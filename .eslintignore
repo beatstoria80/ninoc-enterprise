@@ -1,0 +1,6 @@
+backup_v2_vite/
+old_project_backup/
+temp_repo/
+node_modules/
+.next/
+dist/

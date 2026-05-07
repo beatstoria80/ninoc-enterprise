@@ -1,0 +1,3587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Manager Content</title>
+<meta name="description" content="Professional Content Manager Dashboard - Beatstoria">
+<meta name="theme-color" content="#1d6b4a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MC Pro">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surf:#ffffff;--card:#ffffff;--card2:#f0efe9;--border:#e4e2d8;
+  --accent:#1d6b4a;--accent2:#28a265;--accentL:#e8f5ee;
+  --indigo:#4c51b5;--indigoL:#eef0fc;
+  --red:#e5304a;--redL:#fdeef1;--orange:#e07b22;--orangeL:#fef3e8;--gold:#c9930a;
+  --cyan:#0891b2;--cyanL:#e0f4f9;
+  --txt:#1a1915;--txt2:#6b6856;--muted:#b0ac9a;
+  --lime:#1d6b4a;--lime2:#28a265;
+  --purpleL:#4c51b5;--purple:#4c51b5;
+  --radius:16px;--shadow:0 2px 8px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:3px;opacity:.5}
+
+/* ── MODALS ── */
+.modal{position:fixed;inset:0;background:rgba(26,25,21,.6);z-index:1000;display:none;align-items:flex-end;justify-content:center;transition:.2s}
+.modal.show{display:flex}
+.modal-sheet{background:var(--surf);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:24px;position:relative;animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-drag{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px}
+.modal-body{margin-bottom:24px}
+.modal-actions{display:flex;flex-direction:column;gap:10px}
+
+/* FAB BATCH (REMOVED) */
+
+/* BATCH MODAL ELEMENTS */
+.batch-pic-select{margin-bottom:20px}
+.batch-pic-select label{display:block;font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;margin-bottom:8px}
+.batch-pic-select select{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);font-family:inherit;font-size:14px;color:var(--txt);outline:none}
+.batch-slots label{display:block;font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;margin-bottom:8px}
+.batch-slot{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);font-family:inherit;font-size:13px;color:var(--txt);margin-bottom:10px;outline:none;transition:border-color .15s}
+.batch-slot:focus{border-color:var(--accent);background:var(--surf)}
+.cancel-btn{padding:12px;border-radius:14px;border:1.5px solid var(--border);background:none;color:var(--txt2);font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}
+
+.vid-links{display:flex;gap:6px;flex-wrap:wrap}
+.vid-btn{font-size:11px;color:var(--cyan);background:var(--cyanL);border:1px solid rgba(8,145,178,.2);border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;font-weight:600;transition:all .18s cubic-bezier(.34,1.56,.64,1)}
+.vid-btn:hover{background:rgba(8,145,178,.15);transform:translateY(-1px)}
+.vid-btn.ok{background:var(--accentL);border-color:var(--accent2);color:var(--accent)}
+
+/* ── UTILS ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ══════════ LOGIN ══════════ */
+#scLogin{align-items:stretch;padding:0}
+.login-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 15% 15%,rgba(29,107,74,.12) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(76,81,181,.08) 0%,transparent 55%),linear-gradient(160deg,#f8f7f3 0%,#eeecea 100%);pointer-events:none}
+.login-wrap{flex:1;display:flex;flex-direction:column;padding:clamp(20px, 8vh, 40px) 24px 32px;position:relative;z-index:1}
+.login-brand{font-family:'Unbounded',sans-serif;font-size:clamp(28px, 10vw, 44px);font-weight:900;letter-spacing:-1.5px;margin-bottom:8px;line-height:1;text-transform:uppercase;text-align:center;word-break:break-word}
+.login-brand em{color:var(--lime);font-style:normal}
+.login-tagline{font-size:clamp(10px, 3vw, 12px);color:var(--txt2);margin-bottom:clamp(20px, 6vh, 40px);font-weight:400;letter-spacing:-0.2px;text-align:center;line-height:1.4}
+.login-section{margin-bottom:28px}
+.login-lbl{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.pic-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pic-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 14px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.pic-card::before{content:'';position:absolute;inset:0;background:var(--lime);opacity:0;transition:.2s;border-radius:13px}
+.pic-card.sel{border-color:var(--lime);background:rgba(197,241,53,.08)}
+.pic-card.sel::before{opacity:.05}
+.pic-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin-bottom:10px;font-family:'Unbounded',sans-serif}
+.pic-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.pic-role{font-size:11px;color:var(--txt2)}
+.pic-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--lime);display:none;align-items:center;justify-content:center;font-size:10px;color:#080810;font-weight:800}
+.pic-card.sel .pic-check{display:flex}
+
+.admin-box{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px}
+.admin-inner{display:flex;gap:8px}
+.admin-in{flex:1;background:var(--bg);border:1.5px solid var(--border);color:var(--txt);border-radius:10px;padding:10px 14px;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.admin-in:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,107,74,.1)}.nc-select:focus,.nc-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,107,74,.1)}
+.admin-in::placeholder{color:var(--muted);font-size:13px}
+.admin-ok{padding:10px 16px;border-radius:10px;border:1.5px solid var(--purpleL);background:rgba(155,125,224,.12);color:var(--purpleL);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.admin-ok:hover{background:rgba(155,125,224,.25)}
+.admin-verified{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--lime);margin-top:8px;display:none}
+
+.login-err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.login-btn{width:100%;padding:16px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;transition:all .2s cubic-bezier(.34,1.56,.64,1);letter-spacing:.3px;box-shadow:0 4px 16px rgba(29,107,74,.3)}
+.login-btn:disabled{opacity:.3;cursor:not-allowed}
+.login-btn:not(:disabled):hover{box-shadow:0 6px 20px rgba(29,107,74,.4);transform:translateY(-1px)}.login-btn:not(:disabled):active{transform:scale(.97) translateY(0)}
+
+/* ══════════ LOADING ══════════ */
+#scLoading{align-items:center;justify-content:center;gap:20px}
+.ld-brand{font-family:'Unbounded',sans-serif;font-size:28px;font-weight:900;letter-spacing:-1px}
+.ld-brand em{color:var(--lime);font-style:normal}
+.ld-spin{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-txt{font-size:13px;color:var(--txt2)}
+.ld-sub{font-size:11px;color:var(--muted)}
+
+/* ══════════ APP ══════════ */
+#scApp{display:none;flex-direction:column;min-height:100vh;overflow:visible}
+#scApp.active{display:flex}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:13px 18px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border)}
+.topbar-r1{display:flex;align-items:center;justify-content:space-between}
+.tb-brand{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:900;letter-spacing:-1px}
+.tb-brand em{color:var(--lime);font-style:normal}
+.tb-right{display:flex;gap:6px;align-items:center}
+.tb-badge{font-size:10px;font-weight:700;border-radius:6px;padding:3px 9px}
+.tb-badge.admin{background:rgba(155,125,224,.18);border:1px solid var(--purpleL);color:var(--purpleL)}
+.tb-badge.pending{background:rgba(255,59,92,.12);border:1px solid var(--red);color:var(--red)}
+.tb-badge.done{background:rgba(197,241,53,.12);border:1px solid var(--lime2);color:var(--lime2)}
+.tb-btn{width:34px;height:34px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--txt2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:color .15s,border-color .15s}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accentL)}
+.tb-btn.notif-active{border-color:var(--orange);color:var(--orange);background:var(--orangeL)}
+.topbar-r2{font-size:11px;color:var(--txt2);margin-top:5px}
+.topbar-r2 strong{color:var(--txt);font-weight:500}
+
+/* DATE STRIP */
+.date-strip{background:var(--surf);border-bottom:1px solid var(--border);padding:8px 18px;overflow-x:auto;position:sticky;top:66px;z-index:90}
+.date-strip::-webkit-scrollbar{display:none}
+.ds-list{display:flex;gap:6px;min-width:max-content}
+.ds-btn{display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;min-width:46px;transition:background .15s,border-color .15s;position:relative}
+.ds-btn .dl{font-size:9px;color:var(--txt2);text-transform:uppercase;font-weight:600;letter-spacing:.5px}
+.ds-btn .dn{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;color:var(--txt)}
+.ds-btn.active{background:var(--accent);border-color:var(--accent)}
+.ds-btn.active .dl,.ds-btn.active .dn{color:#fff}
+.ds-btn.has-dot::after{content:'';position:absolute;bottom:4px;width:5px;height:5px;background:var(--accent2);border-radius:50%}
+@keyframes notif-pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(255, 59, 92, 0.7); border-color: var(--red); color: var(--red); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 59, 92, 0); border-color: var(--red); color: var(--red); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 59, 92, 0); border-color: var(--red); color: var(--red); }
+}
+.notif-urgent {
+  animation: notif-pulse-red 1.5s infinite !important;
+  background: rgba(255, 59, 92, 0.08) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+.ds-btn.active.has-dot::after{background:rgba(255,255,255,.7)}
+
+/* FILTER ROW */
+.filter-row{padding:8px 18px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:138px;z-index:80}
+.filter-row::-webkit-scrollbar{display:none}
+.pill{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--txt2);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit;transition:background .15s,color .15s,border-color .15s}
+.pill.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(29,107,74,.25)}
+
+/* PAGES */
+.page{display:none;padding:14px 18px 40px;flex:1 0 auto;overflow:visible}
+.page.active{display:block !important; position:static !important}
+#pagePosts{width:100% !important; position:static !important}
+#pageHome{display:none;padding:14px 18px 40px;flex:1 0 auto}
+#pageHome.active{display:block}
+#pageStats{display:none;padding:14px 18px 40px;flex:1 0 auto}
+#pageStats.active{display:block}
+#pageAdmin{display:none;padding:14px 18px 40px;flex:1 0 auto}
+#pageAdmin.active{display:block}
+.scroll-spacer{height:180px;width:100%;pointer-events:none}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);display:block !important;position:relative !important;width:100% !important}
+.card-head{padding:12px 14px 8px;display:flex;justify-content:space-between;align-items:flex-start}
+.card-left{}
+.card-num{font-size:10px;color:var(--muted);font-weight:600;margin-bottom:3px}
+.card-akun{font-size:16px;font-weight:700;margin-bottom:2px}
+.card-akun span{color:var(--lime)}
+.card-meta{font-size:11px;color:var(--txt2)}
+.card-product{font-size:12px;color:var(--cyan);font-weight:500;margin-top:4px;display:flex;align-items:center;gap:4px}
+.card-right{text-align:right}
+.cat-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--accentL);border:1px solid rgba(29,107,74,.2);color:var(--accent)}
+
+/* VIDEO SECTION */
+.vid-sec{margin:0 14px 8px;background:var(--cyanL);border:1px solid rgba(8,145,178,.15);border-radius:10px;padding:8px 12px}
+.vid-lbl{font-size:10px;color:var(--cyan);font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.vid-links{display:flex;gap:6px;flex-wrap:wrap}
+.vid-btn{font-size:11px;color:var(--cyan);background:var(--cyanL);border:1px solid rgba(8,145,178,.2);border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;transition:all .18s cubic-bezier(.34,1.56,.64,1)}
+.vid-btn:hover{background:rgba(8,145,178,.15);transform:translateY(-1px)}
+.vid-btn.ok{background:var(--accentL);border-color:var(--accent2);color:var(--accent)}
+
+/* CAPTION */
+.cap-sec{margin:0 14px 8px}
+.cap-lbl{font-size:10px;color:var(--txt2);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px}
+.cap-box{background:#f9f9f9; border:1px solid #ddd; border-radius:10px; padding:12px 16px; font-size:14px; line-height:1.5; color:#000; white-space:pre-wrap; word-break:break-word; max-height:220px; overflow-y:auto; }
+.prod-label{font-size:8px; text-transform:uppercase; color:var(--muted); letter-spacing:1.2px; margin-bottom:1px; font-weight:700}
+.prod-val{font-size:14px; font-weight:400; color:var(--cyan); font-family:'Inter',sans-serif; margin-bottom:14px; opacity:0.9}
+.copy-btn{width:100%;margin-top:7px;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--accentL);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s cubic-bezier(.34,1.56,.64,1)}
+.copy-btn:hover{background:rgba(29,107,74,.12);border-color:var(--accent2)}
+.copy-btn.copied{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ADMIN ADVANCED REPORT */
+.admin-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 16px}
+.admin-stats-grid .stat-card{border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.admin-stats-grid .stat-card.main{background:linear-gradient(135deg,var(--accent) 0%,#1d4d3a 100%);color:#fff}
+.admin-stats-grid .stat-card.main .stat-lbl{color:rgba(255,255,255,.8)}
+.admin-stats-grid .stat-val{font-size:16px}
+.admin-list-sec{margin:0 16px 16px}
+.detail-row{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;transition:all .15s}
+.detail-row:active{background:var(--bg)}
+.detail-info{display:flex;flex-direction:column;gap:1px}
+.detail-pic{font-size:9px;font-weight:700;color:var(--accent)}
+.detail-akun{font-size:12px;font-weight:700}
+.detail-meta{font-size:9px;color:var(--muted)}
+.detail-metrics{text-align:right}
+.detail-v{font-size:13px;font-weight:800;color:var(--cyan)}
+.detail-l{font-size:9px;color:var(--muted)}
+/* RANGE PICKER */
+.range-picker{background:var(--card);margin:8px 16px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);display:flex;gap:6px;align-items:center}
+.range-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px;font-size:11px;font-family:inherit;color:var(--txt)}
+
+/* STATUS PILLS */
+.status-pill{font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;display:inline-block;margin-top:6px;letter-spacing:0.5px}
+.status-pill.ready{background:rgba(29,107,74,0.1);color:var(--accent);border:1px solid rgba(29,107,74,0.2)}
+.status-pill.done{background:rgba(132,204,22,0.1);color:var(--lime);border:1px solid rgba(132,204,22,0.2)}
+.dl-mini-btn { background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 16px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; font-size:14px; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.dl-mini-btn:hover { background:#f8fafc; border-color:#94a3b8; transform:translateY(-1px); box-shadow:0 2px 4px rgba(0,0,0,0.08); }
+
+/* LINK + METRICS */
+.link-sec{border-top:1px solid var(--border);padding:12px 16px}
+.link-lbl{font-size:10px;color:var(--txt2);font-weight:600;margin-bottom:7px;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;justify-content:space-between}
+.link-input-row{display:flex;gap:7px}
+.link-in{flex:1;background:var(--bg);border:1.5px solid var(--border);color:var(--txt);border-radius:10px;padding:9px 12px;font-size:12px;font-family:inherit;outline:none;min-width:0;transition:border-color .15s}
+.link-in:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,107,74,.1)}
+.link-in::placeholder{color:var(--muted)}
+.save-btn{padding:9px 15px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .18s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 8px rgba(29,107,74,.2)}
+.save-btn:active{transform:scale(.95);box-shadow:none}
+.save-btn:disabled{opacity:.4;cursor:not-allowed}
+.link-saved{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.link-saved a{font-size:11px;color:var(--cyan);word-break:break-all;flex:1}
+.edit-link-btn{font-size:11px;color:var(--txt2);background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;font-family:inherit}
+
+/* METRICS ROW */
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.metric-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
+.metric-val{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.metric-val.views{color:var(--cyan)}
+.metric-val.likes{color:var(--red)}
+.metric-val.comments{color:var(--gold)}
+.metric-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.fetch-btn{width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--cyanL);color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s ease;display:flex;align-items:center;justify-content:center;gap:5px}
+.fetch-btn:hover{background:rgba(8,145,178,.15);border-color:var(--cyan)}
+.fetch-btn .spin{width:12px;height:12px;border:2px solid rgba(8,145,178,.25);border-top-color:var(--cyan);border-radius:50%;animation:spin .6s linear infinite;display:none}
+.fetch-btn.loading .spin{display:block}
+.fetch-btn.loading span{display:none}
+
+/* ── HOME PAGE ── */
+.page-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.5px;margin-bottom:4px;color:var(--txt)}
+.page-sub{font-size:12px;color:var(--txt2);margin-bottom:16px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;box-shadow:var(--shadow)}
+.stat-val{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px}
+.stat-lbl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.stat-card.total .stat-val{color:var(--indigo)}
+.stat-card.done .stat-val{color:var(--accent)}
+.stat-card.pending .stat-val{color:var(--red)}
+
+/* NOTIF PANEL */
+.notif-panel{background:#fff;border:1px solid rgba(224,123,34,.25);border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px rgba(224,123,34,.1)}
+.notif-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.notif-title .dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.notif-clear{font-size:11px;color:var(--txt2);cursor:pointer;background:none;border:none;font-family:inherit}
+.notif-list{max-height:200px;overflow-y:auto}
+.notif-item{padding:14px 18px;border-bottom:1px solid var(--border);transition:background .2s ease;cursor:pointer}
+.notif-item:active{background:var(--bg)}
+.notif-item:last-child{border-bottom:none}
+.notif-from{font-weight:700;color:var(--indigo);margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:6px}
+.notif-type-tag{font-size:9px;padding:2px 6px;border-radius:4px;background:var(--indigoL);color:var(--indigo);font-weight:600}
+.notif-msg{color:var(--txt);line-height:1.5;font-size:13px}
+.notif-time{font-size:10px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:4px}
+.notif-empty{padding:60px 20px;text-align:center}
+.notif-empty-ico{font-size:48px;margin-bottom:16px;opacity:.5}
+
+/* NEW NOTIF TABS & UI */
+.notif-tabs { display: flex; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 16px; gap: 4px; }
+.notif-tab-btn { flex: 1; border: none; background: transparent; padding: 10px; font-size: 11px; font-weight: 800; color: var(--txt2); border-radius: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.notif-tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.notif-badge-count { background: var(--red); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 10px; min-width: 16px; text-align: center; }
+
+.msg-bubble { background: #fff; border: 1px solid var(--border); border-radius: 20px 20px 20px 4px; padding: 16px; margin-bottom: 12px; position: relative; transition: transform 0.2s; }
+.msg-bubble:active { transform: scale(0.98); }
+.msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.msg-sender { font-size: 10px; font-weight: 900; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+.msg-time { font-size: 9px; color: var(--muted); font-weight: 600; }
+.msg-content { font-size: 13px; color: var(--txt); line-height: 1.5; font-weight: 500; }
+.msg-type-badge { font-size: 8px; background: var(--bg); color: var(--txt2); padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+
+.task-card-mini { border-radius: 16px; border: 1px solid var(--border); background: #fff; margin-bottom: 12px; overflow: hidden; transition: all 0.2s; }
+.task-card-mini:hover { border-color: var(--accent); }
+.task-mini-head { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.task-mini-body { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
+
+.notif-empty-msg{font-size:14px;color:var(--txt2);font-weight:500}
+
+/* PROGRESS SECTION */
+.prog-title{font-size:11px;color:var(--txt2);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px}
+.prog-item{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:9px;margin-bottom:6px}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px}
+.prog-bar-bg{background:rgba(0,0,0,.4);border-radius:4px;height:4px;overflow:hidden}
+.prog-bar{height:100%;border-radius:4px;transition:width .4s ease}
+
+/* ── STATS PAGE ── */
+.akun-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.akun-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.akun-name{font-size:14px;font-weight:700}
+.akun-name span{color:var(--lime)}
+.akun-pic{font-size:11px;color:var(--txt2)}
+.akun-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.am-box{text-align:center}
+.am-val{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;margin-bottom:2px}
+.am-lbl{font-size:9px;color:var(--muted);font-weight:600}
+
+/* LEADERBOARD */
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.lb-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.lb-title{font-size:13px;font-weight:700}
+.lb-item{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:10px}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;width:24px;text-align:center;flex-shrink:0}
+.lb-rank.r1{color:var(--gold)}
+.lb-rank.r2{color:#c0c0c0}
+.lb-rank.r3{color:#cd7f32}
+.lb-info{flex:1;min-width:0}
+.lb-akun{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-akun span{color:var(--lime)}
+.lb-sub{font-size:10px;color:var(--txt2)}
+.lb-score{text-align:right;flex-shrink:0}
+.lb-views{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--cyan)}
+.lb-posts{font-size:10px;color:var(--muted)}
+
+/* ── ADMIN PAGE ── */
+.admin-section{margin-bottom:20px}
+.admin-sec-title{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pic-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.poc-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:all .2s ease}
+.poc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.poc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Unbounded',sans-serif}
+.poc-name{font-size:14px;font-weight:700}
+.poc-akuns{font-size:10px;color:var(--txt2)}
+.poc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.poc-stat{text-align:center}
+.poc-val{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
+.poc-lbl{font-size:9px;color:var(--muted);font-weight:600}
+.poc-prog{margin-top:10px}
+.poc-pct{font-size:11px;color:var(--txt2);margin-bottom:4px;display:flex;justify-content:space-between}
+
+/* NOTIF COMPOSER (ADMIN) */
+.notif-compose{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.notif-compose::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--indigo)}
+.nc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.nc-label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;margin-bottom:6px;display:block}
+.nc-select{width:100%;background:var(--bg);border:1.5px solid var(--border);color:var(--txt);border-radius:10px;padding:12px;font-size:13px;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6856' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.nc-input{width:100%;background:var(--bg);border:1.5px solid var(--border);color:var(--txt);border-radius:10px;padding:12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px;resize:none;min-height:100px;transition:border-color .2s}
+.nc-input:focus{border-color:var(--indigo);background:#fff}
+.nc-send{width:100%;padding:14px;border-radius:12px;border:none;background:var(--indigo);color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:all .2s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(76,81,181,.3)}
+.nc-send:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(76,81,181,.4)}
+.nc-send:active{transform:scale(.97)}
+
+/* ACTIVITY LOG */
+.log-item{display:flex;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.log-item:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.log-dot.ok{background:var(--lime)}
+.log-dot.notif{background:var(--orange)}
+.log-dot.login{background:var(--cyan)}
+.log-info{flex:1}
+.log-msg{color:var(--txt);line-height:1.4;margin-bottom:2px}
+.log-time{font-size:10px;color:var(--muted)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,14px);z-index:150;display:none}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted);font-size:9px;font-weight:500;transition:color .15s;position:relative}
+.nav-item.active{color:var(--accent)}
+.nav-item:active{transform:scale(.85)}
+.nav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-item.active .nav-icon svg{stroke:var(--accent)}
+.nav-notif{position:absolute;top:0;right:calc(50% - 18px);width:8px;height:8px;background:var(--orange);border-radius:50%;border:1.5px solid var(--surf)}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:300;align-items:flex-end;justify-content:center;padding:0}
+.modal.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{background:var(--surf);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding:20px 20px 30px;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 -8px 32px rgba(0,0,0,.12)}
+@keyframes slideUp{from{transform:translateY(30px)}to{transform:translateY(0)}}
+.modal-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px}
+.fsec{margin-bottom:14px}
+.fsec-lbl{font-size:10px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.fpills{display:flex;flex-wrap:wrap;gap:6px}
+.apply-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:8px;box-shadow:0 3px 12px rgba(29,107,74,.25);transition:all .18s cubic-bezier(.34,1.56,.64,1)}
+.logout-btn{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--red);background:rgba(255,59,92,.08);color:var(--red);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+
+/* TOASTS */
+.toasts{position:fixed;top:70px;bottom:auto;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:calc(100% - 36px);max-width:444px}
+.toast{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);animation:toastIn .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:8px}
+.toast.ok{border-color:var(--accent2);color:var(--accent)}
+.toast.err{border-color:var(--red);color:var(--red)}
+.toast.info{border-color:var(--cyan);color:var(--cyan)}
+.toast.warn{border-color:var(--gold);color:#b37d00;background:#fffaf0;font-weight:600}
+
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px}
+.empty-ico{font-size:40px;margin-bottom:12px}
+.empty-msg{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* ── HERO CARD ── */
+.hero-card{background:linear-gradient(135deg,#1d6b4a 0%,#28a265 60%,#2ebf76 100%);border:none;border-radius:22px;padding:16px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(29,107,74,0.2)}
+.hero-bg-glow{position:absolute;top:-30px;right:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 70%);pointer-events:none}
+.hero-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.hero-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
+.hero-info{flex:1}
+.hero-name{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-role{font-size:9px;color:rgba(255,255,255,0.7);margin-top:1px;font-weight:500}
+.hero-month-badge{font-size:8px;font-weight:800;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:3px 8px;border-radius:6px;white-space:nowrap;letter-spacing:0.5px}
+.hero-stats{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.1);border-radius:16px;padding:12px 10px}
+.hero-stat{flex:1;text-align:center}
+.hero-stat-val{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:#fff;line-height:1}
+.hero-stat-lbl{font-size:7px;color:rgba(255,255,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-top:4px}
+.hero-stat-div{width:1px;height:24px;background:rgba(255,255,255,0.1)}
+#statsDashboard{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+@media(min-width:390px){
+  #statsDashboard{grid-template-columns:1fr 1fr;gap:10px}
+  .hero-card{padding:14px}
+}
+/* AKUN TILE */
+.akun-tile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow)}
+.akun-tile:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}.akun-tile:active{transform:scale(.96)}
+.akun-tile-name{font-size:12px;font-weight:600;margin-bottom:6px;color:var(--lime)}
+.akun-tile-stats{display:flex;justify-content:space-between;align-items:center}
+.akun-tile-count{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
+.akun-tile-lbl{font-size:9px;color:var(--muted)}
+.akun-tile-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.akun-tile-fill{height:100%;border-radius:2px;transition:width .5s ease}
+
+/* ── MOTION & INTERACTION SYSTEM ── */
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Animate-in utility classes */
+.ani-fadein{animation:fadeInUp .35s cubic-bezier(.34,1.56,.64,1) both}
+.ani-pop{animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both}
+.ani-slide{animation:slideInRight .3s cubic-bezier(.34,1.56,.64,1) both}
+.ani-count{animation:countUp .4s cubic-bezier(.34,1.56,.64,1) both}
+/* Staggered delay helpers */
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* Button ripple container */
+.btn-ripple{position:relative;overflow:hidden}
+.btn-ripple .ripple-dot{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);width:10px;height:10px;margin:-5px;pointer-events:none;animation:ripple .5s ease forwards}
+
+/* Loading skeleton shimmer */
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,rgba(255,255,255,.6) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+
+/* Card hover lift — desktop only */
+@media(hover:hover){.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1)}}
+
+/* Page transition */
+.page-enter{animation:fadeInUp .3s cubic-bezier(.34,1.56,.64,1) both}
+
+/* Nav active indicator dot */
+.nav-item.active::before{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--accent);border-radius:50%}
+
+/* ds-btn hover — desktop only */
+@media(hover:hover){
+.ds-btn:hover:not(.active){background:var(--accentL);border-color:var(--accent2)}
+.pill:hover:not(.active){background:var(--accentL);border-color:var(--accent2);color:var(--accent)}
+}
+
+/* Hero ring glow */
+#heroRingFill{filter:drop-shadow(0 0 6px rgba(255,255,255,.4))}
+
+/* Progress bar animated fill */
+.prog-bar{transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+
+/* Toast position above nav */
+/* Toast position above nav removed for top position */
+
+/* Duplicate CSS block removed */
+
+/* ── REPORT METRIC HUB ── */
+.metric-box{border-radius:12px;text-align:center;border:1px solid rgba(0,0,0,0.04)}
+.metric-val{font-family:'Unbounded',sans-serif;font-weight:700;line-height:1;margin-bottom:2px}
+.metric-lbl{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+.link-input-row{display:flex;gap:8px;margin-top:6px}
+.link-in{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg)}
+.save-btn{background:var(--accent);color:#fff;border:none;padding:0 16px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer}
+.fetch-btn{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--txt);font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s}
+.fetch-btn:active{transform:scale(0.98)}
+.fetch-btn .spin{display:none;width:12px;height:12px;border:2px solid rgba(0,0,0,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+.fetch-btn.loading .spin{display:block}
+.fetch-btn.loading span{opacity:0.5}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* FOOTER */
+.footer{background:var(--card);border-top:1.5px solid var(--border);padding:40px 24px 120px;margin-top:20px;text-align:center}
+.footer-logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:900;color:var(--txt);margin-bottom:12px;letter-spacing:-0.5px}
+.footer-logo em{color:var(--lime);font-style:normal}
+.footer-desc{font-size:12px;color:var(--txt2);line-height:1.6;max-width:320px;margin:0 auto 24px}
+.footer-info{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.footer-link{font-size:12px;color:var(--indigo);text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+.footer-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.footer-copy{font-size:11px;color:var(--muted);font-weight:500;padding-top:20px;border-top:1px dashed var(--border)}
+
+  .login-footer{margin-top:40px;text-align:center;font-size:10px;color:var(--muted);text-transform:lowercase;line-height:1.6}
+  .login-footer b{font-weight:700;color:var(--txt2)}
+
+    .tab-nav { display:flex; background:var(--bg); padding:4px; border-radius:12px; margin:15px 16px; border:1px solid var(--border); }
+    .tab-item { flex:1; padding:10px; text-align:center; font-size:11px; font-weight:800; color:var(--txt2); border-radius:10px; cursor:pointer; transition:all 0.2s; font-family:'Unbounded',sans-serif; }
+    .tab-item.active { background:#000; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    
+    /* Notification Tab Pills */
+    .tab-pill { flex:1; padding:10px; border-radius:10px; border:none; background:var(--bg); color:var(--muted); font-size:11px; font-weight:800; cursor:pointer; transition:all 0.2s; font-family:'Unbounded',sans-serif; }
+    .tab-pill.active { background:var(--txt); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+
+/* ── LOGIN RESPONSIVE CORE ── */
+.pic-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+.pass-section { animation:slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1); margin-top:32px; padding:24px; background:#fff; border:1px solid var(--border); border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,0.05); }
+.pass-section label { display:block; font-size:12px; font-weight:800; color:var(--txt2); margin-bottom:12px; text-transform:uppercase; letter-spacing:1.5px; }
+.pass-wrap { position:relative; margin-bottom:20px; }
+.pass-input { width:100%; padding:18px 60px 18px 24px; border-radius:16px; border:2px solid var(--border); font-size:20px; font-family:inherit; outline:none; transition:all 0.25s ease; background:var(--bg); color:var(--txt); letter-spacing:4px; }
+.pass-input:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 5px rgba(29,107,74,0.12); transform:translateY(-2px); }
+.pass-toggle { position:absolute; right:16px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; transition:color 0.2s; z-index:5; }
+.pass-toggle:hover { color:var(--accent); }
+.pass-toggle svg { width:22px; height:22px; stroke-width:2.5; }
+.login-btn { margin-top:10px; }
+@keyframes slideDown { from{opacity:0; transform:translateY(-20px)} to{opacity:1; transform:translateY(0)} }
+
+/* DESKTOP */
+@media(min-width:480px){
+  @media(min-width: 1400px) {
+    .admin-list-sec, .grid-wrap { grid-template-columns: repeat(3, 1fr); }
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="scLogin" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-wrap">
+    <div class="login-brand">MANAGER <em>CONTENT</em></div>
+    <div class="login-tagline">Professional Content Orchestration System · Mei 2026</div>
+
+    <div class="login-section">
+      <div class="pic-grid" id="picGrid"></div>
+      <div class="pass-section" id="passSection" style="display:none">
+        <label id="passLabel">Masukkan Password PIC</label>
+        <div class="pass-wrap">
+          <input type="password" id="passIn" class="pass-input" placeholder="••••••" onkeydown="if(event.key==='Enter') doLogin()">
+          <button type="button" class="pass-toggle" id="passEye" onclick="togglePass()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+        <button class="login-btn" onclick="doLogin()">MASUK <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-left:8px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="login-err" id="loginErr"></div>
+      
+      <div class="login-footer">
+        copyright beatstoria ai<br>
+        email: beatstoria.ai@gmail.com | phone: +62 857-2234-1018<br>
+        professional-grade content orchestration ecosystem
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOADING ══ -->
+<div id="scLoading" class="screen">
+  <div class="ld-brand">MANAGER <em>CONTENT</em></div>
+  <div class="ld-spin"></div>
+  <div class="ld-txt" id="ldTxt">Mengambil data...</div>
+  <div class="ld-sub" id="ldSub">Menghubungkan ke Google Sheets</div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="scApp" class="screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-r1">
+      <div class="tb-brand">MC<em>.</em></div>
+      <div class="tb-right">
+        <div id="tbAdmin" class="tb-badge admin" style="display:none">👑 Admin</div>
+        <button class="tb-btn" id="tbRefreshBtn" onclick="refreshData()" title="Refresh Data">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+        <button class="tb-btn" id="tbNotifBtn" onclick="toggleNotifPanel()" title="Notifikasi">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button class="tb-btn" onclick="openFilter()">☰</button>
+      </div>
+    </div>
+    <div class="topbar-r2" id="tbSub">—</div>
+  </div>
+
+  <!-- DATE STRIP -->
+  <div class="date-strip" id="dateStrip">
+    <div class="ds-list" id="dsList"></div>
+  </div>
+
+  <!-- ADMIN PIC FILTER (POST PAGE ONLY) -->
+  <div id="adminPostPicFilter" style="display:none; padding:10px 18px; overflow-x:auto; white-space:nowrap; gap:6px; background:var(--bg); border-bottom:1px solid var(--border);"></div>
+
+  <!-- FILTER PILLS -->
+  <div class="filter-row" id="filterRow"></div>
+
+  <!-- HOME PAGE -->
+  <div id="pageHome" class="page">
+
+    <!-- HERO CARDS (SPLIT STATS) -->
+    <div id="statsDashboard">
+      
+      <!-- CARD 1: POST CONTENT (IMAGE 1) -->
+      <div class="hero-card ani-pop" id="postHero">
+        <div class="hero-bg-glow"></div>
+        <div class="hero-top">
+          <div class="hero-avatar" id="heroAvatar">—</div>
+          <div class="hero-info">
+            <div class="hero-name" id="heroName">—</div>
+            <div class="hero-role">Post Content</div>
+          </div>
+          <div class="hero-month-badge">POST</div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-val" id="hTotal">0</div>
+            <div class="hero-stat-lbl">Tgt</div>
+          </div>
+          <div class="hero-stat-div"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--lime2)" id="hDone">0</div>
+            <div class="hero-stat-lbl">Ok</div>
+          </div>
+          <div class="hero-stat-div"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:rgba(255,255,255,0.6)" id="hPending">0</div>
+            <div class="hero-stat-lbl">Left</div>
+          </div>
+        </div>
+        <div class="prog-bar-bg" style="margin-top:12px; height:4px; background:rgba(255,255,255,0.15)">
+          <div id="postProgBar" class="prog-bar" style="background:#fff; width:0%"></div>
+        </div>
+      </div>
+
+      <!-- CARD 2: DAILY REPORT (IMAGE 2) -->
+      <div class="hero-card ani-pop d1" id="reportHero" style="background: linear-gradient(135deg, #121212 0%, #2a2a2a 100%); box-shadow: 0 12px 32px rgba(0,0,0,0.18);">
+        <div class="hero-bg-glow" style="background: radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 70%);"></div>
+        <div class="hero-top">
+          <div style="width:38px; height:38px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px;">📋</div>
+          <div class="hero-info">
+            <div class="hero-name" style="font-size:14px">Report</div>
+            <div class="hero-role" style="color:rgba(255,255,255,0.45)">Slot Links</div>
+          </div>
+          <div class="hero-month-badge" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">SLOT</div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-val" id="rTotal">0</div>
+            <div class="hero-stat-lbl">Slt</div>
+          </div>
+          <div class="hero-stat-div" style="background:rgba(255,255,255,0.1)"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--lime2)" id="rDone">0</div>
+            <div class="hero-stat-lbl">Fill</div>
+          </div>
+          <div class="hero-stat-div" style="background:rgba(255,255,255,0.1)"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--orange)" id="rPending">0</div>
+            <div class="hero-stat-lbl">Off</div>
+          </div>
+        </div>
+        <div class="prog-bar-bg" style="margin-top:12px; height:4px; background:rgba(255,255,255,0.08)">
+          <div id="reportProgBar" class="prog-bar" style="background:var(--lime2); width:0%"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SYSTEM BROADCAST (NEW) -->
+    <div id="broadcastHub" style="margin-bottom:20px; display:none">
+      <div class="prog-title" style="display:flex; align-items:center; justify-content:space-between">
+        <span>📢 System Broadcast</span>
+        <div class="notif-type-tag" style="background:var(--redL); color:var(--red); animation:pulse 1.5s infinite">LIVE</div>
+      </div>
+      <div class="hero-card" style="background:linear-gradient(135deg, #4c51b5 0%, #6366f1 100%); padding:16px; min-height:auto; box-shadow:0 8px 24px rgba(76,81,181,0.2)">
+        <div style="display:flex; gap:12px; align-items:flex-start">
+          <div style="width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px">👑</div>
+          <div style="flex:1">
+            <div id="bcMsg" style="color:#fff; font-size:13px; font-weight:500; line-height:1.5; margin-bottom:8px">Menunggu arahan terbaru dari Admin...</div>
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <span id="bcTime" style="font-size:10px; color:rgba(255,255,255,0.6)">Baru saja</span>
+              <button onclick="toggleNotifPanel()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; font-size:10px; font-weight:600; padding:4px 10px; border-radius:6px; cursor:pointer">Lihat Semua</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="prog-title">🏪 Akun Saya</div>
+    <div id="akunTiles" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"></div>
+
+    <div class="prog-title">📅 Progress Harian</div>
+    <div id="homeProgress"></div>
+
+    <!-- PIC COMMUNICATION HUB -->
+    <div id="picCommHub" style="margin-top:24px; display:none">
+      <div class="prog-title">💬 Kirim Pesan ke Semua Tim</div>
+      <div class="notif-compose" style="padding:16px">
+        <textarea class="nc-input" id="picMsgOut" placeholder="Tulis pesan atau info untuk tim lain..." style="min-height:70px; margin-bottom:10px"></textarea>
+        <button class="nc-send" onclick="sendPicNotif()">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Kirim ke Semua Tim
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSTS PAGE -->
+  <div id="pagePosts" class="page" style="display:none"></div>
+
+  <!-- STATS PAGE -->
+  <div id="pageStats" class="page" style="display:none">
+    <div class="page-title">Statistics</div>
+    <div class="page-sub" id="statsSub">—</div>
+
+    <div class="stat-grid" style="margin-bottom:16px">
+      <div class="stat-card total"><div class="stat-val" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card done"><div class="stat-val" id="sDone">0</div><div class="stat-lbl">Upload</div></div>
+      <div class="stat-card pending"><div class="stat-val" id="sPending">0</div><div class="stat-lbl">Belum</div></div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="lb-card">
+      <div class="lb-header">
+        <span style="font-size:16px">🏆</span>
+        <div class="lb-title">Leaderboard — Top Akun</div>
+      </div>
+      <div id="lbList"></div>
+    </div>
+
+    <!-- Per-akun metrics -->
+    <div class="prog-title" style="margin-top:16px">📊 Metrics per Akun</div>
+    <div id="akunMetrics"></div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="pageAdmin" class="page" style="display:none">
+    <div class="page-title">Admin Panel</div>
+    <div class="page-sub">Kontrol aktivitas semua PIC</div>
+
+    <!-- PIC Overview -->
+    <div class="admin-section">
+      <div class="admin-sec-title">👥 Overview PIC</div>
+      <div class="pic-overview-grid" id="picOverview"></div>
+    </div>
+
+    <!-- Send Notification -->
+    <div class="admin-section">
+      <div class="admin-sec-title">📢 Broadcast Hub — Kirim Instruksi</div>
+      <div class="notif-compose">
+        <div class="nc-row">
+          <div>
+            <label class="nc-label">Target Penerima</label>
+            <select class="nc-select" id="ncTarget">
+              <option value="ALL">📢 Semua PIC (Group)</option>
+            </select>
+          </div>
+          <div>
+            <label class="nc-label">Tipe Pesan</label>
+            <select class="nc-select" id="ncType">
+              <option value="📌 Arahan">📌 Arahan</option>
+              <option value="⚠️ Reminder">⚠️ Reminder</option>
+              <option value="✅ Apresiasi">✅ Apresiasi</option>
+              <option value="🔴 Urgent">🔴 Urgent</option>
+            </select>
+          </div>
+        </div>
+        <label class="nc-label">Isi Pesan Instruksi</label>
+        <textarea class="nc-input" id="ncMsg" placeholder="Tulis instruksi atau arahan strategis di sini..."></textarea>
+        <button class="nc-send" onclick="sendNotif()">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Kirim Instruksi Sekarang
+        </button>
+      </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="admin-section">
+      <div class="admin-sec-title" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>📋 Activity Log <span style="font-size:9px; font-weight:normal; color:var(--muted);">(Maks 50 log)</span></span>
+        <button onclick="clearLogs()" style="font-size:10px; padding:4px 8px; background:var(--bg); color:var(--txt2); border:1px solid var(--border); border-radius:6px; cursor:pointer;">Bersihkan</button>
+      </div>
+      <div class="lb-card">
+        <div id="activityLog"></div>
+      </div>
+    </div>
+
+    <!-- Global Leaderboard (Admin view) -->
+    <div class="admin-section">
+      <div class="admin-sec-title">🏆 Leaderboard All PIC</div>
+      <div class="lb-card">
+        <div id="adminLbList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY REPORT PAGE -->
+  <div id="pageReport" class="page" style="display:none">
+    <div class="page-title">Daily Report</div>
+    <div class="page-sub" id="reportSub">Laporan Link Konten Harian</div>
+    
+    <div id="reportContent">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+</div><!-- /scApp -->
+<!-- BOTTOM NAV -->
+<div id="bottomNav" class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="switchPage('home',this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-posts" onclick="switchPage('posts',this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+    <span>Post</span>
+  </div>
+  <div class="nav-item" id="nav-daily" onclick="switchPage('daily',this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg></div>
+    <span>Daily Slot</span>
+  </div>
+  <div class="nav-item" id="nav-report" onclick="switchPage('report',this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+    <span>Report</span>
+  </div>
+  <div class="nav-item" id="nav-stats" onclick="switchPage('stats',this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="16" width="3" height="5" rx="1"/><rect x="10" y="6" width="3" height="15" rx="1"/><rect x="17" y="3" width="3" height="18" rx="1"/></svg></div>
+    <span>Stats</span>
+  </div>
+  <div class="nav-item" id="nav-admin" onclick="switchPage('admin',this)" style="display:none">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="nav-notif" id="adminNotifDot" style="display:none"></div>
+    </div>
+    <span>Admin</span>
+  </div>
+</div>
+
+<!-- FILTER MODAL -->
+<div id="mo" class="modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-title" id="moTitle">Filter</div>
+    <div id="moBody"></div>
+  </div>
+</div>
+<!-- BATCH SAVE MODAL -->
+<div id="batchModal" class="modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-title" id="batchTitle">Batch Save TikTok Links</div>
+    <div class="modal-body" id="batchBody">
+      <!-- Diisi via JS (openBatchModal) -->
+    </div>
+    <div class="modal-actions">
+      <button class="apply-btn" onclick="doBatchSave()">Save Batch</button>
+      <button class="cancel-btn" onclick="document.getElementById('batchModal').classList.remove('show')">Cancel</button>
+    </div>
+  </div>
+</div>
+<!-- End BATCH SAVE MODAL -->
+<!-- NOTIF DROPDOWN (FIXED WINDOW) -->
+<style>
+#notifModal {
+  position: fixed;
+  top: 60px;
+  right: 18px;
+  width: 340px;
+  max-width: calc(100vw - 36px);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  transform-origin: top right;
+}
+#notifModal.show {
+  display: flex;
+  animation: popDown 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes popDown {
+  from { opacity: 0; transform: scale(0.9) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+/* Overlay background to close dropdown when clicking outside */
+#notifOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: none;
+}
+#notifOverlay.show {
+  display: block;
+}
+</style>
+<div id="notifOverlay" onclick="this.classList.remove('show'); document.getElementById('notifModal').classList.remove('show')"></div>
+<div id="notifModal">
+  <div class="notif-header" style="padding:16px 20px 12px; border-bottom:1px solid var(--border); background:#fff">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+      <div class="notif-title" style="font-size:18px; font-weight:900; font-family:'Unbounded',sans-serif">Notifications</div>
+      <button class="notif-clear" onclick="clearNotifPIC()" style="color:var(--red); font-weight:700; font-size:11px; background:rgba(229,48,74,0.08); border:none; padding:6px 10px; border-radius:8px; cursor:pointer;">Clear All</button>
+    </div>
+    <div style="display:flex; gap:8px">
+      <button id="notifTabMsgs" onclick="curNotifTab='msgs';renderNotifPIC()" class="tab-pill active" style="flex:1">💬 Messages</button>
+      <button id="notifTabSys" onclick="curNotifTab='sys';renderNotifPIC()" class="tab-pill" style="flex:1">⚙️ System</button>
+    </div>
+  </div>
+  <div class="notif-list" id="notifListModal" style="max-height:350px; overflow-y:auto; flex:1; padding:12px">
+    <!-- Diisi via JS -->
+  </div>
+</div>
+<!-- End NOTIF DROPDOWN -->
+
+<!-- TOASTS -->
+<div id="toasts" class="toasts"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SECURITY / ANTI-INSPECT / CODE PROTECTION
+// ════════════════════════════════════════════════════════════
+document.addEventListener('contextmenu', event => event.preventDefault());
+document.addEventListener('keydown', function(e) {
+  // Disable F12, Ctrl+Shift+I, J, C, Ctrl+U, Ctrl+S, Ctrl+P, Ctrl+A (prevent copy all)
+  if(
+    e.keyCode === 123 || 
+    (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+    (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 80 || e.keyCode === 65))
+  ) {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzkI-zF2nnDk4WwptdFSfTEb8-5PvNx6MWw7q7le-ns7OaHfcLDZ3CV1cdoDJL1gDpG4g/exec';
+
+
+
+const DATES_ALL = [
+  '01 Mei','02 Mei','03 Mei','04 Mei','05 Mei','06 Mei','07 Mei',
+  '08 Mei','09 Mei','10 Mei','11 Mei','12 Mei','13 Mei','14 Mei',
+  '15 Mei','16 Mei','17 Mei','18 Mei','19 Mei','20 Mei','21 Mei',
+  '22 Mei','23 Mei','24 Mei','25 Mei','26 Mei','27 Mei','28 Mei',
+  '29 Mei','30 Mei','31 Mei'
+];
+
+// Obfuscated Access Keys (Base64 Hidden)
+let PIC_CFG = {};
+let ADMIN_CFG = { pass: 'IB-111', name: 'Admin' }; // Admin pass tetap fallback jika offline
+let PICS_LIST = [];
+const POSTS_LIMIT = { 'Atep': 3 };
+
+// ── GLOBAL HELPERS ──
+// Validasi: link dianggap "task selesai" HANYA jika link TikTok asli (bukan G.Drive/video asset)
+function isValidPostLink(link) {
+  if(!link) return false;
+  const s = String(link).trim().toLowerCase();
+  if(s.length < 10) return false;
+  // Hanya TikTok link yang valid sebagai bukti posting
+  return s.includes('tiktok.com/') || s.includes('vt.tiktok.com');
+}
+
+// Cek Hari Minggu Mei 2026
+function isSunday(dateStr) {
+  if(!dateStr) return false;
+  const day = parseInt(String(dateStr).split(' ')[0]);
+  return [3, 10, 17, 24, 31].includes(day);
+}
+
+async function loadConfig() {
+  try {
+    const res = await gasFetch({ action: 'getPicAkun' });
+    if (res.status === 'ok' && res.picMap) {
+      // Color and Avatar mapping (fallback as GAS doesn't store ini yet)
+      const colors = { 'Risa': '#c5f135', 'Rahma': '#00e5ff', 'Ayu': '#ff8c42', 'Atep': '#ffd166' };
+      const avatars = { 'Risa': 'R', 'Rahma': 'RA', 'Ayu': 'A', 'Atep': 'AT' };
+      const officialPass = { 'Risa': 'RH-001', 'Rahma': 'RM-002', 'Ayu': 'AY-003', 'Atep': 'AT-004' };
+      
+      PIC_CFG = {};
+      Object.keys(res.picMap).forEach(pic => {
+        const pData = res.picMap[pic];
+        PIC_CFG[pic] = {
+          pass: officialPass[pic] || '123',
+          color: colors[pic] || '#666',
+          avatar: avatars[pic] || pic.substring(0, 2).toUpperCase(),
+          akuns: (pData.akuns || []).map(a => typeof a === 'string' ? a : (a.akun || ''))
+        };
+      });
+      PICS_LIST = Object.keys(PIC_CFG);
+      console.log('Dynamic Config Loaded:', PIC_CFG);
+    }
+  } catch (e) {
+    console.error('CRITICAL: Failed to load dynamic config from GAS.', e);
+    // Hard Fallback jika server mati total
+    PIC_CFG = { 'Risa': { pass:'123', color:'#c5f135', avatar:'R', akuns:[] } };
+    PICS_LIST = ['Risa'];
+    toast('⚠️ Server tidak merespon. Menggunakan mode darurat.', 'err');
+  }
+}
+
+/**
+ * Robust GAS Fetcher using JSONP technique to bypass CORS on Vercel
+ */
+function gasFetch(params) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'gas_cb_' + Math.floor(Math.random() * 1000000);
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      reject(new Error('GAS Request Timeout'));
+    }, 15000);
+
+    window[callbackName] = (data) => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+
+    const urlParams = new URLSearchParams(params);
+    urlParams.append('callback', callbackName);
+    
+    const script = document.createElement('script');
+    script.src = GAS_URL + (GAS_URL.indexOf('?') > -1 ? '&' : '?') + urlParams.toString();
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      reject(new Error('GAS Script Load Error'));
+    };
+    document.body.appendChild(script);
+  });
+}
+// ── STATE ──
+
+// ── STATE ──
+var session   = { pic:null, isAdmin:false };
+let loginPIC  = '';
+let DATA      = [];
+let links     = {};
+let reportLinks = {}; // Khusus untuk menampung link dari Image 2 (Daily Report)
+let metrics   = {}; // {rowRef: {views,likes,comments}}
+let saveMeta  = {}; // {rowRef: timestamp} untuk deteksi susulan
+let selDate   = '';
+let selAkun   = '';
+let curPage   = 'home';
+let notifications = {}; // {picName: [{from,type,msg,time}]}
+let activityLogs  = [];
+let showNotifPanel = false;
+let downloadTracker = {}; // {url: count}
+let adminReportType = 'posts'; // 'posts' or 'daily'
+let adminStatsType  = 'posts'; // 'posts' or 'daily'
+let curNotifTab     = 'msgs'; // 'msgs' or 'sys'
+
+// ════════════════════════════════════════════════════════════
+// INIT LOGIN — AUTH WAJIB PER PIC & ADMIN
+// ════════════════════════════════════════════════════════════
+function initLogin(){
+  // 1. Build grid
+  const grid = document.getElementById('picGrid');
+  if(grid) {
+    grid.innerHTML = PICS_LIST.map(p => {
+      const cfg = PIC_CFG[p];
+      return `<div class="pic-card" id="pc-${p}" onclick="selPic('${p}',this)">
+        <div class="pic-avatar" style="background:${cfg.color}20;color:${cfg.color};border:1.5px solid ${cfg.color}40">${cfg.avatar}</div>
+        <div class="pic-name">${p}</div>
+        <div class="pic-check" style="background:${cfg.color}; display:none; border-radius:50%; width:16px; height:16px; align-items:center; justify-content:center; color:#fff; font-size:10px; position:absolute; top:8px; right:8px;">✓</div>
+      </div>`;
+    }).join('') + `
+      <div class="pic-card" id="pc-__ADMIN__" onclick="selPic('__ADMIN__',this)" style="grid-column:1/-1; border-color:rgba(155,125,224,.35)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="pic-avatar" style="background:rgba(155,125,224,.15);color:var(--purpleL);border:1.5px solid rgba(155,125,224,.4);width:34px;height:34px;font-size:14px">IB</div>
+          <div><div class="pic-name" style="color:var(--purpleL)">Admin</div><div class="pic-role" style="font-size:10px;color:var(--muted)">Full Access · Dashboard Control</div></div>
+        </div>
+        <div class="pic-check" style="background:var(--purpleL); display:none; border-radius:50%; width:16px; height:16px; align-items:center; justify-content:center; color:#fff; font-size:10px; position:absolute; top:50%; transform:translateY(-50%); right:16px;">✓</div>
+      </div>
+    `;
+  }
+
+  // 2. Auto-login check
+  const saved = localStorage.getItem('mc_session');
+  if(saved){
+    try {
+      const s = JSON.parse(saved);
+      if(s.pic){
+        session = s;
+        show('scLoading');
+        hide('scLogin');
+        loadData();
+        return;
+      }
+    } catch(e){ localStorage.removeItem('mc_session'); }
+  }
+}
+
+function selPic(pic, el){
+  loginPIC = pic;
+  document.querySelectorAll('.pic-card').forEach(b => {
+    b.classList.remove('sel');
+    const chk = b.querySelector('.pic-check');
+    if(chk) chk.style.display = 'none';
+  });
+  el.classList.add('sel');
+  const chk = el.querySelector('.pic-check');
+  if(chk) chk.style.display = 'flex';
+  
+  const ps = document.getElementById('passSection');
+  const pl = document.getElementById('passLabel');
+  if(ps) ps.style.display = 'block';
+  if(pl) pl.textContent = pic === '__ADMIN__' ? 'Password Admin:' : `Password ${pic}:`;
+  const pi = document.getElementById('passIn');
+  if(pi) { pi.value = ''; pi.focus(); }
+}
+
+function togglePass(){
+  const pi = document.getElementById('passIn');
+  const btn = document.getElementById('passEye');
+  if(!pi || !btn) return;
+  if(pi.type === 'password'){
+    pi.type = 'text';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+  } else {
+    pi.type = 'password';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  }
+}
+
+function doLogin(){
+  const pass = document.getElementById('passIn').value.trim();
+  if(!pass) { shakePass(); return; }
+  
+  if(loginPIC === '__ADMIN__'){
+    if(pass === ADMIN_CFG.pass){
+      session = { pic:'Admin', isAdmin:true };
+      localStorage.setItem('mc_session', JSON.stringify(session));
+      show('scLoading'); hide('scLogin');
+      loadData();
+    } else {
+      shakePass();
+    }
+  } else {
+    if(pass === PIC_CFG[loginPIC].pass){
+      session = { pic:loginPIC, isAdmin:false };
+      localStorage.setItem('mc_session', JSON.stringify(session));
+      show('scLoading'); hide('scLogin');
+      loadData();
+    } else {
+      shakePass();
+    }
+  }
+}
+
+function shakePass(){
+  const pi = document.getElementById('passIn');
+  if(!pi) return;
+  pi.style.borderColor = 'var(--red)';
+  pi.style.animation = 'shake .35s ease';
+  if("vibrate" in navigator) navigator.vibrate([100,50,100]); // Haptic feedback on error
+  setTimeout(() => { pi.style.animation=''; pi.style.borderColor=''; }, 400);
+}
+
+// ════════════════════════════════════════════════════════════
+// DATA LOADING
+// ════════════════════════════════════════════════════════════
+async function refreshData(){
+  const btn = document.getElementById('tbRefreshBtn');
+  if(btn) btn.style.animation = 'spin .8s linear infinite';
+  await loadData(true);
+  if(btn) btn.style.animation = '';
+  toast('✅ Data refreshed','ok');
+}
+
+async function loadData(isRefresh = false){
+  let done = false;
+  function init(result){
+    if(done) return; done = true;
+    if(result?.status === 'ok' && result.data && result.data.length > 0) {
+      console.log('GAS Data Received:', result.data.length, 'rows');
+      DATA = result.data;
+      console.log('Loaded Data:', DATA.length, 'rows');
+      // SAVE CACHE
+      localStorage.setItem('bb21_data_cache_' + session.pic, JSON.stringify(DATA));
+      
+      // Update local storage for notifications and daily reports if present
+      if(result.notifications) {
+        notifications[session.pic] = result.notifications;
+        localStorage.setItem('bb21_notifs', JSON.stringify(notifications));
+      }
+      if(result.dailyReports) {
+        for(let key in result.dailyReports) {
+          const item = result.dailyReports[key];
+          if(item && typeof item === 'object') {
+            reportLinks[key] = item.link || '';
+            metrics[key] = {
+              views: item.views || 0,
+              likes: item.likes || 0,
+              comments: item.comments || 0,
+              shares: item.shares || 0,
+              saves: item.saves || 0,
+              followers: item.followers || 0,
+              basket: item.basket || null
+            };
+          } else {
+            reportLinks[key] = item;
+          }
+        }
+        localStorage.setItem('bb21_reports_' + session.pic, JSON.stringify(reportLinks));
+        localStorage.setItem('bb21_metrics_' + session.pic, JSON.stringify(metrics));
+      }
+
+      if(DATA.length === 0) {
+        toast('⚠️ Data ditemukan di Sheet tapi tidak cocok dengan daftar Akun PIC','warn');
+      }
+    } else if (result?.status === 'error') {
+      toast('❌ Server Error: ' + result.message, 'err');
+    } else if (result && (!result.data || result.data.length === 0)) {
+      toast('⚠️ Data di Google Sheets masih kosong atau Tab tidak ditemukan', 'info');
+    }
+    if(isRefresh) {
+      render();
+      updateStats();
+      // Auto-fetch metrics for items with links
+      DATA.filter(d => links[d.r]).forEach(d => {
+        const safe = String(d.r).replace(/:/g,'_');
+        fetchMetrics(String(d.r).replace(/'/g,"\\'"), safe);
+      });
+    } else {
+      initApp();
+      // Auto-fetch metrics after app init
+      setTimeout(() => {
+        DATA.filter(d => links[d.r]).forEach(d => {
+          const safe = String(d.r).replace(/:/g,'_');
+          fetchMetrics(String(d.r).replace(/'/g,"\\'"), safe);
+        });
+      }, 2000);
+    }
+  }
+
+  try{
+    if(!isRefresh) {
+      // INSTANT LOAD: Cek cache dulu agar tidak stuck di loading screen
+      const cache = localStorage.getItem('bb21_data_cache_' + session.pic);
+      if(cache){
+        try {
+          DATA = JSON.parse(cache);
+          if(DATA && DATA.length > 0){
+            console.log('⚡ Instant Load: Using Cached Data');
+            initApp(); // Buka interface langsung
+            // Tetap fetch di background untuk update data terbaru
+            gasFetch({ action:'getData', pic: session.pic })
+              .then(res => { if(res.data) { DATA = res.data; localStorage.setItem('bb21_data_cache_' + session.pic, JSON.stringify(DATA)); render(); updateStats(); } })
+              .catch(e => console.warn('Background sync failed', e));
+            return; 
+          }
+        } catch(e){ console.warn('Cache corrupted', e); }
+      }
+      
+      show('scLoading');
+      hide('scLogin');
+    }
+    
+    gasFetch({ action: 'getData', pic: session.pic || 'ALL' })
+      .then(res => init(res))
+      .catch(e => {
+        console.error('Fetch Error:', e);
+        toast('❌ Gagal memuat data dari Google Sheets', 'err');
+      });
+
+  } catch(e){ 
+    console.error('Load Error:', e);
+    if(isRefresh) {
+      if(done) return; done = true;
+      render();
+    } else {
+      initApp(); 
+    }
+  }
+}
+
+
+
+
+function initApp(){
+  hide('scLoading');
+  show('scApp');
+  
+  // Initialize Push Notifications (PWA + Service Worker)
+  initPushNotifications();
+  
+  links = JSON.parse(localStorage.getItem('bb21_links_'+session.pic) || '{}');
+  reportLinks = JSON.parse(localStorage.getItem('bb21_reports_'+session.pic) || '{}');
+  metrics = JSON.parse(localStorage.getItem('bb21_metrics_'+session.pic) || '{}');
+  saveMeta = JSON.parse(localStorage.getItem('bb21_meta_'+session.pic) || '{}');
+  document.getElementById('bottomNav').style.display = 'flex';
+
+  // Force hide Admin elements by default
+  const tbAdmin = document.getElementById('tbAdmin');
+  const navAdmin = document.getElementById('nav-admin');
+  if(tbAdmin) tbAdmin.style.display = 'none';
+  if(navAdmin) navAdmin.style.display = 'none';
+
+  if(session.isAdmin){
+    if(tbAdmin) tbAdmin.style.display = 'inline-flex';
+    if(navAdmin) navAdmin.style.display = 'flex';
+    // Admin UI adjustment for Report Nav
+    const nr = document.getElementById('nav-report');
+    if(nr) nr.querySelector('span').textContent = 'All Report';
+  } else if (session.pic === 'Atep' || session.pic === 'ATEP') {
+    // Hide Daily Task for Atep
+    const nd = document.getElementById('nav-daily');
+    if(nd) nd.style.display = 'none';
+  }
+
+  // Load persisted data
+  const sl = localStorage.getItem('bb21_links_' + session.pic);
+  if(sl) try{ links = JSON.parse(sl) || {}; }catch(e){ console.warn('Failed to parse links from localStorage', e); }
+  if(!links) links = {};
+  
+  const srl = localStorage.getItem('bb21_reports_' + session.pic);
+  if(srl) try{ reportLinks = JSON.parse(srl) || {}; }catch(e){ console.warn('Failed to parse reportLinks', e); }
+  if(!reportLinks) reportLinks = {};
+
+  const sm = localStorage.getItem('bb21_metrics_' + session.pic);
+  if(sm) try{ metrics = JSON.parse(sm) || {}; }catch(e){ console.warn('Failed to parse metrics', e); }
+  if(!metrics) metrics = {};
+
+  const sn = localStorage.getItem('bb21_notifs');
+  if(sn) try{ notifications = JSON.parse(sn) || {}; }catch(e){ console.warn('Failed to parse notifications', e); }
+  if(!notifications) notifications = {};
+
+  const slog = localStorage.getItem('bb21_log');
+  if(slog) try{ activityLogs = JSON.parse(slog) || []; }catch(e){ console.warn('Failed to parse logs', e); }
+  if(!activityLogs) activityLogs = [];
+
+  // Atep: cap 3 posts per akun
+  if(!session.isAdmin && POSTS_LIMIT[session.pic]){
+    const cap = POSTS_LIMIT[session.pic];
+    const akunCount = {};
+    DATA = DATA.filter(d => {
+      if(d.pic !== session.pic) return true;
+      akunCount[d.akun] = (akunCount[d.akun]||0) + 1;
+      return akunCount[d.akun] <= cap;
+    });
+  }
+
+  // Merge server links & Sanitize — HANYA link TikTok valid yang di-merge
+  for(let k in links) { if(!isValidPostLink(links[k])) delete links[k]; }
+  DATA.forEach(d => { 
+    if(!d.up || String(d.up).trim().length < 8) d.up = '';
+    // Hanya merge link TikTok asli (bukan G.Drive/video asset)
+    if(d.up && isValidPostLink(d.up) && !links[d.r]) links[d.r] = d.up; 
+  });
+  localStorage.setItem('bb21_links_' + session.pic, JSON.stringify(links));
+
+  // RESTORE STATE (Ant-Reset on Refresh)
+  const savedState = localStorage.getItem('mc_state_' + session.pic);
+  if(savedState) {
+    try {
+      const st = JSON.parse(savedState);
+      selDate = st.selDate || DATES_ALL[0];
+      selAkun = st.selAkun || '';
+      if (session.isAdmin) adminFilterPIC = st.adminFilterPIC || 'ALL';
+      
+      const targetPage = st.curPage || 'home';
+      const navEl = document.getElementById('nav-' + targetPage);
+      switchPage(targetPage, navEl); 
+    } catch(e) { 
+      selDate = DATES_ALL[0]; 
+      switchPage('home', document.getElementById('nav-home')); 
+    }
+  } else {
+    selDate = DATES_ALL[0];
+    selAkun = '';
+    if (session.isAdmin) adminFilterPIC = 'ALL';
+    switchPage('home', document.getElementById('nav-home'));
+  }
+
+  updateNotifIndicators();
+
+  // Polling notifikasi setiap 60 detik
+  if(!session.isAdmin && session.pic) {
+    fetchNotifs();
+    setInterval(fetchNotifs, 60000);
+  }
+}
+
+/**
+ * Helper: Simpan status aplikasi agar tidak reset saat refresh
+ */
+function saveAppState(){
+  if(!session.pic) return;
+  const state = { curPage, selDate, selAkun, adminFilterPIC };
+  localStorage.setItem('mc_state_' + session.pic, JSON.stringify(state));
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function addRipple(btn, e){
+  const r=document.createElement('span'); r.className='ripple-dot';
+  const rect=btn.getBoundingClientRect();
+  r.style.left=(e?e.clientX-rect.left:rect.width/2)+'px';
+  r.style.top=(e?e.clientY-rect.top:rect.height/2)+'px';
+  btn.appendChild(r); setTimeout(()=>r.remove(),550);
+}
+// Attach ripple to dynamic buttons
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.save-btn,.login-btn,.apply-btn,.nc-send,.copy-btn');
+  if(t){ t.classList.add('btn-ripple'); addRipple(t,e); }
+});
+
+function switchPage(page, navEl){
+  curPage = page;
+  saveAppState();
+  // Permission Guard
+  if(page === 'admin' && !session.isAdmin){
+    console.warn('Access Denied: Admin only');
+    switchPage('home', document.getElementById('nav-home'));
+    return;
+  }
+
+  const pages = ['pageHome','pagePosts','pageStats','pageAdmin','pageReport'];
+  pages.forEach(id => {
+    const el = document.getElementById(id);
+    if(el){ el.style.display = 'none'; el.classList.remove('active'); }
+  });
+
+  const ds = document.getElementById('dateStrip');
+  const fr = document.getElementById('filterRow');
+
+  function showPage(id, fn){
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.style.display='block';
+    if(fn) fn();
+  }
+  if(page === 'posts'){
+    showPage('pagePosts', ()=>{ ds.style.display='block'; fr.style.display='flex'; render(); });
+  } else if(page === 'home'){
+    showPage('pageHome', ()=>{ 
+      ds.style.display='none'; 
+      fr.style.display='none'; 
+      updateStats(); 
+      renderNotifPIC(); 
+      const pch = document.getElementById('picCommHub');
+      if(pch) pch.style.display = session.isAdmin ? 'none' : 'block';
+    });
+  } else if(page === 'stats'){
+    showPage('pageStats', ()=>{ ds.style.display='none'; fr.style.display='none'; renderStats(); });
+  } else if(page === 'admin'){
+    showPage('pageAdmin', ()=>{ ds.style.display='none'; fr.style.display='none'; renderAdmin(); });
+  } else if(page === 'report'){
+    adminReportType = 'posts';
+    showPage('pageReport', ()=>{ 
+      ds.style.display='block'; 
+      fr.style.display='none'; 
+      renderReportPage(); 
+    });
+  } else if(page === 'daily'){
+    adminReportType = 'daily';
+    showPage('pageReport', ()=>{ 
+      ds.style.display='block'; 
+      fr.style.display='none'; 
+      renderReportPage(); 
+    });
+  }
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER POSTS
+// ════════════════════════════════════════════════════════════
+function render(){
+  const apf = document.getElementById('adminPostPicFilter');
+  const filterRow = document.getElementById('filterRow');
+  
+  // Guard clause: Cegah render filter pic jika tidak ada elemen
+  if(!apf || !filterRow) return;
+
+  if(session.isAdmin && curPage === 'posts'){
+    apf.style.display = 'flex';
+    apf.innerHTML = `
+      <div class="pill ${adminFilterPIC==='ALL'?'active':''}" onclick="adminFilterPIC='ALL';selAkun='';saveAppState();render()">Semua PIC</div>
+      ${PICS_LIST.map(p => `<div class="pill ${adminFilterPIC===p?'active':''}" onclick="adminFilterPIC='${p}';selAkun='';saveAppState();render()">${p}</div>`).join('')}
+    `;
+  } else {
+    apf.style.display = 'none';
+  }
+
+  const activePIC = session.isAdmin ? adminFilterPIC : session.pic;
+  let filteredAkuns = [];
+  if(activePIC === 'ALL'){
+    filteredAkuns = [...new Set(DATA.map(d => d.akun))].sort();
+  } else {
+    filteredAkuns = (PIC_CFG[activePIC]?.akuns || []).sort();
+  }
+
+  if(curPage === 'posts') {
+    filterRow.innerHTML = `
+      <div class="pill ${!selAkun?'active':''}" onclick="selAkun='';render()">Semua Akun</div>
+      ${filteredAkuns.map(a => {
+        const cleanDisplay = String(a).split('@').pop().split('/')[0].split('?')[0].trim();
+        return `<div class="pill ${selAkun===a?'active':''}" onclick="selAkun='${a}';render()">@${cleanDisplay}</div>`;
+      }).join('')}
+    `;
+  }
+
+  const my = DATA.filter(d => {
+    const activePIC = session.isAdmin ? adminFilterPIC : session.pic;
+    if(activePIC !== 'ALL' && String(d.pic).toLowerCase().trim() !== String(activePIC).toLowerCase().trim()) return false;
+    if(selDate && normalizeDate(d.tgl) !== normalizeDate(selDate)) return false;
+    if(selAkun && String(d.akun).toLowerCase().replace('@','').trim() !== String(selAkun).toLowerCase().replace('@','').trim()) return false;
+    return true;
+  });
+
+  function normalizeDate(s){
+    if(!s) return '';
+    const p = String(s).trim().split(' ');
+    if(p.length < 2) return s;
+    const d = p[0].padStart(2, '0');
+    return d + ' ' + p[1];
+  }
+
+  document.getElementById('tbSub').innerHTML = `<strong>${selDate||'All'}</strong> · <strong style="color:var(--lime)">@${selAkun||'Semua'}</strong>`;
+
+  // Date strip
+  const base = session.isAdmin ? DATA : DATA.filter(d => d.pic === session.pic);
+  document.getElementById('dsList').innerHTML = DATES_ALL.map(d => {
+    const has = base.some(x => x.tgl === d && (!selAkun || x.akun === selAkun));
+    const cls = (d===selDate?'active ':'') + (has?'has-dot':'');
+    const n   = d.split(' ')[0].replace(/^0/,'');
+    return `<button class="ds-btn ${cls}" onclick="pick('${d}')"><div class="dn">${n}</div><div class="dl">Mei</div></button>`;
+  }).join('');
+
+  // FilterRow sudah ditangani oleh sistem PIC -> Akun filter di atas
+
+  if(!my.length){
+    const dayMatch = selDate.match(/^(\d+)/);
+    const dayNum = dayMatch ? parseInt(dayMatch[1]) : 0;
+    const isSun = [3, 10, 17, 24, 31].includes(dayNum);
+    
+    if(isSun) {
+      document.getElementById('pagePosts').innerHTML = `<div class="empty"><div class="empty-ico" style="font-size:50px">🏖️</div><div class="empty-msg" style="color:var(--red); font-weight:800; font-size:16px; margin-bottom:8px;">HARI LIBUR (MINGGU)</div><div class="empty-msg">Target pekerjaan ditiadakan.<br>Namun Anda tetap bisa mengupload data jika ada tugas susulan.</div></div>`;
+    } else {
+      document.getElementById('pagePosts').innerHTML = `<div class="empty"><div class="empty-ico">📭</div><div class="empty-msg">Tidak ada posting<br>untuk tanggal / akun ini</div></div>`;
+    }
+    return;
+  }
+  const footerHtml = `
+    <footer class="footer-inline" style="padding: 40px 0 20px; text-align:center; border-top:1px dashed var(--border); margin-top:30px;">
+      <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Manager Content Professional</div>
+      <div style="font-size:10px; color:var(--muted);">copyright beatstoria ai &copy; 2026</div>
+    </footer>
+    <div class="scroll-spacer"></div>
+  `;
+
+  document.getElementById('pagePosts').innerHTML = my.map((d,i) => renderCard(d,i)).join('') + footerHtml;
+  updateStats();
+}
+
+// Helper: Cek apakah pengerjaan terlambat (Susulan)
+function isLate(targetDateStr, saveTimeStr) {
+  if(!targetDateStr || !saveTimeStr) return false;
+  const months = { 'Mei': 4 }; // 0-indexed
+  const parts = targetDateStr.split(' ');
+  const tDay = parseInt(parts[0]);
+  const tMonth = months[parts[1]] || 4;
+  const targetDate = new Date(2026, tMonth, tDay, 23, 59, 59);
+  const saveDate = new Date(saveTimeStr);
+  return saveDate > targetDate;
+}
+
+function renderCard(d,_idx){
+  const rawLink = links[d.r] ? String(links[d.r]).trim() : '';
+  const saved   = isValidPostLink(rawLink) ? rawLink : '';
+  const safe    = String(d.r).replace(/:/g,'_');
+  const safeR   = String(d.r).replace(/'/g,"\\'");
+  const mx      = metrics[d.r]||{views:d.views||0,likes:d.likes||0,comments:d.comments||0};
+  const vidLines = d.vid ? d.vid.split('\n').filter(v=>v.trim()) : [];
+  const vidHtml = d.vid ? vidLines.map((v,i) => {
+    return `<button class="dl-mini-btn" title="Download Video ${i+1}" onclick="dlVideo('${v.trim()}','vid_${d.no}_${i+1}',this)">📥</button>`;
+  }).join('') : `<button class="dl-mini-btn" style="opacity:0.2; cursor:not-allowed" disabled>📥</button>`;
+
+  const canEdit = session.isAdmin || d.pic === session.pic;
+  const prodName = d.produk || '---';
+
+  // Cek apakah hari Minggu
+  const day = parseInt(d.tgl.split(' ')[0]);
+  const isSun = [3, 10, 17, 24, 31].includes(day);
+  const badgeHtml = isSun ? `<span style="background:var(--red); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:800; letter-spacing:0.5px;">LIBUR / BONUS</span>` : '';
+
+  return `<div class="card" id="card-${safe}" ${isSun ? 'style="border-left:4px solid var(--red);"' : ''}>
+    <div class="card-head" style="margin-bottom:0; padding-bottom:12px;">
+      <div class="card-left" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div class="card-akun" style="font-size:13px; font-weight:700; color:#000 !important;">@<span>${d.akun}</span></div>
+        <div class="card-meta" style="margin-top:4px; font-size:12px; font-weight:600; color:#000 !important;">${d.pic} · ${d.tgl} ${badgeHtml}</div>
+      </div>
+      <div class="card-right" style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center;">
+        <div style="display:flex; gap:5px; align-items:center">
+           ${vidHtml}
+        </div>
+      </div>
+    </div>
+    <div class="cap-sec" style="margin-top:10px">
+      <div style="font-size:11px; font-weight:700; color:#000 !important; text-transform:uppercase; margin-bottom:6px;">${prodName || '---'}</div>
+      <div class="cap-box" id="cap${safe}" style="color:#000 !important; font-weight:500;">${(d.caption || d.cap) || '<span style="color:var(--muted)">(belum ada caption)</span>'}</div>
+      <button class="copy-btn" id="cb${safe}" onclick="doCopy('${safe}')">📋 Copy Caption</button>
+    </div>
+    <div class="link-sec">
+      <div class="link-lbl">
+        <span>🔗 Link TikTok</span>
+        ${saved ? `<span style="color:var(--lime);font-size:9px">✅ Tersimpan</span>` : ''}
+      </div>
+      ${canEdit ? `
+      <div id="f${safe}" ${saved?'style="display:none"':''}>
+        <div class="link-input-row">
+          <input class="link-in" id="i${safe}" type="text" placeholder="https://www.tiktok.com/...">
+          <button class="save-btn" onclick="saveL('${safeR}',${d.no},'${d.pic}','${safe}','${d.akun}','${d.tgl}')">Save</button>
+        </div>
+      </div>
+      <div id="s${safe}" ${saved?'':'style="display:none"'}>
+        <div class="link-saved">
+          <a href="${saved}" target="_blank">${saved}</a>
+          <button class="edit-link-btn" onclick="editL('${safe}')">Edit</button>
+        </div>
+      </div>` : `
+        <div id="s${safe}" ${saved?'':'style="display:none"'}>
+          <div class="link-saved"><a href="${saved}" target="_blank">${saved}</a></div>
+        </div>
+        <div id="f${safe}" ${saved?'style="display:none"':''}><div style="font-size:11px;color:var(--muted)">Link belum diisi</div></div>`}
+      ${(saved || mx.views) ? `
+      <div class="metrics-row" style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:12px">
+        <div class="metric-box"><div class="metric-val views" id="mv${safe}">${fmtNum(mx.views)}</div><div class="metric-lbl">Views</div></div>
+        <div class="metric-box"><div class="metric-val likes" id="ml${safe}">${fmtNum(mx.likes)}</div><div class="metric-lbl">Likes</div></div>
+        <div class="metric-box"><div class="metric-val comments" id="mc${safe}">${fmtNum(mx.comments)}</div><div class="metric-lbl">Comm</div></div>
+        <div class="metric-box"><div class="metric-val" id="ms${safe}" style="color:var(--indigo)">${fmtNum(mx.shares||0)}</div><div class="metric-lbl">Share</div></div>
+        <div class="metric-box"><div class="metric-val" id="msv${safe}" style="color:var(--orange)">${fmtNum(mx.saves||0)}</div><div class="metric-lbl">Save</div></div>
+        <div class="metric-box"><div class="metric-val" id="mf${safe}" style="color:var(--gold)">${fmtNum(mx.followers||0)}</div><div class="metric-lbl">Folw</div></div>
+      </div>
+        <!-- BASKET DISPLAY (REALTIME) -->
+        <div id="mbWrap${safe}">
+          ${saved ? ( (mx.views !== undefined) ? (() => {
+            let displayBasket = mx.basket;
+            // Fallback: jika scraper tidak mendeteksi keranjang tapi kolom PRODUK terisi manual
+            if (!displayBasket && d.produk && String(d.produk).trim() !== "") {
+              displayBasket = { name: d.produk, link: d.tautan || saved || '#' };
+            }
+            
+            if(displayBasket) {
+              const bArr = Array.isArray(displayBasket) ? displayBasket : [displayBasket];
+              const mainB = bArr[0];
+              const bLabel = bArr.length > 1 ? `${mainB.name} (+${bArr.length-1})` : `${mainB.name}`;
+              const bTitle = bArr.map(x => x.name).join('\n');
+              return `<a href="${mainB.link}" target="_blank" title="${bTitle}" style="margin-top:12px; display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#ecfdf5; border:1px solid #10b981; border-radius:100px; text-decoration:none; color:#065f46; font-size:10px; font-weight:800; letter-spacing:0.5px; box-shadow:0 2px 6px rgba(16,185,129,0.08); transition:all 0.2s">
+                 <span style="font-size:15px; filter: hue-rotate(60deg) saturate(2);">🛒</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px;">${bLabel}</span>
+              </a>`;
+            } else {
+              return `<div style="margin-top:12px; padding:12px; background:rgba(239,68,68,0.05); border:1px dashed rgba(239,68,68,0.3); border-radius:12px; display:flex; align-items:center; gap:10px;">
+                 <div style="width:32px; height:32px; background:rgba(239,68,68,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px">⚠️</div>
+                 <div>
+                   <div style="font-size:9px; color:var(--red); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Tautan Keranjang</div>
+                   <div style="font-size:11px; color:var(--red); font-weight:700;">Content ini belum menautkan Produk.</div>
+                 </div>
+              </div>`;
+            }
+          })() : `<div style="margin-top:12px; padding:12px; background:var(--bg); border: 1.5px dashed var(--border); border-radius:12px; font-size:11px; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--muted); font-weight:600">
+              <span class="ld-spin" style="width:14px;height:14px;border-width:2px;display:inline-block"></span> Menganalisis Tautan Keranjang...
+            </div>` ) : ''}
+        </div>
+      </div>
+      ` : ''}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// FETCH METRICS (TikTok link → views/likes/comments via GAS)
+// ════════════════════════════════════════════════════════════
+async function fetchMetrics(rowRef, safe){
+  const btn = document.getElementById('fb'+safe);
+  const lnk = links[rowRef];
+  if(!lnk) return;
+  if(btn) btn.classList.add('loading');
+
+  try {
+    gasFetch({ action: 'getMetrics', link: lnk, row: rowRef })
+      .then(res => {
+        if(btn) btn.classList.remove('loading');
+        if(res.status === 'ok' && res.data){
+          metrics[rowRef] = res.data;
+          localStorage.setItem('bb21_metrics_'+session.pic, JSON.stringify(metrics));
+          
+          // Update UI
+          const mv = document.getElementById('mv'+safe);
+          const ml = document.getElementById('ml'+safe);
+          const mc = document.getElementById('mc'+safe);
+          const ms = document.getElementById('ms'+safe);
+          const msv = document.getElementById('msv'+safe);
+          const mf = document.getElementById('mf'+safe);
+          const mbWrap = document.getElementById('mbWrap'+safe);
+
+          if(mv) mv.textContent = fmtNum(res.data.views);
+          if(ml) ml.textContent = fmtNum(res.data.likes);
+          if(mc) mc.textContent = fmtNum(res.data.comments);
+          if(ms) ms.textContent = fmtNum(res.data.shares);
+          if(msv) msv.textContent = fmtNum(res.data.saves);
+          if(mf) mf.textContent = fmtNum(res.data.followers);
+          
+          if(mbWrap){
+             if(res.data.basket) {
+                const bArr = Array.isArray(res.data.basket) ? res.data.basket : [res.data.basket];
+                const mainB = bArr[0];
+                const bLabel = bArr.length > 1 ? `${mainB.name} (+${bArr.length-1})` : `${mainB.name}`;
+                mbWrap.innerHTML = `<a href="${mainB.link}" target="_blank" style="margin-top:12px; display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#ecfdf5; border:1px solid #10b981; border-radius:100px; text-decoration:none; color:#065f46; font-size:10px; font-weight:800; letter-spacing:0.5px; box-shadow:0 2px 6px rgba(16,185,129,0.08);">
+                   <span style="font-size:15px; filter: hue-rotate(60deg) saturate(2);">🛒</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${bLabel}</span>
+                </a>`;
+             } else {
+                mbWrap.innerHTML = `<div style="margin-top:12px; padding:12px; background:rgba(239,68,68,0.05); border:1px dashed rgba(239,68,68,0.3); border-radius:12px; display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px; height:32px; background:rgba(239,68,68,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px">⚠️</div>
+                  <div>
+                    <div style="font-size:9px; color:var(--red); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Tautan Keranjang</div>
+                    <div style="font-size:11px; color:var(--red); font-weight:700;">Content ini belum menautkan Produk.</div>
+                  </div>
+                </div>`;
+             }
+          }
+
+          // toast(`✅ Realistic metrics updated`,'ok');
+        } else {
+          toast(res.message || 'Gagal mengambil data metrics', 'err');
+        }
+      })
+      .catch(e => {
+        btn.classList.remove('loading');
+        toast('Error: '+e.message,'err');
+      });
+  } catch(e){
+    btn.classList.remove('loading');
+    toast('Error: '+e.message,'err');
+  }
+}
+
+async function syncVisibleMetrics(type){
+  // type: 'posts' or 'reports'
+  let targets = [];
+  if(type === 'posts'){
+    const my = DATA.filter(d => d.pic === session.pic && d.tgl === selDate && d.akun === selAkun);
+    my.forEach(d => { if(links[d.r]) targets.push({ row: d.r, link: links[d.r], safe: String(d.r).replace(/:/g,'_') }); });
+  } else {
+    const akuns = PIC_CFG[session.pic]?.akuns || [];
+    akuns.forEach(akun => {
+      for(let i=1; i<=5; i++){
+        const key = `${akun}_${selDate}_slot${i}`;
+        if(reportLinks[key]) targets.push({ row: key, link: reportLinks[key], safe: key });
+      }
+    });
+  }
+
+  if(targets.length === 0) return;
+  
+  console.log(`Auto-syncing ${targets.length} ${type} metrics...`);
+  // Jalankan secara sekuensial agar tidak overload
+  for(const t of targets){
+    await fetchMetrics(t.row, t.safe);
+    await new Promise(r => setTimeout(r, 500)); 
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// SAVE LINK
+// ════════════════════════════════════════════════════════════
+async function saveL(rowRef, no, pic, safe, akun, tgl){
+  const inp = document.getElementById('i'+safe);
+  const v   = inp ? inp.value.trim() : '';
+  if(!v){ toast('❌ Link belum diisi','err'); return; }
+  if(!v.startsWith('http')){ toast('❌ Harus diawali http/https','err'); return; }
+
+  // Anti Duplication Check (Global detection across all local data)
+  const allLinks = [
+    ...Object.values(links),
+    ...DATA.map(d => d.up),
+    ...Object.values(reportLinks)
+  ].filter(l => l && String(l).startsWith('http'));
+  
+  const isDuplicate = allLinks.some(l => l === v);
+  
+  if(isDuplicate) {
+    toast(`🚫 GAGAL: Link TikTok sudah pernah digunakan! Dilarang menggunakan link ganda.`, 'err');
+    logActivity('error', `Percobaan input link ganda oleh ${session.pic}: ${v.substring(0,30)}...`);
+    playCring(); // Sound effect for error
+    return;
+  }
+
+  if(!v || String(v).trim().length < 8) {
+    delete links[rowRef];
+    delete saveMeta[safe];
+  } else {
+    links[rowRef] = v;
+    if(!saveMeta[safe]) saveMeta[safe] = new Date().toISOString();
+  }
+  localStorage.setItem('bb21_links_'+session.pic, JSON.stringify(links));
+  localStorage.setItem('bb21_meta_'+session.pic, JSON.stringify(saveMeta));
+
+  const fRow = document.getElementById('f'+safe);
+  const sRow = document.getElementById('s'+safe);
+  if(fRow) fRow.style.display = 'none';
+  if(sRow){
+    sRow.style.display = '';
+    sRow.querySelector('.link-saved').innerHTML =
+      `<a href="${v}" target="_blank">${v}</a><button class="edit-link-btn" onclick="editL('${safe}')">Edit</button>`;
+  }
+
+  logActivity('save', `Link posting #${no} (${pic}) disimpan`);
+  updateStats();
+  if (typeof updateNotifIndicators === 'function') updateNotifIndicators();
+  if (typeof renderNotifPIC === 'function') renderNotifPIC();
+  
+  // Auto-fetch metrics silently
+  if(v) fetchMetrics(rowRef, safe);
+
+  // Sync to Sheets
+  try{
+    gasFetch({ action:'saveLink', row:rowRef, link:v, pic })
+      .then(r => {
+        if(v === '') {
+           toast('🗑️ Link berhasil dihapus','ok');
+        } else {
+           toast(r?.status==='ok' ? `✅ Link #${no} tersimpan!` : `⚠️ Lokal ok. Sheet: ${r?.message||''}`, r?.status==='ok'?'ok':'err');
+        }
+      })
+      .catch(e => toast(v===''?'🗑️ Terhapus lokal':'✅ Tersimpan lokal','ok'));
+  } catch(e){ toast(v===''?'🗑️ Terhapus lokal':'✅ Tersimpan lokal','ok'); }
+  
+  // Refresh UI to hide metrics if deleted
+  if(v === '') render(); 
+}
+
+function editL(safe){
+  const f = document.getElementById('f'+safe), s = document.getElementById('s'+safe);
+  if(f) f.style.display = '';
+  if(s) s.style.display = 'none';
+}
+
+// ════════════════════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════════════════════
+function updateStats(){
+  if(!DATA.length) return;
+  const cfg = PIC_CFG[session.pic] || {color:'#666', avatar:'?'};
+  
+  // Menggunakan global isSunday() dan isValidPostLink()
+
+  const my = session.isAdmin ? DATA : DATA.filter(d => d.pic === session.pic);
+  
+  // 1. STATS POST (Exclude Minggu for target, count valid TikTok links for done)
+  const targetPosts = my.filter(d => !isSunday(d.tgl));
+  const hTotal = targetPosts.length;
+  // Hanya link TikTok valid yang dihitung sebagai 'Done'
+  const hDone = my.filter(d => isValidPostLink(links[d.r])).length;
+  const hPend = Math.max(0, hTotal - hDone);
+  const hPct = hTotal ? Math.round((Math.min(hDone, hTotal)/hTotal)*100) : 0;
+
+  // 2. STATS DAILY REPORT (Exclude Minggu)
+  const myAkuns = session.isAdmin ? [...new Set(DATA.map(d=>d.akun))] : (cfg.akuns||[]);
+  const activeDates = DATES_ALL.filter(d => !isSunday(d));
+  // 5 slot per hari per akun
+  const rTotal = activeDates.length * myAkuns.length * 5;
+  
+  let rDone = 0;
+  for(let key in reportLinks) {
+    if(reportLinks[key] && String(reportLinks[key]).trim().length > 10) {
+      rDone++;
+    }
+  }
+
+  const rPend  = Math.max(0, rTotal - rDone);
+  const rPct   = rTotal ? Math.round((Math.min(rDone, rTotal)/rTotal)*100) : 0;
+
+  // Update UI Post
+  const hT = document.getElementById('hTotal');
+  const hD = document.getElementById('hDone');
+  const hP = document.getElementById('hPending');
+  if(hT) hT.textContent = hTotal;
+  if(hD) hD.textContent = hDone;
+  if(hP) hP.textContent = hPend;
+  const pbPost = document.getElementById('postProgBar');
+  if(pbPost) pbPost.style.width = hPct + '%';
+
+  // Update UI Report
+  const rT = document.getElementById('rTotal');
+  const rD = document.getElementById('rDone');
+  const rP = document.getElementById('rPending');
+  if(rT) rT.textContent = rTotal;
+  if(rD) rD.textContent = rDone;
+  if(rP) rP.textContent = rPend;
+  const pbReport = document.getElementById('reportProgBar');
+          if(pbReport) pbReport.style.width = rPct + '%';
+
+  // Update Login UI PIC Avatar
+  const hn = document.getElementById('heroName');
+  const ha = document.getElementById('heroAvatar');
+  if(hn) hn.textContent = session.isAdmin ? 'Admin' : session.pic;
+  if(ha){
+    ha.textContent = session.isAdmin ? 'IB' : cfg.avatar;
+    ha.style.background = session.isAdmin ? 'rgba(155,125,224,0.2)' : cfg.color + '20';
+    ha.style.color = session.isAdmin ? '#a78bfa' : cfg.color;
+  }
+
+
+  // ── Akun tiles ──
+  const at = document.getElementById('akunTiles');
+  if(at){
+    at.innerHTML = myAkuns.map(akun => {
+      const posts  = my.filter(d=>d.akun===akun);
+      const targetPosts = posts.filter(d => !isSunday(d.tgl)).length;
+      const adone  = posts.filter(d=>isValidPostLink(links[d.r])).length;
+      const apct   = targetPosts ? Math.round((Math.min(adone, targetPosts)/targetPosts)*100) : 0;
+      const acol   = apct>=100?'var(--lime)':apct>50?'var(--orange)':'var(--red)';
+      return `<div class="akun-tile btn-ripple" onclick="selAkun='${akun}';switchPage('posts',document.getElementById('nav-posts'));addRipple(this,event)">
+        <div class="akun-tile-name">@${akun}</div>
+        <div class="akun-tile-stats">
+          <div><div class="akun-tile-count" style="color:${acol}">${adone}/${targetPosts}</div><div class="akun-tile-lbl">post done</div></div>
+          <div style="font-size:18px;font-weight:700;font-family:'Unbounded',sans-serif;color:${acol}">${apct}%</div>
+        </div>
+        <div class="akun-tile-bar"><div class="akun-tile-fill" style="background:${acol};width:${apct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Update Subheader
+  const tbSub = document.getElementById('tbSub');
+  if(tbSub) tbSub.innerHTML = `<strong>${selDate||'Mei 2026'}</strong> · <strong style="color:var(--lime)">@${selAkun||'Semua'}</strong>`;
+
+  // Progress harian
+  const ph = DATES_ALL.map(tgl => {
+    const t = my.filter(d => d.tgl === tgl);
+    if(!t.length) return '';
+    const d2  = t.filter(d => isValidPostLink(links[d.r])).length;
+    const isSun = isSunday(tgl);
+    
+    if(isSun && d2 === 0) {
+      return `<div class="prog-item">
+        <div class="prog-row"><span style="color:var(--txt2)">${tgl}</span><span style="color:var(--muted);font-weight:600;font-size:9px;letter-spacing:1px">LIBUR</span></div>
+        <div class="prog-bar-bg" style="background:rgba(255,255,255,0.05)"><div class="prog-bar" style="width:0%"></div></div>
+      </div>`;
+    }
+
+    const targetDay = isSun ? d2 : t.length;
+    const p2  = targetDay ? Math.round(d2/targetDay*100) : 0;
+    const col = p2>=100 ? 'var(--lime)' : p2>50 ? 'var(--orange)' : 'var(--red)';
+    const textLabel = isSun ? `${d2} (Bonus)` : `${d2}/${targetDay}`;
+
+    return `<div class="prog-item">
+      <div class="prog-row"><span style="color:var(--txt2)">${tgl}</span><span style="color:${col};font-weight:600">${textLabel}</span></div>
+      <div class="prog-bar-bg"><div class="prog-bar" style="background:${col};width:${p2}%"></div></div>
+    </div>`;
+  }).filter(Boolean).join('');
+  const hp = document.getElementById('homeProgress');
+  if(hp) hp.innerHTML = ph||`<div style="color:var(--muted);font-size:12px;text-align:center;padding:16px">Belum ada data posting</div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER STATS PAGE
+// ════════════════════════════════════════════════════════════
+function renderStats(){
+  const container = document.getElementById('pageStats');
+  if(!container) return;
+
+  const headerHtml = `
+    <div class="hero-card" style="padding:20px; margin-bottom:0; background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius:0 0 24px 24px">
+      <div style="font-size:11px; color:rgba(255,255,255,0.6); text-transform:uppercase; font-weight:800; letter-spacing:1px">Analytics Engine</div>
+      <div style="font-size:24px; font-weight:900; color:#fff; font-family:'Unbounded',sans-serif">Performance Hub</div>
+    </div>
+    <div class="tab-nav" style="margin-top:-15px; position:relative; z-index:10">
+      <div class="tab-item ${adminStatsType==='posts'?'active':''}" onclick="adminStatsType='posts';renderStats()">Post Content</div>
+      <div class="tab-item ${adminStatsType==='daily'?'active':''}" onclick="adminStatsType='daily';renderStats()">Daily Slots</div>
+    </div>
+  `;
+
+  if(adminStatsType === 'posts'){
+    container.innerHTML = headerHtml + `<div id="statsBody"></div>`;
+    renderPostStats(document.getElementById('statsBody'));
+  } else {
+    container.innerHTML = headerHtml + `<div id="statsBody"></div>`;
+    renderDailyStats(document.getElementById('statsBody'));
+  }
+}
+
+function renderPostStats(body){
+  const my = session.isAdmin ? DATA : DATA.filter(d => d.pic === session.pic);
+  const rangeData = my.filter(d => links[d.r]);
+  
+  let tV=0, tL=0, tC=0;
+  rangeData.forEach(d => {
+    const m = metrics[d.r] || {views:0, likes:0, comments:0};
+    tV += parseInt(m.views)||0; tL += parseInt(m.likes)||0; tC += parseInt(m.comments)||0;
+  });
+
+  body.innerHTML = `
+    <div class="admin-stats-grid" style="margin:0 16px 20px">
+      <div class="stat-card main" style="background:#fff; border:1px solid var(--border)">
+        <span class="stat-lbl" style="color:var(--txt2)">TOTAL VIEWS</span>
+        <span class="stat-val" style="color:var(--accent); font-size:22px">${tV.toLocaleString()}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0">
+          <span class="stat-lbl" style="color:var(--txt2)">LIKES</span>
+          <span class="stat-val" style="color:var(--red); font-size:16px">${fmtNum(tL)}</span>
+        </div>
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0">
+          <span class="stat-lbl" style="color:var(--txt2)">COMMENTS</span>
+          <span class="stat-val" style="color:var(--indigo); font-size:16px">${fmtNum(tC)}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:0 16px 12px; font-size:12px; font-weight:800; color:var(--txt)">🏆 Top Post Ranking</div>
+    <div class="admin-list-sec" style="margin:0 16px">
+      ${rangeData.sort((a,b) => (parseInt(metrics[b.r]?.views)||0) - (parseInt(metrics[a.r]?.views)||0)).slice(0,10).map((d,i) => {
+        const mx = metrics[d.r] || {views:0, likes:0};
+        return `
+          <div class="card ani-fadein" style="margin-bottom:10px; padding:12px; display:flex; align-items:center; gap:12px">
+            <div style="font-size:18px; font-weight:900; color:var(--border)">#${i+1}</div>
+            <div style="flex:1">
+              <div style="font-size:11px; font-weight:800">@${d.akun} <span style="font-weight:400; color:var(--txt2)">· ${d.pic}</span></div>
+              <div style="font-size:9px; color:var(--muted)">${d.tgl}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px; font-weight:800; color:var(--accent)">${fmtNum(mx.views)}</div>
+              <div style="font-size:7px; font-weight:700; color:var(--muted)">VIEWS</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderDailyStats(body){
+  let tV=0, tL=0, tS=0, tC=0, tSv=0;
+  const slotViews = [0,0,0,0,0,0,0];
+
+  for(let key in reportLinks){
+    // Extract PIC safely from key (akun_tgl_slotX)
+    const parts = key.split('_');
+    const akunKey = parts[0];
+    const dFound = DATA.find(d => String(d.akun).toLowerCase().trim() === String(akunKey).toLowerCase().trim());
+    const pic = dFound ? dFound.pic : '---';
+    if(pic.toUpperCase() === 'ATEP') continue; 
+    if(!session.isAdmin && pic !== session.pic) continue;
+
+    const mx = metrics[key] || {views:0, likes:0, shares:0, comments:0, saves:0};
+    tV += parseInt(mx.views)||0;
+    tL += parseInt(mx.likes)||0;
+    tS += parseInt(mx.shares)||0;
+    tC += parseInt(mx.comments)||0;
+    tSv += parseInt(mx.saves)||0;
+
+    const slotParts = key.split('_slot');
+    if(slotParts.length > 1){
+      const slotIdx = parseInt(slotParts[1]);
+      if(slotIdx >= 1 && slotIdx <= 6) slotViews[slotIdx] += (parseInt(mx.views)||0);
+    }
+  }
+
+  body.innerHTML = `
+    <div class="admin-stats-grid" style="margin:0 16px 20px">
+      <div class="stat-card main" style="background:linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); margin-bottom:0">
+        <span class="stat-lbl" style="color:rgba(255,255,255,0.7)">DAILY SLOTS VIEWS</span>
+        <span class="stat-val" style="font-size:22px">${tV.toLocaleString()}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0">
+          <span class="stat-lbl" style="color:var(--txt2)">TOTAL LIKES</span>
+          <span class="stat-val" style="color:var(--red); font-size:16px">${fmtNum(tL)}</span>
+        </div>
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0">
+          <span class="stat-lbl" style="color:var(--txt2)">TOTAL SHARES</span>
+          <span class="stat-val" style="color:var(--indigo); font-size:16px">${fmtNum(tS)}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin:0 16px 20px; display:grid; grid-template-columns:1fr 1fr; gap:10px">
+       <div class="card" style="padding:10px; background:var(--bg); border:1px solid var(--border)">
+          <div style="font-size:8px; color:var(--muted); font-weight:800">TOTAL COMMENTS</div>
+          <div style="font-size:14px; font-weight:900">${fmtNum(tC)}</div>
+       </div>
+       <div class="card" style="padding:10px; background:var(--bg); border:1px solid var(--border)">
+          <div style="font-size:8px; color:var(--muted); font-weight:800">TOTAL SAVES</div>
+          <div style="font-size:14px; font-weight:900">${fmtNum(tSv)}</div>
+       </div>
+    </div>
+
+    <div style="margin:0 16px 12px; font-size:12px; font-weight:800; color:var(--txt)">📊 Performance per Slot</div>
+    <div style="margin:0 16px 20px; display:grid; grid-template-columns:repeat(2,1fr); gap:10px">
+      ${[1,2,3,4,5,6].map(i => `
+        <div class="card" style="padding:10px; background:rgba(0,188,212,0.05); border:1px solid rgba(0,188,212,0.1)">
+          <div style="font-size:9px; font-weight:800; color:var(--cyan); margin-bottom:4px">SLOT ${i}</div>
+          <div style="font-size:14px; font-weight:900">${fmtNum(slotViews[i])}</div>
+          <div style="font-size:8px; color:var(--muted)">Total Views</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="margin:0 16px 12px; font-size:12px; font-weight:800; color:var(--txt)">🔥 Top Daily Links</div>
+    <div class="admin-list-sec" style="margin:0 16px">
+       ${Object.keys(reportLinks).filter(k => {
+         const pic = DATA.find(d => k.startsWith(d.akun))?.pic || '---';
+         return session.isAdmin || pic === session.pic;
+       }).sort((a,b) => (parseInt(metrics[b]?.views)||0) - (parseInt(metrics[a]?.views)||0)).slice(0,10).map(key => {
+         const mx = metrics[key] || {views:0, likes:0};
+         const link = reportLinks[key];
+         const parts = key.split('_');
+         return `
+           <div class="card ani-fadein" style="margin-bottom:10px; padding:12px">
+             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+               <span style="font-size:10px; font-weight:800">@${parts[0]} <span style="font-weight:400">(${parts[1]})</span></span>
+               <span style="font-size:11px; font-weight:900; color:var(--accent)">${fmtNum(mx.views)} View</span>
+             </div>
+             <div style="display:flex; align-items:center; gap:8px">
+               <a href="${link}" target="_blank" style="font-size:9px; color:var(--cyan); text-decoration:none; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">🔗 ${link}</a>
+               <div style="font-size:9px; font-weight:700; color:var(--red)">❤️ ${fmtNum(mx.likes)}</div>
+             </div>
+           </div>
+         `;
+       }).join('')}
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER ADMIN PAGE
+// ════════════════════════════════════════════════════════════
+function renderAdmin(){
+  // Populate Target Select
+  const selTarget = document.getElementById('ncTarget');
+  if(selTarget) {
+    selTarget.innerHTML = `<option value="ALL">📢 Semua PIC (Group)</option>` + 
+      PICS_LIST.map(p => `<option value="${p}">👤 ${p}</option>`).join('');
+  }
+
+  // PIC Overview
+  const overHtml = PICS_LIST.map(p => {
+    const cfg   = PIC_CFG[p];
+    const lowAkuns = cfg.akuns.map(a => a.toLowerCase().trim());
+    const myD   = DATA.filter(d => d.akun && lowAkuns.includes(d.akun.toLowerCase().trim()));
+    const done  = myD.filter(d => links[d.r]).length;
+    const pct   = myD.length ? Math.round(done/myD.length*100) : 0;
+    const col   = pct===100 ? 'var(--lime)' : pct>60 ? 'var(--orange)' : 'var(--red)';
+    // Hitung detail per akun untuk debugging
+    const akunDetails = cfg.akuns.map(akun => {
+      const count = myD.filter(d => d.akun && d.akun.toLowerCase().trim() === akun.toLowerCase().trim()).length;
+      return `<div style="font-size:10px; color:${count === 0 ? 'var(--red)' : 'var(--muted)'}; margin-top:2px;">• ${akun}: <b>${count}</b></div>`;
+    }).join('');
+
+    return `<div class="poc-card">
+      <div class="poc-top">
+        <div class="poc-avatar" style="background:${cfg.color}18;color:${cfg.color};border:1.5px solid ${cfg.color}40">${cfg.avatar}</div>
+        <div><div class="poc-name">${p}</div><div class="poc-akuns">${cfg.akuns.length} akun</div></div>
+      </div>
+      <div style="margin:8px 0; padding:8px; background:rgba(0,0,0,0.03); border-radius:8px;">
+        ${akunDetails}
+      </div>
+      <div class="poc-stats">
+        <div class="poc-stat"><div class="poc-val" style="color:var(--cyan)">${myD.length}</div><div class="poc-lbl">Total</div></div>
+        <div class="poc-stat"><div class="poc-val" style="color:var(--lime)">${done}</div><div class="poc-lbl">Done</div></div>
+      </div>
+      <div class="poc-prog">
+        <div class="poc-pct"><span style="color:${col}">Progress</span><span>${pct}%</span></div>
+        <div class="prog-bar-bg"><div class="prog-bar" style="background:${col};width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('picOverview').innerHTML = overHtml;
+
+  // Unassigned Accounts (NEW)
+  const allKnownAkuns = PICS_LIST.reduce((a,p) => a.concat(PIC_CFG[p].akuns.map(v=>v.toLowerCase().trim())), []);
+  const unassigned = [...new Set(DATA.map(d => d.akun).filter(a => a && !allKnownAkuns.includes(a.toLowerCase().trim())))];
+  
+  const unHtml = unassigned.length ? `
+    <div style="margin-top:20px; padding:16px; background:rgba(239,68,68,0.05); border:1px dashed var(--red); border-radius:12px;">
+      <div style="font-size:12px; font-weight:700; color:var(--red); margin-bottom:10px; display:flex; align-items:center; gap:6px;">⚠️ Akun di Sheet Tidak Terdaftar:</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        ${unassigned.map(a => `<div class="notif-type-tag" style="background:var(--redL); color:var(--red); font-weight:700">@${a}</div>`).join('')}
+      </div>
+      <div style="font-size:10px; color:var(--muted); margin-top:8px;">*Silakan beri tahu saya nama di atas agar saya masukkan ke sistem.</div>
+    </div>` : '';
+  document.getElementById('picOverview').insertAdjacentHTML('afterend', unHtml);
+
+  // Activity log
+  const logs = activityLogs.slice(-20).reverse();
+  document.getElementById('activityLog').innerHTML = logs.length ? logs.map(l =>
+    `<div class="log-item">
+      <div class="log-dot ${l.type}"></div>
+      <div class="log-info"><div class="log-msg">${l.msg}</div><div class="log-time">${l.time}</div></div>
+    </div>`
+  ).join('') : `<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">Belum ada aktivitas</div>`;
+
+  // Global leaderboard
+  const akunMap = {};
+  DATA.forEach(d => {
+    if(!akunMap[d.akun]) akunMap[d.akun] = { pic:d.pic, posts:0, done:0, views:0, likes:0 };
+    akunMap[d.akun].posts++;
+    if(links[d.r]) akunMap[d.akun].done++;
+    const mx = metrics[d.r]||{};
+    akunMap[d.akun].views += (mx.views||d.views||0);
+    akunMap[d.akun].likes += (mx.likes||d.likes||0);
+  });
+  const sorted = Object.entries(akunMap).sort((a,b) => b[1].views - a[1].views);
+  document.getElementById('adminLbList').innerHTML = sorted.map(([akun,v],i) => {
+    const medal = ['🥇','🥈','🥉'][i]||`#${i+1}`;
+    return `<div class="lb-item">
+      <div class="lb-rank ${i<3?'r'+(i+1):''}">${medal}</div>
+      <div class="lb-info"><div class="lb-akun">@<span>${akun}</span></div><div class="lb-sub">${v.pic} · ${v.done}/${v.posts}</div></div>
+      <div class="lb-score"><div class="lb-views">${fmtNum(v.views)}</div><div class="lb-posts">views</div></div>
+    </div>`;
+  }).join('') || `<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">Belum ada data</div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════════════════════════
+function sendNotif(){
+  const target  = document.getElementById('ncTarget').value;
+  const type    = document.getElementById('ncType').value;
+  const msg     = document.getElementById('ncMsg').value.trim();
+  if(!msg){ toast('❌ Tulis pesan dulu','err'); return; }
+
+  const targets = target === 'ALL' ? PICS_LIST : [target];
+  const entry   = { from: ADMIN_CFG.name, type, msg, time: nowStr() };
+
+  targets.forEach(p => {
+    if(!notifications[p]) notifications[p] = [];
+    notifications[p].unshift(entry);
+  });
+  localStorage.setItem('bb21_notifs', JSON.stringify(notifications));
+  document.getElementById('ncMsg').value = '';
+  logActivity('notif', `Notifikasi dikirim ke ${target}: "${msg.slice(0,40)}..."`);
+  toast(`✅ Notifikasi dikirim ke ${target}`, 'ok');
+  updateNotifIndicators();
+
+  // Sync to GAS
+  try{
+    gasFetch({ action:'sendNotif', targets: targets.join(','), type, msg, from: ADMIN_CFG.name })
+      .then(res => {
+        if(res.status === 'ok') toast(`✅ Notifikasi terkirim & tersinkron`, 'ok');
+      })
+      .catch(e => {
+        console.error('Sync failed', e);
+      });
+  } catch(e){ console.warn('Notification sync failed', e); }
+}
+
+function sendPicNotif() {
+  const msg = document.getElementById('picMsgOut').value.trim();
+  if(!msg) { toast('❌ Tulis pesan dulu', 'err'); return; }
+  
+  const from = session.pic;
+  const type = '💬 Pesan Tim';
+  const targets = PICS_LIST;
+  
+  const entry = { from, type, msg, time: nowStr() };
+  targets.forEach(p => {
+    if(!notifications[p]) notifications[p] = [];
+    notifications[p].unshift(entry);
+  });
+  localStorage.setItem('bb21_notifs', JSON.stringify(notifications));
+  
+  document.getElementById('picMsgOut').value = '';
+  toast('✅ Pesan terkirim ke semua tim', 'ok');
+  logActivity('notif', `Pesan tim dikirim oleh ${from}: "${msg.slice(0,40)}..."`);
+  
+  try{
+    gasFetch({ action:'sendNotif', targets: targets.join(','), type, msg, from })
+      .catch(e => console.warn(e));
+  } catch(e){ console.warn(e); }
+}
+
+function fetchNotifs(){
+  if(!session.pic) return;
+  const oldCount = (notifications[session.pic] || []).length;
+    gasFetch({ action:'getNotifs', pic: session.pic })
+    .then(res => {
+      if(res && res.data){
+        const newNotifs = res.data;
+        // Cek apakah ada notifikasi baru
+        if(newNotifs.length > oldCount) {
+          const diff = newNotifs.length - oldCount;
+          const latest = newNotifs[0]; // Notif terbaru ada di index 0
+          if(latest) {
+            showPhoneNotification(
+              `📢 ${latest.from || 'Admin'}`,
+              `${latest.type || ''} ${latest.msg || 'Ada pesan baru'}`.trim(),
+              latest.type
+            );
+          }
+        }
+        notifications[session.pic] = newNotifs;
+        localStorage.setItem('bb21_notifs', JSON.stringify(notifications));
+        renderNotifPIC();
+        updateNotifIndicators();
+      }
+    })
+    .catch(e => { console.warn('Fetch notifications error', e); });
+}
+
+curNotifTab = 'tasks';
+
+function renderNotifPIC(){
+  const container = document.getElementById('notifModal'); 
+  const list = document.getElementById('notifListModal');
+  if(!list) return;
+
+  const notifs = notifications[session.pic] || [];
+  const now = new Date();
+  const todayStr = String(now.getDate()).padStart(2, '0') + ' Mei';
+  let realTodayIdx = DATES_ALL.indexOf(todayStr);
+  if(realTodayIdx === -1) {
+    if(now.getMonth() > 4 || now.getFullYear() > 2026) realTodayIdx = DATES_ALL.length - 1;
+    else realTodayIdx = 0;
+  }
+
+  // 1. COLLECT TASKS
+  let pendingPosts = [];
+  if(!session.isAdmin) {
+    for(let i = 0; i <= realTodayIdx; i++) {
+      const dStr = DATES_ALL[i];
+      if(isSunday(dStr)) continue;
+      const dData = DATA.filter(x => x.pic === session.pic && x.tgl === dStr);
+      if(dData.length > 0) {
+        const dDone = dData.filter(x => isValidPostLink(links[x.r])).length;
+        if(dDone < dData.length) pendingPosts.push({ date: dStr, done: dDone, total: dData.length });
+      }
+    }
+  }
+
+  let pendingSlots = [];
+  if(!session.isAdmin) {
+    const myAkuns = (PIC_CFG[session.pic]?.akuns || []);
+    for(let i = 0; i <= realTodayIdx; i++) {
+      const dStr = DATES_ALL[i];
+      if(isSunday(dStr)) continue;
+      let slotTotal = 0, slotDone = 0;
+      myAkuns.forEach(akun => {
+        for(let s = 1; s <= 5; s++) {
+          slotTotal++;
+          const key = `${akun}_${dStr}_slot${s}`;
+          if(reportLinks[key] && String(reportLinks[key]).trim().length > 10) slotDone++;
+        }
+      });
+      if(slotDone < slotTotal) pendingSlots.push({ date: dStr, done: slotDone, total: slotTotal });
+    }
+  }
+
+  const totalTasks = pendingPosts.length + pendingSlots.length;
+  const totalMsgs = notifs.length;
+
+  // 2. RENDER UI STRUCTURE
+  let html = `
+    <div class="notif-tabs">
+      <button class="notif-tab-btn ${curNotifTab==='tasks'?'active':''}" onclick="curNotifTab='tasks';renderNotifPIC()">
+        📋 Tugas ${totalTasks > 0 ? `<span class="notif-badge-count">${totalTasks}</span>` : ''}
+      </button>
+      <button class="notif-tab-btn ${curNotifTab==='msgs'?'active':''}" onclick="curNotifTab='msgs';renderNotifPIC()">
+        💬 Pesan ${totalMsgs > 0 ? `<span class="notif-badge-count">${totalMsgs}</span>` : ''}
+      </button>
+    </div>
+  `;
+
+  if(curNotifTab === 'tasks') {
+    if(totalTasks === 0) {
+      html += `<div class="notif-empty"><div class="notif-empty-ico">✅</div><div style="font-size:13px;font-weight:700">Semua tugas beres!</div><div style="font-size:11px;color:var(--muted)">Tidak ada tanggungan posting atau slot hari ini.</div></div>`;
+    } else {
+      // POSTING TASKS
+      pendingPosts.forEach(p => {
+        html += `
+          <div class="task-card-mini" onclick="switchPage('posts',document.getElementById('nav-posts'));pick('${p.date}');document.getElementById('notifOverlay').click()">
+            <div class="task-mini-head" style="background:var(--redL)">
+              <div style="font-size:10px; font-weight:900; color:var(--red)">📝 POST CONTENT</div>
+              <div style="font-size:10px; font-weight:900; color:var(--red)">${p.done}/${p.total}</div>
+            </div>
+            <div class="task-mini-body">
+              <div>
+                <div style="font-size:13px; font-weight:700">${p.date}</div>
+                <div style="font-size:10px; color:var(--muted)">${p.total-p.done} tugas belum di-link</div>
+              </div>
+              <div style="color:var(--red); font-size:16px">➜</div>
+            </div>
+          </div>
+        `;
+      });
+      // SLOT TASKS
+      pendingSlots.forEach(p => {
+        html += `
+          <div class="task-card-mini" onclick="switchPage('daily',document.getElementById('nav-daily'));pick('${p.date}');document.getElementById('notifOverlay').click()">
+            <div class="task-mini-head" style="background:var(--orangeL)">
+              <div style="font-size:10px; font-weight:900; color:var(--orange)">📅 DAILY SLOT</div>
+              <div style="font-size:10px; font-weight:900; color:var(--orange)">${p.done}/${p.total}</div>
+            </div>
+            <div class="task-mini-body">
+              <div>
+                <div style="font-size:13px; font-weight:700">${p.date}</div>
+                <div style="font-size:10px; color:var(--muted)">${p.total-p.done} slot belum diisi</div>
+              </div>
+              <div style="color:var(--orange); font-size:16px">➜</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  } else {
+    // MESSAGES TAB
+    if(totalMsgs === 0) {
+      html += `<div class="notif-empty"><div class="notif-empty-ico">💬</div><div style="font-size:13px;font-weight:700">Inbox Kosong</div><div style="font-size:11px;color:var(--muted)">Belum ada pesan dari Admin atau Tim.</div></div>`;
+    } else {
+      notifs.slice().reverse().forEach(n => {
+        const isAdmin = n.from === 'Admin' || n.from === 'Manager';
+        html += `
+          <div class="msg-bubble" style="${isAdmin ? 'border-left: 4px solid var(--accent);' : ''}">
+            <div class="msg-header">
+              <div class="msg-sender">
+                ${isAdmin ? '👑' : '👤'} ${n.from}
+                <span class="msg-type-badge">${n.type || 'INFO'}</span>
+              </div>
+              <div class="msg-time">${n.time}</div>
+            </div>
+            <div class="msg-content">${n.msg}</div>
+          </div>
+        `;
+      });
+    }
+  }
+  
+  list.innerHTML = html;
+}
+
+function toggleNotifPanel(){
+  const modal = document.getElementById('notifModal');
+  const overlay = document.getElementById('notifOverlay');
+  if(!modal) return;
+  renderNotifPIC();
+  modal.classList.add('show');
+  if(overlay) overlay.classList.add('show');
+}
+
+function clearNotifPIC(){
+  if(!confirm('Hapus semua notifikasi?')) return;
+  notifications[session.pic] = [];
+  localStorage.setItem('bb21_notifs', JSON.stringify(notifications));
+  renderNotifPIC();
+  updateNotifIndicators();
+}
+
+function updateNotifIndicators(){
+  const btn = document.getElementById('tbNotifBtn');
+  if(!btn) return;
+  
+  const picNotifs = notifications[session.pic] || [];
+  const unreadCount = picNotifs.length;
+  
+  // ── MENGHITUNG TANGGAL ASLI HARI INI ──
+  const now = new Date();
+  const todayStr = String(now.getDate()).padStart(2, '0') + ' Mei';
+  let realTodayIdx = DATES_ALL.indexOf(todayStr);
+  if(realTodayIdx === -1) {
+    if(now.getMonth() > 4 || now.getFullYear() > 2026) realTodayIdx = DATES_ALL.length - 1;
+    else realTodayIdx = 0;
+  }
+
+  // Cek Tugas Posting Tertunda — SKIP MINGGU, HANYA LINK TIKTOK
+  let hasPostPending = false;
+  if(!session.isAdmin) {
+    for(let i = 0; i <= realTodayIdx; i++) {
+      const dStr = DATES_ALL[i];
+      if(isSunday(dStr)) continue;
+      const dData = DATA.filter(x => x.pic === session.pic && x.tgl === dStr);
+      if(dData.length > 0) {
+        const dDone = dData.filter(x => isValidPostLink(links[x.r])).length;
+        if(dDone < dData.length) { hasPostPending = true; break; }
+      }
+    }
+  }
+
+  // Cek Tugas Daily Slot Tertunda — SKIP MINGGU
+  let hasSlotPending = false;
+  if(!session.isAdmin) {
+    const myAkuns = (PIC_CFG[session.pic]?.akuns || []);
+    for(let i = 0; i <= realTodayIdx; i++) {
+      const dStr = DATES_ALL[i];
+      if(isSunday(dStr)) continue;
+      for(const akun of myAkuns) {
+        for(let s = 1; s <= 5; s++) {
+          const key = `${akun}_${dStr}_slot${s}`;
+          if(!reportLinks[key] || String(reportLinks[key]).trim().length <= 10) {
+            hasSlotPending = true; break;
+          }
+        }
+        if(hasSlotPending) break;
+      }
+      if(hasSlotPending) break;
+    }
+  }
+
+  btn.classList.remove('notif-active', 'notif-urgent');
+  
+  if(hasPostPending || hasSlotPending) {
+    btn.classList.add('notif-urgent');
+  } else if(unreadCount > 0) {
+    btn.classList.add('notif-active');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// PUSH NOTIFICATION SYSTEM (PWA + Service Worker)
+// ════════════════════════════════════════════════════════════
+let swRegistration = null;
+let notifPermission = 'default';
+
+async function initPushNotifications() {
+  // 1. Register Service Worker
+  if ('serviceWorker' in navigator) {
+    try {
+      swRegistration = await navigator.serviceWorker.register('sw.js');
+      console.log('✅ Service Worker registered');
+      
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'CHECK_NOTIFS') {
+          fetchNotifs();
+        }
+      });
+    } catch (e) {
+      console.warn('Service Worker registration failed:', e);
+    }
+  }
+
+  // 2. Request Notification Permission
+  if ('Notification' in window) {
+    notifPermission = Notification.permission;
+    if (notifPermission === 'default') {
+      // Show a friendly prompt after 3 seconds
+      setTimeout(() => {
+        requestNotifPermission();
+      }, 3000);
+    }
+  }
+
+  // 3. Start periodic notification check (every 2 minutes)
+  setInterval(() => {
+    if (session.pic) fetchNotifs();
+  }, 120000);
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  
+  try {
+    const permission = await Notification.requestPermission();
+    notifPermission = permission;
+    if (permission === 'granted') {
+      toast('🔔 Notifikasi HP aktif! Anda akan menerima pesan dari Admin.', 'ok');
+      console.log('✅ Notification permission granted');
+    }
+  } catch (e) {
+    console.warn('Notification permission error:', e);
+  }
+}
+
+function showPhoneNotification(title, body, type) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  
+  // If service worker is available, use it (works in background)
+  if (swRegistration && swRegistration.active) {
+    swRegistration.active.postMessage({
+      type: 'SHOW_NOTIFICATION',
+      title: title,
+      body: body,
+      tag: 'mc-' + Date.now(),
+      notifType: type
+    });
+  } else {
+    // Fallback: direct notification (only works when tab is visible)
+    try {
+      const notif = new Notification(title, {
+        body: body,
+        icon: '📋',
+        badge: '📋',
+        vibrate: [200, 100, 200],
+        tag: 'mc-' + Date.now(),
+        requireInteraction: true
+      });
+      notif.onclick = () => {
+        window.focus();
+        notif.close();
+      };
+    } catch (e) {
+      console.warn('Notification failed:', e);
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// FILTER / LOGOUT
+// ════════════════════════════════════════════════════════════
+function openFilter(){
+  const myAkuns = session.isAdmin
+    ? [...new Set(DATA.map(d => d.akun))].sort()
+    : [...new Set(DATA.filter(d => d.pic === session.pic).map(d => d.akun))].sort();
+
+  let html = '';
+  if(session.isAdmin){
+    html += `<div class="fsec"><div class="fsec-lbl">Filter PIC</div><div class="fpills">
+      ${PICS_LIST.map(p => `<button class="pill ${p===session.pic?'active':''}" onclick="tp('${p}',this)">${p}</button>`).join('')}
+    </div></div>`;
+  }
+  html += `<div class="fsec"><div class="fsec-lbl">Filter Akun</div><div class="fpills">
+    ${['Semua',...myAkuns].map(a =>
+      `<button class="pill ${(a==='Semua'&&!selAkun)||(a===selAkun)?'active':''}" onclick="ta('${a}',this)">${a==='Semua'?'Semua':'@'+a}</button>`
+    ).join('')}
+  </div></div>
+  <button class="apply-btn" onclick="applyFilter()">Terapkan Filter</button>
+  <button class="logout-btn" onclick="doLogout()">🚪 Keluar</button>`;
+
+  document.getElementById('moTitle').textContent = 'Filter & Opsi';
+  document.getElementById('moBody').innerHTML = html;
+  document.getElementById('mo').classList.add('show');
+}
+
+function tp(v,el){ session.pic=v; el.closest('.fpills').querySelectorAll('.pill').forEach(b=>b.classList.remove('active')); el.classList.add('active'); const sl=localStorage.getItem('bb21_links_'+v); links=sl?JSON.parse(sl):{}; for(let k in links){ if(!links[k] || String(links[k]).trim().length < 8) delete links[k]; } DATA.forEach(d=>{ if(!d.up||String(d.up).trim().length < 8) d.up=''; if(d.up&&!links[d.r]) links[d.r]=d.up; }); }
+function ta(v,el){ selAkun=v==='Semua'?'':v; el.closest('.fpills').querySelectorAll('.pill').forEach(b=>b.classList.remove('active')); el.classList.add('active'); saveAppState(); }
+function applyFilter(){ document.getElementById('mo').classList.remove('show'); saveAppState(); render(); updateStats(); }
+
+function doLogout(){
+  localStorage.removeItem('mc_session');
+  document.getElementById('mo').classList.remove('show');
+  hide('scApp'); document.getElementById('bottomNav').style.display='none';
+  initLogin();
+  show('scLogin');
+  const passIn = document.getElementById('passIn');
+  if(passIn){ passIn.value=''; passIn.style.borderColor=''; }
+  const passSection = document.getElementById('passSection');
+  if(passSection) passSection.style.display='none';
+  document.querySelectorAll('.pic-card').forEach(b=>b.classList.remove('sel'));
+  const loginBtn = document.getElementById('loginBtn');
+  if(loginBtn) loginBtn.disabled=true;
+  document.getElementById('tbAdmin').style.display='none';
+  document.getElementById('nav-admin').style.display='none';
+  loginPIC=''; session={pic:null,isAdmin:false}; DATA=[]; links={}; selDate=''; selAkun=''; curPage='home';
+}
+
+// ════════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════════
+function dlVideo(url, fn, btn){
+  // Tracker Download
+  downloadTracker[url] = (downloadTracker[url] || 0) + 1;
+  
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  let id = '';
+  const m1 = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+  if (m1) id = m1[1]; else if (m2) id = m2[1];
+
+  if (id) {
+    const dlUrl = `https://drive.google.com/uc?id=${id}&export=download`;
+    
+    // Perbaikan untuk iOS (iPhone)
+    if(isIOS) {
+       window.open(dlUrl, '_blank');
+       toast('📱 iPhone detected: Membuka jalur unduh khusus iOS', 'info');
+       return;
+    }
+
+    // Teknik Iframe Tersembunyi (Android/PC)
+    let ifr = document.getElementById('dlIframe');
+    if(!ifr){
+      ifr = document.createElement('iframe');
+      ifr.id = 'dlIframe';
+      ifr.style.display = 'none';
+      document.body.appendChild(ifr);
+    }
+    ifr.src = dlUrl;
+    
+    if(downloadTracker[url] === 1) toast('🚀 Sedang mendownload langsung ke perangkat...', 'info');
+  } else {
+    window.open(url, '_blank');
+    if(downloadTracker[url] === 1) toast('Membuka link video...', 'info');
+  }
+
+  const o = btn.textContent; 
+  btn.textContent = '✓ Mendownload...'; 
+  btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = o; btn.classList.remove('ok'); }, 4000);
+}
+
+function doCopy(safe){
+  const box = document.getElementById('cap'+safe);
+  if(!box) return;
+  const txt = box.innerText||box.textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('cb'+safe);
+    if(btn){ btn.textContent='✅ Tersalin!'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent='📋 Copy Caption'; btn.classList.remove('copied'); },2000); }
+    toast('Caption tersalin!','ok');
+  }).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Caption tersalin','ok');
+  });
+}
+
+function fmtNum(n){
+  n=parseInt(n)||0;
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+function pick(d){ 
+  selDate = d; 
+  saveAppState();
+  render(); 
+  
+  if(!session.isAdmin) {
+    const isReportPage = (curPage === 'report' || curPage === 'daily');
+    
+    if(isReportPage) {
+      // LOGIKA TOAST UNTUK DAILY SLOT (FOKUS INPUT PIC)
+      const akuns = (PIC_CFG[session.pic]?.akuns || []).sort();
+      let totalSlots = akuns.length * 5;
+      let filledSlots = 0;
+      akuns.forEach(akun => {
+        for(let i=1; i<=5; i++){
+          const key = `${akun}_${d}_slot${i}`;
+          if(reportLinks[key] && String(reportLinks[key]).length > 10) filledSlots++;
+        }
+      });
+
+      if(totalSlots > 0) {
+        if(filledSlots === 0) {
+          toast(`⚠️ Slot Harian ${d} masih kosong! Anda belum menginput link postingan apapun.`, 'warn');
+        } else if(filledSlots < totalSlots) {
+          toast(`📊 Progress: Baru ${filledSlots}/${totalSlots} slot terisi. Segera lengkapi ${totalSlots - filledSlots} slot lagi!`, 'info');
+        } else {
+          toast(`🎉 Luar biasa! Target 5 slot harian per akun pada ${d} sudah terpenuhi 100%.`, 'ok');
+        }
+      }
+
+    } else {
+      // LOGIKA TOAST UNTUK POSTING (ISOLASI KONTEKS)
+      const myDate = DATA.filter(x => x.pic === session.pic && x.tgl === d && (!selAkun || x.akun === selAkun));
+      if(myDate.length === 0) return;
+
+      const done = myDate.filter(x => isValidPostLink(links[x.r])).length;
+      const remaining = myDate.length - done;
+
+      if(done === myDate.length && done > 0) {
+        // SEMUA SELESAI
+        toast(`🎉 Sempurna! Seluruh ${done} task posting pada ${d} telah selesai!`, 'ok');
+      } else if(done === 0) {
+        // BELUM ADA SATUPUN
+        toast(`🚨 ${d}: ${remaining} task posting belum dikerjakan! Segera drop link TikTok & Save.`, 'err');
+      } else {
+        // SEBAGIAN SELESAI
+        toast(`⚠️ ${d}: Sisa ${remaining} task belum selesai (${done}/${myDate.length} done). Segera lengkapi!`, 'warn');
+      }
+    }
+  }
+}
+function qakun(a){ selAkun=a==='Semua'?'':a; render(); }
+
+// ── PROFESSIONAL ENGINE: Audio & Haptic ──
+let audioCtx;
+function playCring(){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime); // C6
+    osc.frequency.exponentialRampToValueAtTime(1318.51, audioCtx.currentTime + 0.05); // E6
+    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.5);
+    if(navigator.vibrate) navigator.vibrate([80, 40, 80]); // Haptic feedback
+  } catch(e){ /* Audio/Vibrate not supported or blocked */ }
+}
+
+function playErr(){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.25);
+    if(navigator.vibrate) navigator.vibrate(200);
+  } catch(e){ /* Audio/Vibrate not supported or blocked */ }
+}
+
+function toast(msg, type='ok'){
+  if(type === 'ok' || type === 'info') playCring();
+  else if(type === 'err') playErr();
+
+  const e=document.createElement('div');
+  e.className=`toast ${type}`; e.textContent=msg;
+  const tc=document.getElementById('toasts');
+  tc.appendChild(e);
+  // auto remove with fade out - duration set to 6 seconds as per user request
+  setTimeout(()=>{ e.style.animation='fadeInUp .25s ease reverse'; setTimeout(()=>e.remove(),250); },6000);
+}
+
+function show(id){ const el=document.getElementById(id); if(el){ el.style.display='flex'; el.classList.add('active'); } }
+function hide(id){ const el=document.getElementById(id); if(el){ el.style.display='none'; el.classList.remove('active'); } }
+
+function logActivity(type, msg){
+  const ts = nowStr();
+  activityLogs.push({ type, msg, time: ts });
+  if(activityLogs.length>50) activityLogs.shift();
+  localStorage.setItem('bb21_log', JSON.stringify(activityLogs));
+  
+  // Sync to GAS
+  try {
+    gasFetch({ action:'logActivity', pic: session.pic || 'Unknown', type, msg })
+      .catch(e => console.warn('Log sync failed', e));
+  } catch(e){ console.warn('Local log activity error', e); }
+}
+
+function clearLogs(){
+  activityLogs = [];
+  localStorage.setItem('bb21_log', JSON.stringify([]));
+  if(session.isAdmin) renderAdmin();
+  toast('✅ Log aktivitas berhasil dibersihkan', 'ok');
+}
+function renderReportPage(){
+  const container = document.getElementById('reportContent');
+  if(!container) return;
+
+  const isAtep = !session.isAdmin && session.pic === 'ATEP';
+  if(isAtep) adminReportType = 'posts'; // Paksa ATEP ke Monitoring Post
+  
+  // Header based on type with Quick Switch Toggle
+  const headerHtml = `
+    <div class="hero-card" style="padding:20px; margin-bottom:15px; background:linear-gradient(135deg, ${adminReportType==='posts'?'#1e1b4b':'#0f172a'} 0%, ${adminReportType==='posts'?'#312e81':'#1e293b'} 100%); border-radius:0 0 24px 24px">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start">
+        <div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6); text-transform:uppercase; font-weight:800; letter-spacing:1px">${adminReportType==='posts'?'Monitoring Center':'Production Hub'}</div>
+          <div style="font-size:24px; font-weight:900; color:#fff; font-family:'Unbounded',sans-serif">${adminReportType==='posts'?'Post Report':'Daily Slots'}</div>
+        </div>
+        ${!isAtep ? `
+          <button onclick="${adminReportType==='posts' ? "switchPage('daily', document.getElementById('nav-daily'))" : "switchPage('report', document.getElementById('nav-report'))"}" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:6px 12px; border-radius:10px; font-size:10px; font-weight:800; cursor:pointer; backdrop-filter:blur(10px)">
+            ${adminReportType==='posts'?'⚡ Switch to Slots':'📋 Switch to Audit'}
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = headerHtml + `<div id="adminReportBody"></div>`;
+  const body = document.getElementById('adminReportBody');
+
+  if(adminReportType === 'posts'){
+    renderAdminAdvancedReport(body);
+  } else {
+    if(session.isAdmin) renderAdminDailyReport(body);
+    else renderPICDailyReport(body);
+  }
+}
+
+function renderPICDailyReport(container){
+  if(!container) return;
+  
+  const akuns = [...new Set(DATA.filter(d => d.pic === session.pic).map(d => d.akun))].sort();
+  
+  let html = `
+    <div style="margin:0 16px 15px; display:flex; justify-content:space-between; align-items:center">
+      <div>
+        <div style="font-size:12px; font-weight:800; color:var(--txt)">📅 Hari Ini: ${selDate || 'Mei 2026'}</div>
+        <div style="font-size:10px; color:var(--muted)">Lengkapi 5 link slot harian Anda</div>
+      </div>
+      <div class="status-pill done" style="margin:0">PIC MODE</div>
+    </div>
+    <div style="margin:0 16px">
+  `;
+
+  if(akuns.length === 0){
+    html += `<div class="empty"><div class="empty-ico">🤷</div><div class="empty-msg">Anda belum memiliki akun yang ditugaskan</div></div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  akuns.forEach(akun => {
+    html += `
+      <div style="margin-bottom:24px">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px">
+          <div style="width:32px; height:32px; background:var(--accentL); color:var(--accent); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px">@</div>
+          <div style="font-size:15px; font-weight:900; color:var(--txt)">${akun}</div>
+          <div style="flex:1; height:1px; background:var(--border)"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr; gap:12px">
+    `;
+
+    for(let i=1; i<=5; i++){
+      const reportKey = `${akun}_${selDate}_slot${i}`;
+      let val = reportLinks[reportKey] || '';
+      if(val && typeof val === 'object') val = val.link || '';
+      
+      const mx = metrics[reportKey] || {views:0, likes:0, comments:0, shares:0, saves:0, followers:0};
+      const isFilled = String(val).length > 10;
+
+      html += `
+        <div class="ani-fadein" style="background:#fff; border:1px solid ${isFilled?'rgba(0,188,212,0.15)':'var(--border)'}; border-radius:18px; padding:16px; box-shadow:${isFilled?'0 4px 12px rgba(0,0,0,0.03)':'none'}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px">
+            <div>
+              <div style="font-size:8px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px">Slot Production</div>
+              <div style="font-size:14px; font-weight:900; color:var(--txt)">Task #${i}</div>
+            </div>
+            ${isFilled ? `
+              <div style="display:flex; gap:8px">
+                <button onclick="editSlot('${reportKey}')" style="background:var(--bg); border:none; color:var(--txt2); font-size:10px; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:8px">Edit Link</button>
+                <div class="status-pill done" style="margin:0; background:var(--accentL); color:var(--accent)">READY</div>
+              </div>
+            ` : `
+              <div class="status-pill pending" style="margin:0; background:var(--bg); color:var(--muted); border-color:var(--border)">WAITING</div>
+            `}
+          </div>
+          
+          <div id="input-${reportKey}" style="display:${isFilled?'none':'block'}">
+            <div class="link-input-row" style="margin-top:0">
+              <input class="link-in" type="text" data-akun="${akun}" data-slot="${i}" value="${val}" placeholder="Paste TikTok URL here..." style="font-size:12px; padding:12px; background:var(--bg); border-radius:12px">
+              <button class="save-btn" onclick="saveSlot('${akun}','${selDate}',${i})" style="padding:0 20px; border-radius:12px; font-weight:800">SAVE</button>
+            </div>
+          </div>
+
+          <div id="display-${reportKey}" style="display:${isFilled?'block':'none'}">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px">
+              <a href="${val}" target="_blank" style="font-size:11px; color:var(--cyan); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; font-weight:700; background:var(--cyanL); padding:10px 14px; border-radius:12px; border:1px solid rgba(8,145,178,0.1)">🔗 ${val}</a>
+              ${saveMeta[reportKey] && isLate(selDate, saveMeta[reportKey]) ? `<span style="background:var(--red); color:#fff; font-size:8px; padding:4px 8px; border-radius:6px; font-weight:800; flex-shrink:0">SUSULAN</span>` : ''}
+            </div>
+
+            <!-- METRICS MINI GRID -->
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px">
+              <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+                <div style="font-size:12px; font-weight:800; color:var(--cyan)">${fmtNum(mx.views)}</div>
+                <div style="font-size:7px; color:var(--muted); font-weight:700">VIEWS</div>
+              </div>
+              <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+                <div style="font-size:12px; font-weight:800; color:var(--red)">${fmtNum(mx.likes)}</div>
+                <div style="font-size:7px; color:var(--muted); font-weight:700">LIKES</div>
+              </div>
+              <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+                <div style="font-size:12px; font-weight:800; color:var(--indigo)">${fmtNum(mx.shares)}</div>
+                <div style="font-size:7px; color:var(--muted); font-weight:700">SHARE</div>
+              </div>
+            </div>
+
+            <!-- BASKET & ADDITIONAL METRICS -->
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div id="mbWrap${reportKey}" style="flex:1">
+                ${isFilled ? (mx.basket ? 
+                  `<a href="${mx.basket.link}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:rgba(16,185,129,0.08); border:1.5px solid rgba(16,185,129,0.2); border-radius:12px; text-decoration:none; color:#065f46; font-size:10px; font-weight:900;">
+                     <span style="font-size:16px;">🛒</span> <span>${mx.basket.name || 'Produk Terdeteksi'}</span>
+                  </a>` : 
+                  `<div style="padding:10px 12px; background:rgba(239,68,68,0.04); border:1px dashed rgba(239,68,68,0.2); border-radius:12px; display:inline-flex; align-items:center; gap:8px;">
+                     <span style="font-size:16px;">⚠️</span>
+                     <span style="font-size:10px; color:var(--red); font-weight:800;">TIDAK ADA TAUTAN PRODUK</span>
+                  </div>`
+                ) : ''}
+              </div>
+              <div style="display:flex; gap:10px; opacity:0.6">
+                <div style="font-size:9px; font-weight:700; color:var(--txt2)">💬 ${fmtNum(mx.comments)}</div>
+                <div style="font-size:9px; font-weight:700; color:var(--txt2)">💾 ${fmtNum(mx.saves)}</div>
+                <div style="font-size:9px; font-weight:700; color:var(--txt2)">👥 +${fmtNum(mx.followers)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `</div></div>`;
+  });
+
+  html += `
+    <div style="padding:0 16px 40px; text-align:center">
+      <div style="font-size:10px; color:var(--muted); margin-bottom:20px">Manager Content Production Ecosystem &copy; 2026</div>
+    </div>
+    <div style="height:60px"></div>
+  `;
+
+  container.innerHTML = html;
+
+  // TRIGGER AUTO-SYNC
+  syncVisibleMetrics('reports');
+}
+
+function editSlot(key){
+  document.getElementById('display-'+key).style.display = 'none';
+  document.getElementById('input-'+key).style.display = 'block';
+}
+
+async function saveSlot(akun, tgl, slot){
+  const key = `${akun}_${tgl}_slot${slot}`;
+  const inp = document.querySelector(`input[data-akun="${akun}"][data-slot="${slot}"]`);
+  const val = inp.value.trim();
+  
+  if(!val.startsWith('http')){ toast('❌ Link tidak valid','err'); return; }
+  
+  // Anti Duplication Check (Global detection)
+  const allLinks = [
+    ...Object.values(links),
+    ...DATA.map(d => d.up),
+    ...Object.values(reportLinks)
+  ].filter(l => l && String(l).startsWith('http'));
+
+  const isDuplicate = allLinks.some(l => l === val);
+  if(isDuplicate) {
+    toast(`🚫 GAGAL: Link sudah digunakan di tempat lain!`, 'err');
+    logActivity('error', `Cheat detect: Duplikat slot @${akun} oleh ${session.pic}`);
+    playCring();
+    return;
+  }
+  
+  // 1. Simpan Secara Lokal & UI
+  if(!val || val.length < 8) {
+    delete reportLinks[key];
+    delete saveMeta[key];
+  } else {
+    reportLinks[key] = val;
+    if(!saveMeta[key]) saveMeta[key] = new Date().toISOString();
+  }
+  localStorage.setItem('bb21_reports_' + session.pic, JSON.stringify(reportLinks));
+  localStorage.setItem('bb21_meta_' + session.pic, JSON.stringify(saveMeta));
+  logActivity('save', `Slot #${slot} (@${akun}) berhasil disimpan`);
+  renderReportPage();
+  updateStats();
+  
+  toast('⌛ Sedang menarik data realistic...','info');
+  
+  // 2. Jalankan Auto-Scraper Secara Real-time
+  try {
+    const res = await gasFetch({ action:'getMetrics', link: val, row: key, pic: session.pic });
+    
+    if(res && res.status==='ok' && res.data){
+      metrics[key] = {
+        views: res.data.views||0,
+        likes: res.data.likes||0,
+        comments: res.data.comments||0,
+        shares: res.data.shares||0,
+        saves: res.data.saves||0,
+        followers: res.data.followers||0,
+        basket: res.data.basket || null
+      };
+      localStorage.setItem('bb21_metrics_'+session.pic, JSON.stringify(metrics));
+      
+      // Metric UI has been removed from Daily Slots
+      // Update UI Basket
+      const mbWrap = document.getElementById(`mbWrap${key}`);
+      if(mbWrap){
+         if(metrics[key].basket) {
+            mbWrap.innerHTML = `<a href="${metrics[key].basket.link}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(255,165,0,0.1); border:1px solid var(--gold); border-radius:8px; text-decoration:none; color:var(--orange); font-size:11px; font-weight:700;">
+               <span style="font-size:14px;">🛒</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${metrics[key].basket.name || 'Buka'}</span>
+            </a>`;
+         } else {
+            mbWrap.innerHTML = `<div style="padding:6px 10px; background:rgba(255,59,92,0.05); border:1px dashed var(--red); border-radius:8px; display:flex; align-items:center; gap:8px;">
+               <span style="font-size:14px;">🛒</span>
+               <div>
+                 <div style="font-size:9px; color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Tautan Keranjang</div>
+                 <div style="font-size:10px; color:var(--red); font-weight:600;">..segera tautkan product....</div>
+               </div>
+            </div>`;
+         }
+      }
+
+      // toast('✅ Data Scraped & recorded!','ok');
+    }
+  } catch(e) {
+    console.warn('Auto-scrape failed', e);
+  }
+
+  // 3. Sinkronisasi Final ke Google Sheets
+  gasFetch({ action:'saveDailyBatch', pic: session.pic, links: JSON.stringify([{akun, tgl, slot, link: val}]) })
+    .catch(e=>console.warn(e));
+}
+
+async function fetchSlotMetrics(key){
+  const btn = document.getElementById('fb-'+key);
+  const lnk = reportLinks[key];
+  if(!lnk || !btn) return;
+  
+  btn.classList.add('loading');
+  try {
+    const res = await gasFetch({ action:'getMetrics', link: lnk, row: key, pic: session.pic });
+    btn.classList.remove('loading');
+    
+    if(res && res.status==='ok' && res.data){
+      metrics[key] = {
+        views: res.data.views||0,
+        likes: res.data.likes||0,
+        comments: res.data.comments||0,
+        shares: res.data.shares||0,
+        saves: res.data.saves||0,
+        followers: res.data.followers||0,
+        basket: res.data.basket||null
+      };
+      localStorage.setItem('bb21_metrics_'+session.pic, JSON.stringify(metrics));
+      renderReportPage();
+      // toast('📊 Data Scraper Berhasil Diperbarui','ok');
+    }
+  } catch(e) {
+    btn.classList.remove('loading');
+    logActivity('error', `Gagal sinkronisasi data @${key}`);
+    toast('❌ Gagal sinkronisasi data','err');
+  }
+}
+
+function renderAdminReport(container){
+  const reports = PICS_LIST.map(pic => {
+    const picData = DATA.filter(d => d.pic === pic && d.tgl === selDate);
+    const done = picData.filter(d => links[d.r]).length;
+    const total = picData.length;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    return { pic, done, total, pct };
+  });
+
+  let html = `
+    <div class="hero-card" style="padding:15px; margin-bottom:15px; background:linear-gradient(135deg, #4c51b5 0%, #3730a3 100%)">
+      <div style="font-size:11px; color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:1px; font-weight:700">Monitor Global</div>
+      <div style="font-size:20px; font-weight:800; color:#fff; font-family:'Unbounded',sans-serif">${selDate}</div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-sec-title">📊 Progress Harian Seluruh PIC</div>
+      <div class="lb-card">
+  `;
+
+  reports.forEach(r => {
+    html += `
+      <div class="lb-item">
+        <div class="lb-rank">${r.pct}%</div>
+        <div class="lb-info">
+          <div class="lb-name">${r.pic}</div>
+          <div class="lb-score">${r.done} / ${r.total} Post Selesai</div>
+        </div>
+        <div class="lb-trend ${r.pct===100?'up':''}" style="font-size:10px">${r.pct===100?'COMPLETED':(r.pct>0?'IN PROGRESS':'PENDING')}</div>
+      </div>
+    `;
+  });
+
+  html += `</div></div>`;
+  container.innerHTML = html;
+}
+
+function doDailyReportSave(){
+  const btn = event.target;
+  const originalText = btn.textContent;
+  const slots = document.querySelectorAll('.batch-slot');
+  const payload = [];
+  let hasDuplicate = false;
+  const urls = [];
+
+  slots.forEach(inp => {
+    const url = inp.value.trim();
+    if(url){
+      if(urls.includes(url)){
+        hasDuplicate = true;
+      }
+      urls.push(url);
+      payload.push({
+        akun: inp.dataset.akun,
+        tgl: selDate,
+        slot: inp.dataset.slot,
+        link: url,
+        rowId: inp.dataset.rowid
+      });
+    }
+  });
+
+  if(hasDuplicate){
+    toast('⚠️ Peringatan: Ada link ganda! Pastikan setiap slot unik.', 'warn');
+    return;
+  }
+
+  if(payload.length === 0){
+    toast('❌ Harap isi minimal satu link untuk disimpan', 'err');
+    return;
+  }
+
+  // Check if all slots are filled for a specific notification
+  const totalSlots = slots.length;
+  const filledSlots = payload.length;
+
+  btn.disabled = true;
+  btn.textContent = '⌛ Mengirim Laporan...';
+
+  const params = new URLSearchParams({ action:'saveDailyBatch', pic: session.pic, links: JSON.stringify(payload) });
+  fetch(GAS_URL + '?' + params)
+    .then(r=>r.json())
+    .then(res=>{
+      btn.disabled = false;
+      btn.textContent = originalText;
+      if(res && res.status==='ok'){
+        // Update Local State Report
+        payload.forEach(p => {
+          const key = `${p.akun}_${p.tgl}_slot${p.slot}`;
+          reportLinks[key] = p.link;
+        });
+        localStorage.setItem('bb21_reports_' + session.pic, JSON.stringify(reportLinks));
+        
+        if(filledSlots === totalSlots){
+          toast('🌟 LUAR BIASA! Semua slot berhasil terisi dan tersimpan!', 'ok');
+        } else {
+          toast('✅ Laporan harian berhasil disimpan!', 'ok');
+        }
+        updateStats(); // Update Dashboard Stats
+        refreshData(); // Sync with Server
+      } else {
+        toast(res.message || 'Gagal menyimpan laporan', 'err');
+      }
+    })
+    .catch(e => {
+      btn.disabled = false;
+      btn.textContent = originalText;
+      toast('Error: ' + e.message, 'err');
+    });
+}
+
+// ════════ ADVANCED ADMIN REPORT ENGINE ════════
+let adminRangeStart = '';
+let adminRangeEnd = '';
+let adminFilterPIC = 'ALL';
+let adminFilterAkun = 'ALL';
+
+function renderAdminAdvancedReport(container){
+  if(!container) return;
+  
+  if(!adminRangeStart) adminRangeStart = DATES_ALL[0];
+  if(!adminRangeEnd) adminRangeEnd = selDate || DATES_ALL[DATES_ALL.length-1];
+  
+  const startIdx = DATES_ALL.indexOf(adminRangeStart);
+  const endIdx = DATES_ALL.indexOf(adminRangeEnd);
+  const rangeDates = DATES_ALL.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+  
+  // Filtering Data
+  let rangeData = DATA.filter(d => rangeDates.includes(d.tgl));
+  
+  const activePICFilter = session.isAdmin ? adminFilterPIC : session.pic;
+  if(activePICFilter !== 'ALL') rangeData = rangeData.filter(d => d.pic === activePICFilter);
+  if(adminFilterAkun !== 'ALL') rangeData = rangeData.filter(d => d.akun === adminFilterAkun);
+
+  let filteredAkuns = [];
+  if(activePICFilter === 'ALL'){
+    filteredAkuns = [...new Set(DATA.map(d => d.akun))].sort();
+  } else {
+    const cfg = PIC_CFG[activePICFilter];
+    filteredAkuns = cfg ? cfg.akuns.sort() : [];
+  }
+
+  let tV=0, tL=0, tS=0;
+  rangeData.forEach(d => {
+    const m = metrics[d.r] || {views:0, likes:0, shares:0};
+    tV += parseInt(m.views)||0; tL += parseInt(m.likes)||0; tS += parseInt(m.shares)||0;
+  });
+
+  let html = `
+    <!-- HEADER STATS -->
+    <div class="admin-stats-grid" style="margin:0 16px 24px">
+      <div class="stat-card main" style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); margin-bottom:0; border-radius:20px; padding:20px">
+        <span class="stat-lbl" style="color:rgba(255,255,255,0.6)">AGGREGATED VIEWS</span>
+        <span class="stat-val" style="font-size:28px; font-weight:900; letter-spacing:-1px">${tV.toLocaleString()}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px">
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0; border-radius:14px; padding:12px">
+          <span class="stat-lbl" style="color:var(--txt2)">TOTAL LIKES</span>
+          <span class="stat-val" style="color:var(--red); font-size:18px">${fmtNum(tL)}</span>
+        </div>
+        <div class="stat-card" style="background:#fff; border:1px solid var(--border); margin-bottom:0; border-radius:14px; padding:12px">
+          <span class="stat-lbl" style="color:var(--txt2)">TOTAL SHARES</span>
+          <span class="stat-val" style="color:var(--indigo); font-size:18px">${fmtNum(tS)}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED FILTER CONTROLS -->
+    <div class="card" style="padding:18px; margin:0 16px 24px; background:#fff; border:1px solid var(--border); border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.04)">
+      <div style="font-size:10px; font-weight:800; color:var(--txt); margin-bottom:14px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px">
+        <span style="font-size:14px">⚙️</span> Control Center
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px">
+        <div>
+          <label style="font-size:9px; font-weight:800; color:var(--muted); display:block; margin-bottom:6px; letter-spacing:0.5px">PIC UNIT</label>
+          ${session.isAdmin ? `
+            <select class="range-input" onchange="adminFilterPIC=this.value;adminFilterAkun='ALL';renderReportPage()" style="padding:10px; font-size:12px; width:100%; border-radius:10px; background:var(--bg)">
+              <option value="ALL">Semua PIC</option>
+              ${PICS_LIST.map(p => `<option value="${p}" ${p===adminFilterPIC?'selected':''}>${p}</option>`).join('')}
+            </select>
+          ` : `
+            <div style="padding:10px; font-size:12px; background:var(--bg); border:1.5px solid var(--border); border-radius:10px; font-weight:800; color:var(--accent)">${session.pic}</div>
+          `}
+        </div>
+        <div>
+          <label style="font-size:9px; font-weight:800; color:var(--muted); display:block; margin-bottom:6px; letter-spacing:0.5px">ACCOUNT UNIT</label>
+          <select class="range-input" onchange="adminFilterAkun=this.value;renderReportPage()" style="padding:10px; font-size:12px; width:100%; border-radius:10px; background:var(--bg)">
+            <option value="ALL">Semua Akun</option>
+            ${filteredAkuns.map(a => `<option value="${a}" ${a===adminFilterAkun?'selected':''}>@${a}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border)">
+        <label style="font-size:9px; font-weight:800; color:var(--muted); display:block; margin-bottom:8px; letter-spacing:0.5px">TIMEFRAME SELECTOR</label>
+        <div class="range-picker" style="margin:0; padding:0; background:none; border:none; gap:10px">
+          <select class="range-input" onchange="adminRangeStart=this.value;renderReportPage()" style="flex:1; padding:10px; font-size:11px; border-radius:10px; background:var(--bg)">
+            ${DATES_ALL.map(d=>`<option value="${d}" ${d===adminRangeStart?'selected':''}>${d}</option>`).join('')}
+          </select>
+          <div style="color:var(--muted); font-weight:900">→</div>
+          <select class="range-input" onchange="adminRangeEnd=this.value;renderReportPage()" style="flex:1; padding:10px; font-size:11px; border-radius:10px; background:var(--bg)">
+            ${DATES_ALL.map(d=>`<option value="${d}" ${d===adminRangeEnd?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:0 16px 16px; display:flex; justify-content:space-between; align-items:center">
+      <div style="font-size:13px; font-weight:900; color:var(--txt)">📋 Audit Logs: ${rangeData.length} Units</div>
+      <div style="font-size:10px; color:var(--muted)">Range: ${adminRangeStart} - ${adminRangeEnd}</div>
+    </div>
+
+    <div class="admin-list-sec" style="margin:0 16px">
+  `;
+
+  if(!rangeData.length){
+    html += `<div style="text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; background:#fff; border-radius:24px; border:1px dashed var(--border)">
+      <div style="font-size:32px; margin-bottom:12px">🔍</div>
+      <div style="font-weight:700">No data records found</div>
+      <div style="font-size:11px; margin-top:4px">Adjust filters to see audit logs</div>
+    </div>`;
+  } else {
+    rangeData.sort((a,b) => DATES_ALL.indexOf(b.tgl) - DATES_ALL.indexOf(a.tgl));
+    rangeData.forEach(d => {
+      const mx = metrics[d.r] || {views:0, likes:0, comments:0, shares:0, saves:0, followers:0};
+      const tiktokLink = links[d.r] || '';
+      const safe = String(d.r).replace(/:/g,'_');
+      
+      html += `
+        <div class="ani-fadein" style="background:#fff; border:1px solid var(--border); border-radius:20px; padding:16px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,0.02)">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px">
+                <div style="width:8px; height:8px; background:var(--accent); border-radius:50%"></div>
+                <span style="font-size:14px; font-weight:900; color:var(--txt)">@${d.akun}</span>
+                <span style="font-size:9px; padding:3px 8px; background:var(--accentL); border-radius:6px; color:var(--accent); font-weight:800">${d.pic}</span>
+              </div>
+              <div style="font-size:10px; color:var(--muted); margin-top:4px; font-weight:500">${d.tgl} · Assignment #${d.no}</div>
+            </div>
+            ${saveMeta[safe] && isLate(d.tgl, saveMeta[safe]) ? `<span style="background:var(--red); color:#fff; font-size:8px; padding:4px 10px; border-radius:6px; font-weight:900; letter-spacing:0.5px">SUSULAN</span>` : ''}
+          </div>
+
+          <!-- TIKTOK ASSET LINK -->
+          ${tiktokLink ? `
+            <div style="margin-bottom:14px">
+              <a href="${tiktokLink}" target="_blank" style="font-size:11px; color:var(--cyan); text-decoration:none; display:flex; align-items:center; gap:8px; background:var(--cyanL); padding:12px; border-radius:12px; font-weight:700; border:1px solid rgba(8,145,178,0.1)">
+                <span style="font-size:14px">🔗</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1">TikTok: ${tiktokLink}</span>
+              </a>
+            </div>
+          ` : `
+            <div style="font-size:11px; color:var(--muted); padding:12px; background:var(--bg); border-radius:12px; margin-bottom:14px; text-align:center; font-weight:700; border:1px dashed var(--border)">
+              ⚠️ ASSET LINK MISSING
+            </div>
+          `}
+
+          <!-- METRICS DASHBOARD -->
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px">
+            <div style="text-align:center; padding:8px; background:var(--bg); border-radius:10px">
+              <div style="font-size:14px; font-weight:900; color:var(--cyan)">${fmtNum(mx.views)}</div>
+              <div style="font-size:8px; color:var(--muted); font-weight:800; letter-spacing:0.5px">VIEWS</div>
+            </div>
+            <div style="text-align:center; padding:8px; background:var(--bg); border-radius:10px">
+              <div style="font-size:14px; font-weight:900; color:var(--red)">${fmtNum(mx.likes)}</div>
+              <div style="font-size:8px; color:var(--muted); font-weight:800; letter-spacing:0.5px">LIKES</div>
+            </div>
+            <div style="text-align:center; padding:8px; background:var(--bg); border-radius:10px">
+              <div style="font-size:14px; font-weight:900; color:var(--indigo)">${fmtNum(mx.shares)}</div>
+              <div style="font-size:8px; color:var(--muted); font-weight:800; letter-spacing:0.5px">SHARES</div>
+            </div>
+          </div>
+
+          <!-- EXTENDED METRICS & BASKET -->
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid var(--bg)">
+            <div id="mbWrap${safe}" style="flex:1">
+              ${tiktokLink ? (mx.basket ? 
+                `<a href="${mx.basket.link}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; text-decoration:none; color:#065f46; font-size:10px; font-weight:900;">
+                   <span style="font-size:16px;">🛒</span> <span>${mx.basket.name || 'Produk OK'}</span>
+                </a>` : 
+                `<div style="padding:10px 12px; background:rgba(239,68,68,0.05); border:1px dashed rgba(239,68,68,0.3); border-radius:12px; display:inline-flex; align-items:center; gap:8px;">
+                   <span style="font-size:16px;">⚠️</span>
+                   <span style="font-size:10px; color:var(--red); font-weight:900;">NO PRODUCT LINK</span>
+                </div>`
+              ) : ''}
+            </div>
+            <div style="display:flex; gap:12px; opacity:0.7">
+              <div style="font-size:9px; font-weight:800; color:var(--txt2)">💬 ${fmtNum(mx.comments)}</div>
+              <div style="font-size:9px; font-weight:800; color:var(--txt2)">💾 ${fmtNum(mx.saves)}</div>
+              <div style="font-size:9px; font-weight:800; color:var(--txt2)">👥 +${fmtNum(mx.followers)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  html += `</div><div style="height:100px"></div>`;
+  container.innerHTML = html;
+}
+
+// ════════ ADMIN DAILY REPORT ENGINE ════════
+function renderAdminDailyReport(container){
+  if(!container) return;
+  
+  const activePICFilter = session.isAdmin ? adminFilterPIC : session.pic;
+  let filteredAkuns = [];
+  if(activePICFilter === 'ALL'){
+    filteredAkuns = [...new Set(DATA.map(d => d.akun))].sort();
+  } else {
+    const cfg = PIC_CFG[activePICFilter];
+    filteredAkuns = cfg ? cfg.akuns.sort() : [];
+  }
+  
+  // Filter by selected account if needed
+  if(adminFilterAkun !== 'ALL') filteredAkuns = filteredAkuns.filter(a => a === adminFilterAkun);
+
+  let html = `
+    <!-- FILTER BAR -->
+    <div class="card" style="padding:16px; margin:0 16px 20px; background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:0 4px 12px rgba(0,0,0,0.03)">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px">
+        <div>
+          <label style="font-size:9px; font-weight:800; color:var(--txt2); display:block; margin-bottom:6px; letter-spacing:1px">PIC SELECTOR</label>
+          <select class="range-input" onchange="adminFilterPIC=this.value;renderReportPage()" style="padding:10px; font-size:12px; background:var(--bg); border-radius:10px; width:100%">
+            <option value="ALL">Semua PIC</option>
+            ${PICS_LIST.map(p => `<option value="${p}" ${p===adminFilterPIC?'selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label style="font-size:9px; font-weight:800; color:var(--txt2); display:block; margin-bottom:6px; letter-spacing:1px">AKUN SELECTOR</label>
+          <select class="range-input" onchange="adminFilterAkun=this.value;renderReportPage()" style="padding:10px; font-size:12px; background:var(--bg); border-radius:10px; width:100%">
+            <option value="ALL">Semua Akun</option>
+            ${filteredAkuns.map(a => `<option value="${a}" ${a===adminFilterAkun?'selected':''}>@${a}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:9px; font-weight:800; color:var(--txt2); display:block; margin-bottom:6px; letter-spacing:1px">CALENDAR SELECTOR</label>
+        <select class="range-input" onchange="selDate=this.value;renderReportPage()" style="padding:10px; font-size:12px; background:var(--bg); border-radius:10px; width:100%">
+          ${DATES_ALL.map(d=>`<option value="${d}" ${d===selDate?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div style="margin:0 16px 15px; display:flex; justify-content:space-between; align-items:center">
+      <div style="font-size:13px; font-weight:900; color:var(--txt)">📅 Daily Slots Review: ${selDate}</div>
+      <div class="status-pill admin" style="margin:0; background:var(--indigoL); color:var(--indigo); border:none">ADMIN AUDIT</div>
+    </div>
+    <div style="margin:0 16px">
+  `;
+
+  filteredAkuns.forEach(akun => {
+    const pic = DATA.find(d => d.akun === akun)?.pic || '---';
+    if(pic.toUpperCase() === 'ATEP') return;
+    
+    html += `
+      <div style="margin-bottom:24px">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px">
+          <div style="font-size:14px; font-weight:900; color:var(--txt)">@${akun}</div>
+          <div style="font-size:10px; color:var(--muted)">managed by <b>${pic}</b></div>
+          <div style="flex:1; height:1px; background:var(--border)"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr; gap:12px">
+    `;
+
+    for(let i=1; i<=5; i++){
+      const reportKey = `${akun}_${selDate}_slot${i}`;
+      let link = reportLinks[reportKey] || '';
+      if(link && typeof link === 'object') link = link.link || '';
+      
+      const isOk = String(link).length > 10;
+      const mx = metrics[reportKey] || {views:0, likes:0, shares:0, comments:0, saves:0, followers:0};
+
+      html += `
+        <div class="ani-fadein" style="background:#fff; border:1px solid ${isOk?'rgba(29,107,74,0.1)':'var(--border)'}; border-radius:18px; padding:14px; box-shadow:${isOk?'0 2px 8px rgba(0,0,0,0.02)':'none'}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px">
+            <div>
+              <div style="font-size:12px; font-weight:900; color:var(--txt)">Slot #${i}</div>
+              <div style="font-size:9px; color:var(--muted)">Production Unit</div>
+            </div>
+            ${isOk ? `<div class="status-pill done" style="margin:0">FILLED</div>` : `<div class="status-pill pending" style="margin:0; background:var(--bg); border:none; color:var(--muted)">EMPTY</div>`}
+          </div>
+
+          ${isOk ? `
+            <a href="${link}" target="_blank" style="font-size:11px; color:var(--cyan); text-decoration:none; display:block; margin-bottom:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--cyanL); padding:10px; border-radius:10px; font-weight:700; border:1px solid rgba(8,145,178,0.1)">🔗 ${link}</a>
+          ` : `
+            <div style="font-size:10px; color:var(--muted); padding:10px; background:var(--bg); border-radius:10px; margin-bottom:12px; text-align:center; font-weight:600; border:1px dashed var(--border)">⚠️ Slot Belum Terisi</div>
+          `}
+
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px">
+            <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+              <div style="font-size:12px; font-weight:800; color:var(--cyan)">${fmtNum(mx.views)}</div>
+              <div style="font-size:7px; color:var(--muted); font-weight:700">VIEWS</div>
+            </div>
+            <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+              <div style="font-size:12px; font-weight:800; color:var(--red)">${fmtNum(mx.likes)}</div>
+              <div style="font-size:7px; color:var(--muted); font-weight:700">LIKES</div>
+            </div>
+            <div style="text-align:center; padding:6px; background:var(--bg); border-radius:8px">
+              <div style="font-size:12px; font-weight:800; color:var(--indigo)">${fmtNum(mx.shares)}</div>
+              <div style="font-size:7px; color:var(--muted); font-weight:700">SHARE</div>
+            </div>
+          </div>
+          
+          <div style="display:flex; justify-content:space-around; opacity:0.6">
+             <div style="font-size:9px; font-weight:700; color:var(--txt2)">💬 ${fmtNum(mx.comments)}</div>
+             <div style="font-size:9px; font-weight:700; color:var(--txt2)">💾 ${fmtNum(mx.saves)}</div>
+             <div style="font-size:9px; font-weight:700; color:var(--txt2)">👥 +${fmtNum(mx.followers)}</div>
+          </div>
+        </div>
+      `;
+    }
+    html += `</div></div>`;
+  });
+
+  html += `<div style="height:80px"></div>`;
+  container.innerHTML = html;
+}
+
+function nowStr(){
+  return new Date().toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadConfig();
+  initLogin();
+});
+</script>
+</body>
+</html>

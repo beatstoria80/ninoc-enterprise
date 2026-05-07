@@ -1,6 +1,5 @@
-# Responsive Design Consistency Rules
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
 
-- **Strict Isolation**: When modifying the UI for mobile screens, always use Tailwind responsive prefixes (e.g., `max-sm:`, `sm:`, `md:`) to ensure changes do not bleed into the desktop (PC) view unintentionally.
-- **PC vs. Mobile Balance**: Any aesthetic change (e.g., "minimalist icons") should be applied thoughtfully across both views, but size and layout adjustments must be scoped to their respective breakpoints.
-- **No Side Effects**: Before finalizing an edit, mentally verify (or check via linting/compiling) that a fix for mobile doesn't revert a desktop layout fix, and vice versa.
-- **Breakpoint Precision**: Desktop adjustments should generally target `md:` and above, while mobile adjustments should target the base classes or `max-sm:`.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
