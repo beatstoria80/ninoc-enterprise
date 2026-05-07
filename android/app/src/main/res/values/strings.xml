@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NINOC Fashion</string>
+    <string name="title_activity_main">NINOC Fashion</string>
+    <string name="package_name">com.ninoc.enterprise</string>
+    <string name="custom_url_scheme">com.ninoc.enterprise</string>
+</resources>
