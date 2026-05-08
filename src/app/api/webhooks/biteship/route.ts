@@ -59,9 +59,22 @@ function verifySignature(payload: string, signature: string, secret: string): bo
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
-    const payload: BiteshipWebhookPayload = JSON.parse(rawBody);
 
-    // 1. Verify signature if configured
+    // 1. Handle empty body (common during installation/verification)
+    if (!rawBody || rawBody.trim() === '') {
+      console.log('[Biteship Webhook] Received empty body (Installation Ping)');
+      return NextResponse.json({ status: 'OK', message: 'Endpoint ready' });
+    }
+
+    let payload: BiteshipWebhookPayload;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch (e) {
+      console.log('[Biteship Webhook] Received non-JSON body');
+      return NextResponse.json({ status: 'OK', message: 'Received non-JSON body' });
+    }
+
+    // 2. Verify signature if configured
     const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
     const signature = req.headers.get('x-biteship-signature') || '';
 
@@ -69,6 +82,8 @@ export async function POST(req: Request) {
       const isValid = verifySignature(rawBody, signature, webhookSecret);
       if (!isValid) {
         console.error('Biteship webhook signature verification failed');
+        // During installation, we might return 200 even if signature fails if secret is wrong
+        // but for now let's keep it strict if secret IS provided
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     }
