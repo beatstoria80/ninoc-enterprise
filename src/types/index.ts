@@ -30,7 +30,7 @@ export interface Order {
   midtrans_id: string | null;
   payment_url: string | null;
   snap_token: string | null;
-  shipping_address: any;
+  shipping_address: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 }

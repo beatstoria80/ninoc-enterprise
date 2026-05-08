@@ -26,7 +26,7 @@ export default function SuccessPage() {
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-4xl font-display font-black italic text-ink tracking-tighter">Art in Motion.</h1>
+          <h1 className="text-4xl font-display font-medium italic text-ink tracking-tighter">Art in Motion.</h1>
           <p className="text-sm text-muted-text font-medium leading-relaxed">
             Your transaction was successful. We are now preparing your artistic pieces for delivery. A confirmation email has been sent to your archive.
           </p>
@@ -37,7 +37,7 @@ export default function SuccessPage() {
             Continue Collecting
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
-          <Link href="/" className="text-[10px] font-black uppercase tracking-[0.4em] text-ink/30 hover:text-rose transition-colors">
+          <Link href="/" className="text-[10px] font-medium uppercase tracking-[0.4em] text-ink/30 hover:text-rose transition-colors">
             Return to Atelier
           </Link>
         </div>

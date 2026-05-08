@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import GlobalHeader from "@/components/GlobalHeader";
 import GlobalFooter from "@/components/Footer";
+import SupportChat from "@/components/SupportChat";
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const instrument = Instrument_Serif({
+const poppins = Poppins({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "700", "900"],
 });
 
 export const metadata: Metadata = {
-  title: "NINOC ATELIER | Minimalist Art & Design",
-  description: "Wear the Art, Own the Day. Premium fashion for the modern family.",
+  title: "NINOC | Pure Organic Art",
+  description: "Wear the art, own the day. Premium artistic collections for the conscious mobility.",
 };
 
 export default function RootLayout({
@@ -29,21 +30,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${instrument.variable} h-full antialiased`}
+      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <head>
+      <body className="min-h-full flex flex-col overflow-x-hidden">
         <Script 
           src={process.env.MIDTRANS_IS_PRODUCTION === 'true' 
             ? "https://app.midtrans.com/snap/snap.js" 
             : "https://app.sandbox.midtrans.com/snap/snap.js"} 
           data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className="min-h-full flex flex-col overflow-x-hidden">
         <GlobalHeader />
         <main className="flex-1">{children}</main>
         <GlobalFooter />
+        <SupportChat />
       </body>
     </html>
   );

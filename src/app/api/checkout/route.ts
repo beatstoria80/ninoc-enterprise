@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
 import midtransClient from 'midtrans-client';
+import { supabase } from '@/lib/supabase';
+
+interface CheckoutItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  size?: string;
+}
 
 export async function POST(req: Request) {
   try {
-    const { items, customerDetails, totalPrice } = await req.json();
+    const { items, customerDetails, shippingDetails, totalPrice } = await req.json();
 
     // Initialize Midtrans Snap
     const snap = new midtransClient.Snap({
@@ -26,15 +35,31 @@ export async function POST(req: Request) {
         billing_address: {
           address: customerDetails.address,
           city: customerDetails.city,
-          postal_code: customerDetails.zip
+          postal_code: customerDetails.postal_code
+        },
+        shipping_address: {
+          first_name: customerDetails.name,
+          email: customerDetails.email,
+          phone: customerDetails.phone,
+          address: customerDetails.address,
+          city: customerDetails.city,
+          postal_code: customerDetails.postal_code
         }
       },
-      item_details: items.map((item: any) => ({
-        id: item.id,
-        price: item.price,
-        quantity: item.quantity,
-        name: item.name
-      })),
+      item_details: [
+        ...items.map((item: CheckoutItem) => ({
+          id: item.id,
+          price: item.price,
+          quantity: item.quantity,
+          name: item.name
+        })),
+        {
+          id: 'SHIPPING',
+          price: shippingDetails.cost,
+          quantity: 1,
+          name: `Courier: ${shippingDetails.method.toUpperCase()}`
+        }
+      ],
       credit_card: {
         secure: true
       }
@@ -42,11 +67,52 @@ export async function POST(req: Request) {
 
     const transaction = await snap.createTransaction(parameter);
 
-    // Note: In a real production app, you should also save the order to Supabase here
-    // with 'pending' status.
+    // 1. Save order header to Supabase
+    const { error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        id: orderId,
+        user_id: customerDetails.user_id || null,
+        customer_name: customerDetails.name || null,
+        total_price: totalPrice,
+        status: 'pending',
+        snap_token: transaction.token,
+        courier: shippingDetails.method,
+        shipping_address: {
+          ...customerDetails,
+          shipping_method: shippingDetails.method,
+          shipping_cost: shippingDetails.cost
+        }
+      });
+
+    if (orderError) {
+      console.error('Supabase Order Error:', orderError);
+      // Don't block transaction if DB save fails, but log it
+    }
+
+    // 2. Save individual order items
+    if (items.length > 0) {
+      const orderItems = items.map((item: CheckoutItem) => ({
+        order_id: orderId,
+        product_id: item.id,
+        product_name: item.name,
+        size: item.size || null,
+        quantity: item.quantity,
+        unit_price: item.price
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error('Supabase Order Items Error:', itemsError);
+      }
+    }
 
     return NextResponse.json({ token: transaction.token, orderId });
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     console.error('Midtrans API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
