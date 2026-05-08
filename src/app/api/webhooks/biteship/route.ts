@@ -1,20 +1,161 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import crypto from 'crypto';
+
+// ============================================================
+// BITESHIP WEBHOOK HANDLER (PRODUCTION VERSION)
+// Receives real-time tracking updates from Biteship
+// Events: order.status, order.price, order.waybill_id
+// ============================================================
+
+interface BiteshipWebhookPayload {
+  event: string;
+  // order.status event
+  order_id?: string;
+  status?: string;
+  courier_tracking_id?: string;
+  courier_waybill_id?: string;
+  courier_company?: string;
+  courier_driver_name?: string;
+  courier_driver_phone?: string;
+  courier_link?: string;
+  // order.price event
+  price?: number;
+  // order.waybill_id event
+  waybill_id?: string;
+}
+
+// Map Biteship status to our internal order status
+function mapBiteshipStatus(biteshipStatus: string): string {
+  const statusMap: Record<string, string> = {
+    'confirmed': 'pending',
+    'allocated': 'pending',
+    'pick_up': 'shipped',
+    'picking_up': 'shipped',
+    'picked': 'shipped',
+    'shipping': 'shipped',
+    'delivered': 'delivered',
+    'rejected': 'cancelled',
+    'canceled': 'cancelled',
+    'cancelled': 'cancelled',
+    'returned': 'cancelled',
+    'returning': 'shipped',
+    'on_hold': 'shipped',
+    'disposed': 'cancelled',
+  };
+
+  return statusMap[biteshipStatus] || 'pending';
+}
+
+// Verify webhook signature from Biteship
+function verifySignature(payload: string, signature: string, secret: string): boolean {
+  if (!secret) return true; // Skip verification if no secret configured
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(payload);
+  const computed = hmac.digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature));
+}
 
 export async function POST(req: Request) {
-  // TEMPORARY: RETURN 200 OK FOR BITESHIP INSTALLATION
-  // You can revert this once the webhook is verified in Biteship dashboard
-  console.log('[Biteship Webhook] Installation mode active - returning 200 OK');
-  
-  return NextResponse.json({ 
-    status: 'OK', 
-    message: 'Webhook installation successful' 
-  }, { status: 200 });
+  try {
+    const rawBody = await req.text();
+
+    // 1. Handle empty body (ping check)
+    if (!rawBody || rawBody.trim() === '') {
+      return NextResponse.json({ status: 'OK', message: 'Handshake successful' });
+    }
+
+    let payload: BiteshipWebhookPayload;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch (e) {
+      console.warn('[Biteship Webhook] Non-JSON payload received');
+      return NextResponse.json({ status: 'OK', message: 'Payload accepted' });
+    }
+
+    // 2. Verify signature if secret is set in Vercel
+    const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
+    const signature = req.headers.get('x-biteship-signature') || '';
+
+    if (webhookSecret && signature) {
+      const isValid = verifySignature(rawBody, signature, webhookSecret);
+      if (!isValid) {
+        console.error('[Biteship Webhook] Signature verification failed');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+
+    console.log(`[Biteship Webhook] Event: ${payload.event}, Order: ${payload.order_id}`);
+
+    // 3. Process Events
+    switch (payload.event) {
+      case 'order.status': {
+        if (!payload.order_id || !payload.status) break;
+
+        const internalStatus = mapBiteshipStatus(payload.status);
+
+        // Update main order table
+        await supabase
+          .from('orders')
+          .update({
+            status: internalStatus,
+            courier: payload.courier_company || undefined,
+            tracking_id: payload.courier_tracking_id || payload.courier_waybill_id || undefined,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', payload.order_id);
+
+        // Log to tracking_logs for history
+        await supabase.from('tracking_logs').insert({
+          order_id: payload.order_id,
+          biteship_status: payload.status,
+          internal_status: internalStatus,
+          courier_company: payload.courier_company || null,
+          courier_driver_name: payload.courier_driver_name || null,
+          courier_driver_phone: payload.courier_driver_phone || null,
+          courier_link: payload.courier_link || null,
+          raw_payload: payload,
+        });
+        break;
+      }
+
+      case 'order.waybill_id': {
+        const waybillId = payload.waybill_id || payload.courier_waybill_id;
+        if (payload.order_id && waybillId) {
+          await supabase
+            .from('orders')
+            .update({ tracking_id: waybillId })
+            .eq('id', payload.order_id);
+        }
+        break;
+      }
+
+      case 'order.price': {
+        if (payload.order_id) {
+          await supabase.from('tracking_logs').insert({
+            order_id: payload.order_id,
+            biteship_status: 'price_update',
+            internal_status: 'info',
+            raw_payload: payload,
+          });
+        }
+        break;
+      }
+    }
+
+    return NextResponse.json({ status: 'OK', event: payload.event });
+
+  } catch (err) {
+    const error = err as Error;
+    console.error('[Biteship Webhook] Error:', error.message);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
 
 export async function GET() {
   return NextResponse.json({
     status: 'active',
-    service: 'NINOC Biteship Webhook Installation Mode',
+    service: 'NINOC Logistics Engine',
     timestamp: new Date().toISOString(),
   });
 }
