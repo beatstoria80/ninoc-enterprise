@@ -62,9 +62,46 @@ interface SupportTicket {
   created_at: string;
 }
 
+export default function AdminDashboard() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [selectedOrderItems, setSelectedOrderItems] = useState<any[]>([]);
   const [selectedOrderLogs, setSelectedOrderLogs] = useState<any[]>([]);
+
+  // LOGISTICS CONFIGURATION STATE
+  const [logisticsConfig, setLogisticsConfig] = useState({
+    jne_api_key: '',
+    jnt_api_key: '',
+    sicepat_api_key: '',
+    webhook_url: '',
+    is_live: false
+  });
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { data: prodData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      const { data: orderData } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      const { data: ticketData } = await supabase.from('support_tickets').select('*').order('created_at', { ascending: false });
+      
+      if (prodData) setProducts(prodData);
+      if (orderData) setOrders(orderData);
+      if (ticketData) setTickets(ticketData);
+
+      const { data: config } = await supabase.from('atelier_settings').select('*').eq('key', 'logistics_config').single();
+      if (config?.value) setLogisticsConfig(config.value);
+
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const openOrderDetails = async (order: Order) => {
     setSelectedOrder(order);
@@ -74,6 +111,23 @@ interface SupportTicket {
     if (logs) setSelectedOrderLogs(logs);
     setIsModalOpen(true);
   };
+
+  const saveLogisticsConfig = async () => {
+    try {
+      const { error } = await supabase
+        .from('atelier_settings')
+        .upsert({ key: 'logistics_config', value: logisticsConfig });
+      if (error) throw error;
+      alert('Logistics Handshake Configured Successfully.');
+    } catch (error) {
+      console.error('Config save error:', error);
+      alert('Failed to save configuration.');
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <main className="min-h-screen bg-white noise flex overflow-hidden font-medium">
@@ -316,15 +370,6 @@ interface SupportTicket {
           </motion.div>
         )}
       </AnimatePresence>
-    </main>
-  );
-}
-            
-            {/* OTHER TABS OMITTED FOR BREVITY BUT KEPT IN LOGIC */}
-          </AnimatePresence>
-          
-        </section>
-      </div>
     </main>
   );
 }
