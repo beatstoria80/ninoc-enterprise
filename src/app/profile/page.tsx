@@ -17,7 +17,10 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const router = useRouter();
+  
+  // 1. ALL HOOKS AT THE TOP LEVEL
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -46,7 +49,6 @@ export default function ProfilePage() {
           created_at: profile.created_at || authUser.created_at,
         });
       } else {
-        // Fallback to auth metadata if profile not found yet
         setUser({
           id: authUser.id,
           email: authUser.email || '',
@@ -61,63 +63,6 @@ export default function ProfilePage() {
 
     getUser();
   }, [router]);
-
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setIsUploading(true);
-      const file = event.target.files?.[0];
-      if (!file || !user) return;
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-
-      // 1. Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // 2. Get Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      // 3. Update database
-      const { error: updateError } = await supabase
-        .from('customer_profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
-      // 4. Update UI
-      setUser({ ...user, avatar_url: publicUrl });
-      alert('Profile photo updated successfully!');
-
-    } catch (err) {
-      const error = err as Error;
-      alert('Error uploading avatar: ' + error.message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" />
-      </main>
-    );
-  }
-
-  const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -136,13 +81,64 @@ export default function ProfilePage() {
     fetchOrders();
   }, []);
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setIsUploading(true);
+      const file = event.target.files?.[0];
+      if (!file || !user) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('customer_profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      setUser({ ...user, avatar_url: publicUrl });
+      alert('Profile photo updated successfully!');
+
+    } catch (err) {
+      const error = err as Error;
+      alert('Error uploading avatar: ' + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
+  // 2. CONDITIONAL RENDER AFTER HOOKS
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" />
+      </main>
+    );
+  }
+
   const memberSince = user?.created_at 
     ? new Date(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
 
   return (
     <main className="min-h-screen bg-white selection:bg-ink selection:text-white pb-32 font-medium">
-      {/* Hero Banner */}
       <section className="relative pt-40 md:pt-48 px-6 md:px-12 max-w-[1200px] mx-auto">
         
         <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-12 group">
@@ -156,16 +152,28 @@ export default function ProfilePage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-12"
         >
-          {/* Profile Header (Compact) */}
+          {/* Profile Header */}
           <div className="border border-ink/5 rounded-[10px] p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 bg-ink/[0.01]">
-            <div className="w-24 h-24 rounded-full bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10">
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-ink/20">
-                  <User size={32} />
-                </div>
-              )}
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10 relative">
+                {isUploading && (
+                  <div className="absolute inset-0 bg-ink/40 z-10 flex items-center justify-center text-white">
+                    <Loader2 size={24} className="animate-spin" />
+                  </div>
+                )}
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-ink/20">
+                    <User size={32} />
+                  </div>
+                )}
+              </div>
+              
+              <label className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-ink cursor-pointer hover:bg-rose hover:text-white transition-all border border-ink/5">
+                <Camera size={14} />
+                <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" disabled={isUploading} />
+              </label>
             </div>
 
             <div className="flex-1 text-center md:text-left">
