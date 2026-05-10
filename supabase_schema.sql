@@ -55,6 +55,7 @@ CREATE TABLE variants (
 -- 6. Orders (updated with payment_status and midtrans_id)
 CREATE TABLE orders (
   id TEXT PRIMARY KEY,
+  order_number INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) UNIQUE NOT NULL,
   user_id UUID REFERENCES auth.users(id),
   customer_name TEXT,
   total_price BIGINT NOT NULL,
@@ -69,6 +70,9 @@ CREATE TABLE orders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+COMMENT ON TABLE orders IS 'Customer orders with auto-incrementing order_number for easy reference';
+COMMENT ON COLUMN orders.order_number IS 'Unique sequential order number (ORD-001, ORD-002, etc.)';
 
 -- 7. Order Items (line items for each order)
 CREATE TABLE order_items (
@@ -92,6 +96,7 @@ CREATE TABLE order_items (
 CREATE TABLE customer_profiles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
+  customer_number INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) UNIQUE NOT NULL,
   full_name TEXT,
   first_name TEXT,
   last_name TEXT,
@@ -109,6 +114,9 @@ CREATE TABLE customer_profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+COMMENT ON TABLE customer_profiles IS 'Customer archive with auto-incrementing customer_number for easy reference';
+COMMENT ON COLUMN customer_profiles.customer_number IS 'Unique sequential number for easy customer management (CST-001, CST-002, etc.)';
 
 -- 9. Support Tickets
 CREATE TABLE support_tickets (
@@ -268,6 +276,35 @@ CREATE INDEX idx_variants_product_id ON variants(product_id);
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
+CREATE INDEX idx_orders_order_number ON orders(order_number);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_tracking_logs_order_id ON tracking_logs(order_id);
 CREATE INDEX idx_customer_profiles_user_id ON customer_profiles(user_id);
+CREATE INDEX idx_customer_profiles_customer_number ON customer_profiles(customer_number);
+
+-- ============================================================
+-- TRIGGERS FOR UPDATED_AT
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = timezone('utc'::text, now());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_customer_profiles_updated_at BEFORE UPDATE ON customer_profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_atelier_settings_updated_at BEFORE UPDATE ON atelier_settings
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
