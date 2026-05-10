@@ -234,7 +234,11 @@ export default function AdminDashboard() {
         category: product.category,
         image_url: product.image_url || '',
         is_featured: product.is_featured,
-        variants: product.variants?.length ? product.variants : [{ size: 'S', color: 'Black', stock_quantity: 0 }]
+        variants: product.variants?.length ? product.variants.map(v => ({
+          size: v.size || '',
+          color: v.color || '',
+          stock_quantity: v.stock_quantity
+        })) : [{ size: 'S', color: 'Black', stock_quantity: 0 }]
       });
     } else {
       setIsEditMode(false);
