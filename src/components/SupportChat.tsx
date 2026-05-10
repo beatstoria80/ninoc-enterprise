@@ -35,7 +35,8 @@ export default function SupportChat() {
   const [orderId, setOrderId] = useState('');
   const [category, setCategory] = useState('');
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  
+  const [hasUnread, setHasUnread] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const fetchTickets = useCallback(async (userId: string) => {
@@ -117,124 +118,245 @@ export default function SupportChat() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[500]">
+    <div className="fixed bottom-5 right-5 z-[500]">
+      {/* MICRO TRIGGER - 14px icon per manifesto */}
+      <motion.button
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative w-9 h-9 bg-ink rounded-full shadow-lg flex items-center justify-center hover:bg-rose transition-colors duration-300"
+      >
+        {/* Subtle breathe pulse */}
+        <motion.div
+          className="absolute inset-0 bg-rose rounded-full opacity-0"
+          animate={{ scale: [1, 1.3, 1], opacity: hasUnread ? [0, 0.3, 0] : [0, 0, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <X size={14} strokeWidth={1.5} className="text-white" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <MessageSquare size={14} strokeWidth={1.5} className="text-white" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Unread dot */}
+        {hasUnread && (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose rounded-full border border-ink"
+          />
+        )}
+      </motion.button>
+
+      {/* COMPACT PANEL - 300x480 */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-16 right-0 w-[300px] h-[480px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-ink/5 flex flex-col"
+            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="absolute bottom-12 right-0 w-[300px] h-[480px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-ink/5 flex flex-col"
           >
-            {/* COMPACT HEADER */}
-            <div className="bg-ink p-5 text-white relative">
-              <button onClick={() => setIsOpen(false)} className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"><X size={16} /></button>
+            {/* HEADER */}
+            <motion.div
+              className="bg-ink p-4 text-white relative"
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-3 text-white/30 hover:text-white transition-colors"
+              >
+                <X size={14} strokeWidth={1.5} />
+              </motion.button>
               <div className="space-y-0.5">
-                <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-white/40">NINOC Support</p>
-                <h3 className="text-sm font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Archive</span></h3>
+                <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/30">NINOC Support</p>
+                <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Archive</span></h3>
               </div>
-            </div>
+            </motion.div>
 
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'home' && (
-                <div className="p-5 space-y-4 overflow-y-auto no-scrollbar h-full">
-                  <div className="bg-ink/[0.03] p-4 rounded-xl border border-ink/5">
-                    <p className="text-[10px] font-medium text-ink/60 leading-relaxed mb-3 italic">Need help with an archive order?</p>
-                    <button onClick={() => setActiveTab('new_ticket')} className="w-full bg-ink text-white py-2.5 rounded-lg text-[9px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-all">
-                      <MessageSquare size={12} /> New Ticket
-                    </button>
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  className="p-4 space-y-4 overflow-y-auto no-scrollbar h-full"
+                >
+                  <div className="bg-ink/[0.03] p-3.5 rounded-xl border border-ink/5">
+                    <p className="text-[9px] font-medium text-ink/50 leading-relaxed mb-2.5 italic">Need help with an archive order?</p>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setActiveTab('new_ticket')}
+                      className="w-full bg-ink text-white py-2 rounded-lg text-[8px] font-medium uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-rose transition-colors duration-200"
+                    >
+                      <MessageSquare size={10} /> New Ticket
+                    </motion.button>
                   </div>
 
-                  <div className="space-y-2.5">
-                    <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20">Active Conversations</p>
+                  <div className="space-y-2">
+                    <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15">Active Conversations</p>
                     {tickets.length > 0 ? (
-                      tickets.map((t) => (
-                        <button key={t.id} onClick={() => openTicket(t)} className="w-full flex items-center justify-between p-3 bg-white border border-ink/5 rounded-lg hover:border-rose/20 transition-all text-left group">
-                          <div className="min-w-0">
-                            <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
-                            <p className="text-[7px] font-medium text-ink/30 uppercase tracking-widest">#{t.id.split('-')[0]} • {t.status}</p>
+                      tickets.map((t, i) => (
+                        <motion.button
+                          key={t.id}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={() => openTicket(t)}
+                          className="w-full flex items-center justify-between p-2.5 bg-white border border-ink/5 rounded-lg hover:border-rose/20 transition-all duration-200 text-left group"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[8px] font-medium text-ink uppercase truncate">{t.subject}</p>
+                            <p className="text-[6px] font-medium text-ink/25 uppercase tracking-widest">#{t.id.split('-')[0]} • {t.status}</p>
                           </div>
-                          <ChevronRight size={12} className="text-ink/10 group-hover:text-rose transition-all" />
-                        </button>
+                          <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
+                        </motion.button>
                       ))
                     ) : (
-                      <p className="text-[8px] font-medium text-ink/20 italic">Empty archive.</p>
+                      <p className="text-[7px] font-medium text-ink/15 italic text-center py-4">Empty archive.</p>
                     )}
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {activeTab === 'new_ticket' && (
-                <div className="p-5 space-y-4 flex-1 overflow-y-auto no-scrollbar">
-                  <button onClick={() => setActiveTab('home')} className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1">
-                    <ArrowLeft size={10} /> Back
-                  </button>
-                  <div className="space-y-3">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="p-4 space-y-3 flex-1 overflow-y-auto no-scrollbar"
+                >
+                  <motion.button
+                    whileHover={{ x: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setActiveTab('home')}
+                    className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1"
+                  >
+                    <ArrowLeft size={8} /> Back
+                  </motion.button>
+                  <div className="space-y-2.5">
                     <div className="space-y-1">
-                      <label className="text-[7px] font-medium uppercase tracking-widest text-ink/40 ml-1">Subject</label>
-                      <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="..." className="w-full bg-ink/5 border-none rounded-lg py-2 px-3 text-[10px] font-medium outline-none" />
+                      <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Subject</label>
+                      <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="..." className="w-full bg-ink/5 border-none rounded-lg py-1.5 px-2.5 text-[9px] font-medium outline-none placeholder:text-ink/15" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[7px] font-medium uppercase tracking-widest text-ink/40 ml-1">Order ID</label>
-                      <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="NINOC-..." className="w-full bg-ink/5 border-none rounded-lg py-2 px-3 text-[10px] font-medium outline-none" />
+                      <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Order ID</label>
+                      <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="NINOC-..." className="w-full bg-ink/5 border-none rounded-lg py-1.5 px-2.5 text-[9px] font-medium outline-none placeholder:text-ink/15" />
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-[7px] font-medium uppercase tracking-widest text-ink/40 ml-1">Category</label>
-                      <div className="grid grid-cols-2 gap-1.5">
+                    <div className="space-y-1.5">
+                      <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Category</label>
+                      <div className="grid grid-cols-2 gap-1">
                         {[{v:'product',l:'Product'}, {v:'shipping',l:'Shipping'}, {v:'payment',l:'Payment'}, {v:'other',l:'Other'}].map(cat => (
-                          <button key={cat.v} onClick={() => setCategory(cat.v)} className={`py-2 rounded-lg text-[8px] font-medium uppercase tracking-widest border transition-all ${category === cat.v ? 'border-rose text-rose bg-rose/5' : 'border-ink/5 text-ink/30'}`}>
+                          <motion.button
+                            key={cat.v}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setCategory(cat.v)}
+                            className={`py-1.5 rounded-lg text-[7px] font-medium uppercase tracking-widest border transition-all duration-150 ${category === cat.v ? 'border-rose text-rose bg-rose/5' : 'border-ink/5 text-ink/25'}`}
+                          >
                             {cat.l}
-                          </button>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
-                    <button onClick={startNewTicket} className="w-full bg-ink text-white py-3 rounded-xl text-[9px] font-medium uppercase tracking-[0.2em] mt-2">Open Ticket</button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={startNewTicket}
+                      className="w-full bg-ink text-white py-2.5 rounded-xl text-[8px] font-medium uppercase tracking-[0.2em] mt-1 hover:bg-rose transition-colors duration-200"
+                    >
+                      Open Ticket
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {activeTab === 'chat' && (
-                <div className="flex flex-col h-full overflow-hidden">
-                  <div className="p-3 border-b border-ink/5 flex items-center justify-between bg-white">
-                    <button onClick={() => setActiveTab('home')} className="text-rose"><ArrowLeft size={14} /></button>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col h-full overflow-hidden"
+                >
+                  <div className="p-2.5 border-b border-ink/5 flex items-center justify-between bg-white">
+                    <motion.button
+                      whileHover={{ x: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setActiveTab('home')}
+                      className="text-rose"
+                    >
+                      <ArrowLeft size={12} strokeWidth={1.5} />
+                    </motion.button>
                     <div className="text-center">
-                      <p className="text-[9px] font-medium text-ink uppercase truncate max-w-[150px]">{activeTicket?.subject}</p>
-                      <p className="text-[7px] font-medium text-ink/20 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
+                      <p className="text-[8px] font-medium text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject}</p>
+                      <p className="text-[6px] font-medium text-ink/20 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
                     </div>
                     <div className="w-4" />
                   </div>
-                  <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar bg-ink/[0.01]">
+                  <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar bg-ink/[0.01]">
                     {chatMessages.map((m, idx) => (
-                      <div key={idx} className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] p-2.5 rounded-xl text-[10px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-[80%] px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
                           {m.message}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
-                  <div className="p-3 bg-white border-t border-ink/5 flex gap-2">
-                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && sendMessage()} placeholder="Message..." className="flex-1 bg-ink/5 border-none rounded-full py-2 px-4 text-[10px] font-medium outline-none" />
-                    <button onClick={sendMessage} className="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center hover:bg-rose transition-colors flex-shrink-0">
-                      <Send size={12} />
-                    </button>
+                  <div className="p-2.5 bg-white border-t border-ink/5 flex gap-2">
+                    <input
+                      type="text"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                      placeholder="Message..."
+                      className="flex-1 bg-ink/5 border-none rounded-full py-1.5 px-3.5 text-[9px] font-medium outline-none placeholder:text-ink/15"
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={sendMessage}
+                      className="w-7 h-7 bg-ink text-white rounded-full flex items-center justify-center hover:bg-rose transition-colors duration-200 flex-shrink-0"
+                    >
+                      <Send size={10} />
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 bg-rose text-white rounded-full shadow-xl flex items-center justify-center hover:bg-rose/90 transition-all"
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? <X key="close" size={14} /> : <MessageSquare key="open" size={14} />}
-        </AnimatePresence>
-      </motion.button>
     </div>
   );
 }
