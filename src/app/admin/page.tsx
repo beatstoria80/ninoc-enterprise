@@ -3,14 +3,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Package, ShoppingCart, Settings, Plus, Search,
-  TrendingUp, Box, BarChart3, LogOut, X, Save, ShieldCheck,
-  Truck, ChevronRight, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
-  CheckCircle2, Clock, AlertCircle, DollarSign, Package2,
-  Image as ImageIcon, SaveAll, ArrowUpDown, Filter, MoreVertical,
-  ArrowUp, ArrowDown, Minus, Edit, Upload, RefreshCw, FileText,
-  MessageSquare, Send, User, Paperclip
+  LayoutDashboard, Package, ShoppingCart, Plus, Search,
+  TrendingUp, Box, LogOut, X, Save, Paperclip,
+  Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
+  Clock, DollarSign, Minus, RefreshCw,
+  MessageSquare, Send, User
 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';

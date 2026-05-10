@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageSquare, X, Send, ChevronRight, ArrowLeft, MessageCircle } from 'lucide-react';
+import { MessageSquare, X, Send, ChevronRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 
@@ -232,7 +232,7 @@ export default function SupportChat() {
         className="w-10 h-10 bg-rose text-white rounded-full shadow-xl flex items-center justify-center hover:bg-rose/90 transition-all"
       >
         <AnimatePresence mode="wait">
-          {isOpen ? <X key="close" size={14} /> : <MessageCircle key="open" size={14} />}
+          {isOpen ? <X key="close" size={14} /> : <MessageSquare key="open" size={14} />}
         </AnimatePresence>
       </motion.button>
     </div>

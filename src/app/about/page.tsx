@@ -20,7 +20,7 @@ export default function About() {
             <div className="space-y-6">
               <h3 className="text-3xl font-display font-medium italic uppercase tracking-tight">Philosophy</h3>
               <p className="text-sm font-medium text-ink/60 leading-relaxed">
-                "Wear the art, own the day." Every piece is a canvas. Every wearer is an artist.
+                &ldquo;Wear the art, own the day.&rdquo; Every piece is a canvas. Every wearer is an artist.
               </p>
             </div>
           </div>
