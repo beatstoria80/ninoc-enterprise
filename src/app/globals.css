@@ -11,7 +11,7 @@
   --color-ink-faint: #F5F5F5;
   --color-cr: #FFFFFF;
   --color-muted-text: #333333;
-  
+
   --font-display: "var(--font-display)", sans-serif;
   --font-sans: "var(--font-sans)", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
@@ -103,60 +103,4 @@ p {
 /* HIGH CONTRAST INPUTS */
 input::placeholder {
   color: rgba(20, 20, 20, 0.2) !important;
-}
-
-/* ============================================
-   NINOC TOKYO FONT STYLE
-   ============================================ */
-.ninoc-container {
-  font-family: var(--font-ninoc), 'Black Ops One', 'Arial Black', sans-serif;
-  font-size: 96px;
-  font-weight: 400;
-  color: #d91c1c;
-  letter-spacing: -4px;
-  line-height: 1;
-  text-transform: uppercase;
-  background-color: #f5ede0;
-  display: inline-flex;
-  align-items: flex-end;
-  position: relative;
-}
-
-.ninoc-container .letter-i {
-  font-size: 80px;
-  transform: translateY(-10px);
-}
-
-.ninoc-container .letter-n2 {
-  transform: skewX(-6deg);
-}
-
-/* Horizontal bar cutout — O & C */
-.ninoc-container .letter-o,
-.ninoc-container .letter-c {
-  position: relative;
-  display: inline-block;
-}
-
-.ninoc-container .letter-o::after,
-.ninoc-container .letter-c::after {
-  content: '';
-  position: absolute;
-  background: #f5ede0;
-  width: 36px;
-  height: 10px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Red dot accent (kiri teks) */
-.dot-accent {
-  width: 18px;
-  height: 18px;
-  background: #d91c1c;
-  border-radius: 50%;
-  position: absolute;
-  left: -24px;
-  bottom: 14px;
 }

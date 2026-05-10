@@ -26,7 +26,7 @@ export default function Home() {
           .from('products')
           .select('*')
           .limit(4);
-          
+
         if (error) throw error;
         setProducts(data || []);
       } catch (error) {
@@ -41,7 +41,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-cr noise overflow-x-hidden">
-      {/* 
+      {/*
         ---------------------------------------------------------
         ARCHIVAL STUDIO HERO SECTION
         Refined, Asymmetric, Minimalist
@@ -49,7 +49,7 @@ export default function Home() {
       */}
       <section className="relative pt-44 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
+
           {/* Left Column: Branding & Logic */}
           <div className="lg:col-span-4 space-y-12">
             <motion.div
@@ -59,30 +59,21 @@ export default function Home() {
             >
               <div className="flex items-center gap-4 text-rose">
                  <Paperclip size={18} />
-                 <span className="text-[10px] font-medium uppercase tracking-[0.5em]">Tokyo Edition</span>
+                 <span className="text-[10px] font-medium uppercase tracking-[0.5em]">Origin Specification</span>
               </div>
-
-              {/* NINOC Tokyo Font Styled Text */}
-              <div className="relative pl-8 py-4">
-                <div className="dot-accent" />
-                <h1 className="ninoc-container flex gap-0">
-                  <span className="letter-n1">N</span>
-                  <span className="letter-i">I</span>
-                  <span className="letter-n2">N</span>
-                  <span className="letter-o">O</span>
-                  <span className="letter-c">C</span>
-                </h1>
-              </div>
+              <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
+                Archival<br/>Apparel
+              </h1>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-xs md:text-sm font-medium leading-relaxed text-ink/60 max-w-sm uppercase tracking-wider"
             >
-              Established for the preservation of garment integrity. 
-              Our collection represents a curated selection of 
+              Established for the preservation of garment integrity.
+              Our collection represents a curated selection of
               technical excellence and timeless design.
             </motion.p>
 
@@ -100,20 +91,20 @@ export default function Home() {
 
           {/* Middle Column: Visual Anchor */}
           <div className="lg:col-span-5 relative">
-             <motion.div 
+             <motion.div
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                transition={{ duration: 1.2 }}
                className="aspect-[4/5] bg-white rounded-[20px] overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
              >
-                <img 
-                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Archival Garment" 
+                <img
+                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
+                  alt="Archival Garment"
                   className="w-full h-full object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-1000"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent" />
              </motion.div>
-             
+
              {/* Technical Callout Overlay */}
              <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-xl border border-ink/5 shadow-xl hidden md:block">
                 <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
@@ -169,16 +160,16 @@ export default function Home() {
             ))
           ) : (
             products.map((product) => (
-              <Link 
-                key={product.id} 
+              <Link
+                key={product.id}
                 href={`/product/${product.slug}`}
                 className="bg-white p-8 group relative overflow-hidden transition-all duration-700"
               >
                 <div className="aspect-[3/4] overflow-hidden mb-8">
                   {product.image_url && (
-                    <img 
-                      src={product.image_url} 
-                      alt={product.name} 
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
                       className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
                     />
                   )}
