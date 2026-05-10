@@ -1509,7 +1509,7 @@ export default function AdminDashboard() {
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                <div className="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                                   {customer.avatar_url ? (
                                     <Image src={customer.avatar_url} alt="" fill className="object-cover" />
                                   ) : (
