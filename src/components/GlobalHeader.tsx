@@ -30,6 +30,7 @@ export default function GlobalHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
     const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);

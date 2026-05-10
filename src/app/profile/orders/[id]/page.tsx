@@ -19,6 +19,7 @@ interface Order {
     address: string;
     city: string;
     postal_code: string;
+    province?: string;
   } | null;
   courier: string | null;
   tracking_id: string | null;
@@ -33,6 +34,7 @@ interface OrderItem {
   size?: string;
   quantity: number;
   price_at_purchase: number;
+  unit_price?: number;
 }
 
 interface TrackingLog {
@@ -41,6 +43,7 @@ interface TrackingLog {
   status: string;
   description: string | null;
   location: string | null;
+  biteship_status?: string;
   created_at: string;
 }
 
@@ -67,7 +70,7 @@ export default function OrderDetailPage() {
         router.push('/profile');
         return;
       }
-      setOrder(orderData);
+      setOrder(orderData as Order);
 
       // 2. Fetch Order Items
       const { data: itemData } = await supabase
@@ -90,7 +93,7 @@ export default function OrderDetailPage() {
     fetchOrderData();
   }, [id, router]);
 
-  if (isLoading) {
+  if (isLoading || !order) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <div className="w-6 h-6 border border-ink/10 border-t-rose rounded-full animate-spin" />
@@ -183,7 +186,7 @@ export default function OrderDetailPage() {
                       <div key={idx} className="p-5 flex items-start justify-between group hover:bg-ink/[0.01] transition-colors">
                         <div className="space-y-1">
                           <p className="text-[10px] text-ink/80 tracking-wide">
-                            {log.biteship_status.replace(/_/g, ' ').toUpperCase()}
+                            {log.biteship_status?.replace(/_/g, ' ').toUpperCase() || log.status}
                           </p>
                           <p className="text-[8px] text-ink/30 font-medium uppercase tracking-tight">
                             {new Date(log.created_at).toLocaleString('id-ID')}
@@ -213,7 +216,7 @@ export default function OrderDetailPage() {
                     <div className="flex-1 space-y-1">
                       <p className="text-[10px] uppercase tracking-wider">{item.product_name}</p>
                       <p className="text-[8px] text-ink/40 uppercase tracking-widest">Size {item.size} • Qty {item.quantity}</p>
-                      <p className="text-[10px] text-ink/70">Rp {item.unit_price.toLocaleString()}</p>
+                      <p className="text-[10px] text-ink/70">Rp {(item.unit_price ?? item.price_at_purchase).toLocaleString()}</p>
                     </div>
                   </div>
                 ))}

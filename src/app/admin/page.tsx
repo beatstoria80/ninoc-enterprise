@@ -172,6 +172,7 @@ const SidebarItem = ({
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   
+  const [isLoading, setIsLoading] = useState(true);
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -1926,8 +1927,34 @@ function CustomerModal({
   isOpen: boolean;
   onClose: () => void;
   customer: Customer | null;
-  form: typeof customerForm;
-  setForm: React.Dispatch<React.SetStateAction<typeof customerForm>>;
+  form: {
+    email: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    phone: string;
+    street: string;
+    house_number: string;
+    rt: string;
+    rw: string;
+    city: string;
+    province: string;
+    postal_code: string;
+  };
+  setForm: React.Dispatch<React.SetStateAction<{
+    email: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    phone: string;
+    street: string;
+    house_number: string;
+    rt: string;
+    rw: string;
+    city: string;
+    province: string;
+    postal_code: string;
+  }>>;
   onSave: () => void;
 }) {
   return (
