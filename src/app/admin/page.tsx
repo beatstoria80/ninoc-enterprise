@@ -596,7 +596,13 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="p-6 border-t border-gray-100">
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = '/';
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+          >
             <LogOut size={16} />
             <span className="text-[10px] uppercase tracking-wider">Logout</span>
           </button>
