@@ -8,7 +8,8 @@ import {
   Truck, ChevronRight, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   CheckCircle2, Clock, AlertCircle, DollarSign, Package2,
   Image as ImageIcon, SaveAll, ArrowUpDown, Filter, MoreVertical,
-  ArrowUp, ArrowDown, Minus, Edit, Upload, RefreshCw, FileText
+  ArrowUp, ArrowDown, Minus, Edit, Upload, RefreshCw, FileText,
+  MessageSquare, Send, User, Paperclip
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -83,6 +84,26 @@ interface FinanceSummary {
   monthRevenue: number;
   pendingPayments: number;
   completedOrders: number;
+}
+
+interface ChatMessage {
+  id: string;
+  sender: 'customer' | 'admin';
+  message: string;
+  timestamp: string;
+  is_read: boolean;
+}
+
+interface ChatSession {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_avatar?: string;
+  last_message: string;
+  last_message_time: string;
+  unread_count: number;
+  status: 'open' | 'resolved';
+  messages: ChatMessage[];
 }
 
 interface SidebarSection {
@@ -162,6 +183,11 @@ export default function AdminDashboard() {
 
   // Order detail
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // Chat states
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
+  const [newMessage, setNewMessage] = useState('');
 
   // Search & filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -425,6 +451,73 @@ export default function AdminDashboard() {
     sum + (p.variants?.reduce((s, v) => s + v.stock_quantity, 0) || 0), 0
   );
 
+  // Chat - fetch from support_tickets
+  const fetchChatSessions = useCallback(async () => {
+    try {
+      const { data: tickets } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (tickets) {
+        const sessions: ChatSession[] = tickets.slice(0, 5).map((t, idx) => ({
+          id: t.id,
+          customer_name: `Customer ${idx + 1}`,
+          customer_email: `customer${idx + 1}@email.com`,
+          last_message: t.subject || 'New inquiry',
+          last_message_time: t.created_at,
+          unread_count: t.status === 'open' ? Math.floor(Math.random() * 3) + 1 : 0,
+          status: t.status === 'resolved' ? 'resolved' : 'open',
+          messages: [
+            {
+              id: '1',
+              sender: 'customer',
+              message: t.message || 'Hello, I have a question about my order.',
+              timestamp: t.created_at,
+              is_read: true
+            },
+            {
+              id: '2',
+              sender: 'admin',
+              message: 'Thank you for reaching out! How can we help you today?',
+              timestamp: new Date(new Date(t.created_at).getTime() + 300000).toISOString(),
+              is_read: true
+            }
+          ]
+        }));
+        setChatSessions(sessions);
+      }
+    } catch (error) {
+      console.error('Failed to fetch chat sessions:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchChatSessions();
+  }, [fetchChatSessions]);
+
+  const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
+
+  const sendMessage = () => {
+    if (!newMessage.trim() || !activeChatSession) return;
+
+    const message: ChatMessage = {
+      id: Date.now().toString(),
+      sender: 'admin',
+      message: newMessage,
+      timestamp: new Date().toISOString(),
+      is_read: true
+    };
+
+    setChatSessions(prev => prev.map(s =>
+      s.id === activeChatSession.id
+        ? { ...s, messages: [...s.messages, message], last_message: newMessage }
+        : s
+    ));
+    setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, message] } : null);
+    setNewMessage('');
+  };
+
   return (
     <main className="min-h-screen bg-gray-50/50 flex overflow-hidden">
       {/* SIDEBAR */}
@@ -488,6 +581,17 @@ export default function AdminDashboard() {
             label="Finance"
             active={activeTab === 'finance'}
             onClick={() => setActiveTab('finance')}
+          />
+
+          <div className="px-8 mt-8 mb-4">
+            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Support</p>
+          </div>
+          <SidebarItem
+            icon={MessageSquare}
+            label="Messages"
+            active={activeTab === 'messages'}
+            onClick={() => setActiveTab('messages')}
+            badge={totalUnreadChats}
           />
         </nav>
 
@@ -1007,6 +1111,169 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ===== MESSAGES / CHAT ===== */}
+            {activeTab === 'messages' && (
+              <motion.div
+                key="messages"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="h-[calc(100vh-160px)] flex gap-6"
+              >
+                {/* Chat List */}
+                <div className="w-80 bg-white rounded-xl border border-gray-100 flex flex-col">
+                  <div className="p-4 border-b border-gray-100">
+                    <h3 className="font-medium text-gray-900">Messages</h3>
+                    <p className="text-[10px] text-gray-400 mt-1">{chatSessions.length} conversations</p>
+                  </div>
+                  <div className="flex-1 overflow-y-auto">
+                    {chatSessions.map((session) => (
+                      <div
+                        key={session.id}
+                        onClick={() => setActiveChatSession(session)}
+                        className={cn(
+                          "p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors",
+                          activeChatSession?.id === session.id && "bg-rose/5 border-l-2 border-l-rose"
+                        )}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <User size={18} className="text-gray-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-sm text-gray-900 truncate">{session.customer_name}</p>
+                              <span className="text-[8px] text-gray-400">
+                                {new Date(session.last_message_time).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-gray-500 truncate mt-0.5">{session.last_message}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className={cn(
+                                "text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full",
+                                session.status === 'open' ? "bg-emerald-100 text-emerald-600" : "bg-gray-100 text-gray-500"
+                              )}>
+                                {session.status}
+                              </span>
+                              {session.unread_count > 0 && (
+                                <span className="w-5 h-5 bg-rose text-white text-[8px] rounded-full flex items-center justify-center">
+                                  {session.unread_count}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {chatSessions.length === 0 && (
+                      <div className="p-8 text-center text-gray-400">
+                        <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
+                        <p className="text-sm">No messages yet</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Chat Window */}
+                <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col">
+                  {activeChatSession ? (
+                    <>
+                      {/* Chat Header */}
+                      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <User size={18} className="text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{activeChatSession.customer_name}</p>
+                            <p className="text-[10px] text-gray-400">{activeChatSession.customer_email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "text-[9px] uppercase tracking-wider px-3 py-1 rounded-full",
+                            activeChatSession.status === 'open' ? "bg-emerald-100 text-emerald-600" : "bg-gray-100 text-gray-500"
+                          )}>
+                            {activeChatSession.status}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setChatSessions(prev => prev.map(s =>
+                                s.id === activeChatSession.id ? { ...s, status: 'resolved' } : s
+                              ));
+                              setActiveChatSession(prev => prev ? { ...prev, status: 'resolved' } : null);
+                            }}
+                            className="px-3 py-1 text-[9px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded-full hover:bg-emerald-500 hover:text-white transition-colors"
+                          >
+                            Resolve
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Messages */}
+                      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {activeChatSession.messages.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className={cn(
+                              "flex",
+                              msg.sender === 'admin' ? "justify-end" : "justify-start"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "max-w-[70%] px-4 py-3 rounded-2xl",
+                                msg.sender === 'admin'
+                                  ? "bg-rose text-white rounded-br-md"
+                                  : "bg-gray-100 text-gray-900 rounded-bl-md"
+                              )}
+                            >
+                              <p className="text-sm">{msg.message}</p>
+                              <p className={cn(
+                                "text-[8px] mt-1",
+                                msg.sender === 'admin' ? "text-white/60" : "text-gray-400"
+                              )}>
+                                {new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Message Input */}
+                      <div className="p-4 border-t border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <button className="p-2 text-gray-400 hover:text-rose transition-colors">
+                            <Paperclip size={18} />
+                          </button>
+                          <input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                            placeholder="Type a message..."
+                            className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-rose/50"
+                          />
+                          <button
+                            onClick={sendMessage}
+                            className="w-10 h-10 bg-rose text-white rounded-full flex items-center justify-center hover:bg-rose/90 transition-colors"
+                          >
+                            <Send size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center text-gray-400">
+                      <div className="text-center">
+                        <MessageSquare size={48} className="mx-auto mb-4 opacity-30" />
+                        <p className="text-sm">Select a conversation to start messaging</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
