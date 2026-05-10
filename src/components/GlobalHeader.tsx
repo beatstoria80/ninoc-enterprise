@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ChevronRight } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -30,11 +30,10 @@ export default function GlobalHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const { items, removeItem, updateQuantity, totalPrice, addItem } = useCart();
+  const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   useEffect(() => {
     const animationFrame = requestAnimationFrame(() => setMounted(true));
@@ -128,7 +127,7 @@ export default function GlobalHeader() {
           
           <Link href={user ? "/profile" : "/login"} className="text-ink/40 hover:text-rose transition-all">
             {profileAvatar ? (
-              <img src={profileAvatar} alt="Profile" className="w-6 h-6 rounded-full object-cover border border-ink/5" />
+              <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
             ) : (
               <User size={20} strokeWidth={1.5} />
             )}

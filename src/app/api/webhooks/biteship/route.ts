@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     let payload: BiteshipWebhookPayload;
     try {
       payload = JSON.parse(rawBody);
-    } catch (e) {
+    } catch {
       console.warn('[Biteship Webhook] Non-JSON payload received');
       return NextResponse.json({ status: 'OK', message: 'Payload accepted' });
     }

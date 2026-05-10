@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Share2, Heart, Plus, Minus, Paperclip } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, Ruler, Plus, Minus, Paperclip } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -126,7 +127,7 @@ export default function ProductDetailPage() {
                   activeImageIndex === i ? "border-rose scale-[1.05] shadow-xl" : "border-transparent opacity-40 hover:opacity-100"
                 )}
               >
-                <img src={img} className="w-full h-full object-contain p-2" alt="" />
+                <Image src={img} className="object-contain p-2" alt="" fill />
               </button>
             ))}
           </div>
@@ -306,7 +307,7 @@ export default function ProductDetailPage() {
                 >
                   <Link href={`/shop/${p.slug}`} className="group block space-y-6">
                     <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-2xl transition-all duration-500 relative">
-                      <img src={p.image_url} alt={p.name} className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-700" />
+                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-6 group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="space-y-1 px-2">

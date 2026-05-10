@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, ShieldCheck, Zap, Package, Paperclip } from 'lucide-react';
+import { ShieldCheck, Zap, Package, Paperclip, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
 interface Product {
@@ -97,10 +98,11 @@ export default function Home() {
                transition={{ duration: 1.2 }}
                className="aspect-[4/5] bg-white rounded-[20px] overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
              >
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
                   alt="Archival Garment"
-                  className="w-full h-full object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-1000"
+                  fill
+                  className="object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-1000"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent" />
              </motion.div>
@@ -167,10 +169,11 @@ export default function Home() {
               >
                 <div className="aspect-[3/4] overflow-hidden mb-8">
                   {product.image_url && (
-                    <img
+                    <Image
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
+                      fill
+                      className="object-contain group-hover:scale-110 transition-transform duration-700"
                     />
                   )}
                 </div>

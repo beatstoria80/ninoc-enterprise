@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Phone, MapPin, Building, Mail as MailIcon, ArrowRight, Package, CheckCircle, AlertTriangle, X, Info, Home, Hash, Shield, Lock } from 'lucide-react';
+import { User, Phone, MapPin, Building, Mail as MailIcon, ArrowRight, Package, CheckCircle, AlertTriangle, X, Home, Hash, Shield, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';

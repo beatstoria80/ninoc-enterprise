@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Plus, Search,
   TrendingUp, Box, LogOut, X, Save, Paperclip,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
-  Clock, DollarSign, Minus, RefreshCw,
+  Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star
 } from 'lucide-react';
@@ -132,11 +132,6 @@ interface Customer {
   created_at: string;
 }
 
-interface SidebarSection {
-  title: string;
-  items: { icon: React.ElementType; label: string; badge?: number }[];
-}
-
 // ============ SIDEBAR COMPONENT ============
 const SidebarItem = ({
   icon: Icon,
@@ -176,8 +171,7 @@ const SidebarItem = ({
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [isLoading, setIsLoading] = useState(true);
-
+  
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -1516,7 +1510,7 @@ export default function AdminDashboard() {
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                                   {customer.avatar_url ? (
-                                    <img src={customer.avatar_url} alt="" className="w-full h-full object-cover" />
+                                    <Image src={customer.avatar_url} alt="" fill className="object-cover" />
                                   ) : (
                                     <User size={14} className="text-gray-400" />
                                   )}

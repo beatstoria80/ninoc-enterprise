@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, LogOut, User, Mail, Calendar, ChevronRight, Camera, Loader2 } from 'lucide-react';
+import { ArrowLeft, Camera, ChevronRight, Loader2, User } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -171,7 +172,7 @@ export default function ProfilePage() {
                   </div>
                 )}
                 {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
+                  <Image src={user.avatar_url} alt={user.full_name} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-ink/20">
                     <User size={32} />

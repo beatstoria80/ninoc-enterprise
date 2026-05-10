@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { CreditCard, ShieldCheck, ShoppingBag, Truck, MapPin, User, Mail, Phone, ArrowLeft, Home, Hash, Building, Info, Shield, Lock, CheckCircle, Verified } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,8 +20,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -277,7 +276,7 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center group">
                     <div className="w-10 h-10 bg-ink/5 rounded-lg overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors">
-                      {item.image_url && <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />}
+                      {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-medium uppercase truncate text-ink">{item.name}</p>
@@ -346,9 +345,9 @@ export default function CheckoutPage() {
 
             <div className="flex flex-col items-center gap-4 opacity-40">
                <div className="flex items-center gap-6 grayscale">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" className="h-2" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4" />
-                  <img src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" className="h-3" />
+                  <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={40} height={10} className="h-2 w-auto" unoptimized />
+                  <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={40} height={20} className="h-4 w-auto" unoptimized />
+                  <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={60} height={15} className="h-3 w-auto" unoptimized />
                </div>
                <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-center text-ink">
                   Secured by 256-bit SSL Encryption • Official Merchant Partner

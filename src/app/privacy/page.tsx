@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ShieldCheck, Lock, EyeOff } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PrivacyPage() {

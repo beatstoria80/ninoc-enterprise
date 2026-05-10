@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingBag, ArrowRight, Filter, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
@@ -104,10 +105,11 @@ export default function ShopPage() {
                   <Link href={`/shop/${product.slug}`} className="block space-y-6">
                     {/* Image Container */}
                     <div className="relative aspect-[4/5] rounded-[10px] md:rounded-[10px] overflow-hidden bg-white border border-ink/5 shadow-dashboard group-hover:shadow-2xl transition-all duration-500">
-                      <img 
-                        src={product.image_url} 
+                      <Image
+                        src={product.image_url}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       
                       {/* Hover Overlay */}
