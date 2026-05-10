@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, LogOut, User, Mail, Calendar, ShoppingBag, Heart, MapPin, ChevronRight, Camera, Loader2 } from 'lucide-react';
+import { ArrowLeft, LogOut, User, Mail, Calendar, ChevronRight, Camera, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -15,12 +15,21 @@ interface UserProfile {
   created_at: string;
 }
 
+interface Order {
+  id: string;
+  user_id: string | null;
+  total_price: number;
+  status: string;
+  courier: string | null;
+  created_at: string;
+}
+
 export default function ProfilePage() {
   const router = useRouter();
-  
+
   // 1. ALL HOOKS AT THE TOP LEVEL
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 

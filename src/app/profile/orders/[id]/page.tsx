@@ -2,17 +2,54 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ExternalLink, ShieldCheck, Box } from 'lucide-react';
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
+interface Order {
+  id: string;
+  user_id: string | null;
+  total_price: number;
+  status: string;
+  payment_status: string;
+  shipping_address: {
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    postal_code: string;
+  } | null;
+  courier: string | null;
+  tracking_id: string | null;
+  created_at: string;
+}
+
+interface OrderItem {
+  id: string;
+  product_id: string;
+  product_name?: string;
+  variant_id: string | null;
+  size?: string;
+  quantity: number;
+  price_at_purchase: number;
+}
+
+interface TrackingLog {
+  id: string;
+  order_id: string;
+  status: string;
+  description: string | null;
+  location: string | null;
+  created_at: string;
+}
+
 export default function OrderDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [order, setOrder] = useState<any>(null);
-  const [items, setItems] = useState<any[]>([]);
-  const [trackingLogs, setTrackingLogs] = useState<any[]>([]);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [items, setItems] = useState<OrderItem[]>([]);
+  const [trackingLogs, setTrackingLogs] = useState<TrackingLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -242,7 +242,9 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    queueMicrotask(() => {
+      fetchData();
+    });
   }, [fetchData]);
 
   // Product CRUD
@@ -491,7 +493,9 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    fetchChatSessions();
+    queueMicrotask(() => {
+      fetchChatSessions();
+    });
   }, [fetchChatSessions]);
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
