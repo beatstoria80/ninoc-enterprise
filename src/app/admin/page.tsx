@@ -9,7 +9,6 @@ import {
   Clock, DollarSign, Minus, RefreshCw,
   MessageSquare, Send, User
 } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
