@@ -1,5 +1,6 @@
 -- ============================================================
--- NINOC ARCHIVE — COMPLETE PRODUCTION SCHEMA
+-- NINOC ARCHIVE — COMPLETE PRODUCTION SCHEMA v2
+-- Updated: 2024-05-10
 -- ============================================================
 
 -- 1. Cleanup existing tables (in dependency order)
@@ -10,6 +11,7 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS customer_profiles;
 DROP TABLE IF EXISTS support_tickets;
 DROP TABLE IF EXISTS atelier_settings;
+DROP TABLE IF EXISTS tracking_logs;
 
 -- 2. Cleanup existing types
 DROP TYPE IF EXISTS main_category_type;
@@ -18,8 +20,8 @@ DROP TYPE IF EXISTS main_category_type;
 -- CORE TABLES
 -- ============================================================
 
--- 3. Category enum
-CREATE TYPE main_category_type AS ENUM ('fashion', 'accessories', 'utilities');
+-- 3. Category enum (updated to match frontend)
+CREATE TYPE main_category_type AS ENUM ('pakaian', 'utilities', 'aksesoris');
 
 -- 4. Products
 CREATE TABLE products (
@@ -28,7 +30,7 @@ CREATE TABLE products (
   slug TEXT UNIQUE NOT NULL,
   description TEXT,
   price BIGINT NOT NULL,
-  category main_category_type NOT NULL DEFAULT 'fashion',
+  category main_category_type NOT NULL DEFAULT 'pakaian',
   sub_category TEXT,
   image_url TEXT,
   is_featured BOOLEAN DEFAULT false,
@@ -40,23 +42,25 @@ CREATE TABLE products (
 CREATE TABLE variants (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   product_id UUID REFERENCES products(id) ON DELETE CASCADE NOT NULL,
-  size TEXT, 
+  size TEXT,
   color TEXT,
   stock_quantity INTEGER DEFAULT 0 NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- ============================================================
--- ORDERS (ID is TEXT to match 'NINOC-{timestamp}' format)
+-- ORDERS
 -- ============================================================
 
--- 6. Orders
+-- 6. Orders (updated with payment_status and midtrans_id)
 CREATE TABLE orders (
   id TEXT PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id),
   customer_name TEXT,
   total_price BIGINT NOT NULL,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled')),
+  payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'success', 'failed', 'expired')),
+  midtrans_id TEXT,
   payment_url TEXT,
   snap_token TEXT,
   shipping_address JSONB,
@@ -72,9 +76,11 @@ CREATE TABLE order_items (
   order_id TEXT REFERENCES orders(id) ON DELETE CASCADE NOT NULL,
   product_id UUID REFERENCES products(id),
   product_name TEXT NOT NULL,
+  variant_id UUID REFERENCES variants(id),
   size TEXT,
+  color TEXT,
   quantity INTEGER NOT NULL DEFAULT 1,
-  unit_price BIGINT NOT NULL,
+  price_at_purchase BIGINT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -146,6 +152,66 @@ CREATE TABLE tracking_logs (
 );
 
 -- ============================================================
+-- SAMPLE DATA (Products)
+-- ============================================================
+
+-- Insert sample products
+INSERT INTO products (name, slug, description, price, category, image_url, is_featured) VALUES
+(
+  'Essential Oversized Tee',
+  'essential-oversized-tee',
+  'Premium cotton oversized tee with relaxed fit. Perfect for everyday wear with minimalist design.',
+  350000,
+  'pakaian',
+  'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800',
+  true
+),
+(
+  'Archive Cargo Pants',
+  'archive-cargo-pants',
+  'Structured cargo pants with multiple pockets. Technical fabric meets streetwear aesthetic.',
+  585000,
+  'pakaian',
+  'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800',
+  true
+),
+(
+  'Minimal Crossbody Bag',
+  'minimal-crossbody-bag',
+  'Compact crossbody bag in genuine leather. Features adjustable strap and hidden compartment.',
+  425000,
+  'aksesoris',
+  'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800',
+  false
+),
+(
+  'Utility Cap',
+  'utility-cap',
+  'Structured six-panel cap with embroidered logo. Premium cotton twill construction.',
+  185000,
+  'aksesoris',
+  'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800',
+  false
+);
+
+-- Insert variants for each product
+INSERT INTO variants (product_id, size, color, stock_quantity)
+SELECT id, 'S', 'Black', 15 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'M', 'Black', 20 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'L', 'Black', 12 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'XL', 'Black', 8 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'S', 'White', 10 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'M', 'White', 15 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'L', 'White', 10 FROM products WHERE slug = 'essential-oversized-tee'
+UNION ALL SELECT id, 'S', 'Black', 10 FROM products WHERE slug = 'archive-cargo-pants'
+UNION ALL SELECT id, 'M', 'Black', 15 FROM products WHERE slug = 'archive-cargo-pants'
+UNION ALL SELECT id, 'L', 'Black', 8 FROM products WHERE slug = 'archive-cargo-pants'
+UNION ALL SELECT id, 'XL', 'Black', 5 FROM products WHERE slug = 'archive-cargo-pants'
+UNION ALL SELECT id, 'One Size', 'Black', 25 FROM products WHERE slug = 'minimal-crossbody-bag'
+UNION ALL SELECT id, 'One Size', 'Black', 30 FROM products WHERE slug = 'utility-cap'
+UNION ALL SELECT id, 'One Size', 'Navy', 20 FROM products WHERE slug = 'utility-cap';
+
+-- ============================================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================================
 
@@ -173,7 +239,7 @@ CREATE POLICY "Allow order items read" ON order_items FOR SELECT USING (true);
 CREATE POLICY "Allow order items insert" ON order_items FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow order update by webhook" ON orders FOR UPDATE USING (true);
 
--- Tracking logs: webhook can insert, users can read their order's logs
+-- Tracking logs: webhook can insert, users can read their order logs
 CREATE POLICY "Allow tracking log insert" ON tracking_logs FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow tracking log read" ON tracking_logs FOR SELECT USING (true);
 
@@ -190,3 +256,18 @@ CREATE POLICY "Users create tickets" ON support_tickets FOR INSERT WITH CHECK (a
 CREATE POLICY "Allow public read settings" ON atelier_settings FOR SELECT USING (true);
 CREATE POLICY "Allow settings upsert" ON atelier_settings FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow settings update" ON atelier_settings FOR UPDATE USING (true);
+
+-- ============================================================
+-- INDEXES FOR PERFORMANCE
+-- ============================================================
+
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_products_slug ON products(slug);
+CREATE INDEX idx_products_featured ON products(is_featured);
+CREATE INDEX idx_variants_product_id ON variants(product_id);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_tracking_logs_order_id ON tracking_logs(order_id);
+CREATE INDEX idx_customer_profiles_user_id ON customer_profiles(user_id);
