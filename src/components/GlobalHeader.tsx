@@ -134,16 +134,10 @@ export default function GlobalHeader() {
             )}
           </Link>
 
-          <button onClick={() => setIsCartOpen(true)} className="relative group flex items-center gap-2">
-            <div className="flex flex-col items-end leading-none">
-               <span className="text-[8px] font-medium uppercase tracking-widest text-ink/40">Inventory</span>
-               <span className="text-[10px] font-display font-medium italic text-rose">Rp {totalPrice().toLocaleString('id-ID')}</span>
-            </div>
-            <div className="relative">
-              <ShoppingCart size={20} strokeWidth={1.5} className="text-ink/40 group-hover:text-rose transition-all" />
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-rose text-white text-[8px] font-medium flex items-center justify-center rounded-full border border-white shadow-lg">
-                {items.length}
-              </div>
+          <button onClick={() => setIsCartOpen(true)} className="relative group flex items-center">
+            <ShoppingCart size={20} strokeWidth={1.5} className="text-ink/40 group-hover:text-rose transition-all" />
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-rose text-white text-[8px] font-medium flex items-center justify-center rounded-full border border-white shadow-lg">
+              {items.length}
             </div>
           </button>
         </div>
