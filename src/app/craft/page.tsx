@@ -11,8 +11,8 @@ export default function Craft() {
         <div className="py-20 space-y-20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h3 className="text-3xl font-display font-medium italic uppercase tracking-tight">Organic Materials</h3>
-              <p className="text-sm font-medium text-ink/60 leading-relaxed">All fabrics are sourced from certified organic suppliers. No harmful chemicals, no synthetic pesticides.</p>
+              <h3 className="text-3xl font-display font-medium italic uppercase tracking-tight">Premium Materials</h3>
+              <p className="text-sm font-medium text-ink/60 leading-relaxed">All fabrics are sourced from certified suppliers. No harmful chemicals, no synthetic pesticides.</p>
             </div>
             <div className="h-64 bg-white rounded-2xl border border-ink/5" />
           </div>
