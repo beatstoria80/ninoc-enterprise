@@ -103,12 +103,22 @@ export default function GlobalHeader() {
         </Link>
         
         <div className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2">
-          {['Shop', 'Collections', 'Sustainability', 'About'].map((item) => (
-            <Link key={item} href={item === 'Shop' ? '/shop' : '#'} className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
-              <span>{item}</span>
-              <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
-            </Link>
-          ))}
+          <Link href="/shop" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
+            <span>Shop</span>
+            <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
+          </Link>
+          <Link href="/collections" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
+            <span>Collections</span>
+            <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
+          </Link>
+          <Link href="/sustainability" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
+            <span>Sustainability</span>
+            <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
+          </Link>
+          <Link href="/about" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
+            <span>About</span>
+            <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
+          </Link>
         </div>
 
         <div className="flex items-center gap-6 md:gap-10">
