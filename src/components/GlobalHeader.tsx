@@ -111,8 +111,8 @@ export default function GlobalHeader() {
             <span>Collections</span>
             <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
           </Link>
-          <Link href="/sustainability" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
-            <span>Sustainability</span>
+          <Link href="/craft" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
+            <span>Craft</span>
             <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-rose transition-all group-hover:w-full" />
           </Link>
           <Link href="/about" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">

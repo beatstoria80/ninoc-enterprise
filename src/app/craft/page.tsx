@@ -1,11 +1,11 @@
-export default function Sustainability() {
+export default function Craft() {
   return (
     <main className="min-h-screen bg-cr noise pt-32 px-6 md:px-12">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-16">
           <span className="text-[10px] font-medium uppercase tracking-[0.5em] text-rose">NINOC</span>
-          <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink uppercase mt-4">Sustainability</h1>
-          <p className="text-sm font-medium text-ink/60 uppercase tracking-wider mt-6 max-w-xl">Committed to minimal environmental impact.</p>
+          <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink uppercase mt-4">Craft</h1>
+          <p className="text-sm font-medium text-ink/60 uppercase tracking-wider mt-6 max-w-xl">The art of making, the love of detail.</p>
         </div>
 
         <div className="py-20 space-y-20">
@@ -20,8 +20,8 @@ export default function Sustainability() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="h-64 bg-white rounded-2xl border border-ink/5 order-2 md:order-1" />
             <div className="space-y-6 order-1 md:order-2">
-              <h3 className="text-3xl font-display font-medium italic uppercase tracking-tight">Ethical Production</h3>
-              <p className="text-sm font-medium text-ink/60 leading-relaxed">Fair wages, safe conditions. Every piece is crafted with respect for people and planet.</p>
+              <h3 className="text-3xl font-display font-medium italic uppercase tracking-tight">Handmade Precision</h3>
+              <p className="text-sm font-medium text-ink/60 leading-relaxed">Every stitch is placed with intention. Our artisans bring decades of expertise to each piece.</p>
             </div>
           </div>
 
