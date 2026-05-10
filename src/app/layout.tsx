@@ -5,6 +5,7 @@ import Script from "next/script";
 import GlobalHeader from "@/components/GlobalHeader";
 import GlobalFooter from "@/components/Footer";
 import SupportChat from "@/components/SupportChat";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -33,17 +34,19 @@ export default function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <Script
-          src={process.env.MIDTRANS_IS_PRODUCTION === 'true'
-            ? "https://app.midtrans.com/snap/snap.js"
-            : "https://app.sandbox.midtrans.com/snap/snap.js"}
-          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-          strategy="afterInteractive"
-        />
-        <GlobalHeader />
-        <main className="flex-1">{children}</main>
-        <GlobalFooter />
-        <SupportChat />
+        <SmoothScrollProvider>
+          <Script
+            src={process.env.MIDTRANS_IS_PRODUCTION === 'true'
+              ? "https://app.midtrans.com/snap/snap.js"
+              : "https://app.sandbox.midtrans.com/snap/snap.js"}
+            data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+            strategy="afterInteractive"
+          />
+          <GlobalHeader />
+          <main className="flex-1">{children}</main>
+          <GlobalFooter />
+          <SupportChat />
+        </SmoothScrollProvider>
       </body>
     </html>
   );
