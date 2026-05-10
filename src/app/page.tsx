@@ -52,18 +52,27 @@ export default function Home() {
           
           {/* Left Column: Branding & Logic */}
           <div className="lg:col-span-4 space-y-12">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-4"
             >
               <div className="flex items-center gap-4 text-rose">
                  <Paperclip size={18} />
-                 <span className="text-[10px] font-medium uppercase tracking-[0.5em]">Origin Specification</span>
+                 <span className="text-[10px] font-medium uppercase tracking-[0.5em]">Tokyo Edition</span>
               </div>
-              <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
-                Archival<br/>Apparel
-              </h1>
+
+              {/* NINOC Tokyo Font Styled Text */}
+              <div className="relative pl-8 py-4">
+                <div className="dot-accent" />
+                <h1 className="ninoc-container flex gap-0">
+                  <span className="letter-n1">N</span>
+                  <span className="letter-i">I</span>
+                  <span className="letter-n2">N</span>
+                  <span className="letter-o">O</span>
+                  <span className="letter-c">C</span>
+                </h1>
+              </div>
             </motion.div>
 
             <motion.p 

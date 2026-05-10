@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
+import { Black_Ops_One } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import GlobalHeader from "@/components/GlobalHeader";
@@ -17,6 +18,12 @@ const poppins = Poppins({
   weight: ["400", "700", "900"],
 });
 
+const blackOpsOne = Black_Ops_One({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-ninoc",
+});
+
 export const metadata: Metadata = {
   title: "NINOC | Pure Organic Art",
   description: "Wear the art, own the day. Premium artistic collections for the conscious mobility.",
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      className={`${inter.variable} ${poppins.variable} ${blackOpsOne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
         <Script 
