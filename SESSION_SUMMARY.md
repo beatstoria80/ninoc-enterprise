@@ -150,14 +150,46 @@ const { data: savedMessage } = await supabase
 
 ---
 
+## 10. SUPABASE RLS POLICIES (SELESAI ✅)
+- **Files**: supabase_rls_*.sql (SQL scripts untuk Supabase Dashboard)
+- **Purpose**: Row Level Security untuk keamanan database
+
+### Policies yang sudah di-set:
+
+| Table | SELECT | INSERT | UPDATE | DELETE |
+|-------|--------|--------|--------|--------|
+| products | Public | Auth | Auth | Auth |
+| variants | Public | Auth | Auth | Auth |
+| customer_profiles | Own | Own ✅ | Own | - |
+| orders | Own | Own ✅ | Own | - |
+| order_items | Own | Own ✅ | Own | - |
+| support_tickets | Own | Own ✅ | Own | - |
+| support_messages | Own | Own ✅ | Own | - |
+| tracking_logs | Own | Admin | Admin | Admin |
+| atelier_settings | Auth | Auth | Auth | Auth |
+
+### SQL Files:
+- `supabase_rls_cleanup.sql` - Hapus public_* policies berbahaya
+- `supabase_rls_fix_insert.sql` - Fix INSERT policies
+- `supabase_rls_fix_insert_v2.sql` - Fix INSERT policies (final)
+
+### Run di Supabase:
+1. SQL Editor → New Query
+2. Paste SQL file
+3. RUN
+4. Cek hasil dengan query verifikasi
+
+---
+
 ## METRICS
 | Metric | Before | After |
 |--------|--------|-------|
 | Lint Errors | 1 | 0 |
 | Lint Warnings | 47 | 4 |
 | Build Status | FAIL | PASS (after fixes) |
-| Git Commits | 2 | 7 |
+| Git Commits | 2 | 8 |
 | Env Variables | 0 | 6 (set di Vercel) |
+| RLS Policies | Unsecured | Secured ✅ |
 
 ---
 
