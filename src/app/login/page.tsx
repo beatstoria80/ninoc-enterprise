@@ -129,7 +129,7 @@ export default function LoginPage() {
               <div className="relative">
                 <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/25" />
                 <input
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setShowEmailHint(false); setError(''); }}
                   className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none"
