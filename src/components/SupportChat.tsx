@@ -133,7 +133,7 @@ export default function SupportChat() {
   }, [user, tickets, activeTab, activeTicket]);
 
   // Auto-hide notif card when chat is open
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   useEffect(() => {
     if (activeTab === 'chat') {
       setShowNotifCard(false);
