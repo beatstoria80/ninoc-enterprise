@@ -182,18 +182,30 @@ export default function OnboardingPage() {
           <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-3.5 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
             {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
           </button>
-          <div className="flex justify-center gap-8 py-3">
-            <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-              <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
-              <span>Aman</span>
-            </div>
-            <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-              <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
-              <span>Enkripsi</span>
-            </div>
-          </div>
         </div>
       </form>
+
+      {/* Trust Security Bar - PLACED BELOW FORM */}
+      <div className="flex justify-center gap-12 pb-10 pt-4">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+            <Shield size={14} strokeWidth={1.5} className="text-rose/60" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Aman</span>
+            <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Proteksi Data</span>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+            <Lock size={14} strokeWidth={1.5} className="text-rose/60" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Enkripsi</span>
+            <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">SSL Terjamin</span>
+          </div>
+        </div>
+      </div>
 
       {/* Error Modal */}
       {showError && (
