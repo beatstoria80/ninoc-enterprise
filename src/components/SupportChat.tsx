@@ -73,10 +73,17 @@ export default function SupportChat() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        fetchTickets(user.id);
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        if (user) {
+          setUser(user);
+          fetchTickets(user.id);
+        } else {
+          console.log('[Support] No active session found.');
+        }
+      } catch (err) {
+        console.error('[Support] Connection error:', err);
       }
     };
     fetchUser();
@@ -375,9 +382,17 @@ export default function SupportChat() {
                 >
                   <X size={14} strokeWidth={1.5} />
                 </motion.button>
-                <div className="space-y-0.5">
-                  <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/30">NINOC Support</p>
-                  <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Archive</span></h3>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/30 flex items-center gap-1.5">
+                      <span className={cn("w-1 h-1 rounded-full", user ? "bg-emerald-500" : "bg-rose animate-pulse")} />
+                      NINOC Support
+                    </p>
+                    <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Archive</span></h3>
+                  </div>
+                  {user && (
+                    <p className="text-[5px] font-medium text-white/10 uppercase tracking-widest">SPEC: {user.email?.split('@')[0]}</p>
+                  )}
                 </div>
               </motion.div>
 
