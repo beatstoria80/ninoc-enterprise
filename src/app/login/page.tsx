@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailHint, setShowEmailHint] = useState(false);
 
@@ -182,6 +183,10 @@ export default function LoginPage() {
 
             {error && (
               <p className="text-[8px] font-medium text-rose bg-rose/5 px-3 py-2 rounded-lg">{error}</p>
+            )}
+
+            {message && (
+              <p className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg">{message}</p>
             )}
 
             <button
