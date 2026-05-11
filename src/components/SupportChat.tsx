@@ -453,8 +453,8 @@ export default function SupportChat() {
                       </div>
                     </div>
 
-                    {/* PROMINENT BOTTOM INPUT - WHATSAPP STYLE */}
-                    <div className="p-3 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)] space-y-1.5">
+                    {/* PROMINENT BOTTOM INPUT - FIXED FOR CLICK */}
+                    <div className="relative z-10 p-3 bg-white border-t border-ink/5">
                       <div className="flex items-end gap-1.5">
                         <textarea
                           ref={textareaRef}
@@ -472,16 +472,16 @@ export default function SupportChat() {
                             }
                           }}
                           placeholder="Direct inquiry..."
-                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none no-scrollbar min-h-[40px]"
+                          autoComplete="off"
+                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px] focus:shadow-md"
                         />
-                        <motion.button
-                          whileHover={user ? { scale: 1.1, color: '#E8527A' } : {}}
-                          whileTap={user ? { scale: 0.9 } : {}}
+                        <button
                           onClick={startGeneralChat}
-                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                          className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90"
+                          aria-label="Send message"
                         >
-                          <Send size={12} strokeWidth={2.5} />
-                        </motion.button>
+                          <Send size={13} strokeWidth={2} />
+                        </button>
                       </div>
                       <div className="flex justify-between items-center px-0.5">
                         <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15">
@@ -602,16 +602,15 @@ export default function SupportChat() {
                             }
                           }}
                           placeholder="Type message..."
-                          className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none no-scrollbar min-h-[40px]"
+                          className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
                         />
-                        <motion.button
-                          whileHover={{ scale: 1.1, color: '#E8527A' }}
-                          whileTap={{ scale: 0.9 }}
+                        <button
                           onClick={() => sendMessage()}
-                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                          className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90"
+                          aria-label="Send message"
                         >
-                          <Send size={12} strokeWidth={2.5} />
-                        </motion.button>
+                          <Send size={13} strokeWidth={2} />
+                        </button>
                       </div>
                       <div className="flex justify-end px-0.5">
                         <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
