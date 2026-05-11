@@ -106,28 +106,32 @@ export default function SupportChat() {
         },
         async (payload) => {
           const newMsg = payload.new as SupportMessage;
-          // Only notify if this message belongs to one of our tickets
-          const userTicket = tickets.find(t => t.id === newMsg.ticket_id);
-          if (!userTicket) return;
+          
+          // Only notify if this message belongs to our tickets or active session
+          const isRelevant = activeTicket?.id === newMsg.ticket_id || tickets.some(t => t.id === newMsg.ticket_id);
+          if (!isRelevant) return;
 
-          // Don't show if we're already in chat tab looking at this ticket
           if (activeTab === 'chat' && activeTicket?.id === newMsg.ticket_id) {
-            // Just append to chat
-            setChatMessages(prev => [...prev, newMsg]);
+            setChatMessages(prev => {
+              if (prev.some(m => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
+            });
             return;
           }
 
           // Show notification card + badge
           hasUnreadRef.current = true;
           setNotifCount(prev => prev + 1);
+          
+          const relevantTicket = activeTicket?.id === newMsg.ticket_id ? activeTicket : tickets.find(t => t.id === newMsg.ticket_id);
+          
           setLastNotif({
-            subject: userTicket.subject,
+            subject: relevantTicket?.subject || 'Archive Update',
             message: newMsg.message,
             from: 'Studio'
           });
           setShowNotifCard(true);
 
-          // Auto-hide notification card after 6 seconds
           setTimeout(() => {
             setShowNotifCard(false);
           }, 6000);
@@ -138,7 +142,7 @@ export default function SupportChat() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, tickets, activeTab, activeTicket]);
+  }, [tickets, activeTab, activeTicket]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -193,7 +197,10 @@ export default function SupportChat() {
     }
 
     if (data) {
-      setChatMessages(prev => [...prev, data]);
+      setChatMessages(prev => {
+        if (prev.some(m => m.id === data.id)) return prev;
+        return [...prev, data];
+      });
       setMessage('');
     }
   };
