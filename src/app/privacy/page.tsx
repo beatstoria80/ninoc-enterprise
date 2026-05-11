@@ -83,28 +83,28 @@ export default function PrivacyPage() {
       </nav>
 
       {/* CONTENT AREA */}
-      <div className="flex-1 pt-32 pb-12 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1400px] mx-auto w-full">
+      <div className="flex-1 pt-24 pb-8 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1400px] mx-auto w-full">
         
         {/* Compact Header */}
-        <div className="flex items-baseline gap-6 mb-10 border-b border-ink/5 pb-4">
-          <h1 className="text-3xl md:text-4xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
+        <div className="flex items-baseline gap-4 mb-6 border-b border-ink/5 pb-2">
+          <h1 className="text-2xl md:text-3xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
             {t.title}
           </h1>
-          <div className="flex items-center gap-3">
-             <div className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
-             <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30 whitespace-nowrap">{t.updated}</span>
+          <div className="flex items-center gap-2">
+             <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
+             <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20 whitespace-nowrap">{t.updated}</span>
           </div>
         </div>
 
         {/* High-Density Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 overflow-hidden pb-4">
           {t.sections.map((section, idx) => (
-            <div key={idx} className="bg-white border border-ink/5 p-8 rounded-2xl space-y-4 shadow-dashboard flex flex-col justify-center">
-              <div className="flex items-center gap-3 border-b border-ink/5 pb-2">
-                 <ShieldCheck size={14} className="text-rose" />
-                 <h2 className="text-[11px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+            <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-3 shadow-dashboard flex flex-col justify-center overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-ink/5 pb-1">
+                 <ShieldCheck size={12} className="text-rose" />
+                 <h2 className="text-[10px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
               </div>
-              <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+              <p className="text-[9px] font-medium leading-tight text-ink/50 uppercase tracking-wide">
                 {section.text}
               </p>
             </div>
@@ -112,11 +112,11 @@ export default function PrivacyPage() {
         </div>
 
         {/* Minimal Footer */}
-        <div className="pt-10 flex justify-between items-center opacity-30">
-           <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink">© 2026 NINOC ENTERPRISE - PRIVACY ARCHIVE</p>
+        <div className="pt-6 flex justify-between items-center opacity-20 border-t border-ink/5">
+           <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink">© 2026 NINOC ENTERPRISE - PRIVACY ARCHIVE</p>
            <div className="flex gap-4">
-              <Lock size={12} />
-              <ShieldCheck size={12} />
+              <Lock size={10} />
+              <ShieldCheck size={10} />
            </div>
         </div>
       </div>

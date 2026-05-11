@@ -111,31 +111,31 @@ export default function TermsPage() {
       </nav>
 
       {/* CONTENT AREA - SINGLE SCREEN GRID */}
-      <div className="flex-1 pt-32 pb-12 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1800px] mx-auto w-full">
+      <div className="flex-1 pt-24 pb-8 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1600px] mx-auto w-full">
         
         {/* Compact Header */}
-        <div className="flex items-baseline gap-6 mb-10 border-b border-ink/5 pb-4">
-          <h1 className="text-3xl md:text-4xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
+        <div className="flex items-baseline gap-4 mb-6 border-b border-ink/5 pb-2">
+          <h1 className="text-2xl md:text-3xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
             {t.title}
           </h1>
-          <div className="flex items-center gap-3">
-             <div className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
-             <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30 whitespace-nowrap">{t.updated}</span>
+          <div className="flex items-center gap-2">
+             <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
+             <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20 whitespace-nowrap">{t.updated}</span>
           </div>
         </div>
 
         {/* High-Density Industrial Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 overflow-hidden pb-4">
           
           {/* Sector A: Primary Rules */}
-          <div className="space-y-6 flex flex-col">
+          <div className="space-y-4 flex flex-col">
             {[t.sections[0], t.sections[1]].map((section, idx) => (
-              <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-4 shadow-sm flex-1">
-                <div className="flex items-center gap-3 border-b border-ink/5 pb-2">
-                   <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 1}</span>
-                   <h2 className="text-[11px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+              <div key={idx} className="bg-white border border-ink/5 p-4 rounded-lg space-y-2 flex-1 overflow-hidden shadow-sm">
+                <div className="flex items-center gap-2 border-b border-ink/5 pb-1">
+                   <span className="text-[8px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 1}</span>
+                   <h2 className="text-[10px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
                 </div>
-                <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+                <p className="text-[9px] font-medium leading-tight text-ink/50 uppercase tracking-wide">
                   {section.text}
                 </p>
               </div>
@@ -143,14 +143,14 @@ export default function TermsPage() {
           </div>
 
           {/* Sector B: Logistics & Change */}
-          <div className="space-y-6 flex flex-col">
+          <div className="space-y-4 flex flex-col">
             {[t.sections[2], t.sections[3]].map((section, idx) => (
-              <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-4 shadow-sm flex-1">
-                <div className="flex items-center gap-3 border-b border-ink/5 pb-2">
-                   <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 3}</span>
-                   <h2 className="text-[11px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+              <div key={idx} className="bg-white border border-ink/5 p-4 rounded-lg space-y-2 flex-1 overflow-hidden shadow-sm">
+                <div className="flex items-center gap-2 border-b border-ink/5 pb-1">
+                   <span className="text-[8px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 3}</span>
+                   <h2 className="text-[10px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
                 </div>
-                <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+                <p className="text-[9px] font-medium leading-tight text-ink/50 uppercase tracking-wide">
                   {section.text}
                 </p>
               </div>
@@ -158,15 +158,15 @@ export default function TermsPage() {
           </div>
 
           {/* Sector C: Returns & Final Archive */}
-          <div className="flex flex-col space-y-6">
-            <div className="bg-ink text-white p-6 rounded-xl space-y-4 flex-1 shadow-xl">
-               <div className="flex items-center gap-3 border-b border-white/10 pb-2">
-                  <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 05</span>
-                  <h2 className="text-[11px] font-display font-medium italic text-white uppercase tracking-wider">{t.sections[4].title}</h2>
+          <div className="flex flex-col space-y-4">
+            <div className="bg-ink text-white p-5 rounded-lg space-y-3 flex-1 shadow-xl">
+               <div className="flex items-center gap-2 border-b border-white/10 pb-1">
+                  <span className="text-[8px] font-medium text-rose tracking-tighter uppercase">Section 05</span>
+                  <h2 className="text-[10px] font-display font-medium italic text-white uppercase tracking-wider">{t.sections[4].title}</h2>
                </div>
-               <ul className="space-y-3">
+               <ul className="space-y-2">
                  {t.sections[4].items?.map((item, i) => (
-                   <li key={i} className="flex items-start gap-3 text-[9px] font-medium uppercase tracking-widest text-white/60">
+                   <li key={i} className="flex items-start gap-2 text-[8px] font-medium uppercase tracking-widest text-white/50">
                      <div className="w-1 h-1 bg-rose rounded-full mt-1.5 flex-shrink-0" />
                      <span>{item}</span>
                    </li>
@@ -175,13 +175,13 @@ export default function TermsPage() {
             </div>
 
             {/* Micro Archive Footer */}
-            <div className="bg-white/30 border border-ink/5 rounded-xl p-6 flex flex-col items-center justify-center gap-4 text-center">
-              <div className="flex items-center gap-6 opacity-20">
-                <Globe size={18} />
-                <Scale size={18} />
-                <Shield size={18} />
+            <div className="bg-white/30 border border-ink/5 rounded-lg p-4 flex flex-col items-center justify-center gap-3 text-center">
+              <div className="flex items-center gap-4 opacity-10">
+                <Globe size={14} />
+                <Scale size={14} />
+                <Shield size={14} />
               </div>
-              <p className="text-[7px] font-medium uppercase tracking-[0.6em] text-ink/30 leading-relaxed">
+              <p className="text-[6px] font-medium uppercase tracking-[0.5em] text-ink/20 leading-relaxed">
                 NINOC ENTERPRISE — LEGAL ARCHIVE PROTOCOL<br/>
                 HIGH-INTEGRITY DOCUMENTATION SYSTEM v2.1
               </p>

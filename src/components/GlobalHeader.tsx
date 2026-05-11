@@ -103,6 +103,8 @@ export default function GlobalHeader() {
     pathname === '/login' ||
     pathname === '/onboarding' ||
     pathname === '/payment/success' ||
+    pathname === '/terms' ||
+    pathname === '/privacy' ||
     pathname?.startsWith('/admin') ||
     pathname?.startsWith('/profile/orders')
   ) {
