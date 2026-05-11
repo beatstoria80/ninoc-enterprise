@@ -193,9 +193,7 @@ export default function SupportChat() {
     }
 
     if (data) {
-      if (activeTicket?.id === targetTicket.id) {
-        setChatMessages(prev => [...prev, data]);
-      }
+      setChatMessages(prev => [...prev, data]);
       setMessage('');
     }
   };
@@ -204,30 +202,75 @@ export default function SupportChat() {
     if (!message.trim()) return;
     if (message.length > 500) return;
 
-    // Create or find General Inquiry ticket (guest: user_id = null)
-    let genTicket = tickets.find(t => t.subject === 'General Inquiry');
+    const msgToSend = message;
+    const tempId = `guest-${Date.now()}`;
 
-    if (!genTicket) {
-      const { data } = await supabase
-        .from('support_tickets')
-        .insert({
-          user_id: user?.id || null,
-          subject: 'General Inquiry',
-          category: 'other',
-          status: 'open'
-        })
-        .select()
-        .single();
-      if (data) {
-        genTicket = data;
-        setTickets([data, ...tickets]);
+    // Optimistic UI: langsung tampilkan di chat
+    const optimisticMsg: SupportMessage = {
+      id: tempId,
+      ticket_id: tempId,
+      sender_id: '',
+      sender_role: 'customer',
+      message: msgToSend,
+      created_at: new Date().toISOString()
+    };
+    setChatMessages(prev => [...prev, optimisticMsg]);
+    setMessage('');
+
+    try {
+      // Create or find General Inquiry ticket
+      let genTicket = tickets.find(t => t.subject === 'General Inquiry');
+
+      if (!genTicket) {
+        const { data: ticketData } = await supabase
+          .from('support_tickets')
+          .insert({
+            user_id: user?.id || null,
+            subject: 'General Inquiry',
+            category: 'other',
+            status: 'open'
+          })
+          .select()
+          .single();
+        if (ticketData) {
+          genTicket = ticketData;
+          setTickets(prev => [ticketData, ...prev]);
+        }
       }
-    }
 
-    if (genTicket) {
-      const msg = message;
-      await openTicket(genTicket);
-      await sendMessage(msg, genTicket);
+      if (genTicket) {
+        // Insert message
+        const { data: savedMsg, error } = await supabase
+          .from('support_messages')
+          .insert({
+            ticket_id: genTicket.id,
+            sender_id: null,
+            sender_role: 'customer',
+            message: msgToSend
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('[startGeneralChat] Insert error:', error);
+          // Remove optimistic message on error
+          setChatMessages(prev => prev.filter(m => m.id !== tempId));
+          return;
+        }
+
+        if (savedMsg) {
+          // Replace optimistic message with real one
+          setChatMessages(prev =>
+            prev.map(m => m.id === tempId ? savedMsg : m)
+          );
+          setActiveTicket(genTicket);
+          setActiveTab('chat');
+        }
+      }
+    } catch (err) {
+      console.error('[startGeneralChat] Error:', err);
+      // Remove optimistic message on error
+      setChatMessages(prev => prev.filter(m => m.id !== tempId));
     }
   };
 
