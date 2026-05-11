@@ -198,7 +198,7 @@ export default function CheckoutPage() {
   }
 
   const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10";
-  const selectClass = "w-full bg-white py-2 px-3 pr-8 text-[10px] font-medium text-ink outline-none transition-all appearance-none cursor-pointer";
+  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/5 rounded-md";
   const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
 
   return (
@@ -291,43 +291,31 @@ export default function CheckoutPage() {
 
                 <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
                   <label className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
-                  <div className="relative">
-                    <select required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass}>
-                      <option value="">SELECT PROVINCE</option>
-                      {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                    </select>
-                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
-                  </div>
+                  <select required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass}>
+                    <option value="">SELECT PROVINCE</option>
+                    {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                  </select>
                 </div>
                 <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
                   <label className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
-                  <div className="relative">
-                    <select required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province}>
-                      <option value="">SELECT CITY</option>
-                      {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                    </select>
-                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
-                  </div>
+                  <select required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province}>
+                    <option value="">SELECT CITY</option>
+                    {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
                 </div>
                 <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
                   <label className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
-                  <div className="relative">
-                    <select required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city}>
-                      <option value="">SELECT KECAMATAN</option>
-                      {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
-                    </select>
-                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
-                  </div>
+                  <select required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city}>
+                    <option value="">SELECT KECAMATAN</option>
+                    {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                  </select>
                 </div>
                 <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
                   <label className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
-                  <div className="relative">
-                    <select required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan}>
-                      <option value="">SELECT KELURAHAN</option>
-                      {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
-                    </select>
-                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
-                  </div>
+                  <select required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan}>
+                    <option value="">SELECT KELURAHAN</option>
+                    {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
+                  </select>
                 </div>
               </div>
             </section>
