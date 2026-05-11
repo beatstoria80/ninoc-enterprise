@@ -171,9 +171,10 @@ const SidebarItem = ({
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
+  const [adminUser, setAdminUser] = useState<{ id: string; email?: string } | null>(null);
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -229,6 +230,15 @@ export default function AdminDashboard() {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
   const [newMessage, setNewMessage] = useState('');
+
+  // Fetch logged-in admin user
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setAdminUser(user);
+    };
+    fetchAdmin();
+  }, []);
 
   // Search & filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -635,7 +645,7 @@ export default function AdminDashboard() {
         .from('support_messages')
         .insert({
           ticket_id: activeChatSession.id,
-          sender_id: 'admin',
+          sender_id: adminUser?.id || '00000000-0000-0000-0000-000000000000',
           sender_role: 'admin',
           message: newMessage.trim(),
           is_read: false
