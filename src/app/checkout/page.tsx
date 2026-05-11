@@ -181,17 +181,29 @@ export default function CheckoutPage() {
   // Fetch Villages when District changes
   const handleDistrictChange = async (name: string) => {
     const district = districts.find(d => d.name === name);
-    setFormData({ ...formData, kecamatan: name, kelurahan: '' });
+    // Reset downstream + update formData synchronously
+    setFormData(prev => ({ ...prev, kecamatan: name, kelurahan: '' }));
     setVillages([]);
-    if (!district) return;
 
+    if (!district) {
+      console.warn('[handleDistrictChange] District not found for name:', name);
+      return;
+    }
+
+    console.log('[handleDistrictChange] Fetching villages for district:', district.name, 'id:', district.id);
     setLoadingLoc(prev => ({ ...prev, v: true }));
+
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${district.id}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setVillages(data);
-    } catch (e) { console.error(e); }
-    setLoadingLoc(prev => ({ ...prev, v: false }));
+      console.log('[handleDistrictChange] Received villages count:', data?.length);
+      setVillages(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('[handleDistrictChange] Fetch failed:', e);
+    } finally {
+      setLoadingLoc(prev => ({ ...prev, v: false }));
+    }
   };
 
   const subtotal = totalPrice();
