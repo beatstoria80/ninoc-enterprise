@@ -19,6 +19,21 @@ interface LocationItem {
   name: string;
 }
 
+// Static fallback provinces
+const FALLBACK_PROVINCES: LocationItem[] = [
+  { id: '31', name: 'DKI JAKARTA' },
+  { id: '32', name: 'JAWA BARAT' },
+  { id: '33', name: 'JAWA TENGAH' },
+  { id: '35', name: 'JAWA TIMUR' },
+  { id: '36', name: 'BANTEN' },
+  { id: '51', name: 'BALI' },
+  { id: '11', name: 'ACEH' },
+  { id: '12', name: 'SUMATERA UTARA' },
+  { id: '13', name: 'SUMATERA BARAT' },
+  { id: '16', name: 'SUMATERA SELATAN' },
+  { id: '73', name: 'SULAWESI SELATAN' }
+];
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCart();
@@ -27,7 +42,7 @@ export default function CheckoutPage() {
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -51,21 +66,6 @@ export default function CheckoutPage() {
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
 
-  // Static fallback provinces
-  const FALLBACK_PROVINCES = [
-    { id: '31', name: 'DKI JAKARTA' },
-    { id: '32', name: 'JAWA BARAT' },
-    { id: '33', name: 'JAWA TENGAH' },
-    { id: '35', name: 'JAWA TIMUR' },
-    { id: '36', name: 'BANTEN' },
-    { id: '51', name: 'BALI' },
-    { id: '11', name: 'ACEH' },
-    { id: '12', name: 'SUMATERA UTARA' },
-    { id: '13', name: 'SUMATERA BARAT' },
-    { id: '16', name: 'SUMATERA SELATAN' },
-    { id: '73', name: 'SULAWESI SELATAN' }
-  ];
-
   // Fetch Provinces on mount
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -82,7 +82,6 @@ export default function CheckoutPage() {
       setLoadingLoc(prev => ({ ...prev, p: false }));
     };
     fetchProvinces();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Case-insensitive search to handle API vs Fallback differences
