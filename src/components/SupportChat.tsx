@@ -98,22 +98,60 @@ export default function SupportChat() {
     }
   };
 
-  const sendMessage = async () => {
-    if (!message.trim() || !activeTicket || !user) return;
+  const sendMessage = async (overrideMessage?: string, overrideTicket?: SupportTicket) => {
+    const msgToSend = overrideMessage || message;
+    const targetTicket = overrideTicket || activeTicket;
+    
+    if (!msgToSend.trim() || !targetTicket || !user) return;
+    
     const newMessage = {
-      ticket_id: activeTicket.id,
+      ticket_id: targetTicket.id,
       sender_id: user.id,
       sender_role: 'customer' as const,
-      message: message.trim()
+      message: msgToSend.trim()
     };
+    
     const { data } = await supabase
       .from('support_messages')
       .insert(newMessage)
       .select()
       .single();
+      
     if (data) {
-      setChatMessages([...chatMessages, data]);
+      if (activeTicket?.id === targetTicket.id) {
+        setChatMessages([...chatMessages, data]);
+      }
       setMessage('');
+    }
+  };
+
+  const startGeneralChat = async () => {
+    if (!message.trim() || !user) return;
+    
+    // Check if a general ticket already exists
+    let genTicket = tickets.find(t => t.subject === 'General Inquiry');
+    
+    if (!genTicket) {
+      const { data } = await supabase
+        .from('support_tickets')
+        .insert({
+          user_id: user.id,
+          subject: 'General Inquiry',
+          category: 'other',
+          status: 'open'
+        })
+        .select()
+        .single();
+      if (data) {
+        genTicket = data;
+        setTickets([data, ...tickets]);
+      }
+    }
+    
+    if (genTicket) {
+      const msg = message;
+      await openTicket(genTicket);
+      await sendMessage(msg, genTicket);
     }
   };
 
@@ -208,30 +246,57 @@ export default function SupportChat() {
                     </motion.button>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15">Active Conversations</p>
                     {tickets.length > 0 ? (
-                      tickets.map((t, i) => (
-                        <motion.button
-                          key={t.id}
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.05 }}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                          onClick={() => openTicket(t)}
-                          className="w-full flex items-center justify-between p-2.5 bg-white border border-ink/5 rounded-lg hover:border-rose/20 transition-all duration-200 text-left group"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[8px] font-medium text-ink uppercase truncate">{t.subject}</p>
-                            <p className="text-[6px] font-medium text-ink/25 uppercase tracking-widest">#{t.id.split('-')[0]} • {t.status}</p>
-                          </div>
-                          <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
-                        </motion.button>
-                      ))
+                      <div className="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
+                        {tickets.map((t, i) => (
+                          <motion.button
+                            key={t.id}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            onClick={() => openTicket(t)}
+                            className="w-full flex items-center justify-between p-2.5 bg-white border border-ink/5 rounded-lg hover:border-rose/20 transition-all duration-200 text-left group"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[8px] font-medium text-ink uppercase truncate">{t.subject}</p>
+                              <p className="text-[6px] font-medium text-ink/25 uppercase tracking-widest">#{t.id.split('-')[0]} • {t.status}</p>
+                            </div>
+                            <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
+                          </motion.button>
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-[7px] font-medium text-ink/15 italic text-center py-4">Empty archive.</p>
                     )}
+                  </div>
+
+                  {/* DIRECT INQUIRY INPUT */}
+                  <div className="pt-4 border-t border-ink/5">
+                    <div className="bg-ink p-3 rounded-xl space-y-2 shadow-xl shadow-ink/10">
+                      <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/40">Direct Archive Inquiry</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && startGeneralChat()}
+                          placeholder="Type your message..."
+                          className="flex-1 bg-white/5 border-none rounded-lg py-1.5 px-3 text-[9px] font-medium text-white outline-none placeholder:text-white/10"
+                        />
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={startGeneralChat}
+                          className="w-7 h-7 bg-rose text-white rounded-lg flex items-center justify-center hover:bg-rose-600 transition-colors duration-200 flex-shrink-0"
+                        >
+                          <Send size={10} />
+                        </motion.button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -337,7 +402,7 @@ export default function SupportChat() {
                     <motion.button
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.92 }}
-                      onClick={sendMessage}
+                      onClick={() => sendMessage()}
                       className="w-7 h-7 bg-ink text-white rounded-full flex items-center justify-center hover:bg-rose transition-colors duration-200 flex-shrink-0"
                     >
                       <Send size={10} />
