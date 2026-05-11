@@ -4,6 +4,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface SupportTicket {
   id: string;
@@ -127,8 +133,8 @@ export default function SupportChat() {
 
   const startGeneralChat = async () => {
     if (!message.trim() || !user) return;
+    if (message.length > 500) return;
     
-    // Check if a general ticket already exists
     let genTicket = tickets.find(t => t.subject === 'General Inquiry');
     
     if (!genTicket) {
@@ -155,6 +161,18 @@ export default function SupportChat() {
     }
   };
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [message, activeTab]);
   return (
     <div className="fixed bottom-5 right-5 z-[500]">
       {/* MICRO TRIGGER - 14px icon per manifesto */}
@@ -282,26 +300,41 @@ export default function SupportChat() {
                   </div>
 
                   {/* PROMINENT BOTTOM INPUT - WHATSAPP STYLE */}
-                  <div className="p-4 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)]">
+                  <div className="p-4 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)] space-y-2">
                     <div className="relative group">
-                      <input
-                        type="text"
+                      <textarea
+                        ref={textareaRef}
+                        rows={1}
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && startGeneralChat()}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 500) {
+                            setMessage(e.target.value);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            startGeneralChat();
+                          }
+                        }}
                         placeholder="Direct inquiry..."
-                        className="w-full bg-ink text-white py-3.5 pl-4 pr-12 rounded-2xl text-[10px] font-medium outline-none placeholder:text-white/20 shadow-xl shadow-ink/10 transition-all focus:ring-1 focus:ring-rose/30"
+                        className="w-full bg-ink text-white py-3 pl-4 pr-12 rounded-[5px] text-[10px] font-medium outline-none placeholder:text-white/20 shadow-xl shadow-ink/10 transition-all focus:ring-1 focus:ring-rose/30 resize-none no-scrollbar min-h-[44px]"
                       />
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={startGeneralChat}
-                        className="absolute right-2 top-1.5 w-8 h-8 bg-rose text-white rounded-xl flex items-center justify-center hover:bg-rose-600 transition-colors duration-300 shadow-lg shadow-rose/20"
+                        className="absolute right-2 bottom-2 w-8 h-8 bg-rose text-white rounded-[5px] flex items-center justify-center hover:bg-rose-600 transition-colors duration-300 shadow-lg shadow-rose/20"
                       >
                         <Send size={12} />
                       </motion.button>
                     </div>
-                    <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20 text-center mt-3">Studio Direct Channel</p>
+                    <div className="flex justify-between items-center px-1">
+                      <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20">Studio Direct Channel</p>
+                      <p className={cn("text-[6px] font-medium tracking-widest uppercase", message.length > 450 ? "text-rose" : "text-ink/20")}>
+                        {message.length}/500
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -395,24 +428,39 @@ export default function SupportChat() {
                       </motion.div>
                     ))}
                   </div>
-                  <div className="p-4 bg-white border-t border-ink/5">
-                    <div className="relative group flex items-center gap-2">
-                      <input
-                        type="text"
+                  <div className="p-4 bg-white border-t border-ink/5 space-y-2">
+                    <div className="relative group flex items-end gap-2">
+                      <textarea
+                        ref={textareaRef}
+                        rows={1}
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 500) {
+                            setMessage(e.target.value);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
                         placeholder="Type message..."
-                        className="flex-1 bg-ink/5 border-none rounded-2xl py-3 px-4 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:ring-1 focus:ring-ink/10 transition-all"
+                        className="flex-1 bg-ink/5 border-none rounded-[5px] py-3 px-4 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:ring-1 focus:ring-ink/10 transition-all resize-none no-scrollbar min-h-[44px]"
                       />
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => sendMessage()}
-                        className="w-10 h-10 bg-ink text-white rounded-2xl flex items-center justify-center hover:bg-rose transition-all duration-300 shadow-lg shadow-ink/10 flex-shrink-0"
+                        className="w-10 h-10 bg-ink text-white rounded-[5px] flex items-center justify-center hover:bg-rose transition-all duration-300 shadow-lg shadow-ink/10 flex-shrink-0 mb-0.5"
                       >
                         <Send size={14} />
                       </motion.button>
+                    </div>
+                    <div className="flex justify-end px-1">
+                      <p className={cn("text-[6px] font-medium tracking-widest uppercase", message.length > 450 ? "text-rose" : "text-ink/20")}>
+                        {message.length}/500
+                      </p>
                     </div>
                   </div>
                 </motion.div>
