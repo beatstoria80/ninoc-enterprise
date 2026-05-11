@@ -150,7 +150,7 @@ export default function OnboardingPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push('/shop');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
