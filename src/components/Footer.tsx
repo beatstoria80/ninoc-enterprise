@@ -11,7 +11,7 @@ export default function GlobalFooter() {
         {/* Brand Column */}
         <div className="space-y-6">
           <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-display font-medium italic tracking-tighter text-ink">NINOC</h1>
+            <span className="text-3xl font-display font-medium italic tracking-tighter text-ink">NINOC</span>
           </Link>
           <p className="text-[10px] font-medium leading-relaxed text-muted-text max-w-[200px]">
             Wear the art, own the day. Premium artistic collections for the conscious mobility.
@@ -25,10 +25,10 @@ export default function GlobalFooter() {
         <div className="space-y-6">
           <h4 className="label-caps !text-ink">Navigation</h4>
           <ul className="space-y-3">
-            {['Home', 'Shop', 'Admin Dashboard'].map((item) => (
+            {['Home', 'Shop', 'Collections', 'Craft'].map((item) => (
               <li key={item}>
                 <Link 
-                  href={item === 'Home' ? '/' : item === 'Shop' ? '/shop' : '/admin'} 
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase()}`} 
                   className="text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
                 >
                   {item}
