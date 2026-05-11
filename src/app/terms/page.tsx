@@ -86,7 +86,7 @@ export default function LegalArchivePage() {
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
           <div className="flex items-baseline gap-4">
             <h1 className="text-xl md:text-2xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">{t.title}</h1>
-            <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">{t.updated}</span>
+            <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/60">{t.updated}</span>
           </div>
           <div className="flex items-center gap-2">
              <div className="w-1 h-1 rounded-full bg-emerald-500" />
@@ -157,7 +157,7 @@ export default function LegalArchivePage() {
         </div>
 
         {/* Global Legal Footer */}
-        <div className="mt-4 pt-4 border-t border-ink/5 flex justify-between items-center opacity-30">
+        <div className="mt-4 pt-4 border-t border-ink/5 flex justify-between items-center opacity-60">
           <div className="flex gap-8">
              <div className="flex items-center gap-2">
                 <Globe size={10} strokeWidth={1.5} />
