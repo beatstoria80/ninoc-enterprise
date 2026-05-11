@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin, Shield, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function GlobalFooter() {
@@ -73,10 +73,16 @@ export default function GlobalFooter() {
         <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">
           © 2026 NINOC ENTERPRISE. All Rights Reserved.
         </p>
-        <div className="flex gap-8">
-          <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/10">Verified Merchant</span>
-          <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/10">Midtrans Secure</span>
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="flex items-center gap-4">
+            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/15 flex items-center gap-1"><Shield size={10} />Verified Merchant</span>
+            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/15 flex items-center gap-1"><Lock size={10} />Midtrans Secure</span>
+            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/15 flex items-center gap-1"><Shield size={10} />SSL Encrypted</span>
+          </div>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto mt-6 pt-6 border-t border-ink/5 text-center">
+        <p className="text-[8px] font-medium text-ink/15">Data privasi Anda terlindungi. Kami tidak membagikan informasi pribadi ke pihak ketiga.</p>
       </div>
     </footer>
   );
