@@ -20,9 +20,8 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -40,55 +39,19 @@ export default function CheckoutPage() {
     postal_code: ''
   });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setIsLoggedIn(true);
-        setUserId(user.id);
-        setFormData(prev => ({ ...prev, email: user.email || '' }));
-        const { data: profile } = await supabase.from('customer_profiles').select('*').eq('user_id', user.id).single();
-        if (profile) {
-          setFormData({
-            first_name: profile.first_name || '',
-            last_name: profile.last_name || '',
-            email: user.email || '',
-            phone: profile.phone || '',
-            street: profile.street || '',
-            house_number: profile.house_number || '',
-            rt: profile.rt || '',
-            rw: profile.rw || '',
-            kelurahan: profile.kelurahan || '',
-            kecamatan: profile.kecamatan || '',
-            city: profile.city || '',
-            province: profile.province || '',
-            postal_code: profile.postal_code || ''
-          });
-        }
-      }
-    };
-    fetchProfile();
-  }, []);
+  interface LocationItem {
+    id: string;
+    name: string;
+  }
 
-  const shippingOptions = [
-    { id: 'jne', name: 'JNE', price: 15000, etd: '2-3D' },
-    { id: 'jnt', name: 'J&T', price: 12000, etd: '1-2D' },
-    { id: 'sicepat', name: 'SiCepat', price: 18000, etd: '1D' },
-  ];
-
-  const handleShippingChange = (id: string, price: number) => {
-    setShippingMethod(id);
-    setShippingCost(price);
-  };
-
-  const [provinces, setProvinces] = useState<{id: string, name: string}[]>([]);
-  const [cities, setCities] = useState<{id: string, name: string}[]>([]);
-  const [districts, setDistricts] = useState<{id: string, name: string}[]>([]);
-  const [villages, setVillages] = useState<{id: string, name: string}[]>([]);
+  const [provinces, setProvinces] = useState<LocationItem[]>([]);
+  const [cities, setCities] = useState<LocationItem[]>([]);
+  const [districts, setDistricts] = useState<LocationItem[]>([]);
+  const [villages, setVillages] = useState<LocationItem[]>([]);
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
 
-  // Static fallback provinces (defined before useEffect to avoid stale closure / ref-before-declare issues)
+  // Static fallback provinces
   const FALLBACK_PROVINCES = [
     { id: '31', name: 'DKI JAKARTA' },
     { id: '32', name: 'JAWA BARAT' },
@@ -123,87 +86,130 @@ export default function CheckoutPage() {
   }, []);
 
   // Fetch Cities when Province changes
-  const handleProvinceChange = async (name: string) => {
-    const province = provinces.find(p => p.name === name);
-    // Reset semua downstream + update formData synchronously
-    setFormData(prev => ({ ...prev, province: name, city: '', kecamatan: '', kelurahan: '' }));
-    setCities([]); setDistricts([]); setVillages([]);
-
-    if (!province) {
-      console.warn('[handleProvinceChange] Province not found for name:', name);
-      return;
-    }
-
-    console.log('[handleProvinceChange] Fetching regencies for province:', province.name, 'id:', province.id);
+  const fetchCities = async (provinceName: string) => {
+    const province = provinces.find(p => p.name === provinceName);
+    if (!province) return;
     setLoadingLoc(prev => ({ ...prev, c: true }));
-
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${province.id}.json`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log('[handleProvinceChange] Received cities count:', data?.length);
       setCities(Array.isArray(data) ? data : []);
+      return data;
     } catch (e) {
-      console.error('[handleProvinceChange] Fetch failed:', e);
+      console.error('[fetchCities] Fetch failed:', e);
     } finally {
       setLoadingLoc(prev => ({ ...prev, c: false }));
     }
   };
 
+  const handleProvinceChange = async (name: string) => {
+    setFormData(prev => ({ ...prev, province: name, city: '', kecamatan: '', kelurahan: '' }));
+    setCities([]); setDistricts([]); setVillages([]);
+    await fetchCities(name);
+  };
+
   // Fetch Districts when City changes
-  const handleCityChange = async (name: string) => {
-    const city = cities.find(c => c.name === name);
-    // Reset downstream + update formData synchronously
-    setFormData(prev => ({ ...prev, city: name, kecamatan: '', kelurahan: '' }));
-    setDistricts([]); setVillages([]);
-
-    if (!city) {
-      console.warn('[handleCityChange] City not found for name:', name);
-      return;
-    }
-
-    console.log('[handleCityChange] Fetching districts for city:', city.name, 'id:', city.id);
+  const fetchDistricts = async (cityName: string, currentCities: LocationItem[]) => {
+    const city = currentCities.find(c => c.name === cityName);
+    if (!city) return;
     setLoadingLoc(prev => ({ ...prev, d: true }));
-
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${city.id}.json`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log('[handleCityChange] Received districts count:', data?.length);
       setDistricts(Array.isArray(data) ? data : []);
+      return data;
     } catch (e) {
-      console.error('[handleCityChange] Fetch failed:', e);
+      console.error('[fetchDistricts] Fetch failed:', e);
     } finally {
       setLoadingLoc(prev => ({ ...prev, d: false }));
     }
   };
 
+  const handleCityChange = async (name: string) => {
+    setFormData(prev => ({ ...prev, city: name, kecamatan: '', kelurahan: '' }));
+    setDistricts([]); setVillages([]);
+    await fetchDistricts(name, cities);
+  };
+
   // Fetch Villages when District changes
-  const handleDistrictChange = async (name: string) => {
-    const district = districts.find(d => d.name === name);
-    // Reset downstream + update formData synchronously
-    setFormData(prev => ({ ...prev, kecamatan: name, kelurahan: '' }));
-    setVillages([]);
-
-    if (!district) {
-      console.warn('[handleDistrictChange] District not found for name:', name);
-      return;
-    }
-
-    console.log('[handleDistrictChange] Fetching villages for district:', district.name, 'id:', district.id);
+  const fetchVillages = async (districtName: string, currentDistricts: LocationItem[]) => {
+    const district = currentDistricts.find(d => d.name === districtName);
+    if (!district) return;
     setLoadingLoc(prev => ({ ...prev, v: true }));
-
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${district.id}.json`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log('[handleDistrictChange] Received villages count:', data?.length);
       setVillages(Array.isArray(data) ? data : []);
+      return data;
     } catch (e) {
-      console.error('[handleDistrictChange] Fetch failed:', e);
+      console.error('[fetchVillages] Fetch failed:', e);
     } finally {
       setLoadingLoc(prev => ({ ...prev, v: false }));
     }
+  };
+
+  const handleDistrictChange = async (name: string) => {
+    setFormData(prev => ({ ...prev, kecamatan: name, kelurahan: '' }));
+    setVillages([]);
+    await fetchVillages(name, districts);
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (provinces.length === 0) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data: profile } = await supabase.from('customer_profiles').select('*').eq('user_id', user.id).single();
+        if (profile) {
+          const newData = {
+            first_name: profile.first_name || '',
+            last_name: profile.last_name || '',
+            email: user.email || '',
+            phone: profile.phone || '',
+            street: profile.street || '',
+            house_number: profile.house_number || '',
+            rt: profile.rt || '',
+            rw: profile.rw || '',
+            kelurahan: profile.kelurahan || '',
+            kecamatan: profile.kecamatan || '',
+            city: profile.city || '',
+            province: profile.province || '',
+            postal_code: profile.postal_code || ''
+          };
+          setFormData(newData);
+          
+          // Trigger cascading fetches
+          if (newData.province) {
+            const loadedCities = await fetchCities(newData.province);
+            if (newData.city && loadedCities) {
+              const loadedDistricts = await fetchDistricts(newData.city, loadedCities);
+              if (newData.kecamatan && loadedDistricts) {
+                await fetchVillages(newData.kecamatan, loadedDistricts);
+              }
+            }
+          }
+        } else {
+          setFormData(prev => ({ ...prev, email: user.email || '' }));
+        }
+      }
+    };
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provinces]);
+
+  const shippingOptions = [
+    { id: 'jne', name: 'JNE', price: 15000, etd: '2-3D' },
+    { id: 'jnt', name: 'J&T', price: 12000, etd: '1-2D' },
+    { id: 'sicepat', name: 'SiCepat', price: 18000, etd: '1D' },
+  ];
+
+  const handleShippingChange = (id: string, price: number) => {
+    setShippingMethod(id);
+    setShippingCost(price);
   };
 
   const subtotal = totalPrice();
@@ -241,7 +247,7 @@ export default function CheckoutPage() {
     }
   };
 
-   
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) return null;
