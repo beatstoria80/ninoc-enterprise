@@ -132,14 +132,6 @@ export default function SupportChat() {
     };
   }, [user, tickets, activeTab, activeTicket]);
 
-  // Auto-hide notif card when chat is open
-   
-  useEffect(() => {
-    if (activeTab === 'chat') {
-      setShowNotifCard(false);
-    }
-  }, [activeTab]);
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -244,7 +236,7 @@ export default function SupportChat() {
       {/* CENTER-SCREEN NOTIFICATION CARD (Top Right) */}
       {/* ================================================ */}
       <AnimatePresence>
-        {showNotifCard && lastNotif && (
+        {showNotifCard && lastNotif && activeTab !== 'chat' && (
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -445,8 +437,8 @@ export default function SupportChat() {
                     </div>
 
                     {/* PROMINENT BOTTOM INPUT - WHATSAPP STYLE */}
-                    <div className="p-4 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)] space-y-2">
-                      <div className="relative group flex items-end gap-2">
+                    <div className="p-3 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)] space-y-1.5">
+                      <div className="flex items-end gap-1.5">
                         <textarea
                           ref={textareaRef}
                           rows={1}
@@ -462,21 +454,25 @@ export default function SupportChat() {
                               startGeneralChat();
                             }
                           }}
-                          placeholder="Direct inquiry..."
-                          className="flex-1 bg-ink/[0.03] text-ink py-3.5 px-4 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/5 transition-all focus:border-rose/30 focus:bg-white resize-none no-scrollbar min-h-[44px]"
+                          placeholder={user ? "Direct inquiry..." : "Please sign in to inquire..."}
+                          disabled={!user}
+                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none no-scrollbar min-h-[40px] disabled:opacity-50"
                         />
                         <motion.button
-                          whileHover={{ scale: 1.1, color: '#E8527A' }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={user ? { scale: 1.1, color: '#E8527A' } : {}}
+                          whileTap={user ? { scale: 0.9 } : {}}
                           onClick={startGeneralChat}
-                          className="w-9 h-9 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                          disabled={!user}
+                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5 disabled:opacity-30"
                         >
-                          <Send size={14} strokeWidth={2} />
+                          <Send size={12} strokeWidth={2.5} />
                         </motion.button>
                       </div>
-                      <div className="flex justify-between items-center px-1">
-                        <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20">Studio Direct Channel</p>
-                        <p className={cn('text-[6px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/20')}>
+                      <div className="flex justify-between items-center px-0.5">
+                        <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15">
+                          {user ? "Studio Direct Channel" : "Origin Offline"}
+                        </p>
+                        <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
                           {message.length}/500
                         </p>
                       </div>
@@ -573,8 +569,8 @@ export default function SupportChat() {
                         </motion.div>
                       ))}
                     </div>
-                    <div className="p-4 bg-white border-t border-ink/5 space-y-2">
-                      <div className="relative group flex items-end gap-2">
+                    <div className="p-3 bg-white border-t border-ink/5 space-y-1.5">
+                      <div className="flex items-end gap-1.5">
                         <textarea
                           ref={textareaRef}
                           rows={1}
@@ -591,19 +587,19 @@ export default function SupportChat() {
                             }
                           }}
                           placeholder="Type message..."
-                          className="flex-1 bg-ink/[0.03] border border-ink/5 rounded-[5px] py-3.5 px-4 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none no-scrollbar min-h-[44px]"
+                          className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none no-scrollbar min-h-[40px]"
                         />
                         <motion.button
                           whileHover={{ scale: 1.1, color: '#E8527A' }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => sendMessage()}
-                          className="w-9 h-9 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
                         >
-                          <Send size={14} strokeWidth={2} />
+                          <Send size={12} strokeWidth={2.5} />
                         </motion.button>
                       </div>
-                      <div className="flex justify-end px-1">
-                        <p className={cn('text-[6px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/20')}>
+                      <div className="flex justify-end px-0.5">
+                        <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
                           {message.length}/500
                         </p>
                       </div>

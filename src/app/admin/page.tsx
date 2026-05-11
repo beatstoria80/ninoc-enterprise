@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, ShoppingCart, Plus, Search,
-  TrendingUp, Box, LogOut, X, Save, Paperclip,
+  TrendingUp, Box, LogOut, X, Save,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
@@ -1404,8 +1404,8 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Input Area */}
-                      <div className="p-6 border-t border-ink/5 bg-white">
-                        <div className="relative flex items-end gap-3">
+                      <div className="p-3 border-t border-ink/5 bg-white">
+                        <div className="flex items-end gap-1.5">
                           <textarea
                             rows={1}
                             value={newMessage}
@@ -1421,20 +1421,20 @@ export default function AdminDashboard() {
                               }
                             }}
                             placeholder="Type archival response..."
-                            className="flex-1 bg-ink/[0.03] text-ink py-3.5 px-5 rounded-[5px] text-[11px] font-medium outline-none border border-ink/5 placeholder:text-ink/20 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[48px]"
+                            className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none border border-ink/[0.08] placeholder:text-ink/20 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[40px]"
                           />
                           <motion.button
                             whileHover={{ scale: 1.1, color: '#E8527A' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => sendMessage()}
-                            className="w-10 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                            className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
                           >
-                            <Send size={16} strokeWidth={2} />
+                            <Send size={12} strokeWidth={2.5} />
                           </motion.button>
                         </div>
-                        <div className="flex justify-between items-center mt-3 px-1">
-                          <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20 italic text-center">Studio Response Channel</p>
-                          <p className={cn("text-[6px] font-medium tracking-widest uppercase", newMessage.length > 450 ? "text-rose" : "text-ink/20")}>
+                        <div className="flex justify-between items-center mt-2 px-0.5">
+                          <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15 italic">Studio Response Channel</p>
+                          <p className={cn("text-[5.5px] font-medium tracking-widest uppercase", newMessage.length > 450 ? "text-rose" : "text-ink/15")}>
                             {newMessage.length}/500
                           </p>
                         </div>
