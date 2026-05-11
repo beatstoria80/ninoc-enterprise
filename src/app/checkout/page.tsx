@@ -71,7 +71,7 @@ export default function CheckoutPage() {
     const fetchProvinces = async () => {
       setLoadingLoc(prev => ({ ...prev, p: true }));
       try {
-        const res = await fetch('https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json');
+        const res = await fetch('/api/location/provinces');
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
         setProvinces(data && data.length > 0 ? data : FALLBACK_PROVINCES);
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
     if (!province) return null;
     setLoadingLoc(prev => ({ ...prev, c: true }));
     try {
-      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${province.id}.json`);
+      const res = await fetch(`/api/location/regencies?province_id=${province.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setCities(Array.isArray(data) ? data : []);
@@ -121,7 +121,7 @@ export default function CheckoutPage() {
     if (!city) return null;
     setLoadingLoc(prev => ({ ...prev, d: true }));
     try {
-      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${city.id}.json`);
+      const res = await fetch(`/api/location/districts?city_id=${city.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setDistricts(Array.isArray(data) ? data : []);
@@ -146,7 +146,7 @@ export default function CheckoutPage() {
     if (!district) return null;
     setLoadingLoc(prev => ({ ...prev, v: true }));
     try {
-      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${district.id}.json`);
+      const res = await fetch(`/api/location/villages?district_id=${district.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setVillages(Array.isArray(data) ? data : []);
