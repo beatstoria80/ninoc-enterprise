@@ -202,6 +202,11 @@ export default function CheckoutPage() {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return null;
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
@@ -211,12 +216,12 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10";
-  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md relative z-20";
-  const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
+  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10 relative z-50";
+  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md relative z-50";
+  const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block relative z-50";
 
   return (
-    <main className="min-h-screen bg-cr noise">
+    <main className="min-h-screen bg-cr">
       {/* STUDIO EXIT NAV - STATIC */}
       <nav className="fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-5 flex items-center justify-between glass border-b border-ink/10">
         <button 
