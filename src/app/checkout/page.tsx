@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield, ChevronDown } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -80,6 +80,75 @@ export default function CheckoutPage() {
     setShippingCost(price);
   };
 
+  const [provinces, setProvinces] = useState<{id: string, name: string}[]>([]);
+  const [cities, setCities] = useState<{id: string, name: string}[]>([]);
+  const [districts, setDistricts] = useState<{id: string, name: string}[]>([]);
+  const [villages, setVillages] = useState<{id: string, name: string}[]>([]);
+
+  const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
+
+  // Fetch Provinces on mount
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      setLoadingLoc(prev => ({ ...prev, p: true }));
+      try {
+        const res = await fetch('https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json');
+        const data = await res.json();
+        setProvinces(data);
+      } catch (e) { console.error(e); }
+      setLoadingLoc(prev => ({ ...prev, p: false }));
+    };
+    fetchProvinces();
+  }, []);
+
+  // Fetch Cities when Province changes
+  const handleProvinceChange = async (name: string) => {
+    const province = provinces.find(p => p.name === name);
+    setFormData({ ...formData, province: name, city: '', kecamatan: '', kelurahan: '' });
+    setCities([]); setDistricts([]); setVillages([]);
+    if (!province) return;
+
+    setLoadingLoc(prev => ({ ...prev, c: true }));
+    try {
+      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${province.id}.json`);
+      const data = await res.json();
+      setCities(data);
+    } catch (e) { console.error(e); }
+    setLoadingLoc(prev => ({ ...prev, c: false }));
+  };
+
+  // Fetch Districts when City changes
+  const handleCityChange = async (name: string) => {
+    const city = cities.find(c => c.name === name);
+    setFormData({ ...formData, city: name, kecamatan: '', kelurahan: '' });
+    setDistricts([]); setVillages([]);
+    if (!city) return;
+
+    setLoadingLoc(prev => ({ ...prev, d: true }));
+    try {
+      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${city.id}.json`);
+      const data = await res.json();
+      setDistricts(data);
+    } catch (e) { console.error(e); }
+    setLoadingLoc(prev => ({ ...prev, d: false }));
+  };
+
+  // Fetch Villages when District changes
+  const handleDistrictChange = async (name: string) => {
+    const district = districts.find(d => d.name === name);
+    setFormData({ ...formData, kecamatan: name, kelurahan: '' });
+    setVillages([]);
+    if (!district) return;
+
+    setLoadingLoc(prev => ({ ...prev, v: true }));
+    try {
+      const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${district.id}.json`);
+      const data = await res.json();
+      setVillages(data);
+    } catch (e) { console.error(e); }
+    setLoadingLoc(prev => ({ ...prev, v: false }));
+  };
+
   const subtotal = totalPrice();
   const finalTotal = subtotal + shippingCost;
 
@@ -124,7 +193,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2 px-3 text-sm font-medium text-ink outline-none transition-all placeholder:text-ink/10";
+  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10 appearance-none cursor-pointer";
   const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
 
   return (
@@ -215,21 +284,45 @@ export default function CheckoutPage() {
                   <input required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="05" />
                 </div>
 
-                <div className="col-span-3 bg-white p-3 border-t border-ink/10">
-                  <label className={labelClass}>Kelurahan</label>
-                  <input required type="text" value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={inputClass} placeholder="kel..." />
+                <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
+                  <label className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
+                  <div className="relative">
+                    <select required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={inputClass}>
+                      <option value="">SELECT PROVINCE</option>
+                      {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                    </select>
+                    <ChevronDown size={10} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
+                  </div>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10">
-                  <label className={labelClass}>Kecamatan</label>
-                  <input required type="text" value={formData.kecamatan} onChange={(e) => setFormData({...formData, kecamatan: e.target.value})} className={inputClass} placeholder="kec..." />
+                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
+                  <label className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
+                  <div className="relative">
+                    <select required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={inputClass} disabled={!formData.province}>
+                      <option value="">SELECT CITY</option>
+                      {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    </select>
+                    <ChevronDown size={10} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
+                  </div>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-ink/10">
-                  <label className={labelClass}>City</label>
-                  <input required type="text" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className={inputClass} placeholder="bandung" />
+                <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
+                  <label className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
+                  <div className="relative">
+                    <select required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={inputClass} disabled={!formData.city}>
+                      <option value="">SELECT KECAMATAN</option>
+                      {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                    </select>
+                    <ChevronDown size={10} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
+                  </div>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10">
-                  <label className={labelClass}>Province</label>
-                  <input required type="text" value={formData.province} onChange={(e) => setFormData({...formData, province: e.target.value})} className={inputClass} placeholder="west java" />
+                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
+                  <label className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
+                  <div className="relative">
+                    <select required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={inputClass} disabled={!formData.kecamatan}>
+                      <option value="">SELECT KELURAHAN</option>
+                      {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
+                    </select>
+                    <ChevronDown size={10} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-ink/20 group-hover:text-rose transition-colors" />
+                  </div>
                 </div>
               </div>
             </section>
