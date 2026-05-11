@@ -35,7 +35,7 @@ export default function SupportChat() {
   const [orderId, setOrderId] = useState('');
   const [category, setCategory] = useState('');
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [_hasUnread, setHasUnread] = useState(false);
+
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -129,7 +129,7 @@ export default function SupportChat() {
         {/* Subtle breathe pulse */}
         <motion.div
           className="absolute inset-0 bg-rose rounded-full opacity-0"
-          animate={{ scale: [1, 1.3, 1], opacity: hasUnread ? [0, 0.3, 0] : [0, 0, 0] }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0, 0, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
         <AnimatePresence mode="wait">
@@ -155,14 +155,6 @@ export default function SupportChat() {
             </motion.div>
           )}
         </AnimatePresence>
-        {/* Unread dot */}
-        {hasUnread && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose rounded-full border border-ink"
-          />
-        )}
       </motion.button>
 
       {/* COMPACT PANEL - 300x480 */}
