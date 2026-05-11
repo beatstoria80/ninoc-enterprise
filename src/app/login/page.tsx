@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Lock, ArrowLeft, Mail, AlertCircle } from 'lucide-react';
+import { ArrowRight, Lock, ArrowLeft, Mail, AlertCircle, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -192,6 +192,18 @@ export default function LoginPage() {
               <span>{isLoading ? 'Memproses...' : (isSignUp ? 'Daftar' : 'Masuk')}</span>
               <ArrowRight size={14} />
             </button>
+
+            {/* Trust Security Bar */}
+            <div className="flex justify-center gap-8 pt-2">
+              <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
+                <span>Aman</span>
+              </div>
+              <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
+                <span>Enkripsi</span>
+              </div>
+            </div>
           </form>
 
           {/* Toggle */}

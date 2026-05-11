@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -329,9 +329,21 @@ export default function CheckoutPage() {
                     </div>
                   )}
                 </button>
+
+                {/* Professional Trust Bar */}
+                <div className="flex justify-center gap-8 pt-2">
+                  <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                    <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
+                    <span>Aman</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                    <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
+                    <span>Enkripsi</span>
+                  </div>
+                </div>
                 
                 {/* TRUST SIGNALS */}
-                <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="grid grid-cols-2 gap-4 pt-2">
                    <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
                       <ShieldCheck size={14} className="text-emerald-500" />
                       <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Encrypted</span>

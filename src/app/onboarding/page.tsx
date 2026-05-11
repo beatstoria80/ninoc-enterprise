@@ -182,9 +182,15 @@ export default function OnboardingPage() {
           <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-3.5 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
             {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
           </button>
-          <div className="flex justify-center gap-6 py-3">
-            <div className="flex items-center gap-2 text-xs text-ink/30"><Shield size={14} />Aman</div>
-            <div className="flex items-center gap-2 text-xs text-ink/30"><Lock size={14} />Enkripsi</div>
+          <div className="flex justify-center gap-8 py-3">
+            <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+              <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
+              <span>Aman</span>
+            </div>
+            <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+              <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
+              <span>Enkripsi</span>
+            </div>
           </div>
         </div>
       </form>
