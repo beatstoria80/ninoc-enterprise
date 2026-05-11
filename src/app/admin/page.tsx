@@ -533,7 +533,7 @@ export default function AdminDashboard() {
     sum + (p.variants?.reduce((s, v) => s + v.stock_quantity, 0) || 0), 0
   );
 
-  // Chat - fetch from support_tickets
+  // Chat - fetch from support_tickets with messages
   const fetchChatSessions = useCallback(async () => {
     try {
       const { data: tickets } = await supabase
@@ -542,31 +542,33 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
 
       if (tickets) {
-        const sessions: ChatSession[] = tickets.slice(0, 5).map((t, idx) => ({
-          id: t.id,
-          customer_name: `Customer ${idx + 1}`,
-          customer_email: `customer${idx + 1}@email.com`,
-          last_message: t.subject || 'New inquiry',
-          last_message_time: t.created_at,
-          unread_count: t.status === 'open' ? Math.floor(Math.random() * 3) + 1 : 0,
-          status: t.status === 'resolved' ? 'resolved' : 'open',
-          messages: [
-            {
-              id: '1',
-              sender: 'customer',
-              message: t.message || 'Hello, I have a question about my order.',
-              timestamp: t.created_at,
-              is_read: true
-            },
-            {
-              id: '2',
-              sender: 'admin',
-              message: 'Thank you for reaching out! How can we help you today?',
-              timestamp: new Date(new Date(t.created_at).getTime() + 300000).toISOString(),
-              is_read: true
-            }
-          ]
-        }));
+        // Fetch all messages for these tickets
+        const ticketIds = tickets.map(t => t.id);
+        const { data: allMessages } = await supabase
+          .from('support_messages')
+          .select('*')
+          .in('ticket_id', ticketIds)
+          .order('created_at', { ascending: true });
+
+        const sessions: ChatSession[] = tickets.slice(0, 10).map((t) => {
+          const ticketMessages = allMessages?.filter(m => m.ticket_id === t.id) || [];
+          return {
+            id: t.id,
+            customer_name: t.customer_name || `Customer ${t.customer_email?.split('@')[0] || 'Unknown'}`,
+            customer_email: t.customer_email || '',
+            last_message: t.subject || 'New inquiry',
+            last_message_time: t.created_at,
+            unread_count: t.status === 'open' ? (ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length) : 0,
+            status: t.status || 'open',
+            messages: ticketMessages.map(m => ({
+              id: m.id,
+              sender: m.sender_role as 'customer' | 'admin',
+              message: m.message,
+              timestamp: m.created_at,
+              is_read: m.is_read ?? true
+            }))
+          };
+        });
         setChatSessions(sessions);
       }
     } catch (error) {
@@ -582,24 +584,44 @@ export default function AdminDashboard() {
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!newMessage.trim() || !activeChatSession) return;
 
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'admin',
-      message: newMessage,
-      timestamp: new Date().toISOString(),
-      is_read: true
-    };
+    try {
+      // Save to database
+      const { data: savedMessage, error } = await supabase
+        .from('support_messages')
+        .insert({
+          ticket_id: activeChatSession.id,
+          sender_id: 'admin',
+          sender_role: 'admin',
+          message: newMessage.trim(),
+          is_read: false
+        })
+        .select()
+        .single();
 
-    setChatSessions(prev => prev.map(s =>
-      s.id === activeChatSession.id
-        ? { ...s, messages: [...s.messages, message], last_message: newMessage }
-        : s
-    ));
-    setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, message] } : null);
-    setNewMessage('');
+      if (error) throw error;
+
+      const message: ChatMessage = {
+        id: savedMessage.id,
+        sender: 'admin',
+        message: newMessage.trim(),
+        timestamp: savedMessage.created_at,
+        is_read: false
+      };
+
+      // Update local state
+      setChatSessions(prev => prev.map(s =>
+        s.id === activeChatSession.id
+          ? { ...s, messages: [...s.messages, message], last_message: newMessage }
+          : s
+      ));
+      setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, message] } : null);
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   return (
