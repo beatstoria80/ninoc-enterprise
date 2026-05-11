@@ -36,6 +36,9 @@ export default function GlobalHeader() {
   const [mounted, setMounted] = useState(false);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
     const handleScroll = () => {
@@ -142,7 +145,9 @@ export default function GlobalHeader() {
           
           <Link href={user ? "/profile" : "/login"} className="text-ink/40 hover:text-rose transition-all">
             {profileAvatar ? (
-              <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
+              <div className="relative w-5 h-5">
+                <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
+              </div>
             ) : (
               <User size={20} strokeWidth={1.5} />
             )}
