@@ -78,101 +78,117 @@ export default function TermsPage() {
   const t = content[lang];
 
   return (
-    <main className="min-h-screen bg-cr noise pb-40">
-      {/* HEADER SECTION (Static, No Overlap) */}
-      <div className="pt-32 px-6 max-w-4xl mx-auto space-y-12">
-        
-        {/* Navigation & Language Switcher */}
-        <div className="flex items-center justify-between border-b border-ink/5 pb-8">
-          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-all group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+    <main className="h-screen bg-cr noise overflow-hidden flex flex-col">
+      {/* FIXED TOP NAVIGATION */}
+      <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-6 flex items-center justify-between glass border-b border-ink/5">
+        <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
+          <ArrowLeft size={14} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
+          <div className="flex flex-col leading-none">
+            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
             <span className="text-[10px] font-medium uppercase tracking-widest">Back to Atelier</span>
-          </Link>
+          </div>
+        </Link>
 
-          <div className="flex items-center gap-3 text-[10px] font-medium tracking-widest">
-            <button 
-              onClick={() => setLang('ID')}
-              className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
-            >
-              ID
-            </button>
-            <span className="text-ink/10">|</span>
-            <button 
-              onClick={() => setLang('EN')}
-              className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
-            >
-              EN
-            </button>
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+          <span className="text-[10px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC ARCHIVE</span>
+        </div>
+
+        <div className="flex items-center gap-4 text-[10px] font-medium tracking-widest border border-ink/5 rounded-full px-4 py-2 bg-white/50">
+          <button 
+            onClick={() => setLang('ID')}
+            className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
+          >
+            ID
+          </button>
+          <span className="text-ink/5">|</span>
+          <button 
+            onClick={() => setLang('EN')}
+            className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
+          >
+            EN
+          </button>
+        </div>
+      </nav>
+
+      {/* CONTENT AREA - SINGLE SCREEN GRID */}
+      <div className="flex-1 pt-32 pb-12 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1800px] mx-auto w-full">
+        
+        {/* Compact Header */}
+        <div className="flex items-baseline gap-6 mb-10 border-b border-ink/5 pb-4">
+          <h1 className="text-3xl md:text-4xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
+            {t.title}
+          </h1>
+          <div className="flex items-center gap-3">
+             <div className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
+             <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30 whitespace-nowrap">{t.updated}</span>
           </div>
         </div>
 
-        {/* Title Section */}
-        <section className="space-y-4 text-center py-10">
-          <motion.div 
-            key={`icon-${lang}`}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-16 h-16 bg-rose/5 rounded-2xl flex items-center justify-center text-rose mx-auto mb-6"
-          >
-            <Scale size={32} />
-          </motion.div>
-          <motion.h1 
-            key={`title-${lang}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-display font-medium italic tracking-tighter text-ink uppercase"
-          >
-            {t.title}
-          </motion.h1>
-          <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-ink/20">{t.updated}</p>
-        </section>
-
-        {/* Content Section */}
-        <AnimatePresence mode="wait">
-          <motion.article 
-            key={lang}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-16"
-          >
-            {t.sections.map((section, idx) => (
-              <div key={idx} className="space-y-6">
-                <h2 className="text-xl font-display font-medium italic text-ink border-l-4 border-rose pl-6 uppercase tracking-tight">
-                  {section.title}
-                </h2>
-                {section.text && (
-                  <p className="text-sm font-medium leading-relaxed text-ink/60 pl-7">
-                    {section.text}
-                  </p>
-                )}
-                {section.items && (
-                  <ul className="space-y-4 pl-7">
-                    {section.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-4 text-sm font-medium text-ink/60">
-                        <div className="w-1.5 h-1.5 bg-rose rounded-full mt-2 flex-shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+        {/* High-Density Industrial Grid */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+          
+          {/* Sector A: Primary Rules */}
+          <div className="space-y-6 flex flex-col">
+            {[t.sections[0], t.sections[1]].map((section, idx) => (
+              <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-4 shadow-sm flex-1">
+                <div className="flex items-center gap-3 border-b border-ink/5 pb-2">
+                   <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 1}</span>
+                   <h2 className="text-[11px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+                </div>
+                <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+                  {section.text}
+                </p>
               </div>
             ))}
+          </div>
 
-            {/* Trust Indicator */}
-            <div className="pt-20 border-t border-ink/5 flex flex-col items-center gap-6">
-              <div className="flex items-center gap-8 opacity-20">
-                <Globe size={24} />
-                <Languages size={24} />
-                <Shield size={24} />
+          {/* Sector B: Logistics & Change */}
+          <div className="space-y-6 flex flex-col">
+            {[t.sections[2], t.sections[3]].map((section, idx) => (
+              <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-4 shadow-sm flex-1">
+                <div className="flex items-center gap-3 border-b border-ink/5 pb-2">
+                   <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 0{idx + 3}</span>
+                   <h2 className="text-[11px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+                </div>
+                <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+                  {section.text}
+                </p>
               </div>
-              <p className="text-[9px] font-medium uppercase tracking-[0.5em] text-ink/10 text-center">
-                NINOC ENTERPRISE — LEGAL ARCHIVE SYSTEM v2.0
+            ))}
+          </div>
+
+          {/* Sector C: Returns & Final Archive */}
+          <div className="flex flex-col space-y-6">
+            <div className="bg-ink text-white p-6 rounded-xl space-y-4 flex-1 shadow-xl">
+               <div className="flex items-center gap-3 border-b border-white/10 pb-2">
+                  <span className="text-[9px] font-medium text-rose tracking-tighter uppercase">Section 05</span>
+                  <h2 className="text-[11px] font-display font-medium italic text-white uppercase tracking-wider">{t.sections[4].title}</h2>
+               </div>
+               <ul className="space-y-3">
+                 {t.sections[4].items?.map((item, i) => (
+                   <li key={i} className="flex items-start gap-3 text-[9px] font-medium uppercase tracking-widest text-white/60">
+                     <div className="w-1 h-1 bg-rose rounded-full mt-1.5 flex-shrink-0" />
+                     <span>{item}</span>
+                   </li>
+                 ))}
+               </ul>
+            </div>
+
+            {/* Micro Archive Footer */}
+            <div className="bg-white/30 border border-ink/5 rounded-xl p-6 flex flex-col items-center justify-center gap-4 text-center">
+              <div className="flex items-center gap-6 opacity-20">
+                <Globe size={18} />
+                <Scale size={18} />
+                <Shield size={18} />
+              </div>
+              <p className="text-[7px] font-medium uppercase tracking-[0.6em] text-ink/30 leading-relaxed">
+                NINOC ENTERPRISE — LEGAL ARCHIVE PROTOCOL<br/>
+                HIGH-INTEGRITY DOCUMENTATION SYSTEM v2.1
               </p>
             </div>
-          </motion.article>
-        </AnimatePresence>
+          </div>
+
+        </div>
       </div>
     </main>
   );
