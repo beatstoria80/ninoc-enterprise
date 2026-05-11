@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown, User, Phone } from 'lucide-react';
+import { ArrowRight, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
