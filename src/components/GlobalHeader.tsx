@@ -88,7 +88,14 @@ export default function GlobalHeader() {
   }, [searchQuery]);
 
   if (!mounted) return null;
-  if (pathname === '/checkout' || pathname?.startsWith('/admin')) {
+  if (
+    pathname === '/checkout' ||
+    pathname === '/login' ||
+    pathname === '/onboarding' ||
+    pathname === '/payment/success' ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/profile/orders')
+  ) {
     return null;
   }
 
