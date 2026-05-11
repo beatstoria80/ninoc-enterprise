@@ -1,123 +1,121 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
+import { ArrowLeft, Scale, Globe, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PrivacyPage() {
   const [lang, setLang] = useState<'ID' | 'EN'>('ID');
 
   const content = {
-    ID: {
-      title: "Privacy Policy",
-      updated: "Terakhir Diperbarui: 7 Mei 2026",
-      sections: [
-        {
-          title: "Keamanan Data",
-          text: "NINOC ATELIER menjamin kerahasiaan informasi pelanggan. Data Anda tidak akan disalahgunakan atau dijual kepada pihak ketiga."
-        },
-        {
-          title: "Koleksi Informasi",
-          text: "Kami mengumpulkan informasi identitas seperti nama, email, dan alamat pengiriman hanya untuk keperluan pemrosesan pesanan."
-        },
-        {
-          title: "Transaksi Aman",
-          text: "Semua transaksi diproses melalui gateway pembayaran Midtrans yang terenkripsi. Kami tidak menyimpan data kartu kredit Anda."
-        }
+    EN: {
+      title: "LEGAL ARCHIVE",
+      updated: "VER 2.1 / MAY 2026",
+      terms: [
+        { id: "T1", title: "Conditions of Use", text: "NINOC ATELIER is offered to you conditioned on your acceptance of the terms contained herein. Use of this Site constitutes agreement." },
+        { id: "T2", title: "Overview", text: "By using this Site, you agree to these Terms, guidelines and rules. If you do not agree, you must exit the Site immediately." },
+        { id: "T3", title: "Modification", text: "NINOC reserves the right to change prices and content at any time without prior notice. Continued use constitutes agreement." },
+        { id: "T4", title: "Shipment", text: "Risk of loss passes to you upon our delivery to the carrier. All items are made pursuant to a shipment contract." },
+        { id: "T5", title: "Returns", text: "Items must be returned within 7 days in original condition. Sale items are not eligible for returns." }
+      ],
+      privacy: [
+        { id: "P1", title: "Data Security", text: "We guarantee confidentiality. Your information will not be misused, abused or sold to third parties." },
+        { id: "P2", title: "Info Collection", text: "We collect name, email, and address for order processing only. Data is protected by industrial encryption." },
+        { id: "P3", title: "Transactions", text: "Processed through Midtrans secure gateway. We do not store credit card or sensitive financial info." }
       ]
     },
-    EN: {
-      title: "Privacy Policy",
-      updated: "Last Updated: May 7, 2026",
-      sections: [
-        {
-          title: "Data Security",
-          text: "NINOC ATELIER guarantees the confidentiality of customer information. Your data will not be misused or sold to third parties."
-        },
-        {
-          title: "Info Collection",
-          text: "We collect identity information such as name, email, and shipping address only for order processing purposes."
-        },
-        {
-          title: "Secure Payment",
-          text: "All transactions are processed through encrypted Midtrans payment gateways. We do not store your credit card data."
-        }
+    ID: {
+      title: "ARSIP LEGAL",
+      updated: "VER 2.1 / MEI 2026",
+      terms: [
+        { id: "T1", title: "Syarat Penggunaan", text: "NINOC ATELIER ditawarkan kepada Anda dengan syarat penerimaan Anda atas ketentuan ini. Penggunaan Situs merupakan persetujuan." },
+        { id: "T2", title: "Ringkasan", text: "Dengan menggunakan Situs ini, Anda menyetujui Syarat dan Ketentuan ini, serta ketentuan, pedoman, atau aturan lain yang berlaku. Jika tidak setuju, silakan tinggalkan Situs." },
+        { id: "T3", title: "Perubahan", text: "NINOC berhak mengubah harga dan konten kapan saja tanpa pemberitahuan. Penggunaan berkelanjutan adalah bentuk persetujuan." },
+        { id: "T4", title: "Pengiriman", text: "Risiko kehilangan berpindah tangan setelah penyerahan barang ke pihak ekspedisi berdasarkan kontrak pengiriman." },
+        { id: "T5", title: "Pengembalian", text: "Barang harus dikembalikan dalam 7 hari dengan kondisi asli. Barang diskon tidak dapat dikembalikan." }
+      ],
+      privacy: [
+        { id: "P1", title: "Keamanan Data", text: "Kami menjamin kerahasiaan data. Informasi Anda tidak akan disalahgunakan atau dijual kepada pihak ketiga." },
+        { id: "P2", title: "Koleksi Data", text: "Kami mengumpulkan nama dan alamat hanya untuk pengiriman. Data dilindungi oleh enkripsi standar industri." },
+        { id: "P3", title: "Transaksi", text: "Diproses melalui gateway Midtrans. Kami tidak menyimpan data kartu kredit atau info keuangan sensitif Anda." }
       ]
     }
   };
 
   const t = content[lang];
+  const allSections = [...t.terms, ...t.privacy];
 
   return (
     <main className="h-screen bg-cr noise overflow-hidden flex flex-col">
-      {/* FIXED TOP NAVIGATION */}
-      <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-6 flex items-center justify-between glass border-b border-ink/5">
+      {/* COMPACT NAV */}
+      <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-4 flex items-center justify-between glass border-b border-ink/5">
         <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
-          <ArrowLeft size={14} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={12} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           <div className="flex flex-col leading-none">
-            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
-            <span className="text-[10px] font-medium uppercase tracking-widest">Back to Atelier</span>
+            <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
+            <span className="text-[9px] font-medium uppercase tracking-widest text-ink">Back to Atelier</span>
           </div>
         </Link>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-          <span className="text-[10px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC ARCHIVE</span>
+          <span className="text-[9px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC ARCHIVE</span>
         </div>
 
-        <div className="flex items-center gap-4 text-[10px] font-medium tracking-widest border border-ink/5 rounded-full px-4 py-2 bg-white/50">
-          <button 
-            onClick={() => setLang('ID')}
-            className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
-          >
-            ID
-          </button>
+        <div className="flex items-center gap-4 text-[9px] font-medium tracking-widest border border-ink/5 rounded-full px-3 py-1.5 bg-white/50 shadow-sm">
+          <button onClick={() => setLang('ID')} className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>ID</button>
           <span className="text-ink/5">|</span>
-          <button 
-            onClick={() => setLang('EN')}
-            className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}
-          >
-            EN
-          </button>
+          <button onClick={() => setLang('EN')} className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>EN</button>
         </div>
       </nav>
 
-      {/* CONTENT AREA */}
-      <div className="flex-1 pt-24 pb-8 px-6 md:px-12 overflow-hidden flex flex-col max-w-[1400px] mx-auto w-full">
+      {/* UNIFIED ARCHIVE GRID */}
+      <div className="flex-1 pt-20 pb-6 px-6 md:px-12 flex flex-col max-w-[1900px] mx-auto w-full overflow-hidden">
         
-        {/* Compact Header */}
-        <div className="flex items-baseline gap-4 mb-6 border-b border-ink/5 pb-2">
-          <h1 className="text-2xl md:text-3xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">
-            {t.title}
-          </h1>
+        {/* Minimal Header */}
+        <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
+          <div className="flex items-baseline gap-4">
+            <h1 className="text-xl md:text-2xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">{t.title}</h1>
+            <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">{t.updated}</span>
+          </div>
           <div className="flex items-center gap-2">
-             <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
-             <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20 whitespace-nowrap">{t.updated}</span>
+             <div className="w-1 h-1 rounded-full bg-emerald-500" />
+             <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600/50">System Live</span>
           </div>
         </div>
 
-        {/* High-Density Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 overflow-hidden pb-4">
-          {t.sections.map((section, idx) => (
-            <div key={idx} className="bg-white border border-ink/5 p-6 rounded-xl space-y-3 shadow-dashboard flex flex-col justify-center overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-ink/5 pb-1">
-                 <ShieldCheck size={12} className="text-rose" />
-                 <h2 className="text-[10px] font-display font-medium italic text-ink uppercase tracking-wider">{section.title}</h2>
+        {/* 4x2 Industrial Grid */}
+        <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-2 pb-2">
+          {allSections.map((s) => (
+            <div key={s.id} className="bg-white border border-ink/5 p-4 rounded-lg flex flex-col justify-between shadow-sm hover:border-rose/20 transition-all group overflow-hidden">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between border-b border-ink/5 pb-1">
+                  <span className="text-[7px] font-medium text-rose tracking-tighter uppercase">{s.id}</span>
+                  <h2 className="text-[9px] font-display font-medium italic text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h2>
+                </div>
+                <p className="text-[9px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide">
+                  {s.text}
+                </p>
               </div>
-              <p className="text-[9px] font-medium leading-tight text-ink/50 uppercase tracking-wide">
-                {section.text}
-              </p>
+              <div className="pt-2 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                 <Scale size={8} className="text-rose" />
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Minimal Footer */}
-        <div className="pt-6 flex justify-between items-center opacity-20 border-t border-ink/5">
-           <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink">© 2026 NINOC ENTERPRISE - PRIVACY ARCHIVE</p>
-           <div className="flex gap-4">
-              <Lock size={10} />
-              <ShieldCheck size={10} />
-           </div>
+        {/* High-Density Global Legal Footer */}
+        <div className="mt-2 pt-2 border-t border-ink/5 flex justify-between items-center opacity-30">
+          <div className="flex gap-6">
+             <div className="flex items-center gap-2">
+                <Shield size={10} strokeWidth={1.5} />
+                <span className="text-[7px] font-medium uppercase tracking-widest">Encrypted Archive</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <Globe size={10} strokeWidth={1.5} />
+                <span className="text-[7px] font-medium uppercase tracking-widest">Global Protocol</span>
+             </div>
+          </div>
+          <p className="text-[7px] font-medium uppercase tracking-[0.5em] text-ink">NINOC ENTERPRISE — LEGAL ARCHIVE SYSTEM v2.1</p>
         </div>
       </div>
     </main>
