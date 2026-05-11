@@ -176,20 +176,25 @@ export default function SupportChat() {
 
     const newMessage = {
       ticket_id: targetTicket.id,
-      sender_id: user?.id || '00000000-0000-0000-0000-000000000000',
+      sender_id: null,
       sender_role: 'customer' as const,
       message: msgToSend.trim()
     };
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('support_messages')
       .insert(newMessage)
       .select()
       .single();
 
+    if (error) {
+      console.error('[sendMessage] Supabase error:', error.code, error.message);
+      return;
+    }
+
     if (data) {
       if (activeTicket?.id === targetTicket.id) {
-        setChatMessages([...chatMessages, data]);
+        setChatMessages(prev => [...prev, data]);
       }
       setMessage('');
     }
