@@ -71,6 +71,7 @@ export default function SupportChat() {
     setNotifCount(0);
   }, []);
 
+  // Fetch logged-in user OR allow guest mode
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -80,10 +81,12 @@ export default function SupportChat() {
           setUser(user);
           fetchTickets(user.id);
         } else {
-          console.log('[Support] No active session found.');
+          // Guest mode: no user, but still show UI and allow chat
+          console.log('[Support] Guest mode active.');
         }
       } catch (err) {
-        console.error('[Support] Connection error:', err);
+        // Guest mode on error — still allow chat
+        console.log('[Support] Guest mode active (auth error):', err);
       }
     };
     fetchUser();
@@ -91,8 +94,6 @@ export default function SupportChat() {
 
   // Real-time subscription for new admin messages
   useEffect(() => {
-    if (!user) return;
-
     const channel = supabase
       .channel('support-realtime')
       .on(
@@ -195,16 +196,17 @@ export default function SupportChat() {
   };
 
   const startGeneralChat = async () => {
-    if (!message.trim() || !user) return;
+    if (!message.trim()) return;
     if (message.length > 500) return;
 
+    // Create or find General Inquiry ticket (guest: user_id = null)
     let genTicket = tickets.find(t => t.subject === 'General Inquiry');
 
     if (!genTicket) {
       const { data } = await supabase
         .from('support_tickets')
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           subject: 'General Inquiry',
           category: 'other',
           status: 'open'
@@ -469,23 +471,21 @@ export default function SupportChat() {
                               startGeneralChat();
                             }
                           }}
-                          placeholder={user ? "Direct inquiry..." : "Please sign in to inquire..."}
-                          disabled={!user}
-                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none no-scrollbar min-h-[40px] disabled:opacity-50"
+                          placeholder="Direct inquiry..."
+                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none no-scrollbar min-h-[40px]"
                         />
                         <motion.button
                           whileHover={user ? { scale: 1.1, color: '#E8527A' } : {}}
                           whileTap={user ? { scale: 0.9 } : {}}
                           onClick={startGeneralChat}
-                          disabled={!user}
-                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5 disabled:opacity-30"
+                          className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
                         >
                           <Send size={12} strokeWidth={2.5} />
                         </motion.button>
                       </div>
                       <div className="flex justify-between items-center px-0.5">
                         <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15">
-                          {user ? "Studio Direct Channel" : "Origin Offline"}
+                          {user ? "Studio Direct Channel" : "Guest Mode — Chat Active"}
                         </p>
                         <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
                           {message.length}/500
