@@ -172,11 +172,11 @@ export default function SupportChat() {
     const msgToSend = overrideMessage || message;
     const targetTicket = overrideTicket || activeTicket;
 
-    if (!msgToSend.trim() || !targetTicket || !user) return;
+    if (!msgToSend.trim() || !targetTicket) return;
 
     const newMessage = {
       ticket_id: targetTicket.id,
-      sender_id: user.id,
+      sender_id: user?.id || '00000000-0000-0000-0000-000000000000',
       sender_role: 'customer' as const,
       message: msgToSend.trim()
     };
