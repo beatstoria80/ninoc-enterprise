@@ -35,7 +35,7 @@ export default function SupportChat() {
   const [orderId, setOrderId] = useState('');
   const [category, setCategory] = useState('');
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [hasUnread, setHasUnread] = useState(false);
+  const [_hasUnread, setHasUnread] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

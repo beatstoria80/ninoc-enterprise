@@ -172,7 +172,7 @@ const SidebarItem = ({
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   
-  const [isLoading, setIsLoading] = useState(true);
+
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
