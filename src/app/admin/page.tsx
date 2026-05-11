@@ -1421,15 +1421,15 @@ export default function AdminDashboard() {
                               }
                             }}
                             placeholder="Type archival response..."
-                            className="flex-1 bg-ink text-white py-3.5 px-5 rounded-[5px] text-[10px] font-medium outline-none placeholder:text-white/20 shadow-xl shadow-ink/10 transition-all focus:ring-1 focus:ring-rose/30 resize-none no-scrollbar min-h-[48px]"
+                            className="flex-1 bg-ink/[0.03] text-ink py-3.5 px-5 rounded-[5px] text-[11px] font-medium outline-none border border-ink/5 placeholder:text-ink/20 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[48px]"
                           />
                           <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.1, color: '#E8527A' }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => sendMessage()}
-                            className="w-12 h-12 bg-rose text-white rounded-[5px] flex items-center justify-center hover:bg-rose-600 transition-all duration-300 shadow-lg shadow-rose/20 shrink-0"
+                            className="w-10 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
                           >
-                            <Send size={16} />
+                            <Send size={16} strokeWidth={2} />
                           </motion.button>
                         </div>
                         <div className="flex justify-between items-center mt-3 px-1">
