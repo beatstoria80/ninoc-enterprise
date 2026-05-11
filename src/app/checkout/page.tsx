@@ -14,6 +14,11 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+interface LocationItem {
+  id: string;
+  name: string;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCart();
@@ -38,11 +43,6 @@ export default function CheckoutPage() {
     province: '',
     postal_code: ''
   });
-
-  interface LocationItem {
-    id: string;
-    name: string;
-  }
 
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
   const [cities, setCities] = useState<LocationItem[]>([]);
@@ -85,10 +85,16 @@ export default function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Case-insensitive search to handle API vs Fallback differences
+  const findLocationByName = (list: LocationItem[], name: string) => {
+    if (!name) return null;
+    return list.find(item => item.name.toUpperCase() === name.toUpperCase()) || null;
+  };
+
   // Fetch Cities when Province changes
   const fetchCities = async (provinceName: string) => {
-    const province = provinces.find(p => p.name === provinceName);
-    if (!province) return;
+    const province = findLocationByName(provinces, provinceName);
+    if (!province) return null;
     setLoadingLoc(prev => ({ ...prev, c: true }));
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${province.id}.json`);
@@ -98,6 +104,7 @@ export default function CheckoutPage() {
       return data;
     } catch (e) {
       console.error('[fetchCities] Fetch failed:', e);
+      return null;
     } finally {
       setLoadingLoc(prev => ({ ...prev, c: false }));
     }
@@ -106,13 +113,13 @@ export default function CheckoutPage() {
   const handleProvinceChange = async (name: string) => {
     setFormData(prev => ({ ...prev, province: name, city: '', kecamatan: '', kelurahan: '' }));
     setCities([]); setDistricts([]); setVillages([]);
-    await fetchCities(name);
+    if (name) await fetchCities(name);
   };
 
   // Fetch Districts when City changes
   const fetchDistricts = async (cityName: string, currentCities: LocationItem[]) => {
-    const city = currentCities.find(c => c.name === cityName);
-    if (!city) return;
+    const city = findLocationByName(currentCities, cityName);
+    if (!city) return null;
     setLoadingLoc(prev => ({ ...prev, d: true }));
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${city.id}.json`);
@@ -122,6 +129,7 @@ export default function CheckoutPage() {
       return data;
     } catch (e) {
       console.error('[fetchDistricts] Fetch failed:', e);
+      return null;
     } finally {
       setLoadingLoc(prev => ({ ...prev, d: false }));
     }
@@ -130,13 +138,13 @@ export default function CheckoutPage() {
   const handleCityChange = async (name: string) => {
     setFormData(prev => ({ ...prev, city: name, kecamatan: '', kelurahan: '' }));
     setDistricts([]); setVillages([]);
-    await fetchDistricts(name, cities);
+    if (name) await fetchDistricts(name, cities);
   };
 
   // Fetch Villages when District changes
   const fetchVillages = async (districtName: string, currentDistricts: LocationItem[]) => {
-    const district = currentDistricts.find(d => d.name === districtName);
-    if (!district) return;
+    const district = findLocationByName(currentDistricts, districtName);
+    if (!district) return null;
     setLoadingLoc(prev => ({ ...prev, v: true }));
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${district.id}.json`);
@@ -146,6 +154,7 @@ export default function CheckoutPage() {
       return data;
     } catch (e) {
       console.error('[fetchVillages] Fetch failed:', e);
+      return null;
     } finally {
       setLoadingLoc(prev => ({ ...prev, v: false }));
     }
@@ -154,7 +163,7 @@ export default function CheckoutPage() {
   const handleDistrictChange = async (name: string) => {
     setFormData(prev => ({ ...prev, kecamatan: name, kelurahan: '' }));
     setVillages([]);
-    await fetchVillages(name, districts);
+    if (name) await fetchVillages(name, districts);
   };
 
   useEffect(() => {
@@ -182,12 +191,12 @@ export default function CheckoutPage() {
           };
           setFormData(newData);
           
-          // Trigger cascading fetches
+          // Trigger cascading fetches sequentially with proper error handling
           if (newData.province) {
             const loadedCities = await fetchCities(newData.province);
-            if (newData.city && loadedCities) {
+            if (newData.city && Array.isArray(loadedCities)) {
               const loadedDistricts = await fetchDistricts(newData.city, loadedCities);
-              if (newData.kecamatan && loadedDistricts) {
+              if (newData.kecamatan && Array.isArray(loadedDistricts)) {
                 await fetchVillages(newData.kecamatan, loadedDistricts);
               }
             }
@@ -261,9 +270,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10 relative z-50";
-  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md relative z-50";
-  const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block relative z-50";
+  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10";
+  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md disabled:opacity-50 disabled:cursor-not-allowed";
+  const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
 
   return (
     <main className="min-h-screen bg-cr">
@@ -291,9 +300,9 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <div className="pt-24 px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-[1600px] mx-auto relative z-10">
+      <div className="pt-24 px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-[1600px] mx-auto">
         {/* FORM AREA */}
-        <div className="lg:col-span-6 space-y-8 relative z-10">
+        <div className="lg:col-span-6 space-y-8">
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-8">
             
             {/* 01: IDENTITY */}
@@ -305,22 +314,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10 overflow-hidden rounded-lg shadow-sm">
+              <div className="grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
                 <div className="bg-white p-3">
-                  <label className={labelClass}>First Name</label>
-                  <input required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="john" />
+                  <label htmlFor="first_name" className={labelClass}>First Name</label>
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="john" />
                 </div>
                 <div className="bg-white p-3 border-l border-ink/10">
-                  <label className={labelClass}>Last Name</label>
-                  <input required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="doe" />
+                  <label htmlFor="last_name" className={labelClass}>Last Name</label>
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="doe" />
                 </div>
                 <div className="bg-white p-3 border-t border-ink/10">
-                  <label className={labelClass}>Email Archive</label>
-                  <input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="mail@archive.com" />
+                  <label htmlFor="email" className={labelClass}>Email Archive</label>
+                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="mail@archive.com" />
                 </div>
                 <div className="bg-white p-3 border-t border-l border-ink/10">
-                  <label className={labelClass}>Phone Reference</label>
-                  <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="08..." />
+                  <label htmlFor="phone" className={labelClass}>Phone Reference</label>
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="08..." />
                 </div>
               </div>
             </section>
@@ -334,49 +343,49 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-6 gap-[1px] bg-ink/10 border border-ink/10 overflow-hidden rounded-lg shadow-sm">
+              <div className="grid grid-cols-6 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
                 <div className="col-span-6 bg-white p-3">
-                  <label className={labelClass}>Street / Building / Archive Loc.</label>
-                  <input required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="jl. merdeka" />
+                  <label htmlFor="street" className={labelClass}>Street / Building / Archive Loc.</label>
+                  <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="jl. merdeka" />
                 </div>
                 
                 <div className="col-span-2 bg-white p-3 border-t border-ink/10">
-                  <label className={labelClass}>No</label>
-                  <input required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
+                  <label htmlFor="house_number" className={labelClass}>No</label>
+                  <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
                 </div>
                 <div className="col-span-2 bg-white p-3 border-t border-l border-ink/10">
-                  <label className={labelClass}>RT</label>
-                  <input required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="01" />
+                  <label htmlFor="rt" className={labelClass}>RT</label>
+                  <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="01" />
                 </div>
                 <div className="col-span-2 bg-white p-3 border-t border-l border-ink/10">
-                  <label className={labelClass}>RW</label>
-                  <input required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="05" />
+                  <label htmlFor="rw" className={labelClass}>RW</label>
+                  <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="05" />
                 </div>
 
-                <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
-                  <label className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
-                  <select required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass}>
+                <div className="col-span-3 bg-white p-3 border-t border-ink/10">
+                  <label htmlFor="province" className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
+                  <select id="province" required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass} disabled={loadingLoc.p}>
                     <option value="">SELECT PROVINCE</option>
                     {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
-                  <label className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
-                  <select required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province}>
+                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10">
+                  <label htmlFor="city" className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
+                  <select id="city" required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province || loadingLoc.c}>
                     <option value="">SELECT CITY</option>
                     {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-ink/10 relative group">
-                  <label className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
-                  <select required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city}>
+                <div className="col-span-3 bg-white p-3 border-t border-ink/10">
+                  <label htmlFor="kecamatan" className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
+                  <select id="kecamatan" required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city || loadingLoc.d}>
                     <option value="">SELECT KECAMATAN</option>
                     {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                   </select>
                 </div>
-                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10 relative group">
-                  <label className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
-                  <select required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan}>
+                <div className="col-span-3 bg-white p-3 border-t border-l border-ink/10">
+                  <label htmlFor="kelurahan" className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
+                  <select id="kelurahan" required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan || loadingLoc.v}>
                     <option value="">SELECT KELURAHAN</option>
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
@@ -391,7 +400,7 @@ export default function CheckoutPage() {
                 <h2 className="text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Partner</h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-[1px] bg-ink/10 border border-ink/10 overflow-hidden rounded-lg shadow-sm">
+              <div className="grid grid-cols-3 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
                 {shippingOptions.map((option) => (
                   <button
                     key={option.id}
