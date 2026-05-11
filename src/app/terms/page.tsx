@@ -101,19 +101,19 @@ export default function LegalArchivePage() {
           <div className="bg-white border border-ink/5 rounded-xl flex flex-col overflow-hidden shadow-dashboard">
              <div className="px-6 py-4 border-b border-ink/5 bg-ink/[0.02] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                   <FileText size={14} className="text-rose" />
-                   <h2 className="text-[11px] font-display font-medium italic text-ink tracking-widest">{t.terms.title}</h2>
+                   <FileText size={16} className="text-rose" />
+                   <h2 className="text-[14px] font-display font-medium italic text-ink tracking-widest">{t.terms.title}</h2>
                 </div>
-                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector A / Archive</span>
+                <span className="text-[9px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector A / Archive</span>
              </div>
-             <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
+             <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
                 {t.terms.sections.map((s) => (
-                  <div key={s.id} className="space-y-2 group">
+                  <div key={s.id} className="space-y-3 group">
                      <div className="flex items-center gap-3">
-                        <span className="text-[8px] font-medium text-rose tabular-nums">{s.id}</span>
-                        <h3 className="text-[9px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
+                        <span className="text-[10px] font-medium text-rose tabular-nums">{s.id}</span>
+                        <h3 className="text-[12px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
                      </div>
-                     <p className="text-[10px] font-medium leading-relaxed text-ink/40 uppercase tracking-wide pl-6">
+                     <p className="text-[13px] font-medium leading-relaxed text-ink/50 uppercase tracking-wide pl-7">
                         {s.text}
                      </p>
                   </div>
@@ -125,19 +125,19 @@ export default function LegalArchivePage() {
           <div className="bg-white border border-ink/5 rounded-xl flex flex-col overflow-hidden shadow-dashboard">
              <div className="px-6 py-4 border-b border-ink/5 bg-ink/[0.02] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                   <Lock size={14} className="text-rose" />
-                   <h2 className="text-[11px] font-display font-medium italic text-ink tracking-widest">{t.privacy.title}</h2>
+                   <Lock size={16} className="text-rose" />
+                   <h2 className="text-[14px] font-display font-medium italic text-ink tracking-widest">{t.privacy.title}</h2>
                 </div>
-                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector B / Archive</span>
+                <span className="text-[9px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector B / Archive</span>
              </div>
-             <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-8">
+             <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10">
                 {t.privacy.sections.map((s) => (
-                  <div key={s.id} className="space-y-2 group">
+                  <div key={s.id} className="space-y-3 group">
                      <div className="flex items-center gap-3">
-                        <span className="text-[8px] font-medium text-rose tabular-nums">{s.id}</span>
-                        <h3 className="text-[9px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
+                        <span className="text-[10px] font-medium text-rose tabular-nums">{s.id}</span>
+                        <h3 className="text-[12px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
                      </div>
-                     <p className="text-[10px] font-medium leading-relaxed text-ink/40 uppercase tracking-wide pl-6">
+                     <p className="text-[13px] font-medium leading-relaxed text-ink/50 uppercase tracking-wide pl-7">
                         {s.text}
                      </p>
                   </div>
