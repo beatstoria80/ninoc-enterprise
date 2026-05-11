@@ -537,29 +537,28 @@ export default function AdminDashboard() {
   // Chat - fetch from support_tickets with messages
   const fetchChatSessions = useCallback(async () => {
     try {
-      const { data: tickets } = await supabase
+      const { data: ticketsData } = await supabase
         .from('support_tickets')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (tickets) {
-        // Fetch all messages for these tickets
-        const ticketIds = tickets.map(t => t.id);
+      if (ticketsData) {
+        const ticketIds = ticketsData.map(t => t.id);
         const { data: allMessages } = await supabase
           .from('support_messages')
           .select('*')
           .in('ticket_id', ticketIds)
           .order('created_at', { ascending: true });
 
-        const sessions: ChatSession[] = tickets.slice(0, 10).map((t) => {
+        const sessions: ChatSession[] = ticketsData.map((t) => {
           const ticketMessages = allMessages?.filter(m => m.ticket_id === t.id) || [];
           return {
             id: t.id,
-            customer_name: t.customer_name || `Customer ${t.customer_email?.split('@')[0] || 'Unknown'}`,
-            customer_email: t.customer_email || '',
-            last_message: t.subject || 'New inquiry',
-            last_message_time: t.created_at,
-            unread_count: t.status === 'open' ? (ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length) : 0,
+            customer_name: t.subject || `Inquiry ${t.id.split('-')[0]}`,
+            customer_email: t.category || 'general',
+            last_message: ticketMessages[ticketMessages.length - 1]?.message || 'No messages',
+            last_message_time: ticketMessages[ticketMessages.length - 1]?.created_at || t.created_at,
+            unread_count: ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length,
             status: t.status || 'open',
             messages: ticketMessages.map(m => ({
               id: m.id,
@@ -576,6 +575,48 @@ export default function AdminDashboard() {
       console.error('Failed to fetch chat sessions:', error);
     }
   }, []);
+
+  // Real-time subscription for support messages
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_support_messages')
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'support_messages' 
+      }, () => {
+        fetchChatSessions();
+      })
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'support_tickets'
+      }, () => {
+        fetchChatSessions();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchChatSessions]);
+
+  // Mark messages as read when session is active
+  useEffect(() => {
+    if (activeChatSession && activeTab === 'messages') {
+      const unreadCount = activeChatSession.messages.filter(m => !m.is_read && m.sender === 'customer').length;
+      if (unreadCount > 0) {
+        supabase
+          .from('support_messages')
+          .update({ is_read: true })
+          .eq('ticket_id', activeChatSession.id)
+          .eq('sender_role', 'customer')
+          .then(() => {
+            fetchChatSessions();
+          });
+      }
+    }
+  }, [activeChatSession, activeTab, fetchChatSessions]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -1235,7 +1276,7 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
-            {/* ===== MESSAGES / CHAT ===== */}
+            {/* ===== ARCHIVAL INQUIRIES ===== */}
             {activeTab === 'messages' && (
               <motion.div
                 key="messages"
@@ -1244,97 +1285,86 @@ export default function AdminDashboard() {
                 className="h-[calc(100vh-160px)] flex gap-6"
               >
                 {/* Chat List */}
-                <div className="w-80 bg-white rounded-xl border border-gray-100 flex flex-col">
-                  <div className="p-4 border-b border-gray-100">
-                    <h3 className="font-medium text-gray-900">Messages</h3>
-                    <p className="text-[10px] text-gray-400 mt-1">{chatSessions.length} conversations</p>
+                <div className="w-80 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">
+                  <div className="p-5 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
+                    <div>
+                      <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Archive Inquiries</h3>
+                      <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1.5">{chatSessions.length} sessions active</p>
+                    </div>
+                    <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
                   </div>
-                  <div className="flex-1 overflow-y-auto">
+                  <div className="flex-1 overflow-y-auto no-scrollbar">
                     {chatSessions.map((session) => (
-                      <div
+                      <button
                         key={session.id}
-                        onClick={() => setActiveChatSession(session)}
+                        onClick={() => {
+                          setActiveChatSession(session);
+                        }}
                         className={cn(
-                          "p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors",
-                          activeChatSession?.id === session.id && "bg-rose/5 border-l-2 border-l-rose"
+                          "w-full p-5 text-left border-b border-ink/[0.03] transition-all duration-300 group relative",
+                          activeChatSession?.id === session.id ? "bg-ink/[0.02]" : "hover:bg-ink/[0.01]"
                         )}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                            <User size={18} className="text-gray-400" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <p className="font-medium text-sm text-gray-900 truncate">{session.customer_name}</p>
-                              <span className="text-[8px] text-gray-400">
-                                {new Date(session.last_message_time).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-gray-500 truncate mt-0.5">{session.last_message}</p>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className={cn(
-                                "text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full",
-                                session.status === 'open' ? "bg-emerald-100 text-emerald-600" : "bg-gray-100 text-gray-500"
-                              )}>
-                                {session.status}
-                              </span>
-                              {session.unread_count > 0 && (
-                                <span className="w-5 h-5 bg-rose text-white text-[8px] rounded-full flex items-center justify-center">
-                                  {session.unread_count}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                        {activeChatSession?.id === session.id && (
+                          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-rose" />
+                        )}
+                        <div className="flex justify-between items-start mb-1.5">
+                          <span className="text-[9px] font-medium text-ink uppercase truncate pr-4">{session.customer_name}</span>
+                          <span className="text-[6px] text-ink/20 uppercase font-medium">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                      </div>
+                        <div className="flex justify-between items-end">
+                          <p className="text-[8px] text-ink/40 truncate flex-1 leading-snug lowercase tracking-tight">{session.last_message}</p>
+                          {session.unread_count > 0 && (
+                            <span className="bg-rose text-white text-[6px] font-bold px-1.5 py-0.5 rounded-[2px] ml-2 shrink-0">{session.unread_count}</span>
+                          )}
+                        </div>
+                        <div className="mt-2 flex gap-1.5">
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">SPEC: {session.customer_email}</span>
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">•</span>
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">ID: {session.id.split('-')[0]}</span>
+                        </div>
+                      </button>
                     ))}
                     {chatSessions.length === 0 && (
-                      <div className="p-8 text-center text-gray-400">
-                        <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
-                        <p className="text-sm">No messages yet</p>
+                      <div className="p-12 text-center flex flex-col items-center justify-center space-y-4 opacity-20">
+                        <MessageSquare size={24} strokeWidth={1} />
+                        <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">No active inquiries</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Chat Window */}
-                <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col">
+                {/* Chat Area */}
+                <div className="flex-1 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">
                   {activeChatSession ? (
                     <>
                       {/* Chat Header */}
-                      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                            <User size={18} className="text-gray-400" />
+                      <div className="p-5 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-ink rounded-[5px] flex items-center justify-center text-white text-[10px] font-medium">
+                            {activeChatSession.customer_name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{activeChatSession.customer_name}</p>
-                            <p className="text-[10px] text-gray-400">{activeChatSession.customer_email}</p>
+                            <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{activeChatSession.customer_name}</h3>
+                            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Origin Spec: {activeChatSession.customer_email}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={cn(
-                            "text-[9px] uppercase tracking-wider px-3 py-1 rounded-full",
-                            activeChatSession.status === 'open' ? "bg-emerald-100 text-emerald-600" : "bg-gray-100 text-gray-500"
-                          )}>
-                            {activeChatSession.status}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setChatSessions(prev => prev.map(s =>
-                                s.id === activeChatSession.id ? { ...s, status: 'resolved' } : s
-                              ));
-                              setActiveChatSession(prev => prev ? { ...prev, status: 'resolved' } : null);
+                        <div className="flex gap-2">
+                          <button 
+                            className="px-4 py-1.5 border border-ink/10 rounded-[5px] text-[7px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose hover:border-rose transition-all duration-300"
+                            onClick={async () => {
+                              await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', activeChatSession.id);
+                              fetchChatSessions();
+                              setActiveChatSession(null);
                             }}
-                            className="px-3 py-1 text-[9px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded-full hover:bg-emerald-500 hover:text-white transition-colors"
                           >
-                            Resolve
+                            Mark Resolved
                           </button>
                         </div>
                       </div>
 
-                      {/* Messages */}
-                      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      {/* Messages History */}
+                      <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-6 bg-white">
                         {activeChatSession.messages.map((msg) => (
                           <div
                             key={msg.id}
@@ -1343,55 +1373,77 @@ export default function AdminDashboard() {
                               msg.sender === 'admin' ? "justify-end" : "justify-start"
                             )}
                           >
-                            <div
-                              className={cn(
-                                "max-w-[70%] px-4 py-3 rounded-2xl",
-                                msg.sender === 'admin'
-                                  ? "bg-rose text-white rounded-br-md"
-                                  : "bg-gray-100 text-gray-900 rounded-bl-md"
-                              )}
-                            >
-                              <p className="text-sm">{msg.message}</p>
-                              <p className={cn(
-                                "text-[8px] mt-1",
-                                msg.sender === 'admin' ? "text-white/60" : "text-gray-400"
+                            <div className={cn(
+                              "max-w-[70%] group",
+                              msg.sender === 'admin' ? "items-end" : "items-start"
+                            )}>
+                              <div className={cn(
+                                "p-4 rounded-[5px] text-[10px] leading-relaxed",
+                                msg.sender === 'admin' 
+                                  ? "bg-ink text-white shadow-lg shadow-ink/5" 
+                                  : "bg-ink/[0.03] text-ink border border-ink/5"
                               )}>
-                                {new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                              </p>
+                                {msg.message}
+                              </div>
+                              <div className={cn(
+                                "mt-2 flex items-center gap-2",
+                                msg.sender === 'admin' ? "flex-row-reverse" : "flex-row"
+                              )}>
+                                <span className="text-[6px] font-medium text-ink/20 uppercase tracking-widest">
+                                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {msg.sender === 'admin' && (
+                                  <span className={cn("text-[6px] font-bold uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
+                                    {msg.is_read ? 'ARCHIVED' : 'SENT'}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
                       </div>
 
-                      {/* Message Input */}
-                      <div className="p-4 border-t border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <button className="p-2 text-gray-400 hover:text-rose transition-colors">
-                            <Paperclip size={18} />
-                          </button>
-                          <input
-                            type="text"
+                      {/* Input Area */}
+                      <div className="p-6 border-t border-ink/5 bg-white">
+                        <div className="relative flex items-end gap-3">
+                          <textarea
+                            rows={1}
                             value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                            placeholder="Type a message..."
-                            className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-rose/50"
+                            onChange={(e) => {
+                              if (e.target.value.length <= 500) {
+                                setNewMessage(e.target.value);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessage();
+                              }
+                            }}
+                            placeholder="Type archival response..."
+                            className="flex-1 bg-ink text-white py-3.5 px-5 rounded-[5px] text-[10px] font-medium outline-none placeholder:text-white/20 shadow-xl shadow-ink/10 transition-all focus:ring-1 focus:ring-rose/30 resize-none no-scrollbar min-h-[48px]"
                           />
-                          <button
-                            onClick={sendMessage}
-                            className="w-10 h-10 bg-rose text-white rounded-full flex items-center justify-center hover:bg-rose/90 transition-colors"
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => sendMessage()}
+                            className="w-12 h-12 bg-rose text-white rounded-[5px] flex items-center justify-center hover:bg-rose-600 transition-all duration-300 shadow-lg shadow-rose/20 shrink-0"
                           >
                             <Send size={16} />
-                          </button>
+                          </motion.button>
+                        </div>
+                        <div className="flex justify-between items-center mt-3 px-1">
+                          <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20 italic text-center">Studio Response Channel</p>
+                          <p className={cn("text-[6px] font-medium tracking-widest uppercase", newMessage.length > 450 ? "text-rose" : "text-ink/20")}>
+                            {newMessage.length}/500
+                          </p>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="flex-1 flex items-center justify-center text-gray-400">
-                      <div className="text-center">
-                        <MessageSquare size={48} className="mx-auto mb-4 opacity-30" />
-                        <p className="text-sm">Select a conversation to start messaging</p>
-                      </div>
+                    <div className="flex-1 flex flex-col items-center justify-center space-y-4 opacity-20">
+                      <MessageSquare size={48} strokeWidth={0.5} />
+                      <p className="text-[10px] font-medium uppercase tracking-[0.5em] italic">Select inquiry to respond</p>
                     </div>
                   )}
                 </div>
