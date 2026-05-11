@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield, ChevronDown } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -20,6 +20,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   
@@ -87,7 +88,8 @@ export default function CheckoutPage() {
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
 
-  const fallbackProvinces = [
+  // Static fallback provinces (defined before useEffect to avoid stale closure / ref-before-declare issues)
+  const FALLBACK_PROVINCES = [
     { id: '31', name: 'DKI JAKARTA' },
     { id: '32', name: 'JAWA BARAT' },
     { id: '33', name: 'JAWA TENGAH' },
@@ -109,46 +111,71 @@ export default function CheckoutPage() {
         const res = await fetch('https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json');
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-        setProvinces(data && data.length > 0 ? data : fallbackProvinces);
-      } catch (e) { 
+        setProvinces(data && data.length > 0 ? data : FALLBACK_PROVINCES);
+      } catch (e) {
         console.error("Province fetch failed:", e);
-        setProvinces(fallbackProvinces);
+        setProvinces(FALLBACK_PROVINCES);
       }
       setLoadingLoc(prev => ({ ...prev, p: false }));
     };
     fetchProvinces();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch Cities when Province changes
   const handleProvinceChange = async (name: string) => {
     const province = provinces.find(p => p.name === name);
-    setFormData({ ...formData, province: name, city: '', kecamatan: '', kelurahan: '' });
+    // Reset semua downstream + update formData synchronously
+    setFormData(prev => ({ ...prev, province: name, city: '', kecamatan: '', kelurahan: '' }));
     setCities([]); setDistricts([]); setVillages([]);
-    if (!province) return;
 
+    if (!province) {
+      console.warn('[handleProvinceChange] Province not found for name:', name);
+      return;
+    }
+
+    console.log('[handleProvinceChange] Fetching regencies for province:', province.name, 'id:', province.id);
     setLoadingLoc(prev => ({ ...prev, c: true }));
+
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${province.id}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setCities(data);
-    } catch (e) { console.error(e); }
-    setLoadingLoc(prev => ({ ...prev, c: false }));
+      console.log('[handleProvinceChange] Received cities count:', data?.length);
+      setCities(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('[handleProvinceChange] Fetch failed:', e);
+    } finally {
+      setLoadingLoc(prev => ({ ...prev, c: false }));
+    }
   };
 
   // Fetch Districts when City changes
   const handleCityChange = async (name: string) => {
     const city = cities.find(c => c.name === name);
-    setFormData({ ...formData, city: name, kecamatan: '', kelurahan: '' });
+    // Reset downstream + update formData synchronously
+    setFormData(prev => ({ ...prev, city: name, kecamatan: '', kelurahan: '' }));
     setDistricts([]); setVillages([]);
-    if (!city) return;
 
+    if (!city) {
+      console.warn('[handleCityChange] City not found for name:', name);
+      return;
+    }
+
+    console.log('[handleCityChange] Fetching districts for city:', city.name, 'id:', city.id);
     setLoadingLoc(prev => ({ ...prev, d: true }));
+
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${city.id}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setDistricts(data);
-    } catch (e) { console.error(e); }
-    setLoadingLoc(prev => ({ ...prev, d: false }));
+      console.log('[handleCityChange] Received districts count:', data?.length);
+      setDistricts(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('[handleCityChange] Fetch failed:', e);
+    } finally {
+      setLoadingLoc(prev => ({ ...prev, d: false }));
+    }
   };
 
   // Fetch Villages when District changes
@@ -202,7 +229,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) return null;

@@ -172,6 +172,7 @@ const SidebarItem = ({
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
