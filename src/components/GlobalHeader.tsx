@@ -37,9 +37,16 @@ export default function GlobalHeader() {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   useEffect(() => {
-    const animationFrame = requestAnimationFrame(() => setMounted(true));
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    let scrollTimer: ReturnType<typeof setTimeout> | undefined;
+    const handleScroll = () => {
+      if (!scrollTimer) {
+        scrollTimer = setTimeout(() => {
+          setIsScrolled(window.scrollY > 20);
+          scrollTimer = undefined;
+        }, 16);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     const fetchProfile = async (userId: string) => {
       const { data } = await supabase
@@ -62,7 +69,7 @@ export default function GlobalHeader() {
     });
 
     return () => {
-      cancelAnimationFrame(animationFrame);
+      if (scrollTimer) clearTimeout(scrollTimer);
       window.removeEventListener('scroll', handleScroll);
       subscription.unsubscribe();
     };
