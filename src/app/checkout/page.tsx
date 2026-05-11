@@ -87,6 +87,20 @@ export default function CheckoutPage() {
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
 
+  const fallbackProvinces = [
+    { id: '31', name: 'DKI JAKARTA' },
+    { id: '32', name: 'JAWA BARAT' },
+    { id: '33', name: 'JAWA TENGAH' },
+    { id: '35', name: 'JAWA TIMUR' },
+    { id: '36', name: 'BANTEN' },
+    { id: '51', name: 'BALI' },
+    { id: '11', name: 'ACEH' },
+    { id: '12', name: 'SUMATERA UTARA' },
+    { id: '13', name: 'SUMATERA BARAT' },
+    { id: '16', name: 'SUMATERA SELATAN' },
+    { id: '73', name: 'SULAWESI SELATAN' }
+  ];
+
   // Fetch Provinces on mount
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -95,10 +109,10 @@ export default function CheckoutPage() {
         const res = await fetch('https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json');
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-        setProvinces(data || []);
+        setProvinces(data && data.length > 0 ? data : fallbackProvinces);
       } catch (e) { 
         console.error("Province fetch failed:", e);
-        // Fallback or retry logic can go here
+        setProvinces(fallbackProvinces);
       }
       setLoadingLoc(prev => ({ ...prev, p: false }));
     };
@@ -198,7 +212,7 @@ export default function CheckoutPage() {
   }
 
   const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10";
-  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/5 rounded-md";
+  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md relative z-20";
   const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
 
   return (
@@ -227,9 +241,9 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <div className="pt-24 px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-[1600px] mx-auto">
+      <div className="pt-24 px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-[1600px] mx-auto relative z-10">
         {/* FORM AREA */}
-        <div className="lg:col-span-6 space-y-8">
+        <div className="lg:col-span-6 space-y-8 relative z-10">
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-8">
             
             {/* 01: IDENTITY */}
