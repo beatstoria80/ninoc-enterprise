@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageSquare, X, Send, ChevronRight, ArrowLeft } from 'lucide-react';
+import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 
@@ -229,74 +229,79 @@ export default function SupportChat() {
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'home' && (
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  className="p-4 space-y-4 overflow-y-auto no-scrollbar h-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex flex-col h-full overflow-hidden bg-white"
                 >
-                  <div className="bg-ink/[0.03] p-3.5 rounded-xl border border-ink/5">
-                    <p className="text-[9px] font-medium text-ink/50 leading-relaxed mb-2.5 italic">Need help with an archive order?</p>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('new_ticket')}
-                      className="w-full bg-ink text-white py-2 rounded-lg text-[8px] font-medium uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-rose transition-colors duration-200"
-                    >
-                      <MessageSquare size={10} /> New Ticket
-                    </motion.button>
-                  </div>
-
-                  <div className="space-y-2 flex-1">
-                    <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15">Active Conversations</p>
-                    {tickets.length > 0 ? (
-                      <div className="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
-                        {tickets.map((t, i) => (
-                          <motion.button
-                            key={t.id}
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            onClick={() => openTicket(t)}
-                            className="w-full flex items-center justify-between p-2.5 bg-white border border-ink/5 rounded-lg hover:border-rose/20 transition-all duration-200 text-left group"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <p className="text-[8px] font-medium text-ink uppercase truncate">{t.subject}</p>
-                              <p className="text-[6px] font-medium text-ink/25 uppercase tracking-widest">#{t.id.split('-')[0]} • {t.status}</p>
-                            </div>
-                            <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
-                          </motion.button>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-[7px] font-medium text-ink/15 italic text-center py-4">Empty archive.</p>
-                    )}
-                  </div>
-
-                  {/* DIRECT INQUIRY INPUT */}
-                  <div className="pt-4 border-t border-ink/5">
-                    <div className="bg-ink p-3 rounded-xl space-y-2 shadow-xl shadow-ink/10">
-                      <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/40">Direct Archive Inquiry</p>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && startGeneralChat()}
-                          placeholder="Type your message..."
-                          className="flex-1 bg-white/5 border-none rounded-lg py-1.5 px-3 text-[9px] font-medium text-white outline-none placeholder:text-white/10"
-                        />
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={startGeneralChat}
-                          className="w-7 h-7 bg-rose text-white rounded-lg flex items-center justify-center hover:bg-rose-600 transition-colors duration-200 flex-shrink-0"
-                        >
-                          <Send size={10} />
-                        </motion.button>
-                      </div>
+                  <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-6">
+                    {/* QUICK ACTION HEADER */}
+                    <div className="flex items-center justify-between">
+                      <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival Support</p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setActiveTab('new_ticket')}
+                        className="text-[8px] font-medium uppercase tracking-widest text-rose hover:text-ink transition-colors flex items-center gap-1.5"
+                      >
+                        <Plus size={10} /> New Ticket
+                      </motion.button>
                     </div>
+
+                    {/* ACTIVE CONVERSATIONS LIST */}
+                    <div className="space-y-3">
+                      <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/10">Active Conversations</p>
+                      {tickets.length > 0 ? (
+                        <div className="space-y-1">
+                          {tickets.map((t, i) => (
+                            <motion.button
+                              key={t.id}
+                              initial={{ opacity: 0, x: -5 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.03 }}
+                              whileHover={{ x: 2 }}
+                              whileTap={{ scale: 0.99 }}
+                              onClick={() => openTicket(t)}
+                              className="w-full flex items-center justify-between p-3 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-300 text-left group"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
+                                <p className="text-[6px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">#{t.id.split('-')[0]} • {t.status}</p>
+                              </div>
+                              <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-300 ml-3 flex-shrink-0" />
+                            </motion.button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 opacity-20">
+                          <MessageSquare size={24} strokeWidth={1} />
+                          <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">Archive Empty</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* PROMINENT BOTTOM INPUT - WHATSAPP STYLE */}
+                  <div className="p-4 bg-white border-t border-ink/5 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.02)]">
+                    <div className="relative group">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && startGeneralChat()}
+                        placeholder="Direct inquiry..."
+                        className="w-full bg-ink text-white py-3.5 pl-4 pr-12 rounded-2xl text-[10px] font-medium outline-none placeholder:text-white/20 shadow-xl shadow-ink/10 transition-all focus:ring-1 focus:ring-rose/30"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={startGeneralChat}
+                        className="absolute right-2 top-1.5 w-8 h-8 bg-rose text-white rounded-xl flex items-center justify-center hover:bg-rose-600 transition-colors duration-300 shadow-lg shadow-rose/20"
+                      >
+                        <Send size={12} />
+                      </motion.button>
+                    </div>
+                    <p className="text-[6px] font-medium uppercase tracking-[0.3em] text-ink/20 text-center mt-3">Studio Direct Channel</p>
                   </div>
                 </motion.div>
               )}
@@ -390,23 +395,25 @@ export default function SupportChat() {
                       </motion.div>
                     ))}
                   </div>
-                  <div className="p-2.5 bg-white border-t border-ink/5 flex gap-2">
-                    <input
-                      type="text"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                      placeholder="Message..."
-                      className="flex-1 bg-ink/5 border-none rounded-full py-1.5 px-3.5 text-[9px] font-medium outline-none placeholder:text-ink/15"
-                    />
-                    <motion.button
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.92 }}
-                      onClick={() => sendMessage()}
-                      className="w-7 h-7 bg-ink text-white rounded-full flex items-center justify-center hover:bg-rose transition-colors duration-200 flex-shrink-0"
-                    >
-                      <Send size={10} />
-                    </motion.button>
+                  <div className="p-4 bg-white border-t border-ink/5">
+                    <div className="relative group flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                        placeholder="Type message..."
+                        className="flex-1 bg-ink/5 border-none rounded-2xl py-3 px-4 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:ring-1 focus:ring-ink/10 transition-all"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => sendMessage()}
+                        className="w-10 h-10 bg-ink text-white rounded-2xl flex items-center justify-center hover:bg-rose transition-all duration-300 shadow-lg shadow-ink/10 flex-shrink-0"
+                      >
+                        <Send size={14} />
+                      </motion.button>
+                    </div>
                   </div>
                 </motion.div>
               )}
