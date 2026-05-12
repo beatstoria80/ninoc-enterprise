@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
@@ -17,6 +17,21 @@ function cn(...inputs: ClassValue[]) {
 interface LocationItem {
   id: string;
   name: string;
+}
+
+// Define Midtrans callback result type
+interface MidtransSnapResult {
+  transaction_id?: string;
+  order_id?: string;
+  status_code?: string;
+  gross_amount?: string;
+}
+
+// Define Snap callbacks
+interface SnapCallbacks {
+  onSuccess?: (result: MidtransSnapResult) => void;
+  onError?: (err: unknown) => void;
+  onClose?: () => void;
 }
 
 // Static fallback provinces
@@ -42,6 +57,21 @@ export default function CheckoutPage() {
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [snapLoaded, setSnapLoaded] = useState(false);
+  const snapInitRef = useRef(false);
+
+  // Load Midtrans Snap.js script (only once)
+  useEffect(() => {
+    if (snapInitRef.current) return;
+    snapInitRef.current = true;
+
+    const script = document.createElement('script');
+    script.src = 'https://app.midtrans.com/snap/snap.js';
+    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '');
+    script.onload = () => setSnapLoaded(true);
+    script.onerror = () => console.error('Failed to load Midtrans script');
+    document.head.appendChild(script);
+  }, []);
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -223,12 +253,21 @@ export default function CheckoutPage() {
   const subtotal = totalPrice();
   const finalTotal = subtotal + shippingCost;
 
-  const handleCheckout = async (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!shippingMethod) return;
+
+    // Ensure Midtrans script is loaded
+    if (!snapLoaded || !(window as Window & { snap?: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap) {
+      alert('Payment system is not ready. Please refresh the page.');
+      return;
+    }
+
     setIsProcessing(true);
+
     const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province} ${formData.postal_code}`;
     const fullName = `${formData.first_name} ${formData.last_name}`.trim();
+
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -240,18 +279,45 @@ export default function CheckoutPage() {
           totalPrice: finalTotal
         })
       });
-      const data = await response.json();
-      if (data.token) {
-        // @ts-expect-error - Midtrans Snap
-        window.snap.pay(data.token, {
-          onSuccess: () => { clearCart(); router.push('/payment/success'); },
-          onError: () => { setIsProcessing(false); alert('Payment failed.'); },
-          onClose: () => { setIsProcessing(false); }
-        });
+
+      // Handle non-OK responses
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        throw new Error(errorData.error || `Request failed with status ${response.status}`);
       }
+
+      const data = await response.json();
+
+      // Validate token exists
+      if (!data.token) {
+        throw new Error(data.error || 'Payment token not received from server');
+      }
+
+      // Open Midtrans Snap popup
+      // @ts-expect-error - Midtrans Snap global
+      window.snap.pay(data.token, {
+        onSuccess: (result: MidtransSnapResult) => {
+          console.log('Payment success:', result);
+          clearCart();
+          router.push('/payment/success');
+        },
+        onError: (err: unknown) => {
+          console.error('Midtrans payment error:', err);
+          setIsProcessing(false);
+          alert('Payment failed. Please try again or contact support.');
+        },
+        onClose: () => {
+          // User closed popup without completing payment - this is NOT an error
+          console.log('Payment popup closed by user');
+          setIsProcessing(false);
+        }
+      });
+
     } catch (err) {
-      console.error(err);
+      console.error('[handleCheckout] Error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setIsProcessing(false);
+      alert(`Checkout failed: ${errorMessage}. Please check your details and try again.`);
     }
   };
 
@@ -465,13 +531,13 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-4">
-                <button 
+                <button
                   form="checkout-form"
-                  disabled={isProcessing || !shippingMethod}
+                  disabled={isProcessing || !shippingMethod || !snapLoaded}
                   className={cn(
                     "w-full py-4 rounded-xl text-[10px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
-                    isProcessing || !shippingMethod 
-                      ? "bg-ink/5 text-ink/20 cursor-not-allowed" 
+                    isProcessing || !shippingMethod || !snapLoaded
+                      ? "bg-ink/5 text-ink/20 cursor-not-allowed"
                       : "bg-ink text-white hover:bg-rose shadow-xl shadow-ink/10 active:scale-95"
                   )}
                 >
@@ -479,6 +545,16 @@ export default function CheckoutPage() {
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                       <span>Verifying...</span>
+                    </div>
+                  ) : !snapLoaded ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 border-2 border-ink/20 border-t-ink/40 rounded-full animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : !shippingMethod ? (
+                    <div className="flex items-center gap-2">
+                      <Lock size={12} />
+                      <span>Select Courier</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
