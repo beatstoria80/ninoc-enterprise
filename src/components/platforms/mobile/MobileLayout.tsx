@@ -36,9 +36,7 @@ interface MobileLayoutProps {
  */
 export default function MobileLayout({
   children,
-  title = 'NINOC',
-  showBack = false,
-  backHref = '/',
+  // title, showBack, backHref — reserved for future header customization
   cartCount = 0,
   hideHeader = false,
 }: MobileLayoutProps) {
@@ -54,7 +52,7 @@ export default function MobileLayout({
 
       {/* Fixed Header */}
       {!hideHeader && (
-        <header className="fixed top-[env(safe-area-inset-top)] inset-x-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]">
+        <header className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[200] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]">
           <div className="flex items-center justify-between h-14 px-4">
             {/* Left: Logo */}
             <div className="flex items-center gap-2">
@@ -65,14 +63,8 @@ export default function MobileLayout({
 
             {/* Right: Actions */}
             <div className="flex items-center gap-4">
-              <button className="p-2 text-ink/40 hover:text-rose transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="M21 21l-4.35-4.35"/>
-                </svg>
-              </button>
               <Link href="/checkout" className="relative p-2 text-ink/40 hover:text-rose transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 6h15l-1.5 9h-12z"/>
                   <circle cx="9" cy="20" r="1"/>
                   <circle cx="18" cy="20" r="1"/>
@@ -90,16 +82,15 @@ export default function MobileLayout({
 
       {/* Main Content - with top padding for header */}
       <main className={cn(
-        "flex-1 overflow-y-auto",
-        !hideHeader && "pt-14",
-        "pb-[calc(60px+env(safe-area-inset-bottom))]",
+        "flex-1 overflow-y-auto pt-14",
+        "pb-[calc(64px+env(safe-area-inset-bottom))]",
         "ios-momentum-scroll"
       )}>
         {children}
       </main>
 
       {/* Fixed Bottom Tab Bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav">
+      <nav className="fixed bottom-0 left-0 right-0 z-[200] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav">
         <div className="h-[calc(60px+env(safe-area-inset-bottom))] px-4 flex items-center justify-around">
           {/* Home */}
           <Link

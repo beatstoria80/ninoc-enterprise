@@ -34,15 +34,24 @@ export default function GlobalHeader() {
     const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  // Start as TRUE mobile to prevent SSR flash - will be corrected by useEffect
+  const [isMobileDevice, setIsMobileDevice] = useState(true);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
-  // Detect mobile device immediately on mount
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setIsMobileDevice(typeof window !== 'undefined' && window.innerWidth < 768); }, []);
+  // Detect mobile device - start as mobile to prevent any header flash
+  useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobileDevice(window.innerWidth < 768);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
