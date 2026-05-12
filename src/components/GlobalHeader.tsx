@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -24,7 +23,6 @@ interface Product {
 }
 
 export default function GlobalHeader() {
-  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -36,14 +34,15 @@ export default function GlobalHeader() {
     const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isMobilePage, setIsMobilePage] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
+  // Detect mobile device immediately on mount
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setIsMobilePage(typeof window !== 'undefined' && window.innerWidth < 768); }, []);
+  useEffect(() => { setIsMobileDevice(typeof window !== 'undefined' && window.innerWidth < 768); }, []);
 
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
@@ -105,24 +104,9 @@ export default function GlobalHeader() {
 
   if (!mounted) return null;
 
-  // Pages where GlobalHeader should be hidden (custom mobile views)
-  const hideOnPages = [
-    '/checkout',
-    '/login',
-    '/onboarding',
-    '/payment/success',
-    '/terms',
-    '/privacy',
-    '/shop',
-    '/about',
-  ];
-
-  const shouldHide = hideOnPages.some(p => pathname === p || pathname?.startsWith(p + '/'));
-
-  // Hide for mobile pages with custom header
-  if (shouldHide && isMobilePage) {
-    return null;
-  }
+  // SEPARATE UI PER PLATFORM - Hide GlobalHeader on all mobile devices
+  // Each page has its own mobile-optimized header
+  if (isMobileDevice) return null;
 
   return (
     <>
