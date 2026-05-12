@@ -29,9 +29,14 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [mounted, setMounted] = useState(false);
 
   // Platform detection
   const { isMobile, isIPhone } = useDevice();
+
+  // Ensure we don't render until client-side hydration
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setMounted(true); }, []);
 
   const categories = ['All', 'Fashion', 'Art', 'Accessories'];
 
@@ -66,6 +71,8 @@ export default function ShopPage() {
   const mobileCategories = categories.filter(c => c !== 'All');
 
   // ===== MOBILE NATIVE APP VIEW =====
+  if (!mounted) return <div className="min-h-screen bg-cr" />;
+
   if (isMobile) {
     return (
       <main className={cn(
