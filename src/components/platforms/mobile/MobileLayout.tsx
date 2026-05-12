@@ -56,32 +56,15 @@ export default function MobileLayout({
       {!hideHeader && (
         <header className="fixed top-[env(safe-area-inset-top)] inset-x-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]">
           <div className="flex items-center justify-between h-14 px-4">
-            {/* Left: Back or Logo */}
-            <div className="flex-1">
-              {showBack ? (
-                <Link href={backHref} className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                  </svg>
-                </Link>
-              ) : (
-                <span className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">
-                  {title}
-                </span>
-              )}
-            </div>
-
-            {/* Center: Title (optional) */}
-            <div className="flex-1 text-center">
-              {title && !showBack && (
-                <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">
-                  {title}
-                </span>
-              )}
+            {/* Left: Logo */}
+            <div className="flex items-center gap-2">
+              <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">
+                NINOC
+              </span>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex-1 flex justify-end items-center gap-3">
+            <div className="flex items-center gap-4">
               <button className="p-2 text-ink/40 hover:text-rose transition-colors">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8"/>
@@ -117,16 +100,16 @@ export default function MobileLayout({
 
       {/* Fixed Bottom Tab Bar */}
       <nav className="fixed bottom-0 inset-x-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav">
-        <div className="h-[calc(60px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around">
+        <div className="h-[calc(60px+env(safe-area-inset-bottom))] px-4 flex items-center justify-around">
           {/* Home */}
           <Link
             href="/"
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 py-2 px-4 min-w-[60px] transition-colors",
+              "flex flex-col items-center justify-center gap-1 py-2 min-w-[80px] transition-colors",
               isActive('/') ? "text-rose" : "text-ink/30"
             )}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/') ? 0 : 1.5}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill={isActive('/') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
               <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
@@ -138,42 +121,22 @@ export default function MobileLayout({
             </span>
           </Link>
 
-          {/* Shop / Explore */}
-          <Link
-            href="/shop"
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 py-2 px-4 min-w-[60px] transition-colors",
-              isActive('/shop') ? "text-rose" : "text-ink/30"
-            )}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <span className={cn(
-              "text-[9px] font-medium uppercase tracking-wider",
-              isActive('/shop') && "text-rose"
-            )}>
-              Explore
-            </span>
-          </Link>
-
           {/* Cart */}
           <Link
             href="/checkout"
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 py-2 px-4 min-w-[60px] transition-colors",
+              "flex flex-col items-center justify-center gap-1 py-2 min-w-[80px] transition-colors",
               isActive('/checkout') ? "text-rose" : "text-ink/30"
             )}
           >
             <div className="relative">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 6h15l-1.5 9h-12z"/>
                 <circle cx="9" cy="20" r="1"/>
                 <circle cx="18" cy="20" r="1"/>
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose text-white text-[8px] font-medium rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[8px] font-medium rounded-full flex items-center justify-center">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -190,11 +153,11 @@ export default function MobileLayout({
           <Link
             href="/profile"
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 py-2 px-4 min-w-[60px] transition-colors",
+              "flex flex-col items-center justify-center gap-1 py-2 min-w-[80px] transition-colors",
               isActive('/profile') ? "text-rose" : "text-ink/30"
             )}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
