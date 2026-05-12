@@ -19,6 +19,7 @@ interface DeviceInfo {
 
 /**
  * useDevice - Detect device type for platform-specific UI
+ * Uses SSR-safe initial state to prevent desktop flash on mobile
  */
 export function useDevice(options: UseDeviceOptions = {}): DeviceInfo & {
   isMobile: boolean;
@@ -27,14 +28,14 @@ export function useDevice(options: UseDeviceOptions = {}): DeviceInfo & {
 } {
   const { mobileBreakpoint = 768, tabletBreakpoint = 1024 } = options;
 
+  // SSR-safe: start as mobile to prevent desktop layout flash
   const [info, setInfo] = useState<DeviceInfo>({
-    device: 'desktop',
+    device: 'mobile' as DeviceType,
     isIPhone: false,
     hasNotch: false
   });
 
   useEffect(() => {
-    // Detect device function
     const detect = () => {
       if (typeof window === 'undefined') return;
 
@@ -53,7 +54,7 @@ export function useDevice(options: UseDeviceOptions = {}): DeviceInfo & {
       setInfo({ device, isIPhone, hasNotch });
     };
 
-    // Initial detection
+    // Immediate detection on mount
     detect();
 
     // Watch resize
