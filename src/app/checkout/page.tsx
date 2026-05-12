@@ -335,9 +335,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/10";
-  const selectClass = "w-full bg-white py-2 px-3 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md disabled:opacity-50 disabled:cursor-not-allowed";
-  const labelClass = "text-[8px] font-medium uppercase tracking-[0.1em] text-ink/80 mb-1 block";
+  const inputClass = "w-full bg-white py-2.5 px-3.5 text-[11px] font-medium text-ink outline-none transition-all placeholder:text-ink/30";
+  const selectClass = "w-full bg-white py-2.5 px-3.5 text-[11px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md disabled:opacity-50 disabled:cursor-not-allowed";
+  const labelClass = "text-[9px] font-medium uppercase tracking-[0.12em] text-ink/70 mb-1.5 block";
 
   return (
     <main className="min-h-screen bg-cr">
@@ -382,19 +382,19 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
                 <div className="bg-white p-3">
                   <label htmlFor="first_name" className={labelClass}>First Name</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="john" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="John" />
                 </div>
                 <div className="bg-white p-3 border-l border-ink/10">
                   <label htmlFor="last_name" className={labelClass}>Last Name</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="Doe" />
                 </div>
                 <div className="bg-white p-3 border-t border-ink/10">
                   <label htmlFor="email" className={labelClass}>Email Archive</label>
-                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="mail@archive.com" />
+                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="your@email.com" />
                 </div>
                 <div className="bg-white p-3 border-t border-l border-ink/10">
                   <label htmlFor="phone" className={labelClass}>Phone Reference</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="08..." />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="0812 3456 7890" />
                 </div>
               </div>
             </section>
@@ -411,7 +411,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-6 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
                 <div className="col-span-6 bg-white p-3">
                   <label htmlFor="street" className={labelClass}>Street / Building / Archive Loc.</label>
-                  <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="jl. merdeka" />
+                  <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
                 
                 <div className="col-span-2 bg-white p-3 border-t border-ink/10">
@@ -420,11 +420,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="col-span-2 bg-white p-3 border-t border-l border-ink/10">
                   <label htmlFor="rt" className={labelClass}>RT</label>
-                  <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="01" />
+                  <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
                 </div>
                 <div className="col-span-2 bg-white p-3 border-t border-l border-ink/10">
                   <label htmlFor="rw" className={labelClass}>RW</label>
-                  <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="05" />
+                  <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
                 </div>
 
                 <div className="col-span-3 bg-white p-3 border-t border-ink/10">
@@ -492,32 +492,32 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center border-b border-ink/5 pb-3">
                 <div className="flex items-center gap-3">
                    <ShoppingBag size={14} className="text-ink/30" />
-                   <h3 className="text-[10px] font-medium uppercase tracking-widest text-ink">Order Archive</h3>
+                   <h3 className="text-[11px] font-medium uppercase tracking-widest text-ink">Order Archive</h3>
                 </div>
-                <span className="text-[9px] font-medium text-ink/60 italic">{items.length} Pieces</span>
+                <span className="text-[10px] font-medium text-ink/60 italic">{items.length} Pieces</span>
               </div>
 
               <div className="space-y-4 max-h-[25vh] overflow-y-auto no-scrollbar pr-2">
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center group">
-                    <div className="w-10 h-10 bg-ink/5 rounded-lg overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
+                    <div className="w-12 h-12 bg-ink/5 rounded-lg overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
                       {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-medium uppercase truncate text-ink">{item.name}</p>
-                      <p className="text-[8px] font-medium text-ink/30 uppercase tracking-tighter">Size {item.size} • Qty {item.quantity}</p>
+                      <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
+                      <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">Size {item.size} • Qty {item.quantity}</p>
                     </div>
-                    <p className="text-xs font-display font-medium italic text-ink/80">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
+                    <p className="text-sm font-display font-medium italic text-ink/80">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
                   </div>
                 ))}
               </div>
 
               <div className="space-y-3 pt-6 border-t border-ink/5">
-                <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                   <span>Value Subtotal</span>
                   <span className="text-ink">Rp {subtotal.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                   <span>Logistics Archive</span>
                   <span className={cn("font-medium italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                      {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
@@ -526,7 +526,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="pt-8 flex flex-col items-center border-t border-ink/5">
-                <span className="text-[9px] font-medium uppercase tracking-[0.6em] text-ink/60 mb-2">Total Investment</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.6em] text-ink/60 mb-2">Total Investment</span>
                 <span className="text-3xl font-display font-medium italic text-rose leading-none drop-shadow-sm">Rp {finalTotal.toLocaleString('id-ID')}</span>
               </div>
 
@@ -535,7 +535,7 @@ export default function CheckoutPage() {
                   form="checkout-form"
                   disabled={isProcessing || !shippingMethod || !snapLoaded}
                   className={cn(
-                    "w-full py-4 rounded-xl text-[10px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
+                    "w-full py-4 rounded-xl text-[11px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
                     isProcessing || !shippingMethod || !snapLoaded
                       ? "bg-ink/5 text-ink/20 cursor-not-allowed"
                       : "bg-ink text-white hover:bg-rose shadow-xl shadow-ink/10 active:scale-95"
