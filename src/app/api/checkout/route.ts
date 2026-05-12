@@ -14,6 +14,10 @@ export async function POST(req: Request) {
   try {
     const { items, customerDetails, shippingDetails, totalPrice } = await req.json();
 
+    // Debug: Log env vars (remove in production)
+    console.log('[Checkout] MIDTRANS_SERVER_KEY present:', !!process.env.MIDTRANS_SERVER_KEY);
+    console.log('[Checkout] MIDTRANS_IS_PRODUCTION:', process.env.MIDTRANS_IS_PRODUCTION);
+
     // Initialize Midtrans Snap
     const snap = new midtransClient.Snap({
       isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
