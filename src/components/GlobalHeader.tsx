@@ -150,7 +150,7 @@ export default function GlobalHeader() {
           <Link href={user ? "/profile" : "/login"} className="text-ink/40 hover:text-rose transition-all">
             {profileAvatar ? (
               <div className="relative w-5 h-5">
-                <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
+                <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-none border border-ink/5" />
               </div>
             ) : (
               <User size={20} strokeWidth={1.5} />
@@ -159,7 +159,7 @@ export default function GlobalHeader() {
 
           <button onClick={() => setIsCartOpen(true)} className="relative group flex items-center">
             <ShoppingCart size={20} strokeWidth={1.5} className="text-ink/40 group-hover:text-rose transition-all" />
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-rose text-white text-[8px] font-medium flex items-center justify-center rounded-full border border-white shadow-lg">
+            <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm">
               {items.length}
             </div>
           </button>
@@ -188,9 +188,9 @@ export default function GlobalHeader() {
               </div>
               <button 
                 onClick={() => setIsCartOpen(false)}
-                className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white transition-all"
+                className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white transition-all"
               >
-                <X size={18} />
+                <X size={14} />
               </button>
             </div>
 
@@ -201,8 +201,8 @@ export default function GlobalHeader() {
                 {items.length > 0 ? (
                   <div className="space-y-10">
                     {items.map((item) => (
-                      <div key={`${item.id}-${item.size}`} className="flex gap-8 group">
-                        <div className="w-28 h-36 bg-white rounded-xl overflow-hidden flex-shrink-0 relative border border-ink/5">
+                      <div key={`${item.id}-${item.size}`} className="flex gap-6 group">
+                        <div className="w-24 h-32 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5">
                           {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-700" />}
                         </div>
                         <div className="flex-1 flex flex-col justify-between py-1">
@@ -218,16 +218,16 @@ export default function GlobalHeader() {
                           
                           <div className="flex items-end justify-between">
                             <div className="space-y-4">
-                               <div className="flex items-center gap-3 bg-ink/5 px-3 py-1.5 rounded-lg w-fit">
-                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/30 hover:text-rose"><Minus size={12} /></button>
-                                  <span className="text-[10px] font-medium w-4 text-center">{item.quantity}</span>
-                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/30 hover:text-rose"><Plus size={12} /></button>
+                               <div className="flex items-center gap-3 bg-ink/5 px-2 py-1 rounded-none w-fit">
+                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/30 hover:text-rose"><Minus size={10} /></button>
+                                  <span className="text-[9px] font-medium w-3 text-center">{item.quantity}</span>
+                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/30 hover:text-rose"><Plus size={10} /></button>
                                </div>
                                <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
                             </div>
-                            <div className="text-lg font-display font-medium italic text-rose">
-                               Rp {(item.price * item.quantity).toLocaleString('id-ID')}
-                            </div>
+                             <div className="text-base font-display font-medium italic text-rose">
+                                Rp {(item.price * item.quantity).toLocaleString('id-ID')}
+                             </div>
                           </div>
                         </div>
                       </div>
@@ -269,7 +269,7 @@ export default function GlobalHeader() {
                           <Link 
                             href="/checkout" 
                             onClick={() => setIsCartOpen(false)}
-                            className="w-full bg-ink text-white py-6 rounded-xl font-medium text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-rose transition-all shadow-xl shadow-ink/5 group"
+                            className="w-full bg-ink text-white py-4 rounded-none font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-rose transition-all group"
                           >
                             <span>Archive Selection</span>
                           </Link>
@@ -304,8 +304,8 @@ export default function GlobalHeader() {
           >
             <div className="flex items-center justify-between mb-20">
               <div className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase">NINOC Search</div>
-              <button onClick={() => setIsSearchOpen(false)} className="w-12 h-12 rounded-full bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white transition-all">
-                <X size={20} />
+              <button onClick={() => setIsSearchOpen(false)} className="w-10 h-10 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white transition-all">
+                <X size={18} />
               </button>
             </div>
 
@@ -326,14 +326,14 @@ export default function GlobalHeader() {
                     key={product.id} 
                     href={`/product/${product.slug}`}
                     onClick={() => setIsSearchOpen(false)}
-                    className="flex gap-8 group"
+                    className="flex gap-6 group"
                   >
-                    <div className="w-24 h-32 bg-ink/5 rounded-2xl overflow-hidden flex-shrink-0 relative border border-ink/5">
+                    <div className="w-20 h-28 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5">
                       {product.image_url && <Image src={product.image_url} alt={product.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform" />}
                     </div>
                     <div className="flex flex-col justify-center">
-                      <h3 className="text-xl font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors">{product.name}</h3>
-                      <p className="text-lg font-display font-medium italic text-ink/30 mt-2">Rp {product.price.toLocaleString('id-ID')}</p>
+                      <h3 className="text-base font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors">{product.name}</h3>
+                      <p className="text-sm font-display font-medium italic text-ink/30 mt-1">Rp {product.price.toLocaleString('id-ID')}</p>
                     </div>
                   </Link>
                 ))}

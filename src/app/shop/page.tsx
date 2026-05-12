@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
+import { useDevice } from '@/app/checkout/_components/useDevice';
+import { CategoryGrid } from './_components';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,6 +29,9 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Platform detection
+  const { isMobile, isIPhone } = useDevice();
 
   const categories = ['All', 'Fashion', 'Art', 'Accessories'];
 
@@ -48,10 +53,141 @@ export default function ShopPage() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
+  const filteredProducts = selectedCategory === 'All'
+    ? products
     : products.filter(p => p.category === selectedCategory);
 
+  // Prepare products for mobile component
+  const mobileProducts = filteredProducts.map((p, i) => ({
+    ...p,
+    index: i
+  }));
+
+  const mobileCategories = categories.filter(c => c !== 'All');
+
+  // ===== MOBILE NATIVE APP VIEW =====
+  if (isMobile) {
+    return (
+      <main className={cn(
+        "min-h-screen bg-cr ios-mobile-shop",
+        isIPhone && "pt-[env(safe-area-inset-top)]"
+      )}>
+        {/* Mobile Header */}
+        <header className={cn(
+          "fixed top-0 inset-x-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-ink/5",
+          isIPhone && "pt-[env(safe-area-inset-top)]"
+        )}>
+          <div className="flex items-center justify-between px-4 py-4">
+            {/* Logo */}
+            <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">
+              NINOC
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              <button className="relative p-2">
+                <Search size={20} className="text-ink" />
+              </button>
+              <button className="relative p-2">
+                <ShoppingBag size={20} className="text-ink" />
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium rounded-none flex items-center justify-center">
+                  {products.length}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Category Pills - Horizontal Scroll */}
+          <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={cn(
+                  "px-3 py-1.5 rounded-none text-[9px] font-medium uppercase tracking-[0.2em] whitespace-nowrap transition-all",
+                  selectedCategory === cat
+                    ? "bg-ink text-white"
+                    : "bg-ink/5 text-ink/40"
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        {/* Safe area spacer */}
+        <div className={cn("h-32", isIPhone && "pt-[env(safe-area-inset-top)]")} />
+
+        {/* Mobile Native Product Grid by Category */}
+        <div className="pb-24">
+          <CategoryGrid
+            products={mobileProducts}
+            categories={mobileCategories}
+          />
+        </div>
+
+        {/* Mobile Bottom Tab Bar */}
+        <nav className={cn(
+          "fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-ink/10 z-[100]",
+          isIPhone && "pb-[env(safe-area-inset-bottom)]"
+        )}>
+          <div className="flex items-center justify-around py-3">
+            {/* Home */}
+            <button className="flex flex-col items-center gap-1 px-6 py-2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-rose">
+                <path d="M12 3L4 9v12h5v-6h6v6h5V9z"/>
+              </svg>
+              <span className="text-[9px] font-medium text-rose uppercase tracking-wider">Home</span>
+            </button>
+
+            {/* Shop */}
+            <button className="flex flex-col items-center gap-1 px-6 py-2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ink/40">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <span className="text-[9px] font-medium text-ink/40 uppercase tracking-wider">Explore</span>
+            </button>
+
+            {/* Cart */}
+            <button className="flex flex-col items-center gap-1 px-6 py-2 relative">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ink/40">
+                <path d="M6 6h15l-1.5 9h-12z"/>
+                <circle cx="9" cy="20" r="1"/>
+                <circle cx="18" cy="20" r="1"/>
+              </svg>
+              <span className="text-[9px] font-medium text-ink/40 uppercase tracking-wider">Cart</span>
+            </button>
+
+            {/* Profile */}
+            <button className="flex flex-col items-center gap-1 px-6 py-2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ink/40">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span className="text-[9px] font-medium text-ink/40 uppercase tracking-wider">Profile</span>
+            </button>
+          </div>
+        </nav>
+
+        <style jsx>{`
+          .ios-mobile-shop {
+            -webkit-overflow-scrolling: touch;
+          }
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
+      </main>
+    );
+  }
+
+  // ===== DESKTOP VIEW (Original) =====
   return (
     <main className="min-h-screen bg-cr noise pb-40">
 

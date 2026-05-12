@@ -62,7 +62,7 @@ export default function CheckoutPage() {
   const snapInitRef = useRef(false);
 
   // Platform detection for mobile-specific UI
-  const { isMobile, isIPhone, hasNotch } = useDevice();
+  const { isMobile, isIPhone } = useDevice();
 
   // Load Midtrans Snap.js script (only once)
   useEffect(() => {
@@ -339,9 +339,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2 px-3 text-[14px] font-normal text-ink outline-none transition-all placeholder:text-ink/30";
-  const selectClass = "w-full bg-white py-2 px-3 text-[14px] font-normal text-ink outline-none transition-all cursor-pointer border border-ink/10 rounded-md disabled:opacity-50 disabled:cursor-not-allowed";
-  const labelClass = "text-[10px] font-medium uppercase tracking-[0.12em] text-ink/70 mb-1 block";
+  const inputClass = "w-full bg-white py-1.5 px-2 text-[10px] font-medium text-ink outline-none transition-all placeholder:text-ink/20";
+  const selectClass = "w-full bg-white py-1.5 px-2 text-[10px] font-medium text-ink outline-none transition-all cursor-pointer border border-ink/5 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed";
+  const labelClass = "text-[8px] font-medium uppercase tracking-[0.15em] text-ink/50 mb-0.5 block";
 
   return (
     <main className={cn(
@@ -369,8 +369,8 @@ export default function CheckoutPage() {
         <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none">NINOC</div>
         <div className="flex items-center gap-4">
            <div className="hidden md:flex flex-col items-end leading-none mr-2">
-              <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600">Auth Channel</span>
-              <span className="text-[9px] font-medium uppercase tracking-tighter text-ink/60">Secure Payment</span>
+              <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600">Secure Protocol</span>
+              <span className="text-[9px] font-medium uppercase tracking-tighter text-ink/60">Transaction Specification</span>
            </div>
            <ShieldCheck size={18} className="text-emerald-500" />
         </div>
@@ -379,35 +379,35 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-6 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-20 pb-36 space-y-6" : "pt-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start"
+        isMobile ? "pt-16 pb-24 space-y-4" : "pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* FORM AREA */}
-        <div className={cn(isMobile ? "space-y-4" : "lg:col-span-6 space-y-8")}>
-          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-8">
+        <div className={cn(isMobile ? "space-y-4" : "lg:col-span-6 space-y-6")}>
+          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6">
             
             {/* 01: IDENTITY */}
             <section className="space-y-3">
-              <div className="flex items-center justify-between border-b border-ink/10 pb-1">
+              <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-display font-medium italic text-ink/40">01</span>
-                  <h2 className="text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">Identity Authorization</h2>
+                  <span className="text-[9px] font-display font-medium italic text-ink/30">01</span>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Origin Specification</h2>
                 </div>
               </div>
               
-              <div className={cn("grid gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm", isMobile ? "grid-cols-1" : "grid-cols-2")}>
-                <div className={cn("bg-white", isMobile ? "p-4" : "p-3")}>
+              <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
+                <div className={cn("bg-white", isMobile ? "p-3" : "p-2")}>
                   <label htmlFor="first_name" className={labelClass}>First Name</label>
                   <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="John" />
                 </div>
-                <div className={cn("bg-white border-l border-ink/10", isMobile ? "p-4" : "p-3")}>
+                <div className={cn("bg-white border-l border-ink/5", isMobile ? "p-3" : "p-2")}>
                   <label htmlFor="last_name" className={labelClass}>Last Name</label>
                   <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="Doe" />
                 </div>
-                <div className={cn("bg-white border-t border-ink/10", isMobile ? "p-4" : "p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "p-3" : "p-2")}>
                   <label htmlFor="email" className={labelClass}>Email Archive</label>
                   <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="your@email.com" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/10", isMobile ? "p-4" : "p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "p-3" : "p-2")}>
                   <label htmlFor="phone" className={labelClass}>Phone Reference</label>
                   <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="0812 3456 7890" />
                 </div>
@@ -416,54 +416,54 @@ export default function CheckoutPage() {
 
             {/* 02: ADDRESS */}
             <section className="space-y-3">
-              <div className="flex items-center justify-between border-b border-ink/10 pb-1">
+              <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-display font-medium italic text-ink/40">02</span>
-                  <h2 className="text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">Shipping Target</h2>
+                  <span className="text-[9px] font-display font-medium italic text-ink/30">02</span>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Archive Destination</h2>
                 </div>
               </div>
 
-              <div className={cn("grid gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm", isMobile ? "grid-cols-1" : "grid-cols-6")}>
-                <div className={cn("bg-white", isMobile ? "col-span-1 p-4" : "col-span-6 p-3")}>
+              <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>
+                <div className={cn("bg-white", isMobile ? "col-span-1 p-3" : "col-span-6 p-2")}>
                   <label htmlFor="street" className={labelClass}>Street / Building / Archive Loc.</label>
                   <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
 
-                <div className={cn("bg-white border-t border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-2 p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-2 p-2")}>
                   <label htmlFor="house_number" className={labelClass}>No</label>
                   <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-2 p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-2 p-2")}>
                   <label htmlFor="rt" className={labelClass}>RT</label>
                   <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-2 p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-2 p-2")}>
                   <label htmlFor="rw" className={labelClass}>RW</label>
                   <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
                 </div>
 
-                <div className={cn("bg-white border-t border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-2")}>
                   <label htmlFor="province" className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="province" required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass} disabled={loadingLoc.p}>
                     <option value="">SELECT PROVINCE</option>
                     {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-2")}>
                   <label htmlFor="city" className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="city" required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province || loadingLoc.c}>
                     <option value="">SELECT CITY</option>
                     {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-2")}>
                   <label htmlFor="kecamatan" className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="kecamatan" required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city || loadingLoc.d}>
                     <option value="">SELECT KECAMATAN</option>
                     {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/10", isMobile ? "col-span-1 p-4" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-2")}>
                   <label htmlFor="kelurahan" className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="kelurahan" required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan || loadingLoc.v}>
                     <option value="">SELECT KELURAHAN</option>
@@ -475,24 +475,24 @@ export default function CheckoutPage() {
 
             {/* 03: SHIPPING */}
             <section className="space-y-3">
-              <div className="flex items-center gap-2 border-b border-ink/10 pb-1">
-                <span className="text-[10px] font-display font-medium italic text-ink/40">03</span>
-                <h2 className="text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Partner</h2>
+              <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
+                <span className="text-[9px] font-display font-medium italic text-ink/30">03</span>
+                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Archive Logistics</h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-[1px] bg-ink/10 border border-ink/10 rounded-lg shadow-sm">
+              <div className="grid grid-cols-3 gap-[1px] bg-ink/5 border border-ink/5 rounded-none">
                 {shippingOptions.map((option) => (
                   <button
                     key={option.id}
                     type="button"
                     onClick={() => handleShippingChange(option.id, option.price)}
                     className={cn(
-                      "flex flex-col items-center py-3 px-1 transition-all bg-white",
-                      shippingMethod === option.id ? "bg-rose/[0.03]" : "hover:bg-ink/[0.02]"
+                      "flex flex-col items-center py-2 px-1 transition-all bg-white",
+                      shippingMethod === option.id ? "bg-rose/[0.02]" : "hover:bg-ink/[0.01]"
                     )}
                   >
-                    <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink/60")}>{option.name}</span>
-                    <span className="text-xs font-display font-medium italic text-ink">Rp {option.price.toLocaleString('id-ID')}</span>
+                    <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink/40")}>{option.name}</span>
+                    <span className="text-[11px] font-display font-medium italic text-ink">Rp {option.price.toLocaleString('id-ID')}</span>
                   </button>
                 ))}
               </div>
@@ -504,28 +504,28 @@ export default function CheckoutPage() {
         <div className={isMobile ? "lg:col-span-12" : "lg:col-span-4 lg:pl-12"}>
           {isMobile ? (
             /* Mobile: Compact summary card above CTA */
-            <div className="bg-white border border-ink/10 rounded-xl p-4 mt-4">
+            <div className="bg-white border border-ink/5 rounded-none p-3 mt-2">
               <div className="flex justify-between items-center">
-                <span className="text-[11px] font-medium uppercase tracking-wider text-ink">Order ({items.length} items)</span>
-                <span className="text-sm font-display font-medium italic text-rose">Rp {finalTotal.toLocaleString('id-ID')}</span>
+                <span className="text-[9px] font-medium uppercase tracking-wider text-ink/60">Order ({items.length} items)</span>
+                <span className="text-xs font-display font-medium italic text-rose">Rp {finalTotal.toLocaleString('id-ID')}</span>
               </div>
             </div>
           ) : (
             /* Desktop: Full sidebar summary */
-            <div className="sticky top-24 space-y-6">
-            <div className="bg-white border border-ink/10 rounded-2xl p-8 space-y-8 shadow-2xl shadow-ink/5">
-              <div className="flex justify-between items-center border-b border-ink/5 pb-3">
+            <div className="sticky top-20 space-y-4">
+            <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
+              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
                 <div className="flex items-center gap-3">
-                   <ShoppingBag size={14} className="text-ink/30" />
-                   <h3 className="text-[11px] font-medium uppercase tracking-widest text-ink">Order Archive</h3>
+                   <ShoppingBag size={12} className="text-ink/20" />
+                   <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Catalog Selection</h3>
                 </div>
-                <span className="text-[10px] font-medium text-ink/60 italic">{items.length} Pieces</span>
+                <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
               </div>
 
-              <div className="space-y-4 max-h-[25vh] overflow-y-auto no-scrollbar pr-2">
+              <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center group">
-                    <div className="w-12 h-12 bg-ink/5 rounded-lg overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
+                  <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center group">
+                    <div className="w-10 h-10 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
                       {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -537,12 +537,12 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              <div className="space-y-3 pt-6 border-t border-ink/5">
-                <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+              <div className="space-y-2 pt-4 border-t border-ink/5">
+                <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
                   <span>Value Subtotal</span>
                   <span className="text-ink">Rp {subtotal.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
                   <span>Logistics Archive</span>
                   <span className={cn("font-medium italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                      {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
@@ -550,9 +550,9 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="pt-8 flex flex-col items-center border-t border-ink/5">
-                <span className="text-[10px] font-medium uppercase tracking-[0.6em] text-ink/60 mb-2">Total Investment</span>
-                <span className="text-3xl font-display font-medium italic text-rose leading-none drop-shadow-sm">Rp {finalTotal.toLocaleString('id-ID')}</span>
+              <div className="pt-6 flex flex-col items-center border-t border-ink/5">
+                <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30 mb-1">Total Investment</span>
+                <span className="text-2xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
               </div>
 
               <div className="space-y-4">
@@ -560,30 +560,30 @@ export default function CheckoutPage() {
                   form="checkout-form"
                   disabled={isProcessing || !shippingMethod || !snapLoaded}
                   className={cn(
-                    "w-full py-4 rounded-xl text-[11px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
+                    "w-full py-3 rounded-none text-[10px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
                     isProcessing || !shippingMethod || !snapLoaded
                       ? "bg-ink/5 text-ink/20 cursor-not-allowed"
-                      : "bg-ink text-white hover:bg-rose shadow-xl shadow-ink/10 active:scale-95"
+                      : "bg-ink text-white hover:bg-rose active:scale-[0.98]"
                   )}
                 >
                   {isProcessing ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
                       <span>Verifying...</span>
                     </div>
                   ) : !snapLoaded ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-ink/20 border-t-ink/40 rounded-full animate-spin" />
+                      <div className="w-2.5 h-2.5 border border-ink/20 border-t-ink/40 rounded-full animate-spin" />
                       <span>Loading...</span>
                     </div>
                   ) : !shippingMethod ? (
                     <div className="flex items-center gap-2">
-                      <Lock size={12} />
+                      <Lock size={10} />
                       <span>Select Courier</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <Lock size={12} />
+                      <Lock size={10} />
                       <span>Authorize Payment</span>
                     </div>
                   )}
