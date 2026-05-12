@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useDevice } from './_components/useDevice';
+import BottomCTA from './_components/BottomCTA';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -629,6 +630,15 @@ export default function CheckoutPage() {
           )}
         </div>
       </div>
+
+      {isMobile && (
+        <BottomCTA
+          text="Checkout"
+          isLoading={isProcessing}
+          disabled={!shippingMethod || !snapLoaded}
+          formId="checkout-form"
+        />
+      )}
     </main>
   );
 }

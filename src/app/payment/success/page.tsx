@@ -4,14 +4,38 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useDevice } from '@/app/checkout/_components/useDevice';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export default function SuccessPage() {
+  const { isMobile, isIPhone } = useDevice();
+
   return (
-    <main className="min-h-screen bg-cr noise flex items-center justify-center p-6 text-center">
-      <motion.div 
+    <main className={cn(
+      "min-h-screen bg-cr noise flex items-center justify-center p-6",
+      isIPhone && "pt-[env(safe-area-inset-top)]"
+    )}>
+      {/* MOBILE NAV BAR */}
+      {isMobile && (
+        <nav className={cn(
+          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
+          isIPhone && "pt-[env(safe-area-inset-top)]"
+        )}>
+          <div className="flex items-center justify-center py-3">
+            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
+          </div>
+        </nav>
+      )}
+
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full space-y-8"
+        className={cn("max-w-md w-full space-y-8", isMobile && "pt-16")}
       >
         <div className="relative">
           <motion.div 

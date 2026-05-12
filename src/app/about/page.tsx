@@ -1,7 +1,37 @@
+"use client";
+
+import { useDevice } from '@/app/checkout/_components/useDevice';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export default function About() {
+  const { isMobile, isIPhone } = useDevice();
+
   return (
-    <main className="min-h-screen bg-cr noise pt-32 px-6 md:px-12">
-      <div className="max-w-[1800px] mx-auto">
+    <main className={cn("min-h-screen bg-cr noise", isIPhone && "pt-[env(safe-area-inset-top)]")}>
+      {/* MOBILE NAV BAR */}
+      {isMobile && (
+        <nav className={cn(
+          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
+          isIPhone && "pt-[env(safe-area-inset-top)]"
+        )}>
+          <div className="flex items-center justify-between px-4 py-3">
+            <Link href="/" className="flex items-center gap-2 text-ink/40">
+              <ArrowLeft size={16} />
+            </Link>
+            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
+            <div className="w-8" />
+          </div>
+        </nav>
+      )}
+
+      <div className={cn("max-w-[1800px] mx-auto", isMobile ? "pt-14 px-4" : "pt-32 px-6 md:px-12")}>
         <div className="mb-16">
           <span className="text-[10px] font-medium uppercase tracking-[0.5em] text-rose">NINOC</span>
           <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink uppercase mt-4">About</h1>

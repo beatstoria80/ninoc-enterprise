@@ -1,9 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useDevice } from '@/app/checkout/_components/useDevice';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface Province { id: string; name: string; }
 interface Regency { id: string; name: string; }
@@ -11,6 +18,7 @@ interface District { id: string; name: string; }
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { isMobile, isIPhone } = useDevice();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [userEmail, setUserEmail] = useState('');
@@ -109,8 +117,24 @@ export default function OnboardingPage() {
   const cr = "text-xs font-medium text-rose bg-rose/10 px-2 py-1 rounded";
 
   return (
-    <main className="min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col">
-      {/* Header */}
+    <main className={cn(
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col",
+      isIPhone && "pt-[env(safe-area-inset-top)]"
+    )}>
+      {/* MOBILE NAV BAR */}
+      {isMobile && (
+        <nav className={cn(
+          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
+          isIPhone && "pt-[env(safe-area-inset-top)]"
+        )}>
+          <div className="flex items-center justify-center py-3">
+            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
+          </div>
+        </nav>
+      )}
+
+      {/* Header - Desktop only */}
+      {!isMobile && (
       <header className={bd}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-rose/10 rounded-xl flex items-center justify-center"><Package size={18} className="text-rose" /></div>
@@ -118,6 +142,21 @@ export default function OnboardingPage() {
         </div>
         <button onClick={logout} className="text-sm text-ink/30 hover:text-rose flex items-center gap-2"><LogOut size={16} />Batal</button>
       </header>
+      )}
+
+      {/* Mobile Header - Show title and back button */}
+      {isMobile && (
+        <div className={cn(
+          "flex items-center justify-between px-4 py-3 bg-white border-b border-ink/5",
+          isIPhone && "pt-10"
+        )}>
+          <button onClick={logout} className="text-ink/40 hover:text-rose flex items-center gap-2">
+            <ArrowLeft size={16} />
+          </button>
+          <span className="text-sm font-medium text-ink">Lengkapi Data</span>
+          <div className="w-8" />
+        </div>
+      )}
 
       {/* Email badge */}
       <div className={bd + " bg-emerald-50"}>
@@ -126,7 +165,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Form */}
-      <form onSubmit={submit} className="flex-1 overflow-y-auto">
+      <form onSubmit={submit} className="flex-1 overflow-y-auto pb-24">
         <div className="max-w-xl mx-auto px-5 py-4 space-y-3">
           {/* 01 Identitas */}
           <div className={cd}>
@@ -179,11 +218,25 @@ export default function OnboardingPage() {
           </div>
 
           {/* Submit */}
+          {!isMobile ? (
           <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-3.5 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
             {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
           </button>
+          ) : null}
         </div>
       </form>
+
+      {/* MOBILE STICKY SUBMIT BUTTON */}
+      {isMobile && (
+        <div className={cn(
+          "fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-ink/10 p-4",
+          isIPhone && "pb-[env(safe-area-inset-bottom)]"
+        )}>
+          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
+            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
+          </button>
+        </div>
+      )}
 
       {/* Trust Security Bar - PLACED BELOW FORM */}
       <div className="flex justify-center gap-12 pb-10 pt-4">

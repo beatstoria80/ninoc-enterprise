@@ -10,6 +10,7 @@ import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
+import { useDevice } from '@/app/checkout/_components/useDevice';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,6 +41,9 @@ export default function ProductDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+
+  // Platform detection for mobile-specific UI
+  const { isMobile, isIPhone } = useDevice();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -92,12 +96,31 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-cr noise pb-20">
-      <div className="pt-24 md:pt-32 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto">
-        
-        {/* FIXED BACK BUTTON - SENSORY & MINIMAL */}
-        <button 
-          onClick={() => router.back()} 
+    <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
+      {/* MOBILE NAV BAR */}
+      {isMobile && (
+        <nav className={cn(
+          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
+          isIPhone && "pt-[env(safe-area-inset-top)]"
+        )}>
+          <div className="flex items-center justify-between px-4 py-3">
+            <button onClick={() => router.back()} className="flex items-center gap-2 text-ink/40 hover:text-rose transition-all">
+              <ArrowLeft size={16} />
+            </button>
+            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
+            <div className="w-8" />
+          </div>
+        </nav>
+      )}
+
+      <div className={cn(
+        "pt-24 md:pt-32 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
+        isMobile && "pt-14"
+      )}>
+
+        {/* DESKTOP ONLY - FIXED BACK BUTTON */}
+        <button
+          onClick={() => router.back()}
           className="fixed left-6 md:left-12 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-4 text-ink/20 hover:text-rose transition-all group hidden xl:flex"
         >
           <div className="w-12 h-12 flex items-center justify-center rounded-full border border-ink/5 bg-white shadow-sm group-hover:border-rose/20 group-hover:bg-rose/5 group-hover:shadow-xl transition-all duration-500">
@@ -105,14 +128,6 @@ export default function ProductDetailPage() {
           </div>
           <span className="text-[8px] font-medium uppercase tracking-[0.6em] vertical-text transform rotate-180 opacity-0 group-hover:opacity-100 transition-all duration-500">Back to Shop</span>
         </button>
-
-        {/* Mobile Back Button */}
-        <div className="flex xl:hidden items-center justify-between mb-8">
-          <button onClick={() => router.back()} className="flex items-center gap-3 text-ink/30 hover:text-rose transition-all">
-            <ArrowLeft size={16} />
-            <span className="text-[9px] font-medium uppercase tracking-[0.4em]">Back</span>
-          </button>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 xl:gap-3">
           
@@ -243,6 +258,7 @@ export default function ProductDetailPage() {
 
               {/* ACTION BUTTON - REFINED SCALE */}
               <div className="pt-4 relative z-10">
+                {!isMobile && (
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
@@ -264,9 +280,11 @@ export default function ProductDetailPage() {
                     )}
                   </AnimatePresence>
                 </button>
+                )}
               </div>
 
-              {/* Trust Badges */}
+              {/* Trust Badges - Desktop only */}
+              {!isMobile && (
               <div className="grid grid-cols-3 gap-4 pt-10 border-t border-ink/5">
                 {[
                   { icon: ShieldCheck, label: 'Secure Payment' },
@@ -279,6 +297,7 @@ export default function ProductDetailPage() {
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -321,6 +340,41 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+
+      {/* MOBILE STICKY BOTTOM CTA */}
+      {isMobile && (
+        <div className={cn(
+          "fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/10",
+          isIPhone && "pb-[env(safe-area-inset-bottom)]"
+        )}>
+          <div className="flex items-center gap-4 p-4">
+            <div className="flex-1">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Total</p>
+              <p className="text-lg font-display font-medium italic text-rose">Rp {product.price?.toLocaleString('id-ID')}</p>
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={addedToCart}
+              className={cn(
+                "px-8 py-4 rounded-xl font-medium text-[10px] uppercase tracking-[0.3em] flex items-center gap-3 transition-all",
+                addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white"
+              )}
+            >
+              {addedToCart ? (
+                <>
+                  <ShieldCheck size={14} />
+                  <span>ADDED</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={14} />
+                  <span>ADD TO CART</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
