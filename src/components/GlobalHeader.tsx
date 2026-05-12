@@ -31,26 +31,14 @@ export default function GlobalHeader() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_isSearching, setIsSearching] = useState(false);
 
-    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  // Start as TRUE mobile to prevent SSR flash - will be corrected by useEffect
-  const [isMobileDevice, setIsMobileDevice] = useState(true);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setMounted(true); }, []);
-
-  // Detect mobile device - start as mobile to prevent any header flash
-  useEffect(() => {
-    const checkMobile = () => {
-      if (typeof window !== 'undefined') {
-        setIsMobileDevice(window.innerWidth < 768);
-      }
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+  useEffect(() => { 
+    setMounted(true); 
   }, []);
 
   useEffect(() => {
@@ -112,10 +100,6 @@ export default function GlobalHeader() {
   }, [searchQuery]);
 
   if (!mounted) return null;
-
-  // SEPARATE UI PER PLATFORM - Hide GlobalHeader on all mobile devices
-  // Each page has its own mobile-optimized header
-  if (isMobileDevice) return null;
 
   return (
     <>

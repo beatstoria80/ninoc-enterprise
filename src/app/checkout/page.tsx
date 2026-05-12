@@ -345,9 +345,8 @@ export default function CheckoutPage() {
   const labelClass = "text-[8px] font-medium uppercase tracking-[0.15em] text-ink/50 mb-0.5 block";
 
   return (
-    <main className={cn(
-      "min-h-screen bg-cr",
-      // iOS Safe Area - only apply on actual iOS devices
+    <div className={cn(
+      "w-full",
       isIPhone && "ios-mobile-layout"
     )}>
       {/* STUDIO EXIT NAV - iOS safe area aware */}
@@ -639,6 +638,6 @@ export default function CheckoutPage() {
           formId="checkout-form"
         />
       )}
-    </main>
+    </div>
   );
 }

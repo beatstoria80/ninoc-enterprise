@@ -9,7 +9,6 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
-import MobileLayout from '@/components/platforms/mobile/MobileLayout';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,8 +45,8 @@ function MobileShopView({ products }: { products: Product[] }) {
   }, {} as Record<string, Product[]>);
 
   return (
-    <MobileLayout title="NINOC" cartCount={0}>
-      {/* Category Pills */}
+    <div className="bg-cr min-h-screen">
+      {/* Category Pills - Adjusted top for global MobileLayout header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-ink/5">
         <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
           {categories.map((cat) => (
@@ -68,7 +67,7 @@ function MobileShopView({ products }: { products: Product[] }) {
       </div>
 
       {/* Product Grid */}
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 pb-20">
         {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
           <div key={category} className="space-y-3">
             {/* Category Header */}
@@ -92,7 +91,7 @@ function MobileShopView({ products }: { products: Product[] }) {
                 >
                   <Link href={`/shop/${product.slug}`} className="block">
                     {/* Image */}
-                    <div className="aspect-square bg-white rounded-lg overflow-hidden border border-ink/5 relative">
+                    <div className="aspect-square bg-white rounded-none overflow-hidden border border-ink/5 relative">
                       <Image
                         src={product.image_url}
                         alt={product.name}
@@ -124,7 +123,7 @@ function MobileShopView({ products }: { products: Product[] }) {
           </div>
         )}
       </div>
-    </MobileLayout>
+    </div>
   );
 }
 

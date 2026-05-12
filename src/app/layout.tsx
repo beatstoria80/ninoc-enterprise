@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-import GlobalHeader from "@/components/GlobalHeader";
-import GlobalFooter from "@/components/Footer";
+import ClientPlatformManager from "@/components/ClientPlatformManager";
 import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
@@ -42,9 +41,9 @@ export default function RootLayout({
             data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
             strategy="afterInteractive"
           />
-          <GlobalHeader />
-          <main className="flex-1">{children}</main>
-          <GlobalFooter />
+          <ClientPlatformManager>
+            {children}
+          </ClientPlatformManager>
           <SupportChat />
         </SmoothScrollProvider>
       </body>
