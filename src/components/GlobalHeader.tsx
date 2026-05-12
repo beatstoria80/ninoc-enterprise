@@ -36,10 +36,14 @@ export default function GlobalHeader() {
     const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isMobilePage, setIsMobilePage] = useState(false);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setIsMobilePage(typeof window !== 'undefined' && window.innerWidth < 768); }, []);
 
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
@@ -52,7 +56,7 @@ export default function GlobalHeader() {
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     const fetchProfile = async (userId: string) => {
       const { data } = await supabase
         .from('customer_profiles')
@@ -100,16 +104,23 @@ export default function GlobalHeader() {
   }, [searchQuery]);
 
   if (!mounted) return null;
-  if (
-    pathname === '/checkout' ||
-    pathname === '/login' ||
-    pathname === '/onboarding' ||
-    pathname === '/payment/success' ||
-    pathname === '/terms' ||
-    pathname === '/privacy' ||
-    pathname?.startsWith('/admin') ||
-    pathname?.startsWith('/profile/orders')
-  ) {
+
+  // Pages where GlobalHeader should be hidden (custom mobile views)
+  const hideOnPages = [
+    '/checkout',
+    '/login',
+    '/onboarding',
+    '/payment/success',
+    '/terms',
+    '/privacy',
+    '/shop',
+    '/about',
+  ];
+
+  const shouldHide = hideOnPages.some(p => pathname === p || pathname?.startsWith(p + '/'));
+
+  // Hide for mobile pages with custom header
+  if (shouldHide && isMobilePage) {
     return null;
   }
 
