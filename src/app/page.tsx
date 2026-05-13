@@ -334,16 +334,12 @@ export default function Home() {
 
         {/* Drag wrapper — pointer events on the scrollable slider itself */}
         <div className="relative select-none">
-          {/* DEBUG: visible drag indicator on screen */}
-          <div className="absolute top-2 left-2 z-50 bg-rose text-white text-[8px] px-2 py-1 font-mono pointer-events-none">DRAG TEST</div>
-
           {/* Pointer events on the slider element itself — no wrapper interference */}
           <div
             data-slider
             ref={sliderRef}
             className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar select-none"
             onPointerDown={(e) => {
-              console.log('[DRAG DEBUG] onPointerDown fired! clientX:', e.clientX, 'button:', e.button);
               if (!sliderRef.current) return;
               e.currentTarget.setPointerCapture(e.pointerId);
               dragState.current = { active: true, startX: e.clientX, startScroll: sliderRef.current.scrollLeft };
@@ -354,12 +350,10 @@ export default function Home() {
               const delta = e.clientX - dragState.current.startX;
               const maxScroll = -(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
               sliderRef.current.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
-              console.log('[DRAG DEBUG] onPointerMove, delta:', delta, 'scrollLeft:', sliderRef.current.scrollLeft);
             }}
             onPointerUp={() => {
               dragState.current.active = false;
               document.body.style.userSelect = '';
-              console.log('[DRAG DEBUG] onPointerUp fired!');
             }}
             onPointerLeave={() => {
               dragState.current.active = false;
