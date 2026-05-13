@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
@@ -60,22 +60,24 @@ export default function CheckoutPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [snapLoaded, setSnapLoaded] = useState(false);
-  const snapInitRef = useRef(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
 
-  // Load Midtrans Snap.js script (only once)
+  // Mark snap as loaded once window.snap is available (script loaded via layout.tsx)
   useEffect(() => {
-    if (snapInitRef.current) return;
-    snapInitRef.current = true;
-
-    const script = document.createElement('script');
-    script.src = 'https://app.midtrans.com/snap/snap.js';
-    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '');
-    script.onload = () => setSnapLoaded(true);
-    script.onerror = () => console.error('Failed to load Midtrans script');
-    document.head.appendChild(script);
+    interface WindowWithSnap extends Window {
+      snap?: { pay: (token: string, callbacks: unknown) => void };
+    }
+    const checkSnap = () => {
+      if (typeof window !== 'undefined' && (window as WindowWithSnap).snap) {
+        setSnapLoaded(true);
+      }
+    };
+    // Check immediately and poll briefly in case script loads after this effect
+    checkSnap();
+    const timeout = setTimeout(checkSnap, 1000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const [formData, setFormData] = useState({

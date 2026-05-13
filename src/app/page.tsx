@@ -164,7 +164,7 @@ export default function Home() {
             products.map((product) => (
               <Link
                 key={product.id}
-                href={`/product/${product.slug}`}
+                href={`/shop/${product.slug}`}
                 className="bg-white p-4 md:p-8 group relative overflow-hidden transition-all duration-700"
               >
                 <div className="aspect-[3/4] overflow-hidden mb-6 md:mb-8">

@@ -59,11 +59,19 @@ export default function OrderDetailPage() {
     const fetchOrderData = async () => {
       if (!id) return;
 
-      // 1. Fetch Order Header
+      // Verify user is authenticated first
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
+        router.push('/login');
+        return;
+      }
+
+      // 1. Fetch Order Header (enforce user_id check — prevents IDOR)
       const { data: orderData } = await supabase
         .from('orders')
         .select('*')
         .eq('id', id)
+        .eq('user_id', authUser.id)
         .single();
 
       if (!orderData) {
@@ -109,7 +117,7 @@ export default function OrderDetailPage() {
     { label: 'Studio Delivery', status: 'delivered', icon: <CheckCircle size={14} /> },
   ];
 
-  const currentStepIndex = steps.findIndex(s => s.status === order.status);
+  const currentStepIndex = Math.max(0, steps.findIndex(s => s.status === order.status));
 
   return (
     <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white pb-32">
@@ -236,8 +244,8 @@ export default function OrderDetailPage() {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <p className="text-[8px] uppercase tracking-widest text-ink/30 italic">Registered Consignee</p>
-                  <p className="text-[11px] leading-relaxed uppercase tracking-tight">{order.shipping_address?.name}</p>
-                  <p className="text-[9px] text-ink/40">{order.shipping_address?.phone}</p>
+                  <p className="text-[11px] leading-relaxed uppercase tracking-tight">{order.shipping_address?.name || order.shipping_address?.phone || 'Unknown Recipient'}</p>
+                  <p className="text-[9px] text-ink/40">{order.shipping_address?.phone || '—'}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[8px] uppercase tracking-widest text-ink/30 italic">Dest. Node Specification</p>

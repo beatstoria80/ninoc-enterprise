@@ -304,7 +304,7 @@ export default function GlobalHeader() {
                 {searchResults.map((product) => (
                   <Link 
                     key={product.id} 
-                    href={`/product/${product.slug}`}
+                    href={`/shop/${product.slug}`}
                     onClick={() => setIsSearchOpen(false)}
                     className="flex gap-6 group"
                   >

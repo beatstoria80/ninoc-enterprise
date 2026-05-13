@@ -53,6 +53,9 @@ function verifySignature(payload: string, signature: string, secret: string): bo
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(payload);
   const computed = hmac.digest('hex');
+  // Use simple comparison for hex strings — timingSafeEqual requires same buffer length
+  // Both are 64-char hex strings, but guard against malformed signatures
+  if (signature.length !== computed.length) return false;
   return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature));
 }
 
@@ -114,7 +117,7 @@ export async function POST(req: Request) {
           courier_driver_name: payload.courier_driver_name || null,
           courier_driver_phone: payload.courier_driver_phone || null,
           courier_link: payload.courier_link || null,
-          raw_payload: payload,
+          raw_payload: JSON.stringify(payload),
         });
         break;
       }
@@ -136,7 +139,7 @@ export async function POST(req: Request) {
             order_id: payload.order_id,
             biteship_status: 'price_update',
             internal_status: 'info',
-            raw_payload: payload,
+            raw_payload: JSON.stringify(payload),
           });
         }
         break;

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Scale, Globe, Shield, Lock, FileText } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LegalArchivePage() {
+export default function PrivacyPage() {
   const [lang, setLang] = useState<'ID' | 'EN'>('ID');
 
   const content = {

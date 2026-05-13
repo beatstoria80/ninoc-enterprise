@@ -28,12 +28,19 @@ interface Product {
 // MOBILE SHOP VIEW (iOS Native)
 // ===============================
 function MobileShopView({ products }: { products: Product[] }) {
+  // Category keys must match DB values: 'pakaian' | 'utilities' | 'aksesoris'
+  const categoryMap: Record<string, string> = {
+    'All': 'All',
+    'Fashion': 'pakaian',
+    'Utilities': 'utilities',
+    'Accessories': 'aksesoris',
+  };
+  const displayCategories = Object.keys(categoryMap);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Fashion', 'Art', 'Accessories'];
 
   const filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category === categoryMap[selectedCategory]);
 
   // Group products by category
   const groupedProducts = filteredProducts.reduce((acc, product) => {
@@ -49,7 +56,7 @@ function MobileShopView({ products }: { products: Product[] }) {
       {/* Category Pills - Adjusted top for global MobileLayout header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-ink/5">
         <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
-          {categories.map((cat) => (
+          {displayCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
@@ -106,7 +113,7 @@ function MobileShopView({ products }: { products: Product[] }) {
                         {product.name}
                       </h3>
                       <p className="text-[11px] font-display font-medium italic text-rose">
-                        Rp {product.price.toLocaleString('id-ID')}
+                        Rp {(product.price ?? 0).toLocaleString('id-ID')}
                       </p>
                     </div>
                   </Link>
@@ -131,12 +138,19 @@ function MobileShopView({ products }: { products: Product[] }) {
 // DESKTOP SHOP VIEW
 // ===============================
 function DesktopShopView({ products }: { products: Product[] }) {
+  // Category keys must match DB values: 'pakaian' | 'utilities' | 'aksesoris'
+  const categoryMap: Record<string, string> = {
+    'All': 'All',
+    'Fashion': 'pakaian',
+    'Utilities': 'utilities',
+    'Accessories': 'aksesoris',
+  };
+  const displayCategories = Object.keys(categoryMap);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Fashion', 'Art', 'Accessories'];
 
   const filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category === categoryMap[selectedCategory]);
 
   return (
     <main className="min-h-screen bg-cr noise pb-40">
@@ -145,7 +159,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
         <section className="pointer-events-auto">
           <div className="glass border border-ink/5 rounded-full p-2 flex items-center gap-2 shadow-2xl shadow-ink/5 overflow-hidden">
             <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-1">
-              {categories.map((cat) => (
+              {displayCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -218,7 +232,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
                       {product.category} Archive
                     </p>
                     <p className="text-base md:text-xl font-display font-medium italic text-rose pt-2">
-                      Rp {product.price.toLocaleString('id-ID')}
+                      Rp {(product.price ?? 0).toLocaleString('id-ID')}
                     </p>
                   </div>
                 </Link>
