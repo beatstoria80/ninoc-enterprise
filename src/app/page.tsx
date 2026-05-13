@@ -235,17 +235,16 @@ function ProductCard({ product, index }: ProductCardProps) {
       >
         {/* Image Container */}
         <motion.div
-          className="aspect-[3/4] overflow-hidden mb-2 md:mb-8 relative"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.6, ease: MOTION.ease }}
-          style={{ originX: 0.5, originY: 0.5 }}
+          className="aspect-[3/4] overflow-hidden mb-2 md:mb-8 relative bg-white border border-ink/5"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
           {product.image_url && (
             <Image
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-contain transition-all duration-700 group-hover:grayscale-0 grayscale"
+              className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100"
             />
           )}
         </motion.div>
@@ -397,17 +396,17 @@ export default function Home() {
             {/* Hero Heading — Word-level split stagger */}
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
               {["Archival", "Apparel"].map((word, wi) => (
-                <motion.span
-                  key={word}
-                  variants={wordVariants}
-                  initial="hidden"
-                  animate="visible"
-                  custom={wi}
-                  className="inline-block mr-[0.2em] last:mr-0"
-                  style={{ display: 'block', overflow: 'hidden' }}
-                >
-                  {word}
-                </motion.span>
+                <span key={word} className="block overflow-hidden">
+                  <motion.span
+                    variants={wordVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={wi}
+                    className="block"
+                  >
+                    {word}
+                  </motion.span>
+                </span>
               ))}
             </h1>
 
@@ -428,20 +427,23 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.5 }}
             >
-              <Link href="/shop" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300">
+              <Link href="/shop" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300 relative">
                 <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Catalog</span>
-                <motion.div
-                  className="w-4 md:w-12 h-[1px] bg-ink/40 md:bg-ink/20"
-                  animate={{ width: [16, 80, 80] }}
-                  transition={{ delay: 0.8, duration: 1.2, ease: MOTION.ease }}
-                  style={{ originX: 0 }}
-                />
-                <motion.div
-                  className="absolute left-0 h-[1px] bg-rose"
-                  initial={{ width: 0 }}
-                  whileHover={{ width: 80 }}
-                  transition={{ duration: 0.4, ease: MOTION.ease }}
-                />
+                <div className="relative overflow-hidden w-4 md:w-12 h-[1px]">
+                  <motion.div
+                    className="absolute inset-0 bg-ink/20"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 1, duration: 1, ease: MOTION.ease }}
+                    style={{ originX: 0 }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-rose"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: 0 }}
+                    transition={{ duration: 0.4, ease: MOTION.ease }}
+                  />
+                </div>
               </Link>
             </motion.div>
           </div>
