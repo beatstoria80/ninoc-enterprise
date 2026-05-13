@@ -118,7 +118,7 @@ export default function Home() {
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-20 mt-4 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-48 mt-4 lg:mt-0">
              {/* MOBILE VIEW GRID */}
              <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-3 md:hidden">
                 <div className="space-y-0">
