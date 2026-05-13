@@ -155,19 +155,19 @@ export default function Home() {
            <Link href="/shop" className="text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-all">View All</Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-ink/5 border border-ink/5 overflow-hidden rounded-none">
+        <div className="md:grid md:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-ink/5 border border-ink/5 overflow-hidden rounded-none flex overflow-x-auto no-scrollbar snap-x snap-mandatory">
           {isLoading ? (
             Array(4).fill(0).map((_, i) => (
-              <div key={i} className="aspect-[3/4] bg-white animate-pulse" />
+              <div key={i} className="aspect-[3/4] bg-white animate-pulse min-w-[80vw] md:min-w-0" />
             ))
           ) : (
             products.map((product) => (
               <Link
                 key={product.id}
                 href={`/shop/${product.slug}`}
-                className="bg-white p-4 md:p-8 group relative overflow-hidden transition-all duration-700"
+                className="bg-white p-6 md:p-8 group relative overflow-hidden transition-all duration-700 min-w-[85vw] md:min-w-0 snap-center border-r border-ink/5 last:border-r-0"
               >
-                <div className="aspect-[3/4] overflow-hidden mb-6 md:mb-8">
+                <div className="aspect-[3/4] overflow-hidden mb-6 md:mb-8 relative">
                   {product.image_url && (
                     <Image
                       src={product.image_url}
@@ -177,13 +177,13 @@ export default function Home() {
                     />
                   )}
                 </div>
-                <div className="space-y-1.5 md:space-y-2">
-                  <p className="text-[8px] md:text-[9px] font-medium uppercase tracking-widest text-ink/30">{product.category}</p>
+                <div className="space-y-2 md:space-y-3">
+                  <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">{product.category}</p>
                   <h3 className="text-sm md:text-xl font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors line-clamp-1">{product.name}</h3>
-                  <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-ink/5 mt-3 md:mt-4">
+                  <div className="flex items-center justify-between pt-4 md:pt-6 border-t border-ink/5 mt-4 md:mt-6">
                      <p className="text-sm md:text-lg font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
-                     <div className="w-6 h-6 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all">
-                        <ChevronRight size={12} />
+                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all">
+                        <ChevronRight size={14} />
                      </div>
                   </div>
                 </div>

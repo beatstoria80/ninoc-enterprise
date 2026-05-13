@@ -237,14 +237,14 @@ input:focus, textarea:focus, select:focus {
 /* Mobile touch — native momentum scroll */
 .mobile-momentum {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  overscroll-behavior-y: contain;
+  overscroll-behavior: auto;
+  overscroll-behavior-y: auto;
 }
 
-/* Disable Lenis/pointer events conflict on touch devices */
+/* Enable both horizontal and vertical panning */
 @media (hover: none) and (pointer: coarse) {
   * {
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
   }
 }
 

@@ -75,7 +75,7 @@ export default function MobileLayout({
     const value = e.target.value;
     setSearchQuery(value);
     // Debounced search
-    const timeout = setTimeout(() => handleSearch(value), 300);
+    setTimeout(() => handleSearch(value), 300);
     // Debounce is handled locally, no need to return cleanup function here
     // as it's not a hook. For better debouncing, use a ref.
   };
@@ -454,8 +454,8 @@ export default function MobileLayout({
 
         .ios-momentum-scroll {
           -webkit-overflow-scrolling: touch;
-          overscroll-behavior-y: contain;
-          overscroll-behavior: contain;
+          overscroll-behavior-y: auto;
+          overscroll-behavior: auto;
         }
 
         .ios-bottom-nav {

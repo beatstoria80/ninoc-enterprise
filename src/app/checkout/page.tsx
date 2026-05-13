@@ -316,6 +316,7 @@ export default function CheckoutPage() {
       }
 
       // Open Midtrans Snap popup
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).snap.pay(data.token, {
         onSuccess: (result: MidtransSnapResult) => {
           console.log('Payment initiated:', result);
