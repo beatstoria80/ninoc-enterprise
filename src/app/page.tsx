@@ -1,11 +1,137 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { ShieldCheck, Zap, Package, Paperclip, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+
+// Portrait image carousel pool for hover effect
+const PORTRAIT_IMAGES = [
+  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1000&auto=format&fit=crop",
+];
+
+const CAROUSEL_INTERVAL = 200; // ms per image switch
+
+function PortraitImageCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startCycle = useCallback(() => {
+    setIsHovered(true);
+    let idx = 0;
+    setCurrentIndex(idx);
+    timerRef.current = setInterval(() => {
+      idx = (idx + 1) % PORTRAIT_IMAGES.length;
+      setCurrentIndex(idx);
+    }, CAROUSEL_INTERVAL);
+  }, []);
+
+  const stopCycle = useCallback(() => {
+    setIsHovered(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setCurrentIndex(0);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
+      onMouseEnter={startCycle}
+      onMouseLeave={stopCycle}
+      style={{ cursor: 'pointer' }}
+    >
+      {PORTRAIT_IMAGES.map((src, i) => (
+        <div
+          key={src}
+          className="absolute inset-0 transition-opacity duration-100"
+          style={{
+            opacity: currentIndex === i && isHovered ? 1 : (currentIndex === i && !isHovered ? 1 : 0),
+            zIndex: currentIndex === i ? 2 : 1,
+          }}
+        >
+          <Image
+            src={src}
+            alt={`Archival Garment ${i + 1}`}
+            fill
+            className={`object-cover ${isHovered ? 'grayscale-0' : 'grayscale'}`}
+            priority={i === 0}
+          />
+        </div>
+      ))}
+
+      {/* Grayscale base when not hovered */}
+      {!isHovered && (
+        <div
+          className="absolute inset-0 grayscale hover:grayscale-0 transition-all duration-1000 z-10 pointer-events-none"
+          aria-hidden="true"
+        >
+          <Image
+            src={PORTRAIT_IMAGES[0]}
+            alt=""
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+
+      {/* Cycling indicator dots */}
+      {isHovered && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+          {PORTRAIT_IMAGES.map((_, i) => (
+            <div
+              key={i}
+              className="w-1 h-1 rounded-full transition-all duration-100"
+              style={{
+                backgroundColor: currentIndex === i ? '#E8527A' : 'rgba(20,20,20,0.2)',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter md:hidden">
+        SPEC-001
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent hidden md:block" />
+    </motion.div>
+  );
+}
+
+// Fade-up section wrapper for entrance animations
+function FadeUpSection({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 interface Product {
   id: string;
@@ -49,6 +175,7 @@ export default function Home() {
         ---------------------------------------------------------
       */}
       {/* HERO SECTION - TECHNICAL SPLIT LAYOUT */}
+      <FadeUpSection delay={0}>
       <section className="relative md:pt-44 pt-2 pb-6 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
@@ -57,6 +184,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-1 md:space-y-4"
             >
               <div className="flex items-center gap-2 text-rose">
@@ -92,29 +220,18 @@ export default function Home() {
 
           {/* Right Column (Mobile) / Middle (PC): Visual Anchor */}
           <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-             <motion.div
-               initial={{ opacity: 0, scale: 0.98 }}
-               animate={{ opacity: 1, scale: 1 }}
-               transition={{ duration: 1.2 }}
-               className="aspect-[3/4] md:aspect-[4/5] bg-white rounded-none overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
-             >
-                <Image
-                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
-                   alt="Archival Garment"
-                   fill
-                   className="object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-1000"
-                />
-                <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter md:hidden">
-                   SPEC-001
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent hidden md:block" />
-             </motion.div>
+             <PortraitImageCarousel />
 
              {/* Technical Callout Overlay (PC Only) */}
-             <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block">
+             <motion.div
+               initial={{ opacity: 0, y: 8 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: 1.4, duration: 0.6 }}
+               className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block"
+             >
                 <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
                 <p className="text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br/>Industrial Grade Fabrics</p>
-             </div>
+             </motion.div>
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
@@ -164,8 +281,10 @@ export default function Home() {
 
         </div>
       </section>
+      </FadeUpSection>
 
       {/* SWISS GRID CATALOG - DENSE GRID (MOBILE) / CLASSIC GRID (PC) */}
+      <FadeUpSection delay={0.1}>
       <section className="md:mt-40 mt-4 px-4 md:px-12 max-w-[1800px] mx-auto">
         <div className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-8 mb-4 md:mb-12">
            <div>
@@ -212,8 +331,10 @@ export default function Home() {
           )}
         </div>
       </section>
+      </FadeUpSection>
 
       {/* TRUST SYMBOLS - HIGH DENSITY (MOBILE) / SPACIOUS (PC) */}
+      <FadeUpSection delay={0.2}>
       <section className="md:mt-40 mt-8 md:mb-40 mb-12 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-20">
             <div className="flex flex-col items-center text-center space-y-2 md:space-y-6">
@@ -245,6 +366,7 @@ export default function Home() {
             </div>
          </div>
       </section>
+      </FadeUpSection>
     </div>
   );
 }
