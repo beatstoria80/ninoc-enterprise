@@ -421,28 +421,40 @@ export default function Home() {
               <span className="hidden md:inline"> Our collection represents a curated selection of technical excellence and timeless design.</span>
             </motion.p>
 
-            {/* Browse CTA */}
+            {/* Browse CTA — Animated underline slide reveal */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.5, ease: MOTION.ease }}
             >
               <Link href="/shop" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300 relative">
                 <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Catalog</span>
-                <div className="relative overflow-hidden w-4 md:w-12 h-[1px]">
+
+                {/* Animated line: two-layer slide effect */}
+                <div className="relative w-4 md:w-12 h-[1px] overflow-hidden">
+                  {/* Base line — appears from left to right */}
                   <motion.div
                     className="absolute inset-0 bg-ink/20"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ delay: 1, duration: 1, ease: MOTION.ease }}
+                    transition={{ delay: 1, duration: 0.8, ease: MOTION.ease }}
                     style={{ originX: 0 }}
                   />
+                  {/* Hover line — slides in from left on hover */}
                   <motion.div
-                    className="absolute inset-0 bg-rose"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: 0 }}
+                    className="absolute inset-0 bg-rose origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.4, ease: MOTION.ease }}
                   />
+                  {/* Arrow icon — slides 4px right on hover */}
+                  <motion.span
+                    className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.3, ease: MOTION.ease }}
+                  >
+                    <ChevronRight className="w-2 h-2 md:w-3 md:h-3 text-rose" />
+                  </motion.span>
                 </div>
               </Link>
             </motion.div>
