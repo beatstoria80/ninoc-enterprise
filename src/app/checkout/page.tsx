@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     let isMounted = true;
     let retryCount = 0;
     const maxRetries = 10;
-
+    let timeoutId: NodeJS.Timeout;
     const checkSnap = () => {
       if (!isMounted) return;
       if (typeof window !== 'undefined' && (window as WindowWithSnap).snap) {
@@ -82,15 +82,17 @@ export default function CheckoutPage() {
       }
       if (retryCount < maxRetries) {
         retryCount++;
-        setTimeout(checkSnap, 1000);
+        timeoutId = setTimeout(checkSnap, 1000);
       } else {
         setSnapLoadFailed(true);
       }
     };
     // Check immediately and poll briefly in case script loads after this effect
     checkSnap();
-    return () => { isMounted = false; };
-    return () => clearTimeout(timeout);
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const [formData, setFormData] = useState({
