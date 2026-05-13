@@ -386,35 +386,40 @@ export default function Home() {
   // Catalog section viewport ref for stagger
   const catalogRef = useRef(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dragConstraints, setDragConstraints] = useState({ left: -500, right: 0 });
   const catalogInView = useInView(catalogRef, { once: false, amount: 0.1 });
 
   useEffect(() => {
     const updateConstraints = () => {
-      if (sliderRef.current) {
-        // Force a slight delay to ensure browser has calculated layout
-        requestAnimationFrame(() => {
-          if (sliderRef.current) {
-            const sliderWidth = sliderRef.current.scrollWidth;
-            const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
-            // Ensure we only set constraints if the content is actually wider than container
-            const maxDrag = Math.min(0, -(sliderWidth - containerWidth));
-            setDragConstraints({ left: maxDrag - 100, right: 0 }); // Extra 100px buffer for elastic feel
+      requestAnimationFrame(() => {
+        if (containerRef.current && sliderRef.current) {
+          const sliderWidth = sliderRef.current.scrollWidth;
+          const containerWidth = containerRef.current.offsetWidth;
+          const diff = sliderWidth - containerWidth;
+
+          // Only allow dragging if content overflows container
+          if (diff > 0) {
+            setDragConstraints({ left: -diff, right: 0 });
+          } else {
+            setDragConstraints({ left: 0, right: 0 });
           }
-        });
-      }
+        }
+      });
     };
 
+    // Initial + staggered checks for dynamic content
     updateConstraints();
     window.addEventListener('resize', updateConstraints);
-    // Multiple checks to ensure dynamic content loading doesn't break constraints
-    const timer1 = setTimeout(updateConstraints, 500);
-    const timer2 = setTimeout(updateConstraints, 2000);
-    
+    const timer1 = setTimeout(updateConstraints, 300);
+    const timer2 = setTimeout(updateConstraints, 1000);
+    const timer3 = setTimeout(updateConstraints, 2000);
+
     return () => {
       window.removeEventListener('resize', updateConstraints);
       clearTimeout(timer1);
       clearTimeout(timer2);
+      clearTimeout(timer3);
     };
   }, [products, isLoading]);
 
@@ -607,7 +612,8 @@ export default function Home() {
         </motion.div>
 
         {/* Horizontal Draggable Slider — Momentum Scroll */}
-        <div 
+        <div
+          ref={containerRef}
           className="relative overflow-hidden group no-scrollbar touch-pan-y"
           data-lenis-prevent
         >
@@ -615,11 +621,11 @@ export default function Home() {
             ref={sliderRef}
             drag="x"
             dragConstraints={dragConstraints}
-            dragElastic={0.1}
+            dragElastic={0.05}
             dragMomentum={true}
-            dragTransition={{ power: 0.3, timeConstant: 200 }}
+            dragTransition={{ power: 0.4, timeConstant: 250 }}
             whileTap={{ cursor: "grabbing" }}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing pointer-events-auto"
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing"
             variants={staggerContainerVariants}
             initial="hidden"
             animate={catalogInView ? 'visible' : 'hidden'}
