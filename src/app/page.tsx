@@ -392,21 +392,29 @@ export default function Home() {
   useEffect(() => {
     const updateConstraints = () => {
       if (sliderRef.current) {
-        const sliderWidth = sliderRef.current.scrollWidth;
-        const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
-        setDragConstraints({ left: -(sliderWidth - containerWidth), right: 0 });
+        // Force a slight delay to ensure browser has calculated layout
+        requestAnimationFrame(() => {
+          if (sliderRef.current) {
+            const sliderWidth = sliderRef.current.scrollWidth;
+            const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
+            // Ensure we only set constraints if the content is actually wider than container
+            const maxDrag = Math.min(0, -(sliderWidth - containerWidth));
+            setDragConstraints({ left: maxDrag - 100, right: 0 }); // Extra 100px buffer for elastic feel
+          }
+        });
       }
     };
 
     updateConstraints();
     window.addEventListener('resize', updateConstraints);
-    
-    // Also re-calculate after a short delay to ensure images are settled
-    const timer = setTimeout(updateConstraints, 1000);
+    // Multiple checks to ensure dynamic content loading doesn't break constraints
+    const timer1 = setTimeout(updateConstraints, 500);
+    const timer2 = setTimeout(updateConstraints, 2000);
     
     return () => {
       window.removeEventListener('resize', updateConstraints);
-      clearTimeout(timer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
   }, [products, isLoading]);
 
@@ -617,15 +625,16 @@ export default function Home() {
         </motion.div>
 
         {/* Horizontal Draggable Slider — Momentum Scroll */}
-        <div className="relative overflow-hidden group no-scrollbar">
+        <div className="relative overflow-hidden group no-scrollbar touch-pan-y">
           <motion.div
             ref={sliderRef}
             drag="x"
             dragConstraints={dragConstraints}
-            dragElastic={0.2}
-            dragTransition={{ power: 0.3, timeConstant: 250 }}
+            dragElastic={0.15}
+            dragMomentum={true}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 20, power: 0.3 }}
             whileTap={{ cursor: "grabbing" }}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing"
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing pointer-events-auto"
             variants={staggerContainerVariants}
             initial="hidden"
             animate={catalogInView ? 'visible' : 'hidden'}
