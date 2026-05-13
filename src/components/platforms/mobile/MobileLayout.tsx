@@ -76,7 +76,8 @@ export default function MobileLayout({
     setSearchQuery(value);
     // Debounced search
     const timeout = setTimeout(() => handleSearch(value), 300);
-    return () => clearTimeout(timeout);
+    // Debounce is handled locally, no need to return cleanup function here
+    // as it's not a hook. For better debouncing, use a ref.
   };
 
   // Back button: Navigate to shop to keep users engaged
