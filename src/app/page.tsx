@@ -227,9 +227,8 @@ interface Product {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ isDragging: boolean; startX: number; scrollLeft: number }>({ isDragging: false, startX: 0, scrollLeft: 0 });
+  const dragState = useRef({ active: false, startX: 0, startScroll: 0 });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -245,32 +244,6 @@ export default function Home() {
     };
     fetchProducts();
   }, []);
-
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!sliderRef.current) return;
-    dragRef.current = { isDragging: true, startX: e.clientX, scrollLeft: sliderRef.current.scrollLeft };
-    sliderRef.current.setPointerCapture(e.pointerId);
-    sliderRef.current.style.cursor = 'grabbing';
-    document.body.style.userSelect = 'none';
-    setIsDragging(true);
-  };
-
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragRef.current.isDragging || !sliderRef.current) return;
-    e.preventDefault();
-    const x = e.clientX - dragRef.current.startX;
-    const walk = -x * 1.5;
-    const maxLeft = -(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
-    sliderRef.current.scrollLeft = Math.max(maxLeft, Math.min(0, dragRef.current.scrollLeft + walk));
-  };
-
-  const onPointerUp = () => {
-    if (!sliderRef.current) return;
-    dragRef.current.isDragging = false;
-    sliderRef.current.style.cursor = 'grab';
-    document.body.style.userSelect = '';
-    setIsDragging(false);
-  };
 
   return (
     <div className="mobile-momentum select-none">
@@ -359,19 +332,42 @@ export default function Home() {
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* Drag wrapper — captures pointer events */}
+        {/* Drag wrapper — pointer events attached to the scrollable element itself */}
         <div
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerLeave={onPointerUp}
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          className="relative"
+          onPointerDown={(e) => {
+            const slider = sliderRef.current;
+            if (!slider) return;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            dragState.current = { active: true, startX: e.clientX, startScroll: slider.scrollLeft };
+                      }}
+          onPointerMove={(e) => {
+            if (!dragState.current.active) return;
+            const slider = sliderRef.current;
+            if (!slider) return;
+            const delta = e.clientX - dragState.current.startX;
+            const maxScroll = -(slider.scrollWidth - slider.offsetWidth);
+            slider.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
+          }}
+          onPointerUp={() => {
+            const slider = sliderRef.current;
+            if (slider) slider.style.cursor = 'grab';
+            dragState.current.active = false;
+            document.body.style.userSelect = '';
+          }}
+          onPointerLeave={() => {
+            const slider = sliderRef.current;
+            if (slider) slider.style.cursor = 'grab';
+            dragState.current.active = false;
+            document.body.style.userSelect = '';
+          }}
+          style={{ cursor: 'grab' }}
         >
           <div
             ref={sliderRef}
             className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar"
             style={{
-              cursor: 'inherit',
+              cursor: 'grab',
               userSelect: 'none',
               WebkitUserSelect: 'none',
               scrollbarWidth: 'none',
