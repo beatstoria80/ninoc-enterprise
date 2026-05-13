@@ -109,7 +109,7 @@ function PortraitImageCarousel() {
 
       {/* Cycling indicator dots */}
       {isHovered && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        <div className="absolute bottom-3 right-3 flex gap-1.5 z-20">
           {PORTRAIT_IMAGES.map((_, i) => (
             <div
               key={i}
