@@ -93,8 +93,6 @@ export default function GlobalHeader() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  if (!mounted) return null;
-
   return (
     <>
       <nav className={cn(
