@@ -72,9 +72,9 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-[8px] md:text-sm font-medium leading-tight text-ink/80 max-w-[120px] md:max-w-xs uppercase tracking-tight"
+              className="text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[150px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
-              Preservation of garment integrity.
+              Preservation of garment integrity. technical excellence and timeless design.
             </motion.p>
 
             <motion.div
@@ -117,29 +117,29 @@ export default function Home() {
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
-             <div className="grid grid-cols-3 lg:grid-cols-1 gap-2 border-t border-ink/5 pt-3 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8 lg:space-y-16">
+          <div className="col-span-2 lg:col-span-3 lg:pt-32 mt-2 md:mt-4 lg:mt-0">
+             <div className="grid grid-cols-3 lg:grid-cols-1 gap-1 md:gap-2 border-t border-ink/5 pt-2 md:pt-3 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8 lg:space-y-16">
                 <div className="space-y-0 md:space-y-1">
-                   <p className="text-[7px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Year</p>
-                   <p className="text-[9px] md:text-xs font-medium text-ink uppercase md:normal-case">Est. 2024</p>
+                   <p className="text-[6px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Year</p>
+                   <p className="text-[8px] md:text-xs font-medium text-ink uppercase md:normal-case">2024</p>
                 </div>
                 <div className="space-y-0 md:space-y-1">
-                   <p className="text-[7px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Location</p>
-                   <p className="text-[9px] md:text-xs font-medium text-ink uppercase md:normal-case">Bandung, Indonesia</p>
+                   <p className="text-[6px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Loc</p>
+                   <p className="text-[8px] md:text-xs font-medium text-ink uppercase md:normal-case">BDG, ID</p>
                 </div>
                 <div className="space-y-0 md:space-y-1">
-                   <p className="text-[7px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Philosophy</p>
-                   <p className="text-[9px] md:text-xs font-medium text-ink uppercase md:italic md:leading-relaxed">&quot;Functionality through absolute simplicity.&quot;</p>
+                   <p className="text-[6px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40 md:text-ink/20">Phil</p>
+                   <p className="text-[8px] md:text-xs font-medium text-ink uppercase md:italic md:leading-relaxed">Simplicity</p>
                 </div>
              </div>
 
-             <div className="bg-ink text-white p-6 md:p-8 rounded-none space-y-4 md:space-y-6 hidden lg:block mt-16">
-                <div className="flex items-center gap-3">
-                   <ShieldCheck size={18} className="text-rose" />
-                   <span className="text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
+             <div className="bg-ink text-white p-3 md:p-8 rounded-none space-y-2 md:space-y-6 mt-4 md:mt-16 lg:block">
+                <div className="flex items-center gap-2 md:gap-3">
+                   <ShieldCheck className="w-3 h-3 md:w-[18px] md:h-[18px] text-rose" />
+                   <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
                 </div>
-                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider opacity-60">
-                   Secure fulfillment and international verification protocols for every archive piece.
+                <p className="text-[7px] md:text-[9px] font-medium uppercase leading-tight md:leading-relaxed tracking-wider opacity-60">
+                   Secure fulfillment and international verification protocols.
                 </p>
              </div>
           </div>
