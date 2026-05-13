@@ -5,6 +5,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Menu, X, ArrowLeft, Search, MessageSquare, ShoppingBag, User, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
+import Image from 'next/image';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,18 +21,67 @@ interface MobileLayoutProps {
   hideHeader?: boolean;
 }
 
+interface SearchResult {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  image_url: string;
+  category: string;
+}
+
 export default function MobileLayout({
   children,
   showBack = false,
-  backHref,
+  backHref = '/shop',
   cartCount = 0,
   hideHeader = false,
 }: MobileLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+
+  // Search functionality
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .limit(10);
+      setSearchResults(data || []);
+    } catch (e) {
+      console.error('Search error:', e);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    // Debounced search
+    const timeout = setTimeout(() => handleSearch(value), 300);
+    return () => clearTimeout(timeout);
+  };
+
+  // Back button: Navigate to shop to keep users engaged
+  const handleBack = () => {
+    // Always navigate to shop - standard app engagement strategy
+    router.push('/shop');
+  };
 
   return (
     <div className="min-h-screen bg-cr ios-native-layout flex flex-col overflow-x-hidden">
@@ -44,8 +95,8 @@ export default function MobileLayout({
             {/* Left: Back or Logo */}
             <div className="flex items-center gap-3">
               {showBack ? (
-                <button 
-                  onClick={() => backHref ? router.push(backHref) : router.back()}
+                <button
+                  onClick={handleBack}
                   className="p-2 -ml-2 text-ink/60 active:scale-90 transition-transform"
                 >
                   <ArrowLeft size={20} strokeWidth={1.5} />
@@ -59,10 +110,14 @@ export default function MobileLayout({
 
             {/* Right: Search & Burger Menu */}
             <div className="flex items-center gap-1">
-              <button className="p-2 text-ink/30 hover:text-rose transition-colors">
+              {/* Search Icon - Opens Search Modal */}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 text-ink/30 hover:text-rose transition-colors active:scale-90"
+              >
                 <Search size={18} strokeWidth={1.5} />
               </button>
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(true)}
                 className="p-2 text-ink/60 hover:text-rose transition-colors active:scale-90"
               >
@@ -72,6 +127,107 @@ export default function MobileLayout({
           </div>
         </header>
       )}
+
+      {/* Search Modal Overlay */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
+              className="fixed inset-0 bg-cr/80 backdrop-blur-sm z-[500]"
+            />
+
+            {/* Search Modal */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[510] bg-white shadow-2xl"
+            >
+              <div className="p-4 border-b border-ink/5">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 relative">
+                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleSearchInput}
+                      placeholder="Search catalog..."
+                      autoFocus
+                      className="w-full bg-ink/5 rounded-full py-3 pl-12 pr-4 text-sm text-ink placeholder:text-ink/30 outline-none focus:ring-2 focus:ring-rose/20"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setSearchQuery('');
+                      setSearchResults([]);
+                    }}
+                    className="p-2 text-ink/30 hover:text-rose"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Search Results */}
+              <div className="max-h-[60vh] overflow-y-auto">
+                {isSearching && (
+                  <div className="p-8 text-center">
+                    <div className="w-6 h-6 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto" />
+                  </div>
+                )}
+                {!isSearching && searchQuery && searchResults.length === 0 && (
+                  <div className="p-8 text-center">
+                    <p className="text-sm text-ink/30">No results found</p>
+                  </div>
+                )}
+                {!isSearching && searchResults.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/shop/${product.slug}`}
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setSearchQuery('');
+                      setSearchResults([]);
+                    }}
+                    className="flex items-center gap-4 p-4 border-b border-ink/5 hover:bg-ink/5 transition-colors"
+                  >
+                    <div className="w-12 h-12 bg-ink/5 rounded-lg overflow-hidden">
+                      {product.image_url && (
+                        <Image
+                          src={product.image_url}
+                          alt={product.name}
+                          width={48}
+                          height={48}
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-ink uppercase">{product.name}</p>
+                      <p className="text-xs text-rose italic">Rp {product.price.toLocaleString('id-ID')}</p>
+                    </div>
+                  </Link>
+                ))}
+                {!searchQuery && (
+                  <div className="p-8 text-center">
+                    <p className="text-xs text-ink/30 uppercase tracking-wider">Start typing to search</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Slide-over Menu Drawer */}
       <AnimatePresence>
