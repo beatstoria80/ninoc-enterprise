@@ -420,24 +420,6 @@ export default function Home() {
 
   return (
     <div className="mobile-momentum overflow-x-hidden select-none">
-      <style jsx global>{`
-        /* Hide scrollbars for all browsers */
-        * {
-          -ms-overflow-style: none !important;
-          scrollbar-width: none !important;
-        }
-        *::-webkit-scrollbar {
-          display: none !important;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none !important;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none !important;
-          scrollbar-width: none !important;
-        }
-      `}</style>
-
       {/* ══════════════════════════════════════════════
           HERO SECTION — Text Split + Cinematic Reveal
           ══════════════════════════════════════════════ */}
@@ -625,14 +607,17 @@ export default function Home() {
         </motion.div>
 
         {/* Horizontal Draggable Slider — Momentum Scroll */}
-        <div className="relative overflow-hidden group no-scrollbar touch-pan-y">
+        <div 
+          className="relative overflow-hidden group no-scrollbar touch-pan-y"
+          data-lenis-prevent
+        >
           <motion.div
             ref={sliderRef}
             drag="x"
             dragConstraints={dragConstraints}
-            dragElastic={0.15}
+            dragElastic={0.1}
             dragMomentum={true}
-            dragTransition={{ bounceStiffness: 600, bounceDamping: 20, power: 0.3 }}
+            dragTransition={{ power: 0.3, timeConstant: 200 }}
             whileTap={{ cursor: "grabbing" }}
             className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing pointer-events-auto"
             variants={staggerContainerVariants}
