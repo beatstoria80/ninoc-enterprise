@@ -41,7 +41,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="mobile-momentum overflow-x-hidden">
       {/*
         ---------------------------------------------------------
         ARCHIVAL STUDIO HERO SECTION

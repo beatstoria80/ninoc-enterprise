@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 
 export default function SmoothScrollProvider({
@@ -8,8 +8,14 @@ export default function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const lenisRef = useRef<Lenis | null>(null);
+
   useEffect(() => {
-    const lenis = new Lenis({
+    // Disable Lenis on mobile — use native momentum scroll instead
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
+
+    lenisRef.current = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
@@ -20,14 +26,16 @@ export default function SmoothScrollProvider({
     });
 
     function raf(time: number) {
-      lenis.raf(time);
+      lenisRef.current?.raf(time);
       requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    const rafId = requestAnimationFrame(raf);
 
     return () => {
-      lenis.destroy();
+      cancelAnimationFrame(rafId);
+      lenisRef.current?.destroy();
+      lenisRef.current = null;
     };
   }, []);
 

@@ -234,6 +234,20 @@ input:focus, textarea:focus, select:focus {
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* Mobile touch — native momentum scroll */
+.mobile-momentum {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
+}
+
+/* Disable Lenis/pointer events conflict on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    touch-action: pan-y;
+  }
+}
+
 /* Loading skeleton shimmer */
 @keyframes shimmer {
   0% {
