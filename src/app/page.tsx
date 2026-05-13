@@ -368,7 +368,17 @@ export default function Home() {
 
   // Catalog section viewport ref for stagger
   const catalogRef = useRef(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
   const catalogInView = useInView(catalogRef, { once: false, amount: 0.1 });
+
+  useEffect(() => {
+    if (sliderRef.current) {
+      const sliderWidth = sliderRef.current.scrollWidth;
+      const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
+      setDragConstraints({ left: -(sliderWidth - containerWidth), right: 0 });
+    }
+  }, [products, isLoading]);
 
   return (
     <div className="mobile-momentum overflow-x-hidden">
@@ -559,30 +569,35 @@ export default function Home() {
            <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* Staggered product grid — ripple left-to-right, bottom-to-top */}
-        <motion.div
-          ref={catalogRef}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-ink/5 border border-ink/5 overflow-hidden rounded-none"
-          variants={staggerContainerVariants}
-          initial="hidden"
-          animate={catalogInView ? 'visible' : 'hidden'}
-        >
-          {isLoading ? (
-            Array(4).fill(0).map((_, i) => (
-              <motion.div
-                key={i}
-                className="aspect-[3/4] bg-white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-              />
-            ))
-          ) : (
-            products.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
-            ))
-          )}
-        </motion.div>
+        {/* Horizontal Draggable Slider — Momentum Scroll */}
+        <div className="relative overflow-hidden group cursor-grab active:cursor-grabbing">
+          <motion.div
+            ref={sliderRef}
+            drag="x"
+            dragConstraints={dragConstraints}
+            dragElastic={0.1}
+            dragTransition={{ power: 0.2, timeConstant: 200 }}
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max"
+            variants={staggerContainerVariants}
+            initial="hidden"
+            animate={catalogInView ? 'visible' : 'hidden'}
+          >
+            {isLoading ? (
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
+              ))
+            ) : (
+              products.map((product, i) => (
+                <div key={product.id} className="w-[300px] md:w-[450px] flex-shrink-0">
+                  <ProductCard product={product} index={i} />
+                </div>
+              ))
+            )}
+          </motion.div>
+
+          {/* Draggable Indicator Overlay (Mobile Hint) */}
+          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white/80 to-transparent pointer-events-none md:hidden" />
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════
