@@ -35,8 +35,9 @@ const wordVariants: Variants = {
   }),
 };
 
-// ─── SECTION SLIDE — Vertical scroll reveal (reserved for layout use) ───
-const _sectionRevealVariants: Variants = {
+// ─── SECTION SLIDE — Vertical scroll reveal ───
+// Exported for potential future use in page layout wrappers
+export const sectionRevealVariants: Variants = {
   hidden: { y: 40, opacity: 0 },
   visible: {
     y: 0,
