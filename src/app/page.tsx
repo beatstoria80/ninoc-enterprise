@@ -347,6 +347,23 @@ interface Product {
   id: string; name: string; price: number; image_url?: string; slug: string; category?: string;
 }
 
+// Fade-up section wrapper for entrance animations
+function FadeUpSection({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-20px' });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -396,12 +413,20 @@ export default function Home() {
   return (
     <div className="mobile-momentum overflow-x-hidden select-none">
       <style jsx global>{`
+        /* Hide scrollbars for all browsers */
+        * {
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
+        }
+        *::-webkit-scrollbar {
+          display: none !important;
+        }
         .no-scrollbar::-webkit-scrollbar {
-          display: none;
+          display: none !important;
         }
         .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
         }
       `}</style>
 
@@ -576,7 +601,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           ARCHIVE CATALOG — Staggered grid reveal
           ══════════════════════════════════════════════ */}
-      <section className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
+      <section ref={catalogRef} className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto overflow-hidden">
         <motion.div
           className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-4 mb-2 md:mb-6"
           initial={{ opacity: 0, y: 16 }}
@@ -623,16 +648,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          TRUST SYMBOLS — Icon bounce + delayed metadata
-          ══════════════════════════════════════════════ */}
-      <section className="md:mt-40 mt-8 md:mb-40 mb-12 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
-        <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-20">
-          <TrustItem icon={<ShieldCheck className="w-4 h-4 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
-          <TrustItem icon={<Zap className="w-4 h-4 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
-          <TrustItem icon={<Package className="w-4 h-4 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />
-        </div>
-      </section>
+      {/* TRUST SYMBOLS — Icon bounce + delayed metadata */}
+      <FadeUpSection delay={0.2}>
+        <section className="md:mt-40 mt-8 md:mb-40 mb-12 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-20">
+            <TrustItem icon={<ShieldCheck className="w-4 h-4 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
+            <TrustItem icon={<Zap className="w-4 h-4 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
+            <TrustItem icon={<Package className="w-4 h-4 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />
+          </div>
+        </section>
+      </FadeUpSection>
 
     </div>
   );
