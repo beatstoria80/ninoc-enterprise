@@ -33,13 +33,7 @@ export default function GlobalHeader() {
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { 
-    setMounted(true); 
-  }, []);
 
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;

@@ -7,8 +7,9 @@ import MobileLayout from './platforms/mobile/MobileLayout';
 import { useCart } from '@/store/useCart';
 
 export default function ClientPlatformManager({ children }: { children: React.ReactNode }) {
+  // Start as mobile to prevent SSR flash
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
   const { items } = useCart();
 
   useEffect(() => {
@@ -22,14 +23,10 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Prevent SSR hydration mismatch by showing nothing or a simple loader until mounted
+  // Show simple loader until mounted
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-cr flex flex-col">
-        <GlobalHeader />
-        <main className="flex-1">{children}</main>
-        <GlobalFooter />
-      </div>
+      <div className="min-h-screen bg-cr" />
     );
   }
 

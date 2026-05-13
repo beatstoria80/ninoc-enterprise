@@ -281,6 +281,13 @@ export default function SupportChat() {
     }
   };
 
+  // Listen for external open events (from Burger Menu)
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-support-chat', handleOpen);
+    return () => window.removeEventListener('open-support-chat', handleOpen);
+  }, []);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = () => {
@@ -357,9 +364,9 @@ export default function SupportChat() {
       </AnimatePresence>
 
       {/* ================================================ */}
-      {/* MICRO TRIGGER - 14px icon per manifesto */}
+      {/* MICRO TRIGGER - Hidden on mobile, shown on Desktop */}
       {/* ================================================ */}
-      <div className="fixed bottom-5 right-5 z-[500]">
+      <div className="fixed bottom-5 right-5 z-[500] hidden md:block">
         {/* Badge counter */}
         <AnimatePresence>
           {notifCount > 0 && (
