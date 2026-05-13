@@ -9,9 +9,9 @@ export default function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const isDragging = useRef(false);
 
   useEffect(() => {
-    // Disable Lenis on mobile — use native momentum scroll instead
     const isMobile = window.innerWidth < 768;
     if (isMobile) return;
 
@@ -23,29 +23,32 @@ export default function SmoothScrollProvider({
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 2,
-      // Disable Lenis on drag-active elements to prevent event conflict
-      // Lenis intercepts pointer events and blocks custom drag on slider
-      // Allow native scroll everywhere — custom drag handles slider
     });
 
-    // Stop Lenis during any pointer interaction over the slider
-    const stopLenisOnDrag = (e: PointerEvent) => {
+    // Global pointer handler — stops Lenis when dragging anywhere on page
+    const onGlobalPointerDown = (e: PointerEvent) => {
+      console.log('[LENIS DEBUG] Global pointerdown on:', (e.target as HTMLElement).tagName, 'class:', (e.target as HTMLElement).className);
       const target = e.target as HTMLElement;
-      const slider = target.closest('[data-slider]');
-      if (slider && lenisRef.current) {
+      // Stop Lenis for ALL pointer interactions on page (not just slider)
+      // This ensures no pointer event is intercepted by Lenis during drag
+      if (lenisRef.current && !isDragging.current) {
         lenisRef.current.stop();
+        console.log('[LENIS DEBUG] Lenis STOPPED');
       }
+      isDragging.current = true;
     };
 
-    const resumeLenisOnRelease = () => {
+    const onGlobalPointerUp = () => {
       if (lenisRef.current) {
         lenisRef.current.start();
+        console.log('[LENIS DEBUG] Lenis STARTED');
       }
+      isDragging.current = false;
     };
 
-    document.addEventListener('pointerdown', stopLenisOnDrag);
-    document.addEventListener('pointerup', resumeLenisOnRelease);
-    document.addEventListener('pointerleave', resumeLenisOnRelease);
+    document.addEventListener('pointerdown', onGlobalPointerDown);
+    document.addEventListener('pointerup', onGlobalPointerUp);
+    document.addEventListener('pointerleave', onGlobalPointerUp);
 
     function raf(time: number) {
       lenisRef.current?.raf(time);
@@ -58,9 +61,9 @@ export default function SmoothScrollProvider({
       cancelAnimationFrame(rafId);
       lenisRef.current?.destroy();
       lenisRef.current = null;
-      document.removeEventListener('pointerdown', stopLenisOnDrag);
-      document.removeEventListener('pointerup', resumeLenisOnRelease);
-      document.removeEventListener('pointerleave', resumeLenisOnRelease);
+      document.removeEventListener('pointerdown', onGlobalPointerDown);
+      document.removeEventListener('pointerup', onGlobalPointerUp);
+      document.removeEventListener('pointerleave', onGlobalPointerUp);
     };
   }, []);
 
