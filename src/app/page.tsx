@@ -122,7 +122,7 @@ function PortraitImageCarousel() {
         </div>
       )}
 
-      <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter md:hidden z-20">
+      <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20">
         SPEC-001
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent hidden md:block z-20" />
@@ -249,7 +249,7 @@ export default function Home() {
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] mt-4 lg:mt-0">
              {/* MOBILE VIEW GRID */}
              <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-3 md:hidden">
                 <div className="space-y-0">
