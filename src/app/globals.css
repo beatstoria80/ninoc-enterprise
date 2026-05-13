@@ -229,8 +229,13 @@ input:focus, textarea:focus, select:focus {
 /* Mobile touch — native momentum scroll */
 .mobile-momentum {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: auto;
-  overscroll-behavior-y: auto;
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
+/* Disable overscroll interference globally for drag elements */
+.drag-container {
+  overscroll-behavior: none !important;
 }
 
 /* Enable both horizontal and vertical panning */

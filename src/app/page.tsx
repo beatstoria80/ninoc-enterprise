@@ -614,33 +614,40 @@ export default function Home() {
         {/* Horizontal Draggable Slider — Momentum Scroll */}
         <div
           ref={containerRef}
-          className="relative overflow-hidden group no-scrollbar touch-pan-y"
-          data-lenis-prevent
+          className="relative overflow-hidden group no-scrollbar drag-container overscroll-contain"
+          style={{ touchAction: 'pan-y' }}
         >
+          {/* Stagger wrapper — separate from drag element */}
           <motion.div
-            ref={sliderRef}
-            drag="x"
-            dragConstraints={dragConstraints}
-            dragElastic={0.05}
-            dragMomentum={true}
-            dragTransition={{ power: 0.4, timeConstant: 250 }}
-            whileTap={{ cursor: "grabbing" }}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing"
             variants={staggerContainerVariants}
             initial="hidden"
             animate={catalogInView ? 'visible' : 'hidden'}
           >
-            {isLoading ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
-              ))
-            ) : (
-              products.map((product, i) => (
-                <div key={product.id} className="w-[300px] md:w-[450px] flex-shrink-0">
-                  <ProductCard product={product} index={i} />
-                </div>
-              ))
-            )}
+            <motion.div
+              ref={sliderRef}
+              drag="x"
+              dragConstraints={dragConstraints}
+              dragElastic={0.08}
+              dragMomentum={true}
+              dragTransition={{ power: 0.5, timeConstant: 300 }}
+              whileTap={{ cursor: "grabbing" }}
+              style={{ cursor: 'grab' }}
+              onTapStart={() => { document.body.style.userSelect = 'none'; }}
+              onTapCancel={() => { document.body.style.userSelect = ''; }}
+              className="flex gap-px bg-ink/5 border border-ink/5 w-max"
+            >
+              {isLoading ? (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
+                ))
+              ) : (
+                products.map((product, i) => (
+                  <div key={product.id} className="w-[300px] md:w-[450px] flex-shrink-0">
+                    <ProductCard product={product} index={i} />
+                  </div>
+                ))
+              )}
+            </motion.div>
           </motion.div>
 
           {/* Draggable Indicator Overlay (Mobile Hint) */}
