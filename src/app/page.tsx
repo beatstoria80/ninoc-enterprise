@@ -334,13 +334,14 @@ export default function Home() {
 
         {/* Drag wrapper — pointer events attached to the scrollable element itself */}
         <div
-          className="relative"
+          className="relative select-none"
           onPointerDown={(e) => {
             const slider = sliderRef.current;
             if (!slider) return;
             e.currentTarget.setPointerCapture(e.pointerId);
             dragState.current = { active: true, startX: e.clientX, startScroll: slider.scrollLeft };
-                      }}
+            document.body.style.userSelect = 'none';
+          }}
           onPointerMove={(e) => {
             if (!dragState.current.active) return;
             const slider = sliderRef.current;
@@ -361,7 +362,7 @@ export default function Home() {
             dragState.current.active = false;
             document.body.style.userSelect = '';
           }}
-          style={{ cursor: 'grab' }}
+          style={{ cursor: 'grab', touchAction: 'none' }}
         >
           <div
             ref={sliderRef}
