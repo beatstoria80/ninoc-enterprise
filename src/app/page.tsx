@@ -22,16 +22,7 @@ function PortraitImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const startCycle = useCallback(() => {
-    setIsHovered(true);
-    let idx = 0;
-    setCurrentIndex(idx);
-    timerRef.current = setInterval(() => {
-      idx = (idx + 1) % PORTRAIT_IMAGES.length;
-      setCurrentIndex(idx);
-    }, CAROUSEL_INTERVAL);
-  }, []);
+  const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stopCycle = useCallback(() => {
     setIsHovered(false);
@@ -39,12 +30,35 @@ function PortraitImageCarousel() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    if (stopTimerRef.current) {
+      clearTimeout(stopTimerRef.current);
+      stopTimerRef.current = null;
+    }
     setCurrentIndex(0);
   }, []);
+
+  const startCycle = useCallback(() => {
+    setIsHovered(true);
+    let idx = 0;
+    setCurrentIndex(idx);
+
+    // Auto-stop after 2 cycles (~2 seconds) to prevent infinite loop on mobile/touch
+    if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
+    stopTimerRef.current = setTimeout(() => {
+      stopCycle();
+    }, 2000);
+
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      idx = (idx + 1) % PORTRAIT_IMAGES.length;
+      setCurrentIndex(idx);
+    }, CAROUSEL_INTERVAL);
+  }, [stopCycle]);
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
     };
   }, []);
 
