@@ -44,6 +44,11 @@ export default function SupportChat() {
   const [notifCount, setNotifCount] = useState(0);
   const [showNotifCard, setShowNotifCard] = useState(false);
   const [lastNotif, setLastNotif] = useState<{ subject: string; message: string; from: string } | null>(null);
+  
+  // Dispatch unread count to other components (like MobileLayout)
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('support-unread-count', { detail: notifCount }));
+  }, [notifCount]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasUnreadRef = useRef(false);
@@ -364,7 +369,7 @@ export default function SupportChat() {
       </AnimatePresence>
 
       {/* ================================================ */}
-      {/* MICRO TRIGGER - Hidden on mobile, shown on Desktop */}
+      {/* MICRO TRIGGER - Desktop Only */}
       {/* ================================================ */}
       <div className="fixed bottom-5 right-5 z-[500] hidden md:block">
         {/* Badge counter */}
@@ -420,17 +425,32 @@ export default function SupportChat() {
             )}
           </AnimatePresence>
         </motion.button>
+      </div>
 
-        {/* COMPACT PANEL - 300x480 */}
-        <AnimatePresence>
+      {/* COMPACT PANEL - Responsive */}
+      <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              initial={typeof window !== 'undefined' && window.innerWidth < 768 
+                ? { opacity: 0, y: '100%' } 
+                : { opacity: 0, y: 8, scale: 0.96 }
+              }
+              animate={typeof window !== 'undefined' && window.innerWidth < 768 
+                ? { opacity: 1, y: 0 } 
+                : { opacity: 1, y: 0, scale: 1 }
+              }
+              exit={typeof window !== 'undefined' && window.innerWidth < 768 
+                ? { opacity: 0, y: '100%' } 
+                : { opacity: 0, y: 8, scale: 0.96 }
+              }
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="absolute bottom-12 right-0 w-[300px] h-[480px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-ink/5 flex flex-col"
+              className={cn(
+                "fixed z-[600] bg-white shadow-2xl overflow-hidden border border-ink/5 flex flex-col transition-all",
+                "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[300px] md:h-[480px] md:rounded-2xl"
+              )}
             >
+              {/* Backdrop for mobile */}
+              <div className="md:hidden absolute inset-0 bg-ink/20 backdrop-blur-sm -z-10" onClick={() => setIsOpen(false)} />
               {/* HEADER */}
               <motion.div
                 className="bg-ink p-4 text-white relative"
@@ -686,7 +706,6 @@ export default function SupportChat() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
     </>
   );
 }

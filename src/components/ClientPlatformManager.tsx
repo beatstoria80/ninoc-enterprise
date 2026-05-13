@@ -38,7 +38,11 @@ export default function ClientPlatformManager({ children }: { children: React.Re
 
   if (isMobile) {
     return (
-      <MobileLayout cartCount={items.length}>
+      <MobileLayout 
+        cartCount={items.length} 
+        hideTabBar={pathname === '/checkout'}
+        hideHeader={pathname === '/checkout'}
+      >
         {children}
       </MobileLayout>
     );

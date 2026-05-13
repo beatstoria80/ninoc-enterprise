@@ -19,6 +19,7 @@ interface MobileLayoutProps {
   backHref?: string;
   cartCount?: number;
   hideHeader?: boolean;
+  hideTabBar?: boolean;
 }
 
 interface SearchResult {
@@ -35,6 +36,7 @@ export default function MobileLayout({
   showBack = false,
   cartCount = 0,
   hideHeader = false,
+  hideTabBar = false,
 }: MobileLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -43,6 +45,7 @@ export default function MobileLayout({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [supportUnreadCount, setSupportUnreadCount] = useState(0);
 
   const isActive = (path: string) => pathname === path;
 
@@ -81,6 +84,16 @@ export default function MobileLayout({
     // Always navigate to shop - standard app engagement strategy
     router.push('/shop');
   };
+
+  // Listen for support unread count
+  React.useEffect(() => {
+    const handleUnread = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setSupportUnreadCount(customEvent.detail || 0);
+    };
+    window.addEventListener('support-unread-count', handleUnread);
+    return () => window.removeEventListener('support-unread-count', handleUnread);
+  }, []);
 
   return (
     <div className="min-h-screen bg-cr ios-native-layout flex flex-col overflow-x-hidden">
@@ -327,103 +340,113 @@ export default function MobileLayout({
 
       {/* Main Content - with top padding for header */}
       <main className={cn(
-        "flex-1 overflow-y-auto pt-14",
-        "pb-[calc(80px+env(safe-area-inset-bottom))]",
+        "flex-1 overflow-y-auto",
+        !hideHeader && "pt-14",
+        !hideTabBar && "pb-[calc(80px+env(safe-area-inset-bottom))]",
         "ios-momentum-scroll"
       )}>
         {children}
       </main>
 
       {/* Fixed Bottom Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none">
-        <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-4 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
-          {/* Home */}
-          <Link
-            href="/"
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
-              isActive('/') ? "text-rose scale-105" : "text-ink/30"
-            )}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span className={cn(
-              "text-[8px] font-medium uppercase tracking-[0.1em]",
-              isActive('/') ? "text-rose" : "text-ink/40"
-            )}>
-              Home
-            </span>
-          </Link>
-
-          {/* Cart */}
-          <Link
-            href="/checkout"
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
-              isActive('/checkout') ? "text-rose scale-105" : "text-ink/30"
-            )}
-          >
-            <div className="relative">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/checkout') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/checkout') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 6h15l-1.5 9h-12z"/>
-                <circle cx="9" cy="20" r="1"/>
-                <circle cx="18" cy="20" r="1"/>
+      {!hideTabBar && (
+        <nav className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none">
+          <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-4 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
+            {/* Home */}
+            <Link
+              href="/"
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
+                isActive('/') ? "text-rose scale-105" : "text-ink/30"
+              )}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
               </svg>
-              {cartCount > 0 && (
+              <span className={cn(
+                "text-[8px] font-medium uppercase tracking-[0.1em]",
+                isActive('/') ? "text-rose" : "text-ink/40"
+              )}>
+                Home
+              </span>
+            </Link>
+
+            {/* Cart */}
+            <Link
+              href="/checkout"
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
+                isActive('/checkout') ? "text-rose scale-105" : "text-ink/30"
+              )}
+            >
+              <div className="relative">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/checkout') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/checkout') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 6h15l-1.5 9h-12z"/>
+                  <circle cx="9" cy="20" r="1"/>
+                  <circle cx="18" cy="20" r="1"/>
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <span className={cn(
+                "text-[8px] font-medium uppercase tracking-[0.1em]",
+                isActive('/checkout') ? "text-rose" : "text-ink/40"
+              )}>
+                Cart
+              </span>
+            </Link>
+
+            {/* Chat/Support */}
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('open-support-chat'));
+              }}
+              className="flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] text-ink/30 transition-colors"
+            >
+              <div className="relative">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 01-.91 3.19"/>
+                <path d="M21 6.5a8.38 8.38 0 01-.91 3.19"/>
+                <path d="M21 16.5a8.38 8.38 0 01-.91 3.19"/>
+                <path d="M3 11.5a8.38 8.38 0 01-.91-3.19"/>
+                <path d="M3 6.5a8.38 8.38 0 01-.91-3.19"/>
+                <path d="M3 16.5a8.38 8.38 0 01-.91-3.19"/>
+              </svg>
+              {supportUnreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center">
-                  {cartCount}
+                  {supportUnreadCount}
                 </span>
               )}
             </div>
-            <span className={cn(
-              "text-[8px] font-medium uppercase tracking-[0.1em]",
-              isActive('/checkout') ? "text-rose" : "text-ink/40"
-            )}>
-              Cart
-            </span>
-          </Link>
-
-          {/* Chat/Support */}
-          <button
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('open-support-chat'));
-            }}
-            className="flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] text-ink/30 transition-colors"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 01-.91 3.19"/>
-              <path d="M21 6.5a8.38 8.38 0 01-.91 3.19"/>
-              <path d="M21 16.5a8.38 8.38 0 01-.91 3.19"/>
-              <path d="M3 11.5a8.38 8.38 0 01-.91-3.19"/>
-              <path d="M3 6.5a8.38 8.38 0 01-.91-3.19"/>
-              <path d="M3 16.5a8.38 8.38 0 01-.91-3.19"/>
-            </svg>
             <span className="text-[8px] font-medium uppercase tracking-wider text-ink/40">Chat</span>
-          </button>
+            </button>
 
-          {/* Profile */}
-          <Link
-            href="/profile"
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
-              isActive('/profile') ? "text-rose scale-105" : "text-ink/30"
-            )}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/profile') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/profile') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span className={cn(
-              "text-[8px] font-medium uppercase tracking-[0.1em]",
-              isActive('/profile') ? "text-rose" : "text-ink/40"
-            )}>
-              Profile
-            </span>
-          </Link>
-        </div>
-      </nav>
+            {/* Profile */}
+            <Link
+              href="/profile"
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] transition-all relative z-[410]",
+                isActive('/profile') ? "text-rose scale-105" : "text-ink/30"
+              )}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive('/profile') ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive('/profile') ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span className={cn(
+                "text-[8px] font-medium uppercase tracking-[0.1em]",
+                isActive('/profile') ? "text-rose" : "text-ink/40"
+              )}>
+                Profile
+              </span>
+            </Link>
+          </div>
+        </nav>
+      )}
 
       {/* iOS Native CSS */}
       <style jsx global>{`
