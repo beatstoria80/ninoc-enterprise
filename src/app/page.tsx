@@ -228,7 +228,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const dragState = useRef({ active: false, startX: 0, startScroll: 0 });
+  const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -244,6 +244,57 @@ export default function Home() {
     };
     fetchProducts();
   }, []);
+
+  // Attach native DOM event listeners DIRECTLY to the slider element
+  // This BYPASSES React's synthetic event system entirely
+  useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+
+    const onDown = (e: PointerEvent | MouseEvent) => {
+      console.log('[NATIVE] pointerdown/mousedown! x:', (e as PointerEvent).clientX || (e as MouseEvent).clientX);
+      e.preventDefault();
+      e.stopPropagation();
+      dragRef.current = { active: true, startX: (e as PointerEvent).clientX || (e as MouseEvent).clientX, startScroll: el.scrollLeft };
+      document.body.style.userSelect = 'none';
+      console.log('[NATIVE] captured, scrollLeft:', el.scrollLeft, 'offsetW:', el.offsetWidth);
+    };
+
+    const onMove = (e: PointerEvent | MouseEvent) => {
+      if (!dragRef.current.active) return;
+      e.preventDefault();
+      const clientX = (e as PointerEvent).clientX ?? (e as MouseEvent).clientX;
+      const delta = clientX - dragRef.current.startX;
+      const maxScroll = -(el.scrollWidth - el.offsetWidth);
+      el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
+      console.log('[NATIVE] move delta:', delta, 'scrollLeft:', el.scrollLeft);
+    };
+
+    const onUp = () => {
+      dragRef.current.active = false;
+      document.body.style.userSelect = '';
+      console.log('[NATIVE] pointerup/mouseup!');
+    };
+
+    // Use capture phase to intercept events before they bubble
+    el.addEventListener('pointerdown', onDown, { capture: true });
+    el.addEventListener('mousedown', onDown, { capture: true });
+    el.addEventListener('pointermove', onMove, { capture: true });
+    el.addEventListener('mousemove', onMove, { capture: true });
+    el.addEventListener('pointerup', onUp, { capture: true });
+    el.addEventListener('mouseup', onUp, { capture: true });
+    el.addEventListener('pointerleave', onUp, { capture: true });
+
+    return () => {
+      el.removeEventListener('pointerdown', onDown, { capture: true });
+      el.removeEventListener('mousedown', onDown, { capture: true });
+      el.removeEventListener('pointermove', onMove, { capture: true });
+      el.removeEventListener('mousemove', onMove, { capture: true });
+      el.removeEventListener('pointerup', onUp, { capture: true });
+      el.removeEventListener('mouseup', onUp, { capture: true });
+      el.removeEventListener('pointerleave', onUp, { capture: true });
+    };
+  }, [isLoading]); // re-attach after products load so we have the element
 
   return (
     <div className="mobile-momentum select-none">
@@ -334,57 +385,11 @@ export default function Home() {
 
         {/* Drag wrapper — pointer events on the scrollable slider itself */}
         <div className="relative select-none">
-          {/* Pointer events on the slider element itself — no wrapper interference */}
+          {/* Native DOM event listeners attached via useEffect — bypasses React event system */}
           <div
             data-slider
             ref={sliderRef}
             className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar select-none"
-            onPointerDown={(e) => {
-              console.log('[SLIDER] pointerdown! x:', e.clientX, 'y:', e.clientY);
-              if (!sliderRef.current) { console.log('[SLIDER] no ref!'); return; }
-              e.currentTarget.setPointerCapture(e.pointerId);
-              dragState.current = { active: true, startX: e.clientX, startScroll: sliderRef.current.scrollLeft };
-              document.body.style.userSelect = 'none';
-              console.log('[SLIDER] capture set, scrollLeft:', sliderRef.current.scrollLeft, 'scrollWidth:', sliderRef.current.scrollWidth, 'offsetWidth:', sliderRef.current.offsetWidth);
-            }}
-            onPointerMove={(e) => {
-              if (!dragState.current.active || !sliderRef.current) return;
-              const delta = e.clientX - dragState.current.startX;
-              const maxScroll = -(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
-              sliderRef.current.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
-              console.log('[SLIDER] moving delta:', delta, 'new scrollLeft:', sliderRef.current.scrollLeft);
-            }}
-            onPointerUp={() => {
-              dragState.current.active = false;
-              document.body.style.userSelect = '';
-              console.log('[SLIDER] pointerup!');
-            }}
-            onPointerLeave={() => {
-              dragState.current.active = false;
-              document.body.style.userSelect = '';
-            }}
-            onMouseDown={(e) => {
-              // Fallback: native mousedown if pointerdown not triggered
-              console.log('[SLIDER] mousedown! x:', e.clientX);
-              if (!sliderRef.current) return;
-              e.preventDefault();
-              dragState.current = { active: true, startX: e.clientX, startScroll: sliderRef.current.scrollLeft };
-              document.body.style.userSelect = 'none';
-              console.log('[SLIDER] mousedown capture, scrollLeft:', sliderRef.current.scrollLeft);
-            }}
-            onMouseMove={(e) => {
-              if (!dragState.current.active || !sliderRef.current) return;
-              e.preventDefault();
-              const delta = e.clientX - dragState.current.startX;
-              const maxScroll = -(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
-              sliderRef.current.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
-            }}
-            onMouseUp={() => {
-              dragState.current.active = false;
-              document.body.style.userSelect = '';
-            }}
-            onContextMenu={(e) => e.preventDefault()}
-            onDragStart={() => false}
             style={{
               cursor: 'grab',
               userSelect: 'none',
