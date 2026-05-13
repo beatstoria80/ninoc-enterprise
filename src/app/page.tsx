@@ -190,7 +190,7 @@ export default function Home() {
       */}
       {/* HERO SECTION - TECHNICAL SPLIT LAYOUT */}
       <FadeUpSection delay={0}>
-      <section className="relative md:pt-44 pt-2 pb-6 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
+      <section className="relative md:pt-44 pt-2 pb-0 md:pb-0 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
           {/* Left Column: Branding */}
@@ -249,7 +249,7 @@ export default function Home() {
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-72 mt-4 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
              {/* MOBILE VIEW GRID */}
              <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-3 md:hidden">
                 <div className="space-y-0">
@@ -299,8 +299,8 @@ export default function Home() {
 
       {/* SWISS GRID CATALOG - DENSE GRID (MOBILE) / CLASSIC GRID (PC) */}
       <FadeUpSection delay={0.1}>
-      <section className="md:mt-40 mt-4 px-4 md:px-12 max-w-[1800px] mx-auto">
-        <div className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-8 mb-4 md:mb-12">
+      <section className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
+        <div className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-4 mb-2 md:mb-6">
            <div>
               <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40 md:text-ink/20 mb-1 md:mb-3">Latest Archive</p>
               <h2 className="text-xl md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
