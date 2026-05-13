@@ -48,11 +48,11 @@ export default function Home() {
         Refined, Asymmetric, Minimalist
         ---------------------------------------------------------
       */}
-      <section className="relative md:pt-44 pt-20 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <section className="relative md:pt-44 pt-24 pb-12 px-6 md:px-12 max-w-[1800px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-start">
 
           {/* Left Column: Branding & Logic */}
-          <div className="lg:col-span-4 space-y-12">
+          <div className="lg:col-span-4 space-y-8 md:space-y-12">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -62,7 +62,7 @@ export default function Home() {
                  <Paperclip size={18} />
                  <span className="text-[10px] font-medium uppercase tracking-[0.5em]">Origin Specification</span>
               </div>
-              <h1 className="text-6xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
+              <h1 className="text-5xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
                 Archival<br/>Apparel
               </h1>
             </motion.div>
@@ -91,7 +91,7 @@ export default function Home() {
           </div>
 
           {/* Middle Column: Visual Anchor */}
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5 relative mt-8 lg:mt-0">
              <motion.div
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
@@ -108,14 +108,14 @@ export default function Home() {
              </motion.div>
 
              {/* Technical Callout Overlay */}
-             <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block">
+             <div className="absolute -bottom-4 -right-4 md:-bottom-8 md:-right-8 bg-white p-4 md:p-6 rounded-none border border-ink/5 shadow-xl">
                 <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
-                <p className="text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br/>Industrial Grade Fabrics</p>
+                <p className="text-[9px] md:text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br/>Industrial Grade Fabrics</p>
              </div>
           </div>
 
           {/* Right Column: Metadata & Trust */}
-          <div className="lg:col-span-3 space-y-16 lg:pt-32">
+          <div className="lg:col-span-3 space-y-12 lg:space-y-16 lg:pt-32 mt-12 lg:mt-0">
              <div className="space-y-6 border-l border-ink/5 pl-8">
                 <div className="space-y-1">
                    <p className="text-[9px] font-medium uppercase tracking-widest text-ink/20">Year</p>
@@ -146,11 +146,11 @@ export default function Home() {
       </section>
 
       {/* SWISS GRID CATALOG SECTION */}
-      <section className="mt-40 px-6 md:px-12 max-w-[1800px] mx-auto">
-        <div className="flex items-end justify-between border-b border-ink/5 pb-8 mb-12">
+      <section className="md:mt-40 mt-16 px-6 md:px-12 max-w-[1800px] mx-auto">
+        <div className="flex items-end justify-between border-b border-ink/5 pb-6 md:pb-8 mb-8 md:mb-12">
            <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.5em] text-ink/20 mb-3">Latest Archive</p>
-              <h2 className="text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
+              <h2 className="text-3xl md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
            </div>
            <Link href="/shop" className="text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-all">View All</Link>
         </div>
@@ -165,7 +165,7 @@ export default function Home() {
               <Link
                 key={product.id}
                 href={`/shop/${product.slug}`}
-                className="bg-white p-6 md:p-8 group relative overflow-hidden transition-all duration-700 min-w-[85vw] md:min-w-0 snap-center border-r border-ink/5 last:border-r-0"
+                className="bg-white p-6 md:p-8 group relative overflow-hidden transition-all duration-700 min-w-[80vw] md:min-w-0 snap-center border-r border-ink/5 last:border-r-0"
               >
                 <div className="aspect-[3/4] overflow-hidden mb-6 md:mb-8 relative">
                   {product.image_url && (
@@ -179,9 +179,9 @@ export default function Home() {
                 </div>
                 <div className="space-y-2 md:space-y-3">
                   <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">{product.category}</p>
-                  <h3 className="text-sm md:text-xl font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors line-clamp-1">{product.name}</h3>
+                  <h3 className="text-xs md:text-xl font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors line-clamp-1">{product.name}</h3>
                   <div className="flex items-center justify-between pt-4 md:pt-6 border-t border-ink/5 mt-4 md:mt-6">
-                     <p className="text-sm md:text-lg font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
+                     <p className="text-xs md:text-lg font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all">
                         <ChevronRight size={14} />
                      </div>
@@ -194,29 +194,29 @@ export default function Home() {
       </section>
 
       {/* TRUST SYMBOLS SECTION */}
-      <section className="mt-40 mb-40 border-y border-ink/5 py-24 bg-white/30 backdrop-blur-sm">
-         <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-20">
-            <div className="flex flex-col items-center text-center space-y-6">
-               <div className="w-16 h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <ShieldCheck size={28} />
+      <section className="md:mt-40 mt-16 md:mb-40 mb-16 border-y border-ink/5 py-12 md:py-24 bg-white/30 backdrop-blur-sm">
+         <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20">
+            <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
+               <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
+                  <ShieldCheck size={24} md:size={28} />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Quality Assured</h3>
                   <p className="text-[8px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">Rigorous inspection for every piece.</p>
                </div>
             </div>
-            <div className="flex flex-col items-center text-center space-y-6">
-               <div className="w-16 h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <Zap size={28} />
+            <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
+               <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
+                  <Zap size={24} md:size={28} />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Instant Logistics</h3>
                   <p className="text-[8px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">Rapid archival fulfillment system.</p>
                </div>
             </div>
-            <div className="flex flex-col items-center text-center space-y-6">
-               <div className="w-16 h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <Package size={28} />
+            <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
+               <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
+                  <Package size={24} md:size={28} />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Secure Storage</h3>
