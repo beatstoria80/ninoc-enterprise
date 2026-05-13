@@ -375,39 +375,29 @@ export default function Home() {
   // Catalog section viewport ref for stagger
   const catalogRef = useRef(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [dragConstraints, setDragConstraints] = useState({ left: -800, right: 0 });
 
   useEffect(() => {
     const updateConstraints = () => {
       requestAnimationFrame(() => {
-        if (containerRef.current && sliderRef.current) {
+        if (sliderRef.current) {
           const sliderWidth = sliderRef.current.scrollWidth;
-          const containerWidth = containerRef.current.offsetWidth;
+          const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
           const diff = sliderWidth - containerWidth;
-
-          // Only allow dragging if content overflows container
-          if (diff > 0) {
-            setDragConstraints({ left: -diff, right: 0 });
-          } else {
-            setDragConstraints({ left: 0, right: 0 });
-          }
+          setDragConstraints({ left: diff > 0 ? -diff : 0, right: 0 });
         }
       });
     };
 
-    // Initial + staggered checks for dynamic content
     updateConstraints();
     window.addEventListener('resize', updateConstraints);
-    const timer1 = setTimeout(updateConstraints, 300);
-    const timer2 = setTimeout(updateConstraints, 1000);
-    const timer3 = setTimeout(updateConstraints, 2000);
+    const t1 = setTimeout(updateConstraints, 300);
+    const t2 = setTimeout(updateConstraints, 1000);
+    const t3 = setTimeout(updateConstraints, 2000);
 
     return () => {
       window.removeEventListener('resize', updateConstraints);
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
     };
   }, [products, isLoading]);
 
@@ -599,56 +589,42 @@ export default function Home() {
            <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* Horizontal Draggable Slider — Momentum Scroll */}
-        <div
-          ref={containerRef}
-          className="relative overflow-hidden group no-scrollbar drag-container overscroll-contain"
-          style={{ touchAction: 'pan-y' }}
-          onMouseDown={(e) => e.preventDefault()}
+        {/* Horizontal Draggable Slider — Core element with pointer capture */}
+        <motion.div
+          ref={sliderRef}
+          drag="x"
+          dragConstraints={dragConstraints}
+          dragElastic={0.1}
+          dragMomentum={true}
+          dragTransition={{ power: 0.5, timeConstant: 300 }}
+          whileTap={{ cursor: 'grabbing' }}
+          style={{
+            cursor: 'grab',
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
+          onPointerDown={() => {}}
+          onTapStart={() => { document.body.style.userSelect = 'none'; document.body.style.pointerEvents = 'none'; }}
+          onTapCancel={() => { document.body.style.userSelect = ''; document.body.style.pointerEvents = ''; }}
+          onPointerUp={() => { document.body.style.userSelect = ''; document.body.style.pointerEvents = ''; }}
+          className="flex gap-px bg-ink/5 border border-ink/5 w-max select-none"
         >
-          <motion.div
-            ref={sliderRef}
-            drag="x"
-            dragConstraints={dragConstraints}
-            dragElastic={0.08}
-            dragMomentum={true}
-            dragTransition={{ power: 0.5, timeConstant: 300 }}
-            whileTap={{ cursor: 'grabbing' }}
-            style={{ cursor: 'grab', touchAction: 'none' }}
-            onTapStart={() => { document.body.style.userSelect = 'none'; }}
-            onTapCancel={() => { document.body.style.userSelect = ''; }}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max select-none"
-          >
-            {isLoading ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
-              ))
-            ) : (
-              products.map((product, i) => (
-                <div
-                  key={product.id}
-                  className="w-[300px] md:w-[450px] flex-shrink-0"
-                  onMouseEnter={(e) => {
-                    // Re-enable stagger animation on each card entrance
-                    const card = e.currentTarget as HTMLDivElement;
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    requestAnimationFrame(() => {
-                      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                      card.style.opacity = '1';
-                      card.style.transform = 'translateY(0)';
-                    });
-                  }}
-                >
-                  <ProductCard product={product} index={i} />
-                </div>
-              ))
-            )}
-          </motion.div>
-
-          {/* Draggable Indicator Overlay (Mobile Hint) */}
-          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white/80 to-transparent pointer-events-none md:hidden" />
-        </div>
+          {isLoading ? (
+            Array(4).fill(0).map((_, i) => (
+              <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse pointer-events-none" />
+            ))
+          ) : (
+            products.map((product, i) => (
+              <div
+                key={product.id}
+                className="w-[300px] md:w-[450px] flex-shrink-0 pointer-events-none"
+              >
+                <ProductCard product={product} index={i} />
+              </div>
+            ))
+          )}
+        </motion.div>
       </section>
 
       {/* TRUST SYMBOLS — Icon bounce + delayed metadata */}
