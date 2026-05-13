@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, ShoppingCart, Plus, Search,
-  TrendingUp, Box, LogOut, X, Save,
+  TrendingUp, Box, LogOut, X, Save, Menu,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
@@ -171,6 +171,7 @@ const SidebarItem = ({
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
@@ -678,23 +679,81 @@ export default function AdminDashboard() {
 
   return (
     <main className="min-h-screen bg-gray-50/50 flex overflow-hidden">
-      {/* SIDEBAR */}
-      <aside className="w-72 bg-white border-r border-gray-100 flex flex-col z-50">
+      {/* MOBILE TOP BAR */}
+      <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
+        <div className="flex items-center gap-2">
+          <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
+          <span className="text-[8px] text-gray-300 uppercase tracking-wider">Admin</span>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-gray-400 hover:text-rose"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </header>
+
+      {/* MOBILE SLIDE-OVER MENU */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[600] md:hidden">
+          <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
+                <p className="text-[8px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
+                <X size={16} />
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto py-4">
+              <div className="px-6 mb-2">
+                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Dashboard</p>
+              </div>
+              <SidebarItem icon={LayoutDashboard} label="Overview" active={activeTab === 'overview'} onClick={() => { setActiveTab('overview'); setIsMobileMenuOpen(false); }} />
+              <div className="px-6 mt-6 mb-2">
+                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Catalog</p>
+              </div>
+              <SidebarItem icon={Package} label="Products" active={activeTab === 'products'} onClick={() => { setActiveTab('products'); setIsMobileMenuOpen(false); }} badge={products.length} />
+              <SidebarItem icon={Box} label="Inventory" active={activeTab === 'inventory'} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }} badge={totalStock} />
+              <SidebarItem icon={Users} label="Customers" active={activeTab === 'customers'} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }} badge={customers.length} />
+              <div className="px-6 mt-6 mb-2">
+                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Operations</p>
+              </div>
+              <SidebarItem icon={ShoppingCart} label="Orders" active={activeTab === 'orders'} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }} badge={orders.length} />
+              <SidebarItem icon={MessageSquare} label="Support Chat" active={activeTab === 'messages'} onClick={() => { setActiveTab('messages'); setIsMobileMenuOpen(false); }} badge={totalUnreadChats} />
+              <div className="px-6 mt-6 mb-2">
+                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Finance</p>
+              </div>
+              <SidebarItem icon={TrendingUp} label="Revenue" active={activeTab === 'revenue'} onClick={() => { setActiveTab('revenue'); setIsMobileMenuOpen(false); }} />
+              <SidebarItem icon={CreditCard} label="Payments" active={activeTab === 'payments'} onClick={() => { setActiveTab('payments'); setIsMobileMenuOpen(false); }} />
+              <div className="px-6 mt-6 mb-2">
+                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Support</p>
+              </div>
+              <SidebarItem icon={Mail} label="Inbox" active={activeTab === 'inbox'} onClick={() => { setActiveTab('inbox'); setIsMobileMenuOpen(false); }} />
+            </nav>
+            <div className="p-4 border-t border-gray-100">
+              <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                <LogOut size={16} />
+                <span className="text-[10px] uppercase tracking-wider">Logout</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* DESKTOP SIDEBAR */}
+      <aside className="hidden md:flex w-72 bg-white border-r border-gray-100 flex-col z-50">
         <div className="p-8 border-b border-gray-100">
           <div className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase leading-none">NINOC</div>
           <p className="text-[8px] uppercase tracking-[0.4em] text-gray-300 mt-2">Admin Control Center</p>
         </div>
-
         <nav className="flex-1 overflow-y-auto py-6">
           <div className="px-8 mb-4">
             <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Dashboard</p>
           </div>
-          <SidebarItem
-            icon={LayoutDashboard}
-            label="Overview"
-            active={activeTab === 'overview'}
-            onClick={() => setActiveTab('overview')}
-          />
+          <SidebarItem icon={LayoutDashboard} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
 
           <div className="px-8 mt-8 mb-4">
             <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Catalog</p>
@@ -775,9 +834,9 @@ export default function AdminDashboard() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="h-20 bg-white border-b border-gray-100 px-8 flex items-center justify-between">
+      <div className="flex-1 flex flex-col overflow-hidden pt-14 md:pt-0">
+        {/* Desktop Header */}
+        <header className="hidden md:flex h-20 bg-white border-b border-gray-100 px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-[10px] uppercase tracking-wider text-gray-300">NINOC /</span>
             <h1 className="text-lg font-medium text-gray-900 uppercase tracking-wide">
@@ -793,7 +852,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-y-auto p-8">
+        <section className="flex-1 overflow-y-auto p-4 md:p-8">
           <AnimatePresence mode="wait">
             {/* ===== OVERVIEW ===== */}
             {activeTab === 'overview' && (
@@ -803,7 +862,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-8"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                   {[
                     { label: 'Total Revenue', value: `Rp ${finance.totalRevenue.toLocaleString('id-ID')}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
                     { label: 'Today Revenue', value: `Rp ${finance.todayRevenue.toLocaleString('id-ID')}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
