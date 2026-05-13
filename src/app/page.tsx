@@ -48,14 +48,14 @@ export default function Home() {
         Refined, Asymmetric, Minimalist
         ---------------------------------------------------------
       */}
-      {/* HERO SECTION - EXTREME COMPACTNESS */}
+      {/* HERO SECTION - TECHNICAL SPLIT LAYOUT */}
       <section className="relative md:pt-44 pt-2 pb-6 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-start">
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
           {/* Left Column: Branding */}
-          <div className="lg:col-span-4 space-y-4 md:space-y-12">
+          <div className="lg:col-span-4 space-y-3 md:space-y-12">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-1 md:space-y-4"
             >
@@ -63,7 +63,7 @@ export default function Home() {
                  <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
                  <span className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
               </div>
-              <h1 className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
+              <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
                 Archival<br/>Apparel
               </h1>
             </motion.div>
@@ -72,9 +72,9 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-[9px] md:text-sm font-medium leading-tight text-ink/80 max-w-xs uppercase tracking-tight"
+              className="text-[8px] md:text-sm font-medium leading-tight text-ink/80 max-w-[120px] md:max-w-xs uppercase tracking-tight"
             >
-              Preservation of garment integrity. Curated technical excellence.
+              Preservation of garment integrity.
             </motion.p>
 
             <motion.div
@@ -82,20 +82,20 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Link href="/shop" className="group inline-flex items-center gap-3 text-ink hover:text-rose transition-all">
-                <span className="text-[8px] md:text-[11px] font-medium uppercase tracking-[0.3em]">Browse Catalog</span>
-                <div className="w-6 md:w-12 h-[1px] bg-ink/40 group-hover:w-20 group-hover:bg-rose transition-all" />
+              <Link href="/shop" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-all">
+                <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em]">Browse</span>
+                <div className="w-4 md:w-12 h-[1px] bg-ink/40 group-hover:w-20 group-hover:bg-rose transition-all" />
               </Link>
             </motion.div>
           </div>
 
-          {/* Middle Column: Visual Anchor */}
-          <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+          {/* Right Column (Mobile) / Middle (PC): Visual Spec */}
+          <div className="lg:col-span-5 relative">
              <motion.div
-               initial={{ opacity: 0, scale: 0.95 }}
+               initial={{ opacity: 0, scale: 0.98 }}
                animate={{ opacity: 1, scale: 1 }}
                transition={{ duration: 1.2 }}
-               className="aspect-[16/9] md:aspect-[4/5] bg-white rounded-none overflow-hidden border border-ink/5 relative"
+               className="aspect-[3/4] md:aspect-[4/5] bg-white rounded-none overflow-hidden border border-ink/5 relative"
              >
                 <Image
                    src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
@@ -103,16 +103,15 @@ export default function Home() {
                    fill
                    className="object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-1000"
                 />
+                <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter">
+                   SPEC-001
+                </div>
              </motion.div>
-             
-             <div className="absolute -bottom-1 -right-1 bg-white p-2 border border-ink/5 shadow-sm md:hidden">
-                <p className="text-[6px] font-medium text-ink uppercase">Industrial Grade</p>
-             </div>
           </div>
 
-          {/* Right Column: Metadata - Compact Row for Mobile */}
-          <div className="lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
-             <div className="grid grid-cols-3 lg:grid-cols-1 gap-2 border-t lg:border-t-0 lg:border-l border-ink/5 pt-4 lg:pt-0 lg:pl-8">
+          {/* Metadata Block - Now integrated below on mobile for density */}
+          <div className="col-span-2 lg:col-span-3 lg:pt-32">
+             <div className="grid grid-cols-3 lg:grid-cols-1 gap-2 border-t border-ink/5 pt-3 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
                 <div className="space-y-0">
                    <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Year</p>
                    <p className="text-[9px] font-medium text-ink uppercase">2024</p>
