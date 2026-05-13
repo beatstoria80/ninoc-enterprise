@@ -59,7 +59,7 @@ export default function Home() {
               className="space-y-2 md:space-y-4"
             >
               <div className="flex items-center gap-4 text-rose">
-                 <Paperclip size={14} md:size={18} />
+                 <Paperclip className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
                  <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.5em]">Origin Specification</span>
               </div>
               <h1 className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.8] uppercase">
@@ -133,7 +133,7 @@ export default function Home() {
 
              <div className="bg-ink text-white p-6 md:p-8 rounded-none space-y-4 md:space-y-6">
                 <div className="flex items-center gap-3">
-                   <ShieldCheck size={16} md:size={18} className="text-rose" />
+                   <ShieldCheck className="w-4 h-4 md:w-[18px] md:h-[18px] text-rose" />
                    <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
                 </div>
                 <p className="text-[8px] font-medium uppercase leading-relaxed tracking-wider opacity-60">
@@ -183,7 +183,7 @@ export default function Home() {
                   <div className="flex items-center justify-between pt-3 md:pt-6 border-t border-ink/5 mt-3 md:mt-6">
                      <p className="text-[10px] md:text-lg font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
                      <div className="w-6 h-6 md:w-10 md:h-10 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all">
-                        <ChevronRight size={12} md:size={14} />
+                        <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
                      </div>
                   </div>
                 </div>
