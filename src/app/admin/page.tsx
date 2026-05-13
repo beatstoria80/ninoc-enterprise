@@ -270,8 +270,10 @@ export default function AdminDashboard() {
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const completedOrders = orderData.filter(o => o.status === 'delivered' || o.status === 'shipped');
-        const pendingOrders = orderData.filter(o => o.payment_status === 'pending');
+        const completedOrders = orderData.filter(o =>
+          o.status === 'paid' || o.status === 'delivered' || o.status === 'shipped'
+        );
+        const pendingOrders = orderData.filter(o => o.status === 'pending');
 
         const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_price, 0);
         const todayRevenue = completedOrders

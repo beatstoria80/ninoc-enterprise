@@ -14,9 +14,15 @@ export async function POST(req: Request) {
   try {
     const { items, customerDetails, shippingDetails, totalPrice } = await req.json();
 
-    // Debug: Log env vars (remove in production)
-    console.log('[Checkout] MIDTRANS_SERVER_KEY present:', !!process.env.MIDTRANS_SERVER_KEY);
-    console.log('[Checkout] MIDTRANS_IS_PRODUCTION:', process.env.MIDTRANS_IS_PRODUCTION);
+    // Ensure gross_amount is integer (Midtrans requires integer rupiah)
+    const grossAmount = Math.round(Number(totalPrice));
+    if (!Number.isInteger(grossAmount) || grossAmount <= 0) {
+      return NextResponse.json({ error: 'Invalid total price' }, { status: 400 });
+    }
+
+    // Extract first_name / last_name from customerDetails
+    const firstName = customerDetails.first_name || '';
+    const lastName = customerDetails.last_name || '';
 
     // Initialize Midtrans Snap
     const snap = new midtransClient.Snap({
@@ -30,24 +36,28 @@ export async function POST(req: Request) {
     const parameter = {
       transaction_details: {
         order_id: orderId,
-        gross_amount: totalPrice
+        gross_amount: grossAmount
       },
       customer_details: {
-        first_name: customerDetails.name,
-        email: customerDetails.email,
-        phone: customerDetails.phone,
+        first_name: firstName,
+        last_name: lastName,
+        email: customerDetails.email || '',
+        phone: customerDetails.phone || '',
         billing_address: {
-          address: customerDetails.address,
-          city: customerDetails.city,
-          postal_code: customerDetails.postal_code
+          first_name: firstName,
+          last_name: lastName,
+          address: customerDetails.address || '',
+          city: customerDetails.city || '',
+          postal_code: customerDetails.postal_code || ''
         },
         shipping_address: {
-          first_name: customerDetails.name,
-          email: customerDetails.email,
-          phone: customerDetails.phone,
-          address: customerDetails.address,
-          city: customerDetails.city,
-          postal_code: customerDetails.postal_code
+          first_name: firstName,
+          last_name: lastName,
+          email: customerDetails.email || '',
+          phone: customerDetails.phone || '',
+          address: customerDetails.address || '',
+          city: customerDetails.city || '',
+          postal_code: customerDetails.postal_code || ''
         }
       },
       item_details: [
@@ -111,6 +121,8 @@ export async function POST(req: Request) {
 
       if (itemsError) {
         console.error('Supabase Order Items Error:', itemsError);
+        // Throw to prevent returning a token for an order with no line items
+        throw new Error('Failed to save order items. Please try again.');
       }
     }
 

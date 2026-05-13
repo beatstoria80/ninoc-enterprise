@@ -80,7 +80,12 @@ export async function POST(req: Request) {
     const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
     const signature = req.headers.get('x-biteship-signature') || '';
 
-    if (webhookSecret && signature) {
+    if (webhookSecret) {
+      // If secret is configured, signature MUST be present and valid
+      if (!signature) {
+        console.error('[Biteship Webhook] Signature header missing but secret is configured');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       const isValid = verifySignature(rawBody, signature, webhookSecret);
       if (!isValid) {
         console.error('[Biteship Webhook] Signature verification failed');

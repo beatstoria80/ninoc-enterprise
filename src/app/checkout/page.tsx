@@ -53,13 +53,14 @@ const FALLBACK_PROVINCES: LocationItem[] = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [snapLoaded, setSnapLoaded] = useState(false);
+  const [snapLoadFailed, setSnapLoadFailed] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -69,14 +70,26 @@ export default function CheckoutPage() {
     interface WindowWithSnap extends Window {
       snap?: { pay: (token: string, callbacks: unknown) => void };
     }
+    let isMounted = true;
+    let retryCount = 0;
+    const maxRetries = 10;
+
     const checkSnap = () => {
+      if (!isMounted) return;
       if (typeof window !== 'undefined' && (window as WindowWithSnap).snap) {
         setSnapLoaded(true);
+        return;
+      }
+      if (retryCount < maxRetries) {
+        retryCount++;
+        setTimeout(checkSnap, 1000);
+      } else {
+        setSnapLoadFailed(true);
       }
     };
     // Check immediately and poll briefly in case script loads after this effect
     checkSnap();
-    const timeout = setTimeout(checkSnap, 1000);
+    return () => { isMounted = false; };
     return () => clearTimeout(timeout);
   }, []);
 
@@ -301,11 +314,11 @@ export default function CheckoutPage() {
       }
 
       // Open Midtrans Snap popup
-      // @ts-expect-error - Midtrans Snap global
       window.snap.pay(data.token, {
         onSuccess: (result: MidtransSnapResult) => {
-          console.log('Payment success:', result);
-          clearCart();
+          console.log('Payment initiated:', result);
+          // Don't clear cart here — webhook must confirm payment first
+          // Cart will be cleared by /api/payments/webhook after status is confirmed 'paid'
           router.push('/payment/success');
         },
         onError: (err: unknown) => {
@@ -337,7 +350,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
         <h2 className="text-2xl font-display font-medium italic uppercase">Archive Empty</h2>
-        <Link href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest">Back to Shop</Link>
+        <Link href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>Back to Shop</Link>
       </div>
     );
   }
@@ -577,6 +590,10 @@ export default function CheckoutPage() {
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 border border-ink/20 border-t-ink/40 rounded-full animate-spin" />
                       <span>Loading...</span>
+                    </div>
+                  ) : snapLoadFailed ? (
+                    <div className="flex items-center gap-2">
+                      <span>Payment Unavailable</span>
                     </div>
                   ) : !shippingMethod ? (
                     <div className="flex items-center gap-2">
