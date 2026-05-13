@@ -46,17 +46,6 @@ export const sectionRevealVariants: Variants = {
   },
 };
 
-// ─── STAGGER CONTAINER — For grid children ripple ───
-const staggerContainerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-};
-
 // ─── PRODUCT CARD — Individual card entrance ───
 const productCardVariants: Variants = {
   hidden: { y: 30, opacity: 0 },
@@ -387,8 +376,7 @@ export default function Home() {
   const catalogRef = useRef(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dragConstraints, setDragConstraints] = useState({ left: -500, right: 0 });
-  const catalogInView = useInView(catalogRef, { once: false, amount: 0.1 });
+  const [dragConstraints, setDragConstraints] = useState({ left: -800, right: 0 });
 
   useEffect(() => {
     const updateConstraints = () => {
@@ -616,38 +604,46 @@ export default function Home() {
           ref={containerRef}
           className="relative overflow-hidden group no-scrollbar drag-container overscroll-contain"
           style={{ touchAction: 'pan-y' }}
+          onMouseDown={(e) => e.preventDefault()}
         >
-          {/* Stagger wrapper — separate from drag element */}
           <motion.div
-            variants={staggerContainerVariants}
-            initial="hidden"
-            animate={catalogInView ? 'visible' : 'hidden'}
+            ref={sliderRef}
+            drag="x"
+            dragConstraints={dragConstraints}
+            dragElastic={0.08}
+            dragMomentum={true}
+            dragTransition={{ power: 0.5, timeConstant: 300 }}
+            whileTap={{ cursor: 'grabbing' }}
+            style={{ cursor: 'grab', touchAction: 'none' }}
+            onTapStart={() => { document.body.style.userSelect = 'none'; }}
+            onTapCancel={() => { document.body.style.userSelect = ''; }}
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max select-none"
           >
-            <motion.div
-              ref={sliderRef}
-              drag="x"
-              dragConstraints={dragConstraints}
-              dragElastic={0.08}
-              dragMomentum={true}
-              dragTransition={{ power: 0.5, timeConstant: 300 }}
-              whileTap={{ cursor: "grabbing" }}
-              style={{ cursor: 'grab' }}
-              onTapStart={() => { document.body.style.userSelect = 'none'; }}
-              onTapCancel={() => { document.body.style.userSelect = ''; }}
-              className="flex gap-px bg-ink/5 border border-ink/5 w-max"
-            >
-              {isLoading ? (
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
-                ))
-              ) : (
-                products.map((product, i) => (
-                  <div key={product.id} className="w-[300px] md:w-[450px] flex-shrink-0">
-                    <ProductCard product={product} index={i} />
-                  </div>
-                ))
-              )}
-            </motion.div>
+            {isLoading ? (
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse" />
+              ))
+            ) : (
+              products.map((product, i) => (
+                <div
+                  key={product.id}
+                  className="w-[300px] md:w-[450px] flex-shrink-0"
+                  onMouseEnter={(e) => {
+                    // Re-enable stagger animation on each card entrance
+                    const card = e.currentTarget as HTMLDivElement;
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    requestAnimationFrame(() => {
+                      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                      card.style.opacity = '1';
+                      card.style.transform = 'translateY(0)';
+                    });
+                  }}
+                >
+                  <ProductCard product={product} index={i} />
+                </div>
+              ))
+            )}
           </motion.div>
 
           {/* Draggable Indicator Overlay (Mobile Hint) */}
