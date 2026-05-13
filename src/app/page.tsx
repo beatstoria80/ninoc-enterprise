@@ -332,47 +332,39 @@ export default function Home() {
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* Drag wrapper — pointer events attached to the scrollable element itself */}
-        <div
-          className="relative select-none"
-          onPointerDown={(e) => {
-            const slider = sliderRef.current;
-            if (!slider) return;
-            e.currentTarget.setPointerCapture(e.pointerId);
-            dragState.current = { active: true, startX: e.clientX, startScroll: slider.scrollLeft };
-            document.body.style.userSelect = 'none';
-          }}
-          onPointerMove={(e) => {
-            if (!dragState.current.active) return;
-            const slider = sliderRef.current;
-            if (!slider) return;
-            const delta = e.clientX - dragState.current.startX;
-            const maxScroll = -(slider.scrollWidth - slider.offsetWidth);
-            slider.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
-          }}
-          onPointerUp={() => {
-            const slider = sliderRef.current;
-            if (slider) slider.style.cursor = 'grab';
-            dragState.current.active = false;
-            document.body.style.userSelect = '';
-          }}
-          onPointerLeave={() => {
-            const slider = sliderRef.current;
-            if (slider) slider.style.cursor = 'grab';
-            dragState.current.active = false;
-            document.body.style.userSelect = '';
-          }}
-          style={{ cursor: 'grab', touchAction: 'none' }}
-        >
+        {/* Drag wrapper — pointer events on the scrollable slider itself */}
+        <div className="relative select-none">
+          {/* Pointer events on the slider element itself — no wrapper interference */}
           <div
             ref={sliderRef}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar"
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar select-none"
+            onPointerDown={(e) => {
+              if (!sliderRef.current) return;
+              e.currentTarget.setPointerCapture(e.pointerId);
+              dragState.current = { active: true, startX: e.clientX, startScroll: sliderRef.current.scrollLeft };
+              document.body.style.userSelect = 'none';
+            }}
+            onPointerMove={(e) => {
+              if (!dragState.current.active || !sliderRef.current) return;
+              const delta = e.clientX - dragState.current.startX;
+              const maxScroll = -(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
+              sliderRef.current.scrollLeft = Math.max(maxScroll, Math.min(0, dragState.current.startScroll - delta));
+            }}
+            onPointerUp={() => {
+              dragState.current.active = false;
+              document.body.style.userSelect = '';
+            }}
+            onPointerLeave={() => {
+              dragState.current.active = false;
+              document.body.style.userSelect = '';
+            }}
             style={{
               cursor: 'grab',
               userSelect: 'none',
               WebkitUserSelect: 'none',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
+              touchAction: 'none',
             }}
           >
             {isLoading ? (
