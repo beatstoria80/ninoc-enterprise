@@ -383,13 +383,12 @@ export default function Home() {
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* Drag wrapper — pointer events on the scrollable slider itself */}
+        {/* DEBUG BORDER: red box shows slider area */}
         <div className="relative select-none">
-          {/* Native DOM event listeners attached via useEffect — bypasses React event system */}
           <div
             data-slider
             ref={sliderRef}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar select-none"
+            className="flex gap-px bg-ink/5 border border-2 border-red-500 w-max overflow-x-auto no-scrollbar select-none"
             style={{
               cursor: 'grab',
               userSelect: 'none',
