@@ -198,7 +198,7 @@ export default function Home() {
          <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20">
             <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
                <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <ShieldCheck size={24} md:size={28} />
+                  <ShieldCheck className="w-6 h-6 md:w-7 md:h-7" />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Quality Assured</h3>
@@ -207,7 +207,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
                <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <Zap size={24} md:size={28} />
+                  <Zap className="w-6 h-6 md:w-7 md:h-7" />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Instant Logistics</h3>
@@ -216,7 +216,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
                <div className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 rounded-none flex items-center justify-center text-rose">
-                  <Package size={24} md:size={28} />
+                  <Package className="w-6 h-6 md:w-7 md:h-7" />
                </div>
                <div className="space-y-2">
                   <h3 className="text-[10px] font-medium uppercase tracking-[0.3em]">Secure Storage</h3>
