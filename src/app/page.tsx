@@ -72,7 +72,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-[9px] md:text-sm font-medium leading-tight text-ink/60 max-w-xs uppercase tracking-tight"
+              className="text-[9px] md:text-sm font-medium leading-tight text-ink/80 max-w-xs uppercase tracking-tight"
             >
               Preservation of garment integrity. Curated technical excellence.
             </motion.p>
@@ -84,7 +84,7 @@ export default function Home() {
             >
               <Link href="/shop" className="group inline-flex items-center gap-3 text-ink hover:text-rose transition-all">
                 <span className="text-[8px] md:text-[11px] font-medium uppercase tracking-[0.3em]">Browse Catalog</span>
-                <div className="w-6 md:w-12 h-[1px] bg-ink/20 group-hover:w-20 group-hover:bg-rose transition-all" />
+                <div className="w-6 md:w-12 h-[1px] bg-ink/40 group-hover:w-20 group-hover:bg-rose transition-all" />
               </Link>
             </motion.div>
           </div>
@@ -114,15 +114,15 @@ export default function Home() {
           <div className="lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
              <div className="grid grid-cols-3 lg:grid-cols-1 gap-2 border-t lg:border-t-0 lg:border-l border-ink/5 pt-4 lg:pt-0 lg:pl-8">
                 <div className="space-y-0">
-                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/20">Year</p>
+                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Year</p>
                    <p className="text-[9px] font-medium text-ink uppercase">2024</p>
                 </div>
                 <div className="space-y-0">
-                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/20">Loc</p>
+                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Loc</p>
                    <p className="text-[9px] font-medium text-ink uppercase">BDG, ID</p>
                 </div>
                 <div className="space-y-0">
-                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/20">Phil</p>
+                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Phil</p>
                    <p className="text-[9px] font-medium text-ink uppercase italic leading-none">Simplicity</p>
                 </div>
              </div>
@@ -161,7 +161,7 @@ export default function Home() {
                   )}
                 </div>
                 <div className="space-y-1 md:space-y-3">
-                  <p className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">{product.category}</p>
+                  <p className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40">{product.category}</p>
                   <h3 className="text-[9px] md:text-xl font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors line-clamp-1">{product.name}</h3>
                   <div className="flex items-center justify-between pt-2 md:pt-6 border-t border-ink/5 mt-2 md:mt-6">
                      <p className="text-[9px] md:text-lg font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
@@ -185,7 +185,7 @@ export default function Home() {
                </div>
                <div className="space-y-0">
                   <h3 className="text-[8px] font-medium uppercase tracking-widest leading-none">Quality</h3>
-                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/30 hidden md:block">Rigorous inspection.</p>
+                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/60 hidden md:block">Rigorous inspection.</p>
                </div>
             </div>
             <div className="flex flex-col items-center text-center space-y-2">
@@ -194,7 +194,7 @@ export default function Home() {
                </div>
                <div className="space-y-0">
                   <h3 className="text-[8px] font-medium uppercase tracking-widest leading-none">Instant</h3>
-                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/30 hidden md:block">Rapid fulfillment.</p>
+                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/60 hidden md:block">Rapid fulfillment.</p>
                </div>
             </div>
             <div className="flex flex-col items-center text-center space-y-2">
@@ -203,7 +203,7 @@ export default function Home() {
                </div>
                <div className="space-y-0">
                   <h3 className="text-[8px] font-medium uppercase tracking-widest leading-none">Secure</h3>
-                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/30 hidden md:block">Protected storage.</p>
+                  <p className="text-[6px] font-medium uppercase tracking-tighter text-ink/60 hidden md:block">Protected storage.</p>
                </div>
             </div>
          </div>
