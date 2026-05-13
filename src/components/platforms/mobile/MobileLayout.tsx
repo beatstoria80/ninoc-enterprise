@@ -154,7 +154,7 @@ export default function MobileLayout({
                 setSearchQuery('');
                 setSearchResults([]);
               }}
-              className="fixed inset-0 bg-cr/80 backdrop-blur-sm z-[500]"
+              className="fixed inset-0 bg-ink/10 backdrop-blur-[2px] z-[500]"
             />
 
             {/* Search Modal */}
@@ -162,19 +162,19 @@ export default function MobileLayout({
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[510] bg-white shadow-2xl"
+              className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[510] bg-white border-b border-ink/5 shadow-2xl"
             >
-              <div className="p-4 border-b border-ink/5">
+              <div className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 relative">
-                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                  <div className="flex-1 relative flex items-center gap-3 bg-ink/[0.03] px-4 py-2 border border-ink/[0.05]">
+                    <Search size={14} className="text-ink/20" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={handleSearchInput}
-                      placeholder="Search catalog..."
+                      placeholder="SEARCH CATALOG..."
                       autoFocus
-                      className="w-full bg-ink/5 rounded-full py-3 pl-12 pr-4 text-sm text-ink placeholder:text-ink/30 outline-none focus:ring-2 focus:ring-rose/20"
+                      className="w-full bg-transparent py-1 text-[10px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
                     />
                   </div>
                   <button
@@ -183,23 +183,23 @@ export default function MobileLayout({
                       setSearchQuery('');
                       setSearchResults([]);
                     }}
-                    className="p-2 text-ink/30 hover:text-rose"
+                    className="p-2 text-ink/30 hover:text-rose text-[10px] font-medium uppercase tracking-widest"
                   >
-                    <X size={20} />
+                    CLOSE
                   </button>
                 </div>
               </div>
 
               {/* Search Results */}
-              <div className="max-h-[60vh] overflow-y-auto">
+              <div className="max-h-[70vh] overflow-y-auto no-scrollbar">
                 {isSearching && (
-                  <div className="p-8 text-center">
-                    <div className="w-6 h-6 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto" />
+                  <div className="p-12 text-center">
+                    <div className="w-4 h-4 border-2 border-rose/10 border-t-rose rounded-full animate-spin mx-auto" />
                   </div>
                 )}
                 {!isSearching && searchQuery && searchResults.length === 0 && (
-                  <div className="p-8 text-center">
-                    <p className="text-sm text-ink/30">No results found</p>
+                  <div className="p-12 text-center">
+                    <p className="text-[10px] font-medium uppercase tracking-widest text-ink/20">No items found</p>
                   </div>
                 )}
                 {!isSearching && searchResults.map((product) => (
@@ -211,30 +211,25 @@ export default function MobileLayout({
                       setSearchQuery('');
                       setSearchResults([]);
                     }}
-                    className="flex items-center gap-4 p-4 border-b border-ink/5 hover:bg-ink/5 transition-colors"
+                    className="flex items-center gap-4 p-4 border-t border-ink/[0.03] hover:bg-ink/[0.02] transition-colors"
                   >
-                    <div className="w-12 h-12 bg-ink/5 rounded-lg overflow-hidden">
+                    <div className="w-10 h-14 bg-ink/[0.03] flex-shrink-0 relative border border-ink/[0.05]">
                       {product.image_url && (
                         <Image
                           src={product.image_url}
                           alt={product.name}
-                          width={48}
-                          height={48}
+                          width={40}
+                          height={56}
                           className="object-cover"
                         />
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-ink uppercase">{product.name}</p>
-                      <p className="text-xs text-rose italic">Rp {product.price.toLocaleString('id-ID')}</p>
+                      <p className="text-[10px] font-medium text-ink uppercase tracking-tight">{product.name}</p>
+                      <p className="text-[9px] text-rose italic tracking-wider">Rp {product.price.toLocaleString('id-ID')}</p>
                     </div>
                   </Link>
                 ))}
-                {!searchQuery && (
-                  <div className="p-8 text-center">
-                    <p className="text-xs text-ink/30 uppercase tracking-wider">Start typing to search</p>
-                  </div>
-                )}
               </div>
             </motion.div>
           </>

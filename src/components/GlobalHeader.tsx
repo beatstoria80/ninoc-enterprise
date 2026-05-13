@@ -273,53 +273,95 @@ export default function GlobalHeader() {
         )}
       </AnimatePresence>
 
-      {/* Search Overlay */}
+      {/* Compact Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white z-[300] p-6 md:p-12 flex flex-col"
-          >
-            <div className="flex items-center justify-between mb-20">
-              <div className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase">NINOC Search</div>
-              <button onClick={() => setIsSearchOpen(false)} className="w-10 h-10 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white transition-all">
-                <X size={18} />
-              </button>
-            </div>
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSearchOpen(false)}
+              className="fixed inset-0 bg-ink/10 backdrop-blur-[2px] z-[200]"
+            />
+            
+            {/* Minimal Search Bar */}
+            <motion.div 
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -100, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 inset-x-0 z-[210] bg-white border-b border-ink/5 pt-[env(safe-area-inset-top)]"
+            >
+              <div className="px-6 md:px-12 py-4 flex items-center justify-between gap-8 max-w-[1800px] mx-auto">
+                <div className="flex-1 flex items-center gap-4 relative">
+                  <Search size={16} className="text-ink/30" />
+                  <input 
+                    autoFocus
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search catalog..." 
+                    className="flex-1 bg-transparent py-2 text-xs font-medium uppercase tracking-[0.2em] outline-none placeholder:text-ink/20"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="text-ink/20 hover:text-rose">
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                <button 
+                  onClick={() => setIsSearchOpen(false)} 
+                  className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 hover:text-rose transition-all flex items-center gap-2"
+                >
+                  Close
+                </button>
+              </div>
 
-            <div className="max-w-[1200px] mx-auto w-full space-y-12">
-              <div className="relative">
-                <input 
-                  autoFocus
-                  type="text" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search Archive..." 
-                  className="w-full bg-transparent border-b-2 border-ink/5 focus:border-rose py-10 text-4xl md:text-6xl font-display font-medium italic uppercase tracking-tighter outline-none transition-all placeholder:text-ink/5"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-10">
-                {searchResults.map((product) => (
-                  <Link 
-                    key={product.id} 
-                    href={`/shop/${product.slug}`}
-                    onClick={() => setIsSearchOpen(false)}
-                    className="flex gap-6 group"
+              {/* Minimal Results Dropdown */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-ink/5 max-h-[400px] overflow-y-auto"
                   >
-                    <div className="w-20 h-28 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5">
-                      {product.image_url && <Image src={product.image_url} alt={product.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform" />}
+                    <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {searchResults.length > 0 ? (
+                          searchResults.map((product) => (
+                            <Link 
+                              key={product.id} 
+                              href={`/shop/${product.slug}`}
+                              onClick={() => {
+                                setIsSearchOpen(false);
+                                setSearchQuery('');
+                              }}
+                              className="flex gap-4 group p-2 hover:bg-ink/5 transition-all"
+                            >
+                              <div className="w-12 h-16 bg-ink/5 flex-shrink-0 relative border border-ink/5">
+                                {product.image_url && <Image src={product.image_url} alt={product.name} fill className="object-contain p-1" />}
+                              </div>
+                              <div className="flex flex-col justify-center">
+                                <h3 className="text-[10px] font-medium uppercase tracking-tight group-hover:text-rose transition-colors">{product.name}</h3>
+                                <p className="text-[9px] font-medium text-ink/30 mt-0.5 italic">Rp {product.price.toLocaleString('id-ID')}</p>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="col-span-full py-4 text-center">
+                            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">No matching items found</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-col justify-center">
-                      <h3 className="text-base font-display font-medium italic uppercase tracking-tight group-hover:text-rose transition-colors">{product.name}</h3>
-                      <p className="text-sm font-display font-medium italic text-ink/30 mt-1">Rp {product.price.toLocaleString('id-ID')}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
