@@ -118,7 +118,7 @@ export default function Home() {
           </div>
 
           {/* Metadata Block - Compact Row for Mobile / Classic Sidebar for PC */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-32 mt-4 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-20 mt-4 lg:mt-0">
              {/* MOBILE VIEW GRID */}
              <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-3 md:hidden">
                 <div className="space-y-0">
@@ -136,21 +136,21 @@ export default function Home() {
              </div>
 
              {/* DESKTOP VIEW SIDEBAR */}
-             <div className="hidden md:flex flex-col space-y-6 border-l border-ink/5 pl-8">
-                <div className="space-y-0.5">
+             <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
+                <div className="space-y-0">
                    <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Year</p>
                    <p className="text-[10px] font-medium text-ink">Est. 2024</p>
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-0">
                    <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Location</p>
                    <p className="text-[10px] font-medium text-ink">Bandung, Indonesia</p>
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-0">
                    <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Philosophy</p>
-                   <p className="text-[10px] font-medium text-ink italic leading-relaxed">&quot;Functionality through absolute simplicity.&quot;</p>
+                   <p className="text-[10px] font-medium text-ink italic leading-tight">&quot;Functionality through absolute simplicity.&quot;</p>
                 </div>
 
-                <div className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-16">
+                <div className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8">
                    <div className="flex items-center gap-3">
                       <ShieldCheck size={18} className="text-rose" />
                       <span className="text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
