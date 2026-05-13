@@ -373,15 +373,37 @@ export default function Home() {
   const catalogInView = useInView(catalogRef, { once: false, amount: 0.1 });
 
   useEffect(() => {
-    if (sliderRef.current) {
-      const sliderWidth = sliderRef.current.scrollWidth;
-      const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
-      setDragConstraints({ left: -(sliderWidth - containerWidth), right: 0 });
-    }
+    const updateConstraints = () => {
+      if (sliderRef.current) {
+        const sliderWidth = sliderRef.current.scrollWidth;
+        const containerWidth = sliderRef.current.parentElement?.offsetWidth || 0;
+        setDragConstraints({ left: -(sliderWidth - containerWidth), right: 0 });
+      }
+    };
+
+    updateConstraints();
+    window.addEventListener('resize', updateConstraints);
+    
+    // Also re-calculate after a short delay to ensure images are settled
+    const timer = setTimeout(updateConstraints, 1000);
+    
+    return () => {
+      window.removeEventListener('resize', updateConstraints);
+      clearTimeout(timer);
+    };
   }, [products, isLoading]);
 
   return (
-    <div className="mobile-momentum overflow-x-hidden">
+    <div className="mobile-momentum overflow-x-hidden select-none">
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
 
       {/* ══════════════════════════════════════════════
           HERO SECTION — Text Split + Cinematic Reveal
@@ -570,14 +592,15 @@ export default function Home() {
         </motion.div>
 
         {/* Horizontal Draggable Slider — Momentum Scroll */}
-        <div className="relative overflow-hidden group cursor-grab active:cursor-grabbing">
+        <div className="relative overflow-hidden group no-scrollbar">
           <motion.div
             ref={sliderRef}
             drag="x"
             dragConstraints={dragConstraints}
-            dragElastic={0.1}
-            dragTransition={{ power: 0.2, timeConstant: 200 }}
-            className="flex gap-px bg-ink/5 border border-ink/5 w-max"
+            dragElastic={0.2}
+            dragTransition={{ power: 0.3, timeConstant: 250 }}
+            whileTap={{ cursor: "grabbing" }}
+            className="flex gap-px bg-ink/5 border border-ink/5 w-max cursor-grab active:cursor-grabbing"
             variants={staggerContainerVariants}
             initial="hidden"
             animate={catalogInView ? 'visible' : 'hidden'}
