@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Menu, X, ArrowLeft, Search, MessageSquare, ShoppingBag, User, Info } from 'lucide-react';
+import { Menu, X, Search, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
@@ -33,7 +33,6 @@ interface SearchResult {
 export default function MobileLayout({
   children,
   showBack = false,
-  backHref = '/shop',
   cartCount = 0,
   hideHeader = false,
 }: MobileLayoutProps) {
@@ -229,7 +228,7 @@ export default function MobileLayout({
         )}
       </AnimatePresence>
 
-      {/* Slide-over Menu Drawer */}
+      {/* Slide-over Menu - Minimal Compact Drawer */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -239,74 +238,87 @@ export default function MobileLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-[500]"
+              className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[500]"
             />
-            
-            {/* Drawer */}
+
+            {/* Drawer - Compact Minimal */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 w-[80%] max-w-[320px] bg-white z-[510] shadow-2xl flex flex-col"
+              className="fixed inset-y-0 right-0 w-[260px] bg-white z-[510] shadow-2xl flex flex-col"
             >
-              <div className="p-6 flex items-center justify-between border-b border-ink/5">
-                <span className="font-display font-medium text-sm italic tracking-widest text-rose uppercase">Archive Menu</span>
-                <button 
+              {/* Header */}
+              <div className="p-4 flex items-center justify-between border-b border-ink/5">
+                <span className="font-display font-medium text-xs italic tracking-wider text-rose uppercase">Menu</span>
+                <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="p-2 -mr-2 text-ink/30 hover:text-ink transition-colors"
+                  className="p-1 text-ink/30 hover:text-rose"
                 >
-                  <X size={20} strokeWidth={1.5} />
+                  <X size={16} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto py-8 px-6 space-y-8">
-                {/* Navigation Links */}
-                <div className="space-y-4">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/20">Catalog Selection</p>
-                  <div className="grid gap-2">
-                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 py-3 text-sm font-medium uppercase tracking-tight text-ink hover:text-rose transition-colors group">
-                      <div className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all"><ShoppingBag size={14} /></div>
-                      Home Archive
-                    </Link>
-                    <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 py-3 text-sm font-medium uppercase tracking-tight text-ink hover:text-rose transition-colors group">
-                      <div className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all"><Search size={14} /></div>
-                      Browse Catalog
-                    </Link>
-                    <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 py-3 text-sm font-medium uppercase tracking-tight text-ink hover:text-rose transition-colors group">
-                      <div className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-rose group-hover:text-white transition-all"><User size={14} /></div>
-                      Member Profile
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Support Section */}
-                <div className="space-y-4">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/20">Archival Help</p>
-                  <button 
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      // Custom event to open SupportChat
-                      window.dispatchEvent(new CustomEvent('open-support-chat'));
-                    }} 
-                    className="w-full flex items-center gap-4 py-3 text-sm font-medium uppercase tracking-tight text-ink hover:text-rose transition-colors group"
-                  >
-                    <div className="w-8 h-8 rounded-none bg-rose/10 flex items-center justify-center text-rose group-hover:bg-rose group-hover:text-white transition-all"><MessageSquare size={14} /></div>
-                    Support Archive
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/20">Studio Exit</p>
-                  <Link href="/about" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 py-3 text-sm font-medium uppercase tracking-tight text-ink/40 hover:text-ink transition-colors group">
-                    <div className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center group-hover:bg-ink group-hover:text-white transition-all"><Info size={14} /></div>
-                    Origin Specification
-                  </Link>
-                </div>
+              {/* Simple Link List */}
+              <div className="flex-1 overflow-y-auto">
+                <Link
+                  href="/"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-ink hover:text-rose border-b border-ink/5 transition-colors"
+                >
+                  <span className="w-6 h-6 bg-ink/5 flex items-center justify-center text-[10px]">🏠</span>
+                  Home
+                </Link>
+                <Link
+                  href="/shop"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-ink hover:text-rose border-b border-ink/5 transition-colors"
+                >
+                  <span className="w-6 h-6 bg-ink/5 flex items-center justify-center text-[10px]">🛍</span>
+                  Catalog
+                </Link>
+                <Link
+                  href="/checkout"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-ink hover:text-rose border-b border-ink/5 transition-colors"
+                >
+                  <span className="w-6 h-6 bg-ink/5 flex items-center justify-center text-[10px]">🛒</span>
+                  Cart
+                  {cartCount > 0 && (
+                    <span className="ml-auto bg-rose text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                  )}
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-ink hover:text-rose border-b border-ink/5 transition-colors"
+                >
+                  <span className="w-6 h-6 bg-ink/5 flex items-center justify-center text-[10px]">👤</span>
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    window.dispatchEvent(new CustomEvent('open-support-chat'));
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-rose border-b border-ink/5 transition-colors"
+                >
+                  <span className="w-6 h-6 bg-rose/10 text-rose flex items-center justify-center text-[10px]">💬</span>
+                  Support Chat
+                </button>
+                <Link
+                  href="/about"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-ink/50 transition-colors mt-auto"
+                >
+                  About
+                </Link>
               </div>
 
-              <div className="p-8 border-t border-ink/5 text-center">
-                <p className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/20">NINOC Archive © 2024</p>
+              {/* Footer */}
+              <div className="p-4 border-t border-ink/5 text-center">
+                <p className="text-[8px] uppercase tracking-widest text-ink/20">NINOC © 2024</p>
               </div>
             </motion.div>
           </>
@@ -372,6 +384,24 @@ export default function MobileLayout({
               Cart
             </span>
           </Link>
+
+          {/* Chat/Support */}
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('open-support-chat'));
+            }}
+            className="flex flex-col items-center justify-center gap-1 py-2 min-w-[70px] text-ink/30 transition-colors"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 01-.91 3.19"/>
+              <path d="M21 6.5a8.38 8.38 0 01-.91 3.19"/>
+              <path d="M21 16.5a8.38 8.38 0 01-.91 3.19"/>
+              <path d="M3 11.5a8.38 8.38 0 01-.91-3.19"/>
+              <path d="M3 6.5a8.38 8.38 0 01-.91-3.19"/>
+              <path d="M3 16.5a8.38 8.38 0 01-.91-3.19"/>
+            </svg>
+            <span className="text-[8px] font-medium uppercase tracking-wider text-ink/40">Chat</span>
+          </button>
 
           {/* Profile */}
           <Link
