@@ -336,6 +336,7 @@ export default function Home() {
         <div className="relative select-none">
           {/* Pointer events on the slider element itself — no wrapper interference */}
           <div
+            data-slider
             ref={sliderRef}
             className="flex gap-px bg-ink/5 border border-ink/5 w-max overflow-x-auto no-scrollbar select-none"
             onPointerDown={(e) => {

@@ -23,7 +23,29 @@ export default function SmoothScrollProvider({
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 2,
+      // Disable Lenis on drag-active elements to prevent event conflict
+      // Lenis intercepts pointer events and blocks custom drag on slider
+      // Allow native scroll everywhere — custom drag handles slider
     });
+
+    // Stop Lenis during any pointer interaction over the slider
+    const stopLenisOnDrag = (e: PointerEvent) => {
+      const target = e.target as HTMLElement;
+      const slider = target.closest('[data-slider]');
+      if (slider && lenisRef.current) {
+        lenisRef.current.stop();
+      }
+    };
+
+    const resumeLenisOnRelease = () => {
+      if (lenisRef.current) {
+        lenisRef.current.start();
+      }
+    };
+
+    document.addEventListener('pointerdown', stopLenisOnDrag);
+    document.addEventListener('pointerup', resumeLenisOnRelease);
+    document.addEventListener('pointerleave', resumeLenisOnRelease);
 
     function raf(time: number) {
       lenisRef.current?.raf(time);
@@ -36,6 +58,9 @@ export default function SmoothScrollProvider({
       cancelAnimationFrame(rafId);
       lenisRef.current?.destroy();
       lenisRef.current = null;
+      document.removeEventListener('pointerdown', stopLenisOnDrag);
+      document.removeEventListener('pointerup', resumeLenisOnRelease);
+      document.removeEventListener('pointerleave', resumeLenisOnRelease);
     };
   }, []);
 
