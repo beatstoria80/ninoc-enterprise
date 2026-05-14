@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, PanInfo } from 'framer-motion';
 
 export default function ScrollCapsule() {
   const [scrollDirection, setScrollDirection] = useState<'down' | 'up'>('down');
@@ -46,7 +46,7 @@ export default function ScrollCapsule() {
     }
   };
 
-  const handleDrag = (_: any, info: any) => {
+  const handleDrag = (_: unknown, info: PanInfo) => {
     const docHeight = document.documentElement.scrollHeight;
     const winHeight = window.innerHeight;
     const maxScroll = docHeight - winHeight;
