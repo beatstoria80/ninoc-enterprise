@@ -399,6 +399,63 @@ export default function CheckoutPage() {
         // Mobile: stacked layout with bottom padding for CTA
         isMobile ? "pt-20 pb-24 space-y-4" : "pt-36 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
+        {/* ORDER SUMMARY - Top on mobile for transparency */}
+        {isMobile && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
+              <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
+              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Financial Specification</h2>
+            </div>
+            
+            <div className="bg-white border border-ink/5 p-4 space-y-4 shadow-sm">
+              <div className="space-y-2 border-b border-ink/5 pb-3">
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                  <span>Archive Value</span>
+                  <span>Rp {subtotal.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                  <span>Logistics Fee</span>
+                  <span className={shippingCost > 0 ? "text-ink" : "text-rose italic"}>
+                    {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Selection Required'}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">Total Investment</span>
+                  <span className="text-xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('mobile-item-list');
+                    if (el) el.classList.toggle('hidden');
+                  }}
+                  className="px-3 py-1.5 border border-ink/5 text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Collapsible Item List for Mobile */}
+              <div id="mobile-item-list" className="hidden pt-4 space-y-3 border-t border-ink/5">
+                {items.map((item) => (
+                  <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center">
+                    <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
+                      {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[9px] font-medium uppercase truncate text-ink">{item.name}</p>
+                      <p className="text-[7px] font-medium text-ink/30 uppercase">Size {item.size} • Qty {item.quantity}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* FORM AREA */}
         <div className={cn(isMobile ? "space-y-4" : "lg:col-span-6 space-y-6")}>
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6 relative z-10">
@@ -516,138 +573,127 @@ export default function CheckoutPage() {
               </div>
             </section>
           </form>
-        </div>
-
-        {/* ORDER SUMMARY - Sidebar on desktop, Bottom on mobile */}
-        <div className={isMobile ? "lg:col-span-12" : "lg:col-span-4 lg:pl-12"}>
-          {isMobile ? (
-            /* Mobile: Compact summary card above CTA */
-            <div className="bg-white border border-ink/5 rounded-none p-3 mt-2">
-              <div className="flex justify-between items-center">
-                <span className="text-[9px] font-medium uppercase tracking-wider text-ink/60">Order ({items.length} items)</span>
-                <span className="text-xs font-display font-medium italic text-rose">Rp {finalTotal.toLocaleString('id-ID')}</span>
-              </div>
-            </div>
-          ) : (
-            /* Desktop: Full sidebar summary */
+        </div>        {/* ORDER SUMMARY - Sidebar on desktop only */}
+        {!isMobile && (
+          <div className="lg:col-span-4 lg:pl-12">
             <div className="sticky top-20 space-y-4">
-            <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
-              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-                <div className="flex items-center gap-3">
-                   <ShoppingBag size={12} className="text-ink/20" />
-                   <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Catalog Selection</h3>
-                </div>
-                <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
-              </div>
-
-              <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
-                {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center group">
-                    <div className="w-10 h-10 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
-                      {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
-                      <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">Size {item.size} • Qty {item.quantity}</p>
-                    </div>
-                    <p className="text-sm font-display font-medium italic text-ink/80">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
+              <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
+                <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+                  <div className="flex items-center gap-3">
+                     <ShoppingBag size={12} className="text-ink/20" />
+                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Catalog Selection</h3>
                   </div>
-                ))}
-              </div>
-
-              <div className="space-y-2 pt-4 border-t border-ink/5">
-                <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
-                  <span>Value Subtotal</span>
-                  <span className="text-ink">Rp {subtotal.toLocaleString('id-ID')}</span>
+                  <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
                 </div>
-                <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
-                  <span>Logistics Archive</span>
-                  <span className={cn("font-medium italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
-                     {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
-                  </span>
+
+                <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
+                  {items.map((item) => (
+                    <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center group">
+                      <div className="w-10 h-10 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
+                        {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
+                        <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">Size {item.size} • Qty {item.quantity}</p>
+                      </div>
+                      <p className="text-sm font-display font-medium italic text-ink/80">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
+                    </div>
+                  ))}
                 </div>
-              </div>
 
-              <div className="pt-6 flex flex-col items-center border-t border-ink/5">
-                <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30 mb-1">Total Investment</span>
-                <span className="text-2xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
-              </div>
-
-              <div className="space-y-4">
-                <button
-                  form="checkout-form"
-                  disabled={isProcessing || !shippingMethod || !snapLoaded}
-                  className={cn(
-                    "w-full py-3 rounded-none text-[10px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
-                    isProcessing || !shippingMethod || !snapLoaded
-                      ? "bg-ink/5 text-ink/20 cursor-not-allowed"
-                      : "bg-ink text-white hover:bg-rose active:scale-[0.98]"
-                  )}
-                >
-                  {isProcessing ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
-                      <span>Verifying...</span>
-                    </div>
-                  ) : !snapLoaded ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 border border-ink/20 border-t-ink/40 rounded-full animate-spin" />
-                      <span>Loading...</span>
-                    </div>
-                  ) : snapLoadFailed ? (
-                    <div className="flex items-center gap-2">
-                      <span>Payment Unavailable</span>
-                    </div>
-                  ) : !shippingMethod ? (
-                    <div className="flex items-center gap-2">
-                      <Lock size={10} />
-                      <span>Select Courier</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Lock size={10} />
-                      <span>Authorize Payment</span>
-                    </div>
-                  )}
-                </button>
-
-                {/* Professional Trust Bar */}
-                <div className="flex justify-center gap-8 pt-2">
-                  <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-                    <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
-                    <span>Aman</span>
+                <div className="space-y-2 pt-4 border-t border-ink/5">
+                  <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
+                    <span>Value Subtotal</span>
+                    <span className="text-ink">Rp {subtotal.toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-                    <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
-                    <span>Enkripsi</span>
+                  <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
+                    <span>Logistics Archive</span>
+                    <span className={cn("font-medium italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
+                       {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
+                    </span>
                   </div>
                 </div>
-                
-                {/* TRUST SIGNALS */}
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                   <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
-                      <ShieldCheck size={14} className="text-emerald-500" />
-                      <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Encrypted</span>
-                   </div>
-                   <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
-                      <Verified size={14} className="text-emerald-500" />
-                      <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Verified</span>
-                   </div>
+
+                <div className="pt-6 flex flex-col items-center border-t border-ink/5">
+                  <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30 mb-1">Total Investment</span>
+                  <span className="text-2xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
+                </div>
+
+                <div className="space-y-4">
+                  <button
+                    form="checkout-form"
+                    disabled={isProcessing || !shippingMethod || !snapLoaded}
+                    className={cn(
+                      "w-full py-3 rounded-none text-[10px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
+                      isProcessing || !shippingMethod || !snapLoaded
+                        ? "bg-ink/5 text-ink/20 cursor-not-allowed"
+                        : "bg-ink text-white hover:bg-rose active:scale-[0.98]"
+                    )}
+                  >
+                    {isProcessing ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
+                        <span>Verifying...</span>
+                      </div>
+                    ) : !snapLoaded ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 border border-ink/20 border-t-ink/40 rounded-full animate-spin" />
+                        <span>Loading...</span>
+                      </div>
+                    ) : snapLoadFailed ? (
+                      <div className="flex items-center gap-2">
+                        <span>Payment Unavailable</span>
+                      </div>
+                    ) : !shippingMethod ? (
+                      <div className="flex items-center gap-2">
+                        <Lock size={10} />
+                        <span>Select Courier</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Lock size={10} />
+                        <span>Authorize Payment</span>
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Professional Trust Bar */}
+                  <div className="flex justify-center gap-8 pt-2">
+                    <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                      <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
+                      <span>Aman</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
+                      <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
+                      <span>Enkripsi</span>
+                    </div>
+                  </div>
+                  
+                  {/* TRUST SIGNALS */}
+                  <div className="grid grid-cols-2 gap-4 pt-2">
+                     <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
+                        <ShieldCheck size={14} className="text-emerald-500" />
+                        <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Encrypted</span>
+                     </div>
+                     <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
+                        <Verified size={14} className="text-emerald-500" />
+                        <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Verified</span>
+                     </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col items-center gap-3 opacity-40">
-               <div className="flex items-center justify-center gap-8 grayscale">
-                  <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={36} height={12} className="h-3 w-auto object-contain" unoptimized />
-                  <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={36} height={20} className="h-4 w-auto object-contain" unoptimized />
-                  <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={52} height={16} className="h-3 w-auto object-contain" unoptimized />
-               </div>
-               <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 256-bit SSL Encryption • Official Merchant Partner</p>
+              <div className="flex flex-col items-center gap-3 opacity-40">
+                 <div className="flex items-center justify-center gap-8 grayscale">
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={36} height={12} className="h-3 w-auto object-contain" unoptimized />
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={36} height={20} className="h-4 w-auto object-contain" unoptimized />
+                    <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={52} height={16} className="h-3 w-auto object-contain" unoptimized />
+                 </div>
+                 <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 255-bit SSL Encryption • Official Merchant Partner</p>
+              </div>
             </div>
           </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Mobile BottomCTA - Show on ALL mobile devices (iOS + Android) */}
