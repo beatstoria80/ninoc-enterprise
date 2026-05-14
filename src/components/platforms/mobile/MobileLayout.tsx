@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Menu, X, Search, ArrowLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 
@@ -46,6 +46,21 @@ export default function MobileLayout({
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [supportUnreadCount, setSupportUnreadCount] = useState(0);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+
+  const { scrollY } = useScroll();
+
+  // Handle "Hide and Rise" logic
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() || 0;
+    if (latest > previous && latest > 150) {
+      // Scrolling down & passed threshold -> Hide
+      setIsNavVisible(false);
+    } else if (latest < previous || latest < 10) {
+      // Scrolling up or at top -> Show
+      setIsNavVisible(true);
+    }
+  });
 
   const isActive = (path: string) => pathname === path;
 
@@ -76,18 +91,14 @@ export default function MobileLayout({
     setSearchQuery(value);
     // Debounced search
     setTimeout(() => handleSearch(value), 300);
-    // Debounce is handled locally, no need to return cleanup function here
-    // as it's not a hook. For better debouncing, use a ref.
   };
 
-  // Back button: Navigate to shop to keep users engaged
   const handleBack = () => {
-    // Always navigate to shop - standard app engagement strategy
     router.push('/shop');
   };
 
   // Listen for support unread count
-  React.useEffect(() => {
+  useEffect(() => {
     const handleUnread = (e: Event) => {
       const customEvent = e as CustomEvent;
       setSupportUnreadCount(customEvent.detail || 0);
@@ -101,9 +112,14 @@ export default function MobileLayout({
       {/* Safe area top spacer */}
       <div className="h-[env(safe-area-inset-top)] bg-white/95" />
 
-      {/* Fixed Header */}
+      {/* Fixed Header with Hide and Rise */}
       {!hideHeader && (
-        <header className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]">
+        <motion.header 
+          initial={{ y: 0 }}
+          animate={{ y: isNavVisible ? 0 : -100 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]"
+        >
           <div className="flex items-center justify-between h-14 px-4">
             {/* Left: Back or Logo */}
             <div className="flex items-center gap-3">
@@ -123,7 +139,6 @@ export default function MobileLayout({
 
             {/* Right: Search & Burger Menu */}
             <div className="flex items-center gap-1">
-              {/* Search Icon - Opens Search Modal */}
               <button
                 onClick={() => setIsSearchOpen(true)}
                 className="p-2 text-ink/30 hover:text-rose transition-colors active:scale-90"
@@ -138,7 +153,7 @@ export default function MobileLayout({
               </button>
             </div>
           </div>
-        </header>
+        </motion.header>
       )}
 
       {/* Search Modal Overlay */}
@@ -344,9 +359,14 @@ export default function MobileLayout({
         {children}
       </main>
 
-      {/* Fixed Bottom Tab Bar */}
+      {/* Fixed Bottom Tab Bar with Hide and Rise */}
       {!hideTabBar && (
-        <nav className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none">
+        <motion.nav 
+          initial={{ y: 0 }}
+          animate={{ y: isNavVisible ? 0 : 120 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none"
+        >
           <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-4 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
             {/* Home */}
             <Link
@@ -441,7 +461,7 @@ export default function MobileLayout({
               </span>
             </Link>
           </div>
-        </nav>
+        </motion.nav>
       )}
 
       {/* iOS Native CSS */}
