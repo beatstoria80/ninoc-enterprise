@@ -325,7 +325,7 @@ export default function Home() {
 
       {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
-        <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1.5 md:pb-4 mb-1 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
+        <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
           <h2 className="text-sm md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300 leading-none">View All</Link>
         </motion.div>
@@ -335,11 +335,11 @@ export default function Home() {
           <DragSlider className="flex gap-px w-full">
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[280px] md:w-[450px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
+                <div key={i} className="w-[calc(50vw-4px)] md:w-[450px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[280px] md:w-[450px] flex-shrink-0">
+                <div key={product.id} className="w-[calc(50vw-4px)] md:w-[450px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
