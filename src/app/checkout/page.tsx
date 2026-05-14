@@ -401,7 +401,7 @@ export default function CheckoutPage() {
       )}>
         {/* FORM AREA */}
         <div className={cn(isMobile ? "space-y-4" : "lg:col-span-6 space-y-6")}>
-          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6">
+          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6 relative z-10">
             
             {/* 01: IDENTITY */}
             <section className="space-y-3">
