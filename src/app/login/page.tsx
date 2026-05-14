@@ -236,7 +236,7 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center gap-6"
         >
-          <div className="w-full max-w-md bg-white rounded-xl border border-ink/5 shadow-dashboard">
+          <div className="w-full max-w-lg bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
             <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 border-b border-ink/5">
               <ArrowLeft size={14} />
@@ -363,18 +363,18 @@ export default function LoginPage() {
 
           {/* Trust Security Bar - PLACED BELOW CARD */}
           <div className="flex justify-center gap-12 pt-2">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-                <Shield size={14} strokeWidth={1.5} className="text-rose/60" />
+            <div className="flex items-start gap-2">
+              <div className="w-6 h-6 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+                <Shield size={12} strokeWidth={1.5} className="text-rose/60" />
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Aman</span>
                 <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Proteksi Data</span>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-                <Lock size={14} strokeWidth={1.5} className="text-rose/60" />
+            <div className="flex items-start gap-2">
+              <div className="w-6 h-6 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+                <Lock size={12} strokeWidth={1.5} className="text-rose/60" />
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Enkripsi</span>

@@ -294,7 +294,46 @@ export default function Home() {
       el.removeEventListener('mouseup', onUp, { capture: true });
       el.removeEventListener('pointerleave', onUp, { capture: true });
     };
-  }, [isLoading]); // re-attach after products load so we have the element
+  }, [isLoading]);
+
+  // Document-level capture listener to detect if ANY pointer event reaches document
+  useEffect(() => {
+    const checkPath = (target: Element): string => {
+      const path: string[] = [];
+      let node: Element | null = target;
+      while (node && node !== document.body && path.length < 10) {
+        const pe = window.getComputedStyle(node).pointerEvents;
+        const display = window.getComputedStyle(node).display;
+        path.push(`${node.tagName}${pe !== 'auto' || display === 'none' ? `[${pe || display}]` : ''}`);
+        node = node.parentElement;
+      }
+      return path.join(' > ');
+    };
+
+    const onDocDown = (e: Event) => {
+      console.log('[DOC] pointerdown reached document. target:', (e.target as HTMLElement).tagName, 'path:', checkPath(e.target as Element));
+    };
+
+    const onDocMove = () => {
+      if (!dragRef.current.active) return;
+      console.log('[DOC] pointermove reached document!');
+    };
+
+    document.addEventListener('pointerdown', onDocDown, { capture: true });
+    document.addEventListener('pointermove', onDocMove, { capture: true });
+
+    return () => {
+      document.removeEventListener('pointerdown', onDocDown, { capture: true });
+      document.removeEventListener('pointermove', onDocMove, { capture: true });
+    };
+  }, []);
+
+  // TEST: window-level listener to check if ANY event reaches window
+  useEffect(() => {
+    window.addEventListener('pointerdown', (e: Event) => {
+      console.log('[WINDOW] pointerdown! target:', (e.target as HTMLElement).tagName, 'relatedTarget:', (e as PointerEvent).relatedTarget);
+    }, { capture: true });
+  }, []);
 
   return (
     <div className="mobile-momentum select-none">
