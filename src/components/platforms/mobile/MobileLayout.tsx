@@ -345,10 +345,9 @@ export default function MobileLayout({
                 {/* Links Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Legal</h4>
+                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival</h4>
                     <div className="flex flex-col gap-2">
-                      <Link href="/terms" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Terms</Link>
-                      <Link href="/privacy" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Privacy</Link>
+                      <Link href="/legal" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
                     </div>
                   </div>
                   <div className="space-y-3">

@@ -35,11 +35,8 @@ export default function GlobalFooter() {
 
           <div className="flex flex-col gap-2">
             <h4 className="text-[9px] font-bold uppercase tracking-widest text-ink mb-2">Legal Info</h4>
-            <Link href="/terms" className="text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
-              Terms & Conditions
-            </Link>
-            <Link href="/privacy" className="text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
-              Privacy Policy
+            <Link href="/legal" className="text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+              Legal Specifications
             </Link>
           </div>
           
