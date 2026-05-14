@@ -397,7 +397,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-6 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-16 pb-24 space-y-4" : "pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-20 pb-24 space-y-4" : "pt-28 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* FORM AREA */}
         <div className={cn(isMobile ? "space-y-4" : "lg:col-span-6 space-y-6")}>
