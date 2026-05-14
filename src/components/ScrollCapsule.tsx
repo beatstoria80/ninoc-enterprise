@@ -21,7 +21,9 @@ export default function ScrollCapsule() {
 
     const hasScroll = docHeight > winHeight + 10;
     setIsVisible(hasScroll);
-    setScrollDirection(scrollY > 300 ? 'up' : 'down');
+    
+    // Flip direction to "up" only when passed 60% of the page
+    setScrollDirection(scrollY > docHeight * 0.6 ? 'up' : 'down');
   }, []);
 
   useEffect(() => {
@@ -40,9 +42,17 @@ export default function ScrollCapsule() {
   }, [checkScroll]);
 
   const handleClick = () => {
-    if (scrollDirection === 'down') {
+    const scrollY = window.scrollY;
+    const catalogEl = document.getElementById('archive-catalog');
+    
+    if (scrollY < 100 && catalogEl) {
+      // From Slide 1 to Slide 2 (New Releases)
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (scrollDirection === 'down') {
+      // From Slide 2 to Slide 3 (Bottom)
       window.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' });
     } else {
+      // Back to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
