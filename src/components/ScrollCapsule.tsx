@@ -25,6 +25,7 @@ export default function ScrollCapsule() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkScroll();
     const interval = setInterval(checkScroll, 1000);
     const timeout = setTimeout(() => clearInterval(interval), 5000);
