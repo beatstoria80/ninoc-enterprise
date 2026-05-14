@@ -326,10 +326,8 @@ export default function Home() {
       {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
         <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1.5 md:pb-4 mb-1 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
-          <div>
-            <h2 className="text-lg md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
-          </div>
-          <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
+          <h2 className="text-sm md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none">New Releases</h2>
+          <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300 leading-none">View All</Link>
         </motion.div>
 
         {/* DRAG SLIDER — mouse drag to scroll */}
