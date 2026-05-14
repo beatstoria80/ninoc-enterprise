@@ -577,11 +577,16 @@ export default function CheckoutPage() {
         {!isMobile && (
           <div className="lg:col-span-4 lg:pl-12">
             <div className="sticky top-20 space-y-4">
+              <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
+                <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
+                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Financial Specification</h2>
+              </div>
+              
               <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
                 <div className="flex justify-between items-center border-b border-ink/5 pb-2">
                   <div className="flex items-center gap-3">
                      <ShoppingBag size={12} className="text-ink/20" />
-                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Catalog Selection</h3>
+                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Archive Selection</h3>
                   </div>
                   <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
                 </div>
@@ -689,7 +694,7 @@ export default function CheckoutPage() {
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={36} height={20} className="h-4 w-auto object-contain" unoptimized />
                     <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={52} height={16} className="h-3 w-auto object-contain" unoptimized />
                  </div>
-                 <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 255-bit SSL Encryption • Official Merchant Partner</p>
+                 <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 256-bit SSL Encryption • Official Merchant Partner</p>
               </div>
             </div>
           </div>
