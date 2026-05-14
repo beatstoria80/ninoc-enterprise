@@ -131,7 +131,7 @@ export default function SupportChat() {
           const relevantTicket = activeTicket?.id === newMsg.ticket_id ? activeTicket : tickets.find(t => t.id === newMsg.ticket_id);
           
           setLastNotif({
-            subject: relevantTicket?.subject || 'Archive Update',
+            subject: relevantTicket?.subject || 'Status Update',
             message: newMsg.message,
             from: 'Studio'
           });
@@ -352,7 +352,7 @@ export default function SupportChat() {
                 }}
                 className="w-full bg-rose text-white py-2.5 rounded-lg text-[8px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-600 transition-colors"
               >
-                <MessageSquare size={10} /> Open Archive
+                <MessageSquare size={10} /> Open Support
               </motion.button>
             </div>
             {/* Progress bar */}
@@ -472,7 +472,7 @@ export default function SupportChat() {
                       <span className={cn("w-1 h-1 rounded-full", user ? "bg-emerald-500" : "bg-rose animate-pulse")} />
                       NINOC Support
                     </p>
-                    <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Archive</span></h3>
+                    <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Center</span></h3>
                   </div>
                   {user && (
                     <p className="text-[5px] font-medium text-white/10 uppercase tracking-widest">SPEC: {user.email?.split('@')[0]}</p>
@@ -491,7 +491,7 @@ export default function SupportChat() {
                     <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-6">
                       {/* QUICK ACTION HEADER */}
                       <div className="flex items-center justify-between">
-                        <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival Support</p>
+                        <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support Center</p>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -529,7 +529,7 @@ export default function SupportChat() {
                         ) : (
                           <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 opacity-20">
                             <MessageSquare size={24} strokeWidth={1} />
-                            <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">Archive Empty</p>
+                            <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">Inbox Empty</p>
                           </div>
                         )}
                       </div>

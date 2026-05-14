@@ -196,7 +196,7 @@ export default function ProductDetailPage() {
               <div className="space-y-6">
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2">Product Description</h4>
-                  <p className="text-[13px] leading-relaxed text-ink/60 font-medium">{product.description || 'Premium quality apparel from NINOC Archive.'}</p>
+                  <p className="text-[13px] leading-relaxed text-ink/60 font-medium">{product.description || 'Premium quality apparel from NINOC.'}</p>
                 </div>
 
                 {/* Size Selection & Guide Positioning */}
@@ -308,7 +308,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col md:flex-row justify-between items-end border-b border-ink/5 pb-8">
               <div className="space-y-2">
                 <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-rose">You Might Also Like</span>
-                <h2 className="text-4xl md:text-6xl font-display font-medium italic tracking-tighter text-ink uppercase">Related <span className="text-rose">Archive</span></h2>
+                <h2 className="text-4xl md:text-6xl font-display font-medium italic tracking-tighter text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               </div>
               <Link href="/shop" className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-2 group mb-2 md:mb-0">
                 View Full Collection <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />

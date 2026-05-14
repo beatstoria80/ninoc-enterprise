@@ -180,7 +180,7 @@ export default function ProfilePage() {
         {!isMobile && (
         <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-12 group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[10px] uppercase tracking-[0.2em]">Return to Archive Catalog</span>
+          <span className="text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
         </Link>
         )}
 
@@ -216,7 +216,7 @@ export default function ProfilePage() {
 
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl font-display italic text-ink uppercase tracking-tight">{user?.full_name}</h1>
-              <p className="text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Archive Membership • Est. {memberSince}</p>
+              <p className="text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
                 <div className="space-y-1">
@@ -224,7 +224,7 @@ export default function ProfilePage() {
                   <p className="text-[10px] text-ink/70">{user?.email}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[8px] uppercase tracking-widest text-ink/30">Archive Status</p>
+                  <p className="text-[8px] uppercase tracking-widest text-ink/30">Member Status</p>
                   <p className="text-[10px] text-rose">Verified Individual</p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export default function ProfilePage() {
           <div className="space-y-8">
             <div className="flex items-end justify-between border-b border-ink/5 pb-6">
               <div className="space-y-1">
-                <h2 className="text-xs uppercase tracking-[0.4em] text-ink">Archive Investment Logs</h2>
+                <h2 className="text-xs uppercase tracking-[0.4em] text-ink">Investment Logs</h2>
                 <p className="text-[9px] text-ink/40 tracking-wider">Historical record of all origin specifications acquired.</p>
               </div>
               <p className="text-[9px] font-medium text-ink/30">{orders.length} Entries Found</p>

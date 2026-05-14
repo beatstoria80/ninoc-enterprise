@@ -52,7 +52,7 @@ export default function SuccessPage() {
         <div className="space-y-4">
           <h1 className="text-4xl font-display font-medium italic text-ink tracking-tighter">Art in Motion.</h1>
           <p className="text-sm text-muted-text font-medium leading-relaxed">
-            Your transaction was successful. We are now preparing your artistic pieces for delivery. A confirmation email has been sent to your archive.
+            Your transaction was successful. We are now preparing your artistic pieces for delivery. A confirmation email has been sent to your registered email.
           </p>
         </div>
 

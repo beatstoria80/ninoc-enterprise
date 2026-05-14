@@ -229,7 +229,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
                       <ArrowRight size={16} className="text-ink/10 group-hover:text-rose group-hover:translate-x-1 transition-all" />
                     </div>
                     <p className="text-[10px] font-medium text-ink/30 uppercase tracking-[0.2em]">
-                      {product.category} Archive
+                      {product.category}
                     </p>
                     <p className="text-base md:text-xl font-display font-medium italic text-rose pt-2">
                       Rp {(product.price ?? 0).toLocaleString('id-ID')}

@@ -1359,7 +1359,7 @@ export default function AdminDashboard() {
                 <div className="w-80 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">
                   <div className="p-5 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
                     <div>
-                      <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Archive Inquiries</h3>
+                      <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Customer Inquiries</h3>
                       <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1.5">{chatSessions.length} sessions active</p>
                     </div>
                     <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
@@ -1532,7 +1532,7 @@ export default function AdminDashboard() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Customer Archive</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">Customer Records</h2>
                     <p className="text-sm text-gray-500">{customers.length} registered members</p>
                   </div>
                   <button

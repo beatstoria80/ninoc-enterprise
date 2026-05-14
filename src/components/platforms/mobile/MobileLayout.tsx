@@ -361,7 +361,7 @@ export default function MobileLayout({
 
                 {/* Base Contact */}
                 <div className="space-y-2">
-                  <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archive Base</h4>
+                  <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Base</h4>
                   <p className="text-[9px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">
                     Bandung, West Java, ID 40112<br />
                     beatstoria.ai@gmail.com

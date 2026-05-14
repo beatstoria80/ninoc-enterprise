@@ -190,7 +190,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           {product.image_url && (
             <Image src={product.image_url} alt={product.name} fill className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100" />
           )}
-          <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">ARCHIVE SPEC-{(index + 101).toString()}</div>
+          <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">NINOC SPEC-{(index + 101).toString()}</div>
         </motion.div>
         
         <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">

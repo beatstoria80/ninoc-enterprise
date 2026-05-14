@@ -105,7 +105,7 @@ export default function ScrollCapsule() {
 
             <div className="flex flex-col items-center gap-1.5 opacity-30">
               <span className="text-[7px] font-medium uppercase tracking-[0.4em] [writing-mode:vertical-rl] transform rotate-180 select-none">
-                {scrollDirection === 'down' ? 'Archive Explore' : 'Return Origin'}
+                {scrollDirection === 'down' ? 'Explore Catalog' : 'Return Origin'}
               </span>
             </div>
           </motion.div>

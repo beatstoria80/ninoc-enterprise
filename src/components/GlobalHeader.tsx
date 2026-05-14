@@ -162,7 +162,7 @@ export default function GlobalHeader() {
                  <div className="font-display font-medium text-3xl italic tracking-tighter text-rose uppercase">Active Selection</div>
                  <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
                  <div className="hidden md:flex flex-col leading-none">
-                    <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30">Origin Archive</span>
+                    <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30">Origin Studio</span>
                     <span className="text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
                  </div>
               </div>
@@ -193,7 +193,7 @@ export default function GlobalHeader() {
                                  <Trash2 size={16} />
                                </button>
                             </div>
-                            <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20 italic">Archive Ref: #{item.id.slice(0, 8)}</p>
+                            <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20 italic">Item Ref: #{item.id.slice(0, 8)}</p>
                           </div>
                           
                           <div className="flex items-end justify-between">
@@ -233,7 +233,7 @@ export default function GlobalHeader() {
                              <span>Rp {totalPrice().toLocaleString('id-ID')}</span>
                           </div>
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
-                             <span>Archive Fee</span>
+                             <span>Handling Fee</span>
                              <span className="text-emerald-600 italic">Complimentary</span>
                           </div>
                        </div>
@@ -251,7 +251,7 @@ export default function GlobalHeader() {
                             onClick={() => setIsCartOpen(false)}
                             className="w-full bg-ink text-white py-4 rounded-none font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-rose transition-all group"
                           >
-                            <span>Archive Selection</span>
+                            <span>Selection Details</span>
                           </Link>
                           <div className="flex items-center justify-center gap-3 opacity-30 grayscale">
                              <ShieldCheck size={14} />

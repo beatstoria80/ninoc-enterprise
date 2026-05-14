@@ -169,7 +169,7 @@ export default function LegalPage() {
                 <span className="text-[7px] font-medium uppercase tracking-widest">Legal Integrity</span>
              </div>
           </div>
-          <p className="text-[7px] font-medium uppercase tracking-[0.5em] text-ink">NINOC ENTERPRISE — HIGH-DENSITY LEGAL ARCHIVE v2.1</p>
+          <p className="text-[7px] font-medium uppercase tracking-[0.5em] text-ink">NINOC ENTERPRISE — HIGH-DENSITY LEGAL SPECS v2.1</p>
         </div>
       </div>
     </main>

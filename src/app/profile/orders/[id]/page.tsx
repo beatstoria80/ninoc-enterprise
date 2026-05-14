@@ -112,7 +112,7 @@ export default function OrderDetailPage() {
   const steps = [
     { label: 'Order Registered', status: 'pending', icon: <Clock size={14} /> },
     { label: 'Payment Verified', status: 'paid', icon: <ShieldCheck size={14} /> },
-    { label: 'In Storage Archive', status: 'processing', icon: <Package size={14} /> },
+    { label: 'In Logistics Storage', status: 'processing', icon: <Package size={14} /> },
     { label: 'Carrier Pickup', status: 'shipped', icon: <Truck size={14} /> },
     { label: 'Studio Delivery', status: 'delivered', icon: <CheckCircle size={14} /> },
   ];
@@ -127,7 +127,7 @@ export default function OrderDetailPage() {
         <div className="flex items-center justify-between mb-16">
           <Link href="/profile" className="flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group">
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-[10px] uppercase tracking-[0.2em]">Exit to Archive Log</span>
+            <span className="text-[10px] uppercase tracking-[0.2em]">Exit to Order Log</span>
           </Link>
           <div className="text-right">
             <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Origin Specification ID</p>
@@ -183,7 +183,7 @@ export default function OrderDetailPage() {
 
               {/* Detailed Tracking Logs (from Biteship Webhook) */}
               <div className="space-y-4">
-                <h3 className="text-[8px] uppercase tracking-widest text-ink/30">Event Logs (Temporal Archive)</h3>
+                <h3 className="text-[8px] uppercase tracking-widest text-ink/30">Event Logs (Temporal Log)</h3>
                 <div className="border border-ink/5 rounded-[4px] divide-y divide-ink/5">
                   {trackingLogs.length === 0 ? (
                     <div className="p-8 text-center">
@@ -211,7 +211,7 @@ export default function OrderDetailPage() {
             </section>
           </div>
 
-          {/* RIGHT COLUMN: Archive Specification Details */}
+          {/* RIGHT COLUMN: Unit Specification Details */}
           <div className="lg:col-span-5 space-y-12">
             
             {/* Order Items */}
