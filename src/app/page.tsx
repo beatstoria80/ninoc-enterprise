@@ -136,7 +136,7 @@ function PortraitImageCarousel() {
           ))}
         </div>
       )}
-      <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20">SPEC-001</div>
+      <div className="absolute top-2 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20">SPEC-001</div>
       <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent hidden md:block z-20" />
     </motion.div>
   );
