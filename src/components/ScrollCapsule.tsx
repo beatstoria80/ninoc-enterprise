@@ -31,6 +31,7 @@ export default function ScrollCapsule() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkScroll();
     
     // Polling height for the first 5 seconds to handle dynamic content/images loading
