@@ -236,14 +236,14 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center gap-6"
         >
-          <div className="w-full max-w-lg bg-white rounded-xl border border-ink/5 shadow-dashboard">
+          <div className="w-full md:w-[600px] lg:w-[800px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 border-b border-ink/5">
+            <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-6 px-8 lg:px-16 border-b border-ink/5">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
 
-            <div className="p-6 space-y-6">
+            <div className="p-8 lg:p-16 space-y-8 lg:space-y-10">
               {/* Title */}
               <div>
                 <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
