@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, PanInfo } from 'framer-motion';
+import { ArrowDown } from 'lucide-react';
 
 export default function ScrollCapsule() {
   const [scrollDirection, setScrollDirection] = useState<'down' | 'up'>('down');
@@ -77,42 +78,40 @@ export default function ScrollCapsule() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="hidden md:block fixed inset-y-0 right-0 w-20 z-[9999] pointer-events-none" ref={containerRef}>
-          <motion.button
+        <div className="hidden md:block fixed inset-y-0 right-0 w-16 z-[9999] pointer-events-none" ref={containerRef}>
+          <motion.div
             key="global-scroll-capsule"
-            onClick={handleClick}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }} // We use onDrag for custom logic
-            dragElastic={0}
-            onDrag={handleDrag}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             style={{ 
               y: yPos,
               pointerEvents: 'auto',
-              x: 0
             }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-8 flex flex-col items-center group cursor-grab active:cursor-grabbing"
-            aria-label={scrollDirection === 'down' ? 'Scroll down' : 'Back to top'}
+            className="absolute right-4 md:right-5 flex flex-col items-center gap-3"
           >
-            <motion.div
-              animate={{ y: scrollDirection === 'down' ? [0, 4, 0] : [0, -4, 0] }}
-              transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
-              className="w-6 h-10 rounded-full border-2 border-ink/20 group-hover:border-rose/70 bg-white/95 backdrop-blur-md flex items-center justify-center transition-colors duration-300 shadow-xl"
+            <motion.button 
+              onClick={handleClick}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0}
+              onDrag={handleDrag}
+              className="w-7 h-20 rounded-full border border-ink/10 bg-white/40 backdrop-blur-md flex items-center justify-center group hover:border-rose/20 transition-all duration-500 cursor-grab active:cursor-grabbing"
             >
               <motion.div
-                animate={
-                  scrollDirection === 'down'
-                    ? { y: [0, 6, 0], opacity: [1, 0.3, 1] }
-                    : { y: [0, -6, 0], opacity: [1, 0.3, 1] }
-                }
-                transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
-                className="w-[3px] h-2.5 rounded-full bg-ink/40 group-hover:bg-rose transition-colors duration-300"
-              />
-            </motion.div>
-          </motion.button>
+                animate={{ rotate: scrollDirection === 'down' ? 0 : 180 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <ArrowDown size={14} className="text-ink/40 group-hover:text-rose transition-colors" />
+              </motion.div>
+            </motion.button>
+
+            <div className="flex flex-col items-center gap-1.5 opacity-30">
+              <span className="text-[7px] font-medium uppercase tracking-[0.4em] [writing-mode:vertical-rl] transform rotate-180 select-none">
+                {scrollDirection === 'down' ? 'Archive Explore' : 'Return Origin'}
+              </span>
+            </div>
+          </motion.div>
         </div>
       )}
     </AnimatePresence>
