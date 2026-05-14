@@ -319,10 +319,33 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* SCROLL DOWN INDICATOR — Desktop only */}
+        <motion.button
+          onClick={() => document.getElementById('archive-catalog')?.scrollIntoView({ behavior: 'smooth' })}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8, duration: 0.8, ease: MOTION.ease }}
+          className="hidden md:flex flex-col items-center gap-3 mx-auto mt-16 mb-4 group cursor-pointer"
+          aria-label="Scroll to catalog"
+        >
+          <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/20 group-hover:text-rose transition-colors duration-300">Scroll to explore</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+            className="w-8 h-14 rounded-full border border-ink/10 group-hover:border-rose/30 flex items-start justify-center pt-2 transition-colors duration-300"
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+              className="w-1 h-3 rounded-full bg-ink/20 group-hover:bg-rose transition-colors duration-300"
+            />
+          </motion.div>
+        </motion.button>
       </section>
 
       {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
-      <section className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
+      <section id="archive-catalog" className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
         <motion.div className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-4 mb-2 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
           <div>
             <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40 md:text-ink/20 mb-1 md:mb-3">Latest Archive</p>
