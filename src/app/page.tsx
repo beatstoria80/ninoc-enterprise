@@ -32,10 +32,38 @@ const wordVariants: Variants = {
   }),
 };
 
-// Product card entrance animation
+// Product card entrance animation — staggered sequence
 const productCardVariants: Variants = {
-  hidden: { y: 30, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.7, ease: MOTION.ease } },
+  hidden: { y: 40, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: { 
+      delay: i * 0.15, 
+      duration: 0.8, 
+      ease: [0.16, 1, 0.3, 1] 
+    },
+  }),
+};
+
+// Nested image entrance
+const cardImageVariants: Variants = {
+  hidden: { scale: 1.05, opacity: 0 },
+  visible: { 
+    scale: 1, 
+    opacity: 1, 
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } 
+  },
+};
+
+// Nested content entrance
+const cardContentVariants: Variants = {
+  hidden: { y: 10, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1, 
+    transition: { delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] } 
+  },
 };
 
 // Trust icon spring bounce
@@ -153,18 +181,19 @@ interface ProductCardProps {
 
 function ProductCard({ product, index }: ProductCardProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-30px' });
+  const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
 
   return (
     <motion.div ref={ref} variants={productCardVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
       <Link href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5 transition-all duration-500" style={{ transition: 'all 0.5s' }}>
-        <motion.div className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
+        <motion.div variants={cardImageVariants} className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
           {product.image_url && (
             <Image src={product.image_url} alt={product.name} fill className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100" />
           )}
           <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">ARCHIVE SPEC-{(index + 101).toString()}</div>
         </motion.div>
-        <div className="space-y-1 md:space-y-1.5">
+        
+        <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
           <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">{product.category || "Garment Origin"}</p>
           <motion.h3 className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
             {product.name}
@@ -180,7 +209,7 @@ function ProductCard({ product, index }: ProductCardProps) {
               </motion.div>
             </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
       </Link>
     </motion.div>
   );
