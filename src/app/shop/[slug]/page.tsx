@@ -269,7 +269,6 @@ export default function ProductDetailPage() {
 
               {/* ACTION BUTTON - REFINED SCALE */}
               <div className="pt-4 relative z-10">
-                {!isMobile && (
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
@@ -291,7 +290,6 @@ export default function ProductDetailPage() {
                     )}
                   </AnimatePresence>
                 </button>
-                )}
               </div>
 
               {/* Trust Badges - Desktop only */}
@@ -354,7 +352,7 @@ export default function ProductDetailPage() {
 
       {/* MOBILE STICKY BOTTOM CTA — show based on actual window width, bypasses SSR hydration issues */}
       {showMobileCart && (
-        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/10">
+        <div className="fixed bottom-[calc(64px+env(safe-area-inset-bottom))] left-0 right-0 z-[350] bg-white/95 backdrop-blur-xl border-t border-ink/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-2">
           <div className="flex items-center gap-4 p-4">
             <div className="flex-1">
               <p className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Total</p>
