@@ -88,6 +88,7 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
         WebkitUserSelect: 'none',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
+        touchAction: 'pan-x', // mobile: only allow horizontal pan, block vertical page scroll
         ...style,
       }}
     >
