@@ -358,8 +358,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 placeholder:text-[10px] focus:border-rose/40";
-  const selectClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40";
+  const inputClass = "w-full bg-white py-2.5 px-3 text-[10px] font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
+  const selectClass = "w-full bg-white py-2 px-2.5 text-[10px] font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
   const labelClass = "text-[9px] font-bold uppercase tracking-[0.2em] text-ink/70 mb-1.5 block";
 
   return (
@@ -606,14 +606,14 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                <div className="space-y-2 pt-4 border-t border-ink/5">
-                  <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
+                <div className="space-y-2 pt-4 border-t border-ink/20">
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
                     <span>Value Subtotal</span>
-                    <span className="text-ink">Rp {subtotal.toLocaleString('id-ID')}</span>
+                    <span>Rp {subtotal.toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="flex justify-between text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
                     <span>Logistics Archive</span>
-                    <span className={cn("font-medium italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
+                    <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                        {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
                     </span>
                   </div>
