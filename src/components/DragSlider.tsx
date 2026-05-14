@@ -3,11 +3,9 @@
 import React, { useRef, useEffect } from 'react';
 
 // ═══════════════════════════════════════════════════════════════
-// DRAG SLIDER — PC Mouse Drag via Native addEventListener Capture
-// Formula: scrollLeft = startScroll - delta  (delta = currentX - startX)
-// Mobile works because touch bypasses React synthetic events
-// PC fails because Framer Motion intercepts pointer/mouse events first
-// Fix: use capture phase addEventListener on mount, bypass React entirely
+// DRAG SLIDER — PC mouse + Mobile touch drag
+// Mobile: body scroll-lock on touchstart prevents page lag/freeze
+// PC: pointer capture phase bypasses Framer Motion interference
 // ═══════════════════════════════════════════════════════════════
 
 interface DragSliderProps {
@@ -24,42 +22,82 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
     const el = containerRef.current;
     if (!el) return;
 
-    // onDown — capture start position, disable text selection
+    // Lock body scroll during touch drag — prevents mobile vertical page scroll lag
+    const lockBody = () => {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    };
+    const unlockBody = () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+
+    // ── PC POINTER DRAG (non-touch pointer types) ──────────────
     const onDown = (e: Event) => {
       const ev = e as PointerEvent;
-      if (ev.pointerType === 'touch') return; // Allow native touch behavior
-      
+      if (ev.pointerType === 'touch') return; // let native touch handle it
       ev.preventDefault();
-      dragRef.current = {
-        active: true,
-        startX: ev.clientX,
-        startScroll: el.scrollLeft,
-      };
+      dragRef.current = { active: true, startX: ev.clientX, startScroll: el.scrollLeft };
       document.body.style.userSelect = 'none';
     };
 
-    // onMove — calculate delta, apply scrollLeft
     const onMove = (e: Event) => {
       if (!dragRef.current.active) return;
       const ev = e as PointerEvent;
       if (ev.pointerType === 'touch') return;
-      
       ev.preventDefault();
       const delta = ev.clientX - dragRef.current.startX;
       const maxScroll = -(el.scrollWidth - el.offsetWidth);
       el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
     };
 
-    // onUp — reset drag state
     const onUp = () => {
+      if (!dragRef.current.active) return;
       dragRef.current.active = false;
       document.body.style.userSelect = '';
     };
 
-    // Attach with capture phase — intercepts BEFORE React synthetic events
-    // Mobile: touch events work because touch doesn't go through React delegation
-    // PC: pointer/mouse events go through React delegation first, then Framer Motion
-    // Capture phase fires before bubble, so we intercept before Framer Motion sees it
+    // ── MOBILE NATIVE TOUCH HANDLERS ───────────────────────────
+    // These bypass React entirely — prevents page scroll lag on mobile
+    let startTouchX = 0;
+    let startScroll = 0;
+    let isDragging = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      // Only lock if touch starts inside this slider
+      const touch = e.touches[0];
+      const rect = el.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        e.preventDefault();
+        lockBody();
+        isDragging = true;
+        startTouchX = touch.clientX;
+        startScroll = el.scrollLeft;
+        dragRef.current = { active: true, startX: touch.clientX, startScroll: el.scrollLeft };
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const delta = touch.clientX - startTouchX;
+      const maxScroll = -(el.scrollWidth - el.offsetWidth);
+      el.scrollLeft = Math.max(maxScroll, Math.min(0, startScroll - delta));
+    };
+
+    const onTouchEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      dragRef.current.active = false;
+      unlockBody();
+    };
+
+    // ── ATTACH HANDLERS ────────────────────────────────────────
+    // Pointer events (capture phase) — PC only
     el.addEventListener('pointerdown', onDown, true);
     el.addEventListener('pointermove', onMove, true);
     el.addEventListener('pointerup', onUp, true);
@@ -68,6 +106,12 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
     el.addEventListener('mousemove', onMove, true);
     el.addEventListener('mouseup', onUp, true);
     el.addEventListener('mouseleave', onUp, true);
+
+    // Native touch events — mobile only, bypass React entirely
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: false });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: false });
 
     return () => {
       el.removeEventListener('pointerdown', onDown, true);
@@ -78,6 +122,11 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
       el.removeEventListener('mousemove', onMove, true);
       el.removeEventListener('mouseup', onUp, true);
       el.removeEventListener('mouseleave', onUp, true);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
+      unlockBody();
     };
   }, []);
 
@@ -91,7 +140,8 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
         WebkitUserSelect: 'none',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
-        touchAction: 'pan-x', // mobile: only allow horizontal pan, block vertical page scroll
+        touchAction: 'pan-x',
+        WebkitOverflowScrolling: 'touch',
         ...style,
       }}
     >
