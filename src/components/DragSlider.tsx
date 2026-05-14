@@ -70,7 +70,6 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
         cursor: 'grab',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
-        touchAction: 'pan-y', // Critical: allows vertical page scroll on mobile
         WebkitOverflowScrolling: 'touch',
         ...style,
       }}
