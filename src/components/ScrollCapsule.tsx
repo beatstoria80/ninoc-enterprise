@@ -60,9 +60,9 @@ export default function ScrollCapsule() {
     const winHeight = window.innerHeight;
     const maxScroll = docHeight - winHeight;
     
-    // Calculate progress based on vertical position (15vh to 85vh)
-    const trackStart = winHeight * 0.15;
-    const trackEnd = winHeight * 0.85;
+    // Calculate progress based on vertical position (10vh to 90vh for more range)
+    const trackStart = winHeight * 0.10;
+    const trackEnd = winHeight * 0.90;
     const trackLength = trackEnd - trackStart;
     
     // Get current y relative to viewport
