@@ -80,7 +80,7 @@ export default function LegalPage() {
       </nav>
 
       {/* 2-GRID UNIFIED ARCHIVE */}
-      <div className="flex-1 pt-20 pb-6 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full overflow-hidden">
+      <div className="flex-1 pt-20 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full overflow-hidden">
         
         {/* Minimal Header */}
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
@@ -95,7 +95,7 @@ export default function LegalPage() {
         </div>
 
         {/* OPEN ARCHIVE LAYOUT - NO CARDS */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 overflow-y-auto no-scrollbar pt-8">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 overflow-y-auto no-scrollbar pt-12">
           
           {/* Sector A: TERMS & CONDITIONS */}
           <div className="space-y-12">
@@ -158,7 +158,7 @@ export default function LegalPage() {
         </div>
 
         {/* Global Legal Footer */}
-        <div className="mt-4 pt-4 border-t border-ink/5 flex justify-between items-center opacity-60">
+        <div className="mt-12 pt-8 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-60">
           <div className="flex gap-8">
              <div className="flex items-center gap-2">
                 <Globe size={10} strokeWidth={1.5} />
