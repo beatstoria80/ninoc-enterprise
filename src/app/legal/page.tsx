@@ -9,7 +9,7 @@ export default function LegalPage() {
 
   const content = {
     EN: {
-      title: "LEGAL ARCHIVE",
+      title: "LEGAL",
       updated: "VER 2.1 / MAY 2026",
       terms: {
         title: "TERMS & CONDITIONS",
@@ -31,7 +31,7 @@ export default function LegalPage() {
       }
     },
     ID: {
-      title: "ARSIP LEGAL",
+      title: "LEGAL",
       updated: "VER 2.1 / MEI 2026",
       terms: {
         title: "SYARAT & KETENTUAN",
@@ -69,7 +69,7 @@ export default function LegalPage() {
         </Link>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-          <span className="text-[9px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC ARCHIVE</span>
+          <span className="text-[9px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC</span>
         </div>
 
         <div className="flex items-center gap-4 text-[9px] font-medium tracking-widest border border-ink/5 rounded-full px-3 py-1.5 bg-white/50 shadow-sm">
