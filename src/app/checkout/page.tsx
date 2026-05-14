@@ -352,7 +352,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h2 className="text-2xl font-display font-medium italic uppercase">Archive Empty</h2>
+        <h2 className="text-2xl font-display font-medium italic uppercase">Empty</h2>
         <Link href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>Back to Shop</Link>
       </div>
     );
@@ -410,7 +410,7 @@ export default function CheckoutPage() {
             <div className="bg-white border border-ink/5 p-4 space-y-4 shadow-sm">
               <div className="space-y-2 border-b border-ink/5 pb-3">
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
-                  <span>Archive Value</span>
+                  <span>Subtotal</span>
                   <span>Rp {subtotal.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
@@ -479,7 +479,7 @@ export default function CheckoutPage() {
                   <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40", isMobile ? "p-4" : "p-4")}>
-                  <label htmlFor="email" className={labelClass}>Email Archive</label>
+                  <label htmlFor="email" className={labelClass}>Email</label>
                   <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-4" : "p-4")}>
@@ -639,7 +639,7 @@ export default function CheckoutPage() {
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                        <span>Verifying Archive...</span>
+                        <span>Verifying...</span>
                       </div>
                     ) : !snapLoaded ? (
                       <div className="flex items-center gap-2">
