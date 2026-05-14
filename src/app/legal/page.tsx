@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowLeft, Scale, Globe, Shield, Lock, FileText } from 'lucide-react';
+import { ArrowLeft, Scale, Globe, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LegalPage() {
