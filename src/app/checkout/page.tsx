@@ -358,9 +358,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all placeholder:text-ink/20 placeholder:text-xs";
-  const selectClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all cursor-pointer border border-ink/5 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed";
-  const labelClass = "text-[8px] font-medium uppercase tracking-[0.15em] text-ink/50 mb-1 block";
+  const inputClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 placeholder:text-[10px] focus:border-rose/40";
+  const selectClass = "w-full bg-white py-2.5 px-3 text-sm font-medium text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40";
+  const labelClass = "text-[9px] font-bold uppercase tracking-[0.2em] text-ink/70 mb-1.5 block";
 
   return (
     <div className={cn(
@@ -469,22 +469,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
               
-              <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
-                <div className={cn("bg-white", isMobile ? "p-3" : "p-3")}>
+              <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
+                <div className={cn("bg-white", isMobile ? "p-4" : "p-4")}>
                   <label htmlFor="first_name" className={labelClass}>First Name</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className={inputClass} placeholder="John" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="John" />
                 </div>
-                <div className={cn("bg-white border-l border-ink/5", isMobile ? "p-3" : "p-3")}>
+                <div className={cn("bg-white border-l border-ink/40", isMobile ? "p-4" : "p-4")}>
                   <label htmlFor="last_name" className={labelClass}>Last Name</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className={inputClass} placeholder="Doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
                 </div>
-                <div className={cn("bg-white border-t border-ink/5", isMobile ? "p-3" : "p-3")}>
+                <div className={cn("bg-white border-t border-ink/40", isMobile ? "p-4" : "p-4")}>
                   <label htmlFor="email" className={labelClass}>Email Archive</label>
-                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={inputClass} placeholder="your@email.com" />
+                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "p-3" : "p-3")}>
+                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-4" : "p-4")}>
                   <label htmlFor="phone" className={labelClass}>Phone Reference</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className={inputClass} placeholder="0812 3456 7890" />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
                 </div>
               </div>
             </section>
@@ -619,82 +619,59 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="pt-6 flex flex-col items-center border-t border-ink/5">
-                  <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30 mb-1">Total Investment</span>
-                  <span className="text-2xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
+                <div className="pt-6 flex flex-col items-center border-t border-ink/20">
+                  <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">Total Investment</span>
+                  <span className="text-3xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
                 </div>
 
-                <div className="space-y-4">
+                {/* DESKTOP CTA */}
+                <div className="pt-6">
                   <button
                     form="checkout-form"
                     disabled={isProcessing || !shippingMethod || !snapLoaded}
                     className={cn(
-                      "w-full py-3 rounded-none text-[10px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
+                      "w-full py-4 rounded-none text-[11px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
                       isProcessing || !shippingMethod || !snapLoaded
-                        ? "bg-ink/5 text-ink/20 cursor-not-allowed"
-                        : "bg-ink text-white hover:bg-rose active:scale-[0.98]"
+                        ? "bg-ink/5 text-ink/20 cursor-not-allowed border border-ink/10"
+                        : "bg-ink text-white hover:bg-rose active:scale-[0.98] shadow-lg shadow-ink/5"
                     )}
                   >
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
-                        <span>Verifying...</span>
+                        <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        <span>Verifying Archive...</span>
                       </div>
                     ) : !snapLoaded ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 border border-ink/20 border-t-ink/40 rounded-full animate-spin" />
-                        <span>Loading...</span>
-                      </div>
-                    ) : snapLoadFailed ? (
-                      <div className="flex items-center gap-2">
-                        <span>Payment Unavailable</span>
+                        <div className="w-3 h-3 border-2 border-ink/20 border-t-ink/60 rounded-full animate-spin" />
+                        <span>Preparing Gateway...</span>
                       </div>
                     ) : !shippingMethod ? (
                       <div className="flex items-center gap-2">
-                        <Lock size={10} />
+                        <Lock size={12} strokeWidth={1.5} />
                         <span>Select Courier</span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Lock size={10} />
+                        <Lock size={12} strokeWidth={1.5} />
                         <span>Authorize Payment</span>
                       </div>
                     )}
                   </button>
-
-                  {/* Professional Trust Bar */}
-                  <div className="flex justify-center gap-8 pt-2">
-                    <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-                      <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
-                      <span>Aman</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
-                      <Lock size={10} strokeWidth={1.5} className="text-rose/40" />
-                      <span>Enkripsi</span>
-                    </div>
-                  </div>
-                  
-                  {/* TRUST SIGNALS */}
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                     <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
-                        <ShieldCheck size={14} className="text-emerald-500" />
-                        <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Encrypted</span>
-                     </div>
-                     <div className="flex flex-col items-center gap-2 border border-ink/5 rounded-lg py-3">
-                        <Verified size={14} className="text-emerald-500" />
-                        <span className="text-[7px] font-medium uppercase tracking-widest text-ink/40">Verified</span>
-                     </div>
-                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center gap-3 opacity-40">
-                 <div className="flex items-center justify-center gap-8 grayscale">
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={36} height={12} className="h-3 w-auto object-contain" unoptimized />
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={36} height={20} className="h-4 w-auto object-contain" unoptimized />
-                    <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={52} height={16} className="h-3 w-auto object-contain" unoptimized />
+              {/* SECURITY SPECS */}
+              <div className="flex flex-col items-center gap-4 opacity-70">
+                 <div className="flex items-center justify-center gap-10 grayscale brightness-90">
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={40} height={14} className="h-3.5 w-auto object-contain" unoptimized />
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={40} height={22} className="h-4.5 w-auto object-contain" unoptimized />
+                    <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={60} height={20} className="h-3.5 w-auto object-contain" unoptimized />
                  </div>
-                 <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 256-bit SSL Encryption • Official Merchant Partner</p>
+                 <div className="flex flex-col items-center gap-1">
+                    <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
+                    <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/30">Official Archive Merchant Partner</p>
+                 </div>
               </div>
             </div>
           </div>
