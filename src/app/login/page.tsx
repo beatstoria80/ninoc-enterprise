@@ -90,7 +90,7 @@ export default function LoginPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-6",
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-6 pt-24 md:pt-32",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* MOBILE NAV BAR */}
@@ -238,12 +238,12 @@ export default function LoginPage() {
         >
           <div className="w-full md:w-[600px] lg:w-[800px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-6 px-8 lg:px-16 border-b border-ink/5">
+            <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
 
-            <div className="p-8 lg:p-16 space-y-8 lg:space-y-10">
+            <div className="p-6 lg:p-10 lg:px-16 space-y-5 lg:space-y-6">
               {/* Title */}
               <div>
                 <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
