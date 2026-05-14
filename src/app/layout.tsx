@@ -5,6 +5,7 @@ import Script from "next/script";
 import ClientPlatformManager from "@/components/ClientPlatformManager";
 import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import ScrollCapsule from "@/components/ScrollCapsule";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -45,6 +46,7 @@ export default function RootLayout({
             {children}
           </ClientPlatformManager>
           <SupportChat />
+          <ScrollCapsule />
         </SmoothScrollProvider>
       </body>
     </html>

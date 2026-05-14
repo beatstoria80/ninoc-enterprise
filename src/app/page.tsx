@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView, Variants, AnimatePresence } from 'framer-motion';
+import { motion, useInView, Variants } from 'framer-motion';
 import { ShieldCheck, Zap, Package, Paperclip, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -228,14 +228,6 @@ interface Product {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasScrolled, setHasScrolled] = useState(false);
-
-  // Auto-hide scroll capsule after user scrolls past hero
-  useEffect(() => {
-    const onScroll = () => setHasScrolled(window.scrollY > 200);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -329,35 +321,6 @@ export default function Home() {
         </div>
 
       </section>
-
-      {/* FIXED SCROLL CAPSULE — Right-center of viewport, desktop only */}
-      <AnimatePresence>
-        {!hasScrolled && (
-          <motion.button
-            key="scroll-capsule"
-            onClick={() => document.getElementById('archive-catalog')?.scrollIntoView({ behavior: 'smooth' })}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ delay: 1.6, duration: 0.8, ease: MOTION.ease }}
-            className="hidden md:flex fixed right-8 top-1/2 -translate-y-1/2 z-[90] flex-col items-center gap-3 group cursor-pointer"
-            aria-label="Scroll to catalog"
-          >
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
-              className="w-8 h-16 rounded-full border border-ink/15 group-hover:border-rose/40 bg-white/80 backdrop-blur-sm flex items-start justify-center pt-3 transition-colors duration-300 shadow-lg shadow-ink/5"
-            >
-              <motion.div
-                animate={{ y: [0, 10, 0], opacity: [1, 0.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
-                className="w-1 h-3.5 rounded-full bg-ink/25 group-hover:bg-rose transition-colors duration-300"
-              />
-            </motion.div>
-            <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/20 group-hover:text-rose transition-colors duration-300 whitespace-nowrap writing-vertical" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>Explore</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
 
       {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
       <section id="archive-catalog" className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
