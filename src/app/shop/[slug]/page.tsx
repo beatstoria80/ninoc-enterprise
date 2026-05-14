@@ -41,20 +41,11 @@ export default function ProductDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [showMobileCart, setShowMobileCart] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
 
-  // Set mobile cart visibility after mount — checks actual window width on client
-  /* eslint-disable react-hooks/set-state-in-effect */
-  // Set mobile cart visibility after mount — checks actual window width on client
-  useEffect(() => {
-    setShowMobileCart(window.innerWidth < 768);
-    const handleResize = () => setShowMobileCart(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
 
   useEffect(() => {
     const fetchProduct = async () => {
