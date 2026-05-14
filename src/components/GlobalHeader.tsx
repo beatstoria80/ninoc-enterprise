@@ -255,7 +255,7 @@ export default function GlobalHeader() {
                           </Link>
                           <div className="flex items-center justify-center gap-3 opacity-30 grayscale">
                              <ShieldCheck size={14} />
-                             <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Archival Protocol</span>
+                             <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction Protocol</span>
                           </div>
                        </div>
                     </div>
