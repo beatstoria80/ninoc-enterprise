@@ -612,7 +612,7 @@ export default function CheckoutPage() {
                     <span>Rp {subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
-                    <span>Logistics Archive</span>
+                    <span>Logistics</span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                        {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
                     </span>
