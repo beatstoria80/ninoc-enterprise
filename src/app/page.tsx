@@ -291,9 +291,9 @@ export default function Home() {
           </div>
 
           {/* Right: Metadata Sidebar */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] mt-4 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] mt-1 lg:mt-0">
             {/* Mobile */}
-            <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-3 md:hidden">
+            <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-1.5 md:hidden">
               {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
                 <motion.div key={item.label} className="space-y-0" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.1, duration: 0.5, ease: MOTION.ease }}>
                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">{item.label}</p>
@@ -323,11 +323,11 @@ export default function Home() {
       </section>
 
       {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
-      <section id="archive-catalog" className="md:mt-2 mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
-        <motion.div className="flex items-end justify-between border-b border-ink/5 pb-2 md:pb-4 mb-2 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
+      <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
+        <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1.5 md:pb-4 mb-1 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
           <div>
             <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40 md:text-ink/20 mb-1 md:mb-3">Latest Archive</p>
-            <h2 className="text-xl md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
+            <h2 className="text-lg md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink">New Releases</h2>
           </div>
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
