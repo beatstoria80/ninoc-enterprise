@@ -68,11 +68,9 @@ export default function GlobalFooter() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-4 pt-2 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-2">
-        <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">
-          © 2026 NINOC ENTERPRISE.
-        </p>
-        <div className="flex items-center gap-4">
+      <div className="max-w-7xl mx-auto mt-4 pt-2 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">© 2026 NINOC ENTERPRISE.</p>
+        <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30">
               <Shield size={8} strokeWidth={1.5} className="text-rose/40" />

@@ -14,9 +14,10 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const [isMobile, setIsMobile] = useState(true);
   const { items } = useCart();
 
-  // Hide GlobalHeader/Footer on admin pages
+  // Hide GlobalHeader/Footer on admin pages AND checkout page (desktop)
   const isAdminPage = pathname?.startsWith('/admin');
-  const showGlobalHeader = !isAdminPage;
+  const isCheckoutPage = pathname === '/checkout';
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

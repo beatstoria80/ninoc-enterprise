@@ -637,15 +637,13 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 opacity-40">
-               <div className="flex items-center gap-6 grayscale">
-                  <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={40} height={10} className="h-2 w-auto" unoptimized />
-                  <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={40} height={20} className="h-4 w-auto" unoptimized />
-                  <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={60} height={15} className="h-3 w-auto" unoptimized />
+            <div className="flex flex-col items-center gap-3 opacity-40">
+               <div className="flex items-center justify-center gap-8 grayscale">
+                  <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={36} height={12} className="h-3 w-auto object-contain" unoptimized />
+                  <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={36} height={20} className="h-4 w-auto object-contain" unoptimized />
+                  <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={52} height={16} className="h-3 w-auto object-contain" unoptimized />
                </div>
-               <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-center text-ink">
-                  Secured by 256-bit SSL Encryption • Official Merchant Partner
-               </p>
+               <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-center text-ink/30 leading-relaxed">Secured by 256-bit SSL Encryption • Official Merchant Partner</p>
             </div>
           </div>
           )}
