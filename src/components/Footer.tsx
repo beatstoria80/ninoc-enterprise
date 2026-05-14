@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Mail, MapPin, Shield, Lock } from 'lucide-react';
+import { Mail, MapPin, Shield, Lock, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 export default function GlobalFooter() {
@@ -16,9 +16,6 @@ export default function GlobalFooter() {
           <p className="text-[9px] font-medium leading-tight text-muted-text mt-1">
             Wear the art, own the day. Premium artistic collections for the conscious mobility.
           </p>
-          <div className="flex mt-1">
-            <Mail size={12} className="text-ink/40 hover:text-rose transition-colors cursor-pointer" />
-          </div>
         </div>
 
         {/* Navigation & Legal in one flex container for extreme compactness */}
@@ -54,6 +51,18 @@ export default function GlobalFooter() {
                 Bandung City<br />
                 West Java, ID 40112
               </p>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <Mail size={10} className="text-rose" />
+              <a href="mailto:beatstoria.ai@gmail.com" className="text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors lowercase">
+                beatstoria.ai@gmail.com
+              </a>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <Phone size={10} className="text-rose" />
+              <a href="tel:+628211983774" className="text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors">
+                +62 8211983774
+              </a>
             </div>
           </div>
         </div>
