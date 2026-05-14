@@ -650,6 +650,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
+      {/* Mobile BottomCTA - Show on ALL mobile devices (iOS + Android) */}
       {isMobile && (
         <BottomCTA
           text="Checkout"
