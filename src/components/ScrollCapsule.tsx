@@ -22,8 +22,8 @@ export default function ScrollCapsule() {
     const docHeight = document.documentElement.scrollHeight;
     const winHeight = window.innerHeight;
 
-    // Only show if page is actually scrollable (content taller than viewport + 200px buffer)
-    const hasScroll = docHeight > winHeight + 200;
+    // Only show if page is actually scrollable (content taller than viewport + 50px buffer)
+    const hasScroll = docHeight > winHeight + 50;
     setIsVisible(hasScroll);
 
     // Flip direction: if user scrolled past 300px → show "up"
@@ -33,9 +33,14 @@ export default function ScrollCapsule() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     checkScroll();
+    
+    // Also check after a short delay to ensure DOM has settled
+    const timer = setTimeout(checkScroll, 1000);
+    
     window.addEventListener('scroll', checkScroll, { passive: true });
     window.addEventListener('resize', checkScroll, { passive: true });
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', checkScroll);
       window.removeEventListener('resize', checkScroll);
     };
@@ -59,13 +64,13 @@ export default function ScrollCapsule() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 10 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="hidden md:flex fixed right-3 top-1/2 -translate-y-1/2 z-[80] flex-col items-center group cursor-pointer"
+          className="hidden md:flex fixed right-3 top-1/2 -translate-y-1/2 z-[999] flex-col items-center group cursor-pointer"
           aria-label={scrollDirection === 'down' ? 'Scroll down' : 'Back to top'}
         >
           <motion.div
             animate={{ y: scrollDirection === 'down' ? [0, 3, 0] : [0, -3, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-5 h-9 rounded-full border border-ink/10 group-hover:border-rose/40 bg-white/70 backdrop-blur-sm flex items-center justify-center transition-colors duration-300 shadow-sm"
+            className="w-5 h-9 rounded-full border border-ink/20 group-hover:border-rose/60 bg-white/90 backdrop-blur-md flex items-center justify-center transition-colors duration-300 shadow-md"
           >
             <motion.div
               animate={
