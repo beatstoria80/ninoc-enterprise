@@ -157,24 +157,24 @@ function ProductCard({ product, index }: ProductCardProps) {
 
   return (
     <motion.div ref={ref} variants={productCardVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
-      <Link href={`/shop/${product.slug}`} className="bg-white p-3 md:p-5 group relative overflow-hidden block border border-transparent hover:border-ink/5 transition-all duration-500" style={{ transition: 'all 0.5s' }}>
-        <motion.div className="aspect-[3/4] overflow-hidden mb-2 md:mb-5 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
+      <Link href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5 transition-all duration-500" style={{ transition: 'all 0.5s' }}>
+        <motion.div className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
           {product.image_url && (
             <Image src={product.image_url} alt={product.name} fill className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100" />
           )}
           <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">ARCHIVE SPEC-{(index + 101).toString()}</div>
         </motion.div>
-        <div className="space-y-1 md:space-y-2">
-          <p className="text-[7px] md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">{product.category || "Garment Origin"}</p>
-          <motion.h3 className="text-[9px] md:text-lg font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
+        <div className="space-y-1 md:space-y-1.5">
+          <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">{product.category || "Garment Origin"}</p>
+          <motion.h3 className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
             {product.name}
           </motion.h3>
-          <motion.div className="flex items-center justify-between pt-2 md:pt-4 border-t border-ink/5 mt-2 md:mt-4">
+          <motion.div className="flex items-center justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3">
             <div className="space-y-0.5">
               <p className="text-[6px] uppercase tracking-widest text-ink/20 leading-none">Investment Value</p>
-              <p className="text-[9px] md:text-base font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
+              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
             </div>
-            <motion.div className="w-5 h-5 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
+            <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
               <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
                 <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
               </motion.div>
@@ -339,11 +339,11 @@ export default function Home() {
           <DragSlider className="flex gap-px w-full">
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[calc(50vw-4px)] md:w-[380px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
+                <div key={i} className="w-[calc(50vw-4px)] md:w-[300px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[calc(50vw-4px)] md:w-[380px] flex-shrink-0">
+                <div key={product.id} className="w-[calc(50vw-4px)] md:w-[300px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
