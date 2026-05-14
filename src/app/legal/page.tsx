@@ -94,26 +94,26 @@ export default function LegalPage() {
           </div>
         </div>
 
-        {/* 2-GRID Layout */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
+        {/* OPEN ARCHIVE LAYOUT - NO CARDS */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 overflow-y-auto no-scrollbar pt-8">
           
-          {/* Sector 1: TERMS & CONDITIONS */}
-          <div className="bg-white border border-ink/5 rounded-xl flex flex-col overflow-hidden shadow-dashboard">
-             <div className="px-6 py-4 border-b border-ink/5 bg-ink/[0.02] flex items-center justify-between">
+          {/* Sector A: TERMS & CONDITIONS */}
+          <div className="space-y-12">
+             <div className="flex items-center justify-between border-b border-ink/10 pb-2">
                 <div className="flex items-center gap-3">
-                   <FileText size={16} className="text-rose" />
-                   <h2 className="text-[14px] font-display font-medium italic text-ink tracking-widest">{t.terms.title}</h2>
+                   <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.terms.title}</h2>
                 </div>
-                <span className="text-[9px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector A / Archive</span>
+                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 01</span>
              </div>
-             <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
+             
+             <div className="space-y-10">
                 {t.terms.sections.map((s) => (
-                  <div key={s.id} className="space-y-3 group">
-                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-medium text-rose tabular-nums">{s.id}</span>
-                        <h3 className="text-[12px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
+                  <div key={s.id} className="space-y-2">
+                     <div className="flex items-center gap-4">
+                        <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
+                        <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[13px] font-medium leading-relaxed text-ink/50 uppercase tracking-wide pl-7">
+                     <p className="text-[11px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8 max-w-md">
                         {s.text}
                      </p>
                   </div>
@@ -121,35 +121,36 @@ export default function LegalPage() {
              </div>
           </div>
 
-          {/* Sector 2: PRIVACY POLICY */}
-          <div className="bg-white border border-ink/5 rounded-xl flex flex-col overflow-hidden shadow-dashboard">
-             <div className="px-6 py-4 border-b border-ink/5 bg-ink/[0.02] flex items-center justify-between">
+          {/* Sector B: PRIVACY POLICY */}
+          <div className="space-y-12">
+             <div className="flex items-center justify-between border-b border-ink/10 pb-2">
                 <div className="flex items-center gap-3">
-                   <Lock size={16} className="text-rose" />
-                   <h2 className="text-[14px] font-display font-medium italic text-ink tracking-widest">{t.privacy.title}</h2>
+                   <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.privacy.title}</h2>
                 </div>
-                <span className="text-[9px] font-medium text-ink/20 uppercase tracking-[0.3em]">Sector B / Archive</span>
+                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 02</span>
              </div>
-             <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10">
+
+             <div className="space-y-10">
                 {t.privacy.sections.map((s) => (
-                  <div key={s.id} className="space-y-3 group">
-                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-medium text-rose tabular-nums">{s.id}</span>
-                        <h3 className="text-[12px] font-medium text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{s.title}</h3>
+                  <div key={s.id} className="space-y-2">
+                     <div className="flex items-center gap-4">
+                        <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
+                        <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[13px] font-medium leading-relaxed text-ink/50 uppercase tracking-wide pl-7">
+                     <p className="text-[11px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8 max-w-md">
                         {s.text}
                      </p>
                   </div>
                 ))}
              </div>
-             <div className="p-6 bg-ink text-white">
-                <div className="flex items-center gap-3 mb-2">
-                   <Shield size={12} className="text-rose" />
-                   <span className="text-[8px] font-medium uppercase tracking-[0.2em]">Archival Security Protocol</span>
+
+             <div className="pt-12 border-t border-ink/5 space-y-4">
+                <div className="flex items-center gap-3">
+                   <Shield size={10} className="text-rose/40" />
+                   <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol</span>
                 </div>
-                <p className="text-[7px] text-white/40 uppercase tracking-widest leading-loose">
-                   This document is legally binding under the NINOC Enterprise digital archive jurisdiction. All modifications are logged in the origin system.
+                <p className="text-[9px] text-ink/20 uppercase tracking-[0.1em] leading-relaxed max-w-xs">
+                   THIS DOCUMENT IS LEGALLY BINDING. ALL MODIFICATIONS ARE LOGGED IN THE ORIGIN SYSTEM.
                 </p>
              </div>
           </div>
