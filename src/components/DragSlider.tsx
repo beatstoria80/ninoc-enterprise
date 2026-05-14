@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 // ═══════════════════════════════════════════════════════════════
-// DRAG SLIDER — Pure JS Mouse Drag to Scroll
+// DRAG SLIDER — PC Mouse Drag via Native addEventListener Capture
 // Formula: scrollLeft = startScroll - delta  (delta = currentX - startX)
-// useRef for performance (no re-render during drag)
-// Native DOM addEventListener with capture phase
+// Mobile works because touch bypasses React synthetic events
+// PC fails because Framer Motion intercepts pointer/mouse events first
+// Fix: use capture phase addEventListener on mount, bypass React entirely
 // ═══════════════════════════════════════════════════════════════
 
 interface DragSliderProps {
@@ -19,57 +20,68 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
   const containerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
 
-  // onDown — capture start position, disable text selection
-  const onDown = (e: React.PointerEvent | React.MouseEvent) => {
+  useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    e.preventDefault(); // Prevent browser default (image drag, text selection)
-
-    dragRef.current = {
-      active: true,
-      startX: e.clientX,
-      startScroll: el.scrollLeft,
+    // onDown — capture start position, disable text selection
+    const onDown = (e: Event) => {
+      const ev = e as PointerEvent | MouseEvent;
+      ev.preventDefault();
+      dragRef.current = {
+        active: true,
+        startX: (ev as PointerEvent).clientX || (ev as MouseEvent).clientX,
+        startScroll: el.scrollLeft,
+      };
+      document.body.style.userSelect = 'none';
     };
 
-    document.body.style.userSelect = 'none';
-  };
+    // onMove — calculate delta, apply scrollLeft
+    const onMove = (e: Event) => {
+      if (!dragRef.current.active) return;
+      const ev = e as PointerEvent | MouseEvent;
+      ev.preventDefault();
+      const clientX = (ev as PointerEvent).clientX ?? (ev as MouseEvent).clientX;
+      const delta = clientX - dragRef.current.startX;
+      const maxScroll = -(el.scrollWidth - el.offsetWidth);
+      el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
+    };
 
-  // onMove — calculate delta, apply scrollLeft
-  const onMove = (e: React.PointerEvent | React.MouseEvent) => {
-    const el = containerRef.current;
-    if (!el || !dragRef.current.active) return;
+    // onUp — reset drag state
+    const onUp = () => {
+      dragRef.current.active = false;
+      document.body.style.userSelect = '';
+    };
 
-    e.preventDefault();
+    // Attach with capture phase — intercepts BEFORE React synthetic events
+    // Mobile: touch events work because touch doesn't go through React delegation
+    // PC: pointer/mouse events go through React delegation first, then Framer Motion
+    // Capture phase fires before bubble, so we intercept before Framer Motion sees it
+    el.addEventListener('pointerdown', onDown, true);
+    el.addEventListener('pointermove', onMove, true);
+    el.addEventListener('pointerup', onUp, true);
+    el.addEventListener('pointercancel', onUp, true);
+    el.addEventListener('mousedown', onDown, true);
+    el.addEventListener('mousemove', onMove, true);
+    el.addEventListener('mouseup', onUp, true);
+    el.addEventListener('mouseleave', onUp, true);
 
-    // Delta: how far mouse has moved from start point
-    const delta = e.clientX - dragRef.current.startX;
-
-    // Max scroll left boundary (negative)
-    const maxScroll = -(el.scrollWidth - el.offsetWidth);
-
-    // Apply: startScroll - delta  (dragging left = negative delta = increase scroll, moves right)
-    el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
-  };
-
-  // onUp — reset drag state, re-enable text selection
-  const onUp = () => {
-    dragRef.current.active = false;
-    document.body.style.userSelect = '';
-  };
+    return () => {
+      el.removeEventListener('pointerdown', onDown, true);
+      el.removeEventListener('pointermove', onMove, true);
+      el.removeEventListener('pointerup', onUp, true);
+      el.removeEventListener('pointercancel', onUp, true);
+      el.removeEventListener('mousedown', onDown, true);
+      el.removeEventListener('mousemove', onMove, true);
+      el.removeEventListener('mouseup', onUp, true);
+      el.removeEventListener('mouseleave', onUp, true);
+    };
+  }, []);
 
   return (
     <div
       ref={containerRef}
       className={`overflow-x-auto no-scrollbar ${className}`}
-      onPointerDown={onDown}
-      onPointerMove={onMove}
-      onPointerUp={onUp}
-      onPointerLeave={onUp}
-      onMouseDown={onDown}
-      onMouseMove={onMove}
-      onMouseUp={onUp}
-      onMouseLeave={onUp}
       style={{
         cursor: 'grab',
         userSelect: 'none',
