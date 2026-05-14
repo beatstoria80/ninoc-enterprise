@@ -18,7 +18,7 @@ export default function Collections() {
             <p className="text-sm font-medium text-ink/50">Exclusive drops in limited quantities.</p>
           </div>
           <div className="bg-white rounded-2xl p-12 border border-ink/5">
-            <h3 className="text-2xl font-display font-medium italic uppercase tracking-tight mb-4">Archive</h3>
+            <h3 className="text-2xl font-display font-medium italic uppercase tracking-tight mb-4">Collection</h3>
             <p className="text-sm font-medium text-ink/50">Heritage pieces from previous seasons.</p>
           </div>
         </div>

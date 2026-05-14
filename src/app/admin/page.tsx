@@ -1465,7 +1465,7 @@ export default function AdminDashboard() {
                                 </span>
                                 {msg.sender === 'admin' && (
                                   <span className={cn("text-[6px] font-bold uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
-                                    {msg.is_read ? 'ARCHIVED' : 'SENT'}
+                                    {msg.is_read ? 'PROCESSED' : 'SENT'}
                                   </span>
                                 )}
                               </div>

@@ -380,7 +380,7 @@ export default function CheckoutPage() {
           </div>
           <div className="flex flex-col items-start leading-none">
             <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Archive Catalog</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
           </div>
         </button>
         <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none hidden md:block">NINOC</div>
@@ -493,13 +493,13 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-display font-medium italic text-ink/30">02</span>
-                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Archive Destination</h2>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Destination Specification</h2>
                 </div>
               </div>
 
               <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>
                 <div className={cn("bg-white", isMobile ? "col-span-1 p-3" : "col-span-6 p-3")}>
-                  <label htmlFor="street" className={labelClass}>Street / Building / Archive Loc.</label>
+                  <label htmlFor="street" className={labelClass}>Street / Building / Precise Loc.</label>
                   <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
 
@@ -551,7 +551,7 @@ export default function CheckoutPage() {
             <section className="space-y-3">
               <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
                 <span className="text-[9px] font-display font-medium italic text-ink/30">03</span>
-                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Archive Logistics</h2>
+                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
               </div>
 
               <div className="grid grid-cols-3 gap-[1px] bg-ink/5 border border-ink/5 rounded-none">
@@ -585,7 +585,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-center border-b border-ink/5 pb-2">
                   <div className="flex items-center gap-3">
                      <ShoppingBag size={12} className="text-ink/20" />
-                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Archive Selection</h3>
+                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Final Selection</h3>
                   </div>
                   <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
                 </div>
@@ -623,7 +623,7 @@ export default function CheckoutPage() {
                   <span className="text-3xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID')}</span>
                 </div>
 
-                {/* DESKTOP CTA */}
+                {/* CATALOG */}
                 <div className="pt-6">
                   <button
                     form="checkout-form"
@@ -669,7 +669,7 @@ export default function CheckoutPage() {
                  </div>
                  <div className="flex flex-col items-center gap-1">
                     <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
-                    <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/30">Official Archive Merchant Partner</p>
+                    <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/30">Official NINOC Merchant Partner</p>
                  </div>
               </div>
             </div>

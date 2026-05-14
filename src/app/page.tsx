@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 import DragSlider from '@/components/DragSlider';
 
 // ═══════════════════════════════════════════════════════════════
-// CINEMATIC MOTION ENGINE — NINOC ARCHIVE
+// CINEMATIC MOTION ENGINE — NINOC STUDIO
 // Physics: [0.16, 1, 0.3, 1] — Fast out, slow settle
 // ═══════════════════════════════════════════════════════════════
 
@@ -348,7 +348,7 @@ export default function Home() {
                   <ShieldCheck size={18} className="text-rose" />
                   <span className="text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
                 </div>
-                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider opacity-60">Secure fulfillment and international verification protocols for every archive piece.</p>
+                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider opacity-60">Secure fulfillment and international verification protocols for every piece.</p>
               </motion.div>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function Home() {
 
       </section>
 
-      {/* ARCHIVE CATALOG — PURE JS POINTER DRAG */}
+      {/* CATALOG — PURE JS POINTER DRAG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
         <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
           <h2 className="text-sm md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
