@@ -41,9 +41,20 @@ export default function ProductDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [showMobileCart, setShowMobileCart] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
+
+  // Set mobile cart visibility after mount — checks actual window width on client
+  /* eslint-disable react-hooks/set-state-in-effect */
+  // Set mobile cart visibility after mount — checks actual window width on client
+  useEffect(() => {
+    setShowMobileCart(window.innerWidth < 768);
+    const handleResize = () => setShowMobileCart(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -341,38 +352,37 @@ export default function ProductDetailPage() {
         )}
       </div>
 
-      {/* MOBILE STICKY BOTTOM CTA — always rendered, CSS md:hidden handles desktop visibility */}
-      <div className={cn(
-        "fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/10 md:hidden",
-        isIPhone && "pb-[env(safe-area-inset-bottom)]"
-      )}>
-        <div className="flex items-center gap-4 p-4">
-          <div className="flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Total</p>
-            <p className="text-lg font-display font-medium italic text-rose">Rp {product.price?.toLocaleString('id-ID')}</p>
+      {/* MOBILE STICKY BOTTOM CTA — show based on actual window width, bypasses SSR hydration issues */}
+      {showMobileCart && (
+        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-ink/10">
+          <div className="flex items-center gap-4 p-4">
+            <div className="flex-1">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Total</p>
+              <p className="text-lg font-display font-medium italic text-rose">Rp {product.price?.toLocaleString('id-ID')}</p>
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={addedToCart}
+              className={cn(
+                "px-8 py-4 rounded-xl font-medium text-[10px] uppercase tracking-[0.3em] flex items-center gap-3 transition-all",
+                addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white"
+              )}
+            >
+              {addedToCart ? (
+                <>
+                  <ShieldCheck size={14} />
+                  <span>ADDED</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={14} />
+                  <span>ADD TO CART</span>
+                </>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={addedToCart}
-            className={cn(
-              "px-8 py-4 rounded-xl font-medium text-[10px] uppercase tracking-[0.3em] flex items-center gap-3 transition-all",
-              addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white"
-            )}
-          >
-            {addedToCart ? (
-              <>
-                <ShieldCheck size={14} />
-                <span>ADDED</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart size={14} />
-                <span>ADD TO CART</span>
-              </>
-            )}
-          </button>
         </div>
-      </div>
+      )}
     </main>
   );
 }
