@@ -26,11 +26,13 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
 
     // onDown — capture start position, disable text selection
     const onDown = (e: Event) => {
-      const ev = e as PointerEvent | MouseEvent;
+      const ev = e as PointerEvent;
+      if (ev.pointerType === 'touch') return; // Allow native touch behavior
+      
       ev.preventDefault();
       dragRef.current = {
         active: true,
-        startX: (ev as PointerEvent).clientX || (ev as MouseEvent).clientX,
+        startX: ev.clientX,
         startScroll: el.scrollLeft,
       };
       document.body.style.userSelect = 'none';
@@ -39,10 +41,11 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
     // onMove — calculate delta, apply scrollLeft
     const onMove = (e: Event) => {
       if (!dragRef.current.active) return;
-      const ev = e as PointerEvent | MouseEvent;
+      const ev = e as PointerEvent;
+      if (ev.pointerType === 'touch') return;
+      
       ev.preventDefault();
-      const clientX = (ev as PointerEvent).clientX ?? (ev as MouseEvent).clientX;
-      const delta = clientX - dragRef.current.startX;
+      const delta = ev.clientX - dragRef.current.startX;
       const maxScroll = -(el.scrollWidth - el.offsetWidth);
       el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
     };

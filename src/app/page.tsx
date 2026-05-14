@@ -333,15 +333,15 @@ export default function Home() {
         </motion.div>
 
         {/* DRAG SLIDER — mouse drag to scroll */}
-        <div className="relative select-none">
-          <DragSlider className="flex gap-px bg-ink/5 border border-ink/5 w-max">
+        <div className="relative select-none -mx-4 md:mx-0">
+          <DragSlider className="flex gap-px w-full">
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
+                <div key={i} className="w-[280px] md:w-[450px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[300px] md:w-[450px] flex-shrink-0">
+                <div key={product.id} className="w-[280px] md:w-[450px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
