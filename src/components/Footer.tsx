@@ -6,10 +6,10 @@ import Link from 'next/link';
 
 export default function GlobalFooter() {
   return (
-    <footer className="bg-white border-t border-ink/5 pt-20 pb-12 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="bg-white border-t border-ink/5 pt-10 pb-6 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand Column */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-display font-medium italic tracking-tighter text-ink">NINOC</span>
           </Link>
@@ -22,9 +22,9 @@ export default function GlobalFooter() {
         </div>
 
         {/* Navigation */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <h4 className="label-caps !text-ink">Navigation</h4>
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {['Home', 'Shop', 'Collections', 'Craft'].map((item) => (
               <li key={item}>
                 <Link 
@@ -39,9 +39,9 @@ export default function GlobalFooter() {
         </div>
 
         {/* Legal - MANDATORY FOR MIDTRANS */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <h4 className="label-caps !text-ink">Legal Info</h4>
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             <li>
               <Link href="/terms" className="text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors">
                 Terms & Conditions
@@ -56,7 +56,7 @@ export default function GlobalFooter() {
         </div>
 
         {/* Location */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <h4 className="label-caps !text-ink">NINOC Base</h4>
           <div className="flex items-start gap-3">
             <MapPin size={16} className="text-rose mt-0.5" />
@@ -69,11 +69,11 @@ export default function GlobalFooter() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">
           © 2026 NINOC ENTERPRISE. All Rights Reserved.
         </p>
-        <div className="flex flex-col md:flex-row items-center gap-8">
+        <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30">
               <Shield size={10} strokeWidth={1.5} className="text-rose/40" />
@@ -91,7 +91,7 @@ export default function GlobalFooter() {
           </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto mt-6 pt-6 border-t border-ink/5 text-center">
+      <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-ink/5 text-center">
         <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/15">
           Data privasi Anda terlindungi melalui enkripsi standar industri. Kami tidak membagikan informasi pribadi ke pihak ketiga.
         </p>
