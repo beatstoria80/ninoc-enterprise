@@ -340,9 +340,50 @@ export default function MobileLayout({
                 </Link>
               </div>
 
-              {/* Footer */}
-              <div className="p-4 border-t border-ink/5 text-center">
-                <p className="text-[8px] uppercase tracking-widest text-ink/20">NINOC © 2024</p>
+              {/* Footer Information inside Menu */}
+              <div className="p-6 bg-ink/[0.02] border-t border-ink/5 mt-auto space-y-8">
+                {/* Links Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Legal</h4>
+                    <div className="flex flex-col gap-2">
+                      <Link href="/terms" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Terms</Link>
+                      <Link href="/privacy" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Privacy</Link>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
+                    <div className="flex flex-col gap-2">
+                      <Link href="/returns" className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Returns</Link>
+                      <button onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))} className="text-[9px] font-medium uppercase tracking-widest text-rose/60 text-left">Help</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Base Contact */}
+                <div className="space-y-2">
+                  <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archive Base</h4>
+                  <p className="text-[9px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">
+                    Bandung, West Java, ID 40112<br />
+                    beatstoria.ai@gmail.com
+                  </p>
+                </div>
+
+                {/* Trust Badges */}
+                <div className="pt-4 border-t border-ink/[0.05] flex items-center gap-4 opacity-30 grayscale">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                    <span className="text-[7px] font-medium uppercase tracking-widest">Secure</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                    <span className="text-[7px] font-medium uppercase tracking-widest">Verified</span>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-[7px] uppercase tracking-[0.4em] text-ink/15">NINOC © 2026</p>
+                </div>
               </div>
             </motion.div>
           </>
