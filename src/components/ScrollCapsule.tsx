@@ -46,8 +46,8 @@ export default function ScrollCapsule() {
     const catalogEl = document.getElementById('archive-catalog');
     
     if (scrollY < 100 && catalogEl) {
-      // From Slide 1 to Slide 2 (New Releases)
-      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // From Slide 1 to Slide 2 (New Releases) - Aligned to CENTER to avoid Header overlap
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else if (scrollDirection === 'down') {
       // From Slide 2 to Slide 3 (Bottom)
       window.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' });
