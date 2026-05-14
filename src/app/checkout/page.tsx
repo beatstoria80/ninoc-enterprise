@@ -384,7 +384,7 @@ export default function CheckoutPage() {
             <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Archive Catalog</span>
           </div>
         </button>
-        <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none">NINOC</div>
+        <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none hidden md:block">NINOC</div>
         <div className="flex items-center gap-4">
            <div className="hidden md:flex flex-col items-end leading-none mr-2">
               <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600">Secure Protocol</span>
