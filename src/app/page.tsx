@@ -291,7 +291,7 @@ export default function Home() {
           </div>
 
           {/* Right: Metadata Sidebar */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] mt-1 lg:mt-0">
+          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
             {/* Mobile */}
             <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-1.5 md:hidden">
               {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
