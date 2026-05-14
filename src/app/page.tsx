@@ -6,6 +6,7 @@ import { ShieldCheck, Zap, Package, Paperclip, ChevronRight } from 'lucide-react
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import DragSlider from '@/components/DragSlider';
 
 // ═══════════════════════════════════════════════════════════════
 // CINEMATIC MOTION ENGINE — NINOC ARCHIVE
@@ -227,8 +228,6 @@ interface Product {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -243,96 +242,6 @@ export default function Home() {
       }
     };
     fetchProducts();
-  }, []);
-
-  // Attach native DOM event listeners DIRECTLY to the slider element
-  // This BYPASSES React's synthetic event system entirely
-  useEffect(() => {
-    const el = sliderRef.current;
-    if (!el) return;
-
-    const onDown = (e: PointerEvent | MouseEvent) => {
-      console.log('[NATIVE] pointerdown/mousedown! x:', (e as PointerEvent).clientX || (e as MouseEvent).clientX);
-      e.preventDefault();
-      e.stopPropagation();
-      dragRef.current = { active: true, startX: (e as PointerEvent).clientX || (e as MouseEvent).clientX, startScroll: el.scrollLeft };
-      document.body.style.userSelect = 'none';
-      console.log('[NATIVE] captured, scrollLeft:', el.scrollLeft, 'offsetW:', el.offsetWidth);
-    };
-
-    const onMove = (e: PointerEvent | MouseEvent) => {
-      if (!dragRef.current.active) return;
-      e.preventDefault();
-      const clientX = (e as PointerEvent).clientX ?? (e as MouseEvent).clientX;
-      const delta = clientX - dragRef.current.startX;
-      const maxScroll = -(el.scrollWidth - el.offsetWidth);
-      el.scrollLeft = Math.max(maxScroll, Math.min(0, dragRef.current.startScroll - delta));
-      console.log('[NATIVE] move delta:', delta, 'scrollLeft:', el.scrollLeft);
-    };
-
-    const onUp = () => {
-      dragRef.current.active = false;
-      document.body.style.userSelect = '';
-      console.log('[NATIVE] pointerup/mouseup!');
-    };
-
-    // Use capture phase to intercept events before they bubble
-    el.addEventListener('pointerdown', onDown, { capture: true });
-    el.addEventListener('mousedown', onDown, { capture: true });
-    el.addEventListener('pointermove', onMove, { capture: true });
-    el.addEventListener('mousemove', onMove, { capture: true });
-    el.addEventListener('pointerup', onUp, { capture: true });
-    el.addEventListener('mouseup', onUp, { capture: true });
-    el.addEventListener('pointerleave', onUp, { capture: true });
-
-    return () => {
-      el.removeEventListener('pointerdown', onDown, { capture: true });
-      el.removeEventListener('mousedown', onDown, { capture: true });
-      el.removeEventListener('pointermove', onMove, { capture: true });
-      el.removeEventListener('mousemove', onMove, { capture: true });
-      el.removeEventListener('pointerup', onUp, { capture: true });
-      el.removeEventListener('mouseup', onUp, { capture: true });
-      el.removeEventListener('pointerleave', onUp, { capture: true });
-    };
-  }, [isLoading]);
-
-  // Document-level capture listener to detect if ANY pointer event reaches document
-  useEffect(() => {
-    const checkPath = (target: Element): string => {
-      const path: string[] = [];
-      let node: Element | null = target;
-      while (node && node !== document.body && path.length < 10) {
-        const pe = window.getComputedStyle(node).pointerEvents;
-        const display = window.getComputedStyle(node).display;
-        path.push(`${node.tagName}${pe !== 'auto' || display === 'none' ? `[${pe || display}]` : ''}`);
-        node = node.parentElement;
-      }
-      return path.join(' > ');
-    };
-
-    const onDocDown = (e: Event) => {
-      console.log('[DOC] pointerdown reached document. target:', (e.target as HTMLElement).tagName, 'path:', checkPath(e.target as Element));
-    };
-
-    const onDocMove = () => {
-      if (!dragRef.current.active) return;
-      console.log('[DOC] pointermove reached document!');
-    };
-
-    document.addEventListener('pointerdown', onDocDown, { capture: true });
-    document.addEventListener('pointermove', onDocMove, { capture: true });
-
-    return () => {
-      document.removeEventListener('pointerdown', onDocDown, { capture: true });
-      document.removeEventListener('pointermove', onDocMove, { capture: true });
-    };
-  }, []);
-
-  // TEST: window-level listener to check if ANY event reaches window
-  useEffect(() => {
-    window.addEventListener('pointerdown', (e: Event) => {
-      console.log('[WINDOW] pointerdown! target:', (e.target as HTMLElement).tagName, 'relatedTarget:', (e as PointerEvent).relatedTarget);
-    }, { capture: true });
   }, []);
 
   return (
@@ -422,21 +331,9 @@ export default function Home() {
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300">View All</Link>
         </motion.div>
 
-        {/* DEBUG BORDER: red box shows slider area */}
+        {/* DRAG SLIDER — mouse drag to scroll */}
         <div className="relative select-none">
-          <div
-            data-slider
-            ref={sliderRef}
-            className="flex gap-px bg-ink/5 border border-2 border-red-500 w-max overflow-x-auto no-scrollbar select-none"
-            style={{
-              cursor: 'grab',
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              touchAction: 'none',
-            }}
-          >
+          <DragSlider className="flex gap-px bg-ink/5 border border-ink/5 w-max">
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
                 <div key={i} className="w-[300px] md:w-[450px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
@@ -448,8 +345,8 @@ export default function Home() {
                 </div>
               ))
             )}
-          </div>
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block" style={{ marginTop: 0 }} />
+          </DragSlider>
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block" />
         </div>
       </section>
 
