@@ -252,7 +252,7 @@ export default function Home() {
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
           {/* Left: Branding */}
-          <div className="lg:col-span-4 space-y-3 md:space-y-12">
+          <div className="lg:col-span-4 space-y-2.5 md:space-y-12">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.5, ease: MOTION.ease }} className="flex items-center gap-2 text-rose">
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
               <span className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
@@ -279,6 +279,16 @@ export default function Home() {
                 </div>
               </Link>
             </motion.div>
+
+            {/* Mobile Metadata - Relocated for balance */}
+            <div className="grid grid-cols-3 gap-2 mt-4 md:hidden">
+              {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
+                <motion.div key={item.label} className="space-y-0" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + i * 0.1, duration: 0.5, ease: MOTION.ease }}>
+                  <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">{item.label}</p>
+                  <p className="text-[9px] font-medium text-ink uppercase italic leading-none">{item.value}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* Middle: Portrait Carousel */}
@@ -292,16 +302,7 @@ export default function Home() {
 
           {/* Right: Metadata Sidebar */}
           <div className="col-span-2 lg:col-span-3 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
-            {/* Mobile */}
-            <div className="grid grid-cols-3 gap-2 border-t border-ink/5 pt-1.5 md:hidden">
-              {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
-                <motion.div key={item.label} className="space-y-0" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.1, duration: 0.5, ease: MOTION.ease }}>
-                  <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">{item.label}</p>
-                  <p className="text-[9px] font-medium text-ink uppercase italic leading-none">{item.value}</p>
-                </motion.div>
-              ))}
-            </div>
-            {/* Desktop */}
+            {/* Desktop only sidebar content */}
             <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
               {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
                 <motion.div key={item.label} className="space-y-0" variants={metadataVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} custom={i}>
