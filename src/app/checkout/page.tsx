@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Verified, Shield } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -60,7 +60,6 @@ export default function CheckoutPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [snapLoaded, setSnapLoaded] = useState(false);
-  const [snapLoadFailed, setSnapLoadFailed] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -84,7 +83,7 @@ export default function CheckoutPage() {
         retryCount++;
         timeoutId = setTimeout(checkSnap, 1000);
       } else {
-        setSnapLoadFailed(true);
+        // Silent fail - handled by !snapLoaded check in CTA
       }
     };
     // Check immediately and poll briefly in case script loads after this effect
