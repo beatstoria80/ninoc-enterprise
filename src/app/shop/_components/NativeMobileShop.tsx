@@ -18,6 +18,7 @@ interface ProductCardProps {
   image_url: string;
   category: string;
   index: number;
+  price_tag?: string | null;
 }
 
 /**
@@ -70,8 +71,13 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
         <p className="text-[9px] font-medium text-ink uppercase tracking-[0.1em] line-clamp-1">
           {product.name}
         </p>
-        <p className="text-[10px] font-display font-medium italic text-rose">
-          Rp {product.price.toLocaleString('id-ID')}
+        {product.price_tag && (
+          <p className="text-[7px] font-medium text-rose uppercase tracking-[0.15em] leading-none pt-0.5">
+            {product.price_tag}
+          </p>
+        )}
+        <p className="text-[10px] font-display font-medium italic text-rose pt-0.5">
+          Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
       </div>
     </motion.div>

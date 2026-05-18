@@ -242,7 +242,7 @@ export default function MobileLayout({
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] font-medium text-ink uppercase tracking-tight">{product.name}</p>
-                      <p className="text-[9px] text-rose italic tracking-wider">Rp {product.price.toLocaleString('id-ID')}</p>
+                      <p className="text-[9px] text-rose italic tracking-wider">Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </div>
                   </Link>
                 ))}

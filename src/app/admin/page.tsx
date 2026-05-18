@@ -37,6 +37,7 @@ interface Product {
   perspective3?: string | null;
   perspective4?: string | null;
   is_featured: boolean;
+  price_tag?: string | null;
   created_at: string;
   variants?: Variant[];
 }
@@ -214,6 +215,7 @@ export default function AdminDashboard() {
     perspective3: '',
     perspective4: '',
     is_featured: false,
+    price_tag: '',
     variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
   });
 
@@ -346,6 +348,7 @@ export default function AdminDashboard() {
         perspective3: product.perspective3 || '',
         perspective4: product.perspective4 || '',
         is_featured: product.is_featured,
+        price_tag: product.price_tag || '',
         variants: product.variants?.length ? product.variants.map(v => ({
           size: v.size || '',
           color: v.color || '',
@@ -367,6 +370,7 @@ export default function AdminDashboard() {
         perspective3: '',
         perspective4: '',
         is_featured: false,
+        price_tag: '',
         variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
       });
     }
@@ -405,13 +409,25 @@ export default function AdminDashboard() {
     setProductForm({ ...productForm, variants: newVariants });
   };
 
+  const cleanAndParsePrice = (priceStr: string) => {
+    let cleaned = priceStr.replace(/\./g, '');
+    if (cleaned.includes(',')) {
+      cleaned = cleaned.split(',')[0];
+    }
+    if (cleaned.includes('.')) {
+      cleaned = cleaned.split('.')[0];
+    }
+    const parsed = parseInt(cleaned.replace(/[^\d-]/g, ''), 10);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   const saveProduct = async () => {
     try {
       const productData = {
         name: productForm.name,
         slug: productForm.slug,
         description: productForm.description,
-        price: parseInt(productForm.price),
+        price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
         image_url: productForm.image_url || null,
         perspective1: productForm.perspective1 || null,
@@ -419,6 +435,7 @@ export default function AdminDashboard() {
         perspective3: productForm.perspective3 || null,
         perspective4: productForm.perspective4 || null,
         is_featured: productForm.is_featured,
+        price_tag: productForm.price_tag || null,
         updated_at: new Date().toISOString()
       };
 
@@ -1012,8 +1029,8 @@ export default function AdminDashboard() {
               >
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                   {[
-                    { label: 'Total Revenue', value: `Rp ${finance.totalRevenue.toLocaleString('id-ID')}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
-                    { label: 'Today Revenue', value: `Rp ${finance.todayRevenue.toLocaleString('id-ID')}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
+                    { label: 'Total Revenue', value: `Rp ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
+                    { label: 'Today Revenue', value: `Rp ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
                     { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'bg-blue-500/10 text-blue-600' },
                     { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'bg-amber-500/10 text-amber-600' }
                   ].map((stat, i) => (
@@ -1057,7 +1074,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-6">
                           <div className="text-right">
                             <p className="text-[10px] uppercase tracking-wider text-gray-400">Amount</p>
-                            <p className="text-sm font-medium">Rp {order.total_price.toLocaleString('id-ID')}</p>
+                            <p className="text-sm font-medium">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                           </div>
                           <StatusBadge status={order.status} />
                         </div>
@@ -1154,8 +1171,12 @@ export default function AdminDashboard() {
                           <span className="text-[10px] uppercase tracking-wider text-gray-400">{product.category}</span>
                           <span className="text-[10px] uppercase tracking-wider text-rose">{product.variants?.length || 0} variants</span>
                         </div>
-                        <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
-                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID')}</p>
+                        {product.price_tag && (
+                          <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose mb-1">
+                            {product.price_tag}
+                          </div>
+                        )}
+                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -1442,7 +1463,7 @@ export default function AdminDashboard() {
                             {new Date(order.created_at).toLocaleDateString('id-ID')}
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <span className="font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID')}</span>
+                            <span className="font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.status} />
@@ -1574,12 +1595,12 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gradient-to-br from-rose to-rose/80 rounded-xl p-6 text-white">
                     <p className="text-[10px] uppercase tracking-widest opacity-70">Total Revenue</p>
-                    <p className="text-3xl font-bold mt-2">Rp {finance.totalRevenue.toLocaleString('id-ID')}</p>
+                    <p className="text-3xl font-bold mt-2">Rp {finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     <p className="text-[10px] opacity-70 mt-4">{finance.completedOrders} completed orders</p>
                   </div>
                   <div className="bg-white rounded-xl p-6 border border-gray-100">
                     <p className="text-[10px] uppercase tracking-widest text-gray-400">This Month</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">Rp {finance.monthRevenue.toLocaleString('id-ID')}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-2">Rp {finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     <p className="text-[10px] text-gray-500 mt-4">
                       {orders.filter(o => new Date(o.created_at) >= new Date(new Date().getFullYear(), new Date().getMonth(), 1)).length} orders this month
                     </p>
@@ -1611,7 +1632,7 @@ export default function AdminDashboard() {
                         <tr key={order.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</td>
                           <td className="px-6 py-4 text-sm text-gray-700">{order.shipping_address?.name || 'Guest'}</td>
-                          <td className="px-6 py-4 text-center font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID')}</td>
+                          <td className="px-6 py-4 text-center font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.payment_status || order.status} />
                           </td>
@@ -1871,7 +1892,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
-                        <p className="text-lg font-semibold text-gray-900">Rp {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID')}</p>
+                        <p className="text-lg font-semibold text-gray-900">Rp {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                       </div>
                     </div>
                   </div>
@@ -2076,10 +2097,10 @@ export default function AdminDashboard() {
                     <div>
                       <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price (IDR)</label>
                       <input
-                        type="number"
+                        type="text"
                         value={productForm.price}
                         onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                        placeholder="0"
+                        placeholder="e.g. 149.000"
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                       />
                     </div>
@@ -2095,6 +2116,22 @@ export default function AdminDashboard() {
                         <option value="aksesoris">Aksesoris</option>
                       </select>
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price Tag (Optional Badge above Price)</label>
+                    <select
+                      value={productForm.price_tag}
+                      onChange={(e) => setProductForm({ ...productForm, price_tag: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                    >
+                      <option value="">None (No Tag)</option>
+                      <option value="Harga Special">Harga Special</option>
+                      <option value="Diskon">Diskon</option>
+                      <option value="Price Deal">Price Deal</option>
+                      <option value="Limited Edition">Limited Edition</option>
+                      <option value="Archive Special">Archive Special</option>
+                    </select>
                   </div>
 
                   <div>
@@ -2334,7 +2371,7 @@ export default function AdminDashboard() {
                           <p className="font-medium text-gray-900">{item.product_name || 'Product'}</p>
                           <p className="text-sm text-gray-500">Size: {item.size || '-'} | Qty: {item.quantity}</p>
                         </div>
-                        <p className="font-semibold">Rp {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                        <p className="font-semibold">Rp {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                       </div>
                     ))}
                   </div>
@@ -2355,7 +2392,7 @@ export default function AdminDashboard() {
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Total</span>
-                    <span className="text-xl font-bold text-gray-900">Rp {selectedOrder.total_price.toLocaleString('id-ID')}</span>
+                    <span className="text-xl font-bold text-gray-900">Rp {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                 </div>
               </div>

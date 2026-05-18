@@ -175,7 +175,7 @@ function PortraitImageCarousel() {
 // ═══════════════════════════════════════════════════════════════
 
 interface ProductCardProps {
-  product: { id: string; name: string; price: number; image_url?: string; slug: string; category?: string };
+  product: { id: string; name: string; price: number; image_url?: string; slug: string; category?: string; price_tag?: string | null };
   index: number;
 }
 
@@ -201,7 +201,12 @@ function ProductCard({ product, index }: ProductCardProps) {
           <motion.div className="flex items-center justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3">
             <div className="space-y-0.5">
               <p className="text-[6px] uppercase tracking-widest text-ink/20 leading-none">Investment Value</p>
-              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink">Rp {product.price.toLocaleString('id-ID')}</p>
+              {product.price_tag && (
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none pt-1">
+                  {product.price_tag}
+                </p>
+              )}
+              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink pt-1">Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
               <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
@@ -255,7 +260,7 @@ function FadeUpSection({ children, delay = 0, className = '' }: { children: Reac
 // ═══════════════════════════════════════════════════════════════
 
 interface Product {
-  id: string; name: string; price: number; image_url?: string; slug: string; category?: string;
+  id: string; name: string; price: number; image_url?: string; slug: string; category?: string; price_tag?: string | null;
 }
 
 export default function Home() {

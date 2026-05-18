@@ -22,6 +22,7 @@ interface Product {
   price: number;
   image_url: string;
   category: string;
+  price_tag?: string | null;
 }
 
 // ===============================
@@ -112,8 +113,13 @@ function MobileShopView({ products }: { products: Product[] }) {
                       <h3 className="text-[10px] font-medium uppercase tracking-tight text-ink line-clamp-1">
                         {product.name}
                       </h3>
+                      {product.price_tag && (
+                        <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">
+                          {product.price_tag}
+                        </div>
+                      )}
                       <p className="text-[11px] font-display font-medium italic text-rose">
-                        Rp {(product.price ?? 0).toLocaleString('id-ID')}
+                        Rp {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                   </Link>
@@ -231,8 +237,13 @@ function DesktopShopView({ products }: { products: Product[] }) {
                     <p className="text-[10px] font-medium text-ink/30 uppercase tracking-[0.2em]">
                       {product.category}
                     </p>
+                    {product.price_tag && (
+                      <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose pt-1">
+                        {product.price_tag}
+                      </div>
+                    )}
                     <p className="text-base md:text-xl font-display font-medium italic text-rose pt-2">
-                      Rp {(product.price ?? 0).toLocaleString('id-ID')}
+                      Rp {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                 </Link>

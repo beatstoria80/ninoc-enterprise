@@ -28,6 +28,7 @@ interface Product {
   perspective2?: string;
   perspective3?: string;
   perspective4?: string;
+  price_tag?: string | null;
 }
 
 export default function ProductDetailPage() {
@@ -190,7 +191,12 @@ export default function ProductDetailPage() {
                   <div className="flex gap-0.5 text-rose/40"><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /></div>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
-                <p className="text-2xl md:text-3xl font-display font-medium italic text-rose">Rp {product.price?.toLocaleString('id-ID')}</p>
+                {product.price_tag && (
+                  <div className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-2.5 py-1.5 rounded-sm w-fit mt-3">
+                    {product.price_tag}
+                  </div>
+                )}
+                <p className="text-2xl md:text-3xl font-display font-medium italic text-rose mt-3">Rp {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
 
               <div className="space-y-6">
@@ -331,7 +337,12 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="space-y-1 px-2">
                       <h3 className="text-sm md:text-base font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors">{p.name}</h3>
-                      <p className="text-xs font-medium text-rose">Rp {p.price?.toLocaleString('id-ID')}</p>
+                      {p.price_tag && (
+                        <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
+                          {p.price_tag}
+                        </div>
+                      )}
+                      <p className="text-xs font-medium text-rose">Rp {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </div>
                   </Link>
                 </motion.div>
