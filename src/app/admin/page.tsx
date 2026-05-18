@@ -32,6 +32,10 @@ interface Product {
   price: number;
   category: string;
   image_url: string | null;
+  perspective1?: string | null;
+  perspective2?: string | null;
+  perspective3?: string | null;
+  perspective4?: string | null;
   is_featured: boolean;
   created_at: string;
   variants?: Variant[];
@@ -205,6 +209,10 @@ export default function AdminDashboard() {
     price: '',
     category: 'pakaian',
     image_url: '',
+    perspective1: '',
+    perspective2: '',
+    perspective3: '',
+    perspective4: '',
     is_featured: false,
     variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
   });
@@ -333,6 +341,10 @@ export default function AdminDashboard() {
         price: product.price.toString(),
         category: product.category,
         image_url: product.image_url || '',
+        perspective1: product.perspective1 || '',
+        perspective2: product.perspective2 || '',
+        perspective3: product.perspective3 || '',
+        perspective4: product.perspective4 || '',
         is_featured: product.is_featured,
         variants: product.variants?.length ? product.variants.map(v => ({
           size: v.size || '',
@@ -350,6 +362,10 @@ export default function AdminDashboard() {
         price: '',
         category: 'pakaian',
         image_url: '',
+        perspective1: '',
+        perspective2: '',
+        perspective3: '',
+        perspective4: '',
         is_featured: false,
         variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
       });
@@ -398,6 +414,10 @@ export default function AdminDashboard() {
         price: parseInt(productForm.price),
         category: productForm.category,
         image_url: productForm.image_url || null,
+        perspective1: productForm.perspective1 || null,
+        perspective2: productForm.perspective2 || null,
+        perspective3: productForm.perspective3 || null,
+        perspective4: productForm.perspective4 || null,
         is_featured: productForm.is_featured,
         updated_at: new Date().toISOString()
       };
@@ -1135,7 +1155,7 @@ export default function AdminDashboard() {
                           <span className="text-[10px] uppercase tracking-wider text-rose">{product.variants?.length || 0} variants</span>
                         </div>
                         <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
-                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID', { maximumFractionDigits: 0 })}</p>
+                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID')}</p>
                         <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -2057,10 +2077,8 @@ export default function AdminDashboard() {
                       <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price (IDR)</label>
                       <input
                         type="number"
-                        step="1"
-                        min="0"
                         value={productForm.price}
-                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value.replace(/\D/g, '') })}
+                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                         placeholder="0"
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                       />
@@ -2106,15 +2124,59 @@ export default function AdminDashboard() {
                         ) : (
                           <span>Upload File</span>
                         )}
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={handleProductImageUpload} 
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleProductImageUpload}
                           disabled={isUploadingProductImage}
                         />
                       </label>
                     </div>
+                  </div>
+
+                  {/* Additional Images — for product gallery navigation */}
+                  <div className="space-y-3">
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
+                    {(['perspective1','perspective2','perspective3','perspective4'] as const).map((field, idx) => (
+                      <div key={field} className="flex items-center gap-2">
+                        <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
+                        <input
+                          type="url"
+                          value={productForm[field]}
+                          onChange={(e) => setProductForm({ ...productForm, [field]: e.target.value })}
+                          placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
+                        />
+                        <label className="relative flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                          <span>Upload</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setIsUploadingProductImage(true);
+                              try {
+                                const fileName = `product-${crypto.randomUUID()}.${file.name.split('.').pop()}`;
+                                const { error: uploadError } = await supabase.storage
+                                  .from('products')
+                                  .upload(fileName, file);
+                                if (uploadError) throw uploadError;
+                                const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
+                                setProductForm(prev => ({ ...prev, [field]: publicUrl }));
+                              } catch (err) {
+                                alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                              } finally {
+                                setIsUploadingProductImage(false);
+                              }
+                            }}
+                            disabled={isUploadingProductImage}
+                          />
+                        </label>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="flex items-center gap-3">
