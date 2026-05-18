@@ -198,10 +198,10 @@ export default function GlobalHeader() {
                           
                           <div className="flex items-end justify-between">
                             <div className="space-y-4">
-                               <div className="flex items-center gap-3 bg-ink/5 px-2 py-1 rounded-none w-fit">
-                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/30 hover:text-rose"><Minus size={10} /></button>
-                                  <span className="text-[9px] font-medium w-3 text-center">{item.quantity}</span>
-                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/30 hover:text-rose"><Plus size={10} /></button>
+                               <div className="flex items-center gap-4 bg-ink/5 px-3 py-2 rounded-none w-fit">
+                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Minus size={12} strokeWidth={2} /></button>
+                                  <span className="text-[11px] font-medium w-6 text-center">{item.quantity}</span>
+                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Plus size={12} strokeWidth={2} /></button>
                                </div>
                                <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
                             </div>
