@@ -1135,7 +1135,7 @@ export default function AdminDashboard() {
                           <span className="text-[10px] uppercase tracking-wider text-rose">{product.variants?.length || 0} variants</span>
                         </div>
                         <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
-                        <p className="text-lg font-semibold text-gray-900">Rp {product.price.toLocaleString('id-ID')}</p>
+                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID', { maximumFractionDigits: 0 })}</p>
                         <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -2057,8 +2057,10 @@ export default function AdminDashboard() {
                       <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price (IDR)</label>
                       <input
                         type="number"
+                        step="1"
+                        min="0"
                         value={productForm.price}
-                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value.replace(/\D/g, '') })}
                         placeholder="0"
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                       />
@@ -2083,8 +2085,8 @@ export default function AdminDashboard() {
                       value={productForm.description}
                       onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                       placeholder="Product description..."
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50 resize-none"
+                      rows={6}
+                      className="w-full min-h-[140px] px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50 resize-y"
                     />
                   </div>
 
