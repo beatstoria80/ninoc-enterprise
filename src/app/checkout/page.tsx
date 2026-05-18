@@ -410,12 +410,12 @@ export default function CheckoutPage() {
               <div className="space-y-2 border-b border-ink/5 pb-3">
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Subtotal</span>
-                  <span>Rp {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span>IDR {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Logistics Fee</span>
                   <span className={shippingCost > 0 ? "text-ink" : "text-rose italic"}>
-                    {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Selection Required'}
+                    {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'Selection Required'}
                   </span>
                 </div>
               </div>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">Total Investment</span>
-                  <span className="text-xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
                 <button 
                   type="button"
@@ -566,7 +566,7 @@ export default function CheckoutPage() {
                     )}
                   >
                     <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink/40")}>{option.name}</span>
-                    <span className="text-[11px] font-display font-medium italic text-ink">Rp {option.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-[11px] font-display font-medium italic text-ink">IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </button>
                 ))}
               </div>
@@ -600,7 +600,7 @@ export default function CheckoutPage() {
                         <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
                         <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">Size {item.size} • Qty {item.quantity}</p>
                       </div>
-                      <p className="text-sm font-display font-medium italic text-ink/80">Rp {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      <p className="text-sm font-display font-medium italic text-ink/80">IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   ))}
                 </div>
@@ -608,19 +608,19 @@ export default function CheckoutPage() {
                 <div className="space-y-2 pt-4 border-t border-ink/20">
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
                     <span>Value Subtotal</span>
-                    <span>Rp {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span>IDR {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
                     <span>Logistics</span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
-                       {shippingCost > 0 ? `+ Rp ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Action Required'}
+                       {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'Action Required'}
                     </span>
                   </div>
                 </div>
 
                 <div className="pt-6 flex flex-col items-center border-t border-ink/20">
                   <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">Total Investment</span>
-                  <span className="text-3xl font-display font-medium italic text-rose leading-none">Rp {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-3xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
 
                 {/* CATALOG */}

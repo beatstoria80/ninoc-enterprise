@@ -206,7 +206,7 @@ export default function GlobalHeader() {
                                <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
                             </div>
                              <div className="text-base font-display font-medium italic text-rose">
-                                Rp {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                              </div>
                           </div>
                         </div>
@@ -230,7 +230,7 @@ export default function GlobalHeader() {
                        <div className="space-y-5">
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                              <span>Raw Value</span>
-                             <span>Rp {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                             <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                           </div>
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                              <span>Handling Fee</span>
@@ -242,7 +242,7 @@ export default function GlobalHeader() {
                     <div className="pt-12 border-t border-ink/5 flex flex-col items-center flex-1 justify-center space-y-12">
                        <div className="text-center">
                           <span className="text-[9px] font-medium uppercase tracking-[0.6em] text-ink/20 block mb-4">Total Investment</span>
-                          <span className="text-4xl font-display font-medium italic text-rose leading-none">Rp {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          <span className="text-4xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                        </div>
 
                        <div className="w-full space-y-6">
@@ -346,7 +346,7 @@ export default function GlobalHeader() {
                               </div>
                               <div className="flex flex-col justify-center">
                                 <h3 className="text-[10px] font-medium uppercase tracking-tight group-hover:text-rose transition-colors">{product.name}</h3>
-                                <p className="text-[9px] font-medium text-ink/30 mt-0.5 italic">Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                <p className="text-[9px] font-medium text-ink/30 mt-0.5 italic">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                               </div>
                             </Link>
                           ))

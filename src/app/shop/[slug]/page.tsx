@@ -196,7 +196,7 @@ export default function ProductDetailPage() {
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-2xl md:text-3xl font-display font-medium italic text-rose mt-3">Rp {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-2xl md:text-3xl font-display font-medium italic text-rose mt-3">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
               <div className="space-y-6">
@@ -342,7 +342,7 @@ export default function ProductDetailPage() {
                           {p.price_tag}
                         </div>
                       )}
-                      <p className="text-xs font-medium text-rose">Rp {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      <p className="text-xs font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </Link>
                 </motion.div>

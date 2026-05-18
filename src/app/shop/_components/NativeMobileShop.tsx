@@ -77,7 +77,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
           </p>
         )}
         <p className="text-[10px] font-display font-medium italic text-rose pt-0.5">
-          Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </p>
       </div>
     </motion.div>

@@ -119,7 +119,7 @@ function MobileShopView({ products }: { products: Product[] }) {
                         </div>
                       )}
                       <p className="text-[11px] font-display font-medium italic text-rose">
-                        Rp {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        IDR {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </p>
                     </div>
                   </Link>
@@ -243,7 +243,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
                       </div>
                     )}
                     <p className="text-base md:text-xl font-display font-medium italic text-rose pt-2">
-                      Rp {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      IDR {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </p>
                   </div>
                 </Link>

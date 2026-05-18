@@ -206,7 +206,7 @@ function ProductCard({ product, index }: ProductCardProps) {
                   {product.price_tag}
                 </p>
               )}
-              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink pt-1">Rp {product.price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink pt-1">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
             </div>
             <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
               <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>

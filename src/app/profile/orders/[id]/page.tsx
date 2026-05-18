@@ -224,14 +224,14 @@ export default function OrderDetailPage() {
                     <div className="flex-1 space-y-1">
                       <p className="text-[10px] uppercase tracking-wider">{item.product_name}</p>
                       <p className="text-[8px] text-ink/40 uppercase tracking-widest">Size {item.size} • Qty {item.quantity}</p>
-                      <p className="text-[10px] text-ink/70">Rp {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      <p className="text-[10px] text-ink/70">IDR {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="pt-4 border-t border-ink/5 flex justify-between items-end">
                 <p className="text-[8px] uppercase tracking-widest text-ink/30">Total Investment Value</p>
-                <p className="text-xl font-display italic tracking-tight">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-xl font-display italic tracking-tight">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
             </section>
 

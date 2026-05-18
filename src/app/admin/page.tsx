@@ -1029,8 +1029,8 @@ export default function AdminDashboard() {
               >
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                   {[
-                    { label: 'Total Revenue', value: `Rp ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
-                    { label: 'Today Revenue', value: `Rp ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
+                    { label: 'Total Revenue', value: `IDR ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
+                    { label: 'Today Revenue', value: `IDR ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
                     { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'bg-blue-500/10 text-blue-600' },
                     { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'bg-amber-500/10 text-amber-600' }
                   ].map((stat, i) => (
@@ -1074,7 +1074,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-6">
                           <div className="text-right">
                             <p className="text-[10px] uppercase tracking-wider text-gray-400">Amount</p>
-                            <p className="text-sm font-medium">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                            <p className="text-sm font-medium">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                           </div>
                           <StatusBadge status={order.status} />
                         </div>
@@ -1176,7 +1176,7 @@ export default function AdminDashboard() {
                             {product.price_tag}
                           </div>
                         )}
-                        <p className="text-lg font-semibold text-gray-900">Rp {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="text-lg font-semibold text-gray-900">IDR {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -1463,7 +1463,7 @@ export default function AdminDashboard() {
                             {new Date(order.created_at).toLocaleDateString('id-ID')}
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <span className="font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="font-semibold text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.status} />
@@ -1595,12 +1595,12 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gradient-to-br from-rose to-rose/80 rounded-xl p-6 text-white">
                     <p className="text-[10px] uppercase tracking-widest opacity-70">Total Revenue</p>
-                    <p className="text-3xl font-bold mt-2">Rp {finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <p className="text-3xl font-bold mt-2">IDR {finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     <p className="text-[10px] opacity-70 mt-4">{finance.completedOrders} completed orders</p>
                   </div>
                   <div className="bg-white rounded-xl p-6 border border-gray-100">
                     <p className="text-[10px] uppercase tracking-widest text-gray-400">This Month</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">Rp {finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-2">IDR {finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     <p className="text-[10px] text-gray-500 mt-4">
                       {orders.filter(o => new Date(o.created_at) >= new Date(new Date().getFullYear(), new Date().getMonth(), 1)).length} orders this month
                     </p>
@@ -1632,7 +1632,7 @@ export default function AdminDashboard() {
                         <tr key={order.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</td>
                           <td className="px-6 py-4 text-sm text-gray-700">{order.shipping_address?.name || 'Guest'}</td>
-                          <td className="px-6 py-4 text-center font-semibold text-gray-900">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                          <td className="px-6 py-4 text-center font-semibold text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.payment_status || order.status} />
                           </td>
@@ -1892,7 +1892,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
-                        <p className="text-lg font-semibold text-gray-900">Rp {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="text-lg font-semibold text-gray-900">IDR {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                     </div>
                   </div>
@@ -2371,7 +2371,7 @@ export default function AdminDashboard() {
                           <p className="font-medium text-gray-900">{item.product_name || 'Product'}</p>
                           <p className="text-sm text-gray-500">Size: {item.size || '-'} | Qty: {item.quantity}</p>
                         </div>
-                        <p className="font-semibold">Rp {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="font-semibold">IDR {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                     ))}
                   </div>
@@ -2392,7 +2392,7 @@ export default function AdminDashboard() {
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Total</span>
-                    <span className="text-xl font-bold text-gray-900">Rp {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-xl font-bold text-gray-900">IDR {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
               </div>

@@ -276,7 +276,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-12 text-right">
                       <div className="space-y-1">
                         <p className="text-[8px] uppercase tracking-widest text-ink/30">Total Investment</p>
-                        <p className="text-xs text-ink">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p className="text-xs text-ink">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[8px] uppercase tracking-widest text-ink/30">Logistics</p>
