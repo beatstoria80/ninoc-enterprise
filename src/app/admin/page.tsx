@@ -448,14 +448,32 @@ export default function AdminDashboard() {
       const fileName = `product-${crypto.randomUUID()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      // Try uploading to 'products' first
+      let uploadResult = await supabase.storage
         .from('products')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      let bucketName = 'products';
+
+      // Fallback to 'avatars' if 'products' bucket is not found
+      if (uploadResult.error && uploadResult.error.message.includes('Bucket not found')) {
+        console.warn("Bucket 'products' not found. Falling back to 'avatars'.");
+        uploadResult = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file);
+        bucketName = 'avatars';
+        
+        if (uploadResult.error) {
+          throw uploadResult.error;
+        } else {
+          alert("Note: Bucket 'products' was not found in your Supabase storage, so the image was successfully uploaded to 'avatars' instead. We recommend creating a public bucket named 'products' in your Supabase Dashboard.");
+        }
+      } else if (uploadResult.error) {
+        throw uploadResult.error;
+      }
 
       const { data: { publicUrl } } = supabase.storage
-        .from('products')
+        .from(bucketName)
         .getPublicUrl(filePath);
 
       setProductForm({ ...productForm, image_url: publicUrl });
