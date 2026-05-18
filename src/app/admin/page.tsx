@@ -208,6 +208,8 @@ export default function AdminDashboard() {
     variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
   });
 
+  const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
+
   // Customer form states
   const [customerForm, setCustomerForm] = useState({
     email: '',
@@ -433,6 +435,35 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Failed to save product:', error);
       alert('Failed to save product');
+    }
+  };
+
+  const handleProductImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setIsUploadingProductImage(true);
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `product-${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      setProductForm({ ...productForm, image_url: publicUrl });
+    } catch (err) {
+      const error = err as Error;
+      alert('Error uploading image: ' + error.message);
+    } finally {
+      setIsUploadingProductImage(false);
     }
   };
 
@@ -1831,13 +1862,29 @@ export default function AdminDashboard() {
 
                   <div>
                     <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
-                    <input
-                      type="url"
-                      value={productForm.image_url}
-                      onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                      placeholder="https://..."
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                    />
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="url"
+                        value={productForm.image_url}
+                        onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                        placeholder="https://..."
+                        className="flex-1 px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                      />
+                      <label className="relative flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
+                        {isUploadingProductImage ? (
+                          <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <span>Upload File</span>
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={handleProductImageUpload} 
+                          disabled={isUploadingProductImage}
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3">
