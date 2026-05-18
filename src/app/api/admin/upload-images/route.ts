@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
 
 export const config = {
   api: {
-    bodyParser: false // Allow multipart form data
+    bodyParser: false,
+    sizeLimit: '12mb'
   }
 };
