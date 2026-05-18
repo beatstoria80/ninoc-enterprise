@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, Ruler, Plus, Minus, Paperclip } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, Ruler, Plus, Minus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -121,16 +121,21 @@ export default function ProductDetailPage() {
         isMobile && "pt-14"
       )}>
 
-        {/* DESKTOP ONLY - FIXED BACK BUTTON */}
-        <button
-          onClick={() => router.back()}
-          className="fixed left-6 md:left-12 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-4 text-ink/20 hover:text-rose transition-all group hidden xl:flex"
-        >
-          <div className="w-12 h-12 flex items-center justify-center rounded-full border border-ink/5 bg-white shadow-sm group-hover:border-rose/20 group-hover:bg-rose/5 group-hover:shadow-xl transition-all duration-500">
-            <ArrowLeft size={18} />
-          </div>
-          <span className="text-[8px] font-medium uppercase tracking-[0.6em] vertical-text transform rotate-180 opacity-0 group-hover:opacity-100 transition-all duration-500">Back to Shop</span>
-        </button>
+        {/* BACK TO CATALOG NAV - TOP LEFT */}
+        <div className="mb-6 hidden lg:block">
+          <button 
+            onClick={() => router.push('/shop')} 
+            className="group flex items-center gap-3 text-ink transition-all"
+          >
+            <div className="w-8 h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
+              <ArrowLeft size={14} />
+            </div>
+            <div className="flex flex-col items-start leading-none">
+              <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
+              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Archive Catalog</span>
+            </div>
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 xl:gap-3">
           
@@ -141,8 +146,8 @@ export default function ProductDetailPage() {
                 key={i}
                 onClick={() => setActiveImageIndex(i)}
                 className={cn(
-                  "w-full aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all relative group bg-white",
-                  activeImageIndex === i ? "border-rose scale-[1.05] shadow-xl" : "border-transparent opacity-40 hover:opacity-100"
+                  "w-full aspect-[3/4] rounded-none overflow-hidden border transition-all relative group bg-white",
+                  activeImageIndex === i ? "border-rose opacity-100" : "border-ink/5 opacity-40 hover:opacity-100"
                 )}
               >
                 <Image src={img} className="object-contain p-2" alt="" fill />
@@ -152,26 +157,16 @@ export default function ProductDetailPage() {
 
           {/* MAIN IMAGE - NO CROP PROFESSIONAL STANDARD */}
           <div className="lg:col-span-7 xl:col-span-7">
-            <div className="relative aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] max-h-[85vh] rounded-[24px] overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeImageIndex}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  src={images[activeImageIndex]}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-8 md:p-12"
-                />
-              </AnimatePresence>
-              
-              {/* Artistic Studio Paperclip - Clipped to the edge */}
-              <div className="absolute top-4 right-4 z-20 transform rotate-[30deg] opacity-80 hover:opacity-100 transition-opacity translate-x-1/4 -translate-y-1/4">
-                 <div className="relative">
-                    <Paperclip size={40} strokeWidth={1.5} className="text-ink/80 drop-shadow-md" />
-                 </div>
-              </div>
+            <div className="relative aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] max-h-[85vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
+              <motion.img
+                key={activeImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.15 }}
+                src={images[activeImageIndex]}
+                alt={product.name}
+                className="w-full h-full object-contain p-2"
+              />
               
               {/* Mobile Indicators */}
               <div className="absolute bottom-6 flex lg:hidden gap-2">
@@ -219,7 +214,7 @@ export default function ProductDetailPage() {
                         </button>
                         
                         {/* THE TABLE - Repositioned to the RIGHT as requested to avoid overlapping images/desc */}
-                        <div className="absolute top-0 left-full ml-10 w-72 bg-white border border-ink/10 shadow-[40px_0_80px_rgba(0,0,0,0.1)] rounded-2xl p-6 opacity-0 -translate-x-4 pointer-events-none group-hover/guide:opacity-100 group-hover/guide:translate-x-0 transition-all z-50">
+                        <div className="absolute top-0 left-full ml-10 w-72 bg-white border border-ink/10 shadow-[40px_0_80px_rgba(0,0,0,0.1)] rounded-none p-6 opacity-0 -translate-x-4 pointer-events-none group-hover/guide:opacity-100 group-hover/guide:translate-x-0 transition-all z-50">
                            <div className="absolute left-0 top-6 -translate-x-1/2 w-3 h-3 bg-white border-l border-t border-ink/10 rotate-[-45deg]" />
                            <h5 className="text-[10px] font-medium uppercase tracking-widest mb-4 border-b border-ink/5 pb-2">Measurement (CM)</h5>
                            <div className="space-y-3">
@@ -243,8 +238,8 @@ export default function ProductDetailPage() {
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center text-[10px] font-medium transition-all border",
-                          selectedSize === size ? "bg-ink text-white border-ink shadow-md scale-105" : "bg-white text-ink border-ink/5 hover:border-ink/20"
+                          "w-10 h-10 rounded-none flex items-center justify-center text-[10px] font-medium transition-all border",
+                          selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                         )}
                       >
                         {size}
@@ -256,10 +251,10 @@ export default function ProductDetailPage() {
                 {/* Quantity */}
                 <div className="space-y-3">
                   <h4 className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30">Quantity</h4>
-                  <div className="flex items-center gap-4 bg-ink/[0.02] w-fit px-3 py-1.5 rounded-xl border border-ink/5">
-                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-full transition-all text-ink/30 hover:text-rose"><Minus size={12} /></button>
+                  <div className="flex items-center gap-4 bg-ink/[0.02] w-fit px-3 py-1.5 rounded-none border border-ink/5">
+                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={12} /></button>
                     <span className="text-[10px] font-medium w-4 text-center">{quantity}</span>
-                    <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-full transition-all text-ink/30 hover:text-rose"><Plus size={12} /></button>
+                    <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={12} /></button>
                   </div>
                 </div>
               </div>
@@ -270,8 +265,8 @@ export default function ProductDetailPage() {
                   onClick={handleAddToCart}
                   disabled={addedToCart}
                   className={cn(
-                    "w-full py-5 rounded-2xl font-medium text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
-                    addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose active:scale-95"
+                    "w-full py-5 rounded-none font-medium text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                    addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
                   <AnimatePresence mode="wait">
