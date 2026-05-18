@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Service role client — bypasses RLS for bulk admin uploads
-const supabaseAdmin = createClient(
+// Only instantiated on server-side (lazy to avoid build-time errors)
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const { error: uploadError } = await supabaseAdmin.storage
+        const { error: uploadError } = await getSupabaseAdmin().storage
           .from(bucketId)
           .upload(filePath, buffer, {
             contentType: file.type || 'image/jpeg',
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        const { data: urlData } = supabaseAdmin.storage
+        const { data: urlData } = getSupabaseAdmin().storage
           .from(bucketId)
           .getPublicUrl(filePath);
 
