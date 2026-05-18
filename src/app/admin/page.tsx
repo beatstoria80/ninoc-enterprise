@@ -8,7 +8,8 @@ import {
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
-  MapPin, CreditCard, Shield, Star
+  MapPin, CreditCard, Shield, Star,
+  Upload
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -228,6 +229,13 @@ export default function AdminDashboard() {
 
   // Order detail
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // Bulk image upload states
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkResults, setBulkResults] = useState<{ name: string; url: string; error?: string }[] | null>(null);
+  const [bulkProductLink, setBulkProductLink] = useState(''); // product name to link images to
 
   // Chat states
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
@@ -482,6 +490,69 @@ export default function AdminDashboard() {
       alert('Error uploading image: ' + error.message);
     } finally {
       setIsUploadingProductImage(false);
+    }
+  };
+
+  // ===== BULK UPLOAD HANDLER =====
+  const handleBulkImageUpload = async () => {
+    if (bulkFiles.length === 0) return;
+    setBulkUploading(true);
+    setBulkResults(null);
+
+    try {
+      const formData = new FormData();
+      for (const file of bulkFiles) {
+        formData.append('files', file);
+      }
+      formData.append('bucket', 'products');
+
+      const res = await fetch('/api/admin/upload-images', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      setBulkResults(data.results);
+
+      // Update product with first successful image
+      const firstSuccess = data.results.find((r: { url: string; error?: string }) => r.url);
+      if (firstSuccess) {
+        setProductForm(prev => ({ ...prev, image_url: firstSuccess.url }));
+        // Pre-fill product name from linked name if provided
+        if (bulkProductLink.trim()) {
+          setProductForm(prev => ({
+            ...prev,
+            name: bulkProductLink.trim(),
+            slug: bulkProductLink.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+          }));
+        }
+        setActiveTab('products');
+        setBulkUploadOpen(false);
+      }
+    } catch (err) {
+      alert('Bulk upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+    } finally {
+      setBulkUploading(false);
+    }
+  };
+
+  const openBulkUpload = () => {
+    setBulkFiles([]);
+    setBulkResults(null);
+    setBulkProductLink('');
+    setBulkUploadOpen(true);
+    setActiveTab('overview');
+  };
+
+  const handleBulkFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    if (selected.length > 1000) {
+      alert('Maximum 1000 files per batch. Please split your selection.');
+      setBulkFiles(selected.slice(0, 1000));
+    } else {
+      setBulkFiles(selected);
     }
   };
 
@@ -817,6 +888,12 @@ export default function AdminDashboard() {
             badge={products.length}
           />
           <SidebarItem
+            icon={Upload}
+            label="Upload Images"
+            active={activeTab === 'upload'}
+            onClick={() => openBulkUpload()}
+          />
+          <SidebarItem
             icon={Box}
             label="Inventory"
             active={activeTab === 'inventory'}
@@ -1063,6 +1140,139 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ===== BULK UPLOAD ===== */}
+            {bulkUploadOpen && (
+              <motion.div
+                key="bulk-upload"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Upload Images</h2>
+                    <p className="text-sm text-gray-500">
+                      {bulkFiles.length > 0
+                        ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected`
+                        : 'Batch upload up to 1000 images per batch'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setBulkUploadOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Product name link */}
+                <div className="bg-white rounded-xl border border-gray-100 p-4">
+                  <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">
+                    Product Name (optional — auto-fills product form)
+                  </label>
+                  <input
+                    type="text"
+                    value={bulkProductLink}
+                    onChange={(e) => setBulkProductLink(e.target.value)}
+                    placeholder="e.g. Essential Oversized Tee — images will link to this product"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                  />
+                </div>
+
+                {/* Drop zone */}
+                <div
+                  className={cn(
+                    "border-2 border-dashed rounded-xl p-8 text-center transition-colors",
+                    bulkFiles.length > 0 ? "border-rose/30 bg-rose/5" : "border-gray-200 hover:border-rose/30"
+                  )}
+                >
+                  {bulkFiles.length > 0 ? (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto">
+                        {bulkFiles.slice(0, 50).map((f, i) => (
+                          <div key={i} className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-gray-200 text-[10px] text-gray-600">
+                            <span className="font-medium">{i + 1}.</span>
+                            <span className="truncate max-w-[120px]">{f.name}</span>
+                          </div>
+                        ))}
+                        {bulkFiles.length > 50 && (
+                          <span className="text-sm text-gray-400">...and {bulkFiles.length - 50} more</span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-center gap-4">
+                        <label className="px-4 py-2 bg-rose text-white text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer hover:bg-rose/90 transition-colors">
+                          {bulkUploading ? 'Uploading...' : 'Add More Files'}
+                          <input type="file" accept="image/*" multiple className="hidden" onChange={handleBulkFileSelect} disabled={bulkUploading} />
+                        </label>
+                        <button
+                          onClick={() => setBulkFiles([])}
+                          className="px-4 py-2 text-gray-500 text-[10px] uppercase tracking-wider font-medium hover:text-red-500 transition-colors"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Upload size={32} className="mx-auto text-gray-300" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Drop images here or click to browse</p>
+                        <p className="text-[10px] text-gray-400 mt-1">JPG, PNG, WEBP • Max 10MB per file • Up to 1000 files</p>
+                      </div>
+                      <label className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">
+                        Select Files
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleBulkFileSelect} />
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload results */}
+                {bulkResults && (
+                  <div className="bg-white rounded-xl border border-gray-100 p-4">
+                    <h3 className="text-sm font-medium mb-3">
+                      Upload Results ({bulkResults.filter(r => !r.error).length} / {bulkResults.length} succeeded)
+                    </h3>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                      {bulkResults.map((r, i) => (
+                        <div key={i} className={cn(
+                          "flex items-center justify-between px-3 py-2 rounded-lg text-[10px]",
+                          r.error ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"
+                        )}>
+                          <span className="truncate flex-1 mr-4">{r.name}</span>
+                          <span className="font-medium">{r.error ? 'FAILED' : 'OK'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setBulkResults(null)}
+                      className="mt-3 text-[10px] uppercase tracking-wider text-gray-400 hover:text-gray-600"
+                    >
+                      Clear Results
+                    </button>
+                  </div>
+                )}
+
+                {/* Submit */}
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleBulkImageUpload}
+                    disabled={bulkFiles.length === 0 || bulkUploading}
+                    className={cn(
+                      "flex items-center gap-2 px-6 py-3 bg-rose text-white rounded-lg font-medium text-sm transition-colors",
+                      (bulkFiles.length === 0 || bulkUploading) && "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    {bulkUploading ? (
+                      <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Uploading...</>
+                    ) : (
+                      <><Upload size={16} /> Upload {bulkFiles.length} Image{bulkFiles.length > 1 ? 's' : ''}</>
+                    )}
+                  </button>
                 </div>
               </motion.div>
             )}
