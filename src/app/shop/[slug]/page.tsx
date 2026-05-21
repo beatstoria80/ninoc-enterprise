@@ -137,10 +137,11 @@ export default function ProductDetailPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-2 xl:gap-3">
+        {/* 4-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action */}
+        <div className="grid grid-cols-2 lg:grid-cols-[56px_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-5">
           
-          {/* LEFT GALLERY */}
-          <div className="hidden lg:flex lg:col-span-1 flex-col gap-4 overflow-y-auto no-scrollbar max-h-[55vh]">
+          {/* GRID 1 — THUMBNAIL STRIP */}
+          <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh]">
             {images.map((img, i) => (
               <button
                 key={i}
@@ -155,8 +156,8 @@ export default function ProductDetailPage() {
             ))}
           </div>
 
-          {/* MAIN IMAGE - NO CROP PROFESSIONAL STANDARD */}
-          <div className="col-span-1 lg:col-span-7 xl:col-span-7 group/mainimg">
+          {/* GRID 2 — MAIN IMAGE (UNCHANGED) */}
+          <div className="col-span-1 group/mainimg">
             <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
                 key={activeImageIndex}
@@ -201,90 +202,82 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* INFO PANEL - COMPACT & REFINED (GRID 3 START) */}
-          <div className="col-span-1 lg:col-span-4 xl:col-span-4 flex flex-col py-0 lg:py-2">
-            <div className="space-y-4 lg:space-y-10">
-              <div className="space-y-2 lg:space-y-4">
+          {/* GRID 3 — GARMENT SPECIFICATION */}
+          <div className="col-span-1 flex flex-col py-0 lg:py-1">
+            <div className="space-y-4 lg:space-y-6">
+              <div className="space-y-2 lg:space-y-3">
                 <div className="flex items-center gap-1.5 lg:gap-3">
                   <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
                   <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
                 </div>
-                <h1 className="text-xl md:text-5xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
+                <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
-                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-3">
+                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-2">
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-sm md:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-3">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-4 lg:space-y-6">
-                <div className="space-y-1.5 lg:space-y-3">
-                  <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Product Description</h4>
-                  <p className="text-[9px] lg:text-[13px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
-                </div>
+              <div className="space-y-1.5 lg:space-y-3">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
+                <p className="text-[9px] lg:text-[12px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
+              </div>
 
-                {/* Size Selection & Guide Positioning */}
-                <div className="space-y-4 relative">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40">Select Size</h4>
-                    
-                    {/* Size Guide - Repositioned to Right Side Area */}
-                    <div className="relative">
-                      <div className="group/guide">
-                        <button className="flex items-center gap-2 text-[8px] font-medium uppercase tracking-[0.2em] text-rose">
-                          <Ruler size={10} />
-                          <span className="border-b border-rose/10">Size Guide</span>
-                        </button>
-                        
-                        {/* THE TABLE - Repositioned to the RIGHT as requested to avoid overlapping images/desc */}
-                        <div className="absolute top-0 left-full ml-10 w-72 bg-white border border-ink/10 shadow-[40px_0_80px_rgba(0,0,0,0.1)] rounded-none p-6 opacity-0 -translate-x-4 pointer-events-none group-hover/guide:opacity-100 group-hover/guide:translate-x-0 transition-all z-50">
-                           <div className="absolute left-0 top-6 -translate-x-1/2 w-3 h-3 bg-white border-l border-t border-ink/10 rotate-[-45deg]" />
-                           <h5 className="text-[10px] font-medium uppercase tracking-widest mb-4 border-b border-ink/5 pb-2">Measurement (CM)</h5>
-                           <div className="space-y-3">
-                              <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                              {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
-                                 <div key={s} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-1">
-                                    <span className="text-rose">{s.split(':')[0]}</span>
-                                    <span>{s.split(':')[1]}</span>
-                                 </div>
-                              ))}
-                           </div>
-                           <p className="text-[7px] text-ink/20 mt-4 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
-                        </div>
-                      </div>
+              {/* Size Guide Table - Inline for Grid 3 */}
+              <div className="space-y-2">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
+                  <Ruler size={10} className="text-rose" />
+                  Measurement (CM)
+                </h4>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
+                    <div key={s} className="flex justify-between text-[9px] font-medium border-b border-ink/5 pb-1">
+                      <span className="text-rose">{s.split(':')[0]}</span>
+                      <span>{s.split(':')[1]}</span>
                     </div>
-                  </div>
-                  
-                  <div className="flex gap-1 lg:gap-2 flex-wrap">
-                    {['S', 'M', 'L', 'XL'].map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={cn(
-                          "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
-                          selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
-                        )}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
+                <p className="text-[7px] text-ink/20 mt-2 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+              </div>
+            </div>
+          </div>
 
-                {/* Quantity */}
-                <div className="space-y-1.5 lg:space-y-3">
-                  <h4 className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30">Quantity</h4>
-                  <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
-                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
-                    <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
-                    <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
-                  </div>
+          {/* GRID 4 — SELECTION & ACTION */}
+          <div className="col-span-1 flex flex-col py-0 lg:py-1">
+            <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
+              {/* Size Selection */}
+              <div className="space-y-3">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
+                <div className="flex gap-1 lg:gap-2 flex-wrap">
+                  {['S', 'M', 'L', 'XL'].map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={cn(
+                        "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
+                        selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
+                      )}
+                    >
+                      {size}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* ACTION BUTTON - REFINED SCALE */}
-              <div className="pt-2 lg:pt-4 relative z-10">
+              {/* Quantity */}
+              <div className="space-y-1.5 lg:space-y-3">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
+                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
+                  <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
+                </div>
+              </div>
+
+              {/* ACTION BUTTON */}
+              <div className="pt-2 lg:pt-4 relative z-10 mt-auto">
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
@@ -310,7 +303,7 @@ export default function ProductDetailPage() {
 
               {/* Trust Badges - Desktop only */}
               {!isMobile && (
-              <div className="grid grid-cols-3 gap-4 pt-10 border-t border-ink/5">
+              <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5">
                 {[
                   { icon: ShieldCheck, label: 'Secure Payment' },
                   { icon: Truck, label: 'Express Shipping' },
