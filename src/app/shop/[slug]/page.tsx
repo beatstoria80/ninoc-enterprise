@@ -117,12 +117,12 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-24 md:pt-32 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
+        "pt-12 md:pt-16 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
         isMobile && "pt-14"
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-6 hidden lg:block">
+        <div className="mb-4 hidden lg:block">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all"
@@ -132,12 +132,12 @@ export default function ProductDetailPage() {
             </div>
             <div className="flex flex-col items-start leading-none">
               <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Archive Catalog</span>
+              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
             </div>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 xl:gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-2 xl:gap-3">
           
           {/* LEFT GALLERY */}
           <div className="hidden lg:flex lg:col-span-1 flex-col gap-4 overflow-y-auto no-scrollbar max-h-[80vh]">
@@ -156,7 +156,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* MAIN IMAGE - NO CROP PROFESSIONAL STANDARD */}
-          <div className="lg:col-span-7 xl:col-span-7">
+          <div className="col-span-1 lg:col-span-7 xl:col-span-7">
             <div className="relative aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] max-h-[85vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
                 key={activeImageIndex}
@@ -178,26 +178,26 @@ export default function ProductDetailPage() {
           </div>
 
           {/* INFO PANEL - COMPACT & REFINED (GRID 3 START) */}
-          <div className="lg:col-span-4 xl:col-span-4 flex flex-col py-2">
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-ink text-white rounded-full text-[7px] font-medium uppercase tracking-[0.2em]">Authentic Product</span>
-                  <div className="flex gap-0.5 text-rose/40"><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /><Star size={8} fill="currentColor" /></div>
+          <div className="col-span-1 lg:col-span-4 xl:col-span-4 flex flex-col py-0 lg:py-2">
+            <div className="space-y-4 lg:space-y-10">
+              <div className="space-y-2 lg:space-y-4">
+                <div className="flex items-center gap-1.5 lg:gap-3">
+                  <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
+                  <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
+                <h1 className="text-xl md:text-5xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
-                  <div className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-2.5 py-1.5 rounded-sm w-fit mt-3">
+                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-3">
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-2xl md:text-3xl font-display font-medium italic text-rose mt-3">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                <p className="text-sm md:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-3">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2">Product Description</h4>
-                  <p className="text-[13px] leading-relaxed text-ink/60 font-medium">{product.description || 'Premium quality apparel from NINOC.'}</p>
+              <div className="space-y-4 lg:space-y-6">
+                <div className="space-y-1.5 lg:space-y-3">
+                  <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Product Description</h4>
+                  <p className="text-[9px] lg:text-[13px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
                 </div>
 
                 {/* Size Selection & Guide Positioning */}
@@ -232,13 +232,13 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 lg:gap-2 flex-wrap">
                     {['S', 'M', 'L', 'XL'].map((size) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         className={cn(
-                          "w-10 h-10 rounded-none flex items-center justify-center text-[10px] font-medium transition-all border",
+                          "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
                           selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                         )}
                       >
@@ -249,23 +249,23 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Quantity */}
-                <div className="space-y-3">
+                <div className="space-y-1.5 lg:space-y-3">
                   <h4 className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30">Quantity</h4>
-                  <div className="flex items-center gap-4 bg-ink/[0.02] w-fit px-3 py-1.5 rounded-none border border-ink/5">
-                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={12} /></button>
-                    <span className="text-[10px] font-medium w-4 text-center">{quantity}</span>
-                    <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={12} /></button>
+                  <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
+                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
+                    <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
+                    <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
                   </div>
                 </div>
               </div>
 
               {/* ACTION BUTTON - REFINED SCALE */}
-              <div className="pt-4 relative z-10">
+              <div className="pt-2 lg:pt-4 relative z-10">
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
                   className={cn(
-                    "w-full py-5 rounded-none font-medium text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                    "w-full py-2.5 lg:py-5 rounded-none font-medium text-[9px] lg:text-xs uppercase tracking-[0.2em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                     addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
@@ -316,7 +316,7 @@ export default function ProductDetailPage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-10">
               {relatedProducts.map((p, i) => (
                 <motion.div
                   key={p.id}
