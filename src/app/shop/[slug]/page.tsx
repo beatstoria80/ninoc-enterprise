@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, Ruler, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -117,12 +117,12 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-12 md:pt-16 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
+        "pt-12 md:pt-36 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
         isMobile && "pt-14"
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 hidden lg:block">
+        <div className="mb-6 hidden lg:block">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all"
@@ -140,7 +140,7 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-2 xl:gap-3">
           
           {/* LEFT GALLERY */}
-          <div className="hidden lg:flex lg:col-span-1 flex-col gap-4 overflow-y-auto no-scrollbar max-h-[80vh]">
+          <div className="hidden lg:flex lg:col-span-1 flex-col gap-4 overflow-y-auto no-scrollbar max-h-[55vh]">
             {images.map((img, i) => (
               <button
                 key={i}
@@ -156,8 +156,8 @@ export default function ProductDetailPage() {
           </div>
 
           {/* MAIN IMAGE - NO CROP PROFESSIONAL STANDARD */}
-          <div className="col-span-1 lg:col-span-7 xl:col-span-7">
-            <div className="relative aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] max-h-[85vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
+          <div className="col-span-1 lg:col-span-7 xl:col-span-7 group/mainimg">
+            <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
                 key={activeImageIndex}
                 initial={{ opacity: 0 }}
@@ -167,6 +167,30 @@ export default function ProductDetailPage() {
                 alt={product.name}
                 className="w-full h-full object-contain p-2"
               />
+              
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                    }}
+                    className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 hover:bg-white text-ink/40 hover:text-rose flex items-center justify-center border border-ink/10 opacity-100 lg:opacity-0 lg:group-hover/mainimg:opacity-100 transition-all rounded-none z-10"
+                  >
+                    <ChevronLeft size={20} strokeWidth={1.5} />
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                    }}
+                    className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 hover:bg-white text-ink/40 hover:text-rose flex items-center justify-center border border-ink/10 opacity-100 lg:opacity-0 lg:group-hover/mainimg:opacity-100 transition-all rounded-none z-10"
+                  >
+                    <ChevronRight size={20} strokeWidth={1.5} />
+                  </button>
+                </>
+              )}
               
               {/* Mobile Indicators */}
               <div className="absolute bottom-6 flex lg:hidden gap-2">
