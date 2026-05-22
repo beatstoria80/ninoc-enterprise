@@ -34,7 +34,7 @@ interface Product {
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('M');
@@ -128,7 +128,7 @@ export default function ProductDetailPage() {
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="absolute top-10 lg:top-14 hidden lg:block z-20">
+        <div className="mb-4 lg:mb-6 hidden lg:block">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all"
@@ -312,8 +312,47 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Trust Badges - Desktop only */}
-              {!isMobile && (
+              {/* MINI CART SUMMARY IN GRID 4 */}
+              {items.length > 0 && (
+                <div className="mt-4 border border-ink/10 p-3 bg-white shadow-sm flex flex-col gap-3 relative z-20">
+                  <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+                    <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
+                    <span className="text-[10px] font-medium text-ink">{items.length} Items</span>
+                  </div>
+                  
+                  <div className="max-h-[140px] overflow-y-auto no-scrollbar space-y-2">
+                    {items.map((item, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <div className="w-10 h-10 bg-ink/5 relative overflow-hidden flex-shrink-0">
+                           {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-cover" />}
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col">
+                           <span className="text-[9px] font-medium uppercase leading-tight truncate text-ink">{item.name}</span>
+                           <span className="text-[8px] font-medium text-ink/40">Size: {item.size} • Qty: {item.quantity}</span>
+                        </div>
+                        <div className="text-[9px] font-medium text-rose whitespace-nowrap">
+                          {((item.price * item.quantity)/1000).toFixed(0)}k
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-between items-center pt-2 border-t border-ink/5">
+                     <span className="text-[9px] font-medium uppercase tracking-widest text-ink/60">Total Value</span>
+                     <span className="text-[10px] font-medium text-rose">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                  </div>
+                  
+                  <button 
+                    onClick={() => router.push('/checkout')} 
+                    className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                  >
+                    Secure Checkout
+                  </button>
+                </div>
+              )}
+
+              {/* Trust Badges - Desktop only (Hidden if Cart is active to save space) */}
+              {!isMobile && items.length === 0 && (
               <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5">
                 {[
                   { icon: ShieldCheck, label: 'Secure Payment' },
