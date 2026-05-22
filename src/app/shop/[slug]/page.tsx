@@ -168,7 +168,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 2 — MAIN IMAGE */}
-          <div className="col-span-1 group/mainimg relative">
+          <div className="col-span-1 group/mainimg relative lg:ml-4 xl:ml-6">
             <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
                 key={activeImageIndex}
@@ -186,31 +186,31 @@ export default function ProductDetailPage() {
                     <div key={i} className={cn("w-2 h-2 rounded-full", activeImageIndex === i ? "bg-rose" : "bg-ink/10")} />
                  ))}
               </div>
-            </div>
 
-            {/* Navigation Arrows (Outside) */}
-            {images.length > 1 && (
-              <>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-                  }}
-                  className="absolute -left-6 lg:-left-7 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
-                >
-                  <ChevronLeft size={24} strokeWidth={2} />
-                </button>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-                  }}
-                  className="absolute -right-6 lg:-right-7 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
-                >
-                  <ChevronRight size={24} strokeWidth={2} />
-                </button>
-              </>
-            )}
+              {/* Navigation Arrows (Inside) */}
+              {images.length > 1 && (
+                <>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                    }}
+                    className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 text-ink/40 hover:text-rose transition-all z-10 bg-white border border-ink/5 shadow-sm p-1.5"
+                  >
+                    <ChevronLeft size={20} strokeWidth={2} />
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                    }}
+                    className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 text-ink/40 hover:text-rose transition-all z-10 bg-white border border-ink/5 shadow-sm p-1.5"
+                  >
+                    <ChevronRight size={20} strokeWidth={2} />
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
