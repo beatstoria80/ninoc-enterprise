@@ -445,14 +445,14 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-40 space-y-16">
-            <div className="flex flex-col md:flex-row justify-between items-end border-b border-ink/5 pb-8">
-              <div className="space-y-2">
-                <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-rose">You Might Also Like</span>
-                <h2 className="text-4xl md:text-6xl font-display font-medium italic tracking-tighter text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+          <div className="mt-20 lg:mt-24 space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-end border-b border-ink/5 pb-4">
+              <div className="space-y-1">
+                <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-rose">You Might Also Like</span>
+                <h2 className="text-xl md:text-2xl font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               </div>
-              <Link href="/shop" className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-2 group mb-2 md:mb-0">
-                View Full Collection <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              <Link href="/shop" className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-2 group mb-1 md:mb-0">
+                View Full Collection <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
