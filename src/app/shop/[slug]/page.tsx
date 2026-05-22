@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -148,13 +148,9 @@ export default function ProductDetailPage() {
           
           {/* GRID 1 — THUMBNAIL STRIP */}
           <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
-            <AnimatePresence>
               {images.map((img, i) => (
-                <motion.button
+                <button
                   key={i}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + (i * 0.15), duration: 0.4, ease: "easeOut" }}
                   onClick={() => setActiveImageIndex(i)}
                   className={cn(
                     "w-full aspect-[4/5] rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
@@ -162,22 +158,19 @@ export default function ProductDetailPage() {
                   )}
                 >
                   <Image src={img} className="object-contain p-1.5" alt="" fill sizes="100px" />
-                </motion.button>
+                </button>
               ))}
-            </AnimatePresence>
           </div>
 
           {/* GRID 2 — MAIN IMAGE */}
           <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8">
             <div className="w-full relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
-              <motion.img
-                key={activeImageIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.15 }}
+              <Image
                 src={images[activeImageIndex]}
                 alt={product.name}
-                className="w-full h-full object-contain p-2"
+                fill
+                className="object-contain p-2"
+                sizes="(max-width: 768px) 50vw, 30vw"
               />
               
               {/* Mobile Indicators */}
@@ -297,18 +290,16 @@ export default function ProductDetailPage() {
                     addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
-                  <AnimatePresence mode="wait">
                     {addedToCart ? (
-                      <motion.span initial={{ y: 15 }} animate={{ y: 0 }} exit={{ y: -15 }} className="flex items-center gap-2">
+                      <span className="flex items-center gap-2">
                         <ShieldCheck size={16} /> ADDED
-                      </motion.span>
+                      </span>
                     ) : (
                       <div className="flex items-center gap-3">
                         <ShoppingCart size={16} />
                         <span>ADD TO CART</span>
                       </div>
                     )}
-                  </AnimatePresence>
                 </button>
               </div>
 
@@ -348,15 +339,10 @@ export default function ProductDetailPage() {
               ) : (
                 <>
                   {/* Cart Items List */}
-                  <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-ink/5">
-                    <AnimatePresence>
+                  <div className="flex-1 overflow-y-auto divide-y divide-ink/5 pr-1">
                       {items.map((item) => (
-                        <motion.div 
+                        <div 
                           key={`${item.id}-${item.size}`}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20, height: 0 }}
-                          transition={{ duration: 0.2 }}
                           className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
                         >
                           {/* Thumbnail */}
@@ -407,9 +393,8 @@ export default function ProductDetailPage() {
                               </span>
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       ))}
-                    </AnimatePresence>
                   </div>
                   
                   {/* Cart Footer — Summary & Actions */}
@@ -454,13 +439,9 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-4">
-              {relatedProducts.map((p, i) => (
-                <motion.div
+              {relatedProducts.map((p) => (
+                <div
                   key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  viewport={{ once: true }}
                   className="flex-shrink-0 w-[140px] md:w-[160px]"
                 >
                   <Link href={`/shop/${p.slug}`} className="group block space-y-3">
@@ -478,7 +459,7 @@ export default function ProductDetailPage() {
                       <p className="text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </Link>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

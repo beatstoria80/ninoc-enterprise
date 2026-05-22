@@ -43,14 +43,28 @@ body {
   overflow-y: auto;
 }
 
-/* Hide default scrollbar globally - Archive Aesthetic */
+/* Minimal Elegant Scrollbar globally - Archive Aesthetic */
 * {
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 20, 20, 0.1) transparent;
 }
 
-*::-webkit-scrollbar {
-  display: none !important;
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(20, 20, 20, 0.15);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(232, 82, 122, 0.6); /* Rose hover */
 }
 
 /* SHARP GLASS - Reduced blur for better contrast */
