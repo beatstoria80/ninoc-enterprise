@@ -117,12 +117,12 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-12 md:pt-36 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto",
+        "pt-12 md:pt-28 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto relative",
         isMobile && "pt-14"
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-6 hidden lg:block">
+        <div className="absolute top-10 lg:top-14 hidden lg:block z-20">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all"
@@ -138,22 +138,27 @@ export default function ProductDetailPage() {
         </div>
 
         {/* 4-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action */}
-        <div className="grid grid-cols-2 lg:grid-cols-[56px_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-[56px_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
-          <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh]">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImageIndex(i)}
-                className={cn(
-                  "w-full aspect-[3/4] rounded-none overflow-hidden border transition-all relative group bg-white",
-                  activeImageIndex === i ? "border-rose opacity-100" : "border-ink/5 opacity-40 hover:opacity-100"
-                )}
-              >
-                <Image src={img} className="object-contain p-2" alt="" fill />
-              </button>
-            ))}
+          <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
+            <AnimatePresence>
+              {images.map((img, i) => (
+                <motion.button
+                  key={i}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + (i * 0.15), duration: 0.4, ease: "easeOut" }}
+                  onClick={() => setActiveImageIndex(i)}
+                  className={cn(
+                    "w-full aspect-[3/4] rounded-none overflow-hidden border transition-all relative group bg-white",
+                    activeImageIndex === i ? "border-rose opacity-100" : "border-ink/5 opacity-40 hover:opacity-100"
+                  )}
+                >
+                  <Image src={img} className="object-contain p-2" alt="" fill />
+                </motion.button>
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* GRID 2 — MAIN IMAGE (UNCHANGED) */}
