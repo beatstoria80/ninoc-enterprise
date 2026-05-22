@@ -445,18 +445,15 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-12 lg:mt-16 space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-end border-b border-ink/5 pb-3">
-              <div className="space-y-0.5">
-                <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-rose">You Might Also Like</span>
-                <h2 className="text-lg md:text-xl font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
-              </div>
-              <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-2 group mb-1 md:mb-0">
+          <div className="mt-8 lg:mt-10 space-y-3">
+            <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+              <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+              <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-10">
+            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-4">
               {relatedProducts.map((p, i) => (
                 <motion.div
                   key={p.id}
@@ -464,20 +461,21 @@ export default function ProductDetailPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   viewport={{ once: true }}
+                  className="flex-shrink-0 w-[140px] md:w-[160px]"
                 >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-6">
-                    <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-2xl transition-all duration-500 relative">
-                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-6 group-hover:scale-105 transition-transform duration-700" />
+                  <Link href={`/shop/${p.slug}`} className="group block space-y-3">
+                    <div className="aspect-[3/4] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
+                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <div className="space-y-1 px-2">
-                      <h3 className="text-sm md:text-base font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors">{p.name}</h3>
+                    <div className="space-y-1 px-1">
+                      <h3 className="text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
                       {p.price_tag && (
-                        <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
+                        <div className="text-[6px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
                           {p.price_tag}
                         </div>
                       )}
-                      <p className="text-xs font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      <p className="text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </Link>
                 </motion.div>
