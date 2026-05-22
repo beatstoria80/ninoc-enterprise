@@ -143,8 +143,8 @@ export default function ProductDetailPage() {
           </button>
         </div>
 
-        {/* 4-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action */}
-        <div className="grid grid-cols-2 lg:grid-cols-[56px_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
+        {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
+        <div className="grid grid-cols-2 lg:grid-cols-[56px_1.2fr_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-8 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
           <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
@@ -168,7 +168,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 2 — MAIN IMAGE (UNCHANGED) */}
-          <div className="col-span-1 group/mainimg">
+          <div className="col-span-1 group/mainimg relative">
             <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
                 key={activeImageIndex}
@@ -180,30 +180,6 @@ export default function ProductDetailPage() {
                 className="w-full h-full object-contain p-2"
               />
               
-              {/* Navigation Arrows */}
-              {images.length > 1 && (
-                <>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-                    }}
-                    className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 hover:bg-white text-ink/40 hover:text-rose flex items-center justify-center border border-ink/10 opacity-100 lg:opacity-0 lg:group-hover/mainimg:opacity-100 transition-all rounded-none z-10"
-                  >
-                    <ChevronLeft size={20} strokeWidth={1.5} />
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-                    }}
-                    className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 hover:bg-white text-ink/40 hover:text-rose flex items-center justify-center border border-ink/10 opacity-100 lg:opacity-0 lg:group-hover/mainimg:opacity-100 transition-all rounded-none z-10"
-                  >
-                    <ChevronRight size={20} strokeWidth={1.5} />
-                  </button>
-                </>
-              )}
-              
               {/* Mobile Indicators */}
               <div className="absolute bottom-6 flex lg:hidden gap-2">
                  {images.map((_, i) => (
@@ -211,6 +187,30 @@ export default function ProductDetailPage() {
                  ))}
               </div>
             </div>
+
+            {/* Navigation Arrows (Outside) */}
+            {images.length > 1 && (
+              <>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                  }}
+                  className="absolute -left-6 lg:-left-7 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                >
+                  <ChevronLeft size={24} strokeWidth={2} />
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                  }}
+                  className="absolute -right-6 lg:-right-7 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                >
+                  <ChevronRight size={24} strokeWidth={2} />
+                </button>
+              </>
+            )}
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
@@ -312,15 +312,40 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* MINI CART SUMMARY IN GRID 4 */}
-              {items.length > 0 && (
-                <div className="mt-4 border border-ink/10 p-3 bg-white shadow-sm flex flex-col gap-3 relative z-20">
-                  <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-                    <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
-                    <span className="text-[10px] font-medium text-ink">{items.length} Items</span>
-                  </div>
-                  
-                  <div className="max-h-[140px] overflow-y-auto no-scrollbar space-y-2">
+              {/* Trust Badges - Desktop only */}
+              {!isMobile && (
+                <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">
+                  {[
+                    { icon: ShieldCheck, label: 'Secure Payment' },
+                    { icon: Truck, label: 'Express Shipping' },
+                    { icon: RefreshCw, label: 'Easy Returns' }
+                  ].map((badge, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
+                      <badge.icon size={14} className="text-rose" />
+                      <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* GRID 5 — CART ARCHIVE (PERMANENT) */}
+          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0">
+            <div className="border border-ink/10 p-3 bg-white shadow-sm flex flex-col gap-3 relative z-20 h-full min-h-[300px]">
+              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
+                <span className="text-[10px] font-medium text-ink">{items.length} Items</span>
+              </div>
+              
+              {items.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 py-10">
+                  <ShoppingCart size={24} className="mb-2 text-ink" />
+                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Archive is empty</span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex-1 overflow-y-auto no-scrollbar space-y-2">
                     {items.map((item, idx) => (
                       <div key={idx} className="flex gap-2 items-center">
                         <div className="w-10 h-10 bg-ink/5 relative overflow-hidden flex-shrink-0">
@@ -344,27 +369,11 @@ export default function ProductDetailPage() {
                   
                   <button 
                     onClick={() => router.push('/checkout')} 
-                    className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                    className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20 mt-auto"
                   >
                     Secure Checkout
                   </button>
-                </div>
-              )}
-
-              {/* Trust Badges - Desktop only (Hidden if Cart is active to save space) */}
-              {!isMobile && items.length === 0 && (
-              <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5">
-                {[
-                  { icon: ShieldCheck, label: 'Secure Payment' },
-                  { icon: Truck, label: 'Express Shipping' },
-                  { icon: RefreshCw, label: 'Easy Returns' }
-                ].map((badge, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
-                    <badge.icon size={14} className="text-rose" />
-                    <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
-                  </div>
-                ))}
-              </div>
+                </>
               )}
             </div>
           </div>
