@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, X, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -34,7 +34,7 @@ interface Product {
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const { addItem, items, totalPrice } = useCart();
+  const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('M');
@@ -123,7 +123,7 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-12 md:pt-28 px-4 md:px-10 max-w-[1500px] ml-0 mr-auto relative",
+        "pt-12 md:pt-28 px-4 md:px-10 relative",
         isMobile && "pt-14"
       )}>
 
@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="grid grid-cols-2 lg:grid-cols-[56px_1.2fr_1fr_1fr_1fr] gap-3 lg:gap-4 xl:gap-8 mt-4 lg:mt-2">
+        <div className="grid grid-cols-2 lg:grid-cols-[56px_1.2fr_1fr_1fr_1.1fr] gap-3 lg:gap-6 xl:gap-10 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
           <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
@@ -167,7 +167,7 @@ export default function ProductDetailPage() {
             </AnimatePresence>
           </div>
 
-          {/* GRID 2 — MAIN IMAGE (UNCHANGED) */}
+          {/* GRID 2 — MAIN IMAGE */}
           <div className="col-span-1 group/mainimg relative">
             <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <motion.img
@@ -214,7 +214,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1">
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-2">
             <div className="space-y-4 lg:space-y-6">
               <div className="space-y-2 lg:space-y-3">
                 <div className="flex items-center gap-1.5 lg:gap-3">
@@ -256,7 +256,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 4 — SELECTION & ACTION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1">
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-2">
             <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
               <div className="space-y-3">
@@ -330,49 +330,113 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* GRID 5 — CART ARCHIVE (PERMANENT) */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0">
-            <div className="border border-ink/10 p-3 bg-white shadow-sm flex flex-col gap-3 relative z-20 h-full min-h-[300px]">
-              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+          {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
+          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-2">
+            <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
+              {/* Cart Header */}
+              <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
                 <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
-                <span className="text-[10px] font-medium text-ink">{items.length} Items</span>
+                <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? 'Item' : 'Items'}</span>
               </div>
               
               {items.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 py-10">
-                  <ShoppingCart size={24} className="mb-2 text-ink" />
+                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
+                  <ShoppingCart size={28} className="mb-3 text-ink" />
                   <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Archive is empty</span>
+                  <span className="text-[8px] text-ink/40 font-medium mt-1">Select a size and add items</span>
                 </div>
               ) : (
                 <>
-                  <div className="flex-1 overflow-y-auto no-scrollbar space-y-2">
-                    {items.map((item, idx) => (
-                      <div key={idx} className="flex gap-2 items-center">
-                        <div className="w-10 h-10 bg-ink/5 relative overflow-hidden flex-shrink-0">
-                           {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-cover" />}
-                        </div>
-                        <div className="flex-1 min-w-0 flex flex-col">
-                           <span className="text-[9px] font-medium uppercase leading-tight truncate text-ink">{item.name}</span>
-                           <span className="text-[8px] font-medium text-ink/40">Size: {item.size} • Qty: {item.quantity}</span>
-                        </div>
-                        <div className="text-[9px] font-medium text-rose whitespace-nowrap">
-                          {((item.price * item.quantity)/1000).toFixed(0)}k
-                        </div>
-                      </div>
-                    ))}
+                  {/* Cart Items List */}
+                  <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-ink/5">
+                    <AnimatePresence>
+                      {items.map((item) => (
+                        <motion.div 
+                          key={`${item.id}-${item.size}`}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors"
+                        >
+                          {/* Thumbnail */}
+                          <div className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0">
+                            {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" />}
+                          </div>
+
+                          {/* Item Details */}
+                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                            <div className="flex justify-between items-start gap-2">
+                              <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
+                              {/* Delete Button */}
+                              <button 
+                                onClick={() => removeItem(item.id, item.size)}
+                                className="opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0 w-4 h-4 flex items-center justify-center text-ink/20 hover:text-rose hover:bg-rose/5 transition-colors"
+                                title="Remove from archive"
+                              >
+                                <X size={10} strokeWidth={2.5} />
+                              </button>
+                            </div>
+                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">Size {item.size}</span>
+                            
+                            {/* Quantity Controls + Price */}
+                            <div className="flex items-center justify-between mt-0.5">
+                              <div className="flex items-center gap-0 border border-ink/8">
+                                <button 
+                                  onClick={() => {
+                                    if (item.quantity <= 1) {
+                                      removeItem(item.id, item.size);
+                                    } else {
+                                      updateQuantity(item.id, item.quantity - 1, item.size);
+                                    }
+                                  }}
+                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                >
+                                  <Minus size={8} />
+                                </button>
+                                <span className="text-[9px] font-medium w-5 text-center border-x border-ink/8 h-5 flex items-center justify-center">{item.quantity}</span>
+                                <button 
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
+                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                >
+                                  <Plus size={8} />
+                                </button>
+                              </div>
+                              <span className="text-[9px] font-medium text-rose">
+                                IDR {(item.price * item.quantity).toLocaleString('id-ID')}
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
                   
-                  <div className="flex justify-between items-center pt-2 border-t border-ink/5">
-                     <span className="text-[9px] font-medium uppercase tracking-widest text-ink/60">Total Value</span>
-                     <span className="text-[10px] font-medium text-rose">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                  {/* Cart Footer — Summary & Actions */}
+                  <div className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
+                    {/* Subtotal */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Total Investment</span>
+                      <span className="text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        onClick={() => router.push('/checkout')} 
+                        className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                      >
+                        Secure Checkout
+                      </button>
+                      <button 
+                        onClick={() => clearCart()} 
+                        className="w-full py-2 bg-transparent text-ink/30 text-[8px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
+                      >
+                        <Trash2 size={9} />
+                        Clear Archive
+                      </button>
+                    </div>
                   </div>
-                  
-                  <button 
-                    onClick={() => router.push('/checkout')} 
-                    className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20 mt-auto"
-                  >
-                    Secure Checkout
-                  </button>
                 </>
               )}
             </div>
