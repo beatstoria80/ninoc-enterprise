@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, X, Trash2 } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -144,10 +144,10 @@ export default function ProductDetailPage() {
         </div>
 
         {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="grid grid-cols-2 lg:grid-cols-[56px_1.2fr_1fr_1fr_1.1fr] gap-3 lg:gap-6 xl:gap-10 mt-4 lg:mt-2">
+        <div className="grid grid-cols-2 lg:grid-cols-[80px_1.2fr_1fr_1fr_0.95fr] gap-3 lg:gap-5 xl:gap-8 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
-          <div className="hidden lg:flex flex-col gap-3 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
+          <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
             <AnimatePresence>
               {images.map((img, i) => (
                 <motion.button
@@ -157,11 +157,11 @@ export default function ProductDetailPage() {
                   transition={{ delay: 0.3 + (i * 0.15), duration: 0.4, ease: "easeOut" }}
                   onClick={() => setActiveImageIndex(i)}
                   className={cn(
-                    "w-full aspect-[3/4] rounded-none overflow-hidden border transition-all relative group bg-white",
-                    activeImageIndex === i ? "border-rose opacity-100" : "border-ink/5 opacity-40 hover:opacity-100"
+                    "w-full aspect-[4/5] rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
+                    activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
                   )}
                 >
-                  <Image src={img} className="object-contain p-2" alt="" fill />
+                  <Image src={img} className="object-contain p-1.5" alt="" fill sizes="80px" />
                 </motion.button>
               ))}
             </AnimatePresence>
@@ -214,7 +214,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-2">
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-4 lg:space-y-6">
               <div className="space-y-2 lg:space-y-3">
                 <div className="flex items-center gap-1.5 lg:gap-3">
@@ -256,7 +256,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 4 — SELECTION & ACTION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-2">
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
               <div className="space-y-3">
@@ -331,7 +331,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-2">
+          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               {/* Cart Header */}
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
@@ -357,7 +357,7 @@ export default function ProductDetailPage() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20, height: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors"
+                          className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
                         >
                           {/* Thumbnail */}
                           <div className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0">
@@ -368,13 +368,13 @@ export default function ProductDetailPage() {
                           <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                             <div className="flex justify-between items-start gap-2">
                               <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
-                              {/* Delete Button */}
+                              {/* Delete Button — Always Visible */}
                               <button 
                                 onClick={() => removeItem(item.id, item.size)}
-                                className="opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0 w-4 h-4 flex items-center justify-center text-ink/20 hover:text-rose hover:bg-rose/5 transition-colors"
+                                className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
                                 title="Remove from archive"
                               >
-                                <X size={10} strokeWidth={2.5} />
+                                <Trash2 size={10} strokeWidth={2} />
                               </button>
                             </div>
                             <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">Size {item.size}</span>
