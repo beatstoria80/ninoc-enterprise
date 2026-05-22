@@ -42,6 +42,7 @@ export default function ProductDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -102,6 +103,15 @@ export default function ProductDetailPage() {
     }
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const distance = touchStart - e.changedTouches[0].clientX;
+    if (distance > 40) setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+    if (distance < -40) setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+    setTouchStart(null);
   };
 
   return (
@@ -165,13 +175,38 @@ export default function ProductDetailPage() {
           {/* GRID 2 — MAIN IMAGE / MOBILE CAROUSEL */}
           <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8 w-full">
             
-            {/* MOBILE: Horizontal Peeking Carousel (Artboard 2) */}
-            <div className="flex lg:hidden overflow-x-auto snap-x snap-mandatory minimal-scroll w-screen -mx-4 px-4 gap-3 pb-4">
-              {images.map((img, idx) => (
-                <div key={idx} className="w-[75vw] shrink-0 snap-center relative aspect-[4/5] rounded-none bg-white border border-ink/5 shadow-md flex items-center justify-center">
-                  <Image src={img} alt={`${product.name} ${idx}`} fill className="object-contain p-4" sizes="75vw" />
-                </div>
-              ))}
+            {/* MOBILE: Animated Card Preview (Artboard 2) */}
+            <div 
+              className="flex lg:hidden relative w-full aspect-[4/5] justify-center items-center overflow-hidden py-4 touch-pan-y"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              {images.map((img, idx) => {
+                const isActive = idx === activeImageIndex;
+                const isPrev = idx === (activeImageIndex === 0 ? images.length - 1 : activeImageIndex - 1);
+                const isNext = idx === (activeImageIndex === images.length - 1 ? 0 : activeImageIndex + 1);
+                
+                let positionClass = "opacity-0 scale-75 translate-x-0 z-0 pointer-events-none"; // hidden
+                if (isActive) positionClass = "opacity-100 scale-100 translate-x-0 z-20 shadow-xl";
+                else if (isPrev) positionClass = "opacity-40 scale-[0.85] -translate-x-[65%] z-10 shadow-sm cursor-pointer";
+                else if (isNext) positionClass = "opacity-40 scale-[0.85] translate-x-[65%] z-10 shadow-sm cursor-pointer";
+
+                return (
+                  <div 
+                    key={idx} 
+                    onClick={() => {
+                      if (isPrev) setActiveImageIndex(idx);
+                      if (isNext) setActiveImageIndex(idx);
+                    }}
+                    className={cn(
+                      "absolute w-[65%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",
+                      positionClass
+                    )}
+                  >
+                    <Image src={img} alt={`${product.name} ${idx}`} fill className="object-contain p-4 select-none pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
+                  </div>
+                );
+              })}
             </div>
 
             {/* DESKTOP: Single Main Image */}
