@@ -46,6 +46,8 @@ export default function ProductDetailPage() {
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
 
+
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -125,11 +127,7 @@ export default function ProductDetailPage() {
         isMobile && "pt-14"
       )}>
 
-        {/* ============================================================ */}
-        {/* DESKTOP LAYOUT — 5-Column Archival Grid (lg and above)       */}
-        {/* ============================================================ */}
-
-        {/* BACK TO CATALOG NAV - TOP LEFT (Desktop only) */}
+        {/* BACK TO CATALOG NAV - TOP LEFT */}
         <div className="mb-4 lg:mb-6 hidden lg:block">
           <button 
             onClick={() => router.push('/shop')} 
@@ -146,10 +144,10 @@ export default function ProductDetailPage() {
         </div>
 
         {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="hidden lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] lg:gap-4 xl:gap-5 mt-2">
+        <div className="grid grid-cols-2 lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
-          <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
+          <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
               {images.map((img, i) => (
                 <button
                   key={i}
@@ -165,18 +163,25 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 2 — MAIN IMAGE */}
-          <div className="relative flex items-center px-6 xl:px-8">
-            <div className="w-full relative aspect-[4/5] max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
+          <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8">
+            <div className="w-full relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
               <Image
                 src={images[activeImageIndex]}
                 alt={product.name}
                 fill
                 className="object-contain p-2"
-                sizes="30vw"
+                sizes="(max-width: 768px) 50vw, 30vw"
               />
+              
+              {/* Mobile Indicators */}
+              <div className="absolute bottom-6 flex lg:hidden gap-2">
+                 {images.map((_, i) => (
+                    <div key={i} className={cn("w-2 h-2 rounded-full", activeImageIndex === i ? "bg-rose" : "bg-ink/10")} />
+                 ))}
+              </div>
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows (Outside Box, Inside Column Padding) */}
             {images.length > 1 && (
               <>
                 <button 
@@ -184,7 +189,7 @@ export default function ProductDetailPage() {
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
                   }}
-                  className="absolute left-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute left-0 lg:left-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
                 >
                   <ChevronLeft size={24} strokeWidth={2} />
                 </button>
@@ -193,7 +198,7 @@ export default function ProductDetailPage() {
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
                   }}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute right-0 lg:right-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
                 >
                   <ChevronRight size={24} strokeWidth={2} />
                 </button>
@@ -202,30 +207,30 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="flex flex-col py-1">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-ink text-white rounded-full text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
+            <div className="space-y-4 lg:space-y-6">
+              <div className="space-y-2 lg:space-y-3">
+                <div className="flex items-center gap-1.5 lg:gap-3">
+                  <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
                   <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
                 </div>
-                <h1 className="text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
+                <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
-                  <div className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-2.5 py-1.5 rounded-sm w-fit mt-2">
+                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-2">
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-3xl font-display font-medium italic text-rose mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2">Origin Specification</h4>
-                <p className="text-[12px] leading-relaxed text-ink/60 font-medium">{product.description || 'Premium quality apparel from NINOC.'}</p>
+              <div className="space-y-1.5 lg:space-y-3">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
+                <p className="text-[9px] lg:text-[12px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
               </div>
 
-              {/* Size Guide Table */}
+              {/* Size Guide Table - Inline for Grid 3 */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2 flex items-center gap-2">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
                   <Ruler size={10} className="text-rose" />
                   Measurement (CM)
                 </h4>
@@ -244,18 +249,18 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 4 — SELECTION & ACTION */}
-          <div className="flex flex-col py-1">
-            <div className="space-y-6 flex flex-col h-full">
+          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
+            <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
               <div className="space-y-3">
-                <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2">Select Size</h4>
-                <div className="flex gap-2 flex-wrap">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
+                <div className="flex gap-1 lg:gap-2 flex-wrap">
                   {['S', 'M', 'L', 'XL'].map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "w-10 h-10 rounded-none flex items-center justify-center text-[10px] font-medium transition-all border",
+                        "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
                         selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
@@ -266,22 +271,22 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Quantity */}
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-2">Quantity</h4>
-                <div className="flex items-center gap-4 bg-ink/[0.02] w-fit px-3 py-1.5 rounded-none border border-ink/5">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
-                  <span className="text-[10px] font-medium w-4 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
+              <div className="space-y-1.5 lg:space-y-3">
+                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
+                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
+                  <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
                 </div>
               </div>
 
               {/* ACTION BUTTON */}
-              <div className="pt-4 relative z-10 mt-auto">
+              <div className="pt-2 lg:pt-4 relative z-10 mt-auto">
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
                   className={cn(
-                    "w-full py-5 rounded-none font-medium text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                    "w-full py-2.5 lg:py-5 rounded-none font-medium text-[9px] lg:text-xs uppercase tracking-[0.2em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                     addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
@@ -299,23 +304,25 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Trust Badges - Desktop only */}
-              <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">
-                {[
-                  { icon: ShieldCheck, label: 'Secure Payment' },
-                  { icon: Truck, label: 'Express Shipping' },
-                  { icon: RefreshCw, label: 'Easy Returns' }
-                ].map((badge, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
-                    <badge.icon size={14} className="text-rose" />
-                    <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
-                  </div>
-                ))}
-              </div>
+              {!isMobile && (
+                <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">
+                  {[
+                    { icon: ShieldCheck, label: 'Secure Payment' },
+                    { icon: Truck, label: 'Express Shipping' },
+                    { icon: RefreshCw, label: 'Easy Returns' }
+                  ].map((badge, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
+                      <badge.icon size={14} className="text-rose" />
+                      <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
-          <div className="flex flex-col py-1 pl-3 border-l border-ink/5">
+          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               {/* Cart Header */}
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
@@ -347,7 +354,7 @@ export default function ProductDetailPage() {
                           <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                             <div className="flex justify-between items-start gap-2">
                               <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
-                              {/* Delete Button */}
+                              {/* Delete Button — Always Visible */}
                               <button 
                                 onClick={() => removeItem(item.id, item.size)}
                                 className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
@@ -421,21 +428,21 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* RELATED PRODUCTS SECTION - DESKTOP ONLY */}
+        {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-8 lg:mt-10 space-y-3 hidden lg:block">
+          <div className="mt-8 lg:mt-10 space-y-3">
             <div className="flex justify-between items-end border-b border-ink/5 pb-2">
-              <h2 className="text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+              <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="flex gap-6 overflow-x-auto no-scrollbar pb-4">
+            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-4">
               {relatedProducts.map((p) => (
                 <div
                   key={p.id}
-                  className="flex-shrink-0 w-[160px]"
+                  className="flex-shrink-0 w-[140px] md:w-[160px]"
                 >
                   <Link href={`/shop/${p.slug}`} className="group block space-y-3">
                     <div className="aspect-[3/4] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
@@ -443,7 +450,7 @@ export default function ProductDetailPage() {
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="space-y-1 px-1">
-                      <h3 className="text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
+                      <h3 className="text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
                       {p.price_tag && (
                         <div className="text-[6px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
                           {p.price_tag}
@@ -457,182 +464,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
         )}
-
-
-        {/* ============================================================ */}
-        {/* MOBILE LAYOUT — Artboard 2 Wireframe (below lg)              */}
-        {/* ============================================================ */}
-        <div className="block lg:hidden">
-          <div className="max-w-3xl mx-auto space-y-3 pb-20">
-            
-            {/* BACK NAV */}
-            <button 
-              onClick={() => router.push('/shop')} 
-              className="group flex items-center gap-2 text-ink transition-all mb-4"
-            >
-              <div className="w-6 h-6 border border-ink flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
-                <ArrowLeft size={10} />
-              </div>
-              <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink group-hover:text-rose transition-colors">Catalog</span>
-            </button>
-
-            {/* TOP SECTION: 3 PHOTO LAYOUT */}
-            <div className="flex justify-center items-stretch gap-2 h-[45vh]">
-              {/* Left Photo Perspective */}
-              <button 
-                onClick={() => setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
-                className="w-1/4 relative bg-white border border-ink transition-all hover:bg-ink/[0.02] active:scale-[0.98] group flex-shrink-0"
-              >
-                 <Image src={images[(activeImageIndex - 1 + images.length) % images.length]} fill alt="Perspective Left" className="object-contain p-2" />
-              </button>
-              
-              {/* Center Photo Utama */}
-              <div className="w-2/4 relative bg-white border border-ink shadow-sm z-10">
-                 <Image src={images[activeImageIndex]} fill alt={product.name} className="object-contain p-2" priority />
-                 <div className="absolute top-2 left-2 px-1.5 py-0.5 border border-ink text-[6px] font-medium uppercase tracking-[0.2em] text-ink bg-white">UTAMA</div>
-                 
-                 {/* Controls */}
-                 <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
-                   {images.map((_, i) => (
-                      <div key={i} className={cn("h-1 rounded-none transition-all", activeImageIndex === i ? "w-4 bg-ink" : "w-1.5 bg-ink/20")} />
-                   ))}
-                 </div>
-              </div>
-
-              {/* Right Photo Perspective */}
-              <button 
-                onClick={() => setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
-                className="w-1/4 relative bg-white border border-ink transition-all hover:bg-ink/[0.02] active:scale-[0.98] group flex-shrink-0"
-              >
-                 <Image src={images[(activeImageIndex + 1) % images.length]} fill alt="Perspective Right" className="object-contain p-2" />
-              </button>
-            </div>
-
-            {/* MIDDLE CONTENT BLOCKS (BOX GRID) */}
-            <div className="flex flex-col gap-2 pt-2">
-              
-              {/* Row 1: Title/Price & Size Grid */}
-              <div className="flex flex-col gap-2">
-                <div className="flex-1 bg-white border border-ink p-3 flex flex-col justify-center">
-                   <h1 className="text-xl font-display font-medium italic tracking-tighter uppercase leading-[0.9] text-ink">{product.name}</h1>
-                   <div className="flex items-center gap-3 mt-1.5">
-                     <p className="text-sm font-medium text-rose tracking-tight">IDR {product.price?.toLocaleString('id-ID')}</p>
-                     {product.price_tag && <span className="text-[6px] border border-rose/30 bg-rose/5 text-rose uppercase tracking-[0.2em] px-1 py-0.5">{product.price_tag}</span>}
-                   </div>
-                </div>
-                <div className="flex gap-2">
-                  {['S', 'M', 'L', 'XL'].map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        "flex-1 w-12 min-h-[50px] border flex items-center justify-center text-xs font-medium transition-all",
-                        selectedSize === size ? "bg-ink text-white border-ink shadow-sm" : "bg-white text-ink border-ink hover:bg-ink/5"
-                      )}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 2: Origin Spec Header & Quantity */}
-              <div className="flex gap-2">
-                <div className="flex-1 bg-white border border-ink p-2 px-4 flex items-center">
-                  <h4 className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink">Origin Specification</h4>
-                </div>
-                <div className="w-[104px] bg-white border border-ink flex items-center justify-between px-2 flex-shrink-0">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-6 h-6 flex items-center justify-center hover:text-rose"><Minus size={10}/></button>
-                  <span className="text-[10px] font-medium text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="w-6 h-6 flex items-center justify-center hover:text-rose"><Plus size={10}/></button>
-                </div>
-              </div>
-
-              {/* Row 3: Description Box */}
-              <div className="bg-white border border-ink p-4 min-h-[120px]">
-                <p className="text-[10px] leading-relaxed text-ink/80 font-medium">{product.description || 'Premium aesthetic collection from NINOC Archive.'}</p>
-                
-                <div className="flex items-center gap-1.5 mt-4">
-                  <span className="px-1.5 py-0.5 bg-ink text-white text-[5px] font-medium uppercase tracking-[0.2em]">Authentic</span>
-                  <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
-                </div>
-              </div>
-
-              {/* Row 4: Measurement Header */}
-              <div className="bg-white border border-ink p-2 px-4 flex items-center">
-                <h4 className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink">Measurement & Archive</h4>
-              </div>
-
-              {/* Row 5: Large Box (Measurement & Cart) */}
-              <div className="bg-white border border-ink p-4 flex flex-col gap-6">
-                {/* Measurement */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[7px] font-medium border-b border-ink/20 pb-1.5"><span className="text-ink/50 uppercase tracking-widest">Size</span><span className="text-ink/50 uppercase tracking-widest">Chest / Length</span></div>
-                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
-                    <div key={s} className="flex justify-between text-[8px] font-medium border-b border-ink/5 pb-1.5 mt-1.5">
-                      <span className="text-rose">{s.split(':')[0]}</span>
-                      <span>{s.split(':')[1]}</span>
-                    </div>
-                  ))}
-                  <p className="text-[6px] text-ink/30 mt-3 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
-                </div>
-                
-                {/* Cart Summary Box */}
-                <div className="border-t border-ink/10 pt-4 flex flex-col">
-                  <div className="flex justify-between items-center mb-3">
-                     <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink flex items-center gap-1.5"><ShoppingCart size={10} className="text-rose"/> Cart Summary</h4>
-                     <span className="text-[8px] font-medium bg-ink/5 px-1.5 py-0.5">{items.length} Items</span>
-                  </div>
-                  
-                  {/* Mini cart items preview */}
-                  <div className="flex-1 overflow-y-auto minimal-scroll pr-1 max-h-[120px] mb-3 space-y-2">
-                    {items.length === 0 ? (
-                      <div className="h-full flex items-center justify-center text-[8px] uppercase tracking-widest text-ink/30 font-medium">Archive Empty</div>
-                    ) : (
-                      items.map(item => (
-                        <div key={`${item.id}-${item.size}`} className="flex justify-between items-center text-[8px] font-medium bg-ink/[0.02] p-1.5 border border-ink/5">
-                          <span className="truncate max-w-[100px] text-ink/70">{item.name} ({item.size}) x{item.quantity}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-rose">{(item.price * item.quantity).toLocaleString()}</span>
-                            <button onClick={() => removeItem(item.id, item.size)} className="text-ink/20 hover:text-rose"><Trash2 size={8}/></button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <div className="pt-2 border-t border-ink/10 flex justify-between items-center mt-auto">
-                    <span className="text-[7px] font-medium uppercase tracking-widest text-ink/50">Total</span>
-                    <span className="text-xs font-medium text-rose">IDR {totalPrice().toLocaleString('id-ID')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* ACTION BUTTON */}
-              <button
-                onClick={handleAddToCart}
-                disabled={addedToCart}
-                className={cn(
-                  "w-full py-4 mt-2 border-2 text-[10px] uppercase font-medium tracking-[0.4em] transition-all flex items-center justify-center gap-2",
-                  addedToCart ? "bg-emerald-500 border-emerald-500 text-white" : "bg-ink border-ink text-white hover:bg-rose hover:border-rose"
-                )}
-              >
-                {addedToCart ? (
-                  <><ShieldCheck size={14} /> ADDED TO ARCHIVE</>
-                ) : (
-                  <><ShoppingCart size={14} /> ADD TO CART</>
-                )}
-              </button>
-            </div>
-            
-            {/* SECURE BADGES */}
-            <div className="flex justify-center gap-4 opacity-40 mt-4 pb-10">
-               <div className="flex items-center gap-1 text-[6px] font-medium uppercase tracking-widest"><ShieldCheck size={8}/> Secure</div>
-               <div className="w-[1px] h-2 bg-ink/20"/>
-               <div className="flex items-center gap-1 text-[6px] font-medium uppercase tracking-widest"><RefreshCw size={8}/> Returns</div>
-            </div>
-          </div>
-        </div>
       </div>
 
     </main>
