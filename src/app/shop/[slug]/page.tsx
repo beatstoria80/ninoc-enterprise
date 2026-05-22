@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
 
       <div className={cn(
         "pt-12 md:pt-28 px-4 md:px-10 relative",
-        isMobile && "pt-14"
+        isMobile && "pt-14 pb-28" // Added pb-28 for sticky bottom button
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
@@ -143,10 +143,10 @@ export default function ProductDetailPage() {
           </button>
         </div>
 
-        {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="grid grid-cols-2 lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
+        {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
+        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-6 lg:gap-4 xl:gap-5 mt-2 lg:mt-2">
           
-          {/* GRID 1 — THUMBNAIL STRIP */}
+          {/* GRID 1 — THUMBNAIL STRIP (Desktop Only) */}
           <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
               {images.map((img, i) => (
                 <button
@@ -162,9 +162,20 @@ export default function ProductDetailPage() {
               ))}
           </div>
 
-          {/* GRID 2 — MAIN IMAGE */}
-          <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8">
-            <div className="w-full relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
+          {/* GRID 2 — MAIN IMAGE / MOBILE CAROUSEL */}
+          <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8 w-full">
+            
+            {/* MOBILE: Horizontal Peeking Carousel (Artboard 2) */}
+            <div className="flex lg:hidden overflow-x-auto snap-x snap-mandatory minimal-scroll w-screen -mx-4 px-4 gap-3 pb-4">
+              {images.map((img, idx) => (
+                <div key={idx} className="w-[75vw] shrink-0 snap-center relative aspect-[4/5] rounded-none bg-white border border-ink/5 shadow-md flex items-center justify-center">
+                  <Image src={img} alt={`${product.name} ${idx}`} fill className="object-contain p-4" sizes="75vw" />
+                </div>
+              ))}
+            </div>
+
+            {/* DESKTOP: Single Main Image */}
+            <div className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
               <Image
                 src={images[activeImageIndex]}
                 alt={product.name}
@@ -172,13 +183,6 @@ export default function ProductDetailPage() {
                 className="object-contain p-2"
                 sizes="(max-width: 768px) 50vw, 30vw"
               />
-              
-              {/* Mobile Indicators */}
-              <div className="absolute bottom-6 flex lg:hidden gap-2">
-                 {images.map((_, i) => (
-                    <div key={i} className={cn("w-2 h-2 rounded-full", activeImageIndex === i ? "bg-rose" : "bg-ink/10")} />
-                 ))}
-              </div>
             </div>
 
             {/* Navigation Arrows (Outside Box, Inside Column Padding) */}
@@ -280,13 +284,13 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* ACTION BUTTON */}
-              <div className="pt-2 lg:pt-4 relative z-10 mt-auto">
+              {/* ACTION BUTTON - Sticky on Mobile (Artboard 2) */}
+              <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
                 <button
                   onClick={handleAddToCart}
                   disabled={addedToCart}
                   className={cn(
-                    "w-full py-2.5 lg:py-5 rounded-none font-medium text-[9px] lg:text-xs uppercase tracking-[0.2em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                    "w-full py-4 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                     addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
