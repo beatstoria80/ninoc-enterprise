@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
     product.perspective2,
     product.perspective3,
     product.perspective4
-  ].filter((img): img is string => !!img && img.startsWith('http'));
+  ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
   const handleAddToCart = () => {
     if (!product) return;
