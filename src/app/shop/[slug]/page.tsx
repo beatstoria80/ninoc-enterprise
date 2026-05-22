@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Star, ShieldCheck, RefreshCw, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
@@ -34,14 +33,13 @@ interface Product {
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
+  const { addItem, removeItem, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -60,14 +58,6 @@ export default function ProductDetailPage() {
         if (error) throw error;
         if (data) {
           setProduct(data);
-          // Fetch related products
-          const { data: related } = await supabase
-            .from('products')
-            .select('*')
-            .eq('category', data.category)
-            .neq('id', data.id)
-            .limit(4);
-          setRelatedProducts(related || []);
         }
       } catch (error: unknown) {
         console.error('Failed to fetch product:', error);
@@ -127,343 +117,178 @@ export default function ProductDetailPage() {
         isMobile && "pt-14"
       )}>
 
-        {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 lg:mb-6 hidden lg:block">
+        {/* ARTBOARD 2 LAYOUT: Unified Responsive Architecture */}
+        <div className="max-w-3xl mx-auto space-y-3 pb-20">
+          
+          {/* BACK NAV */}
           <button 
             onClick={() => router.push('/shop')} 
-            className="group flex items-center gap-3 text-ink transition-all"
+            className="group flex items-center gap-2 text-ink transition-all mb-4"
           >
-            <div className="w-8 h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
-              <ArrowLeft size={14} />
+            <div className="w-6 h-6 border border-ink flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
+              <ArrowLeft size={10} />
             </div>
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
-            </div>
+            <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink group-hover:text-rose transition-colors">Catalog</span>
           </button>
-        </div>
 
-        {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="grid grid-cols-2 lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
-          
-          {/* GRID 1 — THUMBNAIL STRIP */}
-          <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
-              {images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImageIndex(i)}
-                  className={cn(
-                    "w-full aspect-[4/5] rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
-                    activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
-                  )}
-                >
-                  <Image src={img} className="object-contain p-1.5" alt="" fill sizes="100px" />
-                </button>
-              ))}
-          </div>
-
-          {/* GRID 2 — MAIN IMAGE */}
-          <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8">
-            <div className="w-full relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] lg:max-h-[55vh] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl flex items-center justify-center">
-              <Image
-                src={images[activeImageIndex]}
-                alt={product.name}
-                fill
-                className="object-contain p-2"
-                sizes="(max-width: 768px) 50vw, 30vw"
-              />
-              
-              {/* Mobile Indicators */}
-              <div className="absolute bottom-6 flex lg:hidden gap-2">
+          {/* TOP SECTION: 3 PHOTO LAYOUT */}
+          <div className="flex justify-center items-stretch gap-2 h-[45vh] lg:h-[60vh]">
+            {/* Left Photo Perspective */}
+            <button 
+              onClick={() => setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+              className="w-1/4 relative bg-white border border-ink transition-all hover:bg-ink/[0.02] active:scale-[0.98] group flex-shrink-0"
+            >
+               <Image src={images[(activeImageIndex - 1 + images.length) % images.length]} fill alt="Perspective Left" className="object-contain p-2 md:p-4" />
+               <div className="absolute top-2 left-2 px-1 border border-ink/10 text-[5px] md:text-[7px] font-medium uppercase tracking-widest text-ink/40 bg-white/50 backdrop-blur-sm hidden md:block">PERSPECTIVE</div>
+            </button>
+            
+            {/* Center Photo Utama */}
+            <div className="w-2/4 relative bg-white border border-ink shadow-sm z-10">
+               <Image src={images[activeImageIndex]} fill alt={product.name} className="object-contain p-2 md:p-6" priority />
+               <div className="absolute top-2 left-2 px-1.5 py-0.5 border border-ink text-[6px] md:text-[8px] font-bold uppercase tracking-[0.2em] text-ink bg-white">UTAMA</div>
+               
+               {/* Controls */}
+               <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
                  {images.map((_, i) => (
-                    <div key={i} className={cn("w-2 h-2 rounded-full", activeImageIndex === i ? "bg-rose" : "bg-ink/10")} />
+                    <div key={i} className={cn("h-1 rounded-none transition-all", activeImageIndex === i ? "w-4 md:w-6 bg-ink" : "w-1.5 md:w-2 bg-ink/20")} />
                  ))}
-              </div>
+               </div>
             </div>
 
-            {/* Navigation Arrows (Outside Box, Inside Column Padding) */}
-            {images.length > 1 && (
-              <>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-                  }}
-                  className="absolute left-0 lg:left-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
-                >
-                  <ChevronLeft size={24} strokeWidth={2} />
-                </button>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-                  }}
-                  className="absolute right-0 lg:right-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
-                >
-                  <ChevronRight size={24} strokeWidth={2} />
-                </button>
-              </>
-            )}
+            {/* Right Photo Perspective */}
+            <button 
+              onClick={() => setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+              className="w-1/4 relative bg-white border border-ink transition-all hover:bg-ink/[0.02] active:scale-[0.98] group flex-shrink-0"
+            >
+               <Image src={images[(activeImageIndex + 1) % images.length]} fill alt="Perspective Right" className="object-contain p-2 md:p-4" />
+               <div className="absolute top-2 right-2 px-1 border border-ink/10 text-[5px] md:text-[7px] font-medium uppercase tracking-widest text-ink/40 bg-white/50 backdrop-blur-sm hidden md:block">PERSPECTIVE</div>
+            </button>
           </div>
 
-          {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
-            <div className="space-y-4 lg:space-y-6">
-              <div className="space-y-2 lg:space-y-3">
-                <div className="flex items-center gap-1.5 lg:gap-3">
-                  <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
-                  <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
-                </div>
-                <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
-                {product.price_tag && (
-                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-2">
-                    {product.price_tag}
-                  </div>
-                )}
-                <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+          {/* MIDDLE CONTENT BLOCKS (BOX GRID) */}
+          <div className="flex flex-col gap-2 pt-2">
+            
+            {/* Row 1: Title/Price & Size Grid */}
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="flex-1 bg-white border border-ink p-3 md:p-4 flex flex-col justify-center">
+                 <h1 className="text-xl md:text-2xl lg:text-3xl font-display font-medium italic tracking-tighter uppercase leading-[0.9] text-ink">{product.name}</h1>
+                 <div className="flex items-center gap-3 mt-1.5 md:mt-2">
+                   <p className="text-sm md:text-lg font-medium text-rose tracking-tight">IDR {product.price?.toLocaleString('id-ID')}</p>
+                   {product.price_tag && <span className="text-[6px] md:text-[7px] border border-rose/30 bg-rose/5 text-rose uppercase tracking-[0.2em] px-1 py-0.5">{product.price_tag}</span>}
+                 </div>
               </div>
-
-              <div className="space-y-1.5 lg:space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
-                <p className="text-[9px] lg:text-[12px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
-              </div>
-
-              {/* Size Guide Table - Inline for Grid 3 */}
-              <div className="space-y-2">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
-                  <Ruler size={10} className="text-rose" />
-                  Measurement (CM)
-                </h4>
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
-                    <div key={s} className="flex justify-between text-[9px] font-medium border-b border-ink/5 pb-1">
-                      <span className="text-rose">{s.split(':')[0]}</span>
-                      <span>{s.split(':')[1]}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-[7px] text-ink/20 mt-2 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
-              </div>
-            </div>
-          </div>
-
-          {/* GRID 4 — SELECTION & ACTION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
-            <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
-              {/* Size Selection */}
-              <div className="space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
-                <div className="flex gap-1 lg:gap-2 flex-wrap">
-                  {['S', 'M', 'L', 'XL'].map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
-                        selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
-                      )}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quantity */}
-              <div className="space-y-1.5 lg:space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
-                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
-                  <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
-                </div>
-              </div>
-
-              {/* ACTION BUTTON */}
-              <div className="pt-2 lg:pt-4 relative z-10 mt-auto">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={addedToCart}
-                  className={cn(
-                    "w-full py-2.5 lg:py-5 rounded-none font-medium text-[9px] lg:text-xs uppercase tracking-[0.2em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
-                    addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
-                  )}
-                >
-                    {addedToCart ? (
-                      <span className="flex items-center gap-2">
-                        <ShieldCheck size={16} /> ADDED
-                      </span>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <ShoppingCart size={16} />
-                        <span>ADD TO CART</span>
-                      </div>
+              <div className="flex gap-2">
+                {['S', 'M', 'L', 'XL'].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={cn(
+                      "flex-1 w-12 md:w-16 min-h-[50px] border flex items-center justify-center text-xs font-bold transition-all",
+                      selectedSize === size ? "bg-ink text-white border-ink shadow-sm" : "bg-white text-ink border-ink hover:bg-ink/5"
                     )}
-                </button>
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
-
-              {/* Trust Badges - Desktop only */}
-              {!isMobile && (
-                <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">
-                  {[
-                    { icon: ShieldCheck, label: 'Secure Payment' },
-                    { icon: Truck, label: 'Express Shipping' },
-                    { icon: RefreshCw, label: 'Easy Returns' }
-                  ].map((badge, i) => (
-                    <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
-                      <badge.icon size={14} className="text-rose" />
-                      <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </div>
 
-          {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
-            <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
-              {/* Cart Header */}
-              <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
-                <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? 'Item' : 'Items'}</span>
+            {/* Row 2: Origin Spec Header & Quantity */}
+            <div className="flex gap-2">
+              <div className="flex-1 bg-white border border-ink p-2 px-4 flex items-center">
+                <h4 className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink">Origin Specification</h4>
+              </div>
+              <div className="w-[104px] md:w-[136px] bg-white border border-ink flex items-center justify-between px-2 flex-shrink-0">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-6 h-6 flex items-center justify-center hover:text-rose"><Minus size={10}/></button>
+                <span className="text-[10px] font-medium text-center">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} className="w-6 h-6 flex items-center justify-center hover:text-rose"><Plus size={10}/></button>
+              </div>
+            </div>
+
+            {/* Row 3: Description Box */}
+            <div className="bg-white border border-ink p-4 md:p-6 min-h-[120px]">
+              <p className="text-[10px] md:text-xs leading-relaxed text-ink/80 font-medium">{product.description || 'Premium aesthetic collection from NINOC Archive.'}</p>
+              
+              <div className="flex items-center gap-1.5 mt-4">
+                <span className="px-1.5 py-0.5 bg-ink text-white text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em]">Authentic</span>
+                <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
+              </div>
+            </div>
+
+            {/* Row 4: Measurement Header */}
+            <div className="bg-white border border-ink p-2 px-4 flex items-center">
+              <h4 className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink">Measurement & Archive</h4>
+            </div>
+
+            {/* Row 5: Large Box (Measurement & Cart) */}
+            <div className="bg-white border border-ink p-4 md:p-6 flex flex-col md:flex-row gap-6 md:gap-8">
+              {/* Left: Measurement */}
+              <div className="flex-1 space-y-2">
+                <div className="flex justify-between text-[7px] md:text-[8px] font-bold border-b border-ink/20 pb-1.5"><span className="text-ink/50 uppercase tracking-widest">Size</span><span className="text-ink/50 uppercase tracking-widest">Chest / Length</span></div>
+                {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
+                  <div key={s} className="flex justify-between text-[8px] md:text-[10px] font-medium border-b border-ink/5 pb-1.5 mt-1.5">
+                    <span className="text-rose font-bold">{s.split(':')[0]}</span>
+                    <span>{s.split(':')[1]}</span>
+                  </div>
+                ))}
+                <p className="text-[6px] md:text-[7px] text-ink/30 mt-3 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
               </div>
               
-              {items.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
-                  <ShoppingCart size={28} className="mb-3 text-ink" />
-                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Archive is empty</span>
-                  <span className="text-[8px] text-ink/40 font-medium mt-1">Select a size and add items</span>
+              {/* Right: Cart Summary Box */}
+              <div className="flex-1 md:border-l border-ink/10 md:pl-8 flex flex-col pt-4 md:pt-0 border-t md:border-t-0">
+                <div className="flex justify-between items-center mb-3">
+                   <h4 className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-ink flex items-center gap-1.5"><ShoppingCart size={10} className="text-rose"/> Cart Summary</h4>
+                   <span className="text-[8px] md:text-[9px] font-medium bg-ink/5 px-1.5 py-0.5">{items.length} Items</span>
                 </div>
-              ) : (
-                <>
-                  {/* Cart Items List */}
-                  <div className="flex-1 overflow-y-auto divide-y divide-ink/5 minimal-scroll">
-                      {items.map((item) => (
-                        <div 
-                          key={`${item.id}-${item.size}`}
-                          className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
-                        >
-                          {/* Thumbnail */}
-                          <div className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0">
-                            {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" />}
-                          </div>
-
-                          {/* Item Details */}
-                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
-                              {/* Delete Button — Always Visible */}
-                              <button 
-                                onClick={() => removeItem(item.id, item.size)}
-                                className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
-                                title="Remove from archive"
-                              >
-                                <Trash2 size={10} strokeWidth={2} />
-                              </button>
-                            </div>
-                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">Size {item.size}</span>
-                            
-                            {/* Quantity Controls + Price */}
-                            <div className="flex items-center justify-between mt-0.5">
-                              <div className="flex items-center gap-0 border border-ink/8">
-                                <button 
-                                  onClick={() => {
-                                    if (item.quantity <= 1) {
-                                      removeItem(item.id, item.size);
-                                    } else {
-                                      updateQuantity(item.id, item.quantity - 1, item.size);
-                                    }
-                                  }}
-                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
-                                >
-                                  <Minus size={8} />
-                                </button>
-                                <span className="text-[9px] font-medium w-5 text-center border-x border-ink/8 h-5 flex items-center justify-center">{item.quantity}</span>
-                                <button 
-                                  onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
-                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
-                                >
-                                  <Plus size={8} />
-                                </button>
-                              </div>
-                              <span className="text-[9px] font-medium text-rose">
-                                IDR {(item.price * item.quantity).toLocaleString('id-ID')}
-                              </span>
-                            </div>
-                          </div>
+                
+                {/* Mini cart items preview */}
+                <div className="flex-1 overflow-y-auto minimal-scroll pr-1 max-h-[120px] mb-3 space-y-2">
+                  {items.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-[8px] uppercase tracking-widest text-ink/30 font-medium">Archive Empty</div>
+                  ) : (
+                    items.map(item => (
+                      <div key={`${item.id}-${item.size}`} className="flex justify-between items-center text-[8px] md:text-[9px] font-medium bg-ink/[0.02] p-1.5 border border-ink/5">
+                        <span className="truncate max-w-[100px] text-ink/70">{item.name} ({item.size}) x{item.quantity}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-rose">{(item.price * item.quantity).toLocaleString()}</span>
+                          <button onClick={() => removeItem(item.id, item.size)} className="text-ink/20 hover:text-rose"><Trash2 size={8}/></button>
                         </div>
-                      ))}
-                  </div>
-                  
-                  {/* Cart Footer — Summary & Actions */}
-                  <div className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
-                    {/* Subtotal */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Total Investment</span>
-                      <span className="text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex flex-col gap-2">
-                      <button 
-                        onClick={() => router.push('/checkout')} 
-                        className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
-                      >
-                        Secure Checkout
-                      </button>
-                      <button 
-                        onClick={() => clearCart()} 
-                        className="w-full py-2 bg-transparent text-ink/30 text-[8px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
-                      >
-                        <Trash2 size={9} />
-                        Clear Archive
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-ink/10 flex justify-between items-center mt-auto">
+                  <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-ink/50">Total</span>
+                  <span className="text-xs md:text-sm font-bold text-rose">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                </div>
+              </div>
             </div>
+
+            {/* ACTION BUTTON */}
+            <button
+              onClick={handleAddToCart}
+              disabled={addedToCart}
+              className={cn(
+                "w-full py-4 md:py-5 mt-2 border-2 text-[10px] md:text-[12px] uppercase font-bold tracking-[0.4em] transition-all flex items-center justify-center gap-2",
+                addedToCart ? "bg-emerald-500 border-emerald-500 text-white" : "bg-ink border-ink text-white hover:bg-rose hover:border-rose"
+              )}
+            >
+              {addedToCart ? (
+                <><ShieldCheck size={14} /> ADDED TO ARCHIVE</>
+              ) : (
+                <><ShoppingCart size={14} /> ADD TO CART</>
+              )}
+            </button>
+          </div>
+          
+          {/* SECURE BADGES */}
+          <div className="flex justify-center gap-4 opacity-40 mt-4 pb-10">
+             <div className="flex items-center gap-1 text-[6px] font-medium uppercase tracking-widest"><ShieldCheck size={8}/> Secure</div>
+             <div className="w-[1px] h-2 bg-ink/20"/>
+             <div className="flex items-center gap-1 text-[6px] font-medium uppercase tracking-widest"><RefreshCw size={8}/> Returns</div>
           </div>
         </div>
-
-        {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-8 lg:mt-10 space-y-3">
-            <div className="flex justify-between items-end border-b border-ink/5 pb-2">
-              <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
-              <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
-                View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-4">
-              {relatedProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex-shrink-0 w-[140px] md:w-[160px]"
-                >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-3">
-                    <div className="aspect-[3/4] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
-                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="space-y-1 px-1">
-                      <h3 className="text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
-                      {p.price_tag && (
-                        <div className="text-[6px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
-                          {p.price_tag}
-                        </div>
-                      )}
-                      <p className="text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
     </main>
