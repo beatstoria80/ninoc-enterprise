@@ -280,7 +280,7 @@ export default function CheckoutPage() {
 
     // Ensure Midtrans script is loaded
     if (!snapLoaded || !(window as Window & { snap?: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap) {
-      alert('Payment system is not ready. Please refresh the page.');
+      alert('Payment gateway is not ready. Please refresh the page.');
       return;
     }
 
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
 
   const inputClass = "w-full bg-white py-2.5 px-3 text-[10px] font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
   const selectClass = "w-full bg-white py-2 px-2.5 text-[10px] font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
-  const labelClass = "text-[9px] font-bold uppercase tracking-[0.2em] text-ink/70 mb-1.5 block";
+  const labelClass = "text-[9px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1.5 block";
 
   return (
     <div className={cn(
@@ -606,11 +606,11 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-ink/20">
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
+                  <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>Value Subtotal</span>
                     <span>IDR {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
+                  <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>Logistics</span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                        {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'Action Required'}
@@ -668,7 +668,7 @@ export default function CheckoutPage() {
                     <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={60} height={20} className="h-3.5 w-auto object-contain" unoptimized />
                  </div>
                  <div className="flex flex-col items-center gap-1">
-                    <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
+                    <p className="text-[8px] font-medium uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
                     <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/30">Official NINOC Merchant Partner</p>
                  </div>
               </div>

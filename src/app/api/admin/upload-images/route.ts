@@ -78,10 +78,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-    sizeLimit: '12mb'
-  }
-};

@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Increase body parser limit to allow large image uploads
-  api: {
-    bodyParser: {
-      sizeLimit: '12mb',
-    },
-  },
   images: {
     remotePatterns: [
       {

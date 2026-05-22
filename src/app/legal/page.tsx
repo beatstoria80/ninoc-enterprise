@@ -90,7 +90,7 @@ export default function LegalPage() {
           </div>
           <div className="flex items-center gap-2">
              <div className="w-1 h-1 rounded-full bg-emerald-500" />
-             <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600/50">System Live</span>
+             <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600/50">Studio Live</span>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ export default function LegalPage() {
                    <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol</span>
                 </div>
                 <p className="text-[9px] text-ink/20 uppercase tracking-[0.1em] leading-relaxed max-w-xs">
-                   THIS DOCUMENT IS LEGALLY BINDING. ALL MODIFICATIONS ARE LOGGED IN THE ORIGIN SYSTEM.
+                   THIS DOCUMENT IS LEGALLY BINDING. ALL MODIFICATIONS ARE LOGGED IN THE ORIGIN SPECIFICATION.
                 </p>
              </div>
           </div>

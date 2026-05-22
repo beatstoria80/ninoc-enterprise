@@ -21,7 +21,7 @@ export default function GlobalFooter() {
 
         {/* Navigation */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-bold uppercase tracking-widest text-ink mb-0.5">Navigation</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Navigation</h4>
           <div className="flex flex-col gap-1">
             {['Home', 'Shop', 'Collections', 'Craft'].map((item) => (
               <Link 
@@ -37,7 +37,7 @@ export default function GlobalFooter() {
 
         {/* Legal */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-bold uppercase tracking-widest text-ink mb-0.5">Legal Info</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Legal Info</h4>
           <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
             Legal Specifications
           </Link>
@@ -45,7 +45,7 @@ export default function GlobalFooter() {
           
         {/* Base */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-bold uppercase tracking-widest text-ink mb-0.5">NINOC Base</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NINOC Base</h4>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />

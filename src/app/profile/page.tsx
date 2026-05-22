@@ -234,7 +234,7 @@ export default function ProfilePage() {
               onClick={handleLogout}
               className="text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full"
             >
-              System Exit
+              Studio Exit
             </button>
           </div>
 

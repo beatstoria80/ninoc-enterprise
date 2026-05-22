@@ -800,7 +800,7 @@ export default function AdminDashboard() {
     if (!newMessage.trim() || !activeChatSession) return;
 
     try {
-      // Save to database
+      // Persist to garment archive
       const { data: savedMessage, error } = await supabase
         .from('support_messages')
         .insert({
@@ -1011,7 +1011,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[9px] uppercase tracking-widest text-emerald-600">System Active</span>
+              <span className="text-[9px] uppercase tracking-widest text-emerald-600">Studio Active</span>
             </div>
           </div>
         </header>
@@ -1041,7 +1041,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
-                      <p className="text-xl font-semibold text-gray-900">{stat.value}</p>
+                      <p className="text-xl font-medium text-gray-900">{stat.value}</p>
                     </div>
                   ))}
                 </div>
@@ -1096,7 +1096,7 @@ export default function AdminDashboard() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Products</h2>
+                    <h2 className="text-xl font-medium text-gray-900">Products</h2>
                     <p className="text-sm text-gray-500">{products.length} items in catalog</p>
                   </div>
                   <button
@@ -1176,7 +1176,7 @@ export default function AdminDashboard() {
                             {product.price_tag}
                           </div>
                         )}
-                        <p className="text-lg font-semibold text-gray-900">IDR {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        <p className="text-lg font-medium text-gray-900">IDR {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -1195,7 +1195,7 @@ export default function AdminDashboard() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Upload Images</h2>
+                    <h2 className="text-xl font-medium text-gray-900">Upload Images</h2>
                     <p className="text-sm text-gray-500">
                       {bulkFiles.length > 0
                         ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected`
@@ -1328,13 +1328,13 @@ export default function AdminDashboard() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Inventory</h2>
+                    <h2 className="text-xl font-medium text-gray-900">Inventory</h2>
                     <p className="text-sm text-gray-500">Stock management for all products</p>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="px-4 py-2 bg-white rounded-lg border border-gray-200">
                       <span className="text-[10px] uppercase tracking-wider text-gray-400">Total Stock: </span>
-                      <span className="font-semibold text-gray-900">{totalStock}</span>
+                      <span className="font-medium text-gray-900">{totalStock}</span>
                     </div>
                   </div>
                 </div>
@@ -1369,7 +1369,7 @@ export default function AdminDashboard() {
                             <td className="px-6 py-4 text-sm text-gray-700">{v.color || '-'}</td>
                             <td className="px-6 py-4 text-center">
                               <span className={cn(
-                                "inline-flex items-center justify-center w-10 h-10 rounded-full font-semibold",
+                                "inline-flex items-center justify-center w-10 h-10 rounded-full font-medium",
                                 v.stock_quantity > 10 ? "bg-emerald-100 text-emerald-700" :
                                 v.stock_quantity > 0 ? "bg-amber-100 text-amber-700" :
                                 "bg-red-100 text-red-700"
@@ -1405,7 +1405,7 @@ export default function AdminDashboard() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Orders</h2>
+                    <h2 className="text-xl font-medium text-gray-900">Orders</h2>
                     <p className="text-sm text-gray-500">{orders.length} total orders</p>
                   </div>
                 </div>
@@ -1463,7 +1463,7 @@ export default function AdminDashboard() {
                             {new Date(order.created_at).toLocaleDateString('id-ID')}
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <span className="font-semibold text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className="font-medium text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.status} />
@@ -1493,7 +1493,7 @@ export default function AdminDashboard() {
                 className="space-y-6"
               >
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Logistics</h2>
+                  <h2 className="text-xl font-medium text-gray-900">Logistics</h2>
                   <p className="text-sm text-gray-500">Track and manage shipments</p>
                 </div>
 
@@ -1587,7 +1587,7 @@ export default function AdminDashboard() {
                 className="space-y-6"
               >
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Finance</h2>
+                  <h2 className="text-xl font-medium text-gray-900">Finance</h2>
                   <p className="text-sm text-gray-500">Financial overview and reports</p>
                 </div>
 
@@ -1595,19 +1595,19 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gradient-to-br from-rose to-rose/80 rounded-xl p-6 text-white">
                     <p className="text-[10px] uppercase tracking-widest opacity-70">Total Revenue</p>
-                    <p className="text-3xl font-bold mt-2">IDR {finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p className="text-3xl font-medium mt-2">IDR {finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     <p className="text-[10px] opacity-70 mt-4">{finance.completedOrders} completed orders</p>
                   </div>
                   <div className="bg-white rounded-xl p-6 border border-gray-100">
                     <p className="text-[10px] uppercase tracking-widest text-gray-400">This Month</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">IDR {finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p className="text-2xl font-medium text-gray-900 mt-2">IDR {finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     <p className="text-[10px] text-gray-500 mt-4">
                       {orders.filter(o => new Date(o.created_at) >= new Date(new Date().getFullYear(), new Date().getMonth(), 1)).length} orders this month
                     </p>
                   </div>
                   <div className="bg-white rounded-xl p-6 border border-gray-100">
                     <p className="text-[10px] uppercase tracking-widest text-gray-400">Pending Payments</p>
-                    <p className="text-2xl font-bold text-amber-600 mt-2">{finance.pendingPayments}</p>
+                    <p className="text-2xl font-medium text-amber-600 mt-2">{finance.pendingPayments}</p>
                     <p className="text-[10px] text-gray-500 mt-4">Awaiting confirmation</p>
                   </div>
                 </div>
@@ -1632,7 +1632,7 @@ export default function AdminDashboard() {
                         <tr key={order.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</td>
                           <td className="px-6 py-4 text-sm text-gray-700">{order.shipping_address?.name || 'Guest'}</td>
-                          <td className="px-6 py-4 text-center font-semibold text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                          <td className="px-6 py-4 text-center font-medium text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
                           <td className="px-6 py-4 text-center">
                             <StatusBadge status={order.payment_status || order.status} />
                           </td>
@@ -1686,13 +1686,13 @@ export default function AdminDashboard() {
                         <div className="flex justify-between items-end">
                           <p className="text-[8px] text-ink/40 truncate flex-1 leading-snug lowercase tracking-tight">{session.last_message}</p>
                           {session.unread_count > 0 && (
-                            <span className="bg-rose text-white text-[6px] font-bold px-1.5 py-0.5 rounded-[2px] ml-2 shrink-0">{session.unread_count}</span>
+                            <span className="bg-rose text-white text-[6px] font-medium px-1.5 py-0.5 rounded-[2px] ml-2 shrink-0">{session.unread_count}</span>
                           )}
                         </div>
                         <div className="mt-2 flex gap-1.5">
-                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">SPEC: {session.customer_email}</span>
-                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">•</span>
-                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-bold">ID: {session.id.split('-')[0]}</span>
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-medium">SPEC: {session.customer_email}</span>
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-medium">•</span>
+                          <span className="text-[5px] uppercase tracking-widest text-ink/20 font-medium">ID: {session.id.split('-')[0]}</span>
                         </div>
                       </button>
                     ))}
@@ -1764,7 +1764,7 @@ export default function AdminDashboard() {
                                   {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                                 {msg.sender === 'admin' && (
-                                  <span className={cn("text-[6px] font-bold uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
+                                  <span className={cn("text-[6px] font-medium uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
                                     {msg.is_read ? 'PROCESSED' : 'SENT'}
                                   </span>
                                 )}
@@ -1832,7 +1832,7 @@ export default function AdminDashboard() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Customer Records</h2>
+                    <h2 className="text-xl font-medium text-gray-900">Customer Records</h2>
                     <p className="text-sm text-gray-500">{customers.length} registered members</p>
                   </div>
                   <button
@@ -1870,7 +1870,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Members</p>
-                        <p className="text-lg font-semibold text-gray-900">{customers.length}</p>
+                        <p className="text-lg font-medium text-gray-900">{customers.length}</p>
                       </div>
                     </div>
                   </div>
@@ -1881,7 +1881,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Verified</p>
-                        <p className="text-lg font-semibold text-gray-900">{customers.filter(c => c.is_verified).length}</p>
+                        <p className="text-lg font-medium text-gray-900">{customers.filter(c => c.is_verified).length}</p>
                       </div>
                     </div>
                   </div>
@@ -1892,7 +1892,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
-                        <p className="text-lg font-semibold text-gray-900">IDR {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        <p className="text-lg font-medium text-gray-900">IDR {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                     </div>
                   </div>
@@ -1903,7 +1903,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Orders</p>
-                        <p className="text-lg font-semibold text-gray-900">{customers.reduce((sum, c) => sum + (c.total_orders || 0), 0)}</p>
+                        <p className="text-lg font-medium text-gray-900">{customers.reduce((sum, c) => sum + (c.total_orders || 0), 0)}</p>
                       </div>
                     </div>
                   </div>
@@ -1951,7 +1951,7 @@ export default function AdminDashboard() {
                         .map((customer) => (
                           <tr key={customer.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4">
-                              <span className="font-mono text-sm font-semibold text-rose">CST-{String(customer.customer_number).padStart(3, '0')}</span>
+                              <span className="font-mono text-sm font-medium text-rose">CST-{String(customer.customer_number).padStart(3, '0')}</span>
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
@@ -1994,7 +1994,7 @@ export default function AdminDashboard() {
                               )}
                             </td>
                             <td className="px-6 py-4 text-center">
-                              <span className="font-semibold text-gray-900">{customer.total_orders || 0}</span>
+                              <span className="font-medium text-gray-900">{customer.total_orders || 0}</span>
                             </td>
                             <td className="px-6 py-4 text-center">
                               <div className="flex items-center justify-center gap-2">
@@ -2058,7 +2058,7 @@ export default function AdminDashboard() {
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-medium text-gray-900">
                   {isEditMode ? 'Edit Product' : 'Add New Product'}
                 </h2>
                 <button onClick={() => setIsProductModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
@@ -2069,7 +2069,7 @@ export default function AdminDashboard() {
               <div className="p-8 space-y-6">
                 {/* Basic Info */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Basic Information</h3>
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Basic Information</h3>
 
                   <div>
                     <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Product Name</label>
@@ -2234,7 +2234,7 @@ export default function AdminDashboard() {
                 {/* Variants */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Variants & Stock</h3>
+                    <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Variants & Stock</h3>
                     <button
                       onClick={addVariant}
                       className="flex items-center gap-1 px-3 py-1.5 text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white"
@@ -2320,7 +2320,7 @@ export default function AdminDashboard() {
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
-                  <h2 className="text-lg font-semibold text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
+                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
                 </div>
                 <button onClick={() => setIsOrderModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                   <X size={20} />
@@ -2330,7 +2330,7 @@ export default function AdminDashboard() {
               <div className="p-8 space-y-8">
                 {/* Status */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Order Status</h3>
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Order Status</h3>
                   <div className="flex flex-wrap gap-2">
                     {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
                       <button
@@ -2351,7 +2351,7 @@ export default function AdminDashboard() {
 
                 {/* Tracking */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Tracking Number</h3>
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Tracking Number</h3>
                   <input
                     type="text"
                     defaultValue={selectedOrder.tracking_id || ''}
@@ -2363,7 +2363,7 @@ export default function AdminDashboard() {
 
                 {/* Order Items */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Items</h3>
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Items</h3>
                   <div className="space-y-3">
                     {selectedOrder.order_items?.map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -2371,7 +2371,7 @@ export default function AdminDashboard() {
                           <p className="font-medium text-gray-900">{item.product_name || 'Product'}</p>
                           <p className="text-sm text-gray-500">Size: {item.size || '-'} | Qty: {item.quantity}</p>
                         </div>
-                        <p className="font-semibold">IDR {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        <p className="font-medium">IDR {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                     ))}
                   </div>
@@ -2379,7 +2379,7 @@ export default function AdminDashboard() {
 
                 {/* Shipping */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">Shipping Address</h3>
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Shipping Address</h3>
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="font-medium text-gray-900">{selectedOrder.shipping_address?.name}</p>
                     <p className="text-sm text-gray-600">{selectedOrder.shipping_address?.phone}</p>
@@ -2392,7 +2392,7 @@ export default function AdminDashboard() {
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Total</span>
-                    <span className="text-xl font-bold text-gray-900">IDR {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    <span className="text-xl font-medium text-gray-900">IDR {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
               </div>
@@ -2500,7 +2500,7 @@ function CustomerModal({
             <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-gray-400">Customer Detail</p>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-medium text-gray-900">
                   {customer ? `CST-${String(customer.customer_number).padStart(3, '0')}` : 'Add New Customer'}
                 </h2>
               </div>
@@ -2512,7 +2512,7 @@ function CustomerModal({
             <div className="p-8 space-y-6">
               {/* Basic Info */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Basic Information</h3>
+                <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Basic Information</h3>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -2574,7 +2574,7 @@ function CustomerModal({
 
               {/* Address Info */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Address Information</h3>
+                <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Address Information</h3>
 
                 <div>
                   <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Street Address</label>
