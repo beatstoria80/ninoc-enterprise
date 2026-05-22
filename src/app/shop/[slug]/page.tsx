@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* 5-GRID ARCHIVAL LAYOUT: Thumbnails | Image | Spec | Action | Cart */}
-        <div className="grid grid-cols-2 lg:grid-cols-[80px_1.2fr_1fr_1fr_0.95fr] gap-3 lg:gap-5 xl:gap-8 mt-4 lg:mt-2">
+        <div className="grid grid-cols-2 lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-3 lg:gap-4 xl:gap-5 mt-4 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP */}
           <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
@@ -161,7 +161,7 @@ export default function ProductDetailPage() {
                     activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
                   )}
                 >
-                  <Image src={img} className="object-contain p-1.5" alt="" fill sizes="80px" />
+                  <Image src={img} className="object-contain p-1.5" alt="" fill sizes="100px" />
                 </motion.button>
               ))}
             </AnimatePresence>
