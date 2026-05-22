@@ -81,13 +81,19 @@ export default function ProductDetailPage() {
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop System...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
 
-  const images = [
+  const rawImages = [
     product.image_url,
     product.perspective1,
     product.perspective2,
     product.perspective3,
     product.perspective4
   ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+
+  // Selalu tampilkan 4 thumbnail (1 utama + 3 perspektif). Jika kosong, duplikasi foto utama sebagai placeholder.
+  while (rawImages.length < 4) {
+    rawImages.push(product.image_url);
+  }
+  const images = rawImages;
 
   const handleAddToCart = () => {
     if (!product) return;
