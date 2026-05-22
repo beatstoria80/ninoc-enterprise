@@ -133,8 +133,8 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-12 md:pt-28 px-4 md:px-10 relative",
-        isMobile && "pt-14 pb-28" // Added pb-28 for sticky bottom button
+        "pt-[50px] md:pt-28 px-4 md:px-10 relative",
+        isMobile && "pb-24" // Keep space for sticky bottom button
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
@@ -154,7 +154,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-6 lg:gap-4 xl:gap-5 mt-2 lg:mt-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP (Desktop Only) */}
           <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
@@ -177,7 +177,7 @@ export default function ProductDetailPage() {
             
             {/* MOBILE: Animated Card Preview (Artboard 2) */}
             <div 
-              className="flex lg:hidden relative w-full aspect-[4/5] justify-center items-center overflow-hidden py-4 touch-pan-y"
+              className="flex lg:hidden relative w-full aspect-[4/5] justify-center items-center overflow-hidden py-0 touch-pan-y"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -247,8 +247,8 @@ export default function ProductDetailPage() {
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
-            <div className="space-y-4 lg:space-y-6">
-              <div className="space-y-2 lg:space-y-3">
+            <div className="space-y-2 lg:space-y-6">
+              <div className="space-y-1 lg:space-y-3">
                 <div className="flex items-center gap-1.5 lg:gap-3">
                   <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
                   <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
@@ -262,13 +262,13 @@ export default function ProductDetailPage() {
                 <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-1.5 lg:space-y-3">
+              <div className="space-y-1 lg:space-y-3">
                 <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
                 <p className="text-[9px] lg:text-[12px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
               </div>
 
               {/* Size Guide Table - Inline for Grid 3 */}
-              <div className="space-y-2">
+              <div className="space-y-1.5 lg:space-y-2">
                 <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
                   <Ruler size={10} className="text-rose" />
                   Measurement (CM)
@@ -289,9 +289,9 @@ export default function ProductDetailPage() {
 
           {/* GRID 4 — SELECTION & ACTION */}
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
-            <div className="space-y-4 lg:space-y-6 flex flex-col h-full">
+            <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
                 <div className="flex gap-1 lg:gap-2 flex-wrap">
                   {['S', 'M', 'L', 'XL'].map((size) => (
@@ -361,7 +361,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-6 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
+          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               {/* Cart Header */}
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
@@ -469,8 +469,8 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-8 lg:mt-10 space-y-3">
-            <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+          <div className="mt-4 lg:mt-10 space-y-3">
+            <div className="flex justify-between items-end border-b border-ink/5 pb-1.5 lg:pb-2">
               <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
