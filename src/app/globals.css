@@ -43,28 +43,37 @@ body {
   overflow-y: auto;
 }
 
-/* Minimal Elegant Scrollbar globally - Archive Aesthetic */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(20, 20, 20, 0.1) transparent;
+/* Minimal Elegant Scrollbar Utility - Archive Aesthetic */
+.minimal-scroll {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(20, 20, 20, 0.1) transparent !important;
 }
 
-::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
+.minimal-scroll::-webkit-scrollbar {
+  width: 2px !important;
+  height: 2px !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.minimal-scroll::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(20, 20, 20, 0.15);
-  border-radius: 10px;
+.minimal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(20, 20, 20, 0.15) !important;
+  border-radius: 10px !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(232, 82, 122, 0.6); /* Rose hover */
+.minimal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #E8527A !important; /* Rose color */
+}
+
+/* Hide default scrollbar completely for .no-scrollbar */
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
 }
 
 /* SHARP GLASS - Reduced blur for better contrast */

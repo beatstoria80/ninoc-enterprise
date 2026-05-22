@@ -339,7 +339,7 @@ export default function ProductDetailPage() {
               ) : (
                 <>
                   {/* Cart Items List */}
-                  <div className="flex-1 overflow-y-auto divide-y divide-ink/5 pr-1">
+                  <div className="flex-1 overflow-y-auto divide-y divide-ink/5 minimal-scroll">
                       {items.map((item) => (
                         <div 
                           key={`${item.id}-${item.size}`}

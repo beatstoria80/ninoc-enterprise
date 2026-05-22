@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden">
+      <body className="min-h-full flex flex-col overflow-x-hidden minimal-scroll">
         <SmoothScrollProvider>
           <Script
             src={process.env.MIDTRANS_IS_PRODUCTION === 'true'
