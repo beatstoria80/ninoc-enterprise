@@ -133,8 +133,8 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-[50px] md:pt-28 px-4 md:px-10 relative",
-        isMobile && "pb-24" // Keep space for sticky bottom button
+        "pt-[46px] md:pt-28 px-4 md:px-10 relative", // Ultra-tight pt under mobile header
+        isMobile && "pb-24" 
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
@@ -177,10 +177,13 @@ export default function ProductDetailPage() {
             
             {/* MOBILE: Animated Card Preview (Artboard 2) */}
             <div 
-              className="flex lg:hidden relative w-full aspect-[4/5] justify-center items-center overflow-hidden py-0 touch-pan-y"
+              className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-2"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
+              {/* Invisible placeholder to perfectly dictate container height without negative space */}
+              <div className="w-[75%] aspect-[4/5] invisible pointer-events-none" />
+
               {images.map((img, idx) => {
                 const isActive = idx === activeImageIndex;
                 const isPrev = idx === (activeImageIndex === 0 ? images.length - 1 : activeImageIndex - 1);
@@ -199,7 +202,7 @@ export default function ProductDetailPage() {
                       if (isNext) setActiveImageIndex(idx);
                     }}
                     className={cn(
-                      "absolute w-[65%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",
+                      "absolute w-[75%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",
                       positionClass
                     )}
                   >
