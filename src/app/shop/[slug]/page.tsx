@@ -123,8 +123,8 @@ export default function ProductDetailPage() {
           isIPhone && "pt-[env(safe-area-inset-top)]"
         )}>
           <div className="flex items-center justify-between px-4 py-3">
-            <button onClick={() => router.back()} className="flex items-center gap-2 text-ink/40 hover:text-rose transition-all">
-              <ArrowLeft size={16} />
+            <button onClick={() => router.back()} className="flex items-center justify-center p-2 -ml-2 text-ink/40 hover:text-rose transition-all">
+              <ArrowLeft size={20} />
             </button>
             <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
             <div className="w-8" />
@@ -299,7 +299,7 @@ export default function ProductDetailPage() {
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "w-6 h-6 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[8px] lg:text-[10px] font-medium transition-all border",
+                        "w-10 h-10 lg:w-12 lg:h-12 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border",
                         selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
@@ -312,10 +312,10 @@ export default function ProductDetailPage() {
               {/* Quantity */}
               <div className="space-y-1.5 lg:space-y-3">
                 <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
-                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-1.5 lg:px-3 py-1 lg:py-1.5 rounded-none border border-ink/5">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={10} /></button>
-                  <span className="text-[9px] lg:text-[10px] font-medium w-4 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={10} /></button>
+                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-2 lg:px-3 py-1.5 lg:py-2 rounded-none border border-ink/5">
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={14} /></button>
+                  <span className="text-[11px] lg:text-[12px] font-medium w-6 lg:w-8 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={14} /></button>
                 </div>
               </div>
 
@@ -396,10 +396,10 @@ export default function ProductDetailPage() {
                               {/* Delete Button — Always Visible */}
                               <button 
                                 onClick={() => removeItem(item.id, item.size)}
-                                className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
+                                className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
                                 title="Remove from archive"
                               >
-                                <Trash2 size={10} strokeWidth={2} />
+                                <Trash2 size={14} strokeWidth={2} />
                               </button>
                             </div>
                             <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">Size {item.size}</span>
@@ -415,16 +415,16 @@ export default function ProductDetailPage() {
                                       updateQuantity(item.id, item.quantity - 1, item.size);
                                     }
                                   }}
-                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                  className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
                                 >
-                                  <Minus size={8} />
+                                  <Minus size={12} />
                                 </button>
-                                <span className="text-[9px] font-medium w-5 text-center border-x border-ink/8 h-5 flex items-center justify-center">{item.quantity}</span>
+                                <span className="text-[10px] font-medium w-8 text-center border-x border-ink/8 h-8 flex items-center justify-center">{item.quantity}</span>
                                 <button 
                                   onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
-                                  className="w-5 h-5 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                  className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
                                 >
-                                  <Plus size={8} />
+                                  <Plus size={12} />
                                 </button>
                               </div>
                               <span className="text-[9px] font-medium text-rose">
@@ -448,15 +448,15 @@ export default function ProductDetailPage() {
                     <div className="flex flex-col gap-2">
                       <button 
                         onClick={() => router.push('/checkout')} 
-                        className="w-full py-2.5 bg-rose text-white text-[9px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                        className="w-full py-3 bg-rose text-white text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
                       >
                         Secure Checkout
                       </button>
                       <button 
                         onClick={() => clearCart()} 
-                        className="w-full py-2 bg-transparent text-ink/30 text-[8px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 bg-transparent text-ink/40 text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
-                        <Trash2 size={9} />
+                        <Trash2 size={12} />
                         Clear Archive
                       </button>
                     </div>
