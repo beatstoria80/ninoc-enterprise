@@ -269,7 +269,7 @@ export default function ProductDetailPage() {
                 </h4>
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
+                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
                     <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
                       <span className="text-rose">{s.split(':')[0]}</span>
                       <span>{s.split(':')[1]}</span>
@@ -288,7 +288,7 @@ export default function ProductDetailPage() {
               <div className="space-y-2 lg:space-y-3 mt-4 lg:mt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
                 <div className="flex gap-1.5 lg:gap-2 flex-wrap">
-                  {['S', 'M', 'L', 'XL'].map((size) => (
+                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
