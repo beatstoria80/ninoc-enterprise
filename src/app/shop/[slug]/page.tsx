@@ -171,17 +171,17 @@ export default function ProductDetailPage() {
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-2 lg:mb-3 hidden lg:block sticky top-20 z-[100] w-fit">
+        <div className="mb-4 lg:mb-3 sticky top-[72px] lg:top-20 z-[100] w-fit">
           <button 
             onClick={() => router.push('/shop')} 
-            className="group flex items-center gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
+            className="group flex items-center gap-2 lg:gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-3 lg:pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
           >
-            <div className="w-8 h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
-              <ArrowLeft size={14} />
+            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
+              <ArrowLeft size={12} className="lg:w-[14px] lg:h-[14px] w-3 h-3" />
             </div>
             <div className="flex flex-col items-start leading-none">
-              <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
+              <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
+              <span className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
             </div>
           </button>
         </div>
