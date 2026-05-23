@@ -131,10 +131,10 @@ export default function ProductDetailPage() {
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 lg:mb-6 hidden lg:block">
+        <div className="mb-4 lg:mb-6 hidden lg:block sticky top-32 z-[100] w-fit">
           <button 
             onClick={() => router.push('/shop')} 
-            className="group flex items-center gap-3 text-ink transition-all"
+            className="group flex items-center gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
           >
             <div className="w-8 h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
               <ArrowLeft size={14} />
