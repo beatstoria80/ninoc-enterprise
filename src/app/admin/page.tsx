@@ -872,7 +872,7 @@ export default function AdminDashboard() {
     if (!newMessage.trim() || !activeChatSession) return;
 
     try {
-      // Persist to garment archive
+      // Persist to product database
       const { data: savedMessage, error } = await supabase
         .from('support_messages')
         .insert({
@@ -1083,7 +1083,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full">
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[8px] uppercase tracking-widest text-emerald-600 font-medium">Studio Active</span>
+              <span className="text-[8px] uppercase tracking-widest text-emerald-600 font-medium">System Online</span>
             </div>
           </div>
         </header>
@@ -2068,7 +2068,7 @@ export default function AdminDashboard() {
                           </div>
                           <div>
                             <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{activeChatSession.customer_name}</h3>
-                            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Origin Spec: {activeChatSession.customer_email}</p>
+                            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Email: {activeChatSession.customer_email}</p>
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -2155,7 +2155,7 @@ export default function AdminDashboard() {
                           </motion.button>
                         </div>
                         <div className="flex justify-between items-center mt-2 px-0.5">
-                          <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15 italic">Studio Response Channel</p>
+                          <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15 italic">Customer Support Chat</p>
                           <p className={cn("text-[5.5px] font-medium tracking-widest uppercase", newMessage.length > 450 ? "text-rose" : "text-ink/15")}>
                             {newMessage.length}/500
                           </p>
@@ -2481,7 +2481,7 @@ export default function AdminDashboard() {
                       <option value="Diskon">Diskon</option>
                       <option value="Price Deal">Price Deal</option>
                       <option value="Limited Edition">Limited Edition</option>
-                      <option value="Archive Special">Archive Special</option>
+                      <option value="Special Edition">Special Edition</option>
                     </select>
                   </div>
 
@@ -2491,7 +2491,7 @@ export default function AdminDashboard() {
                       type="text"
                       value={productForm.badge_text}
                       onChange={(e) => setProductForm({ ...productForm, badge_text: e.target.value })}
-                      placeholder="e.g. NEW ARRIVAL, ARCHIVE ITEM"
+                      placeholder="e.g. NEW ARRIVAL, BEST SELLER"
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                     />
                   </div>
