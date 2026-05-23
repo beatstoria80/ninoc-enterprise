@@ -233,13 +233,9 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
+          <div className="col-span-1 flex flex-col pt-4 pb-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6">
               <div className="space-y-1 lg:space-y-3">
-                <div className="flex items-center gap-1.5 lg:gap-3">
-                  <span className="px-2 lg:px-3 py-0.5 lg:py-1 bg-ink text-white rounded-full text-[5px] lg:text-[7px] font-medium uppercase tracking-[0.2em]">Authentic</span>
-                  <div className="flex gap-0.5 text-rose/40"><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /><Star size={6} fill="currentColor" /></div>
-                </div>
                 <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
                   <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-2">
