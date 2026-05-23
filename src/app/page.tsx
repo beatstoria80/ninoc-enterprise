@@ -198,21 +198,23 @@ function ProductCard({ product, index }: ProductCardProps) {
           <motion.h3 className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
             {product.name}
           </motion.h3>
-          <motion.div className="flex items-center justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3">
-            <div className="space-y-0.5">
-              <p className="text-[6px] uppercase tracking-widest text-ink/20 leading-none">Investment Value</p>
+          <motion.div className="flex flex-col justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3 gap-2 md:gap-3">
+            <div className="space-y-1">
+              <p className="text-[6px] md:text-[7px] uppercase tracking-widest text-ink/40 leading-none">Archival Issue</p>
               {product.price_tag && (
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none pt-1">
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none">
                   {product.price_tag}
                 </p>
               )}
-              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink pt-1">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
             </div>
-            <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
-              <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
-                <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
+            <div className="flex items-center justify-between">
+              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+              <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
+                <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
+                  <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
           </motion.div>
         </motion.div>
       </Link>
@@ -364,7 +366,7 @@ export default function Home() {
       {/* CATALOG — PURE JS POINTER DRAG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
         <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
-          <h2 className="text-sm md:text-4xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
+          <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
           <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300 leading-none">View All</Link>
         </motion.div>
 
