@@ -331,12 +331,12 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Quantity */}
-              <div className="space-y-1.5 lg:space-y-3 mt-4 lg:mt-0">
+              <div className="space-y-1.5 lg:space-y-2 mt-4 lg:mt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
-                <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-2 lg:px-3 py-1.5 lg:py-2 rounded-none border border-ink/5">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={14} /></button>
-                  <span className="text-[11px] lg:text-[12px] font-medium w-6 lg:w-8 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Plus size={14} /></button>
+                <div className="flex items-center gap-1 w-fit">
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Minus size={12} /></button>
+                  <span className="text-[11px] font-medium w-4 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Plus size={12} /></button>
                 </div>
               </div>
 
