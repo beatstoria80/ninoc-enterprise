@@ -38,6 +38,7 @@ interface Product {
   perspective4?: string | null;
   is_featured: boolean;
   price_tag?: string | null;
+  badge_text?: string | null;
   created_at: string;
   variants?: Variant[];
 }
