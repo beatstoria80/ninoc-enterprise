@@ -99,10 +99,10 @@ function MobileShopView({ products }: { products: Product[] }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Link href={`/shop/${product.slug}`} className="block">
+                  <Link href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
                     {/* Image */}
                     <div 
-                      className="aspect-square bg-white rounded-none overflow-hidden border border-ink/5 relative"
+                      className="aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative"
                     >
                       <Image
                         src={product.image_url}
@@ -111,20 +111,41 @@ function MobileShopView({ products }: { products: Product[] }) {
                         className="object-cover"
                         unoptimized
                       />
-                    </div>
-                    {/* Info */}
-                    <div className="mt-2 space-y-0.5">
-                      <h3 className="text-[10px] font-medium uppercase tracking-tight text-ink line-clamp-1">
-                        {product.name}
-                      </h3>
+                      {/* Dynamic Tag (Top Right) */}
                       {product.price_tag && (
-                        <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">
+                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
                           {product.price_tag}
                         </div>
                       )}
-                      <p className="text-[11px] font-display font-medium italic text-rose">
-                        IDR {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
+                    </div>
+                    {/* Info */}
+                    <div className="p-2 space-y-2 flex flex-col justify-between flex-grow">
+                      <div>
+                        <h3 className="text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+                          {product.name}
+                        </h3>
+                        <p className="text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
+                          {product.category}
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-display font-medium italic text-rose">
+                          {product.price_tag === 'REDEEM' 
+                            ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` 
+                            : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                        </p>
+                        
+                        <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+                          <div className="flex items-center gap-1 opacity-40">
+                            <ArrowRight size={8} />
+                            <span className="text-[6px] font-medium uppercase tracking-[0.2em]">View</span>
+                          </div>
+                          <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                            Available
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 </motion.div>
