@@ -504,7 +504,7 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-4 lg:mt-4 space-y-3">
+          <div className="mt-4 lg:mt-4 space-y-2">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1.5 lg:pb-2">
               <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
@@ -512,13 +512,13 @@ export default function ProductDetailPage() {
               </Link>
             </div>
 
-            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-4">
+            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-6 pt-1">
               {relatedProducts.map((p) => (
                 <div
                   key={p.id}
                   className="flex-shrink-0 w-[140px] md:w-[160px]"
                 >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-3">
+                  <Link href={`/shop/${p.slug}`} className="group block space-y-1.5">
                     <div className="aspect-[3/4] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                       <Image src={p.image_url} alt={p.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
