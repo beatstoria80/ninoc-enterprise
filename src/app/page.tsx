@@ -353,7 +353,7 @@ export default function Home() {
                   <ShieldCheck size={18} className="text-rose" />
                   <span className="text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                 </div>
-                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider text-white">Every garment is authenticated through rigorous archival protocols and secure fulfillment.</p>
+                <p className="text-[11px] font-medium uppercase leading-loose tracking-widest text-white">Every garment is authenticated through rigorous archival protocols and secure fulfillment.</p>
               </motion.div>
             </div>
           </div>
