@@ -28,7 +28,6 @@ export default function GlobalHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_isSearching, setIsSearching] = useState(false);
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);

@@ -315,8 +315,7 @@ export default function CheckoutPage() {
       }
 
       // Open Midtrans Snap popup
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).snap.pay(data.token, {
+      (window as Window & { snap: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap.pay(data.token, {
         onSuccess: (result: MidtransSnapResult) => {
           console.log('Payment initiated:', result);
           // Don't clear cart here — webhook must confirm payment first

@@ -1,29 +1,28 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextConfig from "eslint-config-next";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
+/** @type {import("eslint").Linter.Config[]} */
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
       ".next/**",
-      "out/**",
-      "build/**",
-      "dist/**",
       "backup_v2_vite/**",
-      "old_project_backup/**",
-      "temp_repo/**",
       "node_modules/**",
-      "next-env.d.ts"
     ],
   },
+  ...nextConfig.map((config) => ({
+    ...config,
+    settings: {
+      ...config.settings,
+      next: {
+        ...config.settings?.next,
+        rootDir: __dirname,
+      },
+    },
+  })),
 ];
 
 export default eslintConfig;
