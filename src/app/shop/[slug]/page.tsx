@@ -133,7 +133,7 @@ export default function ProductDetailPage() {
       )}
 
       <div className={cn(
-        "pt-[46px] md:pt-28 px-4 md:px-10 relative", // Ultra-tight pt under mobile header
+        "pt-14 md:pt-28 px-4 md:px-10 relative", // Tight pt under mobile header
         isMobile && "pb-24" 
       )}>
 
@@ -177,7 +177,7 @@ export default function ProductDetailPage() {
             
             {/* MOBILE: Animated Card Preview (Artboard 2) */}
             <div 
-              className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-2"
+              className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -265,27 +265,27 @@ export default function ProductDetailPage() {
                 <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-1 lg:space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
-                <p className="text-[9px] lg:text-[12px] leading-relaxed text-ink/60 font-medium line-clamp-3 lg:line-clamp-none">{product.description || 'Premium quality apparel from NINOC.'}</p>
+              <div className="space-y-1 lg:space-y-3 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
+                <p className="text-[12px] lg:text-[12px] leading-relaxed text-ink/90 font-medium">{product.description || 'Premium quality apparel from NINOC.'}</p>
               </div>
 
               {/* Size Guide Table - Inline for Grid 3 */}
-              <div className="space-y-1.5 lg:space-y-2">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
+              <div className="space-y-1.5 lg:space-y-2 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2 flex items-center gap-2">
                   <Ruler size={10} className="text-rose" />
                   Measurement (CM)
                 </h4>
                 <div className="space-y-1.5">
-                  <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                  <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
                   {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74'].map(s => (
-                    <div key={s} className="flex justify-between text-[9px] font-medium border-b border-ink/5 pb-1">
+                    <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
                       <span className="text-rose">{s.split(':')[0]}</span>
                       <span>{s.split(':')[1]}</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-[7px] text-ink/20 mt-2 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                <p className="text-[9px] text-ink/40 mt-2 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
               </div>
             </div>
           </div>
@@ -294,9 +294,9 @@ export default function ProductDetailPage() {
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
-              <div className="space-y-2 lg:space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
-                <div className="flex gap-1 lg:gap-2 flex-wrap">
+              <div className="space-y-2 lg:space-y-3 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
+                <div className="flex gap-1.5 lg:gap-2 flex-wrap">
                   {['S', 'M', 'L', 'XL'].map((size) => (
                     <button
                       key={size}
@@ -313,8 +313,8 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Quantity */}
-              <div className="space-y-1.5 lg:space-y-3">
-                <h4 className="text-[8px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
+              <div className="space-y-1.5 lg:space-y-3 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
                 <div className="flex items-center gap-2 lg:gap-4 bg-ink/[0.02] w-fit px-2 lg:px-3 py-1.5 lg:py-2 rounded-none border border-ink/5">
                   <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-white rounded-none transition-all text-ink/30 hover:text-rose"><Minus size={14} /></button>
                   <span className="text-[11px] lg:text-[12px] font-medium w-6 lg:w-8 text-center">{quantity}</span>

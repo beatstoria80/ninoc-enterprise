@@ -156,8 +156,8 @@ export default function GlobalHeader() {
             className="fixed inset-0 z-[300] bg-cr noise flex flex-col overflow-hidden"
           >
             {/* Header Area */}
-            <div className="px-6 md:px-12 py-10 flex items-center justify-between border-b border-ink/5">
-              <div className="flex items-center gap-8">
+            <div className="px-6 md:px-12 py-6 md:py-10 flex items-center justify-between border-b border-ink/5">
+              <div className="flex items-center gap-4 md:gap-8">
                  <div className="font-display font-medium text-3xl italic tracking-tighter text-rose uppercase">Active Selection</div>
                  <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
                  <div className="hidden md:flex flex-col leading-none">
@@ -176,9 +176,9 @@ export default function GlobalHeader() {
             <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-full">
               
               {/* SECTOR 1: PRODUCT LIST (Grids 1-5) */}
-              <div className="md:col-span-5 overflow-y-auto no-scrollbar border-r border-ink/5 px-6 md:px-12 py-12 space-y-12">
+              <div className="md:col-span-5 overflow-y-auto no-scrollbar border-r border-ink/5 px-6 md:px-12 py-6 md:py-12 space-y-6 md:space-y-12">
                 {items.length > 0 ? (
-                  <div className="space-y-10">
+                  <div className="space-y-6 md:space-y-10">
                     {items.map((item) => (
                       <div key={`${item.id}-${item.size}`} className="flex gap-6 group">
                         <div className="w-24 h-32 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5">
@@ -192,17 +192,17 @@ export default function GlobalHeader() {
                                  <Trash2 size={16} />
                                </button>
                             </div>
-                            <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20 italic">Item Ref: #{item.id.slice(0, 8)}</p>
+                            <p className="text-[10px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Item Ref: #{item.id.slice(0, 8)}</p>
                           </div>
                           
                           <div className="flex items-end justify-between">
                             <div className="space-y-4">
-                               <div className="flex items-center gap-5 bg-ink/5 px-4 py-2 rounded-none w-fit">
+                               <div className="flex items-center gap-3 md:gap-5 bg-ink/5 px-3 py-1.5 md:px-4 md:py-2 rounded-none w-fit">
                                   <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Minus size={14} strokeWidth={2} /></button>
-                                  <span className="text-[13px] font-medium w-8 text-center">{item.quantity}</span>
+                                  <span className="text-xs md:text-[13px] font-medium w-6 md:w-8 text-center">{item.quantity}</span>
                                   <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Plus size={14} strokeWidth={2} /></button>
                                </div>
-                               <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
+                               <div className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
                             </div>
                              <div className="text-base font-display font-medium italic text-rose">
                                 IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -221,12 +221,12 @@ export default function GlobalHeader() {
               </div>
 
               {/* SECTOR 2: SUMMARY & BUTTON (Grids 6-9) */}
-              <div className="md:col-span-4 px-8 md:px-12 py-12 bg-white flex flex-col">
+              <div className="md:col-span-4 px-6 md:px-12 py-8 md:py-12 bg-white flex flex-col">
                 {items.length > 0 && (
-                  <div className="space-y-12 h-full flex flex-col">
-                    <div className="space-y-8">
-                       <p className="text-[9px] font-medium uppercase tracking-[0.5em] text-ink/20">Investment Summary</p>
-                       <div className="space-y-5">
+                  <div className="space-y-8 md:space-y-12 h-full flex flex-col">
+                    <div className="space-y-6 md:space-y-8">
+                       <p className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40">Investment Summary</p>
+                       <div className="space-y-4 md:space-y-5">
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                              <span>Raw Value</span>
                              <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
@@ -238,10 +238,10 @@ export default function GlobalHeader() {
                        </div>
                     </div>
                     
-                    <div className="pt-12 border-t border-ink/5 flex flex-col items-center flex-1 justify-center space-y-12">
+                    <div className="pt-8 md:pt-12 border-t border-ink/5 flex flex-col items-center flex-1 justify-center space-y-8 md:space-y-12">
                        <div className="text-center">
-                          <span className="text-[9px] font-medium uppercase tracking-[0.6em] text-ink/20 block mb-4">Total Investment</span>
-                          <span className="text-4xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                          <span className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-3 md:mb-4">Total Investment</span>
+                          <span className="text-3xl md:text-4xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                        </div>
 
                        <div className="w-full space-y-6">
