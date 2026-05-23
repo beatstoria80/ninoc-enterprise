@@ -504,7 +504,7 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-4 lg:mt-10 space-y-3">
+          <div className="mt-4 lg:mt-4 space-y-3">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1.5 lg:pb-2">
               <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
