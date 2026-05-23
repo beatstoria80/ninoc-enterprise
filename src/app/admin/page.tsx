@@ -1166,18 +1166,79 @@ export default function AdminDashboard() {
                           </div>
                         )}
                       </div>
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] uppercase tracking-wider text-gray-400">{product.category}</span>
-                          <span className="text-[10px] uppercase tracking-wider text-rose">{product.variants?.length || 0} variants</span>
+                      <div className="p-4 space-y-3">
+                        {/* Product Name — Destil & Bold */}
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-display font-medium italic text-[15px] text-ink leading-tight">{product.name}</h3>
+                          {product.is_featured && (
+                            <span className="shrink-0 px-1.5 py-0.5 bg-rose text-white text-[8px] uppercase tracking-wider rounded">Featured</span>
+                          )}
                         </div>
-                        {product.price_tag && (
-                          <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose mb-1">
-                            {product.price_tag}
+
+                        {/* Category + Variants */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] uppercase tracking-widest text-gray-400">{product.category}</span>
+                          <span className="text-[9px] text-rose">{product.variants?.length || 0} variants</span>
+                        </div>
+
+                        {/* Price — Prominent */}
+                        <div className="space-y-0.5">
+                          {product.price_tag && (
+                            <div className="text-[8px] uppercase tracking-[0.25em] text-rose font-medium">{product.price_tag}</div>
+                          )}
+                          <p className="text-lg font-medium text-ink leading-none">
+                            {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
+                          </p>
+                        </div>
+
+                        {/* Color/Sizes breakdown dari variants */}
+                        {product.variants && product.variants.length > 0 && (() => {
+                          const colors = [...new Set(product.variants.map(v => v.color).filter(Boolean))] as string[];
+                          const sizes = [...new Set(product.variants.map(v => v.size).filter(Boolean))] as string[];
+                          const totalStock = product.variants.reduce((sum: number, v: { stock_quantity: number }) => sum + (v.stock_quantity || 0), 0);
+                          return (
+                            <div className="pt-1 border-t border-ink/5 space-y-1">
+                              {colors.length > 0 && (
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-[8px] text-gray-400 uppercase">Colors:</span>
+                                  {colors.map(c => (
+                                    <span key={c} className="px-1.5 py-0.5 bg-ink/5 text-[8px] text-ink rounded">{c}</span>
+                                  ))}
+                                </div>
+                              )}
+                              {sizes.length > 0 && (
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-[8px] text-gray-400 uppercase">Sizes:</span>
+                                  {sizes.map(s => (
+                                    <span key={s} className="px-1.5 py-0.5 bg-gray-100 text-[8px] text-gray-600 rounded">{s}</span>
+                                  ))}
+                                </div>
+                              )}
+                              <div className="flex items-center justify-between">
+                                <span className="text-[8px] text-gray-400 uppercase">Total Stock</span>
+                                <span className={cn(
+                                  "text-[10px] font-medium",
+                                  totalStock === 0 ? "text-red-500" : totalStock < 5 ? "text-amber-500" : "text-emerald-600"
+                                )}>{totalStock} units</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Image indicators */}
+                        {(product.perspective1 || product.perspective2 || product.perspective3 || product.perspective4) && (
+                          <div className="flex items-center gap-1">
+                            {[product.perspective1, product.perspective2, product.perspective3, product.perspective4].filter(Boolean).map((_, idx) => (
+                              <div key={idx} className="w-4 h-4 rounded-sm bg-rose/20 border border-rose/20 flex items-center justify-center">
+                                <span className="text-[6px] text-rose">{idx + 1}</span>
+                              </div>
+                            ))}
                           </div>
                         )}
-                        <p className="text-lg font-medium text-gray-900">IDR {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                        <p className="text-[10px] text-gray-400 mt-2 line-clamp-2">{product.description}</p>
+
+                        {/* Description */}
+                        <p className="text-[9px] text-gray-400 leading-relaxed line-clamp-2">{product.description}</p>
                       </div>
                     </div>
                   ))}
