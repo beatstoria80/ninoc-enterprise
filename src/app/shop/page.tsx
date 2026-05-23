@@ -103,10 +103,6 @@ function MobileShopView({ products }: { products: Product[] }) {
                     {/* Image */}
                     <div 
                       className="aspect-square bg-white rounded-none overflow-hidden border border-ink/5 relative"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setFullscreenImage(product.image_url);
-                      }}
                     >
                       <Image
                         src={product.image_url}
