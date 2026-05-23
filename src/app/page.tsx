@@ -286,7 +286,7 @@ export default function Home() {
     <div className="mobile-momentum select-none">
 
       {/* HERO SECTION */}
-      <section className="relative md:pt-44 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
+      <section className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
           {/* Left: Branding */}
