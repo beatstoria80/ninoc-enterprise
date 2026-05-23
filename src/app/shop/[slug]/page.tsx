@@ -38,6 +38,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -96,10 +97,15 @@ export default function ProductDetailPage() {
   }
   const images = rawImages;
 
+  // Extract unique colors from variants
+  const availableColors = product?.variants
+    ? [...new Set(product.variants.map(v => v.color).filter(Boolean) as string[])]
+    : [];
+
   const handleAddToCart = () => {
     if (!product) return;
     for (let i = 0; i < quantity; i++) {
-      addItem(product, selectedSize);
+      addItem(product, selectedSize, selectedColor);
     }
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
@@ -295,6 +301,29 @@ export default function ProductDetailPage() {
                     </button>
                   ))}
                 </div>
+
+                {/* Color Selection */}
+                {availableColors.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Color</h4>
+                    <div className="flex gap-2 flex-wrap">
+                      {availableColors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-none text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
+                            selectedColor === color
+                              ? "bg-ink text-white border-ink"
+                              : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
+                          )}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Quantity */}
@@ -369,7 +398,7 @@ export default function ProductDetailPage() {
                   <div className="flex-1 overflow-y-auto divide-y divide-ink/5 minimal-scroll">
                       {items.map((item) => (
                         <div 
-                          key={`${item.id}-${item.size}`}
+                          key={`${item.id}-${item.size}-${item.color}`}
                           className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
                         >
                           {/* Thumbnail */}
@@ -383,24 +412,26 @@ export default function ProductDetailPage() {
                               <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
                               {/* Delete Button — Always Visible */}
                               <button 
-                                onClick={() => removeItem(item.id, item.size)}
+                                onClick={() => removeItem(item.id, item.size, item.color)}
                                 className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
                                 title="Remove from archive"
                               >
                                 <Trash2 size={14} strokeWidth={2} />
                               </button>
                             </div>
-                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">Size {item.size}</span>
+                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">
+                                    {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
+                                  </span>
                             
                             {/* Quantity Controls + Price */}
                             <div className="flex items-center justify-between mt-0.5">
                               <div className="flex items-center gap-0 border border-ink/8">
-                                <button 
+                                <button
                                   onClick={() => {
                                     if (item.quantity <= 1) {
-                                      removeItem(item.id, item.size);
+                                      removeItem(item.id, item.size, item.color);
                                     } else {
-                                      updateQuantity(item.id, item.quantity - 1, item.size);
+                                      updateQuantity(item.id, item.quantity - 1, item.size, item.color);
                                     }
                                   }}
                                   className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
@@ -409,7 +440,7 @@ export default function ProductDetailPage() {
                                 </button>
                                 <span className="text-[10px] font-medium w-8 text-center border-x border-ink/8 h-8 flex items-center justify-center">{item.quantity}</span>
                                 <button 
-                                  onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
                                   className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
                                 >
                                   <Plus size={12} />

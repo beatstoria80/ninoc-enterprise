@@ -438,13 +438,13 @@ export default function CheckoutPage() {
               {/* Collapsible Item List for Mobile */}
               <div id="mobile-item-list" className="hidden pt-4 space-y-3 border-t border-ink/5">
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center">
+                  <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center">
                     <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
                       {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-medium uppercase truncate text-ink">{item.name}</p>
-                      <p className="text-[7px] font-medium text-ink/30 uppercase">Size {item.size} • Qty {item.quantity}</p>
+                      <p className="text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
                     </div>
                   </div>
                 ))}
@@ -590,13 +590,13 @@ export default function CheckoutPage() {
 
                 <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
                   {items.map((item) => (
-                    <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center group">
+                    <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center group">
                       <div className="w-10 h-10 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
                         {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
-                        <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">Size {item.size} • Qty {item.quantity}</p>
+                        <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
                       </div>
                       <p className="text-sm font-display font-medium italic text-ink/80">IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
