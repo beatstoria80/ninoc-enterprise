@@ -215,50 +215,74 @@ function DesktopShopView({ products }: { products: Product[] }) {
                 transition={{ duration: 0.5, delay: index * 0.05 }}
                 className="group"
               >
-                <Link href={`/shop/${product.slug}`} className="block space-y-6">
-                  {/* Image Container */}
-                  <div className="relative aspect-[4/5] rounded-[10px] overflow-hidden bg-white border border-ink/5 shadow-dashboard group-hover:shadow-2xl transition-all duration-500">
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                <Link href={`/shop/${product.slug}`} className="block h-full">
+                  <div className="bg-white border border-ink/5 shadow-sm hover:shadow-xl hover:border-ink/15 transition-all duration-300 h-full flex flex-col group/card relative overflow-hidden">
+                    
+                    {/* Image Container */}
+                    <div className="relative aspect-square w-full overflow-hidden bg-ink/[0.02]">
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                      />
 
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-ink/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 backdrop-blur-[2px] flex items-center justify-center">
-                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-ink scale-0 group-hover:scale-100 transition-transform duration-500 delay-100 shadow-2xl">
-                        <ShoppingBag size={24} />
+                      {/* Origin Badge (Top Left) */}
+                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm">
+                        Origin Studio
+                      </div>
+
+                      {/* Dynamic Tag (Top Right) */}
+                      {product.price_tag && (
+                        <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
+                          {product.price_tag}
+                        </div>
+                      )}
+
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center z-0 pointer-events-none">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-0 group-hover/card:scale-100 transition-transform duration-300 shadow-xl">
+                          <ShoppingBag size={18} />
+                        </div>
                       </div>
                     </div>
 
-                    {/* Price Badge */}
-                    <div className="absolute top-6 right-6">
-                      <div className="px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl">
-                        <p className="text-[10px] font-medium text-rose">NEW</p>
+                    {/* Product Details Container */}
+                    <div className="p-4 flex flex-col flex-grow justify-between gap-4">
+                      {/* Title & Category */}
+                      <div>
+                        <h3 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
+                          {product.name}
+                        </h3>
+                        <p className="text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
+                          {product.category}
+                        </p>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Product Details */}
-                  <div className="px-4 space-y-1">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-sm md:text-lg font-display font-medium italic tracking-tight text-ink uppercase leading-tight group-hover:text-rose transition-colors">
-                        {product.name}
-                      </h3>
-                      <ArrowRight size={16} className="text-ink/10 group-hover:text-rose group-hover:translate-x-1 transition-all" />
-                    </div>
-                    <p className="text-[10px] font-medium text-ink/30 uppercase tracking-[0.2em]">
-                      {product.category}
-                    </p>
-                    {product.price_tag && (
-                      <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose pt-1">
-                        {product.price_tag}
+                      {/* Price & Meta Footer */}
+                      <div className="space-y-3">
+                        {product.price_tag === 'REDEEM' ? (
+                          <div className="text-sm md:text-base font-display font-medium italic text-rose">
+                            {(product.price ?? 0).toLocaleString('id-ID')} POINTS
+                          </div>
+                        ) : (
+                          <div className="text-sm md:text-base font-display font-medium italic text-rose">
+                            IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                          </div>
+                        )}
+
+                        {/* Metadata Row */}
+                        <div className="flex items-center justify-between pt-2.5 border-t border-ink/5">
+                          <div className="flex items-center gap-1.5 opacity-40">
+                            <ArrowRight size={10} className="group-hover/card:translate-x-1 group-hover/card:text-rose transition-all" />
+                            <span className="text-[8px] font-medium uppercase tracking-[0.2em]">View Spec</span>
+                          </div>
+                          <span className="text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                            Available
+                          </span>
+                        </div>
                       </div>
-                    )}
-                    <p className="text-base md:text-xl font-display font-medium italic text-rose pt-2">
-                      IDR {(product.price ?? 0).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </p>
+                    </div>
                   </div>
                 </Link>
               </motion.div>
