@@ -81,19 +81,22 @@ export default function ProductDetailPage() {
               .limit(4);
             setRelatedProducts(related || []);
             
-            // Setup real-time listener for stock updates
-            channel = supabase
-              .channel(`public:variants:product_id=eq.${data.id}`)
-              .on('postgres_changes', { 
-                event: '*', 
-                schema: 'public', 
-                table: 'variants', 
-                filter: `product_id=eq.${data.id}` 
-              }, () => {
-                // Refetch to get the latest stock quantity
-                fetchProduct(true); 
-              })
-              .subscribe();
+            // Setup real-time listener for stock updates (non-blocking)
+            try {
+              channel = supabase
+                .channel(`variants-stock-${data.id}`)
+                .on('postgres_changes', { 
+                  event: '*', 
+                  schema: 'public', 
+                  table: 'variants', 
+                  filter: `product_id=eq.${data.id}` 
+                }, () => {
+                  fetchProduct(true); 
+                })
+                .subscribe();
+            } catch {
+              console.warn('Realtime subscription unavailable — stock will update on page reload.');
+            }
           }
         }
       } catch (error: unknown) {
@@ -105,7 +108,9 @@ export default function ProductDetailPage() {
     fetchProduct();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      if (channel) {
+        try { supabase.removeChannel(channel); } catch { /* ignore */ }
+      }
     };
   }, [slug]);
 
