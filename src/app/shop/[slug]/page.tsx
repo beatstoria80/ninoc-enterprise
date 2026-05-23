@@ -57,7 +57,9 @@ export default function ProductDetailPage() {
 
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    
+    const fetchProduct = async (isRefetch = false) => {
       try {
         const { data, error } = await supabase
           .from('products')
@@ -68,22 +70,43 @@ export default function ProductDetailPage() {
         if (error) throw error;
         if (data) {
           setProduct(data);
-          // Fetch related products
-          const { data: related } = await supabase
-            .from('products')
-            .select('*')
-            .eq('category', data.category)
-            .neq('id', data.id)
-            .limit(4);
-          setRelatedProducts(related || []);
+          
+          if (!isRefetch) {
+            // Fetch related products only on initial load
+            const { data: related } = await supabase
+              .from('products')
+              .select('*')
+              .eq('category', data.category)
+              .neq('id', data.id)
+              .limit(4);
+            setRelatedProducts(related || []);
+            
+            // Setup real-time listener for stock updates
+            channel = supabase
+              .channel(`public:variants:product_id=eq.${data.id}`)
+              .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'variants', 
+                filter: `product_id=eq.${data.id}` 
+              }, () => {
+                // Refetch to get the latest stock quantity
+                fetchProduct(true); 
+              })
+              .subscribe();
+          }
         }
       } catch (error: unknown) {
         console.error('Failed to fetch product:', error);
       } finally {
-        setIsLoading(false);
+        if (!isRefetch) setIsLoading(false);
       }
     };
     fetchProduct();
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [slug]);
 
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
@@ -104,17 +127,26 @@ export default function ProductDetailPage() {
   const images = rawImages;
 
   // Extract unique colors from variants
-  const availableColors = product?.variants
-    ? [...new Set(product.variants.map(v => v.color).filter(Boolean) as string[])]
-    : [];
+  const availableColors = Array.from(new Set(
+    product?.variants?.filter(v => v.size === selectedSize && v.color).map(v => v.color as string) || []
+  ));
+
+  // Determine available stock for the currently selected variant
+  const selectedVariant = product?.variants?.find(v => v.size === selectedSize && (v.color === selectedColor || !v.color));
+  const availableStock = selectedVariant ? selectedVariant.stock_quantity : 0;
+  
+  // Dynamically clamp the quantity for the UI so we don't need a useEffect (which violates hook rules after early returns)
+  const displayQuantity = availableStock === 0 ? 0 : Math.min(quantity, availableStock);
 
   const handleAddToCart = () => {
-    if (!product) return;
-    for (let i = 0; i < quantity; i++) {
-      addItem(product, selectedSize, selectedColor);
+    if (product) {
+      if (availableStock === 0) return; // Prevent adding if out of stock
+      for (let i = 0; i < displayQuantity; i++) {
+        addItem(product, selectedSize, selectedColor);
+      }
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
     }
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
@@ -341,11 +373,22 @@ export default function ProductDetailPage() {
 
               {/* Quantity */}
               <div className="space-y-1.5 lg:space-y-2 mt-4 lg:mt-0">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
+                <div className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
+                  <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Quantity</h4>
+                  {availableStock > 0 ? (
+                    <span className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider animate-pulse">
+                      {availableStock} in stock (Live)
+                    </span>
+                  ) : (
+                    <span className="text-[8px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
+                      Out of stock
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-1 w-fit">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Minus size={14} /></button>
-                  <span className="text-[12px] font-medium w-6 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Plus size={14} /></button>
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose disabled:opacity-30"><Minus size={14} /></button>
+                  <span className="text-[12px] font-medium w-6 text-center">{displayQuantity}</span>
+                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose disabled:opacity-30"><Plus size={14} /></button>
                 </div>
               </div>
 
@@ -353,16 +396,18 @@ export default function ProductDetailPage() {
               <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
                 <button
                   onClick={handleAddToCart}
-                  disabled={addedToCart}
+                  disabled={addedToCart || availableStock === 0}
                   className={cn(
                     "w-full py-4 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
-                    addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
+                    addedToCart ? "bg-emerald-500 text-white" : availableStock === 0 ? "bg-ink/10 text-ink/30 cursor-not-allowed" : "bg-ink text-white hover:bg-rose"
                   )}
                 >
                     {addedToCart ? (
                       <span className="flex items-center gap-2">
                         <ShieldCheck size={16} /> ADDED
                       </span>
+                    ) : availableStock === 0 ? (
+                      <span>OUT OF STOCK</span>
                     ) : (
                       <div className="flex items-center gap-3">
                         <ShoppingCart size={16} />
