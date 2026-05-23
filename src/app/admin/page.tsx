@@ -2482,6 +2482,7 @@ export default function AdminDashboard() {
                       <option value="Price Deal">Price Deal</option>
                       <option value="Limited Edition">Limited Edition</option>
                       <option value="Special Edition">Special Edition</option>
+                      <option value="REDEEM">REDEEM</option>
                     </select>
                   </div>
 
