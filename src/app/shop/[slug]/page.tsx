@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2 } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/store/useCart';
@@ -47,7 +48,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [isSpecExpanded, setIsSpecExpanded] = useState(false);
+  const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -261,29 +262,15 @@ export default function ProductDetailPage() {
                 <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-1.5 lg:space-y-3 mt-4 lg:mt-0">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Product Specifications</h4>
-                
-                {/* Specifications Grid */}
-                <div className="grid grid-cols-[100px_1fr] gap-y-2 text-[10px] lg:text-[11px] font-medium mt-2">
-                  <span className="text-ink/40">Category</span><span className="text-ink">{product.category || '-'}</span>
-                  <span className="text-ink/40">Brand</span><span className="text-ink">NINOC Studio</span>
-                  <span className="text-ink/40">Condition</span><span className="text-ink">Brand New</span>
-                  <span className="text-ink/40">Origin</span><span className="text-ink">Indonesia</span>
-                </div>
-
-                {/* Expandable Description */}
-                <div className="pt-2 mt-2 border-t border-ink/5">
-                  <div className={cn("text-[11px] lg:text-[12px] leading-relaxed text-ink/80 font-medium transition-all duration-300", isSpecExpanded ? "" : "line-clamp-3")}>
-                    {product.description || 'Premium quality apparel from NINOC.'}
-                  </div>
-                  <button 
-                    onClick={() => setIsSpecExpanded(!isSpecExpanded)}
-                    className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-2"
-                  >
-                    {isSpecExpanded ? "- Show Less" : "+ Read Full Description"}
-                  </button>
-                </div>
+              <div className="space-y-1 lg:space-y-3 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Description</h4>
+                <p className="text-[12px] lg:text-[12px] leading-relaxed text-ink/90 font-medium line-clamp-4">{product.description || 'Premium quality apparel from NINOC.'}</p>
+                <button 
+                  onClick={() => setIsSpecModalOpen(true)}
+                  className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-1 flex items-center gap-1"
+                >
+                  + View Full Specifications
+                </button>
               </div>
 
               {/* Size Guide Table - Inline for Grid 3 */}
@@ -557,6 +544,61 @@ export default function ProductDetailPage() {
         imageUrl={fullscreenImage}
         onClose={() => setFullscreenImage(null)}
       />
+
+      {/* Specifications Popup Modal */}
+      <AnimatePresence>
+        {isSpecModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSpecModalOpen(false)}
+              className="fixed inset-0 bg-ink/60 backdrop-blur-sm z-[200]"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[500px] bg-white shadow-2xl z-[201] rounded-none overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              {/* Modal Header */}
+              <div className="flex justify-between items-center p-5 border-b border-ink/5 bg-ink/[0.02]">
+                <h3 className="text-sm font-display font-medium italic uppercase tracking-wider text-ink">Product Specifications</h3>
+                <button 
+                  onClick={() => setIsSpecModalOpen(false)}
+                  className="w-8 h-8 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-white transition-colors border border-transparent hover:border-ink/5 shadow-sm"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-5 md:p-6 overflow-y-auto minimal-scroll space-y-6">
+                {/* Data Table */}
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Information</h4>
+                  <div className="grid grid-cols-[120px_1fr] gap-y-3 text-[11px] font-medium pt-1">
+                    <span className="text-ink/40">Category</span><span className="text-ink">{product.category || '-'}</span>
+                    <span className="text-ink/40">Brand</span><span className="text-ink">NINOC Studio</span>
+                    <span className="text-ink/40">Condition</span><span className="text-ink">Brand New</span>
+                    <span className="text-ink/40">Material</span><span className="text-ink">Premium Archival Blend</span>
+                  </div>
+                </div>
+
+                {/* Full Description */}
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Description</h4>
+                  <div className="text-[12px] leading-relaxed text-ink/80 font-medium whitespace-pre-wrap">
+                    {product.description || 'Premium quality apparel from NINOC.'}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
     </main>
   );
