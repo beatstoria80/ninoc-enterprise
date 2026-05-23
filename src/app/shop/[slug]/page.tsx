@@ -56,7 +56,7 @@ export default function ProductDetailPage() {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('*')
+          .select('*, variants(*)')
           .eq('slug', slug)
           .single();
           
