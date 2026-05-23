@@ -116,24 +116,8 @@ export default function ProductDetailPage() {
 
   return (
     <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
-      {/* MOBILE NAV BAR */}
-      {isMobile && (
-        <nav className={cn(
-          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
-          isIPhone && "pt-[env(safe-area-inset-top)]"
-        )}>
-          <div className="flex items-center justify-between px-4 py-3">
-            <button onClick={() => router.back()} className="flex items-center justify-center p-2 -ml-2 text-ink/40 hover:text-rose transition-all">
-              <ArrowLeft size={20} />
-            </button>
-            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
-            <div className="w-8" />
-          </div>
-        </nav>
-      )}
-
       <div className={cn(
-        "pt-14 md:pt-28 px-4 md:px-10 relative", // Tight pt under mobile header
+        "pt-0 md:pt-28 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
         isMobile && "pb-24" 
       )}>
 

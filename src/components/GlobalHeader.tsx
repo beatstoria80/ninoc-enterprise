@@ -95,8 +95,8 @@ export default function GlobalHeader() {
   return (
     <>
       <nav className={cn(
-        "fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-8 flex items-center justify-between transition-all duration-700",
-        isScrolled ? "glass border-b border-ink/5 py-5" : "bg-transparent"
+        "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
+        isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
       )}>
         <Link href="/" className="cursor-pointer group flex flex-col">
           <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">NINOC</div>
