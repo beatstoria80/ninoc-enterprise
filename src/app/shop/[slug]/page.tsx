@@ -32,6 +32,7 @@ interface Product {
   perspective4?: string;
   price_tag?: string | null;
   variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
+  specifications?: { label: string; value: string }[] | null;
 }
 
 export default function ProductDetailPage() {
@@ -577,15 +578,19 @@ export default function ProductDetailPage() {
               {/* Modal Body */}
               <div className="p-5 md:p-6 overflow-y-auto minimal-scroll space-y-6">
                 {/* Data Table */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Information</h4>
-                  <div className="grid grid-cols-[120px_1fr] gap-y-3 text-[11px] font-medium pt-1">
-                    <span className="text-ink/40">Category</span><span className="text-ink">{product.category || '-'}</span>
-                    <span className="text-ink/40">Brand</span><span className="text-ink">NINOC Studio</span>
-                    <span className="text-ink/40">Condition</span><span className="text-ink">Brand New</span>
-                    <span className="text-ink/40">Material</span><span className="text-ink">Premium Archival Blend</span>
+                {product.specifications && product.specifications.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Information</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-y-1.5 sm:gap-y-3 gap-x-4 text-[11px] font-medium pt-1">
+                      {product.specifications.map((spec, idx) => (
+                        <React.Fragment key={idx}>
+                          <span className="text-ink/40 uppercase tracking-widest text-[9px] sm:text-[11px] sm:normal-case sm:tracking-normal mt-2 sm:mt-0">{spec.label}</span>
+                          <span className="text-ink">{spec.value}</span>
+                        </React.Fragment>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Full Description */}
                 <div className="space-y-3">

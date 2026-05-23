@@ -29,6 +29,7 @@ interface Product {
   name: string;
   slug: string;
   description: string | null;
+  specifications?: { label: string; value: string }[] | null;
   price: number;
   category: string;
   image_url: string | null;
@@ -274,6 +275,7 @@ export default function AdminDashboard() {
     name: '',
     slug: '',
     description: '',
+    specifications: [] as { label: string; value: string }[],
     price: '',
     category: 'pakaian',
     image_url: '',
@@ -409,6 +411,7 @@ export default function AdminDashboard() {
         name: product.name,
         slug: product.slug,
         description: product.description || '',
+        specifications: product.specifications || [],
         price: product.price.toString(),
         category: product.category,
         image_url: product.image_url || '',
@@ -432,6 +435,7 @@ export default function AdminDashboard() {
         name: '',
         slug: '',
         description: '',
+        specifications: [],
         price: '',
         category: 'pakaian',
         image_url: '',
@@ -498,6 +502,7 @@ export default function AdminDashboard() {
         name: productForm.name,
         slug: productForm.slug,
         description: productForm.description,
+        specifications: productForm.specifications,
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
         image_url: productForm.image_url || null,
@@ -2504,6 +2509,57 @@ export default function AdminDashboard() {
                       rows={3}
                       className="w-full min-h-[60px] px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 resize-y"
                     />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-end mb-2">
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Specifications (Key-Value)</label>
+                      <button
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, specifications: [...(productForm.specifications || []), { label: '', value: '' }] })}
+                        className="text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
+                      >
+                        + Add Spec
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {productForm.specifications?.map((spec, idx) => (
+                        <div key={idx} className="flex gap-2 items-start">
+                          <input
+                            type="text"
+                            placeholder="e.g. Material"
+                            value={spec.label}
+                            onChange={(e) => {
+                              const newSpecs = [...productForm.specifications];
+                              newSpecs[idx].label = e.target.value;
+                              setProductForm({ ...productForm, specifications: newSpecs });
+                            }}
+                            className="w-1/3 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                          />
+                          <input
+                            type="text"
+                            placeholder="e.g. 100% Cotton"
+                            value={spec.value}
+                            onChange={(e) => {
+                              const newSpecs = [...productForm.specifications];
+                              newSpecs[idx].value = e.target.value;
+                              setProductForm({ ...productForm, specifications: newSpecs });
+                            }}
+                            className="flex-1 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newSpecs = productForm.specifications.filter((_, i) => i !== idx);
+                              setProductForm({ ...productForm, specifications: newSpecs });
+                            }}
+                            className="p-2 text-gray-400 hover:text-rose hover:bg-rose/5 rounded transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div>
