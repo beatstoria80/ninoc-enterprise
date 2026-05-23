@@ -236,6 +236,11 @@ export default function ProductDetailPage() {
           <div className="col-span-1 flex flex-col pt-4 pb-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6">
               <div className="space-y-1 lg:space-y-3">
+                <div className="flex items-center gap-2 mb-1.5 lg:mb-2">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-ink text-white rounded-none w-fit shadow-md">
+                    <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
+                  </div>
+                </div>
                 <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
                   <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1 lg:mt-2">
