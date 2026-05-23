@@ -351,9 +351,9 @@ export default function Home() {
               <motion.div className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ delay: 0.5, duration: 0.7, ease: MOTION.ease }}>
                 <div className="flex items-center gap-3">
                   <ShieldCheck size={18} className="text-rose" />
-                  <span className="text-[10px] font-medium uppercase tracking-widest">Global Integrity</span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                 </div>
-                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider opacity-60">Secure fulfillment and international verification protocols for every piece.</p>
+                <p className="text-[9px] font-medium uppercase leading-relaxed tracking-wider opacity-90 text-white">Every garment is authenticated through rigorous archival protocols and secure fulfillment.</p>
               </motion.div>
             </div>
           </div>
