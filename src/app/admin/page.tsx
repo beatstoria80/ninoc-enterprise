@@ -2048,7 +2048,6 @@ export default function AdminDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6"
-            onClick={() => setIsProductModalOpen(false)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -2487,8 +2486,7 @@ function CustomerModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6"
-          onClick={onClose}
-        >
+          >
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
