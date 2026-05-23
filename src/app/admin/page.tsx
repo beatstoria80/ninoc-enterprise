@@ -92,6 +92,44 @@ interface FinanceSummary {
   completedOrders: number;
 }
 
+interface ProductCosting {
+  id: string;
+  product_id: string;
+  supplier_cost: number;
+  shipping_cost: number;
+  packaging_cost: number;
+  operasional_pct: number;
+  tax_rate: number;
+  courier_regency_cost: number;
+  courier_inter_regency_cost: number;
+  courier_same_day_cost: number;
+  courier_instant_cost: number;
+  target_margin_pct: number;
+  selling_price: number;
+}
+
+interface SupplierCostLog {
+  id: string;
+  product_id: string;
+  product_name?: string;
+  old_supplier_cost: number;
+  new_supplier_cost: number;
+  change_reason: string;
+  changed_at: string;
+}
+
+interface PromoImpact {
+  id: string;
+  product_id: string;
+  product_name?: string;
+  promo_name: string;
+  discount_pct: number;
+  discount_amount: number;
+  start_date: string;
+  end_date?: string;
+  is_active: boolean;
+}
+
 interface ChatMessage {
   id: string;
   sender: 'customer' | 'admin';
@@ -202,6 +240,35 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
+  // Financial system states
+  const [productCostings, setProductCostings] = useState<Record<string, ProductCosting>>({});
+  const [supplierLogs, setSupplierLogs] = useState<SupplierCostLog[]>([]);
+  const [activePromos, setActivePromos] = useState<PromoImpact[]>([]);
+  const [editingCosting, setEditingCosting] = useState<ProductCosting | null>(null);
+  const [isCostingModalOpen, setIsCostingModalOpen] = useState(false);
+  const [selectedProductForCosting, setSelectedProductForCosting] = useState<Product | null>(null);
+  const [costingForm, setCostingForm] = useState({
+    supplier_cost: 0, shipping_cost: 0, packaging_cost: 0,
+    operasional_pct: 0, tax_rate: 11,
+    courier_regency_cost: 0, courier_inter_regency_cost: 0,
+    courier_same_day_cost: 0, courier_instant_cost: 0,
+    target_margin_pct: 0, selling_price: 0
+  });
+
+  // Fetch financial data
+  const fetchFinancialData = useCallback(async () => {
+    const { data: costData } = await supabase.from('product_costing').select('*');
+    if (costData) {
+      const map: Record<string, ProductCosting> = {};
+      costData.forEach((c: ProductCosting) => { map[c.product_id] = c; });
+      setProductCostings(map);
+    }
+    const { data: logData } = await supabase.from('supplier_cost_log').select('*, products(name)').order('changed_at', { ascending: false }).limit(10);
+    if (logData) setSupplierLogs(logData as SupplierCostLog[]);
+    const { data: promoData } = await supabase.from('promo_impact').select('*, products(name)').eq('is_active', true);
+    if (promoData) setActivePromos(promoData as PromoImpact[]);
+  }, []);
+
   // Form states
   const [productForm, setProductForm] = useState({
     name: '',
@@ -216,6 +283,7 @@ export default function AdminDashboard() {
     perspective4: '',
     is_featured: false,
     price_tag: '',
+    badge_text: '',
     variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
   });
 
@@ -328,8 +396,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     queueMicrotask(() => {
       fetchData();
+      fetchFinancialData();
     });
-  }, [fetchData]);
+  }, [fetchData, fetchFinancialData]);
 
   // Product CRUD
   const openProductModal = (product?: Product) => {
@@ -349,6 +418,7 @@ export default function AdminDashboard() {
         perspective4: product.perspective4 || '',
         is_featured: product.is_featured,
         price_tag: product.price_tag || '',
+        badge_text: product.badge_text || '',
         variants: product.variants?.length ? product.variants.map(v => ({
           size: v.size || '',
           color: v.color || '',
@@ -371,6 +441,7 @@ export default function AdminDashboard() {
         perspective4: '',
         is_featured: false,
         price_tag: '',
+        badge_text: '',
         variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
       });
     }
@@ -436,6 +507,7 @@ export default function AdminDashboard() {
         perspective4: productForm.perspective4 || null,
         is_featured: productForm.is_featured,
         price_tag: productForm.price_tag || null,
+        badge_text: productForm.badge_text || null,
         updated_at: new Date().toISOString()
       };
 
@@ -1673,6 +1745,226 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Product Costing Section */}
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-gray-900 uppercase tracking-wide">Product Costing</h3>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{products.length} products registered</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        onChange={e => {
+                          const prod = products.find(p => p.id === e.target.value);
+                          if (prod) {
+                            setSelectedProductForCosting(prod);
+                            const existing = productCostings[prod.id];
+                            if (existing) {
+                              setCostingForm({
+                                supplier_cost: existing.supplier_cost,
+                                shipping_cost: existing.shipping_cost,
+                                packaging_cost: existing.packaging_cost,
+                                operasional_pct: existing.operasional_pct,
+                                tax_rate: existing.tax_rate,
+                                courier_regency_cost: existing.courier_regency_cost,
+                                courier_inter_regency_cost: existing.courier_inter_regency_cost,
+                                courier_same_day_cost: existing.courier_same_day_cost,
+                                courier_instant_cost: existing.courier_instant_cost,
+                                target_margin_pct: existing.target_margin_pct,
+                                selling_price: existing.selling_price
+                              });
+                            } else {
+                              setCostingForm({
+                                supplier_cost: 0, shipping_cost: 0, packaging_cost: 0,
+                                operasional_pct: 0, tax_rate: 11,
+                                courier_regency_cost: 0, courier_inter_regency_cost: 0,
+                                courier_same_day_cost: 0, courier_instant_cost: 0,
+                                target_margin_pct: 0, selling_price: Number(prod.price) || 0
+                              });
+                            }
+                            setIsCostingModalOpen(true);
+                          }
+                        }}
+                        className="px-3 py-2 border border-gray-200 rounded-lg text-[10px] focus:outline-none focus:border-rose/50"
+                      >
+                        <option value="">+ Set Costing</option>
+                        {products.map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Product</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Supplier</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Shipping</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Packaging</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Opr %</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Tax %</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Margin %</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Sell Price</th>
+                          <th className="px-5 py-3 text-center text-[9px] uppercase tracking-wider text-gray-500">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {products.slice(0, 20).map(product => {
+                          const costing = productCostings[product.id];
+                          return (
+                            <tr key={product.id} className="hover:bg-gray-50">
+                              <td className="px-5 py-3 text-[10px] font-medium text-gray-900">{product.name}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `IDR ${costing.supplier_cost.toLocaleString('id-ID')}` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `IDR ${costing.shipping_cost.toLocaleString('id-ID')}` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `IDR ${costing.packaging_cost.toLocaleString('id-ID')}` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `${costing.operasional_pct}%` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `${costing.tax_rate}%` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] text-gray-600">{costing ? `${costing.target_margin_pct}%` : '-'}</td>
+                              <td className="px-5 py-3 text-right text-[10px] font-medium text-gray-900">{costing ? `IDR ${costing.selling_price.toLocaleString('id-ID')}` : '-'}</td>
+                              <td className="px-5 py-3 text-center">
+                                <button
+                                  onClick={() => {
+                                    setSelectedProductForCosting(product);
+                                    if (costing) {
+                                      setCostingForm({
+                                        supplier_cost: costing.supplier_cost,
+                                        shipping_cost: costing.shipping_cost,
+                                        packaging_cost: costing.packaging_cost,
+                                        operasional_pct: costing.operasional_pct,
+                                        tax_rate: costing.tax_rate,
+                                        courier_regency_cost: costing.courier_regency_cost,
+                                        courier_inter_regency_cost: costing.courier_inter_regency_cost,
+                                        courier_same_day_cost: costing.courier_same_day_cost,
+                                        courier_instant_cost: costing.courier_instant_cost,
+                                        target_margin_pct: costing.target_margin_pct,
+                                        selling_price: costing.selling_price
+                                      });
+                                    } else {
+                                      setCostingForm({
+                                        supplier_cost: 0, shipping_cost: 0, packaging_cost: 0,
+                                        operasional_pct: 0, tax_rate: 11,
+                                        courier_regency_cost: 0, courier_inter_regency_cost: 0,
+                                        courier_same_day_cost: 0, courier_instant_cost: 0,
+                                        target_margin_pct: 0, selling_price: Number(product.price) || 0
+                                      });
+                                    }
+                                    setIsCostingModalOpen(true);
+                                  }}
+                                  className="px-2 py-1 text-[9px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
+                                >
+                                  {costing ? 'Edit' : 'Set'}
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Supplier Cost Logs */}
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <h3 className="font-medium text-gray-900 uppercase tracking-wide">Supplier Cost Logs</h3>
+                    <p className="text-[10px] text-gray-400 mt-0.5">Recent cost changes</p>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Product</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">Before</th>
+                          <th className="px-5 py-3 text-right text-[9px] uppercase tracking-wider text-gray-500">After</th>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Reason</th>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {supplierLogs.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="px-5 py-8 text-center text-[10px] text-gray-400">No supplier cost changes recorded</td>
+                          </tr>
+                        )}
+                        {supplierLogs.map(log => (
+                          <tr key={log.id} className="hover:bg-gray-50">
+                            <td className="px-5 py-3 text-[10px] font-medium text-gray-900">{log.product_name || '—'}</td>
+                            <td className="px-5 py-3 text-right text-[10px] text-gray-500">IDR {log.old_supplier_cost.toLocaleString('id-ID')}</td>
+                            <td className="px-5 py-3 text-right text-[10px] font-medium text-emerald-600">IDR {log.new_supplier_cost.toLocaleString('id-ID')}</td>
+                            <td className="px-5 py-3 text-[10px] text-gray-600">{log.change_reason || '-'}</td>
+                            <td className="px-5 py-3 text-[10px] text-gray-500">{new Date(log.changed_at).toLocaleDateString('id-ID')}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Promo Impact */}
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-gray-900 uppercase tracking-wide">Promo Impact</h3>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{activePromos.length} active promos</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const name = prompt('Promo name:');
+                        if (name) {
+                          const pct = Number(prompt('Discount %:') || '0');
+                          const productId = prompt('Product ID (or leave empty for all):');
+                          await supabase.from('promo_impact').insert({
+                            product_id: productId || null,
+                            promo_name: name,
+                            discount_pct: pct,
+                            discount_amount: 0,
+                            start_date: new Date().toISOString(),
+                            is_active: true
+                          });
+                          await fetchFinancialData();
+                        }
+                      }}
+                      className="px-3 py-1.5 text-[9px] uppercase tracking-wider bg-rose text-white rounded-lg hover:bg-rose/90 transition-colors"
+                    >
+                      + Add Promo
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Promo Name</th>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Product</th>
+                          <th className="px-5 py-3 text-center text-[9px] uppercase tracking-wider text-gray-500">Discount</th>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">Start</th>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-wider text-gray-500">End</th>
+                          <th className="px-5 py-3 text-center text-[9px] uppercase tracking-wider text-gray-500">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {activePromos.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="px-5 py-8 text-center text-[10px] text-gray-400">No active promos</td>
+                          </tr>
+                        )}
+                        {activePromos.map(promo => (
+                          <tr key={promo.id} className="hover:bg-gray-50">
+                            <td className="px-5 py-3 text-[10px] font-medium text-gray-900">{promo.promo_name}</td>
+                            <td className="px-5 py-3 text-[10px] text-gray-600">{promo.product_name || 'All Products'}</td>
+                            <td className="px-5 py-3 text-center text-[10px] font-medium text-rose">{promo.discount_pct}%</td>
+                            <td className="px-5 py-3 text-[10px] text-gray-500">{new Date(promo.start_date).toLocaleDateString('id-ID')}</td>
+                            <td className="px-5 py-3 text-[10px] text-gray-500">{promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID') : '—'}</td>
+                            <td className="px-5 py-3 text-center">
+                              <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full">Active</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
                 {/* Transaction History */}
                 <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100">
@@ -2195,6 +2487,17 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Custom Badge Text (Override Price Tag)</label>
+                    <input
+                      type="text"
+                      value={productForm.badge_text}
+                      onChange={(e) => setProductForm({ ...productForm, badge_text: e.target.value })}
+                      placeholder="e.g. NEW ARRIVAL, ARCHIVE ITEM"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                    />
+                  </div>
+
+                  <div>
                     <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Description</label>
                     <textarea
                       value={productForm.description}
@@ -2352,6 +2655,163 @@ export default function AdminDashboard() {
                 >
                   <Save size={16} />
                   <span className="text-[10px] uppercase tracking-wider">{isEditMode ? 'Update Product' : 'Save Product'}</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== COSTING MODAL ===== */}
+      <AnimatePresence>
+        {isCostingModalOpen && selectedProductForCosting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">Product Costing</h2>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{selectedProductForCosting.name}</p>
+                </div>
+                <button onClick={() => setIsCostingModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-5">
+                {/* Cost Components */}
+                <div className="space-y-3">
+                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Supplier Cost</label>
+                      <input type="number" value={costingForm.supplier_cost} onChange={e => setCostingForm({...costingForm, supplier_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Shipping Cost</label>
+                      <input type="number" value={costingForm.shipping_cost} onChange={e => setCostingForm({...costingForm, shipping_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Packaging Cost</label>
+                      <input type="number" value={costingForm.packaging_cost} onChange={e => setCostingForm({...costingForm, packaging_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Operasional %</label>
+                      <input type="number" value={costingForm.operasional_pct} onChange={e => setCostingForm({...costingForm, operasional_pct: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax */}
+                <div>
+                  <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tax Rate (%)</label>
+                  <input type="number" value={costingForm.tax_rate} onChange={e => setCostingForm({...costingForm, tax_rate: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                </div>
+
+                {/* Courier Costs */}
+                <div className="space-y-3">
+                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Kurir</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Regency</label>
+                      <input type="number" value={costingForm.courier_regency_cost} onChange={e => setCostingForm({...costingForm, courier_regency_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Inter-Regency</label>
+                      <input type="number" value={costingForm.courier_inter_regency_cost} onChange={e => setCostingForm({...costingForm, courier_inter_regency_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Same Day</label>
+                      <input type="number" value={costingForm.courier_same_day_cost} onChange={e => setCostingForm({...costingForm, courier_same_day_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Instant</label>
+                      <input type="number" value={costingForm.courier_instant_cost} onChange={e => setCostingForm({...costingForm, courier_instant_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Target & Selling Price */}
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Margin & Harga Jual</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Target Margin %</label>
+                      <input type="number" value={costingForm.target_margin_pct} onChange={e => setCostingForm({...costingForm, target_margin_pct: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Selling Price</label>
+                      <input type="number" value={costingForm.selling_price} onChange={e => setCostingForm({...costingForm, selling_price: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="bg-ink/[0.02] rounded-xl p-4 space-y-2">
+                  <p className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">Cost Preview</p>
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-gray-500">Base Cost</span>
+                    <span className="font-medium">IDR {(costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost).toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-gray-500">Operasional ({costingForm.operasional_pct}%)</span>
+                    <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100).toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-gray-500">Tax ({costingForm.tax_rate}%)</span>
+                    <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100 * costingForm.tax_rate / 100).toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
+                    <span className="text-[10px] font-medium text-gray-700">Total Cost</span>
+                    <span className="text-[10px] font-bold text-rose">
+                      IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * (1 + costingForm.operasional_pct / 100) * (1 + costingForm.tax_rate / 100)).toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button onClick={() => setIsCostingModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    const baseCost = costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost;
+                    const withOpr = baseCost * (1 + costingForm.operasional_pct / 100);
+                    const withTax = withOpr * (1 + costingForm.tax_rate / 100);
+                    const { error } = await supabase.from('product_costing').upsert({
+                      product_id: selectedProductForCosting!.id,
+                      supplier_cost: costingForm.supplier_cost,
+                      shipping_cost: costingForm.shipping_cost,
+                      packaging_cost: costingForm.packaging_cost,
+                      operasional_pct: costingForm.operasional_pct,
+                      tax_rate: costingForm.tax_rate,
+                      courier_regency_cost: costingForm.courier_regency_cost,
+                      courier_inter_regency_cost: costingForm.courier_inter_regency_cost,
+                      courier_same_day_cost: costingForm.courier_same_day_cost,
+                      courier_instant_cost: costingForm.courier_instant_cost,
+                      target_margin_pct: costingForm.target_margin_pct,
+                      selling_price: costingForm.selling_price
+                    });
+                    if (!error) {
+                      await fetchFinancialData();
+                      setIsCostingModalOpen(false);
+                    }
+                  }}
+                  className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-lg hover:bg-rose/90"
+                >
+                  <Save size={14} />
+                  <span className="text-[10px] uppercase tracking-wider">Save Costing</span>
                 </button>
               </div>
             </motion.div>
