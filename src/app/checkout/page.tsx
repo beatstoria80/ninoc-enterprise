@@ -314,8 +314,7 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Payment token not received from server');
       }
 
-      // Open Midtrans Snap popup
-      (window as Window & { snap: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap.pay(data.token, {
+      (window as unknown as Window & { snap: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap.pay(data.token, {
         onSuccess: (result: MidtransSnapResult) => {
           console.log('Payment initiated:', result);
           // Don't clear cart here — webhook must confirm payment first
