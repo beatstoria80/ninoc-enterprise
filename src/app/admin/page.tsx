@@ -1073,23 +1073,23 @@ export default function AdminDashboard() {
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col overflow-hidden pt-14 md:pt-0">
         {/* Desktop Header */}
-        <header className="hidden md:flex h-20 bg-white border-b border-gray-100 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] uppercase tracking-wider text-gray-300">NINOC /</span>
-            <h1 className="text-lg font-medium text-gray-900 uppercase tracking-wide">
+        <header className="hidden md:flex h-12 bg-white border-b border-gray-100 px-6 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] uppercase tracking-wider text-gray-300">NINOC /</span>
+            <h1 className="text-sm font-medium text-gray-900 uppercase tracking-wide">
               {activeTab}
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[9px] uppercase tracking-widest text-emerald-600">Studio Active</span>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-[8px] uppercase tracking-widest text-emerald-600 font-medium">Studio Active</span>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-y-auto p-4 md:p-8">
+        <section className="flex-1 overflow-y-auto p-4 md:px-6 md:py-4">
           <AnimatePresence mode="wait">
             {/* ===== OVERVIEW ===== */}
             {activeTab === 'overview' && (
