@@ -47,6 +47,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [isSpecExpanded, setIsSpecExpanded] = useState(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -260,9 +261,29 @@ export default function ProductDetailPage() {
                 <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1 lg:mt-2">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-1 lg:space-y-3 mt-4 lg:mt-0">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Origin Specification</h4>
-                <p className="text-[12px] lg:text-[12px] leading-relaxed text-ink/90 font-medium">{product.description || 'Premium quality apparel from NINOC.'}</p>
+              <div className="space-y-1.5 lg:space-y-3 mt-4 lg:mt-0">
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Product Specifications</h4>
+                
+                {/* Specifications Grid */}
+                <div className="grid grid-cols-[100px_1fr] gap-y-2 text-[10px] lg:text-[11px] font-medium mt-2">
+                  <span className="text-ink/40">Category</span><span className="text-ink">{product.category || '-'}</span>
+                  <span className="text-ink/40">Brand</span><span className="text-ink">NINOC Studio</span>
+                  <span className="text-ink/40">Condition</span><span className="text-ink">Brand New</span>
+                  <span className="text-ink/40">Origin</span><span className="text-ink">Indonesia</span>
+                </div>
+
+                {/* Expandable Description */}
+                <div className="pt-2 mt-2 border-t border-ink/5">
+                  <div className={cn("text-[11px] lg:text-[12px] leading-relaxed text-ink/80 font-medium transition-all duration-300", isSpecExpanded ? "" : "line-clamp-3")}>
+                    {product.description || 'Premium quality apparel from NINOC.'}
+                  </div>
+                  <button 
+                    onClick={() => setIsSpecExpanded(!isSpecExpanded)}
+                    className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-2"
+                  >
+                    {isSpecExpanded ? "- Show Less" : "+ Read Full Description"}
+                  </button>
+                </div>
               </div>
 
               {/* Size Guide Table - Inline for Grid 3 */}
@@ -334,9 +355,9 @@ export default function ProductDetailPage() {
               <div className="space-y-1.5 lg:space-y-2 mt-4 lg:mt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Quantity</h4>
                 <div className="flex items-center gap-1 w-fit">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-6 h-6 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Minus size={12} /></button>
-                  <span className="text-[11px] font-medium w-4 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-6 h-6 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Plus size={12} /></button>
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Minus size={14} /></button>
+                  <span className="text-[12px] font-medium w-6 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(prev => prev + 1)} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose"><Plus size={14} /></button>
                 </div>
               </div>
 
@@ -381,19 +402,19 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* GRID 5 — CART ARCHIVE (PERMANENT & COMPLETE) */}
+          {/* GRID 5 — CART (PERMANENT & COMPLETE) */}
           <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               {/* Cart Header */}
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Archive</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Cart</span>
                 <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? 'Item' : 'Items'}</span>
               </div>
               
               {items.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
                   <ShoppingCart size={28} className="mb-3 text-ink" />
-                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Archive is empty</span>
+                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Cart is empty</span>
                   <span className="text-[8px] text-ink/40 font-medium mt-1">Select a size and add items</span>
                 </div>
               ) : (
@@ -407,32 +428,32 @@ export default function ProductDetailPage() {
                         >
                           {/* Thumbnail */}
                           <div 
-                            className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer"
+                            className="w-14 h-16 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer flex items-center justify-center"
                             onClick={() => item.image_url && setFullscreenImage(item.image_url)}
                           >
                             {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" />}
                           </div>
 
                           {/* Item Details */}
-                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                          <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div className="flex justify-between items-start gap-2">
-                              <span className="text-[9px] font-medium uppercase leading-tight text-ink truncate">{item.name}</span>
+                              <span className="text-[10px] font-medium uppercase leading-tight text-ink truncate pt-0.5">{item.name}</span>
                               {/* Delete Button — Always Visible */}
                               <button 
                                 onClick={() => removeItem(item.id, item.size, item.color)}
-                                className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all"
-                                title="Remove from archive"
+                                className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all -mt-0.5 -mr-1"
+                                title="Remove from cart"
                               >
-                                <Trash2 size={14} strokeWidth={2} />
+                                <Trash2 size={12} strokeWidth={2} />
                               </button>
                             </div>
-                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider">
+                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider mb-auto mt-0.5">
                                     {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
                                   </span>
                             
                             {/* Quantity Controls + Price */}
-                            <div className="flex items-center justify-between mt-0.5">
-                              <div className="flex items-center gap-0 border border-ink/8">
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-ink/5">
+                              <div className="flex items-center gap-1">
                                 <button
                                   onClick={() => {
                                     if (item.quantity <= 1) {
@@ -441,14 +462,14 @@ export default function ProductDetailPage() {
                                       updateQuantity(item.id, item.quantity - 1, item.size, item.color);
                                     }
                                   }}
-                                  className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                  className="w-6 h-6 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
                                 >
                                   <Minus size={12} />
                                 </button>
-                                <span className="text-[10px] font-medium w-8 text-center border-x border-ink/8 h-8 flex items-center justify-center">{item.quantity}</span>
+                                <span className="text-[11px] font-medium w-5 text-center">{item.quantity}</span>
                                 <button 
                                   onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
-                                  className="w-8 h-8 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors"
+                                  className="w-6 h-6 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
                                 >
                                   <Plus size={12} />
                                 </button>
@@ -483,7 +504,7 @@ export default function ProductDetailPage() {
                         className="w-full py-2.5 bg-transparent text-ink/40 text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
                         <Trash2 size={12} />
-                        Clear Archive
+                        Clear Cart
                       </button>
                     </div>
                   </div>
