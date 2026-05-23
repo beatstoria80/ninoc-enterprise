@@ -29,6 +29,7 @@ interface Product {
   perspective3?: string;
   perspective4?: string;
   price_tag?: string | null;
+  variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
 }
 
 export default function ProductDetailPage() {
