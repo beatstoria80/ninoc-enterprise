@@ -290,7 +290,7 @@ export default function Home() {
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
           {/* Left: Branding */}
-          <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-52">
+          <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.5, ease: MOTION.ease }} className="flex items-center gap-2 text-rose">
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
               <span className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
