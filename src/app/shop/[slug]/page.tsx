@@ -129,12 +129,12 @@ export default function ProductDetailPage() {
   return (
     <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
       <div className={cn(
-        "pt-0 md:pt-28 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
+        "pt-0 md:pt-20 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
         isMobile && "pb-24" 
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 lg:mb-6 hidden lg:block sticky top-32 z-[100] w-fit">
+        <div className="mb-4 lg:mb-6 hidden lg:block sticky top-24 z-[100] w-fit">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
