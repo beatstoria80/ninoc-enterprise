@@ -129,12 +129,12 @@ export default function ProductDetailPage() {
   return (
     <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
       <div className={cn(
-        "pt-0 md:pt-20 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
+        "pt-0 md:pt-16 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
         isMobile && "pb-24" 
       )}>
 
         {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 lg:mb-6 hidden lg:block sticky top-24 z-[100] w-fit">
+        <div className="mb-2 lg:mb-3 hidden lg:block sticky top-20 z-[100] w-fit">
           <button 
             onClick={() => router.push('/shop')} 
             className="group flex items-center gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
@@ -504,23 +504,23 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-4 lg:mt-4 space-y-2">
-            <div className="flex justify-between items-end border-b border-ink/5 pb-1.5 lg:pb-2">
-              <h2 className="text-base md:text-lg font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+          <div className="mt-2 lg:mt-2 space-y-1.5">
+            <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
+              <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-6 pt-1">
+            <div className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-4 pt-1">
               {relatedProducts.map((p) => (
                 <div
                   key={p.id}
-                  className="flex-shrink-0 w-[140px] md:w-[160px]"
+                  className="flex-shrink-0 w-[110px] md:w-[130px]"
                 >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-1.5">
-                    <div className="aspect-[3/4] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
-                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" />
+                  <Link href={`/shop/${p.slug}`} className="group block space-y-1">
+                    <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
+                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="space-y-1 px-1">
