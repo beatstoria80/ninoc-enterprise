@@ -1097,7 +1097,7 @@ export default function AdminDashboard() {
                 key="overview"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
+                className="space-y-4"
               >
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                   {[
@@ -1106,14 +1106,16 @@ export default function AdminDashboard() {
                     { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'bg-blue-500/10 text-blue-600' },
                     { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'bg-amber-500/10 text-amber-600' }
                   ].map((stat, i) => (
-                    <div key={i} className="bg-white rounded-xl p-6 border border-gray-100">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", stat.color)}>
-                          <stat.icon size={18} />
+                    <div key={i} className="bg-white rounded-lg p-4 border border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-8 h-8 rounded-md flex items-center justify-center shrink-0", stat.color)}>
+                          <stat.icon size={14} />
+                        </div>
+                        <div>
+                          <p className="text-[9px] uppercase tracking-widest text-gray-400">{stat.label}</p>
+                          <p className="text-sm font-medium text-gray-900">{stat.value}</p>
                         </div>
                       </div>
-                      <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
-                      <p className="text-xl font-medium text-gray-900">{stat.value}</p>
                     </div>
                   ))}
                 </div>
@@ -1163,32 +1165,32 @@ export default function AdminDashboard() {
                 key="products"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-medium text-gray-900">Products</h2>
-                    <p className="text-sm text-gray-500">{products.length} items in catalog</p>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Products</h2>
+                    <span className="text-[9px] text-gray-400">— {products.length} items</span>
                   </div>
                   <button
                     onClick={() => openProductModal()}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-rose text-white rounded-lg hover:bg-rose/90 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-rose text-white rounded hover:bg-rose/90 transition-colors"
                   >
-                    <Plus size={16} />
-                    <span className="text-[10px] uppercase tracking-wider">Add Product</span>
+                    <Plus size={12} />
+                    <span className="text-[9px] uppercase tracking-wider">Add</span>
                   </button>
                 </div>
 
                 {/* Search */}
                 <div className="relative">
-                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                    className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                   />
                 </div>
 
@@ -1322,22 +1324,18 @@ export default function AdminDashboard() {
                 key="bulk-upload"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-medium text-gray-900">Upload Images</h2>
-                    <p className="text-sm text-gray-500">
-                      {bulkFiles.length > 0
-                        ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected`
-                        : 'Batch upload up to 1000 images per batch'}
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Upload Images</h2>
+                    <span className="text-[9px] text-gray-400">— {bulkFiles.length > 0 ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected` : 'batch upload'}</span>
                   </div>
                   <button
                     onClick={() => setBulkUploadOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600"
+                    className="p-1.5 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-600"
                   >
-                    <X size={18} />
+                    <X size={14} />
                   </button>
                 </div>
 
@@ -1455,17 +1453,17 @@ export default function AdminDashboard() {
                 key="inventory"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-medium text-gray-900">Inventory</h2>
-                    <p className="text-sm text-gray-500">Stock management for all products</p>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Inventory</h2>
+                    <span className="text-[9px] text-gray-400">— stock management</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="px-4 py-2 bg-white rounded-lg border border-gray-200">
-                      <span className="text-[10px] uppercase tracking-wider text-gray-400">Total Stock: </span>
-                      <span className="font-medium text-gray-900">{totalStock}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="px-3 py-1 bg-white rounded border border-gray-200">
+                      <span className="text-[9px] uppercase tracking-wider text-gray-400">Stock: </span>
+                      <span className="text-sm font-medium text-gray-900">{totalStock}</span>
                     </div>
                   </div>
                 </div>
@@ -1532,25 +1530,25 @@ export default function AdminDashboard() {
                 key="orders"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-medium text-gray-900">Orders</h2>
-                    <p className="text-sm text-gray-500">{orders.length} total orders</p>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Orders</h2>
+                    <span className="text-[9px] text-gray-400">— {orders.length} total</span>
                   </div>
                 </div>
 
                 {/* Filters */}
                 <div className="flex items-center gap-4">
                   <div className="relative flex-1 max-w-md">
-                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       placeholder="Search orders..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                      className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                     />
                   </div>
                   <select
@@ -1621,11 +1619,11 @@ export default function AdminDashboard() {
                 key="logistics"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
-                <div>
-                  <h2 className="text-xl font-medium text-gray-900">Logistics</h2>
-                  <p className="text-sm text-gray-500">Track and manage shipments</p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics</h2>
+                  <span className="text-[9px] text-gray-400">— shipment tracking</span>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1715,11 +1713,11 @@ export default function AdminDashboard() {
                 key="finance"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-3"
               >
-                <div>
-                  <h2 className="text-xl font-medium text-gray-900">Finance</h2>
-                  <p className="text-sm text-gray-500">Financial overview and reports</p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Finance</h2>
+                  <span className="text-[9px] text-gray-400">— overview & reports</span>
                 </div>
 
                 {/* Stats */}
@@ -2178,13 +2176,13 @@ export default function AdminDashboard() {
                 key="customers"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-2"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-medium text-gray-900">Customer Records</h2>
-                    <p className="text-sm text-gray-500">{customers.length} registered members</p>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Customers</h2>
+                    <span className="text-[9px] text-gray-400">— {customers.length} members</span>
                   </div>
                   <button
                     onClick={() => {
@@ -2199,22 +2197,24 @@ export default function AdminDashboard() {
                         house_number: '',
                         rt: '',
                         rw: '',
+                        kelurahan: '',
+                        kecamatan: '',
                         city: '',
                         province: '',
-                        postal_code: ''
+                        postal_code: '',
                       });
                       setIsCustomerModalOpen(true);
                     }}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-rose text-white rounded-lg hover:bg-rose/90 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-rose text-white rounded hover:bg-rose/90 transition-colors"
                   >
-                    <Plus size={16} />
-                    <span className="text-[10px] uppercase tracking-wider">Add Customer</span>
+                    <Plus size={12} />
+                    <span className="text-[9px] uppercase tracking-wider">Add</span>
                   </button>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-xl p-4 border border-gray-100">
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-rose/10 rounded-lg flex items-center justify-center">
                         <Users size={18} className="text-rose" />
