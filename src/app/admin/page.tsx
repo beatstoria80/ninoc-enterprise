@@ -2197,8 +2197,6 @@ export default function AdminDashboard() {
                         house_number: '',
                         rt: '',
                         rw: '',
-                        kelurahan: '',
-                        kecamatan: '',
                         city: '',
                         province: '',
                         postal_code: '',
