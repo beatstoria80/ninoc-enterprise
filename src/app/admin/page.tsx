@@ -286,7 +286,7 @@ export default function AdminDashboard() {
     is_featured: false,
     price_tag: '',
     badge_text: '',
-    variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
+    variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
   });
 
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
@@ -423,10 +423,11 @@ export default function AdminDashboard() {
         price_tag: product.price_tag || '',
         badge_text: product.badge_text || '',
         variants: product.variants?.length ? product.variants.map(v => ({
+          id: v.id,
           size: v.size || '',
           color: v.color || '',
           stock_quantity: v.stock_quantity
-        })) : [{ size: 'S', color: 'Black', stock_quantity: 0 }]
+        })) : [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
       });
     } else {
       setIsEditMode(false);
@@ -446,7 +447,7 @@ export default function AdminDashboard() {
         is_featured: false,
         price_tag: '',
         badge_text: '',
-        variants: [{ size: 'S', color: 'Black', stock_quantity: 0 }]
+        variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
       });
     }
     setIsProductModalOpen(true);
@@ -467,7 +468,7 @@ export default function AdminDashboard() {
   const addVariant = () => {
     setProductForm({
       ...productForm,
-      variants: [...productForm.variants, { size: '', color: '', stock_quantity: 0 }]
+      variants: [...productForm.variants, { id: '', size: '', color: '', stock_quantity: 0 }]
     });
   };
 
@@ -539,18 +540,44 @@ export default function AdminDashboard() {
         productId = data.id;
       }
 
-      // Save variants
-      await supabase.from('variants').delete().eq('product_id', productId);
+      // Prepare variants to upsert/insert
+      const variantsToUpsert = productForm.variants.flatMap(v => {
+        const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
+        
+        return colors.map((color, index) => {
+          const variantObj: any = {
+            product_id: productId,
+            size: v.size || null,
+            color: color,
+            stock_quantity: parseInt(v.stock_quantity.toString()) || 0,
+            updated_at: new Date().toISOString()
+          };
+          
+          if (v.id && index === 0) {
+            variantObj.id = v.id;
+          } else {
+            variantObj.created_at = new Date().toISOString();
+          }
+          
+          return variantObj;
+        });
+      });
 
-      const variantsToInsert = productForm.variants.map(v => ({
-        product_id: productId,
-        size: v.size || null,
-        color: v.color || null,
-        stock_quantity: parseInt(v.stock_quantity.toString()) || 0,
-        created_at: new Date().toISOString()
-      }));
+      // Try to safely delete variants that are no longer in the list
+      const { data: existingVariants } = await supabase.from('variants').select('id').eq('product_id', productId);
+      const newVariantIds = variantsToUpsert.map(v => v.id).filter(Boolean);
+      const variantsToDelete = existingVariants?.filter(ev => !newVariantIds.includes(ev.id)) || [];
 
-      await supabase.from('variants').insert(variantsToInsert);
+      for (const ev of variantsToDelete) {
+        // Try deleting, if it fails due to FK (e.g. order history), soft-delete by setting stock to 0
+        const { error: delErr } = await supabase.from('variants').delete().eq('id', ev.id);
+        if (delErr) {
+          await supabase.from('variants').update({ stock_quantity: 0, updated_at: new Date().toISOString() }).eq('id', ev.id);
+        }
+      }
+
+      const { error: variantError } = await supabase.from('variants').upsert(variantsToUpsert);
+      if (variantError) throw variantError;
 
       setIsProductModalOpen(false);
       fetchData();
@@ -2674,8 +2701,8 @@ export default function AdminDashboard() {
                           type="text"
                           value={variant.color || ''}
                           onChange={(e) => updateVariant(idx, 'color', e.target.value)}
-                          placeholder="Color"
-                          className="w-32 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                          placeholder="Color (e.g. White, Black)"
+                          className="w-40 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                         />
                         <input
                           type="number"
