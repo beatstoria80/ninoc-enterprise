@@ -1193,7 +1193,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Products Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {filteredProducts.map((product) => (
                     <div key={product.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden group">
                       <div className="aspect-square bg-gray-50 relative">
@@ -1238,10 +1238,10 @@ export default function AdminDashboard() {
                           </div>
                         )}
                       </div>
-                      <div className="p-4 space-y-3">
+                      <div className="p-3 space-y-2">
                         {/* Product Name — Destil & Bold */}
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-display font-medium italic text-[15px] text-ink leading-tight">{product.name}</h3>
+                          <h3 className="font-display font-medium italic text-xs text-ink leading-tight truncate">{product.name}</h3>
                           {product.is_featured && (
                             <span className="shrink-0 px-1.5 py-0.5 bg-rose text-white text-[8px] uppercase tracking-wider rounded">Featured</span>
                           )}
@@ -1258,7 +1258,7 @@ export default function AdminDashboard() {
                           {product.price_tag && (
                             <div className="text-[8px] uppercase tracking-[0.25em] text-rose font-medium">{product.price_tag}</div>
                           )}
-                          <p className="text-lg font-medium text-ink leading-none">
+                          <p className="text-sm font-medium text-ink leading-none">
                             {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                             <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
                           </p>
@@ -1309,8 +1309,6 @@ export default function AdminDashboard() {
                           </div>
                         )}
 
-                        {/* Description */}
-                        <p className="text-[9px] text-gray-400 leading-relaxed line-clamp-2">{product.description}</p>
                       </div>
                     </div>
                   ))}
@@ -2406,10 +2404,10 @@ export default function AdminDashboard() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl"
+              className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white rounded-xl"
               onClick={e => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 className="text-xl font-medium text-gray-900">
                   {isEditMode ? 'Edit Product' : 'Add New Product'}
                 </h2>
@@ -2418,50 +2416,51 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-6 space-y-4">
                 {/* Basic Info */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Basic Information</h3>
 
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Product Name</label>
-                    <input
-                      type="text"
-                      value={productForm.name}
-                      onChange={(e) => handleProductNameChange(e.target.value)}
-                      placeholder="Enter product name"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Slug</label>
-                    <input
-                      type="text"
-                      value={productForm.slug}
-                      onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
-                      placeholder="product-slug"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Product Name</label>
+                      <input
+                        type="text"
+                        value={productForm.name}
+                        onChange={(e) => handleProductNameChange(e.target.value)}
+                        placeholder="Enter product name"
+                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Slug</label>
+                      <input
+                        type="text"
+                        value={productForm.slug}
+                        onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
+                        placeholder="product-slug"
+                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                      />
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price (IDR)</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price (IDR)</label>
                       <input
                         type="text"
                         value={productForm.price}
                         onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                         placeholder="e.g. 149.000"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Category</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Category</label>
                       <select
                         value={productForm.category}
                         onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                       >
                         <option value="pakaian">Pakaian</option>
                         <option value="utilities">Utilities</option>
@@ -2498,13 +2497,13 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Description</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description</label>
                     <textarea
                       value={productForm.description}
                       onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                       placeholder="Product description..."
-                      rows={6}
-                      className="w-full min-h-[140px] px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50 resize-y"
+                      rows={3}
+                      className="w-full min-h-[60px] px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 resize-y"
                     />
                   </div>
 
@@ -2642,16 +2641,16 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 bg-white px-8 py-6 border-t border-gray-100 flex items-center justify-end gap-3">
+              <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-100 flex items-center justify-end gap-3">
                 <button
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-6 py-2.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={saveProduct}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-rose text-white rounded-lg hover:bg-rose/90"
+                  className="px-4 py-2 text-sm bg-rose text-white rounded hover:bg-rose/90 flex items-center gap-2"
                 >
                   <Save size={16} />
                   <span className="text-[10px] uppercase tracking-wider">{isEditMode ? 'Update Product' : 'Save Product'}</span>
