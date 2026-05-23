@@ -9,6 +9,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
+import ImageLightbox from '@/components/ImageLightbox';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -38,6 +39,7 @@ function MobileShopView({ products }: { products: Product[] }) {
   };
   const displayCategories = Object.keys(categoryMap);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const filteredProducts = selectedCategory === 'All'
     ? products
@@ -99,7 +101,13 @@ function MobileShopView({ products }: { products: Product[] }) {
                 >
                   <Link href={`/shop/${product.slug}`} className="block">
                     {/* Image */}
-                    <div className="aspect-square bg-white rounded-none overflow-hidden border border-ink/5 relative">
+                    <div 
+                      className="aspect-square bg-white rounded-none overflow-hidden border border-ink/5 relative"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFullscreenImage(product.image_url);
+                      }}
+                    >
                       <Image
                         src={product.image_url}
                         alt={product.name}
@@ -136,6 +144,12 @@ function MobileShopView({ products }: { products: Product[] }) {
           </div>
         )}
       </div>
+
+      <ImageLightbox
+        isOpen={!!fullscreenImage}
+        imageUrl={fullscreenImage}
+        onClose={() => setFullscreenImage(null)}
+      />
     </div>
   );
 }

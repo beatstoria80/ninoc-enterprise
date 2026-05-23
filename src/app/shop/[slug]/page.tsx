@@ -11,6 +11,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
+import ImageLightbox from '@/components/ImageLightbox';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -45,6 +46,7 @@ export default function ProductDetailPage() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -190,7 +192,8 @@ export default function ProductDetailPage() {
                     key={idx} 
                     onClick={() => {
                       if (isPrev) setActiveImageIndex(idx);
-                      if (isNext) setActiveImageIndex(idx);
+                      else if (isNext) setActiveImageIndex(idx);
+                      else if (isActive) setFullscreenImage(img);
                     }}
                     className={cn(
                       "absolute w-[75%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",
@@ -403,7 +406,10 @@ export default function ProductDetailPage() {
                           className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
                         >
                           {/* Thumbnail */}
-                          <div className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0">
+                          <div 
+                            className="w-12 h-14 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer"
+                            onClick={() => item.image_url && setFullscreenImage(item.image_url)}
+                          >
                             {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" />}
                           </div>
 
@@ -524,6 +530,12 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+
+      <ImageLightbox
+        isOpen={!!fullscreenImage}
+        imageUrl={fullscreenImage}
+        onClose={() => setFullscreenImage(null)}
+      />
 
     </main>
   );

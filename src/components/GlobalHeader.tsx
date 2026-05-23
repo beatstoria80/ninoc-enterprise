@@ -9,6 +9,7 @@ import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
+import ImageLightbox from '@/components/ImageLightbox';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -29,6 +30,7 @@ export default function GlobalHeader() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [_isSearching, setIsSearching] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
@@ -181,7 +183,10 @@ export default function GlobalHeader() {
                   <div className="space-y-6 md:space-y-10">
                     {items.map((item) => (
                       <div key={`${item.id}-${item.size}`} className="flex gap-6 group">
-                        <div className="w-24 h-32 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5">
+                        <div 
+                          className="w-24 h-32 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5 cursor-pointer"
+                          onClick={() => item.image_url && setFullscreenImage(item.image_url)}
+                        >
                           {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-700" />}
                         </div>
                         <div className="flex-1 flex flex-col justify-between py-1">
@@ -363,6 +368,12 @@ export default function GlobalHeader() {
           </>
         )}
       </AnimatePresence>
+
+      <ImageLightbox
+        isOpen={!!fullscreenImage}
+        imageUrl={fullscreenImage}
+        onClose={() => setFullscreenImage(null)}
+      />
     </>
   );
 }
