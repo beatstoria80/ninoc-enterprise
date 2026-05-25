@@ -130,12 +130,12 @@ export default function MobileLayout({
                 >
                   <ArrowLeft size={20} strokeWidth={1.5} />
                 </button>
-              ) : (pathname?.startsWith('/shop') || pathname?.startsWith('/admin')) ? (
+              ) : (
                 <button 
                   onClick={() => router.push('/shop')} 
-                  className="group flex items-center gap-1.5 text-ink transition-all p-1 -ml-1 pr-2 rounded-none"
+                  className="group flex items-center gap-1.5 text-ink transition-all p-1 -ml-1 pr-2 rounded-none active:scale-95"
                 >
-                  <div className="w-5 h-5 rounded-none border border-ink/10 flex items-center justify-center text-ink bg-white">
+                  <div className="w-5 h-5 rounded-none border border-ink/10 flex items-center justify-center text-ink bg-white group-active:border-rose group-active:text-rose transition-colors">
                     <ArrowLeft size={10} strokeWidth={1.5} />
                   </div>
                   <div className="flex flex-col items-start leading-none">
@@ -143,10 +143,6 @@ export default function MobileLayout({
                     <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink">Catalog</span>
                   </div>
                 </button>
-              ) : (
-                <Link href="/" className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">
-                  NINOC
-                </Link>
               )}
             </div>
 
