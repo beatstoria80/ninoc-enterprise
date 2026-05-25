@@ -332,7 +332,7 @@ export default function Home() {
           </div>
 
           {/* Middle: Portrait Carousel */}
-          <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+          <div className="lg:col-span-4 relative mt-4 lg:mt-0">
             <PortraitImageCarousel />
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6, ease: MOTION.ease }} className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30">
               <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
@@ -341,7 +341,7 @@ export default function Home() {
           </div>
 
           {/* Right: Metadata Sidebar */}
-          <div className="col-span-2 lg:col-span-3 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
+          <div className="col-span-2 lg:col-span-4 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
             {/* Desktop only sidebar content */}
             <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
               {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
