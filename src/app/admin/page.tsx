@@ -2697,7 +2697,7 @@ export default function AdminDashboard() {
                         <>
                           {colorGroups.map((group) => (
                             <div key={group.originalIndices[0]} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
-                              <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                              <div className="flex items-center justify-between pb-3 border-b border-gray-200 flex-wrap gap-3">
                                 <div className="flex items-center gap-3">
                                   <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
                                   <input
@@ -2711,7 +2711,22 @@ export default function AdminDashboard() {
                                       });
                                       setProductForm({ ...productForm, variants: newVariants });
                                     }}
-                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink"
+                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink w-32"
+                                  />
+                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium ml-2">Stock:</span>
+                                  <input
+                                    type="number"
+                                    value={group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0}
+                                    onChange={(e) => {
+                                      const newVariants = [...productForm.variants];
+                                      const newStock = parseInt(e.target.value) || 0;
+                                      group.originalIndices.forEach(idx => {
+                                        newVariants[idx].stock_quantity = newStock;
+                                      });
+                                      setProductForm({ ...productForm, variants: newVariants });
+                                    }}
+                                    placeholder="0"
+                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink w-24"
                                   />
                                 </div>
                                 <button
@@ -2725,45 +2740,58 @@ export default function AdminDashboard() {
                                 </button>
                               </div>
 
-                              <div className="space-y-2">
-                                {group.originalIndices.map((idx) => {
-                                  const v = productForm.variants[idx];
-                                  return (
-                                    <div key={idx} className="flex items-center gap-3">
-                                      <input
-                                        type="text"
-                                        value={v.size}
-                                        onChange={(e) => updateVariant(idx, 'size', e.target.value)}
-                                        placeholder="Size (e.g. M)"
-                                        className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                                      />
-                                      <input
-                                        type="number"
-                                        value={v.stock_quantity}
-                                        onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
-                                        placeholder="Stock"
-                                        className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                                      />
+                              <div className="pt-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {Array.from(new Set(['S', 'M', 'L', 'XL', 'One Size', ...group.originalIndices.map(i => productForm.variants[i].size).filter(Boolean)])).map(size => {
+                                    const idx = group.originalIndices.find(i => productForm.variants[i].size === size);
+                                    const isSelected = idx !== undefined;
+                                    return (
                                       <button
-                                        onClick={() => removeVariant(idx)}
-                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        key={size}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          if (isSelected) {
+                                            const newVariants = productForm.variants.filter((_, i) => i !== idx);
+                                            setProductForm({ ...productForm, variants: newVariants });
+                                          } else {
+                                            const commonStock = group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0;
+                                            setProductForm({
+                                              ...productForm,
+                                              variants: [...productForm.variants, { id: '', size: size, color: group.color, stock_quantity: commonStock }]
+                                            });
+                                          }
+                                        }}
+                                        className={cn(
+                                          "px-4 py-2 text-xs font-medium rounded border transition-colors uppercase",
+                                          isSelected 
+                                            ? "bg-rose border-rose text-white shadow-sm" 
+                                            : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+                                        )}
                                       >
-                                        <Minus size={14} />
+                                        {size}
                                       </button>
-                                    </div>
-                                  );
-                                })}
-                                <button
-                                  onClick={() => {
-                                    setProductForm({
-                                      ...productForm,
-                                      variants: [...productForm.variants, { id: '', size: '', color: group.color, stock_quantity: 0 }]
-                                    });
-                                  }}
-                                  className="flex items-center gap-1 mt-3 text-[10px] uppercase tracking-wider text-gray-500 hover:text-rose font-medium"
-                                >
-                                  <Plus size={10} /> Add Size
-                                </button>
+                                    );
+                                  })}
+                                  <input
+                                    type="text"
+                                    placeholder="+ Custom Size (Enter)"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        const newSize = e.currentTarget.value.trim();
+                                        if (newSize) {
+                                          const commonStock = group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0;
+                                          setProductForm({
+                                            ...productForm,
+                                            variants: [...productForm.variants, { id: '', size: newSize, color: group.color, stock_quantity: commonStock }]
+                                          });
+                                          e.currentTarget.value = '';
+                                        }
+                                      }
+                                    }}
+                                    className="px-3 py-2 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 w-36"
+                                  />
+                                </div>
                               </div>
                             </div>
                           ))}
