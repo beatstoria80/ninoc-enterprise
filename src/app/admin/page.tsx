@@ -541,7 +541,7 @@ export default function AdminDashboard() {
       }
 
       // Prepare variants to upsert/insert
-      const variantsToUpsert = productForm.variants.flatMap(v => {
+      const allVariants = productForm.variants.flatMap(v => {
         const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
         
         return colors.map((color, index) => {
@@ -554,8 +554,6 @@ export default function AdminDashboard() {
           
           if (v.id && index === 0) {
             variantObj.id = v.id;
-          } else {
-            variantObj.created_at = new Date().toISOString();
           }
           
           return variantObj;
@@ -564,7 +562,7 @@ export default function AdminDashboard() {
 
       // Try to safely delete variants that are no longer in the list
       const { data: existingVariants } = await supabase.from('variants').select('id').eq('product_id', productId);
-      const newVariantIds = variantsToUpsert.map(v => v.id).filter(Boolean);
+      const newVariantIds = allVariants.map(v => v.id).filter(Boolean);
       const variantsToDelete = existingVariants?.filter(ev => !newVariantIds.includes(ev.id)) || [];
 
       for (const ev of variantsToDelete) {
@@ -575,8 +573,19 @@ export default function AdminDashboard() {
         }
       }
 
-      const { error: variantError } = await supabase.from('variants').upsert(variantsToUpsert);
-      if (variantError) throw variantError;
+      const variantsToUpdate = allVariants.filter(v => v.id);
+      const variantsToInsert = allVariants.filter(v => !v.id);
+
+      if (variantsToUpdate.length > 0) {
+        const { error: updateErr } = await supabase.from('variants').upsert(variantsToUpdate);
+        if (updateErr) throw updateErr;
+      }
+      
+      if (variantsToInsert.length > 0) {
+        const inserts = variantsToInsert.map(v => ({ ...v, created_at: new Date().toISOString() }));
+        const { error: insertErr } = await supabase.from('variants').insert(inserts);
+        if (insertErr) throw insertErr;
+      }
 
       setIsProductModalOpen(false);
       fetchData();
@@ -2707,7 +2716,7 @@ export default function AdminDashboard() {
                                     onChange={(e) => {
                                       const newVariants = [...productForm.variants];
                                       group.originalIndices.forEach(idx => {
-                                        newVariants[idx].color = e.target.value;
+                                        newVariants[idx] = { ...newVariants[idx], color: e.target.value };
                                       });
                                       setProductForm({ ...productForm, variants: newVariants });
                                     }}
@@ -2721,7 +2730,7 @@ export default function AdminDashboard() {
                                       const newVariants = [...productForm.variants];
                                       const newStock = parseInt(e.target.value) || 0;
                                       group.originalIndices.forEach(idx => {
-                                        newVariants[idx].stock_quantity = newStock;
+                                        newVariants[idx] = { ...newVariants[idx], stock_quantity: newStock };
                                       });
                                       setProductForm({ ...productForm, variants: newVariants });
                                     }}
