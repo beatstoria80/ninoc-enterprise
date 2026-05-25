@@ -2682,28 +2682,32 @@ export default function AdminDashboard() {
 
                   <div className="space-y-4">
                     {(() => {
-                      const grouped = productForm.variants.reduce((acc, v, idx) => {
+                      const colorGroups: { color: string, originalIndices: number[] }[] = [];
+                      productForm.variants.forEach((v, idx) => {
                         const color = v.color || '';
-                        if (!acc[color]) acc[color] = [];
-                        acc[color].push({ ...v, originalIndex: idx });
-                        return acc;
-                      }, {} as Record<string, any[]>);
+                        let group = colorGroups.find(g => g.color === color);
+                        if (!group) {
+                          group = { color, originalIndices: [] };
+                          colorGroups.push(group);
+                        }
+                        group.originalIndices.push(idx);
+                      });
 
                       return (
                         <>
-                          {Object.entries(grouped).map(([color, variants], groupIdx) => (
-                            <div key={groupIdx} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
+                          {colorGroups.map((group) => (
+                            <div key={group.originalIndices[0]} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
                               <div className="flex items-center justify-between pb-3 border-b border-gray-200">
                                 <div className="flex items-center gap-3">
                                   <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
                                   <input
                                     type="text"
-                                    value={color}
+                                    value={group.color}
                                     placeholder="e.g. Black"
                                     onChange={(e) => {
                                       const newVariants = [...productForm.variants];
-                                      variants.forEach(v => {
-                                        newVariants[v.originalIndex].color = e.target.value;
+                                      group.originalIndices.forEach(idx => {
+                                        newVariants[idx].color = e.target.value;
                                       });
                                       setProductForm({ ...productForm, variants: newVariants });
                                     }}
@@ -2712,7 +2716,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <button
                                   onClick={() => {
-                                    const newVariants = productForm.variants.filter((_, i) => !variants.find(v => v.originalIndex === i));
+                                    const newVariants = productForm.variants.filter((_, i) => !group.originalIndices.includes(i));
                                     setProductForm({ ...productForm, variants: newVariants });
                                   }}
                                   className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
@@ -2722,35 +2726,38 @@ export default function AdminDashboard() {
                               </div>
 
                               <div className="space-y-2">
-                                {variants.map((v) => (
-                                  <div key={v.originalIndex} className="flex items-center gap-3">
-                                    <input
-                                      type="text"
-                                      value={v.size}
-                                      onChange={(e) => updateVariant(v.originalIndex, 'size', e.target.value)}
-                                      placeholder="Size (e.g. M)"
-                                      className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                                    />
-                                    <input
-                                      type="number"
-                                      value={v.stock_quantity}
-                                      onChange={(e) => updateVariant(v.originalIndex, 'stock_quantity', e.target.value)}
-                                      placeholder="Stock"
-                                      className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                                    />
-                                    <button
-                                      onClick={() => removeVariant(v.originalIndex)}
-                                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                                    >
-                                      <Minus size={14} />
-                                    </button>
-                                  </div>
-                                ))}
+                                {group.originalIndices.map((idx) => {
+                                  const v = productForm.variants[idx];
+                                  return (
+                                    <div key={idx} className="flex items-center gap-3">
+                                      <input
+                                        type="text"
+                                        value={v.size}
+                                        onChange={(e) => updateVariant(idx, 'size', e.target.value)}
+                                        placeholder="Size (e.g. M)"
+                                        className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                      />
+                                      <input
+                                        type="number"
+                                        value={v.stock_quantity}
+                                        onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
+                                        placeholder="Stock"
+                                        className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                      />
+                                      <button
+                                        onClick={() => removeVariant(idx)}
+                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                      >
+                                        <Minus size={14} />
+                                      </button>
+                                    </div>
+                                  );
+                                })}
                                 <button
                                   onClick={() => {
                                     setProductForm({
                                       ...productForm,
-                                      variants: [...productForm.variants, { id: '', size: '', color: color, stock_quantity: 0 }]
+                                      variants: [...productForm.variants, { id: '', size: '', color: group.color, stock_quantity: 0 }]
                                     });
                                   }}
                                   className="flex items-center gap-1 mt-3 text-[10px] uppercase tracking-wider text-gray-500 hover:text-rose font-medium"
