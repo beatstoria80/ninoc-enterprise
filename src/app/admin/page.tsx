@@ -2674,50 +2674,107 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Variants */}
+                {/* Variants Grouped by Color */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Variants & Stock</h3>
-                    <button
-                      onClick={addVariant}
-                      className="flex items-center gap-1 px-3 py-1.5 text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white"
-                    >
-                      <Plus size={12} /> Add Variant
-                    </button>
                   </div>
 
-                  <div className="space-y-3">
-                    {productForm.variants.map((variant, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                        <input
-                          type="text"
-                          value={variant.size}
-                          onChange={(e) => updateVariant(idx, 'size', e.target.value)}
-                          placeholder="Size"
-                          className="w-24 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                        />
-                        <input
-                          type="text"
-                          value={variant.color || ''}
-                          onChange={(e) => updateVariant(idx, 'color', e.target.value)}
-                          placeholder="Color (e.g. White, Black)"
-                          className="w-40 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                        />
-                        <input
-                          type="number"
-                          value={variant.stock_quantity}
-                          onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
-                          placeholder="Stock"
-                          className="w-24 px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                        />
-                        <button
-                          onClick={() => removeVariant(idx)}
-                          className="p-2 text-gray-400 hover:text-red-500"
-                        >
-                          <Minus size={16} />
-                        </button>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    {(() => {
+                      const grouped = productForm.variants.reduce((acc, v, idx) => {
+                        const color = v.color || '';
+                        if (!acc[color]) acc[color] = [];
+                        acc[color].push({ ...v, originalIndex: idx });
+                        return acc;
+                      }, {} as Record<string, any[]>);
+
+                      return (
+                        <>
+                          {Object.entries(grouped).map(([color, variants], groupIdx) => (
+                            <div key={groupIdx} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
+                              <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
+                                  <input
+                                    type="text"
+                                    value={color}
+                                    placeholder="e.g. Black"
+                                    onChange={(e) => {
+                                      const newVariants = [...productForm.variants];
+                                      variants.forEach(v => {
+                                        newVariants[v.originalIndex].color = e.target.value;
+                                      });
+                                      setProductForm({ ...productForm, variants: newVariants });
+                                    }}
+                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink"
+                                  />
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const newVariants = productForm.variants.filter((_, i) => !variants.find(v => v.originalIndex === i));
+                                    setProductForm({ ...productForm, variants: newVariants });
+                                  }}
+                                  className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
+                                >
+                                  Remove Color
+                                </button>
+                              </div>
+
+                              <div className="space-y-2">
+                                {variants.map((v) => (
+                                  <div key={v.originalIndex} className="flex items-center gap-3">
+                                    <input
+                                      type="text"
+                                      value={v.size}
+                                      onChange={(e) => updateVariant(v.originalIndex, 'size', e.target.value)}
+                                      placeholder="Size (e.g. M)"
+                                      className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                    />
+                                    <input
+                                      type="number"
+                                      value={v.stock_quantity}
+                                      onChange={(e) => updateVariant(v.originalIndex, 'stock_quantity', e.target.value)}
+                                      placeholder="Stock"
+                                      className="w-24 px-3 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                    />
+                                    <button
+                                      onClick={() => removeVariant(v.originalIndex)}
+                                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                    >
+                                      <Minus size={14} />
+                                    </button>
+                                  </div>
+                                ))}
+                                <button
+                                  onClick={() => {
+                                    setProductForm({
+                                      ...productForm,
+                                      variants: [...productForm.variants, { id: '', size: '', color: color, stock_quantity: 0 }]
+                                    });
+                                  }}
+                                  className="flex items-center gap-1 mt-3 text-[10px] uppercase tracking-wider text-gray-500 hover:text-rose font-medium"
+                                >
+                                  <Plus size={10} /> Add Size
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          <button
+                            onClick={() => {
+                              setProductForm({
+                                ...productForm,
+                                variants: [...productForm.variants, { id: '', size: 'New Size', color: 'New Color', stock_quantity: 0 }]
+                              });
+                            }}
+                            className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-gray-500 hover:border-rose/50 hover:text-rose transition-colors bg-white font-medium"
+                          >
+                            <Plus size={14} /> Add New Color Variant
+                          </button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
