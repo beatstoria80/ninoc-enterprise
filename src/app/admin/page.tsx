@@ -549,8 +549,7 @@ export default function AdminDashboard() {
             product_id: productId,
             size: v.size || null,
             color: color,
-            stock_quantity: parseInt(v.stock_quantity.toString()) || 0,
-            updated_at: new Date().toISOString()
+            stock_quantity: parseInt(v.stock_quantity.toString()) || 0
           };
           
           if (v.id && index === 0) {
@@ -572,7 +571,7 @@ export default function AdminDashboard() {
         // Try deleting, if it fails due to FK (e.g. order history), soft-delete by setting stock to 0
         const { error: delErr } = await supabase.from('variants').delete().eq('id', ev.id);
         if (delErr) {
-          await supabase.from('variants').update({ stock_quantity: 0, updated_at: new Date().toISOString() }).eq('id', ev.id);
+          await supabase.from('variants').update({ stock_quantity: 0 }).eq('id', ev.id);
         }
       }
 
