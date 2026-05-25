@@ -549,7 +549,7 @@ export default function AdminDashboard() {
             product_id: productId,
             size: v.size || null,
             color: color,
-            stock_quantity: parseInt(v.stock_quantity.toString()) || 0
+            stock_quantity: parseInt(String(v.stock_quantity)) || 0
           };
           
           if (v.id && index === 0) {
@@ -580,9 +580,9 @@ export default function AdminDashboard() {
 
       setIsProductModalOpen(false);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save product:', error);
-      alert('Failed to save product');
+      alert('Failed to save product: ' + (error.message || JSON.stringify(error)));
     }
   };
 
