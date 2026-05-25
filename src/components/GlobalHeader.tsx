@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
@@ -24,6 +25,7 @@ interface Product {
 }
 
 export default function GlobalHeader() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -100,9 +102,21 @@ export default function GlobalHeader() {
         "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
         isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
       )}>
-        <Link href="/" className="cursor-pointer group flex flex-col">
-          <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">NINOC</div>
-        </Link>
+        {(pathname?.startsWith('/shop') || pathname?.startsWith('/admin')) ? (
+          <Link href="/shop" className="group flex items-center gap-2 lg:gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-3 lg:pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none">
+            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
+              <ArrowLeft size={12} className="lg:w-[14px] lg:h-[14px] w-3 h-3" />
+            </div>
+            <div className="flex flex-col items-start leading-none">
+              <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
+              <span className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
+            </div>
+          </Link>
+        ) : (
+          <Link href="/" className="cursor-pointer group flex flex-col">
+            <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">NINOC</div>
+          </Link>
+        )}
         
         <div className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2">
           <Link href="/shop" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">

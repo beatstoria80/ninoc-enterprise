@@ -170,21 +170,7 @@ export default function ProductDetailPage() {
         isMobile && "pb-24" 
       )}>
 
-        {/* BACK TO CATALOG NAV - TOP LEFT */}
-        <div className="mb-4 lg:mb-3 sticky top-[72px] lg:top-20 z-[100] w-fit">
-          <button 
-            onClick={() => router.push('/shop')} 
-            className="group flex items-center gap-2 lg:gap-3 text-ink transition-all bg-white/80 backdrop-blur-md p-1.5 -ml-1.5 pr-3 lg:pr-4 border border-transparent hover:border-ink/10 hover:shadow-lg rounded-none"
-          >
-            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-none border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors bg-white">
-              <ArrowLeft size={12} className="lg:w-[14px] lg:h-[14px] w-3 h-3" />
-            </div>
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-              <span className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
-            </div>
-          </button>
-        </div>
+
 
         {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
         <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
@@ -398,29 +384,29 @@ export default function ProductDetailPage() {
               </div>
 
               {/* ACTION BUTTON - Sticky on Mobile (Artboard 2) */}
-              <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={addedToCart || availableStock === 0}
-                  className={cn(
-                    "w-full py-4 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
-                    addedToCart ? "bg-emerald-500 text-white" : availableStock === 0 ? "bg-ink/10 text-ink/30 cursor-not-allowed" : "bg-ink text-white hover:bg-rose"
-                  )}
-                >
-                    {addedToCart ? (
-                      <span className="flex items-center gap-2">
-                        <ShieldCheck size={16} /> ADDED
-                      </span>
-                    ) : availableStock === 0 ? (
-                      <span>OUT OF STOCK</span>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <ShoppingCart size={16} />
-                        <span>ADD TO CART</span>
-                      </div>
+              {availableStock > 0 && (
+                <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={addedToCart}
+                    className={cn(
+                      "w-full py-4 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
-                </button>
-              </div>
+                  >
+                      {addedToCart ? (
+                        <span className="flex items-center gap-2">
+                          <ShieldCheck size={16} /> ADDED
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <ShoppingCart size={16} />
+                          <span>ADD TO CART</span>
+                        </div>
+                      )}
+                  </button>
+                </div>
+              )}
 
               {/* Trust Badges - Desktop only */}
               {!isMobile && (

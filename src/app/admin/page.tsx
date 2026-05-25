@@ -286,7 +286,11 @@ export default function AdminDashboard() {
     is_featured: false,
     price_tag: '',
     badge_text: '',
+<<<<<<< Updated upstream
     variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+=======
+    variants: [{ id: undefined as string | undefined, size: 'S', color: 'Black', stock_quantity: 0 }]
+>>>>>>> Stashed changes
   });
 
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
@@ -427,7 +431,11 @@ export default function AdminDashboard() {
           size: v.size || '',
           color: v.color || '',
           stock_quantity: v.stock_quantity
+<<<<<<< Updated upstream
         })) : [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+=======
+        })) : [{ id: undefined, size: 'S', color: 'Black', stock_quantity: 0 }]
+>>>>>>> Stashed changes
       });
     } else {
       setIsEditMode(false);
@@ -447,7 +455,11 @@ export default function AdminDashboard() {
         is_featured: false,
         price_tag: '',
         badge_text: '',
+<<<<<<< Updated upstream
         variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+=======
+        variants: [{ id: undefined, size: 'S', color: 'Black', stock_quantity: 0 }]
+>>>>>>> Stashed changes
       });
     }
     setIsProductModalOpen(true);
@@ -468,7 +480,11 @@ export default function AdminDashboard() {
   const addVariant = () => {
     setProductForm({
       ...productForm,
+<<<<<<< Updated upstream
       variants: [...productForm.variants, { id: '', size: '', color: '', stock_quantity: 0 }]
+=======
+      variants: [...productForm.variants, { id: undefined, size: '', color: '', stock_quantity: 0 }]
+>>>>>>> Stashed changes
     });
   };
 
@@ -540,6 +556,7 @@ export default function AdminDashboard() {
         productId = data.id;
       }
 
+<<<<<<< Updated upstream
       // Prepare variants to upsert/insert
       const variantsToUpsert = productForm.variants.flatMap(v => {
         const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
@@ -578,6 +595,36 @@ export default function AdminDashboard() {
 
       const { error: variantError } = await supabase.from('variants').upsert(variantsToUpsert);
       if (variantError) throw variantError;
+=======
+      // Save variants safely without deleting to avoid foreign key constraints
+      const existingVariantsResponse = await supabase.from('variants').select('id').eq('product_id', productId);
+      const existingVariantIds = existingVariantsResponse.data?.map(v => v.id) || [];
+      const newVariantIds = productForm.variants.map(v => v.id).filter(id => id);
+      const variantsToDelete = existingVariantIds.filter(id => !newVariantIds.includes(id));
+
+      if (variantsToDelete.length > 0) {
+        // Set stock to 0 instead of deleting to avoid breaking past orders
+        await supabase.from('variants').update({ stock_quantity: 0 }).in('id', variantsToDelete);
+      }
+
+      for (const v of productForm.variants) {
+         if (v.id) {
+            await supabase.from('variants').update({
+              size: v.size || null,
+              color: v.color || null,
+              stock_quantity: parseInt(v.stock_quantity.toString()) || 0
+            }).eq('id', v.id);
+         } else {
+            await supabase.from('variants').insert({
+              product_id: productId,
+              size: v.size || null,
+              color: v.color || null,
+              stock_quantity: parseInt(v.stock_quantity.toString()) || 0,
+              created_at: new Date().toISOString()
+            });
+         }
+      }
+>>>>>>> Stashed changes
 
       setIsProductModalOpen(false);
       fetchData();
