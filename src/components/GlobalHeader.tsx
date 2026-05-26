@@ -187,39 +187,39 @@ export default function GlobalHeader() {
 
             <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-full">
               
-              {/* SECTOR 1: PRODUCT LIST (Grids 1-5) */}
-              <div className="md:col-span-5 overflow-y-auto no-scrollbar border-r border-ink/5 px-6 md:px-12 py-6 md:py-12 space-y-6 md:space-y-12">
+              {/* SECTOR 1: PRODUCT LIST */}
+              <div className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-6 md:px-10 py-6 md:py-8 space-y-4 md:space-y-6">
                 {items.length > 0 ? (
-                  <div className="space-y-6 md:space-y-10">
+                  <div className="space-y-4 md:space-y-6">
                     {items.map((item) => (
-                      <div key={`${item.id}-${item.size}`} className="flex gap-6 group">
+                      <div key={`${item.id}-${item.size}`} className="flex gap-4 group">
                         <div 
-                          className="w-24 h-32 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5 cursor-pointer"
+                          className="w-20 h-24 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5 cursor-pointer"
                           onClick={() => item.image_url && setFullscreenImage(item.image_url)}
                         >
                           {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-700" />}
                         </div>
-                        <div className="flex-1 flex flex-col justify-between py-1">
-                          <div className="space-y-2">
+                        <div className="flex-1 flex flex-col justify-between py-0.5">
+                          <div className="space-y-1">
                             <div className="flex justify-between items-start">
-                               <h3 className="text-sm font-display font-medium italic uppercase tracking-tight">{item.name}</h3>
+                               <h3 className="text-xs font-display font-medium italic uppercase tracking-tight">{item.name}</h3>
                                <button onClick={() => removeItem(item.id, item.size)} className="text-ink/10 hover:text-rose transition-all">
-                                 <Trash2 size={16} />
+                                 <Trash2 size={14} />
                                </button>
                             </div>
-                            <p className="text-[10px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Item Ref: #{item.id.slice(0, 8)}</p>
+                            <p className="text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Ref: #{item.id.slice(0, 8)}</p>
                           </div>
                           
                           <div className="flex items-end justify-between">
-                            <div className="space-y-4">
-                               <div className="flex items-center gap-3 md:gap-5 bg-ink/5 px-3 py-1.5 md:px-4 md:py-2 rounded-none w-fit">
-                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Minus size={14} strokeWidth={2} /></button>
-                                  <span className="text-xs md:text-[13px] font-medium w-6 md:w-8 text-center">{item.quantity}</span>
-                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Plus size={14} strokeWidth={2} /></button>
+                            <div className="space-y-1.5">
+                               <div className="flex items-center gap-3 bg-ink/5 px-3 py-1.5 rounded-none w-fit">
+                                  <button onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Minus size={12} strokeWidth={2} /></button>
+                                  <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                                  <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)} className="text-ink/50 hover:text-rose p-0.5"><Plus size={12} strokeWidth={2} /></button>
                                </div>
-                               <div className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size}</div>
+                               <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Size {item.size}</div>
                             </div>
-                             <div className="text-base font-display font-medium italic text-rose">
+                             <div className="text-sm font-display font-medium italic text-rose">
                                 IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                              </div>
                           </div>
@@ -228,20 +228,20 @@ export default function GlobalHeader() {
                     ))}
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-20">
-                     <ShoppingCart size={48} />
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20">
+                     <ShoppingCart size={36} />
                      <p className="text-[10px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
                   </div>
                 )}
               </div>
 
-              {/* SECTOR 2: SUMMARY & BUTTON (Grids 6-9) */}
-              <div className="md:col-span-4 px-6 md:px-12 py-8 md:py-12 bg-white flex flex-col">
+              {/* SECTOR 2: SUMMARY & CHECKOUT */}
+              <div className="md:col-span-5 px-6 md:px-10 py-6 md:py-8 bg-white flex flex-col">
                 {items.length > 0 && (
-                  <div className="space-y-8 md:space-y-12 h-full flex flex-col">
-                    <div className="space-y-6 md:space-y-8">
-                       <p className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40">Total Summary</p>
-                       <div className="space-y-4 md:space-y-5">
+                  <div className="space-y-6 h-full flex flex-col">
+                    <div className="space-y-4">
+                       <p className="text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40">Total Summary</p>
+                       <div className="space-y-3 border-b border-ink/5 pb-4">
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                              <span>Raw Value</span>
                              <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
@@ -253,33 +253,28 @@ export default function GlobalHeader() {
                        </div>
                     </div>
                     
-                    <div className="pt-8 md:pt-12 border-t border-ink/5 flex flex-col items-center flex-1 justify-center space-y-8 md:space-y-12">
+                    <div className="flex flex-col items-center space-y-5 flex-1 justify-center">
                        <div className="text-center">
-                          <span className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-3 md:mb-4">Total</span>
-                          <span className="text-3xl md:text-4xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                          <span className="text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-2">Total</span>
+                          <span className="text-2xl md:text-3xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                        </div>
 
-                       <div className="w-full space-y-6">
+                       <div className="w-full space-y-3">
                           <Link 
                             href="/checkout" 
                             onClick={() => setIsCartOpen(false)}
-                            className="w-full bg-ink text-white py-4 rounded-none font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-rose transition-all group"
+                            className="w-full bg-ink text-white py-3.5 rounded-none font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:bg-rose transition-all group"
                           >
-                            <span>Selection Details</span>
+                            <span>Checkout</span>
                           </Link>
-                          <div className="flex items-center justify-center gap-3 opacity-30 grayscale">
-                             <ShieldCheck size={14} />
-                             <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction Protocol</span>
+                          <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
+                             <ShieldCheck size={12} />
+                             <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
                           </div>
                        </div>
                     </div>
                   </div>
                 )}
-              </div>
-
-              {/* SECTOR 3: NEGATIVE SPACE (Grids 10-12) */}
-              <div className="md:col-span-3 hidden md:block bg-cr noise opacity-30">
-                 {/* This area is intentionally left blank for Negative Space aesthetic */}
               </div>
 
             </div>
