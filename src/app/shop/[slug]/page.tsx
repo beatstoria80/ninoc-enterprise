@@ -299,7 +299,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Spesifikasi Produk / Measurement — Tab Toggle */}
-              <div className="pt-2 border-t border-ink/5">
+              <div className="pt-2 border-t border-ink/5 min-h-[160px]">
                 <div className="flex items-center gap-4 mb-3">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
@@ -571,7 +571,7 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-2 lg:mt-2 space-y-1.5">
+          <div className="mt-10 lg:mt-12 space-y-1.5">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
