@@ -376,10 +376,10 @@ export default function ProductDetailPage() {
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-1 w-fit">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose disabled:opacity-30"><Minus size={14} /></button>
-                  <span className="text-[12px] font-medium w-6 text-center">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-8 h-8 flex items-center justify-center transition-all text-ink/30 hover:text-rose disabled:opacity-30"><Plus size={14} /></button>
+                <div className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={16} strokeWidth={2} /></button>
+                  <span className="text-base font-medium w-10 text-center text-ink">{displayQuantity}</span>
+                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={16} strokeWidth={2} /></button>
                 </div>
               </div>
 
@@ -511,7 +511,7 @@ export default function ProductDetailPage() {
                   <div className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
                     {/* Subtotal */}
                     <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Total Investment</span>
+                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Total</span>
                       <span className="text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
                     </div>
                     
@@ -521,7 +521,7 @@ export default function ProductDetailPage() {
                         onClick={() => router.push('/checkout')} 
                         className="w-full py-3 bg-rose text-white text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
                       >
-                        Secure Checkout
+                        Checkout
                       </button>
                       <button 
                         onClick={() => clearCart()} 

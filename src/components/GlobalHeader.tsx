@@ -240,7 +240,7 @@ export default function GlobalHeader() {
                 {items.length > 0 && (
                   <div className="space-y-8 md:space-y-12 h-full flex flex-col">
                     <div className="space-y-6 md:space-y-8">
-                       <p className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40">Investment Summary</p>
+                       <p className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40">Total Summary</p>
                        <div className="space-y-4 md:space-y-5">
                           <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                              <span>Raw Value</span>
@@ -255,7 +255,7 @@ export default function GlobalHeader() {
                     
                     <div className="pt-8 md:pt-12 border-t border-ink/5 flex flex-col items-center flex-1 justify-center space-y-8 md:space-y-12">
                        <div className="text-center">
-                          <span className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-3 md:mb-4">Total Investment</span>
+                          <span className="text-[10px] md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-3 md:mb-4">Total</span>
                           <span className="text-3xl md:text-4xl font-display font-medium italic text-rose leading-none">IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                        </div>
 
