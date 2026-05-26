@@ -367,8 +367,8 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
                   <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Quantity</h4>
                   {availableStock > 0 ? (
-                    <span className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider animate-pulse">
-                      {availableStock} in stock (Live)
+                    <span className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
+                      {availableStock} in stock
                     </span>
                   ) : (
                     <span className="text-[8px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
