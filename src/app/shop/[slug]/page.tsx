@@ -50,6 +50,7 @@ export default function ProductDetailPage() {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
+  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -297,39 +298,52 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Spesifikasi Produk - Collapsible */}
-              <details className="group pt-2 border-t border-ink/5">
-                <summary className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <span>Spesifikasi Produk</span>
-                  <span className="text-rose group-open:hidden">+</span>
-                  <span className="text-rose hidden group-open:block">-</span>
-                </summary>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-3 pt-2 border-t border-ink/5 text-[11px]">
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Motif</span><span className="font-medium">Lainnya</span></div>
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
-                  <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+              {/* Spesifikasi Produk / Measurement — Tab Toggle */}
+              <div className="pt-2 border-t border-ink/5">
+                <div className="flex items-center gap-4 mb-3">
+                  <button
+                    onClick={() => setActiveInfoTab('specs')}
+                    className={`text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
+                      activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
+                    }`}
+                  >
+                    Spesifikasi Produk
+                  </button>
+                  <span className="text-ink/10">|</span>
+                  <button
+                    onClick={() => setActiveInfoTab('measurement')}
+                    className={`text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1.5 ${
+                      activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
+                    }`}
+                  >
+                    <Ruler size={10} className="text-rose" />
+                    Measurement (CM)
+                  </button>
                 </div>
-              </details>
 
-              {/* Size Guide Table - Inline */}
-              <div className="space-y-1.5 lg:space-y-2 pt-2 border-t border-ink/5">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 flex items-center gap-2">
-                  <Ruler size={10} className="text-rose" />
-                  Measurement (CM)
-                </h4>
-                <div className="space-y-1.5 mt-2">
-                  <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                  {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
-                    <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
-                      <span className="text-rose">{s.split(':')[0]}</span>
-                      <span>{s.split(':')[1]}</span>
-                    </div>
-                  ))}
-                  <p className="text-[9px] text-ink/40 mt-1 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
-                </div>
+                {activeInfoTab === 'specs' && (
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Motif</span><span className="font-medium">Lainnya</span></div>
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
+                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+                  </div>
+                )}
+
+                {activeInfoTab === 'measurement' && (
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                    {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
+                      <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
+                        <span className="text-rose">{s.split(':')[0]}</span>
+                        <span>{s.split(':')[1]}</span>
+                      </div>
+                    ))}
+                    <p className="text-[9px] text-ink/40 mt-1 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
