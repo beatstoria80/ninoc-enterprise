@@ -166,7 +166,7 @@ export default function ProductDetailPage() {
   return (
     <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
       <div className={cn(
-        "pt-0 md:pt-16 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
+        "pt-0 md:pt-24 lg:pt-32 px-4 md:px-10 relative", // Mobile uses MobileLayout's pt-14
         isMobile && "pb-24" 
       )}>
 
