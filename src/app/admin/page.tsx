@@ -2733,7 +2733,6 @@ export default function AdminDashboard() {
                                 >
                                   Remove Color
                                 </button>
-                              </div>
 
                               <div className="pt-1">
                                 <div className="flex flex-wrap items-center gap-2">

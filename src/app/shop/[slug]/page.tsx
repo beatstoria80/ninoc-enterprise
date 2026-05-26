@@ -55,8 +55,6 @@ export default function ProductDetailPage() {
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
 
-
-
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     
@@ -115,6 +113,24 @@ export default function ProductDetailPage() {
     };
   }, [slug]);
 
+  // Derive effective size and color from available variants (avoids setState in effect)
+  const effectiveSize = (() => {
+    if (!product?.variants?.length) return selectedSize;
+    const allSizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
+    if (allSizes.length > 0 && !allSizes.includes(selectedSize)) return allSizes[0];
+    return selectedSize;
+  })();
+
+  const effectiveColor = (() => {
+    if (!product?.variants?.length) return selectedColor;
+    const colorsForSize = Array.from(new Set(
+      product.variants.filter(v => v.size === effectiveSize && v.color).map(v => v.color as string)
+    ));
+    if (colorsForSize.length > 0 && !colorsForSize.includes(selectedColor)) return colorsForSize[0];
+    if (colorsForSize.length === 0 && selectedColor !== '') return '';
+    return selectedColor;
+  })();
+
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
 
@@ -134,11 +150,11 @@ export default function ProductDetailPage() {
 
   // Extract unique colors from variants
   const availableColors = Array.from(new Set(
-    product?.variants?.filter(v => v.size === selectedSize && v.color).map(v => v.color as string) || []
+    product?.variants?.filter(v => v.size === effectiveSize && v.color).map(v => v.color as string) || []
   ));
 
   // Determine available stock for the currently selected variant
-  const selectedVariant = product?.variants?.find(v => v.size === selectedSize && (v.color === selectedColor || !v.color));
+  const selectedVariant = product?.variants?.find(v => v.size === effectiveSize && (v.color === effectiveColor || (!v.color && !effectiveColor)));
   const availableStock = selectedVariant ? selectedVariant.stock_quantity : 0;
   
   // Dynamically clamp the quantity for the UI so we don't need a useEffect (which violates hook rules after early returns)
@@ -148,7 +164,7 @@ export default function ProductDetailPage() {
     if (product) {
       if (availableStock === 0) return; // Prevent adding if out of stock
       for (let i = 0; i < displayQuantity; i++) {
-        addItem(product, selectedSize, selectedColor);
+        addItem(product, effectiveSize, effectiveColor);
       }
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
@@ -362,7 +378,7 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedSize(size)}
                       className={cn(
                         "w-10 h-10 lg:w-12 lg:h-12 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border",
-                        selectedSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
+                        effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
                       {size}
@@ -381,7 +397,7 @@ export default function ProductDetailPage() {
                           onClick={() => setSelectedColor(color)}
                           className={cn(
                             "px-3 py-1.5 rounded-none text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
-                            selectedColor === color
+                            effectiveColor === color
                               ? "bg-ink text-white border-ink"
                               : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
                           )}

@@ -390,7 +390,13 @@ export default function CheckoutPage() {
         isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
       )}>
         <button 
-          onClick={() => router.push('/shop')} 
+          onClick={() => {
+            if (items.length > 0 && items[0].slug) {
+              router.push(`/shop/${items[0].slug}`);
+            } else {
+              router.push('/shop');
+            }
+          }} 
           className="group flex items-center gap-3 text-ink transition-all"
         >
           <div className="w-8 h-8 rounded-full border border-ink/10 flex items-center justify-center group-hover:border-rose group-hover:text-rose transition-colors">
@@ -398,7 +404,7 @@ export default function CheckoutPage() {
           </div>
           <div className="flex flex-col items-start leading-none">
             <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Catalog</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Product</span>
           </div>
         </button>
         <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none hidden md:block">NINOC</div>
