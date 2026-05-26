@@ -365,13 +365,15 @@ export default function AdminDashboard() {
         );
         const pendingOrders = orderData.filter(o => o.status === 'pending');
 
-        const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_price, 0);
+        const calcOrderRevenue = (o: Order) => o.order_items?.reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0;
+
+        const totalRevenue = completedOrders.reduce((sum, o) => sum + calcOrderRevenue(o), 0);
         const todayRevenue = completedOrders
           .filter(o => new Date(o.created_at) >= today)
-          .reduce((sum, o) => sum + o.total_price, 0);
+          .reduce((sum, o) => sum + calcOrderRevenue(o), 0);
         const monthRevenue = completedOrders
           .filter(o => new Date(o.created_at) >= monthStart)
-          .reduce((sum, o) => sum + o.total_price, 0);
+          .reduce((sum, o) => sum + calcOrderRevenue(o), 0);
 
         setFinance({
           totalRevenue,
