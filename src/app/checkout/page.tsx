@@ -36,6 +36,10 @@ interface SnapCallbacks {
   onClose?: () => void;
 }
 
+interface SnapOptions extends SnapCallbacks {
+  embedId?: string;
+}
+
 // Static fallback provinces
 const FALLBACK_PROVINCES: LocationItem[] = [
   { id: '31', name: 'DKI JAKARTA' },
@@ -60,6 +64,7 @@ export default function CheckoutPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [snapLoaded, setSnapLoaded] = useState(false);
+  const [paymentToken, setPaymentToken] = useState<string | null>(null);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -67,7 +72,10 @@ export default function CheckoutPage() {
   // Mark snap as loaded once window.snap is available (script loaded via layout.tsx)
   useEffect(() => {
     interface WindowWithSnap extends Window {
-      snap?: { pay: (token: string, callbacks: unknown) => void };
+      snap?: { 
+        pay: (token: string, options: SnapOptions) => void;
+        embed: (token: string, options: SnapOptions) => void;
+      };
     }
     let isMounted = true;
     let retryCount = 0;
@@ -314,24 +322,7 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Payment token not received from server');
       }
 
-      (window as unknown as Window & { snap: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap.pay(data.token, {
-        onSuccess: (result: MidtransSnapResult) => {
-          console.log('Payment initiated:', result);
-          // Don't clear cart here — webhook must confirm payment first
-          // Cart will be cleared by /api/payments/webhook after status is confirmed 'paid'
-          router.push('/payment/success');
-        },
-        onError: (err: unknown) => {
-          console.error('Midtrans payment error:', err);
-          setIsProcessing(false);
-          alert('Payment failed. Please try again or contact support.');
-        },
-        onClose: () => {
-          // User closed popup without completing payment - this is NOT an error
-          console.log('Payment popup closed by user');
-          setIsProcessing(false);
-        }
-      });
+      setPaymentToken(data.token);
 
     } catch (err) {
       console.error('[handleCheckout] Error:', err);
@@ -343,6 +334,32 @@ export default function CheckoutPage() {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
+
+  // Effect to trigger Snap Embed when paymentToken is available
+  useEffect(() => {
+    if (paymentToken && snapLoaded) {
+      const snapObj = (window as unknown as Window & { snap: { embed: (token: string, options: SnapOptions) => void } }).snap;
+      if (snapObj && typeof snapObj.embed === 'function') {
+        snapObj.embed(paymentToken, {
+          embedId: 'snap-container',
+          onSuccess: (result: MidtransSnapResult) => {
+            console.log('Payment successful:', result);
+            router.push('/payment/success');
+          },
+          onError: (err: unknown) => {
+            console.error('Midtrans payment error:', err);
+            setIsProcessing(false);
+            setPaymentToken(null);
+            alert('Payment failed. Please try again or contact support.');
+          },
+          onClose: () => {
+            console.log('Payment popup closed by user');
+            // If they close the snap iframe inside the embed (sometimes possible), we just clean up
+          }
+        });
+      }
+    }
+  }, [paymentToken, snapLoaded, router]);
 
   if (!mounted) return null;
 
@@ -683,6 +700,34 @@ export default function CheckoutPage() {
           disabled={!shippingMethod || !snapLoaded}
           formId="checkout-form"
         />
+      )}
+
+      {/* CUSTOM MIDTRANS EMBED OVERLAY */}
+      {paymentToken && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
+          <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 h-[90vh] md:h-auto md:min-h-[600px]">
+            <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5 bg-ink/[0.02]">
+              <div className="flex items-center gap-3">
+                <ShieldCheck size={18} className="text-emerald-500" />
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-medium uppercase tracking-widest text-ink">Payment Authorization</span>
+                  <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Secured by Midtrans</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setPaymentToken(null);
+                  setIsProcessing(false);
+                }} 
+                className="px-4 py-2 border border-ink/10 text-[9px] font-medium uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors"
+              >
+                Abort
+              </button>
+            </div>
+            {/* Snap Container */}
+            <div id="snap-container" className="w-full flex-1 md:h-[600px] overflow-hidden bg-white"></div>
+          </div>
+        </div>
       )}
     </div>
   );
