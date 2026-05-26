@@ -5,6 +5,7 @@ import Script from "next/script";
 import ClientPlatformManager from "@/components/ClientPlatformManager";
 import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import SecurityEnforcer from "@/components/SecurityEnforcer";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
             data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
             strategy="afterInteractive"
           />
+          <SecurityEnforcer />
           <ClientPlatformManager>
             {children}
           </ClientPlatformManager>
