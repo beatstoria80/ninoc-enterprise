@@ -118,7 +118,7 @@ export async function POST(req: Request) {
         product_name: item.name,
         size: item.size || null,
         quantity: item.quantity,
-        unit_price: item.price
+        price_at_purchase: item.price
       }));
 
       const { error: itemsError } = await supabaseAdmin
