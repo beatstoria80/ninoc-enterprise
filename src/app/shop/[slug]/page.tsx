@@ -174,7 +174,7 @@ export default function ProductDetailPage() {
 
 
         {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] lg:items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP (Desktop Only) */}
           <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
