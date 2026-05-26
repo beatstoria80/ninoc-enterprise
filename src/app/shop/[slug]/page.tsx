@@ -504,7 +504,7 @@ export default function ProductDetailPage() {
                             onClick={() => {
                               if (item.slug && item.slug !== slug) {
                                 router.push(`/shop/${item.slug}`);
-                              } else if (item.image_url) {
+                              } else if (item.image_url && isMobile) {
                                 setFullscreenImage(item.image_url);
                               }
                             }}
