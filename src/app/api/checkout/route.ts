@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import midtransClient from 'midtrans-client';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// Use Service Role Key to bypass RLS since this is a secure server route
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 interface CheckoutItem {
   id: string;
@@ -82,7 +88,7 @@ export async function POST(req: Request) {
     const transaction = await snap.createTransaction(parameter);
 
     // 1. Save order header to Supabase
-    const { error: orderError } = await supabase
+    const { error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
         id: orderId,
@@ -115,7 +121,7 @@ export async function POST(req: Request) {
         unit_price: item.price
       }));
 
-      const { error: itemsError } = await supabase
+      const { error: itemsError } = await supabaseAdmin
         .from('order_items')
         .insert(orderItems);
 
