@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -102,9 +102,17 @@ export default function GlobalHeader() {
         "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
         isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
       )}>
-        <Link href="/" className="cursor-pointer group flex flex-col">
-          <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">ninoc</div>
-        </Link>
+        <div className="relative flex flex-col">
+          <Link href="/" className="cursor-pointer group flex flex-col">
+            <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">ninoc</div>
+          </Link>
+          {pathname.startsWith('/shop') && (
+            <Link href="/shop" className="absolute top-full left-0 mt-1.5 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors whitespace-nowrap">
+              <ArrowLeft size={10} />
+              RETURN TO CATALOG
+            </Link>
+          )}
+        </div>
         
         <div className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2">
           <Link href="/shop" className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-all relative group">
