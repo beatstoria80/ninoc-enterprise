@@ -377,9 +377,9 @@ export default function ProductDetailPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={16} strokeWidth={2} /></button>
-                  <span className="text-base font-medium w-10 text-center text-ink">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={16} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
+                  <span className="text-[14px] font-medium w-10 text-center text-ink">{displayQuantity}</span>
+                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </div>
               </div>
 
