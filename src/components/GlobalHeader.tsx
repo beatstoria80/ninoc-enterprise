@@ -107,7 +107,7 @@ export default function GlobalHeader() {
             <div className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none transition-transform group-hover:scale-105">ninoc</div>
           </Link>
           {((pathname.startsWith('/shop/') && pathname !== '/shop') || pathname === '/checkout' || pathname === '/cart') && (
-            <Link href="/shop" className="absolute top-full left-0 mt-3.5 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors whitespace-nowrap">
+            <Link href="/shop" className="absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors whitespace-nowrap">
               <ArrowLeft size={10} />
               RETURN TO CATALOG
             </Link>
