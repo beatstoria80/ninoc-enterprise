@@ -321,29 +321,30 @@ export default function ProductDetailPage() {
                   </button>
                 </div>
 
-                {activeInfoTab === 'specs' && (
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Motif</span><span className="font-medium">Lainnya</span></div>
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
-                    <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+                <div className="grid">
+                  <div className={`col-start-1 row-start-1 ${activeInfoTab === 'specs' ? '' : 'invisible'}`}>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Motif</span><span className="font-medium">Lainnya</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+                    </div>
                   </div>
-                )}
-
-                {activeInfoTab === 'measurement' && (
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                    {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
-                      <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
-                        <span className="text-rose">{s.split(':')[0]}</span>
-                        <span>{s.split(':')[1]}</span>
-                      </div>
-                    ))}
-                    <p className="text-[9px] text-ink/40 mt-1 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                  <div className={`col-start-1 row-start-1 ${activeInfoTab === 'measurement' ? '' : 'invisible'}`}>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                      {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
+                        <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
+                          <span className="text-rose">{s.split(':')[0]}</span>
+                          <span>{s.split(':')[1]}</span>
+                        </div>
+                      ))}
+                      <p className="text-[9px] text-ink/40 mt-1 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
