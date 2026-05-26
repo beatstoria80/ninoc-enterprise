@@ -502,10 +502,8 @@ export default function ProductDetailPage() {
                           <div 
                             className="w-14 h-16 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer flex items-center justify-center"
                             onClick={() => {
-                              if (item.slug && item.slug !== slug) {
+                              if (item.slug) {
                                 router.push(`/shop/${item.slug}`);
-                              } else if (item.image_url && isMobile) {
-                                setFullscreenImage(item.image_url);
                               }
                             }}
                           >
