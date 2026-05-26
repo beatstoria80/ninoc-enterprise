@@ -2709,7 +2709,6 @@ export default function AdminDashboard() {
                           {colorGroups.map((group) => (
                             <div key={group.originalIndices[0]} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
                               <div className="flex items-center justify-between pb-3 border-b border-gray-200 flex-wrap gap-3">
-                                <div className="flex items-center gap-3">
                                   <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
                                   <input
                                     type="text"
@@ -2722,22 +2721,7 @@ export default function AdminDashboard() {
                                       });
                                       setProductForm({ ...productForm, variants: newVariants });
                                     }}
-                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink w-32"
-                                  />
-                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium ml-2">Stock:</span>
-                                  <input
-                                    type="number"
-                                    value={group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0}
-                                    onChange={(e) => {
-                                      const newVariants = [...productForm.variants];
-                                      const newStock = parseInt(e.target.value) || 0;
-                                      group.originalIndices.forEach(idx => {
-                                        newVariants[idx] = { ...newVariants[idx], stock_quantity: newStock };
-                                      });
-                                      setProductForm({ ...productForm, variants: newVariants });
-                                    }}
-                                    placeholder="0"
-                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink w-24"
+                                    className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium text-ink w-48"
                                   />
                                 </div>
                                 <button
@@ -2765,10 +2749,9 @@ export default function AdminDashboard() {
                                             const newVariants = productForm.variants.filter((_, i) => i !== idx);
                                             setProductForm({ ...productForm, variants: newVariants });
                                           } else {
-                                            const commonStock = group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0;
                                             setProductForm({
                                               ...productForm,
-                                              variants: [...productForm.variants, { id: '', size: size, color: group.color, stock_quantity: commonStock }]
+                                              variants: [...productForm.variants, { id: '', size: size, color: group.color, stock_quantity: 0 }]
                                             });
                                           }
                                         }}
@@ -2791,10 +2774,9 @@ export default function AdminDashboard() {
                                         e.preventDefault();
                                         const newSize = e.currentTarget.value.trim();
                                         if (newSize) {
-                                          const commonStock = group.originalIndices.length > 0 ? productForm.variants[group.originalIndices[0]].stock_quantity : 0;
                                           setProductForm({
                                             ...productForm,
-                                            variants: [...productForm.variants, { id: '', size: newSize, color: group.color, stock_quantity: commonStock }]
+                                            variants: [...productForm.variants, { id: '', size: newSize, color: group.color, stock_quantity: 0 }]
                                           });
                                           e.currentTarget.value = '';
                                         }
@@ -2803,6 +2785,34 @@ export default function AdminDashboard() {
                                     className="px-3 py-2 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 w-36"
                                   />
                                 </div>
+                                
+                                {group.originalIndices.length > 0 && (
+                                  <div className="flex flex-col gap-2 border-t border-gray-200 pt-3 mt-3">
+                                    <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities:</span>
+                                    {group.originalIndices.map(idx => {
+                                      const variant = productForm.variants[idx];
+                                      return (
+                                        <div key={idx} className="flex items-center justify-between bg-white px-3 py-2 border border-gray-200 rounded-lg">
+                                          <span className="text-xs font-medium text-gray-700">Size {variant.size}</span>
+                                          <div className="flex items-center gap-2">
+                                             <span className="text-[10px] text-gray-400 font-medium">QTY</span>
+                                             <input
+                                               type="number"
+                                               min="0"
+                                               value={variant.stock_quantity}
+                                               onChange={(e) => {
+                                                 const newVariants = [...productForm.variants];
+                                                 newVariants[idx] = { ...newVariants[idx], stock_quantity: parseInt(e.target.value) || 0 };
+                                                 setProductForm({ ...productForm, variants: newVariants });
+                                               }}
+                                               className="w-20 px-2 py-1.5 text-xs border border-gray-300 rounded text-center focus:border-rose/50 outline-none font-medium"
+                                             />
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
