@@ -280,7 +280,9 @@ export default function CheckoutPage() {
   };
 
   const subtotal = totalPrice();
-  const finalTotal = subtotal + shippingCost;
+  const tax = Math.round(subtotal * 0.11); // 11% VAT
+  const platformFee = 2500; // Standard platform/gateway fee
+  const finalTotal = subtotal + shippingCost + tax + platformFee;
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -305,6 +307,7 @@ export default function CheckoutPage() {
           items,
           customerDetails: { ...formData, user_id: userId, name: fullName, address: fullAddress },
           shippingDetails: { method: shippingMethod, cost: shippingCost },
+          fees: { tax, platformFee },
           totalPrice: finalTotal
         })
       });
@@ -425,13 +428,21 @@ export default function CheckoutPage() {
               <div className="space-y-2 border-b border-ink/5 pb-3">
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Subtotal</span>
-                  <span>IDR {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Logistics Fee</span>
                   <span className={shippingCost > 0 ? "text-ink" : "text-rose italic"}>
-                    {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'Selection Required'}
+                    {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Selection Required'}
                   </span>
+                </div>
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                  <span>VAT (11%)</span>
+                  <span>+ IDR {tax.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                  <span>Platform Fee</span>
+                  <span>+ IDR {platformFee.toLocaleString('id-ID')}</span>
                 </div>
               </div>
               
@@ -623,13 +634,21 @@ export default function CheckoutPage() {
                 <div className="space-y-2 pt-4 border-t border-ink/20">
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>Value Subtotal</span>
-                    <span>IDR {subtotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>Logistics</span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
-                       {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'Action Required'}
+                       {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
                     </span>
+                  </div>
+                  <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
+                    <span>VAT (11%)</span>
+                    <span className="italic text-ink">+ IDR {tax.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
+                    <span>Platform Fee</span>
+                    <span className="italic text-ink">+ IDR {platformFee.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
 

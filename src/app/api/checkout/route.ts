@@ -18,7 +18,7 @@ interface CheckoutItem {
 
 export async function POST(req: Request) {
   try {
-    const { items, customerDetails, shippingDetails, totalPrice } = await req.json();
+    const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
 
     // Ensure gross_amount is integer (Midtrans requires integer rupiah)
     const grossAmount = Math.round(Number(totalPrice));
@@ -78,7 +78,9 @@ export async function POST(req: Request) {
           price: shippingDetails.cost,
           quantity: 1,
           name: `Courier: ${shippingDetails.method.toUpperCase()}`
-        }
+        },
+        ...(fees.tax > 0 ? [{ id: 'TAX', price: fees.tax, quantity: 1, name: 'VAT (11%)' }] : []),
+        ...(fees.platformFee > 0 ? [{ id: 'FEE', price: fees.platformFee, quantity: 1, name: 'Platform Fee' }] : [])
       ],
       credit_card: {
         secure: true
