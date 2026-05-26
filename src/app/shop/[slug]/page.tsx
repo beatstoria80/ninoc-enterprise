@@ -501,7 +501,13 @@ export default function ProductDetailPage() {
                           {/* Thumbnail */}
                           <div 
                             className="w-14 h-16 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer flex items-center justify-center"
-                            onClick={() => item.image_url && setFullscreenImage(item.image_url)}
+                            onClick={() => {
+                              if (item.slug && item.slug !== slug) {
+                                router.push(`/shop/${item.slug}`);
+                              } else if (item.image_url) {
+                                setFullscreenImage(item.image_url);
+                              }
+                            }}
                           >
                             {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" />}
                           </div>
