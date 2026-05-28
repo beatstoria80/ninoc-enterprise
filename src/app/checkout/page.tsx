@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -65,6 +65,10 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [snapLoaded, setSnapLoaded] = useState(false);
   const [paymentToken, setPaymentToken] = useState<string | null>(null);
+
+  // Dynamic Shipping State
+  const [dynamicShippingOptions, setDynamicShippingOptions] = useState<any[]>([]);
+  const [loadingShipping, setLoadingShipping] = useState<boolean>(false);
 
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
@@ -221,6 +225,12 @@ export default function CheckoutPage() {
   const handleDistrictChange = async (name: string) => {
     setFormData(prev => ({ ...prev, kecamatan: name, kelurahan: '' }));
     setVillages([]);
+    // Reset shipping options when district changes (clear previous rates)
+    if (!name) {
+      setDynamicShippingOptions([]);
+      setShippingMethod('');
+      setShippingCost(0);
+    }
     if (name) await fetchVillages(name, districts);
   };
 
@@ -268,11 +278,42 @@ export default function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provinces]);
 
-  const shippingOptions = [
-    { id: 'jne', name: 'JNE', service: 'REGULER', price: 15000, etd: '2-3 Days', desc: 'Standard Network Distribution' },
-    { id: 'jnt', name: 'J&T', service: 'EZ', price: 12000, etd: '1-2 Days', desc: 'Express Transit Distribution' },
-    { id: 'sicepat', name: 'SiCepat', service: 'BEST', price: 18000, etd: '1 Day', desc: 'Priority Network Distribution' },
+  // Fetch dynamic rates when location is ready
+  useEffect(() => {
+    if (formData.kecamatan) {
+      const fetchRates = async () => {
+        setLoadingShipping(true);
+        try {
+          const res = await fetch('/api/shipping/rates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ destination_area_id: formData.kecamatan })
+          });
+          const data = await res.json();
+          if (data.success && data.pricing) {
+            setDynamicShippingOptions(data.pricing);
+            // Optional: Auto-select if current method is invalid or reset
+            setShippingMethod('');
+            setShippingCost(0);
+          }
+        } catch (e) {
+          console.error('Failed to fetch shipping rates', e);
+        } finally {
+          setLoadingShipping(false);
+        }
+      };
+      fetchRates();
+    }
+  }, [formData.kecamatan]);
+
+  // Fallback options in case API fails or hasn't loaded
+  const fallbackShippingOptions = [
+    { company: 'jne', courier_name: 'JNE', courier_service_name: 'REGULER', price: 15000, duration: '2-3 Days', description: 'Standard Network Distribution' },
+    { company: 'jnt', courier_name: 'J&T', courier_service_name: 'EZ', price: 12000, duration: '1-2 Days', description: 'Express Transit Distribution' },
+    { company: 'sicepat', courier_name: 'SiCepat', courier_service_name: 'BEST', price: 18000, duration: '1 Day', description: 'Priority Network Distribution' },
   ];
+
+  const displayOptions = dynamicShippingOptions.length > 0 ? dynamicShippingOptions : fallbackShippingOptions;
 
   const handleShippingChange = (id: string, price: number) => {
     setShippingMethod(id);
@@ -586,32 +627,44 @@ export default function CheckoutPage() {
                 <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
               </div>
 
-              <div className="grid grid-cols-1 gap-[1px] bg-ink/5 border border-ink/5 rounded-none">
-                {shippingOptions.map((option) => (
+              <div className="grid grid-cols-3 gap-[1px] bg-ink/5 border border-ink/5 rounded-none relative">
+                {loadingShipping && (
+                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                    <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
+                  </div>
+                )}
+                {displayOptions.map((option) => (
                   <button
-                    key={option.id}
+                    key={option.company}
                     type="button"
-                    onClick={() => handleShippingChange(option.id, option.price)}
+                    onClick={() => handleShippingChange(option.company, option.price)}
                     className={cn(
-                      "flex flex-col md:flex-row md:items-center justify-between p-3 transition-all bg-white text-left gap-2",
-                      shippingMethod === option.id ? "bg-rose/[0.03] shadow-[inset_2px_0_0_0_#E8527A]" : "hover:bg-ink/[0.01]"
+                      "group relative flex flex-col items-center py-2.5 px-1 transition-all bg-white border-t-2",
+                      shippingMethod === option.company ? "bg-rose/[0.02] border-rose" : "border-transparent hover:bg-ink/[0.01]"
                     )}
                   >
-                    <div className="flex flex-col gap-1.5">
-                      <div className="flex items-center gap-2">
-                         <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink")}>{option.name}</span>
-                         <span className="text-[8px] border border-ink/10 px-1 py-0.5 text-ink/50 uppercase tracking-widest">{option.service}</span>
-                         {shippingMethod === option.id && <span className="text-[7px] bg-rose text-white px-1.5 py-0.5 uppercase tracking-[0.2em] animate-in fade-in">Active</span>}
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/60")}>{option.courier_name}</span>
+                      <div className="text-ink/30 hover:text-ink transition-colors relative z-20" onClick={(e) => { e.stopPropagation(); /* Only to allow tap target for tooltip on mobile */ }}>
+                        <Info size={10} />
                       </div>
-                      <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink/50 flex items-center gap-2">
-                        <span>EST: {option.etd}</span>
-                        <span className="w-0.5 h-0.5 rounded-full bg-ink/20"></span>
-                        <span>{option.desc}</span>
-                      </span>
                     </div>
-                    <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.id ? "text-rose" : "text-ink")}>
+                    <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-ink" : "text-ink")}>
                       IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
+
+                    {/* Pop-up Info (Tooltip) */}
+                    <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[180px] bg-ink border border-ink shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 origin-bottom scale-95 group-hover:scale-100 pointer-events-none flex flex-col gap-1.5 text-left">
+                      <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                        <span className="text-[10px] font-medium uppercase tracking-widest text-rose">{option.courier_name}</span>
+                        <span className="text-[7px] border border-white/20 px-1 py-0.5 text-white/80 uppercase tracking-widest">{option.courier_service_name}</span>
+                      </div>
+                      <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/60">EST: <span className="text-white">{option.duration}</span></span>
+                      <span className="text-[8px] font-medium tracking-[0.02em] text-white/50 leading-relaxed">{option.description}</span>
+                      
+                      {/* Triangle Arrow */}
+                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-ink rotate-45 border-b border-r border-ink"></div>
+                    </div>
                   </button>
                 ))}
               </div>
