@@ -108,13 +108,13 @@ export default function OnboardingPage() {
 
   if (isLoading) return <main className="min-h-screen bg-white flex items-center justify-center"><div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" /></main>;
 
-  const ip = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm text-ink outline-none";
-  const sl = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm text-ink outline-none appearance-none cursor-pointer";
-  const lb = "text-xs font-medium text-ink/50 mb-1";
+  const ip = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-3 text-[10px] font-medium tracking-widest uppercase text-ink outline-none placeholder:text-ink/30";
+  const sl = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-3 text-[10px] font-medium tracking-widest uppercase text-ink outline-none appearance-none cursor-pointer";
+  const lb = "text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-1.5 block";
   const bd = "bg-white border-b border-ink/5 px-5 py-3 flex items-center justify-between";
   const cd = "px-5 py-4 space-y-3";
-  const gr = "grid grid-cols-2 gap-3";
-  const cr = "text-xs font-medium text-rose bg-rose/10 px-2 py-1 rounded";
+  const gr = "grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10";
+  const cr = "text-[8px] font-medium text-rose bg-rose/10 px-2 py-1 rounded-none";
 
   return (
     <main className={cn(
@@ -170,13 +170,13 @@ export default function OnboardingPage() {
           {/* 01 Identitas */}
           <div className={cd}>
             <div className="flex items-center gap-2 mb-2">
-              <span className={cr}>01</span><span className="text-sm font-medium uppercase text-rose">Identitas Diri</span>
+              <span className={cr}>01</span><span className="text-[10px] font-medium uppercase tracking-widest text-rose">Identitas Diri</span>
             </div>
             <div className={gr}>
-              <div><label className={lb}>Nama Depan</label><input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="John" /></div>
-              <div><label className={lb}>Nama Belakang</label><input value={f.ln} onChange={e => set('ln', e.target.value)} className={ip} placeholder="Doe" /></div>
+              <div className="bg-white"><label className={lb}>Nama Depan</label><input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="JOHN" /></div>
+              <div className="bg-white"><label className={lb}>Nama Belakang</label><input value={f.ln} onChange={e => set('ln', e.target.value)} className={ip} placeholder="DOE" /></div>
             </div>
-            <div><label className={lb}>Nomor Telepon</label><input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={ip} placeholder="081234567890" /></div>
+            <div className="bg-ink/10 border border-ink/10 p-[1px]"><div className="bg-white"><label className={lb}>Nomor Telepon</label><input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={ip} placeholder="081234567890" /></div></div>
           </div>
 
           {/* 02 Alamat */}
@@ -184,43 +184,45 @@ export default function OnboardingPage() {
             <div className="flex items-center gap-2 mb-2">
               <span className={cr}>02</span><span className="text-sm font-medium uppercase text-rose">Alamat Lengkap</span>
             </div>
-            {/* Provinsi */}
-            <div className="relative">
-              <select value={f.prov} onChange={e => set('prov', e.target.value)} className={sl}>
-                <option value="">Pilih Provinsi</option>
-                {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
-            </div>
-            {/* Kota */}
-            <div className="relative">
-              <select value={f.city} onChange={e => set('city', e.target.value)} disabled={!f.prov} className={sl}>
-                <option value="">Pilih Kota/Kabupaten</option>
-                {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-              </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
-            </div>
-            {/* Kecamatan */}
-            <div className="relative">
-              <select value={f.dist} onChange={e => set('dist', e.target.value)} disabled={!f.city} className={sl}>
-                <option value="">Pilih Kecamatan</option>
-                {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+            <div className="bg-ink/10 border border-ink/10 p-[1px] space-y-[1px]">
+              {/* Provinsi */}
+              <div className="relative bg-white">
+                <select value={f.prov} onChange={e => set('prov', e.target.value)} className={sl}>
+                  <option value="">PILIH PROVINSI</option>
+                  {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+              </div>
+              {/* Kota */}
+              <div className="relative bg-white">
+                <select value={f.city} onChange={e => set('city', e.target.value)} disabled={!f.prov} className={sl}>
+                  <option value="">PILIH KOTA/KABUPATEN</option>
+                  {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                </select>
+                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+              </div>
+              {/* Kecamatan */}
+              <div className="relative bg-white">
+                <select value={f.dist} onChange={e => set('dist', e.target.value)} disabled={!f.city} className={sl}>
+                  <option value="">PILIH KECAMATAN</option>
+                  {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
+                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+              </div>
             </div>
             {/* Fields */}
-            <div className={gr + " grid-cols-4"}>
-              <div><label className={lb}>Kel/Desa</label><input value={f.vill} onChange={e => set('vill', e.target.value)} className={ip} placeholder="Sukajadi" /></div>
-              <div><label className={lb}>RT</label><input value={f.rt} onChange={e => set('rt', e.target.value)} className={ip} placeholder="001" /></div>
-              <div><label className={lb}>RW</label><input value={f.rw} onChange={e => set('rw', e.target.value)} className={ip} placeholder="005" /></div>
-              <div><label className={lb}>Kode Pos</label><input value={f.postal} onChange={e => set('postal', e.target.value)} className={ip} placeholder="40111" /></div>
+            <div className="grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10 mt-[1px]">
+              <div className="bg-white"><label className={lb}>Kel/Desa</label><input value={f.vill} onChange={e => set('vill', e.target.value)} className={ip} placeholder="SUKAJADI" /></div>
+              <div className="bg-white"><label className={lb}>RT</label><input value={f.rt} onChange={e => set('rt', e.target.value)} className={ip} placeholder="001" /></div>
+              <div className="bg-white"><label className={lb}>RW</label><input value={f.rw} onChange={e => set('rw', e.target.value)} className={ip} placeholder="005" /></div>
+              <div className="bg-white"><label className={lb}>Kode Pos</label><input value={f.postal} onChange={e => set('postal', e.target.value)} className={ip} placeholder="40111" /></div>
             </div>
           </div>
 
           {/* Submit */}
           {!isMobile ? (
-          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-3.5 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
-            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
+          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-none text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
+            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={14} /></>}
           </button>
           ) : null}
         </div>
@@ -232,8 +234,8 @@ export default function OnboardingPage() {
           "fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-ink/10 p-4",
           isIPhone && "pb-[env(safe-area-inset-bottom)]"
         )}>
-          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-xl text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
-            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={16} /></>}
+          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-none text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
+            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={14} /></>}
           </button>
         </div>
       )}

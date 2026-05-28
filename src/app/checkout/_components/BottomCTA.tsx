@@ -79,7 +79,7 @@ export default function BottomCTA({
               form={formId}
               disabled={disabled || isLoading}
               className={cn(
-                "w-full py-4 rounded-xl text-[11px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
+                "w-full py-4 rounded-none text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
                 // iOS active state styling
                 "active:scale-[0.98] active:bg-rose/90",
                 // Disabled state
@@ -106,7 +106,7 @@ export default function BottomCTA({
               disabled={disabled || isLoading}
               onClick={onClick}
               className={cn(
-                "w-full py-4 rounded-xl text-[11px] font-medium uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-3",
+                "w-full py-4 rounded-none text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
                 "active:scale-[0.98] active:bg-rose/90",
                 disabled || isLoading
                   ? "bg-ink/5 text-ink/20 cursor-not-allowed"

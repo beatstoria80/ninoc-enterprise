@@ -461,7 +461,7 @@ export default function CheckoutPage() {
       </nav>
 
       <div className={cn(
-        "px-6 md:px-12 w-full max-w-[1600px] mx-auto",
+        "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
         isMobile ? "pt-20 pb-24 space-y-4" : "pt-36 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
@@ -473,7 +473,7 @@ export default function CheckoutPage() {
               <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Financial Specification</h2>
             </div>
             
-            <div className="bg-white border border-ink/5 p-4 space-y-4 shadow-sm">
+            <div className="bg-white border border-ink/10 rounded-none p-4 space-y-4 shadow-sm">
               <div className="space-y-2 border-b border-ink/5 pb-3">
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Subtotal</span>
@@ -506,7 +506,7 @@ export default function CheckoutPage() {
                     const el = document.getElementById('mobile-item-list');
                     if (el) el.classList.toggle('hidden');
                   }}
-                  className="px-3 py-1.5 border border-ink/5 text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
+                  className="px-3 py-1.5 border border-ink/10 rounded-none text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
                 >
                   View Details
                 </button>
