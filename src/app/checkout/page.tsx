@@ -764,6 +764,16 @@ export default function CheckoutPage() {
                     )}
                   </button>
                 </div>
+                
+                {process.env.NODE_ENV === 'development' && (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/payment/success')}
+                    className="w-full mt-2 bg-emerald-50 border border-emerald-200 text-emerald-600 py-3 px-6 text-[9px] font-medium uppercase tracking-[0.1em] hover:bg-emerald-100 transition-all flex items-center justify-center"
+                  >
+                    [DEV] Bypass to Payment Success
+                  </button>
+                )}
               </div>
 
               {/* SECURITY SPECS */}
@@ -805,15 +815,29 @@ export default function CheckoutPage() {
                   <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Secured by Midtrans</span>
                 </div>
               </div>
-              <button 
-                onClick={() => {
-                  setPaymentToken(null);
-                  setIsProcessing(false);
-                }} 
-                className="px-4 py-2 border border-ink/10 text-[9px] font-medium uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors"
-              >
-                Abort
-              </button>
+              <div className="flex gap-2">
+                {process.env.NODE_ENV === 'development' && (
+                  <button 
+                    onClick={() => {
+                      setPaymentToken(null);
+                      setIsProcessing(false);
+                      router.push('/payment/success');
+                    }} 
+                    className="px-4 py-2 bg-emerald-500 text-white text-[9px] font-medium uppercase tracking-widest hover:bg-emerald-600 transition-colors"
+                  >
+                    [DEV] Bypass
+                  </button>
+                )}
+                <button 
+                  onClick={() => {
+                    setPaymentToken(null);
+                    setIsProcessing(false);
+                  }} 
+                  className="px-4 py-2 border border-ink/10 text-[9px] font-medium uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors"
+                >
+                  Abort
+                </button>
+              </div>
             </div>
             {/* Snap Container */}
             <div id="snap-container" className="w-full flex-1 md:h-[600px] overflow-hidden bg-white"></div>
