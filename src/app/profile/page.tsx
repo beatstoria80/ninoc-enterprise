@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight } from 'lucide-react';
+import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -191,7 +191,9 @@ export default function ProfilePage() {
               <ArrowLeft size={16} />
             </Link>
             <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
-            <div className="w-8" />
+            <button onClick={handleLogout} className="w-8 h-8 flex items-center justify-end text-ink/40 hover:text-rose transition-colors">
+              <LogOut size={16} />
+            </button>
           </div>
         </nav>
       )}
@@ -259,8 +261,9 @@ export default function ProfilePage() {
 
             <button 
               onClick={handleLogout}
-              className="text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full"
+              className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-ink/60"
             >
+              <LogOut size={12} />
               Studio Exit
             </button>
           </div>
