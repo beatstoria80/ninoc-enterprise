@@ -49,33 +49,55 @@ export default function SuccessPage() {
       )}
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className={cn("max-w-2xl w-full space-y-8", isMobile && "pt-16")}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn("max-w-6xl mx-auto w-full", isMobile && "pt-16")}
       >
-        <div className="relative">
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", damping: 10, stiffness: 100 }}
-            className="w-20 h-20 bg-emerald-500 rounded-full mx-auto flex items-center justify-center text-white shadow-2xl shadow-emerald-500/20"
-          >
-            <CheckCircle size={40} />
-          </motion.div>
-          <div className="absolute -top-4 -right-4 w-12 h-12 bg-rose/10 rounded-full blur-xl" />
-        </div>
-
-        <div className="space-y-3 text-center">
-          <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter">Payment Successful.</h1>
-          <p className="text-[11px] text-ink/50 font-medium uppercase tracking-[0.1em] leading-relaxed max-w-md mx-auto">
-            Thank you for your purchase. We are now processing your order.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start text-left">
           
-          {/* ===== LEFT: VISIBLE INVOICE / RECEIPT ===== */}
-          <div className="lg:col-span-5 w-full order-2 lg:order-1">
+          {/* ===== COLUMN 1: HEADERS & ACTIONS ===== */}
+          <div className="lg:col-span-1 flex flex-col space-y-10">
+            <div className="space-y-4">
+              <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
+                Payment Successful.
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", damping: 10, stiffness: 100 }}
+                  className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
+                >
+                  <CheckCircle size={14} />
+                </motion.div>
+              </h1>
+              <p className="text-[11px] text-ink/50 font-medium uppercase tracking-[0.1em] leading-relaxed max-w-sm">
+                Thank you for your purchase. We are now processing your order.
+              </p>
+            </div>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="flex flex-col space-y-4 pt-8 border-t border-ink/5"
+            >
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+                Continue Collecting
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <button onClick={() => window.print()} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+                <Printer size={14} />
+                Save as PDF
+              </button>
+              <div className="text-center pt-2">
+                <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+                  Return to Atelier
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ===== COLUMN 2: VISIBLE INVOICE / RECEIPT ===== */}
+          <div className="lg:col-span-1 w-full">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -181,8 +203,8 @@ export default function SuccessPage() {
             </motion.div>
           </div>
 
-          {/* ===== RIGHT: TIMELINE & BUTTONS ===== */}
-          <div className="lg:col-span-7 w-full order-1 lg:order-2 flex flex-col space-y-8">
+          {/* ===== COLUMN 3: TIMELINE ===== */}
+          <div className="lg:col-span-1 w-full flex flex-col space-y-8">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -252,29 +274,8 @@ export default function SuccessPage() {
                   </motion.div>
                </div>
             </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="flex flex-col md:flex-row items-center justify-between gap-4 pt-4"
-            >
-              <Link href="/shop" className="w-full md:flex-1 bg-ink text-white px-6 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
-                Continue Collecting
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <button onClick={() => window.print()} className="w-full md:flex-1 px-6 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
-                <Printer size={14} />
-                Save as PDF
-              </button>
-            </motion.div>
-
-            <div className="text-center pt-2">
-              <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
-                Return to Atelier
-              </Link>
-            </div>
           </div>
+
         </div>
       </motion.div>
     </main>
