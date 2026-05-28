@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -629,7 +629,10 @@ export default function CheckoutPage() {
                 <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-[1px] bg-ink/5 border border-ink/5 rounded-none relative">
+              <div className={cn(
+                "gap-[1px] bg-ink/5 border border-ink/5 rounded-none relative",
+                isMobile ? "flex flex-col" : "grid grid-cols-3"
+              )}>
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
@@ -641,32 +644,60 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => handleShippingChange(option.company, option.price)}
                     className={cn(
-                      "group relative flex flex-col items-center py-2.5 px-1 transition-all bg-white border-t-2",
-                      shippingMethod === option.company ? "bg-rose/[0.02] border-rose" : "border-transparent hover:bg-ink/[0.01]"
+                      "relative transition-all bg-white border-l-2 cursor-pointer",
+                      isMobile
+                        ? "flex items-center justify-between py-4 px-4 min-h-[56px] active:bg-ink/[0.03]"
+                        : "group flex flex-col items-center py-2.5 px-1 border-l-0 border-t-2",
+                      shippingMethod === option.company
+                        ? isMobile ? "bg-rose/[0.03] border-rose" : "bg-rose/[0.02] border-rose"
+                        : "border-transparent hover:bg-ink/[0.01]"
                     )}
                   >
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/60")}>{option.courier_name}</span>
-                      <div className="text-ink/30 hover:text-ink transition-colors relative z-20" onClick={(e) => { e.stopPropagation(); /* Only to allow tap target for tooltip on mobile */ }}>
-                        <Info size={10} />
-                      </div>
-                    </div>
-                    <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-ink" : "text-ink")}>
-                      IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </span>
+                    {/* Mobile: horizontal layout */}
+                    {isMobile ? (
+                      <>
+                        <div className="flex flex-col items-start gap-0.5">
+                          <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/70")}>{option.courier_name}</span>
+                          <span className="text-[8px] font-medium uppercase tracking-widest text-ink/30">{option.courier_service_name} • {option.duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-rose" : "text-ink")}>
+                            IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </span>
+                          {shippingMethod === option.company && (
+                            <div className="w-4 h-4 bg-rose rounded-none flex items-center justify-center">
+                              <CheckCircle size={10} className="text-white" />
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      /* Desktop: vertical layout with hover tooltip */
+                      <>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/60")}>{option.courier_name}</span>
+                          <div className="text-ink/30 hover:text-ink transition-colors relative z-20">
+                            <Info size={10} />
+                          </div>
+                        </div>
+                        <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-ink" : "text-ink")}>
+                          IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
 
-                    {/* Pop-up Info (Tooltip) */}
-                    <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[180px] bg-ink border border-ink shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 origin-bottom scale-95 group-hover:scale-100 pointer-events-none flex flex-col gap-1.5 text-left">
-                      <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                        <span className="text-[10px] font-medium uppercase tracking-widest text-rose">{option.courier_name}</span>
-                        <span className="text-[7px] border border-white/20 px-1 py-0.5 text-white/80 uppercase tracking-widest">{option.courier_service_name}</span>
-                      </div>
-                      <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/60">EST: <span className="text-white">{option.duration}</span></span>
-                      <span className="text-[8px] font-medium tracking-[0.02em] text-white/50 leading-relaxed">{option.description}</span>
-                      
-                      {/* Triangle Arrow */}
-                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-ink rotate-45 border-b border-r border-ink"></div>
-                    </div>
+                        {/* Pop-up Info (Tooltip) - Desktop only */}
+                        <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[180px] bg-ink border border-ink shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 origin-bottom scale-95 group-hover:scale-100 pointer-events-none flex flex-col gap-1.5 text-left">
+                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                            <span className="text-[10px] font-medium uppercase tracking-widest text-rose">{option.courier_name}</span>
+                            <span className="text-[7px] border border-white/20 px-1 py-0.5 text-white/80 uppercase tracking-widest">{option.courier_service_name}</span>
+                          </div>
+                          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/60">EST: <span className="text-white">{option.duration}</span></span>
+                          <span className="text-[8px] font-medium tracking-[0.02em] text-white/50 leading-relaxed">{option.description}</span>
+                          
+                          {/* Triangle Arrow */}
+                          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-ink rotate-45 border-b border-r border-ink"></div>
+                        </div>
+                      </>
+                    )}
                   </button>
                 ))}
               </div>
