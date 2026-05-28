@@ -34,8 +34,8 @@ export default function SuccessPage() {
     <>
     <main className={cn(
       "min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-4 md:px-6 print:hidden",
-      isMobile ? "pt-24 pb-32" : "py-6",
-      isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+80px)]"
+      isMobile ? "pt-16 pb-20" : "py-6",
+      isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+60px)]"
     )}>
       {/* MOBILE NAV BAR */}
       {isMobile && (
@@ -54,10 +54,10 @@ export default function SuccessPage() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-[1600px] mx-auto w-full"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-start text-left">
           
           {/* ===== COLUMN 1: HEADERS & ACTIONS ===== */}
-          <div className="lg:col-span-3 flex flex-col space-y-10 order-1">
+          <div className="lg:col-span-3 flex flex-col space-y-4 order-1">
             <div className="space-y-4">
               <h1 className="text-xl md:text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
                 Payment Successful.
@@ -106,7 +106,7 @@ export default function SuccessPage() {
               transition={{ delay: 0.5 }}
               className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
             >
-              <div className="px-6 md:px-8 py-5 border-b border-ink/5 flex items-center justify-between">
+              <div className="px-4 md:px-8 py-3 md:py-5 border-b border-ink/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-ink/[0.03] flex items-center justify-center">
                     <Printer size={14} className="text-ink/40" />
@@ -129,8 +129,8 @@ export default function SuccessPage() {
               </div>
 
               {/* Items */}
-              <div className="px-6 md:px-8 py-4 border-b border-ink/5">
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Purchased Items</p>
+              <div className="px-4 md:px-8 py-3 md:py-4 border-b border-ink/5">
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Purchased Items</p>
                 <div className="space-y-3">
                   {order?.order_items ? (
                     order.order_items.map((item: any) => (
@@ -157,8 +157,8 @@ export default function SuccessPage() {
               </div>
 
               {/* Financial Breakdown */}
-              <div className="px-6 md:px-8 py-4 space-y-2">
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Financial Breakdown</p>
+              <div className="px-4 md:px-8 py-3 md:py-4 space-y-1.5 md:space-y-2">
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Financial Breakdown</p>
                 {(() => {
                   const sub = order?.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                   const tax = Math.round(sub * 0.11);
@@ -195,8 +195,8 @@ export default function SuccessPage() {
 
               {/* Shipping Info */}
               {order?.shipping_address && (
-                <div className="px-6 md:px-8 py-4 border-t border-ink/5 bg-ink/[0.01]">
-                  <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Shipping To</p>
+                <div className="px-4 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
+                  <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-1.5">Shipping To</p>
                   <p className="text-[10px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
                   <p className="text-[9px] font-medium text-ink/40 mt-0.5">{order.shipping_address.address}</p>
                   <p className="text-[9px] font-medium text-ink/40">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
