@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Lock, ArrowLeft, Mail, AlertCircle, Shield } from 'lucide-react';
+import { ArrowRight, Lock, ArrowLeft, Mail, AlertCircle, Shield, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailHint, setShowEmailHint] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,13 +167,20 @@ export default function LoginPage() {
                   <div className="relative">
                     <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/25" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-ink outline-none tracking-widest"
+                      className="w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-10 pr-12 text-[10px] font-medium text-ink outline-none tracking-widest"
                       placeholder="PASSWORD"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/25 hover:text-rose transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
                   </div>
                 </div>
               )}
@@ -297,13 +305,20 @@ export default function LoginPage() {
                     <div className="relative">
                       <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/25" />
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none"
+                        className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-3 px-10 pr-12 text-sm font-medium text-ink outline-none"
                         placeholder="Password"
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/25 hover:text-rose transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
                     </div>
                   </div>
                 )}
