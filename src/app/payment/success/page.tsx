@@ -143,6 +143,111 @@ export default function SuccessPage() {
            </div>
         </motion.div>
 
+        {/* ===== VISIBLE INVOICE / RECEIPT ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
+        >
+          <div className="px-6 md:px-8 py-5 border-b border-ink/5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-ink/[0.03] flex items-center justify-center">
+                <Printer size={14} className="text-ink/40" />
+              </div>
+              <div>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">Transaction Receipt</h3>
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mt-0.5">
+                  {order?.id ? order.id.toUpperCase() : 'Awaiting Order ID'}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30">
+                {order?.created_at
+                  ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                }
+              </p>
+            </div>
+          </div>
+
+          {/* Items */}
+          <div className="px-6 md:px-8 py-4 border-b border-ink/5">
+            <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Purchased Items</p>
+            <div className="space-y-3">
+              {order?.order_items ? (
+                order.order_items.map((item: any) => (
+                  <div key={item.id} className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
+                      <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30 mt-0.5">
+                        {item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}
+                      </p>
+                    </div>
+                    <p className="text-[11px] font-mono font-medium text-ink ml-4 shrink-0">
+                      IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-ink/30 italic">Loading order details...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Financial Breakdown */}
+          <div className="px-6 md:px-8 py-4 space-y-2">
+            <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Financial Breakdown</p>
+            {(() => {
+              const sub = order?.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+              const tax = Math.round(sub * 0.11);
+              const platform = 2500;
+              const shipping = order ? Math.max(0, order.total_price - sub - tax - platform) : 0;
+              const total = order?.total_price || 0;
+
+              return (
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Subtotal</span>
+                    <span className="text-[10px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Logistics ({courierName})</span>
+                    <span className="text-[10px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">VAT (11%)</span>
+                    <span className="text-[10px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Platform Fee</span>
+                    <span className="text-[10px] font-mono font-medium text-ink">+ IDR 2.500</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
+                    <span className="text-lg font-display font-medium italic text-rose">{total > 0 ? `IDR ${total.toLocaleString('id-ID')}` : '—'}</span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+
+          {/* Shipping Info */}
+          {order?.shipping_address && (
+            <div className="px-6 md:px-8 py-4 border-t border-ink/5 bg-ink/[0.01]">
+              <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Shipping To</p>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
+              <p className="text-[9px] font-medium text-ink/40 mt-0.5">{order.shipping_address.address}</p>
+              <p className="text-[9px] font-medium text-ink/40">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+            </div>
+          )}
+        </motion.div>
+
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -155,7 +260,7 @@ export default function SuccessPage() {
           </Link>
           <button onClick={() => window.print()} className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
             <Printer size={14} />
-            Download Invoice
+            Save as PDF
           </button>
           <Link href="/" className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors text-center border border-transparent hover:border-rose/20">
             Return to Atelier
