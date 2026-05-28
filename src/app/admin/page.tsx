@@ -1306,6 +1306,16 @@ export default function AdminDashboard() {
                             {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                             <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
                           </p>
+                          <div className="pt-2 mt-2 border-t border-ink/5">
+                            <p className="text-[8px] text-gray-400 uppercase flex justify-between">
+                              <span>VAT (11%)</span>
+                              <span>+ {Math.round(Number(product.price) * 0.11).toLocaleString('id-ID')} IDR</span>
+                            </p>
+                            <p className="text-[10px] font-medium text-ink flex justify-between mt-1">
+                              <span>TOTAL</span>
+                              <span className="text-rose italic font-display">{Math.round(Number(product.price) * 1.11).toLocaleString('id-ID')} IDR</span>
+                            </p>
+                          </div>
                         </div>
 
                         {/* Color/Sizes breakdown dari variants */}
@@ -3101,10 +3111,38 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Summary */}
-                <div className="pt-4 border-t border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Total</span>
-                    <span className="text-xl font-medium text-gray-900">IDR {selectedOrder.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                <div className="pt-4 border-t border-gray-100 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                    <span>Value Subtotal</span>
+                    <span className="text-gray-900 font-medium">IDR {(() => {
+                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                      return sub.toLocaleString('id-ID');
+                    })()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                    <span>Logistics</span>
+                    <span className="text-gray-900 font-medium">+ IDR {(() => {
+                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                      const tax = Math.round(sub * 0.11);
+                      const platform = 2500;
+                      const shipping = selectedOrder.total_price - sub - tax - platform;
+                      return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
+                    })()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                    <span>VAT (11%)</span>
+                    <span className="text-gray-900 font-medium">+ IDR {(() => {
+                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                      return Math.round(sub * 0.11).toLocaleString('id-ID');
+                    })()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider pb-4 border-b border-gray-100">
+                    <span>Platform Fee</span>
+                    <span className="text-gray-900 font-medium">+ IDR 2.500</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium">Total Investment</span>
+                    <span className="text-2xl font-medium font-display italic text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
               </div>
