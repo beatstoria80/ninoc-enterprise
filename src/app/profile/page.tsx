@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Camera, ChevronRight, Loader2, User } from 'lucide-react';
+import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import ImageCropper from './_components/ImageCropper';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,6 +22,7 @@ interface UserProfile {
   full_name: string;
   avatar_url: string;
   created_at: string;
+  customer_number?: number;
 }
 
 interface Order {
@@ -43,6 +45,7 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -67,6 +70,7 @@ export default function ProfilePage() {
           full_name: profile.full_name || authUser.user_metadata?.full_name || 'NINOC Member',
           avatar_url: profile.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
           created_at: profile.created_at || authUser.created_at,
+          customer_number: profile.customer_number,
         });
       } else {
         setUser({
@@ -102,18 +106,27 @@ export default function ProfilePage() {
   }, []);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setIsUploading(true);
-      const file = event.target.files?.[0];
-      if (!file || !user) return;
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-      const fileExt = file.name.split('.').pop();
+    const objectUrl = URL.createObjectURL(file);
+    setCropImageSrc(objectUrl);
+    event.target.value = ''; // Reset input
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    try {
+      setCropImageSrc(null);
+      setIsUploading(true);
+      if (!user) return;
+
+      const fileExt = 'jpeg';
       const fileName = `${user.id}-${crypto.randomUUID()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, croppedBlob);
 
       if (uploadError) throw uploadError;
 
@@ -159,6 +172,14 @@ export default function ProfilePage() {
 
   return (
     <main className={cn("min-h-screen bg-white selection:bg-ink selection:text-white pb-32 font-medium", isIPhone && "ios-mobile-layout")}>
+      {cropImageSrc && (
+        <ImageCropper 
+          imageSrc={cropImageSrc}
+          onClose={() => setCropImageSrc(null)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+
       {/* MOBILE NAV BAR */}
       {isMobile && (
         <nav className={cn(
@@ -216,6 +237,12 @@ export default function ProfilePage() {
 
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl font-display italic text-ink uppercase tracking-tight">{user?.full_name}</h1>
+              {user?.customer_number && (
+                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-[10px] text-blue-600 font-mono tracking-widest">
+                  <CornerDownRight size={12} className="text-blue-500" />
+                  ID: {user.customer_number.toString().padStart(4, '0')}
+                </div>
+              )}
               <p className="text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
