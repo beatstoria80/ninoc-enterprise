@@ -201,10 +201,19 @@ export default function ProfilePage() {
       <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-32 md:pt-32")}>
 
         {!isMobile && (
-        <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-6 group">
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group">
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
+          </Link>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-ink/50"
+          >
+            <LogOut size={13} />
+            Studio Exit
+          </button>
+        </div>
         )}
 
         <motion.div 
