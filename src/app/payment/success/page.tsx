@@ -56,7 +56,7 @@ export default function SuccessPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start text-left">
           
           {/* ===== COLUMN 1: HEADERS & ACTIONS ===== */}
-          <div className="lg:col-span-1 flex flex-col space-y-10">
+          <div className="lg:col-span-1 flex flex-col space-y-10 order-1">
             <div className="space-y-4">
               <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
                 Payment Successful.
@@ -74,11 +74,12 @@ export default function SuccessPage() {
               </p>
             </div>
 
+            {/* DESKTOP BUTTONS (Hidden on mobile) */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex flex-col space-y-4 pt-8 border-t border-ink/5"
+              className="hidden lg:flex flex-col space-y-4 pt-8 border-t border-ink/5"
             >
               <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
                 Continue Collecting
@@ -97,7 +98,7 @@ export default function SuccessPage() {
           </div>
 
           {/* ===== COLUMN 2: VISIBLE INVOICE / RECEIPT ===== */}
-          <div className="lg:col-span-1 w-full">
+          <div className="lg:col-span-1 w-full order-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -204,7 +205,7 @@ export default function SuccessPage() {
           </div>
 
           {/* ===== COLUMN 3: TIMELINE ===== */}
-          <div className="lg:col-span-1 w-full flex flex-col space-y-8">
+          <div className="lg:col-span-1 w-full flex flex-col space-y-8 order-3">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -275,6 +276,28 @@ export default function SuccessPage() {
                </div>
             </motion.div>
           </div>
+
+          {/* ===== MOBILE BUTTONS (Visible only on mobile at the bottom) ===== */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="lg:hidden w-full flex flex-col space-y-4 pt-4 border-t border-ink/5 order-4"
+          >
+            <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+              Continue Collecting
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <button onClick={() => window.print()} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <Printer size={14} />
+              Save as PDF
+            </button>
+            <div className="text-center pt-2">
+              <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+                Return to Atelier
+              </Link>
+            </div>
+          </motion.div>
 
         </div>
       </motion.div>
