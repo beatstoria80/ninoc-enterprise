@@ -51,12 +51,12 @@ export default function SuccessPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn("max-w-6xl mx-auto w-full", isMobile && "pt-16")}
+        className={cn("max-w-[1600px] mx-auto w-full", isMobile && "pt-16")}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start text-left">
           
           {/* ===== COLUMN 1: HEADERS & ACTIONS ===== */}
-          <div className="lg:col-span-1 flex flex-col space-y-10 order-1">
+          <div className="lg:col-span-3 flex flex-col space-y-10 order-1">
             <div className="space-y-4">
               <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
                 Payment Successful.
@@ -98,7 +98,7 @@ export default function SuccessPage() {
           </div>
 
           {/* ===== COLUMN 2: VISIBLE INVOICE / RECEIPT ===== */}
-          <div className="lg:col-span-1 w-full order-2">
+          <div className="lg:col-span-4 w-full order-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -205,7 +205,7 @@ export default function SuccessPage() {
           </div>
 
           {/* ===== COLUMN 3: TIMELINE ===== */}
-          <div className="lg:col-span-1 w-full flex flex-col space-y-8 order-3">
+          <div className="lg:col-span-5 w-full flex flex-col space-y-8 order-3">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
