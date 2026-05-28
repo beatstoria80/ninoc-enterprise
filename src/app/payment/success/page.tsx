@@ -72,200 +72,210 @@ export default function SuccessPage() {
           </p>
         </div>
 
-        {/* INTERACTIVE TIMELINE */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white border border-ink/5 p-6 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
-        >
-           <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
-              <span>Shipment Protocol</span>
-              <div className="flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                 <span className="text-[8px] text-emerald-600 uppercase">Live Update</span>
-              </div>
-           </h3>
-           
-           <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 space-y-8">
-              
-              {/* Step 1: Active */}
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-                className="relative group"
-              >
-                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                    <ShieldCheck size={18} strokeWidth={2.5} className="animate-pulse" />
-                 </div>
-                 <div className="bg-emerald-50/50 border border-emerald-500/20 p-5 rounded-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
-                    <div className="flex items-center gap-3 mb-1.5 relative">
-                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
-                      <span className="bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
-                    </div>
-                    <p className="text-[9px] font-medium tracking-[0.15em] text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
-                      <Clock size={12} strokeWidth={2} /> Just Now • System Authenticated
-                    </p>
-                 </div>
-              </motion.div>
-
-              {/* Step 2: Processing */}
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
-                className="relative group hover:scale-[1.01] transition-transform"
-              >
-                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
-                    <Package size={18} strokeWidth={2} />
-                 </div>
-                 <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
-                    </div>
-                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Pending Quality Control</p>
-                 </div>
-              </motion.div>
-
-              {/* Step 3: Logistics */}
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
-                className="relative group hover:scale-[1.01] transition-transform"
-              >
-                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
-                    <Truck size={18} strokeWidth={2} />
-                 </div>
-                 <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
-                    </div>
-                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
-                 </div>
-              </motion.div>
-           </div>
-        </motion.div>
-
-        {/* ===== VISIBLE INVOICE / RECEIPT ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
-        >
-          <div className="px-6 md:px-8 py-5 border-b border-ink/5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-ink/[0.03] flex items-center justify-center">
-                <Printer size={14} className="text-ink/40" />
-              </div>
-              <div>
-                <h3 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">Transaction Receipt</h3>
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mt-0.5">
-                  {order?.id ? order.id.toUpperCase() : 'Awaiting Order ID'}
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30">
-                {order?.created_at
-                  ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-                  : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-                }
-              </p>
-            </div>
-          </div>
-
-          {/* Items */}
-          <div className="px-6 md:px-8 py-4 border-b border-ink/5">
-            <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Purchased Items</p>
-            <div className="space-y-3">
-              {order?.order_items ? (
-                order.order_items.map((item: any) => (
-                  <div key={item.id} className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
-                      <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30 mt-0.5">
-                        {item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}
-                      </p>
-                    </div>
-                    <p className="text-[11px] font-mono font-medium text-ink ml-4 shrink-0">
-                      IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}
-                    </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start text-left">
+          
+          {/* ===== LEFT: VISIBLE INVOICE / RECEIPT ===== */}
+          <div className="lg:col-span-5 w-full order-2 lg:order-1">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
+            >
+              <div className="px-6 md:px-8 py-5 border-b border-ink/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-ink/[0.03] flex items-center justify-center">
+                    <Printer size={14} className="text-ink/40" />
                   </div>
-                ))
-              ) : (
-                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[11px] font-medium uppercase tracking-wider text-ink/30 italic">Loading order details...</p>
+                    <h3 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">Transaction Receipt</h3>
+                    <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mt-0.5">
+                      {order?.id ? order.id.toUpperCase() : 'Awaiting Order ID'}
+                    </p>
                   </div>
                 </div>
+                <div className="text-right">
+                  <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30">
+                    {order?.created_at
+                      ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                      : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                    }
+                  </p>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div className="px-6 md:px-8 py-4 border-b border-ink/5">
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Purchased Items</p>
+                <div className="space-y-3">
+                  {order?.order_items ? (
+                    order.order_items.map((item: any) => (
+                      <div key={item.id} className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
+                          <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30 mt-0.5">
+                            {item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}
+                          </p>
+                        </div>
+                        <p className="text-[11px] font-mono font-medium text-ink ml-4 shrink-0">
+                          IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[11px] font-medium uppercase tracking-wider text-ink/30 italic">Loading order details...</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Financial Breakdown */}
+              <div className="px-6 md:px-8 py-4 space-y-2">
+                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Financial Breakdown</p>
+                {(() => {
+                  const sub = order?.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                  const tax = Math.round(sub * 0.11);
+                  const platform = 2500;
+                  const shipping = order ? Math.max(0, order.total_price - sub - tax - platform) : 0;
+                  const total = order?.total_price || 0;
+
+                  return (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Subtotal</span>
+                        <span className="text-[10px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Logistics ({courierName})</span>
+                        <span className="text-[10px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">VAT (11%)</span>
+                        <span className="text-[10px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Platform Fee</span>
+                        <span className="text-[10px] font-mono font-medium text-ink">+ IDR 2.500</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
+                        <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
+                        <span className="text-lg font-display font-medium italic text-rose">{total > 0 ? `IDR ${total.toLocaleString('id-ID')}` : '—'}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Shipping Info */}
+              {order?.shipping_address && (
+                <div className="px-6 md:px-8 py-4 border-t border-ink/5 bg-ink/[0.01]">
+                  <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Shipping To</p>
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
+                  <p className="text-[9px] font-medium text-ink/40 mt-0.5">{order.shipping_address.address}</p>
+                  <p className="text-[9px] font-medium text-ink/40">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+                </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
-          {/* Financial Breakdown */}
-          <div className="px-6 md:px-8 py-4 space-y-2">
-            <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Financial Breakdown</p>
-            {(() => {
-              const sub = order?.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-              const tax = Math.round(sub * 0.11);
-              const platform = 2500;
-              const shipping = order ? Math.max(0, order.total_price - sub - tax - platform) : 0;
-              const total = order?.total_price || 0;
+          {/* ===== RIGHT: TIMELINE & BUTTONS ===== */}
+          <div className="lg:col-span-7 w-full order-1 lg:order-2 flex flex-col space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white border border-ink/5 p-6 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
+            >
+               <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
+                  <span>Shipment Protocol</span>
+                  <div className="flex items-center gap-2">
+                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                     <span className="text-[8px] text-emerald-600 uppercase">Live Update</span>
+                  </div>
+               </h3>
+               
+               <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 space-y-8">
+                  
+                  {/* Step 1: Active */}
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+                    className="relative group"
+                  >
+                     <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                        <ShieldCheck size={18} strokeWidth={2.5} className="animate-pulse" />
+                     </div>
+                     <div className="bg-emerald-50/50 border border-emerald-500/20 p-5 rounded-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
+                        <div className="flex items-center gap-3 mb-1.5 relative">
+                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
+                          <span className="bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
+                        </div>
+                        <p className="text-[9px] font-medium tracking-[0.15em] text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
+                          <Clock size={12} strokeWidth={2} /> Just Now • System Authenticated
+                        </p>
+                     </div>
+                  </motion.div>
 
-              return (
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Subtotal</span>
-                    <span className="text-[10px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Logistics ({courierName})</span>
-                    <span className="text-[10px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">VAT (11%)</span>
-                    <span className="text-[10px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Platform Fee</span>
-                    <span className="text-[10px] font-mono font-medium text-ink">+ IDR 2.500</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
-                    <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
-                    <span className="text-lg font-display font-medium italic text-rose">{total > 0 ? `IDR ${total.toLocaleString('id-ID')}` : '—'}</span>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
+                  {/* Step 2: Processing */}
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
+                    className="relative group hover:scale-[1.01] transition-transform"
+                  >
+                     <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                        <Package size={18} strokeWidth={2} />
+                     </div>
+                     <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
+                        </div>
+                        <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Pending Quality Control</p>
+                     </div>
+                  </motion.div>
 
-          {/* Shipping Info */}
-          {order?.shipping_address && (
-            <div className="px-6 md:px-8 py-4 border-t border-ink/5 bg-ink/[0.01]">
-              <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Shipping To</p>
-              <p className="text-[10px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
-              <p className="text-[9px] font-medium text-ink/40 mt-0.5">{order.shipping_address.address}</p>
-              <p className="text-[9px] font-medium text-ink/40">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+                  {/* Step 3: Logistics */}
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
+                    className="relative group hover:scale-[1.01] transition-transform"
+                  >
+                     <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                        <Truck size={18} strokeWidth={2} />
+                     </div>
+                     <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
+                        </div>
+                        <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
+                     </div>
+                  </motion.div>
+               </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="flex flex-col md:flex-row items-center justify-between gap-4 pt-4"
+            >
+              <Link href="/shop" className="w-full md:flex-1 bg-ink text-white px-6 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+                Continue Collecting
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <button onClick={() => window.print()} className="w-full md:flex-1 px-6 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+                <Printer size={14} />
+                Save as PDF
+              </button>
+            </motion.div>
+
+            <div className="text-center pt-2">
+              <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+                Return to Atelier
+              </Link>
             </div>
-          )}
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="flex flex-col md:flex-row items-center justify-center gap-4 pt-6"
-        >
-          <Link href="/shop" className="w-full md:w-auto bg-ink text-white px-8 py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
-            Continue Collecting
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <button onClick={() => window.print()} className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
-            <Printer size={14} />
-            Save as PDF
-          </button>
-          <Link href="/" className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors text-center border border-transparent hover:border-rose/20">
-            Return to Atelier
-          </Link>
-        </motion.div>
+          </div>
+        </div>
       </motion.div>
     </main>
 
