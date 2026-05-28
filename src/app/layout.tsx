@@ -46,7 +46,9 @@ export default function RootLayout({
           <ClientPlatformManager>
             {children}
           </ClientPlatformManager>
-          <SupportChat />
+          <div className="print:hidden">
+            <SupportChat />
+          </div>
         </SmoothScrollProvider>
       </body>
     </html>

@@ -52,11 +52,11 @@ export default function ClientPlatformManager({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen flex flex-col bg-cr">
-      {showGlobalHeader && <GlobalHeader />}
+      {showGlobalHeader && <div className="print:hidden"><GlobalHeader /></div>}
       <div className="flex-1">
         {children}
       </div>
-      {showGlobalHeader && <GlobalFooter />}
+      {showGlobalHeader && <div className="print:hidden"><GlobalFooter /></div>}
     </div>
   );
 }
