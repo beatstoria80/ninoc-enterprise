@@ -121,7 +121,7 @@ export default function SuccessPage() {
                     <div className="flex items-center gap-2 mb-1.5">
                       <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                     </div>
-                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Awaiting Pickup via Biteship</p>
+                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Awaiting Courier Pickup</p>
                  </div>
               </motion.div>
            </div>
