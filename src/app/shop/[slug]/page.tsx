@@ -315,7 +315,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Spesifikasi Produk / Measurement — Tab Toggle */}
-              <div className="pt-2 border-t border-ink/5 min-h-[160px]">
+              <div className="pt-2 pb-2 border-t border-ink/5">
                 <div className="flex items-center gap-4 mb-3">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
@@ -369,7 +369,7 @@ export default function ProductDetailPage() {
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
-              <div className="space-y-2 lg:space-y-3 mt-4 lg:mt-0">
+              <div className="space-y-2 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-3 lg:pt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
                 <div className="flex gap-1.5 lg:gap-2 flex-wrap">
                   {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
