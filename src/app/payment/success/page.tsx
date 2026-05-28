@@ -34,8 +34,8 @@ export default function SuccessPage() {
     <>
     <main className={cn(
       "min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-4 md:px-6 print:hidden",
-      isMobile ? "pt-16 pb-20" : "py-6",
-      isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+60px)]"
+      isMobile ? "pt-24 pb-20" : "py-6",
+      isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+80px)]"
     )}>
       {/* MOBILE NAV BAR */}
       {isMobile && (
