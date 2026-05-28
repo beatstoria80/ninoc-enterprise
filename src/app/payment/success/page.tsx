@@ -59,7 +59,7 @@ export default function SuccessPage() {
           {/* ===== COLUMN 1: HEADERS & ACTIONS ===== */}
           <div className="lg:col-span-3 flex flex-col space-y-10 order-1">
             <div className="space-y-4">
-              <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
+              <h1 className="text-xl md:text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
                 Payment Successful.
                 <motion.div 
                   initial={{ scale: 0 }}
