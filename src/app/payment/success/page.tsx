@@ -220,7 +220,7 @@ export default function SuccessPage() {
                   </div>
                </h3>
                
-               <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 space-y-8">
+               <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 flex flex-col gap-0 md:gap-8">
                   
                   {/* Step 1: Active */}
                   <motion.div 
@@ -230,7 +230,7 @@ export default function SuccessPage() {
                      <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                         <ShieldCheck size={18} strokeWidth={2.5} className="animate-pulse" />
                      </div>
-                     <div className="bg-emerald-50/50 border border-emerald-500/20 p-5 rounded-xl relative overflow-hidden">
+                     <div className="bg-emerald-50/50 border border-emerald-500/20 p-5 md:p-6 rounded-none relative overflow-hidden border-b-0 md:border-b">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
                         <div className="flex items-center gap-3 mb-1.5 relative">
                           <h4 className="text-[12px] font-bold uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
@@ -250,7 +250,7 @@ export default function SuccessPage() {
                      <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                         <Package size={18} strokeWidth={2} />
                      </div>
-                     <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                     <div className="p-5 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all border-b-0 md:border-b">
                         <div className="flex items-center gap-2 mb-1.5">
                           <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
                         </div>
@@ -266,7 +266,7 @@ export default function SuccessPage() {
                      <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                         <Truck size={18} strokeWidth={2} />
                      </div>
-                     <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                     <div className="p-5 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                         <div className="flex items-center gap-2 mb-1.5">
                           <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                         </div>
