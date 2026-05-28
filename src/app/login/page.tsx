@@ -33,7 +33,8 @@ export default function LoginPage() {
 
     // Admin Backdoor
     if (email === 'adm' && password === '111') {
-      setTimeout(() => router.push('/admin'), 500);
+      setIsLoading(false);
+      router.push('/admin');
       return;
     }
 
@@ -46,7 +47,7 @@ export default function LoginPage() {
           .single();
 
         if (existingUser) {
-          setShowEmailHint(true);
+          setError('Email sudah terdaftar. Silakan masuk.');
           setIsLoading(false);
           return;
         }
@@ -54,21 +55,21 @@ export default function LoginPage() {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
         if (signUpError) throw signUpError;
         setMessage('Registrasi berhasil! Cek email untuk verifikasi.');
+        setIsLoading(false);
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            setShowEmailHint(true);
-            setIsLoading(false);
-            return;
-          }
-          throw signInError;
+          setError('Email atau kata sandi tidak valid.');
+          setIsLoading(false);
+          return;
         }
+        
         router.push('/onboarding');
+        // Fallback to reset button if navigation takes too long or aborts
+        setTimeout(() => setIsLoading(false), 3000);
       }
     } catch (err) {
-      setError((err as Error).message || 'Autentikasi gagal.');
-    } finally {
+      setError((err as Error)?.message || 'Autentikasi gagal.');
       setIsLoading(false);
     }
   };
