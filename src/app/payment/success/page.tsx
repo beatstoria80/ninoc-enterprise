@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -14,6 +15,8 @@ function cn(...inputs: ClassValue[]) {
 
 export default function SuccessPage() {
   const { isMobile, isIPhone } = useDevice();
+  const searchParams = useSearchParams();
+  const courierName = searchParams.get('courier') || 'Standard Shipping';
 
   return (
     <main className={cn(
@@ -121,7 +124,7 @@ export default function SuccessPage() {
                     <div className="flex items-center gap-2 mb-1.5">
                       <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                     </div>
-                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Awaiting Courier Pickup</p>
+                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
                  </div>
               </motion.div>
            </div>

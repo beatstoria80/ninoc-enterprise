@@ -388,7 +388,7 @@ export default function CheckoutPage() {
           embedId: 'snap-container',
           onSuccess: (result: MidtransSnapResult) => {
             console.log('Payment successful:', result);
-            router.push('/payment/success');
+            router.push(`/payment/success?courier=${encodeURIComponent(shippingMethod)}`);
           },
           onError: (err: unknown) => {
             console.error('Midtrans payment error:', err);
@@ -767,7 +767,7 @@ export default function CheckoutPage() {
                 
                 <button
                   type="button"
-                  onClick={() => router.push('/payment/success')}
+                  onClick={() => router.push(`/payment/success?courier=${encodeURIComponent(shippingMethod || 'JNE Reguler')}`)}
                   className="w-full mt-2 bg-emerald-50 border border-emerald-200 text-emerald-600 py-3 px-6 text-[9px] font-medium uppercase tracking-[0.1em] hover:bg-emerald-100 transition-all flex items-center justify-center"
                 >
                   [DEV] Bypass to Payment Success
@@ -818,7 +818,7 @@ export default function CheckoutPage() {
                   onClick={() => {
                     setPaymentToken(null);
                     setIsProcessing(false);
-                    router.push('/payment/success');
+                    router.push(`/payment/success?courier=${encodeURIComponent(shippingMethod || 'JNE Reguler')}`);
                   }} 
                   className="px-4 py-2 bg-emerald-500 text-white text-[9px] font-medium uppercase tracking-widest hover:bg-emerald-600 transition-colors"
                 >
