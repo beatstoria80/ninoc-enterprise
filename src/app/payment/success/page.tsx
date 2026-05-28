@@ -212,7 +212,7 @@ export default function SuccessPage() {
               className="bg-white border border-ink/5 p-6 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
             >
                <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
-                  <span>Shipment Protocol</span>
+                  <span>Shipment Status</span>
                   <div className="flex items-center gap-2">
                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                      <span className="text-[8px] text-emerald-600 uppercase">Live Update</span>
