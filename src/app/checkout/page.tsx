@@ -463,7 +463,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-20 pb-24 space-y-4" : "pt-36 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-20 pb-32 space-y-4" : "pt-36 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
@@ -582,11 +582,11 @@ export default function CheckoutPage() {
                   <label htmlFor="house_number" className={labelClass}>No</label>
                   <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-2 p-3")}>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-3" : "col-span-2 p-3 border-l border-ink/5")}>
                   <label htmlFor="rt" className={labelClass}>RT</label>
                   <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-2 p-3")}>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-3" : "col-span-2 p-3 border-l border-ink/5")}>
                   <label htmlFor="rw" className={labelClass}>RW</label>
                   <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
                 </div>
@@ -598,7 +598,7 @@ export default function CheckoutPage() {
                     {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-3" : "col-span-3 p-3 border-l border-ink/5")}>
                   <label htmlFor="city" className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="city" required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province || loadingLoc.c}>
                     <option value="">SELECT CITY</option>
@@ -612,9 +612,9 @@ export default function CheckoutPage() {
                     {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/5", isMobile ? "col-span-1 p-3" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t relative z-20", isMobile ? "col-span-1 p-3" : "col-span-3 p-3 border-l border-ink/5")}>
                   <label htmlFor="kelurahan" className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
-                  <select id="kelurahan" required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={selectClass} disabled={!formData.kecamatan || loadingLoc.v}>
+                  <select id="kelurahan" required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={cn(selectClass, "relative z-20")} disabled={!formData.kecamatan || loadingLoc.v}>
                     <option value="">SELECT KELURAHAN</option>
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
