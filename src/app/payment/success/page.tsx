@@ -1,13 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { supabase } from '@/lib/supabase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -17,10 +18,22 @@ export default function SuccessPage() {
   const { isMobile, isIPhone } = useDevice();
   const searchParams = useSearchParams();
   const courierName = searchParams.get('courier') || 'Standard Shipping';
+  const orderId = searchParams.get('order_id');
+  const [order, setOrder] = useState<any>(null);
+
+  useEffect(() => {
+    if (orderId) {
+      supabase.from('orders').select('*, order_items(*)').eq('id', orderId).single()
+        .then(({ data }) => {
+          if (data) setOrder(data);
+        });
+    }
+  }, [orderId]);
 
   return (
+    <>
     <main className={cn(
-      "min-h-screen bg-cr noise flex items-center justify-center p-6",
+      "min-h-screen bg-cr noise flex items-center justify-center p-6 print:hidden",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* MOBILE NAV BAR */}
@@ -140,11 +153,161 @@ export default function SuccessPage() {
             Continue Collecting
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
+          <button onClick={() => window.print()} className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+            <Printer size={14} />
+            Download Invoice
+          </button>
           <Link href="/" className="w-full md:w-auto px-8 py-4 text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors text-center border border-transparent hover:border-rose/20">
             Return to Atelier
           </Link>
         </motion.div>
       </motion.div>
     </main>
+
+    {/* ===== PRINTABLE INVOICE ===== */}
+    <div className="hidden print:block bg-white text-black p-8 w-full h-full max-w-4xl mx-auto font-sans m-0">
+       <InvoiceMockup courierName={courierName} order={order} />
+    </div>
+    </>
+  );
+}
+
+function InvoiceMockup({ courierName, order }: { courierName: string, order?: any }) {
+  const date = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+  const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <div className="border border-black p-8 bg-white">
+      {/* Header */}
+      <div className="flex justify-between items-start border-b-[3px] border-black pb-6 mb-6">
+        <div>
+          <h1 className="font-display font-medium text-4xl italic uppercase tracking-tighter mb-1">NINOC</h1>
+          <p className="text-[10px] tracking-[0.2em] uppercase font-bold">Archival Studio Investment</p>
+        </div>
+        <div className="text-right">
+          <h2 className="text-xl font-bold uppercase tracking-wider mb-2">Invoice</h2>
+          <p className="text-xs font-mono">{order?.id ? order.id.toUpperCase() : 'INV-82390192'}</p>
+          <p className="text-[10px] uppercase mt-1">{order?.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
+        </div>
+      </div>
+
+      {/* Customer Info */}
+      <div className="grid grid-cols-2 gap-12 mb-8 text-sm">
+        <div>
+          <p className="text-[9px] uppercase tracking-widest font-bold mb-2 border-b border-black/20 pb-1">Billed To</p>
+          <p className="font-bold">{order?.customer_name || 'Customer Name'}</p>
+          <p className="text-xs mt-1">{order?.shipping_address?.email || 'customer@email.com'}</p>
+          <p className="text-xs font-mono">{order?.shipping_address?.phone || '+62 812-XXXX-XXXX'}</p>
+        </div>
+        <div>
+          <p className="text-[9px] uppercase tracking-widest font-bold mb-2 border-b border-black/20 pb-1">Shipped To</p>
+          <p className="text-xs">{order?.shipping_address?.address || 'Jakarta Selatan, DKI Jakarta'}</p>
+          <p className="text-xs">{order?.shipping_address?.city || '12345'}, {order?.shipping_address?.postal_code || 'Indonesia'}</p>
+          <p className="text-[10px] font-bold mt-2 uppercase tracking-wider">Via <span className="font-bold underline">{order?.courier || courierName}</span></p>
+        </div>
+      </div>
+
+      {/* Items */}
+      <table className="w-full mb-8 text-sm border-collapse">
+        <thead>
+          <tr className="border-b-[3px] border-black text-[9px] uppercase tracking-widest text-left">
+            <th className="py-2">Item Description</th>
+            <th className="py-2 text-center">Qty</th>
+            <th className="py-2 text-right">Unit Price</th>
+            <th className="py-2 text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody className="font-mono text-xs">
+          {order?.order_items ? (
+            order.order_items.map((item: any) => (
+              <tr key={item.id} className="border-b border-black/10">
+                <td className="py-4 font-sans font-bold text-sm uppercase">{item.product_name} {item.size ? `(Size ${item.size})` : ''}</td>
+                <td className="py-4 text-center">{item.quantity}</td>
+                <td className="py-4 text-right">IDR {item.price_at_purchase.toLocaleString('id-ID')}</td>
+                <td className="py-4 text-right">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</td>
+              </tr>
+            ))
+          ) : (
+            <tr className="border-b border-black/10">
+              <td className="py-4 font-sans font-bold text-sm uppercase">Origin Specification Garment (Mockup)</td>
+              <td className="py-4 text-center">1</td>
+              <td className="py-4 text-right">IDR 1,499,000</td>
+              <td className="py-4 text-right">IDR 1,499,000</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {/* Totals */}
+      <div className="flex justify-end">
+        <div className="w-1/2 space-y-2 text-sm">
+          {order ? (
+            <>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Subtotal</span>
+                <span className="font-mono">IDR {(() => {
+                  const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                  return sub.toLocaleString('id-ID');
+                })()}</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Logistics</span>
+                <span className="font-mono">IDR {(() => {
+                  const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                  const tax = Math.round(sub * 0.11);
+                  const platform = 2500;
+                  const shipping = order.total_price - sub - tax - platform;
+                  return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
+                })()}</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">VAT (11%)</span>
+                <span className="font-mono">IDR {(() => {
+                  const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                  return Math.round(sub * 0.11).toLocaleString('id-ID');
+                })()}</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Platform Fee</span>
+                <span className="font-mono">IDR 2,500</span>
+              </div>
+              <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">
+                <span className="font-bold uppercase tracking-widest">Total Investment</span>
+                <span className="font-bold font-mono text-lg">IDR {order.total_price.toLocaleString('id-ID')}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Subtotal</span>
+                <span className="font-mono">IDR 1,499,000</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Logistics</span>
+                <span className="font-mono">IDR 25,000</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">VAT (11%)</span>
+                <span className="font-mono">IDR 164,890</span>
+              </div>
+              <div className="flex justify-between border-b border-black/10 pb-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold">Platform Fee</span>
+                <span className="font-mono">IDR 2,500</span>
+              </div>
+              <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">
+                <span className="font-bold uppercase tracking-widest">Total Investment</span>
+                <span className="font-bold font-mono text-lg">IDR 1,691,390</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-16 pt-8 border-t border-black/20 text-center">
+        <p className="font-display italic text-lg tracking-tighter">Art in Motion</p>
+        <p className="text-[8px] uppercase tracking-[0.3em] mt-2 font-bold">This document is a valid proof of transaction generated electronically.</p>
+      </div>
+    </div>
   );
 }

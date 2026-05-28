@@ -9,7 +9,7 @@ import {
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
-  Upload
+  Upload, Printer
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -951,7 +951,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50/50 flex overflow-hidden">
+    <>
+    <main className="min-h-screen bg-gray-50/50 flex overflow-hidden print:hidden">
       {/* MOBILE TOP BAR */}
       <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">
@@ -3044,9 +3045,15 @@ export default function AdminDashboard() {
                   <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
                   <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
                 </div>
-                <button onClick={() => setIsOrderModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => window.print()} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
+                    <Printer size={14} />
+                    <span className="text-[10px] uppercase font-bold tracking-widest hidden sm:block">Print Resi</span>
+                  </button>
+                  <button onClick={() => setIsOrderModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
 
               <div className="p-8 space-y-8">
@@ -3161,6 +3168,14 @@ export default function AdminDashboard() {
         onSave={saveCustomer}
       />
     </main>
+
+    {/* ===== PRINTABLE SHIPPING LABEL ===== */}
+    {selectedOrder && (
+      <div className="hidden print:block w-[10cm] max-w-[10cm] font-sans box-border mx-auto bg-white text-black p-0 m-0">
+        <ShippingLabel order={selectedOrder} />
+      </div>
+    )}
+    </>
   );
 }
 
@@ -3425,5 +3440,59 @@ function CustomerModal({
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// ===== SHIPPING LABEL COMPONENT =====
+function ShippingLabel({ order }: { order: Order }) {
+  const courier = order.courier?.toUpperCase() || 'STANDARD LOGISTICS';
+  
+  return (
+    <div className="w-[10cm] h-[15cm] border border-black box-border font-sans bg-white text-black mx-auto overflow-hidden flex flex-col">
+       <div className="border-b-[3px] border-black p-3 flex justify-between items-center bg-white">
+          <div className="font-display font-medium italic text-2xl tracking-tighter uppercase">NINOC</div>
+          <div className="font-bold text-xl tracking-wider">{courier}</div>
+       </div>
+       <div className="p-3 border-b-[3px] border-black text-center flex-shrink-0">
+          <div className="w-full h-12 bg-black/5 flex items-center justify-center font-mono text-xs border border-black/20 mb-2">
+             <span className="tracking-[0.5em] text-lg opacity-70">||| |||||| |||| |||||||</span>
+          </div>
+          <p className="font-bold text-sm tracking-widest">{order.tracking_id || 'AWAITING TRACKING ID'}</p>
+       </div>
+       <div className="p-3 border-b-[3px] border-black text-xs flex-1">
+          <div className="grid grid-cols-2 gap-4 h-full">
+            <div className="border-r-[3px] border-black pr-4">
+              <p className="font-bold mb-1 text-[10px] tracking-widest uppercase">Penerima:</p>
+              <p className="font-bold text-sm leading-tight">{order.shipping_address?.name}</p>
+              <p className="font-bold font-mono mt-1">{order.shipping_address?.phone}</p>
+              <p className="mt-2 leading-snug w-full">{order.shipping_address?.address}</p>
+              <p className="mt-1 font-bold">{order.shipping_address?.city}, {order.shipping_address?.postal_code}</p>
+            </div>
+            <div className="pl-2">
+              <p className="font-bold mb-1 text-[10px] tracking-widest uppercase">Pengirim:</p>
+              <p className="font-bold text-sm">NINOC STUDIO</p>
+              <p className="font-mono mt-1">0812-XXXX-XXXX</p>
+              <p className="mt-2 leading-snug">Atelier Warehouse<br/>Jakarta Selatan</p>
+            </div>
+          </div>
+       </div>
+       <div className="p-3 bg-black text-white text-center font-bold tracking-[0.2em] text-lg uppercase">
+          GARMENT ARCHIVE - FRAGILE
+       </div>
+       <div className="p-3 flex justify-between text-[9px] border-t-[3px] border-black bg-white">
+          <div className="max-w-[60%]">
+             <p className="font-bold mb-1 uppercase tracking-wider">Isi Paket:</p>
+             <ul className="list-none space-y-0.5">
+                {order.order_items?.map(item => (
+                  <li key={item.id} className="truncate">- {item.product_name} ({item.quantity}x)</li>
+                ))}
+             </ul>
+          </div>
+          <div className="text-right flex flex-col justify-end">
+             <p className="font-bold mb-0.5 uppercase tracking-wider">Order ID:</p>
+             <p className="font-mono font-bold text-xs">{order.id.slice(0, 8).toUpperCase()}</p>
+          </div>
+       </div>
+    </div>
   );
 }
