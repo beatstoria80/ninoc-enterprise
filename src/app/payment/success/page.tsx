@@ -50,9 +50,9 @@ export default function SuccessPage() {
         </div>
 
         <div className="space-y-3 text-center">
-          <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter">Art in Motion.</h1>
+          <h1 className="text-3xl font-display font-medium italic text-ink tracking-tighter">Investment Secured.</h1>
           <p className="text-[11px] text-ink/50 font-medium uppercase tracking-[0.1em] leading-relaxed max-w-md mx-auto">
-            Transaction Successful. We are now preparing your pieces for delivery.
+            Payment authorized. We are now preparing your archival pieces for Studio Exit.
           </p>
         </div>
 
