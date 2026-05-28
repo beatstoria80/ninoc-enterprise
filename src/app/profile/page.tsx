@@ -154,7 +154,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/');
+    window.location.href = '/';
   };
 
   // 2. CONDITIONAL RENDER AFTER HOOKS
