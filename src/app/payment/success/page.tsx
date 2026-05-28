@@ -33,8 +33,9 @@ export default function SuccessPage() {
   return (
     <>
     <main className={cn(
-      "min-h-screen bg-cr noise flex items-center justify-center p-6 print:hidden",
-      isIPhone && "pt-[env(safe-area-inset-top)]"
+      "min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-4 md:px-6 print:hidden",
+      isMobile ? "pt-24 pb-32" : "py-6",
+      isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+80px)]"
     )}>
       {/* MOBILE NAV BAR */}
       {isMobile && (
@@ -51,7 +52,7 @@ export default function SuccessPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn("max-w-[1600px] mx-auto w-full", isMobile && "pt-16")}
+        className="max-w-[1600px] mx-auto w-full"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start text-left">
           
