@@ -269,9 +269,9 @@ export default function CheckoutPage() {
   }, [provinces]);
 
   const shippingOptions = [
-    { id: 'jne', name: 'JNE', price: 15000, etd: '2-3D' },
-    { id: 'jnt', name: 'J&T', price: 12000, etd: '1-2D' },
-    { id: 'sicepat', name: 'SiCepat', price: 18000, etd: '1D' },
+    { id: 'jne', name: 'JNE', service: 'REGULER', price: 15000, etd: '2-3 Days', desc: 'Standard Network Distribution' },
+    { id: 'jnt', name: 'J&T', service: 'EZ', price: 12000, etd: '1-2 Days', desc: 'Express Transit Distribution' },
+    { id: 'sicepat', name: 'SiCepat', service: 'BEST', price: 18000, etd: '1 Day', desc: 'Priority Network Distribution' },
   ];
 
   const handleShippingChange = (id: string, price: number) => {
@@ -586,19 +586,32 @@ export default function CheckoutPage() {
                 <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-[1px] bg-ink/5 border border-ink/5 rounded-none">
+              <div className="grid grid-cols-1 gap-[1px] bg-ink/5 border border-ink/5 rounded-none">
                 {shippingOptions.map((option) => (
                   <button
                     key={option.id}
                     type="button"
                     onClick={() => handleShippingChange(option.id, option.price)}
                     className={cn(
-                      "flex flex-col items-center py-2 px-1 transition-all bg-white",
-                      shippingMethod === option.id ? "bg-rose/[0.02]" : "hover:bg-ink/[0.01]"
+                      "flex flex-col md:flex-row md:items-center justify-between p-3 transition-all bg-white text-left gap-2",
+                      shippingMethod === option.id ? "bg-rose/[0.03] shadow-[inset_2px_0_0_0_#E8527A]" : "hover:bg-ink/[0.01]"
                     )}
                   >
-                    <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink/40")}>{option.name}</span>
-                    <span className="text-[11px] font-display font-medium italic text-ink">IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center gap-2">
+                         <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.id ? "text-rose" : "text-ink")}>{option.name}</span>
+                         <span className="text-[8px] border border-ink/10 px-1 py-0.5 text-ink/50 uppercase tracking-widest">{option.service}</span>
+                         {shippingMethod === option.id && <span className="text-[7px] bg-rose text-white px-1.5 py-0.5 uppercase tracking-[0.2em] animate-in fade-in">Active</span>}
+                      </div>
+                      <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink/50 flex items-center gap-2">
+                        <span>EST: {option.etd}</span>
+                        <span className="w-0.5 h-0.5 rounded-full bg-ink/20"></span>
+                        <span>{option.desc}</span>
+                      </span>
+                    </div>
+                    <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.id ? "text-rose" : "text-ink")}>
+                      IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    </span>
                   </button>
                 ))}
               </div>
