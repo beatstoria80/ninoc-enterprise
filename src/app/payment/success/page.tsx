@@ -113,13 +113,13 @@ export default function SuccessPage() {
                   </div>
                   <div>
                     <h3 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">Transaction Receipt</h3>
-                    <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mt-0.5">
+                    <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mt-0.5">
                       {order?.id ? order.id.toUpperCase() : 'Awaiting Order ID'}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30">
+                  <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/60">
                     {order?.created_at
                       ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
                       : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -130,14 +130,14 @@ export default function SuccessPage() {
 
               {/* Items */}
               <div className="px-4 md:px-8 py-3 md:py-4 border-b border-ink/5">
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Purchased Items</p>
+                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-2">Purchased Items</p>
                 <div className="space-y-3">
                   {order?.order_items ? (
                     order.order_items.map((item: any) => (
                       <div key={item.id} className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
-                          <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-ink/30 mt-0.5">
+                          <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/60 mt-0.5">
                             {item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}
                           </p>
                         </div>
@@ -149,7 +149,7 @@ export default function SuccessPage() {
                   ) : (
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-ink/30 italic">Loading order details...</p>
+                        <p className="text-[11px] font-medium uppercase tracking-wider text-ink/60 italic">Loading order details...</p>
                       </div>
                     </div>
                   )}
@@ -158,7 +158,7 @@ export default function SuccessPage() {
 
               {/* Financial Breakdown */}
               <div className="px-4 md:px-8 py-3 md:py-4 space-y-1.5 md:space-y-2">
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-2">Financial Breakdown</p>
+                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-2">Financial Breakdown</p>
                 {(() => {
                   const sub = order?.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                   const tax = Math.round(sub * 0.11);
@@ -169,23 +169,23 @@ export default function SuccessPage() {
                   return (
                     <>
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Subtotal</span>
-                        <span className="text-[10px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Subtotal</span>
+                        <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Logistics ({courierName})</span>
-                        <span className="text-[10px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Logistics ({courierName})</span>
+                        <span className="text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">VAT (11%)</span>
-                        <span className="text-[10px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">VAT (11%)</span>
+                        <span className="text-[11px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/40">Platform Fee</span>
-                        <span className="text-[10px] font-mono font-medium text-ink">+ IDR 2.500</span>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Platform Fee</span>
+                        <span className="text-[11px] font-mono font-medium text-ink">+ IDR 2.500</span>
                       </div>
                       <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
-                        <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/80">Total</span>
                         <span className="text-lg font-display font-medium italic text-rose">{total > 0 ? `IDR ${total.toLocaleString('id-ID')}` : '—'}</span>
                       </div>
                     </>
@@ -196,10 +196,10 @@ export default function SuccessPage() {
               {/* Shipping Info */}
               {order?.shipping_address && (
                 <div className="px-4 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
-                  <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-1.5">Shipping To</p>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
-                  <p className="text-[9px] font-medium text-ink/40 mt-0.5">{order.shipping_address.address}</p>
-                  <p className="text-[9px] font-medium text-ink/40">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+                  <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-1.5">Shipping To</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
+                  <p className="text-[10px] font-medium text-ink/70 mt-0.5">{order.shipping_address.address}</p>
+                  <p className="text-[10px] font-medium text-ink/70">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
                 </div>
               )}
             </motion.div>
