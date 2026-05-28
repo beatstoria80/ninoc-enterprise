@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
@@ -71,51 +71,59 @@ export default function SuccessPage() {
               </div>
            </h3>
            
-           <div className="relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-ink/10 before:to-ink/5">
+           <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 space-y-8">
               
-              <div className="space-y-8">
-                 {/* Step 1 */}
-                 <motion.div 
-                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-                   className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default"
-                 >
-                    <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-emerald-500 bg-white text-emerald-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_10px_rgba(16,185,129,0.2)] z-10 ml-0 md:ml-auto md:mr-auto">
-                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+              {/* Step 1: Active */}
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+                className="relative group"
+              >
+                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <ShieldCheck size={18} strokeWidth={2.5} className="animate-pulse" />
+                 </div>
+                 <div className="bg-emerald-50/50 border border-emerald-500/20 p-5 rounded-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
+                    <div className="flex items-center gap-3 mb-1.5 relative">
+                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
+                      <span className="bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
                     </div>
-                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] pl-5 md:pl-0 text-left md:group-odd:text-right md:group-even:text-left">
-                       <h4 className="text-[11px] font-medium uppercase tracking-widest text-ink">Payment Confirmed</h4>
-                       <p className="text-[9px] font-medium tracking-[0.1em] text-ink/40 mt-1 uppercase">Just Now • System Authenticated</p>
-                    </div>
-                 </motion.div>
+                    <p className="text-[9px] font-medium tracking-[0.15em] text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
+                      <Clock size={12} strokeWidth={2} /> Just Now • System Authenticated
+                    </p>
+                 </div>
+              </motion.div>
 
-                 {/* Step 2 */}
-                 <motion.div 
-                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
-                   className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default hover:scale-[1.01] transition-transform"
-                 >
-                    <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-ink/20 bg-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ml-0 md:ml-auto md:mr-auto transition-colors group-hover:border-ink/40">
-                       <div className="w-1.5 h-1.5 bg-ink/20 rounded-full transition-colors group-hover:bg-ink/40"></div>
+              {/* Step 2: Processing */}
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
+                className="relative group hover:scale-[1.01] transition-transform"
+              >
+                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                    <Package size={18} strokeWidth={2} />
+                 </div>
+                 <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
                     </div>
-                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] pl-5 md:pl-0 text-left md:group-odd:text-right md:group-even:text-left">
-                       <h4 className="text-[11px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
-                       <p className="text-[9px] font-medium tracking-[0.1em] text-ink/30 mt-1 uppercase">Pending Quality Control</p>
-                    </div>
-                 </motion.div>
+                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Pending Quality Control</p>
+                 </div>
+              </motion.div>
 
-                 {/* Step 3 */}
-                 <motion.div 
-                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
-                   className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default hover:scale-[1.01] transition-transform"
-                 >
-                    <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-ink/20 bg-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ml-0 md:ml-auto md:mr-auto transition-colors group-hover:border-ink/40">
-                       <div className="w-1.5 h-1.5 bg-ink/20 rounded-full transition-colors group-hover:bg-ink/40"></div>
+              {/* Step 3: Logistics */}
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
+                className="relative group hover:scale-[1.01] transition-transform"
+              >
+                 <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                    <Truck size={18} strokeWidth={2} />
+                 </div>
+                 <div className="p-5 border border-ink/5 rounded-xl bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                     </div>
-                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] pl-5 md:pl-0 text-left md:group-odd:text-right md:group-even:text-left">
-                       <h4 className="text-[11px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
-                       <p className="text-[9px] font-medium tracking-[0.1em] text-ink/30 mt-1 uppercase">Awaiting Pickup via Biteship</p>
-                    </div>
-                 </motion.div>
-              </div>
+                    <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Awaiting Pickup via Biteship</p>
+                 </div>
+              </motion.div>
            </div>
         </motion.div>
 
