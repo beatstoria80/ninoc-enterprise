@@ -311,7 +311,6 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Bulk image upload states
-  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
   const [bulkFiles, setBulkFiles] = useState<File[]>([]);
   const [bulkUploading, setBulkUploading] = useState(false);
   const [bulkResults, setBulkResults] = useState<{ name: string; url: string; error?: string }[] | null>(null);
@@ -680,7 +679,6 @@ export default function AdminDashboard() {
           }));
         }
         setActiveTab('products');
-        setBulkUploadOpen(false);
       }
     } catch (err) {
       alert('Bulk upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
@@ -693,8 +691,7 @@ export default function AdminDashboard() {
     setBulkFiles([]);
     setBulkResults(null);
     setBulkProductLink('');
-    setBulkUploadOpen(true);
-    setActiveTab('overview');
+    setActiveTab('upload');
   };
 
   const handleBulkFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1372,7 +1369,7 @@ export default function AdminDashboard() {
             )}
 
             {/* ===== BULK UPLOAD ===== */}
-            {bulkUploadOpen && (
+            {activeTab === 'upload' && (
               <motion.div
                 key="bulk-upload"
                 initial={{ opacity: 0, y: 10 }}
@@ -1385,7 +1382,7 @@ export default function AdminDashboard() {
                     <span className="text-[9px] text-gray-400">— {bulkFiles.length > 0 ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected` : 'batch upload'}</span>
                   </div>
                   <button
-                    onClick={() => setBulkUploadOpen(false)}
+                    onClick={() => setActiveTab('overview')}
                     className="p-1.5 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-600"
                   >
                     <X size={14} />
