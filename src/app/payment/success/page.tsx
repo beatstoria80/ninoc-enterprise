@@ -421,8 +421,7 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
 
       {/* Footer */}
       <div className="mt-16 pt-8 border-t border-black/20 text-center">
-        <p className="font-display italic text-lg tracking-tighter">Art in Motion</p>
-        <p className="text-[8px] uppercase tracking-[0.3em] mt-2 font-bold">This document is a valid proof of transaction generated electronically.</p>
+        <p className="text-[8px] uppercase tracking-[0.3em] font-bold">This document is a valid proof of transaction generated electronically.</p>
       </div>
     </div>
   );
