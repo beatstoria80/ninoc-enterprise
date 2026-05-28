@@ -6,6 +6,7 @@ import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck } fr
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import AnimatedShippingMap from '../../_components/AnimatedShippingMap';
 
 interface Order {
   id: string;
@@ -138,34 +139,16 @@ export default function OrderDetailPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           {/* LEFT COLUMN: Logistics Situation Report */}
-          <div className="lg:col-span-7 space-y-12">
+          <div className="lg:col-span-7 space-y-6">
             
             {/* Tracking Visualizer */}
-            <section className="space-y-8">
+            <section className="space-y-4">
               <h2 className="text-[10px] uppercase tracking-[0.4em] border-b border-ink/5 pb-4">Logistics Situation Report</h2>
               
-              <div className="relative flex justify-between items-start pt-4">
-                <div className="absolute top-[11px] left-0 right-0 h-[1px] bg-ink/5 z-0" />
-                {steps.map((step, idx) => (
-                  <div key={idx} className="relative z-10 flex flex-col items-center gap-4 group">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                      idx <= currentStepIndex ? 'bg-ink text-white shadow-lg' : 'bg-white border border-ink/10 text-ink/20'
-                    }`}>
-                      {step.icon}
-                    </div>
-                    <div className="text-center">
-                      <p className={`text-[8px] uppercase tracking-widest leading-tight ${
-                        idx <= currentStepIndex ? 'text-ink' : 'text-ink/20'
-                      }`}>
-                        {step.label}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <AnimatedShippingMap currentStepIndex={currentStepIndex} />
 
               {/* Waybill / Tracking Card */}
               {order.tracking_id && (
@@ -191,17 +174,17 @@ export default function OrderDetailPage() {
                     </div>
                   ) : (
                     trackingLogs.map((log, idx) => (
-                      <div key={idx} className="p-5 flex items-start justify-between group hover:bg-ink/[0.01] transition-colors">
-                        <div className="space-y-1">
-                          <p className="text-[10px] text-ink/80 tracking-wide">
+                      <div key={idx} className="p-3 flex items-start justify-between group hover:bg-ink/[0.01] transition-colors">
+                        <div className="space-y-0.5">
+                          <p className="text-[9px] text-ink/80 tracking-wide">
                             {log.biteship_status?.replace(/_/g, ' ').toUpperCase() || log.status}
                           </p>
-                          <p className="text-[8px] text-ink/30 font-medium uppercase tracking-tight">
+                          <p className="text-[7px] text-ink/30 font-medium uppercase tracking-tight">
                             {new Date(log.created_at).toLocaleString('id-ID')}
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-1">
-                          <span className="text-[7px] border border-ink/10 px-1.5 py-0.5 rounded text-ink/40 uppercase tracking-widest group-hover:border-rose/30 group-hover:text-rose transition-all">Verified</span>
+                          <span className="text-[7px] border border-ink/10 px-1 py-0.5 rounded text-ink/40 uppercase tracking-widest group-hover:border-rose/30 group-hover:text-rose transition-all">Verified</span>
                         </div>
                       </div>
                     ))
@@ -212,7 +195,7 @@ export default function OrderDetailPage() {
           </div>
 
           {/* RIGHT COLUMN: Unit Specification Details */}
-          <div className="lg:col-span-5 space-y-12">
+          <div className="lg:col-span-5 space-y-6">
             
             {/* Order Items */}
             <section className="space-y-6">

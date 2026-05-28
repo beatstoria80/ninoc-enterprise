@@ -196,10 +196,10 @@ export default function ProfilePage() {
         </nav>
       )}
 
-      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-40 md:pt-48")}>
+      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-32 md:pt-32")}>
 
         {!isMobile && (
-        <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-12 group">
+        <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-6 group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
         </Link>
@@ -209,10 +209,10 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-12"
+          className="space-y-6"
         >
           {/* Profile Header */}
-          <div className="border border-ink/5 rounded-[10px] p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 bg-ink/[0.01]">
+          <div className="border border-ink/5 rounded-[10px] p-4 md:p-6 flex flex-col md:flex-row items-center gap-6 bg-ink/[0.01]">
             <div className="relative group">
               <div className="w-24 h-24 rounded-full bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10 relative">
                 {isUploading && (
@@ -266,8 +266,8 @@ export default function ProfilePage() {
           </div>
 
           {/* Section: Activity Logs (Orders) */}
-          <div className="space-y-8">
-            <div className="flex items-end justify-between border-b border-ink/5 pb-6">
+          <div className="space-y-4">
+            <div className="flex items-end justify-between border-b border-ink/5 pb-4">
               <div className="space-y-1">
                 <h2 className="text-xs uppercase tracking-[0.4em] text-ink">Investment Logs</h2>
                 <p className="text-[9px] text-ink/40 tracking-wider">Historical record of all origin specifications acquired.</p>
@@ -275,7 +275,7 @@ export default function ProfilePage() {
               <p className="text-[9px] font-medium text-ink/30">{orders.length} Entries Found</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-2">
               {orders.length === 0 ? (
                 <div className="py-20 text-center border border-dashed border-ink/10 rounded-[10px]">
                   <p className="text-[10px] uppercase tracking-widest text-ink/30 italic">No historical records available.</p>
@@ -285,7 +285,7 @@ export default function ProfilePage() {
                   <Link 
                     key={order.id} 
                     href={`/profile/orders/${order.id}`}
-                    className="group border border-ink/5 rounded-[4px] p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-ink/[0.01] transition-all"
+                    className="group border border-ink/5 rounded-[4px] p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-ink/[0.01] transition-all"
                   >
                     <div className="flex flex-col gap-1 flex-1">
                       <div className="flex items-center gap-3">
