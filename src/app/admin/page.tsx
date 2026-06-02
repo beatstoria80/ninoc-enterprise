@@ -3297,29 +3297,18 @@ export default function AdminDashboard() {
                   <button onClick={() => {
                     const printContent = document.getElementById('printable-label');
                     if (printContent) {
-                      const printWindow = window.open('', '_blank');
+                      const printWindow = window.open('', '_blank', 'width=400,height=350');
                       if (printWindow) {
                         const styles = `
-                          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
-                          body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #141414; background: #fff; font-weight: 500; -webkit-print-color-adjust: exact; }
-                          @page { size: 100mm 150mm; margin: 0; }
-                          .resi-container { width: 100mm; height: 150mm; padding: 8mm; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
-                          .header { border-bottom: 2px solid #141414; padding-bottom: 4mm; margin-bottom: 4mm; display: flex; justify-content: space-between; align-items: flex-end; }
-                          .brand { font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; margin: 0; }
-                          .origin { font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
-                          .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; color: #141414; margin: 0 0 2px 0; border-bottom: 1px solid #141414; display: inline-block; padding-bottom: 1px; }
-                          .value { font-size: 10px; margin: 2px 0 4mm 0; line-height: 1.4; text-transform: uppercase; }
-                          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
-                          .section { border-bottom: 1px dashed #141414; padding-bottom: 2mm; margin-bottom: 4mm; }
-                          .section.no-border { border-bottom: none; }
-                          table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
-                          th { font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; text-align: left; padding: 1mm 0; border-bottom: 1px solid #141414; }
-                          td { font-size: 9px; padding: 1.5mm 0; text-transform: uppercase; border-bottom: 1px dotted #ccc; }
-                          .footer { margin-top: auto; text-align: center; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; border-top: 1px solid #141414; padding-top: 2mm; }
+                          @page { size: 10cm 8cm; margin: 0; }
+                          * { margin: 0; padding: 0; box-sizing: border-box; }
+                          html, body { width: 10cm; height: 8cm; overflow: hidden; }
+                          body { font-family: 'Courier New', Consolas, monospace; }
+                          img { display: inline-block; }
                         `;
                         printWindow.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body>${printContent.innerHTML}</body></html>`);
                         printWindow.document.close();
-                        setTimeout(() => printWindow.print(), 500); // Wait for fonts
+                        setTimeout(() => printWindow.print(), 300);
                       }
                     }
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
@@ -3432,68 +3421,8 @@ export default function AdminDashboard() {
 
               {/* HIDDEN PRINTABLE LABEL (RENDERED FOR INNERHTML EXTRACT) */}
               <div id="printable-label" className="hidden">
-                  <div className="resi-container">
-                    <div className="header">
-                      <div>
-                        <p className="brand">NINOC ARCHIVE</p>
-                        <p className="origin">Origin: Studio Facility</p>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div className="label" style={{ marginBottom: 0 }}>Origin ID</div>
-                        <p className="value" style={{ margin: 0, fontSize: '12px' }}>{selectedOrder.id.slice(0, 8).toUpperCase()}</p>
-                      </div>
-                    </div>
-
-                    <div className="section">
-                      <div className="label">Logistics Route</div>
-                      <div className="grid-2" style={{ marginBottom: 0 }}>
-                        <div>
-                          <p className="value" style={{ margin: 0 }}>{selectedOrder.courier || 'STANDARD'} - {selectedOrder.tracking_id || 'PENDING'}</p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <p className="value" style={{ margin: 0 }}>DATE: {new Date(selectedOrder.created_at).toLocaleDateString('en-GB')}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="section">
-                      <div className="label">Client Destination</div>
-                      <p className="value" style={{ marginTop: '4px' }}>
-                        {selectedOrder.shipping_address?.name}<br />
-                        {selectedOrder.shipping_address?.phone}<br />
-                        {selectedOrder.shipping_address?.address}<br />
-                        {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
-                      </p>
-                    </div>
-
-                    <div className="section no-border">
-                      <div className="label">Garment Manifest</div>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Item</th>
-                            <th style={{ textAlign: 'center', width: '20%' }}>Size</th>
-                            <th style={{ textAlign: 'center', width: '15%' }}>Qty</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedOrder.order_items?.map((item, idx) => (
-                            <tr key={idx}>
-                              <td>{item.product_name || 'GARMENT'}</td>
-                              <td style={{ textAlign: 'center' }}>{item.size || 'OS'}</td>
-                              <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="footer">
-                      HANDLE WITH CARE — ARCHIVAL PIECE<br />
-                      NINOC.CO
-                    </div>
-                  </div>
-                </div>
+                <ShippingLabel order={selectedOrder} />
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -3784,56 +3713,304 @@ function CustomerModal({
   );
 }
 
-// ===== SHIPPING LABEL COMPONENT =====
-function ShippingLabel({ order }: { order: Order }) {
-  const courier = order.courier?.toUpperCase() || 'STANDARD LOGISTICS';
+// ============ BARCODE CODE128 RENDERER ============
+function encodeCode128(text: string): number[] {
+  const CODE128_B: Record<string, number> = {};
+  for (let i = 0; i < 95; i++) CODE128_B[String.fromCharCode(32 + i)] = i;
+  
+  const patterns: number[][] = [
+    [2,1,2,2,2,2],[2,2,2,1,2,2],[2,2,2,2,2,1],[1,2,1,2,2,3],[1,2,1,3,2,2],
+    [1,3,1,2,2,2],[1,2,2,2,1,3],[1,2,2,3,1,2],[1,3,2,2,1,2],[2,2,1,2,1,3],
+    [2,2,1,3,1,2],[2,3,1,2,1,2],[1,1,2,2,3,2],[1,2,2,1,3,2],[1,2,2,2,3,1],
+    [1,1,3,2,2,2],[1,2,3,1,2,2],[1,2,3,2,2,1],[2,2,3,2,1,1],[2,2,1,1,3,2],
+    [2,2,1,2,3,1],[2,1,3,2,1,2],[2,2,3,1,1,2],[3,1,2,1,3,1],[3,1,1,2,2,2],
+    [3,2,1,1,2,2],[3,2,1,2,2,1],[3,1,2,2,1,2],[3,2,2,1,1,2],[3,2,2,2,1,1],
+    [2,1,2,1,2,3],[2,1,2,3,2,1],[2,3,2,1,2,1],[1,1,1,3,2,3],[1,3,1,1,2,3],
+    [1,3,1,3,2,1],[1,1,2,3,1,3],[1,3,2,1,1,3],[1,3,2,3,1,1],[2,1,1,3,1,3],
+    [2,3,1,1,1,3],[2,3,1,3,1,1],[1,1,2,1,3,3],[1,1,2,3,3,1],[1,3,2,1,3,1],
+    [1,1,3,1,2,3],[1,1,3,3,2,1],[1,3,3,1,2,1],[3,1,3,1,2,1],[2,1,1,3,3,1],
+    [2,3,1,1,3,1],[2,1,3,1,1,3],[2,1,3,3,1,1],[2,1,3,1,3,1],[3,1,1,1,2,3],
+    [3,1,1,3,2,1],[3,3,1,1,2,1],[3,1,2,1,1,3],[3,1,2,3,1,1],[3,3,2,1,1,1],
+    [3,1,4,1,1,1],[2,2,1,4,1,1],[4,3,1,1,1,1],[1,1,1,2,2,4],[1,1,1,4,2,2],
+    [1,2,1,1,2,4],[1,2,1,4,2,1],[1,4,1,1,2,2],[1,4,1,2,2,1],[1,1,2,2,1,4],
+    [1,1,2,4,1,2],[1,2,2,1,1,4],[1,2,2,4,1,1],[1,4,2,1,1,2],[1,4,2,2,1,1],
+    [2,4,1,2,1,1],[2,2,1,1,1,4],[4,1,3,1,1,1],[2,4,1,1,1,2],[1,3,4,1,1,1],
+    [1,1,1,2,4,2],[1,2,1,1,4,2],[1,2,1,2,4,1],[1,1,4,2,1,2],[1,2,4,1,1,2],
+    [1,2,4,2,1,1],[4,1,1,2,1,2],[4,2,1,1,1,2],[4,2,1,2,1,1],[2,1,2,1,4,1],
+    [2,1,4,1,2,1],[4,1,2,1,2,1],[1,1,1,1,4,3],[1,1,1,3,4,1],[1,3,1,1,4,1],
+    [1,1,4,1,1,3],[1,1,4,3,1,1],[4,1,1,1,1,3],[4,1,1,3,1,1],[1,1,3,1,4,1],
+    [1,1,4,1,3,1],[3,1,1,1,4,1],[4,1,1,1,3,1],[2,1,1,4,1,2],[2,1,1,2,1,4],
+    [2,1,1,2,3,2],[2,3,3,1,1,1,2]
+  ];
+  
+  const startCode = 104; // Start B
+  const bars: number[] = [...patterns[startCode]];
+  let checksum = startCode;
+  
+  for (let i = 0; i < text.length; i++) {
+    const charVal = CODE128_B[text[i]] ?? 0;
+    bars.push(...patterns[charVal]);
+    checksum += charVal * (i + 1);
+  }
+  
+  bars.push(...patterns[checksum % 103]);
+  bars.push(...patterns[106]); // Stop
+  
+  return bars;
+}
+
+function BarcodeCode128({ value, width = 280, height = 50 }: { value: string; width?: number; height?: number }) {
+  if (!value) return null;
+  const bars = encodeCode128(value);
+  const totalUnits = bars.reduce((s, b) => s + b, 0);
+  const unitW = width / totalUnits;
+  
+  let x = 0;
+  const rects: React.ReactElement[] = [];
+  bars.forEach((w, i) => {
+    if (i % 2 === 0) {
+      rects.push(<rect key={i} x={x} y={0} width={w * unitW} height={height} fill="black" />);
+    }
+    x += w * unitW;
+  });
   
   return (
-    <div className="w-[10cm] h-[15cm] border border-black box-border font-sans bg-white text-black mx-auto overflow-hidden flex flex-col">
-       <div className="border-b-[3px] border-black p-3 flex justify-between items-center bg-white">
-          <div className="font-display font-medium italic text-2xl tracking-tighter uppercase">NINOC</div>
-          <div className="font-bold text-xl tracking-wider">{courier}</div>
-       </div>
-       <div className="p-3 border-b-[3px] border-black text-center flex-shrink-0">
-          <div className="w-full h-12 bg-black/5 flex items-center justify-center font-mono text-xs border border-black/20 mb-2">
-             <span className="tracking-[0.5em] text-lg opacity-70">||| |||||| |||| |||||||</span>
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+      {rects}
+    </svg>
+  );
+}
+
+// ============ COURIER LOGO MAPPING ============
+const COURIER_LOGOS: Record<string, string> = {
+  'jne': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne reg': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne yes': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne oke': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'sicepat': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'sicepat best': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'sicepat reg': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'j&t': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
+  'j&t express': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
+  'anteraja': 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Anteraja.png',
+  'pos': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
+  'pos indonesia': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
+  'ninja': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
+  'ninja express': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
+};
+
+function getCourierLogo(courier: string | null): string | null {
+  if (!courier) return null;
+  const key = courier.toLowerCase().trim();
+  for (const [k, v] of Object.entries(COURIER_LOGOS)) {
+    if (key.includes(k)) return v;
+  }
+  return null;
+}
+
+function getCourierService(courier: string | null): { name: string; service: string } {
+  if (!courier) return { name: 'STANDARD', service: 'REG' };
+  const parts = courier.split(' ');
+  return {
+    name: parts[0]?.toUpperCase() || 'STANDARD',
+    service: parts.slice(1).join(' ').toUpperCase() || 'REG'
+  };
+}
+
+// ===== SHIPPING LABEL COMPONENT =====
+function ShippingLabel({ order }: { order: Order }) {
+  const courierInfo = getCourierService(order.courier);
+  const courierLogo = getCourierLogo(order.courier);
+  const trackingId = order.tracking_id || '';
+  const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+  const totalWeight = totalItems * 300; // est. 300g per item
+
+  return (
+    <div style={{
+      width: '10cm',
+      height: '8cm',
+      fontFamily: "'Courier New', 'Consolas', monospace",
+      fontSize: '9px',
+      backgroundColor: 'white',
+      color: 'black',
+      padding: '0',
+      boxSizing: 'border-box',
+      border: '2px solid black',
+      overflow: 'hidden',
+      lineHeight: 1.3
+    }}>
+      {/* ROW 1 — Header: NINOC brand + Courier logo/name + Service */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '4px 6px',
+        borderBottom: '2px solid black',
+        height: '28px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '1px' }}>NINOC</span>
+          <span style={{ fontSize: '7px', color: '#666' }}>ARCHIVE</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {courierLogo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain' }} />
+          )}
+          {!courierLogo && (
+            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{courierInfo.name}</span>
+          )}
+          <span style={{
+            fontSize: '8px',
+            fontWeight: 'bold',
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '1px 4px',
+            letterSpacing: '1px'
+          }}>{courierInfo.service}</span>
+        </div>
+      </div>
+
+      {/* ROW 2 — Barcode + Tracking Number */}
+      <div style={{
+        padding: '4px 6px',
+        borderBottom: '2px solid black',
+        textAlign: 'center'
+      }}>
+        {trackingId ? (
+          <>
+            <BarcodeCode128 value={trackingId} width={300} height={36} />
+            <div style={{
+              fontWeight: 'bold',
+              fontSize: '11px',
+              letterSpacing: '2px',
+              marginTop: '2px'
+            }}>{trackingId}</div>
+          </>
+        ) : (
+          <div style={{
+            fontWeight: 'bold',
+            fontSize: '10px',
+            padding: '8px 0',
+            color: '#999',
+            letterSpacing: '1px',
+            border: '1px dashed #ccc',
+          }}>AWAITING TRACKING NUMBER</div>
+        )}
+      </div>
+
+      {/* ROW 3 — Penerima + Pengirim (side by side) */}
+      <div style={{
+        display: 'flex',
+        borderBottom: '2px solid black',
+        minHeight: '65px'
+      }}>
+        {/* Penerima (larger, left) */}
+        <div style={{
+          flex: 3,
+          padding: '4px 6px',
+          borderRight: '2px solid black',
+        }}>
+          <div style={{
+            fontSize: '7px',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+            marginBottom: '1px',
+            backgroundColor: '#e0e0e0',
+            padding: '1px 3px',
+            display: 'inline-block'
+          }}>PENERIMA / TO</div>
+          <div style={{ fontWeight: 'bold', fontSize: '11px', marginTop: '2px' }}>
+            {order.shipping_address?.name?.toUpperCase()}
           </div>
-          <p className="font-bold text-sm tracking-widest">{order.tracking_id || 'AWAITING TRACKING ID'}</p>
-       </div>
-       <div className="p-3 border-b-[3px] border-black text-xs flex-1">
-          <div className="grid grid-cols-2 gap-4 h-full">
-            <div className="border-r-[3px] border-black pr-4">
-              <p className="font-bold mb-1 text-[10px] tracking-widest uppercase">Penerima:</p>
-              <p className="font-bold text-sm leading-tight">{order.shipping_address?.name}</p>
-              <p className="font-bold font-mono mt-1">{order.shipping_address?.phone}</p>
-              <p className="mt-2 leading-snug w-full">{order.shipping_address?.address}</p>
-              <p className="mt-1 font-bold">{order.shipping_address?.city}, {order.shipping_address?.postal_code}</p>
+          <div style={{ fontSize: '9px', marginTop: '1px' }}>{order.shipping_address?.phone}</div>
+          <div style={{ fontSize: '8px', marginTop: '2px', wordBreak: 'break-word', maxHeight: '24px', overflow: 'hidden' }}>
+            {order.shipping_address?.address}
+          </div>
+          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '1px' }}>
+            {order.shipping_address?.city}, {order.shipping_address?.province || ''} {order.shipping_address?.postal_code}
+          </div>
+        </div>
+        {/* Pengirim (smaller, right) */}
+        <div style={{
+          flex: 2,
+          padding: '4px 6px',
+        }}>
+          <div style={{
+            fontSize: '7px',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+            marginBottom: '1px',
+            backgroundColor: '#e0e0e0',
+            padding: '1px 3px',
+            display: 'inline-block'
+          }}>PENGIRIM / FROM</div>
+          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '2px' }}>NINOC STUDIO</div>
+          <div style={{ fontSize: '8px', marginTop: '1px' }}>0812-XXXX-XXXX</div>
+          <div style={{ fontSize: '8px', marginTop: '2px' }}>Bandung, Jawa Barat</div>
+          <div style={{ fontWeight: 'bold', fontSize: '8px' }}>40115</div>
+        </div>
+      </div>
+
+      {/* ROW 4 — Package Info + Order ID */}
+      <div style={{
+        display: 'flex',
+        borderBottom: '1px solid black',
+      }}>
+        {/* Isi Paket */}
+        <div style={{
+          flex: 3,
+          padding: '3px 6px',
+          borderRight: '2px solid black',
+          maxHeight: '38px',
+          overflow: 'hidden'
+        }}>
+          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '1px' }}>ISI PAKET / CONTENTS</div>
+          {order.order_items?.slice(0, 3).map((item, idx) => (
+            <div key={idx} style={{ fontSize: '8px' }}>
+              {item.product_name} {item.size ? `(${item.size})` : ''} ×{item.quantity}
             </div>
-            <div className="pl-2">
-              <p className="font-bold mb-1 text-[10px] tracking-widest uppercase">Pengirim:</p>
-              <p className="font-bold text-sm">NINOC STUDIO</p>
-              <p className="font-mono mt-1">0812-XXXX-XXXX</p>
-              <p className="mt-2 leading-snug">Atelier Warehouse<br/>Jakarta Selatan</p>
-            </div>
+          ))}
+          {(order.order_items?.length || 0) > 3 && (
+            <div style={{ fontSize: '7px', color: '#666' }}>+{(order.order_items?.length || 0) - 3} item lainnya</div>
+          )}
+        </div>
+        {/* Order ID + Weight */}
+        <div style={{
+          flex: 2,
+          padding: '3px 6px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px' }}>ORDER ID</div>
+          <div style={{ fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+            #{order.id.slice(0, 8).toUpperCase()}
           </div>
-       </div>
-       <div className="p-3 bg-black text-white text-center font-bold tracking-[0.2em] text-lg uppercase">
-          GARMENT ARCHIVE - FRAGILE
-       </div>
-       <div className="p-3 flex justify-between text-[9px] border-t-[3px] border-black bg-white">
-          <div className="max-w-[60%]">
-             <p className="font-bold mb-1 uppercase tracking-wider">Isi Paket:</p>
-             <ul className="list-none space-y-0.5">
-                {order.order_items?.map(item => (
-                  <li key={item.id} className="truncate">- {item.product_name} ({item.quantity}x)</li>
-                ))}
-             </ul>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2px', fontSize: '7px' }}>
+            <span>Qty: {totalItems}</span>
+            <span>~{totalWeight}g</span>
           </div>
-          <div className="text-right flex flex-col justify-end">
-             <p className="font-bold mb-0.5 uppercase tracking-wider">Order ID:</p>
-             <p className="font-mono font-bold text-xs">{order.id.slice(0, 8).toUpperCase()}</p>
-          </div>
-       </div>
+        </div>
+      </div>
+
+      {/* ROW 5 — Footer */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '2px 6px',
+        fontSize: '7px',
+        color: '#444'
+      }}>
+        <span>{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+        <span style={{ letterSpacing: '0.5px' }}>NINOC ARCHIVE • BANDUNG, INDONESIA</span>
+        <span style={{
+          fontWeight: 'bold',
+          backgroundColor: 'black',
+          color: 'white',
+          padding: '1px 4px',
+          fontSize: '7px'
+        }}>FRAGILE</span>
+      </div>
     </div>
   );
 }
