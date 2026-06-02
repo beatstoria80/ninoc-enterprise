@@ -1545,14 +1545,36 @@ export default function AdminDashboard() {
                     <h3 className="text-sm font-medium mb-3">
                       Upload Results ({bulkResults.filter(r => !r.error).length} / {bulkResults.length} succeeded)
                     </h3>
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
                       {bulkResults.map((r, i) => (
-                        <div key={i} className={cn(
-                          "flex items-center justify-between px-3 py-2 rounded-lg text-[10px]",
-                          r.error ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"
-                        )}>
-                          <span className="truncate flex-1 mr-4">{r.name}</span>
-                          <span className="font-medium">{r.error ? 'FAILED' : 'OK'}</span>
+                        <div key={i} className="space-y-1">
+                          <div className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg text-[10px]",
+                            r.error ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"
+                          )}>
+                            <span className="truncate flex-1 mr-4">{r.name}</span>
+                            <span className="font-medium">{r.error ? 'FAILED' : 'OK'}</span>
+                          </div>
+                          {/* Show URL if successful */}
+                          {r.url && (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                              <input
+                                type="text"
+                                readOnly
+                                value={r.url}
+                                className="flex-1 text-[9px] text-gray-500 bg-transparent border-none outline-none truncate"
+                              />
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(r.url);
+                                  alert('URL copied!');
+                                }}
+                                className="text-[9px] px-2 py-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 whitespace-nowrap"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
