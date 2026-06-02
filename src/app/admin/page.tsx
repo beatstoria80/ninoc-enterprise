@@ -705,19 +705,34 @@ export default function AdminDashboard() {
         body: formData
       });
 
-      let data: { results?: { url: string; error?: string }[]; summary?: { uploaded: number }; error?: string };
+      let data: { results?: BulkUploadResult[]; summary?: { uploaded: number }; error?: string; details?: string };
+
       try {
         data = await res.json();
       } catch {
-        alert('Bulk upload failed: Server returned an invalid response. Make sure you are logged in as admin.');
+        alert('Bulk upload failed: Server returned invalid response. Please try again.');
         return;
       }
 
       if (!res.ok) {
-        throw new Error(data.error || `Server error: ${res.status}`);
+        const errorMsg = data.error || `Server error: ${res.status}`;
+        const details = data.details ? `\n\nDetails: ${data.details}` : '';
+        alert(`Bulk upload failed: ${errorMsg}${details}`);
+        return;
       }
 
       setBulkResults(data.results as BulkUploadResult[]);
+
+      // Show summary
+      if (data.summary) {
+        const { uploaded } = data.summary;
+        const total = data.results?.length || 0;
+        if (uploaded === 0) {
+          alert(`Upload failed: All ${total} files failed to upload.`);
+        } else if (uploaded < total) {
+          alert(`Partially succeeded: ${uploaded}/${total} files uploaded.`);
+        }
+      }
 
       // Update product with first successful image
       const firstSuccess = data.results?.find((r) => r.url);
