@@ -279,6 +279,8 @@ export default function AdminDashboard() {
   // Modal states
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -3279,7 +3281,10 @@ export default function AdminDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
-            onClick={() => setIsOrderModalOpen(false)}
+            onClick={() => {
+              setIsOrderModalOpen(false);
+              setIsPrintPreviewOpen(false);
+            }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -3296,32 +3301,15 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => {
-                    const printContent = document.getElementById('printable-label');
-                    if (printContent) {
-                      const printWindow = window.open('', '_blank');
-                      if (printWindow) {
-                        const styles = `
-                          @page { size: 10cm 8cm; margin: 0; }
-                          * { margin: 0; padding: 0; box-sizing: border-box; }
-                          html, body { width: 10cm; height: 8cm; overflow: hidden; margin: 0; padding: 0; background: #fff; }
-                          body { font-family: 'Courier New', Consolas, monospace; display: flex; justify-content: center; align-items: flex-start; }
-                          img { display: inline-block; }
-                          #label-container { width: 10cm; height: 8cm; overflow: hidden; background: white; }
-                        `;
-                        printWindow.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body><div id="label-container">${printContent.innerHTML}</div></body></html>`);
-                        printWindow.document.close();
-                        
-                        printWindow.onload = () => {
-                          printWindow.print();
-                          // setTimeout(() => printWindow.close(), 500);
-                        };
-                      }
-                    }
+                    setIsPrintPreviewOpen(true);
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
                     <Printer size={14} />
                     <span className="text-[10px] uppercase font-bold tracking-widest hidden sm:block">Print Resi</span>
                   </button>
-                  <button onClick={() => setIsOrderModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <button onClick={() => {
+                    setIsOrderModalOpen(false);
+                    setIsPrintPreviewOpen(false);
+                  }} className="p-2 hover:bg-gray-100 rounded-lg">
                     <X size={20} />
                   </button>
                 </div>
@@ -3441,9 +3429,64 @@ export default function AdminDashboard() {
                 <ShippingLabel order={selectedOrder} />
               </div>
             </motion.div>
+
+            {/* PRINT PREVIEW SLIDE OUT (FROM RIGHT OF MODAL) */}
+            <AnimatePresence>
+              {isPrintPreviewOpen && (
+                <motion.div
+                  initial={{ x: '100%', opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: '100%', opacity: 0 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className="absolute right-0 top-0 bottom-0 w-full sm:w-[450px] bg-gray-100 rounded-r-xl shadow-[-10px_0_30px_rgba(0,0,0,0.1)] flex flex-col z-[210] border-l border-gray-200 overflow-hidden"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Label Preview</p>
+                    <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  
+                  {/* Label Canvas Preview - Scaled to fit */}
+                  <div className="flex-1 p-6 flex items-center justify-center overflow-auto">
+                    <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.8)', transformOrigin: 'center' }}>
+                      <ShippingLabel order={selectedOrder} />
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-white border-t border-gray-200">
+                    <button 
+                      onClick={() => {
+                        setIsPrinting(true);
+                        setTimeout(() => {
+                          window.print();
+                          setIsPrinting(false);
+                        }, 200);
+                      }}
+                      className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
+                    >
+                      <Printer size={16} /> Print to Thermal Printer
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* DYNAMIC NATIVE PRINT STYLES */}
+      {isPrinting && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media print {
+            body * { visibility: hidden !important; }
+            #printable-label, #printable-label * { visibility: visible !important; }
+            #printable-label { position: absolute; left: 0; top: 0; margin: 0; padding: 0; }
+            @page { size: 10cm 8cm !important; margin: 0 !important; }
+          }
+        ` }} />
+      )}
 
       {/* ===== CUSTOMER MODAL ===== */}
       <CustomerModal
