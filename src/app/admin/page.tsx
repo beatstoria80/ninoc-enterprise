@@ -1241,7 +1241,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-y-auto p-4 md:px-6 md:py-4">
+        <section className="flex-1 overflow-y-auto p-4 pb-0 md:px-6 md:pt-4 md:pb-0">
           <AnimatePresence mode="wait">
             {/* ===== OVERVIEW ===== */}
             {activeTab === 'overview' && (
@@ -2004,7 +2004,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
-                <div className="flex border border-t-0 border-gray-200 bg-white" style={{ height: 'calc(100vh - 16rem)' }}>
+                <div className="flex border border-t-0 border-gray-200 bg-white" style={{ height: 'calc(100vh - 11rem)' }}>
                   {/* LEFT: MASTER TABLE */}
                   <div className={cn(
                     "flex flex-col transition-all duration-300",
@@ -2632,7 +2632,7 @@ export default function AdminDashboard() {
                 key="messages"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="h-[calc(100vh-160px)] flex gap-6"
+                className="h-[calc(100vh-80px)] flex gap-6"
               >
                 {/* Chat List */}
                 <div className="w-80 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">
