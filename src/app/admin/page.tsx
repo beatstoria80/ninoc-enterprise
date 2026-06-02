@@ -2459,6 +2459,7 @@ export default function AdminDashboard() {
                 <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
                   {/* OVERVIEW */}
                   {financeTab === 'overview' && (
+                    <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-ink/10">
                       <div className="p-6 bg-white border-b md:border-b-0 md:border-r border-ink/10">
                         <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Total Revenue</p>
@@ -2475,6 +2476,113 @@ export default function AdminDashboard() {
                         <p className="text-2xl font-mono text-ink">{finance.pendingPayments}</p>
                         <p className="text-[9px] text-ink/40 mt-4 uppercase tracking-wider">Awaiting settlement</p>
                       </div>
+                    </div>
+
+                    {/* Product Costing Section */}
+                    <div className="border border-ink/10 bg-white">
+                      <div className="p-4 border-b border-ink/10 flex items-center justify-between bg-ink/[0.02]">
+                        <div>
+                          <h3 className="text-[11px] font-medium text-ink uppercase tracking-widest">Product Costing</h3>
+                          <p className="text-[9px] text-ink/40 mt-0.5 uppercase tracking-wider">{products.length} articles registered</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <select
+                            onChange={e => {
+                              const prod = products.find(p => p.id === e.target.value);
+                              if (prod) {
+                                setSelectedProductForCosting(prod);
+                                const existing = productCostings[prod.id];
+                                if (existing) {
+                                  setCostingForm({
+                                    supplier_cost: existing.supplier_cost,
+                                    shipping_cost: existing.shipping_cost,
+                                    packaging_cost: existing.packaging_cost,
+                                    operasional_pct: existing.operasional_pct,
+                                    tax_rate: existing.tax_rate,
+                                    courier_regency_cost: existing.courier_regency_cost,
+                                    courier_inter_regency_cost: existing.courier_inter_regency_cost,
+                                    courier_same_day_cost: existing.courier_same_day_cost,
+                                    courier_instant_cost: existing.courier_instant_cost,
+                                    target_margin_pct: existing.target_margin_pct,
+                                    selling_price: existing.selling_price
+                                  });
+                                } else {
+                                  setCostingForm({
+                                    supplier_cost: 0, shipping_cost: 0, packaging_cost: 0,
+                                    operasional_pct: 0, tax_rate: 11,
+                                    courier_regency_cost: 0, courier_inter_regency_cost: 0,
+                                    courier_same_day_cost: 0, courier_instant_cost: 0,
+                                    target_margin_pct: 0, selling_price: Number(prod.price) || 0
+                                  });
+                                }
+                                setIsCostingModalOpen(true);
+                              }
+                            }}
+                            className="text-[10px] border border-ink/10 px-3 py-1.5 bg-white focus:outline-none"
+                            value=""
+                          >
+                            <option value="" disabled>+ Set Costing</option>
+                            {products.map(p => (
+                              <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div className="overflow-x-auto">
+                        {/* Header */}
+                        <div className="grid grid-cols-12 gap-0 border-b border-ink/10 bg-ink/[0.02] min-w-[900px]">
+                          <div className="col-span-3 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/5">Article</div>
+                          <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/5 text-right">Supplier Cost</div>
+                          <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/5 text-right">Operational (Est)</div>
+                          <div className="col-span-1 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/5 text-right">Logistics</div>
+                          <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/5 text-right">Sell Price</div>
+                          <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 text-right">Net Margin</div>
+                        </div>
+                        {/* Rows */}
+                        <div className="min-w-[900px]">
+                          {Object.entries(productCostings).map(([id, cost]) => {
+                            const prod = products.find(p => p.id === id);
+                            if (!prod) return null;
+                            const opCost = (cost.selling_price * (cost.operasional_pct / 100));
+                            const taxCost = (cost.selling_price * (cost.tax_rate / 100));
+                            const totalCost = cost.supplier_cost + cost.shipping_cost + cost.packaging_cost + opCost + taxCost;
+                            const netMargin = cost.selling_price - totalCost;
+                            const marginPct = cost.selling_price > 0 ? (netMargin / cost.selling_price) * 100 : 0;
+                            return (
+                              <div key={id} className="grid grid-cols-12 gap-0 border-b border-ink/5 hover:bg-ink/[0.01] cursor-pointer" onClick={() => {
+                                setSelectedProductForCosting(prod);
+                                setCostingForm({ ...cost });
+                                setIsCostingModalOpen(true);
+                              }}>
+                                <div className="col-span-3 p-3 border-r border-ink/5">
+                                  <p className="text-[10px] font-medium text-ink uppercase">{prod.name}</p>
+                                  <p className="text-[8px] text-ink/40 uppercase tracking-wider">{prod.category}</p>
+                                </div>
+                                <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/5 text-right">{cost.supplier_cost.toLocaleString('id-ID')}</div>
+                                <div className="col-span-2 p-3 border-r border-ink/5 text-right">
+                                  <p className="text-[10px] font-mono text-ink">{opCost.toLocaleString('id-ID', {maximumFractionDigits:0})}</p>
+                                  <p className="text-[8px] text-ink/40 font-mono">{cost.operasional_pct}%</p>
+                                </div>
+                                <div className="col-span-1 p-3 text-[10px] font-mono text-ink border-r border-ink/5 text-right">{cost.shipping_cost.toLocaleString('id-ID')}</div>
+                                <div className="col-span-2 p-3 text-[10px] font-mono font-medium text-ink border-r border-ink/5 text-right">{cost.selling_price.toLocaleString('id-ID')}</div>
+                                <div className="col-span-2 p-3 text-right">
+                                  <span className={cn("text-[10px] font-mono font-medium", marginPct > 30 ? "text-ink" : marginPct > 15 ? "text-amber-600" : "text-rose")}>
+                                    {netMargin.toLocaleString('id-ID', {maximumFractionDigits:0})}
+                                  </span>
+                                  <span className="text-[8px] font-mono text-ink/40 ml-1">({marginPct.toFixed(1)}%)</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {Object.keys(productCostings).length === 0 && (
+                            <div className="p-6 text-center text-[9px] uppercase tracking-widest text-ink/30">
+                              No product costings configured yet — select a product above
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                     </div>
                   )}
 
