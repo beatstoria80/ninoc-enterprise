@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants } from 'framer-motion';
-import { ShieldCheck, Zap, Package, Paperclip, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, Shirt, Wrench, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import { CategoryType } from '@/types';
 import DragSlider from '@/components/DragSlider';
 
 // ═══════════════════════════════════════════════════════════════
@@ -38,10 +39,10 @@ const productCardVariants: Variants = {
   visible: (i: number) => ({
     y: 0,
     opacity: 1,
-    transition: { 
-      delay: i * 0.15, 
-      duration: 0.8, 
-      ease: [0.16, 1, 0.3, 1] 
+    transition: {
+      delay: i * 0.15,
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1],
     },
   }),
 };
@@ -49,20 +50,20 @@ const productCardVariants: Variants = {
 // Nested image entrance
 const cardImageVariants: Variants = {
   hidden: { scale: 1.05, opacity: 0 },
-  visible: { 
-    scale: 1, 
-    opacity: 1, 
-    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } 
+  visible: {
+    scale: 1,
+    opacity: 1,
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
 // Nested content entrance
 const cardContentVariants: Variants = {
   hidden: { y: 10, opacity: 0 },
-  visible: { 
-    y: 0, 
-    opacity: 1, 
-    transition: { delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] } 
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -92,6 +93,47 @@ const metadataVariants: Variants = {
     transition: { delay: 0.3 + i * 0.12, duration: 0.6, ease: MOTION.ease },
   }),
 };
+
+// Category pill variants
+const categoryPillVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.5 + i * 0.1, duration: 0.6, ease: MOTION.ease },
+  }),
+};
+
+// ═══════════════════════════════════════════════════════════════
+// CATEGORY CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+
+const CATEGORIES = [
+  {
+    id: 'pakaian' as CategoryType,
+    label: 'Pakaian',
+    sublabel: 'Apparel',
+    icon: Shirt,
+    href: '/category?cat=pakaian',
+    spec: 'GARMENT-001',
+  },
+  {
+    id: 'utilities' as CategoryType,
+    label: 'Utilities',
+    sublabel: 'Functional',
+    icon: Wrench,
+    href: '/category?cat=utilities',
+    spec: 'UTIL-002',
+  },
+  {
+    id: 'aksesoris' as CategoryType,
+    label: 'Aksesoris',
+    sublabel: 'Accents',
+    icon: Sparkles,
+    href: '/category?cat=aksesoris',
+    spec: 'ACCS-003',
+  },
+];
 
 // ═══════════════════════════════════════════════════════════════
 // PORTRAIT CAROUSEL — 5 images cycling on hover, 2s auto-stop
@@ -175,7 +217,7 @@ function PortraitImageCarousel() {
 // ═══════════════════════════════════════════════════════════════
 
 interface ProductCardProps {
-  product: { id: string; name: string; price: number; image_url?: string; slug: string; category?: string; price_tag?: string | null };
+  product: { id: string; name: string; price: number; image_url?: string; slug: string; category?: CategoryType; price_tag?: string | null };
   index: number;
 }
 
@@ -183,18 +225,27 @@ function ProductCard({ product, index }: ProductCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
 
+  const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
+  const CategoryIcon = categoryInfo?.icon || Shirt;
+
   return (
     <motion.div ref={ref} variants={productCardVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
       <Link href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5 transition-all duration-500" style={{ transition: 'all 0.5s' }}>
         <motion.div variants={cardImageVariants} className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
-          {product.image_url && (
+          {product.image_url ? (
             <Image src={product.image_url} alt={product.name} fill className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100" />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-ink/10">
+              <CategoryIcon size={32} />
+            </div>
           )}
-          <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">NINOC SPEC-{(index + 101).toString()}</div>
+          <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">NINOC {(index + 101).toString()}</div>
         </motion.div>
-        
+
         <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
-          <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">{product.category || "Garment Origin"}</p>
+          <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">
+            {categoryInfo?.label || 'Garment Origin'}
+          </p>
           <motion.h3 className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
             {product.name}
           </motion.h3>
@@ -244,6 +295,41 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
 }
 
 // ═══════════════════════════════════════════════════════════════
+// CATEGORY QUICK ACCESS
+// ═══════════════════════════════════════════════════════════════
+
+function CategoryQuickAccess() {
+  return (
+    <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+      {CATEGORIES.map((cat, i) => {
+        const Icon = cat.icon;
+        return (
+          <motion.div
+            key={cat.id}
+            variants={categoryPillVariants}
+            initial="hidden"
+            animate="visible"
+            custom={i}
+          >
+            <Link
+              href={cat.href}
+              className="flex items-center gap-2 md:gap-3 bg-white border border-ink/5 px-3 md:px-5 py-2 md:py-3 hover:border-rose hover:bg-rose hover:text-white group transition-all duration-300 whitespace-nowrap"
+            >
+              <Icon size={14} className="text-rose group-hover:text-white transition-colors" strokeWidth={1.5} />
+              <div className="flex flex-col leading-none">
+                <span className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight">{cat.label}</span>
+                <span className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40 group-hover:text-white/60 transition-colors hidden md:block">{cat.sublabel}</span>
+              </div>
+              <ChevronRight size={12} className="text-ink/20 group-hover:text-white/60 transition-colors ml-1" />
+            </Link>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // FADE-UP SECTION WRAPPER
 // ═══════════════════════════════════════════════════════════════
 
@@ -262,7 +348,7 @@ function FadeUpSection({ children, delay = 0, className = '' }: { children: Reac
 // ═══════════════════════════════════════════════════════════════
 
 interface Product {
-  id: string; name: string; price: number; image_url?: string; slug: string; category?: string; price_tag?: string | null;
+  id: string; name: string; price: number; image_url?: string; slug: string; category?: CategoryType; price_tag?: string | null;
 }
 
 export default function Home() {
@@ -272,7 +358,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase.from('products').select('*').limit(4);
+        const { data, error } = await supabase.from('products').select('*').limit(8);
         if (error) throw error;
         setProducts(data || []);
       } catch (error) {
@@ -308,8 +394,8 @@ export default function Home() {
               Established for the preservation of garment integrity. <span className="hidden md:inline">Our collection represents a curated selection of technical excellence and timeless design.</span>
             </motion.p>
             <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6, duration: 0.5, ease: MOTION.ease }}>
-              <Link href="/shop" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300 relative">
-                <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Catalog</span>
+              <Link href="/category" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300 relative">
+                <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Category</span>
                 <div className="relative w-4 md:w-12 h-[1px] overflow-hidden">
                   <motion.div className="absolute inset-0 bg-ink/20" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 1, duration: 0.8, ease: MOTION.ease }} style={{ originX: 0 }} />
                   <motion.div className="absolute inset-0 bg-rose origin-left" initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} transition={{ duration: 0.4, ease: MOTION.ease }} />
@@ -336,7 +422,7 @@ export default function Home() {
             <PortraitImageCarousel />
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6, ease: MOTION.ease }} className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30">
               <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
-              <p className="text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br/>Industrial Grade Fabrics</p>
+              <p className="text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br />Industrial Grade Fabrics</p>
             </motion.div>
           </div>
 
@@ -361,6 +447,26 @@ export default function Home() {
           </div>
         </div>
 
+      </section>
+
+      {/* CATEGORY INDEX — QUICK ACCESS */}
+      <section className="px-4 md:px-12 max-w-[1800px] mx-auto mt-8 md:mt-16 mb-0 md:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: MOTION.ease }}
+          className="flex items-end justify-between mb-4 md:mb-6"
+        >
+          <div className="flex items-center gap-2">
+            <Grid3X3 size={12} className="text-rose" />
+            <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
+          </div>
+          <Link href="/category" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors duration-300 leading-none">
+            View All
+          </Link>
+        </motion.div>
+        <CategoryQuickAccess />
       </section>
 
       {/* CATALOG — PURE JS POINTER DRAG */}
