@@ -357,6 +357,7 @@ export default function AdminDashboard() {
   const [bulkUploading, setBulkUploading] = useState(false);
   const [bulkResults, setBulkResults] = useState<{ name: string; url: string; error?: string }[] | null>(null);
   const [bulkProductLink, setBulkProductLink] = useState(''); // product name to link images to
+  const [allUploadHistory, setAllUploadHistory] = useState<{ name: string; url: string; error?: string; timestamp: number }[]>([]);
 
   type BulkUploadResult = { name: string; url: string; error?: string };
 
@@ -717,6 +718,12 @@ export default function AdminDashboard() {
         return;
       }
 
+      // Save to history (accumulate all uploads)
+      const newResults = (data.results as BulkUploadResult[]).map(r => ({
+        ...r,
+        timestamp: Date.now()
+      }));
+      setAllUploadHistory(prev => [...prev, ...newResults]);
       setBulkResults(data.results as BulkUploadResult[]);
 
       // Show summary
@@ -1556,8 +1563,9 @@ export default function AdminDashboard() {
                       Upload Results ({bulkResults.filter(r => !r.error).length} / {bulkResults.length} succeeded)
                     </h3>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {bulkResults.map((r, i) => (
-                        <div key={i} className="space-y-1">
+                      {/* Show ALL upload history + current results */}
+                      {allUploadHistory.map((r, i) => (
+                        <div key={`history-${r.timestamp}-${i}`} className="space-y-1">
                           <div className={cn(
                             "flex items-center justify-between px-3 py-2 rounded-lg text-[10px]",
                             r.error ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"
@@ -1589,10 +1597,10 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                     <button
-                      onClick={() => setBulkResults(null)}
+                      onClick={() => { setBulkResults(null); setAllUploadHistory([]); setBulkFiles([]); }}
                       className="mt-3 text-[10px] uppercase tracking-wider text-gray-400 hover:text-gray-600"
                     >
-                      Clear Results
+                      Clear All History
                     </button>
                   </div>
                 )}
