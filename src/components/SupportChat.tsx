@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -31,6 +32,9 @@ interface SupportMessage {
 }
 
 export default function SupportChat() {
+  const pathname = usePathname();
+  const isAdminPage = pathname?.startsWith('/admin');
+
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'new_ticket' | 'chat'>('home');
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
@@ -305,6 +309,9 @@ export default function SupportChat() {
   useEffect(() => {
     adjustHeight();
   }, [message, activeTab]);
+
+  // Hide floating chat on admin dashboard (admin has its own Support Chat tab)
+  if (isAdminPage) return null;
 
   return (
     <>
