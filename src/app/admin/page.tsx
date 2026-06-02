@@ -82,6 +82,7 @@ interface ShippingAddress {
   phone: string;
   address: string;
   city: string;
+  province?: string;
   postal_code: string;
 }
 
