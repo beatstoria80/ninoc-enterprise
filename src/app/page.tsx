@@ -589,9 +589,15 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: DURATION.medium, ease: EASING.out }}
             >
-              <PressButton href="/category" className="group inline-flex items-center gap-2 md:gap-6 text-ink relative">
-                <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Category</span>
-                <div className="relative w-4 md:w-12 h-[1px] overflow-hidden">
+              <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
+                {/* Mobile: Simple capsule with icon + text */}
+                <span className="md:hidden inline-flex items-center gap-1.5 bg-ink/5 px-3 py-1.5 border border-ink/10">
+                  <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
+                  <ArrowRight size={10} className="text-rose group-hover:translate-x-0.5 transition-transform" />
+                </span>
+                {/* Desktop: Full line + text */}
+                <span className="hidden md:inline text-[11px] font-medium uppercase tracking-[0.4em]">Browse Category</span>
+                <div className="hidden md:inline relative w-12 h-[1px] overflow-hidden">
                   <motion.div
                     className="absolute inset-0 bg-ink/20"
                     initial={{ scaleX: 0 }}
@@ -606,11 +612,11 @@ export default function Home() {
                     transition={{ duration: DURATION.fast, ease: EASING.out }}
                   />
                   <motion.span
-                    className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     whileHover={{ x: 4 }}
                     transition={{ duration: DURATION.fast, ease: EASING.out }}
                   >
-                    <ChevronRight className="w-2 h-2 md:w-3 md:h-3 text-rose" />
+                    <ChevronRight className="w-3 h-3 text-rose" />
                   </motion.span>
                 </div>
               </PressButton>
