@@ -3298,30 +3298,23 @@ export default function AdminDashboard() {
                   <button onClick={() => {
                     const printContent = document.getElementById('printable-label');
                     if (printContent) {
-                      const iframe = document.createElement('iframe');
-                      iframe.style.position = 'absolute';
-                      iframe.style.width = '0px';
-                      iframe.style.height = '0px';
-                      iframe.style.border = 'none';
-                      document.body.appendChild(iframe);
-                      
-                      const pri = iframe.contentWindow;
-                      if (pri) {
+                      const printWindow = window.open('', '_blank');
+                      if (printWindow) {
                         const styles = `
                           @page { size: 10cm 8cm; margin: 0; }
                           * { margin: 0; padding: 0; box-sizing: border-box; }
-                          html, body { width: 10cm; height: 8cm; overflow: hidden; }
-                          body { font-family: 'Courier New', Consolas, monospace; }
+                          html, body { width: 10cm; height: 8cm; overflow: hidden; margin: 0; padding: 0; background: #fff; }
+                          body { font-family: 'Courier New', Consolas, monospace; display: flex; justify-content: center; align-items: flex-start; }
                           img { display: inline-block; }
+                          #label-container { width: 10cm; height: 8cm; overflow: hidden; background: white; }
                         `;
-                        pri.document.open();
-                        pri.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body>${printContent.innerHTML}</body></html>`);
-                        pri.document.close();
-                        pri.focus();
-                        setTimeout(() => {
-                          pri.print();
-                          setTimeout(() => document.body.removeChild(iframe), 500);
-                        }, 300);
+                        printWindow.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body><div id="label-container">${printContent.innerHTML}</div></body></html>`);
+                        printWindow.document.close();
+                        
+                        printWindow.onload = () => {
+                          printWindow.print();
+                          // setTimeout(() => printWindow.close(), 500);
+                        };
                       }
                     }
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
