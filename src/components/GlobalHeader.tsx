@@ -425,7 +425,7 @@ export default function GlobalHeader() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <NavLink href="/shop">Shop</NavLink>
+          <NavLink href="/catalog">Catalog</NavLink>
           <NavLink href="/collections">Collections</NavLink>
           <NavLink href="/category">Category</NavLink>
           <NavLink href="/about">About</NavLink>
