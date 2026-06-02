@@ -2076,10 +2076,10 @@ export default function AdminDashboard() {
                     <>
                       <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center text-rose font-medium">{session.customer_name?.charAt(0) || 'G'}</div>
+                          <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center text-rose font-medium">{activeChatSession.customer_name?.charAt(0) || 'G'}</div>
                           <div>
-                            <p className="font-medium text-sm">{session.customer_name}</p>
-                            <p className="text-[10px] text-gray-400">{session.customer_email}</p>
+                            <p className="font-medium text-sm">{activeChatSession.customer_name}</p>
+                            <p className="text-[10px] text-gray-400">{activeChatSession.customer_email}</p>
                           </div>
                         </div>
                         <button onClick={() => setActiveChatSession(null)} className="p-2 hover:bg-gray-100 rounded text-gray-400">
