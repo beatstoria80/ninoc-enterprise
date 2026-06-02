@@ -3675,11 +3675,7 @@ export default function AdminDashboard() {
                   <div className="text-xs leading-relaxed text-gray-800">
                     <span className="font-bold uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
                     <span className="text-gray-500 font-mono">
-                      {selectedOrder.shipping_address?.phone ? (
-                        selectedOrder.shipping_address.phone.length > 6
-                          ? selectedOrder.shipping_address.phone.slice(0, 4) + '****' + selectedOrder.shipping_address.phone.slice(-3)
-                          : selectedOrder.shipping_address.phone
-                      ) : '-'}
+                      {selectedOrder.shipping_address?.phone || '-'}
                     </span>
                     <br />
                     {selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
@@ -4313,7 +4309,13 @@ function ShippingLabel({ order }: { order: Order }) {
           <div style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '2px' }}>
             {order.shipping_address?.name?.toUpperCase()}
           </div>
-          <div style={{ fontSize: '10px', marginTop: '2px' }}>{order.shipping_address?.phone}</div>
+          <div style={{ fontSize: '10px', marginTop: '2px' }}>
+            {order.shipping_address?.phone ? (
+              order.shipping_address.phone.length > 6
+                ? order.shipping_address.phone.slice(0, 4) + '****' + order.shipping_address.phone.slice(-3)
+                : order.shipping_address.phone
+            ) : ''}
+          </div>
           <div style={{ fontSize: '9px', marginTop: '4px', wordBreak: 'break-word', overflow: 'hidden' }}>
             {order.shipping_address?.address}
           </div>
