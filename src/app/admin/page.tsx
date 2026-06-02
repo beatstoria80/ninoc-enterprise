@@ -2115,7 +2115,7 @@ export default function AdminDashboard() {
                         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
                         className="border-l border-gray-200 flex flex-col overflow-hidden bg-white shadow-xl z-20 relative"
                       >
-                        <div className="w-full h-full flex flex-col overflow-y-auto p-5 gap-5 custom-scrollbar">
+                        <div className="w-full h-full flex flex-col overflow-y-auto p-4 gap-3 custom-scrollbar">
                           {/* 1. Header / Client Info */}
                           <div className="flex justify-between items-start">
                             <div className="flex items-center gap-3">
@@ -2151,7 +2151,7 @@ export default function AdminDashboard() {
                           </div>
 
                           {/* 2. Order Details Grid */}
-                          <div className="grid grid-cols-4 gap-3 pt-4 border-t border-gray-100">
+                          <div className="grid grid-cols-4 gap-3 pt-3 border-t border-gray-100">
                             <div>
                               <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
                               <p className="text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.slice(0,8).toUpperCase()}</p>
@@ -2172,8 +2172,8 @@ export default function AdminDashboard() {
                           </div>
 
                           {/* 3. Ordered Products */}
-                          <div className="pt-2">
-                            <p className="text-[9px] font-medium text-gray-900 mb-3">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                          <div className="pt-1">
+                            <p className="text-[9px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
                             <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
                               {logisticsSelectedOrder.order_items?.map((item, idx) => (
                                 <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl min-w-[220px] shrink-0 items-center bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -2191,7 +2191,7 @@ export default function AdminDashboard() {
                           </div>
 
                           {/* 4. Map Visualization */}
-                          <div className="relative w-full h-[240px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-2">
+                          <div className="relative w-full h-[180px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-1">
                             <svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 600 300">
                               {/* Map background pattern to simulate streets */}
                               <g stroke="#ffffff" strokeWidth="8" strokeLinecap="round">
@@ -2259,8 +2259,8 @@ export default function AdminDashboard() {
                           </div>
 
                           {/* 5. Timeline */}
-                          <div className="mt-2 pt-4 flex-1">
-                            <div className="flex justify-between items-center mb-6">
+                          <div className="mt-0 pt-2 flex-1">
+                            <div className="flex justify-between items-center mb-3">
                               <div className="flex items-center gap-3">
                                 <span className="text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
                                 <span className="text-[8px] text-gray-400">Updated 5 mins ago</span>
@@ -2270,7 +2270,7 @@ export default function AdminDashboard() {
                               </button>
                             </div>
 
-                            <div className="relative pl-3.5 border-l border-gray-200 space-y-7 ml-2">
+                            <div className="relative pl-3.5 border-l border-gray-200 space-y-4 ml-2">
                               {/* Step 1: Current Status */}
                               <div className="relative">
                                 <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
