@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  api: {
+    // Increase body size limit to 50MB for file uploads
+    responseLimit: false,
+  },
   images: {
     remotePatterns: [
       {

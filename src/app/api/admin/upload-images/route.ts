@@ -2,7 +2,11 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 120; // 2 minutes
+export const dynamic = 'force-dynamic';
+
+// Body size limit - 50MB per request
+export const maxBodySize = 50 * 1024 * 1024;
 
 const getSupabaseAdmin = (): SupabaseClient => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -48,6 +52,17 @@ export async function POST(request: NextRequest) {
         { error: 'Maximum 20 files per batch' },
         { status: 400 }
       );
+    }
+
+    // Validate each file size (max 10MB per file)
+    const maxFileSize = 10 * 1024 * 1024;
+    for (const file of files) {
+      if (file.size > maxFileSize) {
+        return NextResponse.json(
+          { error: `File ${file.name} is too large. Max 10MB per file.` },
+          { status: 413 }
+        );
+      }
     }
 
     const supabaseAdmin = getSupabaseAdmin();

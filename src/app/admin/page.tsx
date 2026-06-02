@@ -678,6 +678,15 @@ export default function AdminDashboard() {
   // ===== BULK UPLOAD HANDLER =====
   const handleBulkImageUpload = async () => {
     if (bulkFiles.length === 0) return;
+
+    // Validate file sizes (max 10MB per file)
+    const maxSize = 10 * 1024 * 1024;
+    const oversizedFiles = bulkFiles.filter(f => f.size > maxSize);
+    if (oversizedFiles.length > 0) {
+      alert(`File too large: ${oversizedFiles.map(f => f.name).join(', ')}\nMax size: 10MB per file`);
+      return;
+    }
+
     setBulkUploading(true);
     setBulkResults(null);
 
@@ -693,11 +702,7 @@ export default function AdminDashboard() {
         body: formData
       });
 
-      // Debug: Log response status
-      console.log('[Admin] Upload response status:', res.status);
-
       const text = await res.text();
-      console.log('[Admin] Upload response text:', text);
 
       let data;
       try {
@@ -741,7 +746,6 @@ export default function AdminDashboard() {
         setActiveTab('products');
       }
     } catch (err) {
-      console.error('[Admin] Upload error:', err);
       alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     } finally {
       setBulkUploading(false);
