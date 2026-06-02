@@ -181,16 +181,57 @@ const { data: savedMessage } = await supabase
 
 ---
 
+## 11. HOME & NAV UI UX REFINEMENT (SELESAI ✅)
+- **Refactoring**: Ubah "Shop" menjadi "Catalog" di Navigation untuk konsistensi brand NINOC.
+- **Mobile Adjustments**:
+  - Disable animasi press-scale di mobile agar interaksi sentuh lebih bersih (cleaner touch).
+  - Sederhanakan tombol "Browse Category" di mobile menjadi bentuk capsule (icon + text).
+- **Bugfix**: Resolve tipe error `framer-motion` pada komponen `PressButton`.
+
+---
+
+## 12. ADMIN IMAGE UPLOAD & DEPLOYMENT FIXES (SELESAI ✅)
+- **Problem**: Upload gambar (product/bulk) gagal karena limit client-side dan konfigurasi.
+- **Fix**: Redirect semua upload gambar melalui server-side API Route (`/api/upload-images`).
+- **File Upload Limits**: 
+  - Pembuatan konfigurasi `vercel.json` untuk meningkatkan limit max upload Vercel.
+  - Peningkatan API body size limit di Next route config.
+- **Error Handling & Logs**:
+  - Peningkatan error handling API upload dan validasi TypeScript.
+  - Penambahan response logging untuk mempermudah debugging.
+  - Modifikasi UI untuk menampilkan Image URL setelah bulk upload.
+- **History**: Fitur mengakumulasi riwayat seluruh file upload di dashboard Admin.
+
+## 13. PRINT RESI (SHIPPING LABEL) CONFIGURATION (SELESAI ✅)
+- **Problem**: Admin butuh fitur cetak resi pengiriman yang terformat rapi sesuai standard thermal printer.
+- **Fix applied**: Implementasi hidden printable section (`id="printable-label"`) dan dynamic `window.open` untuk inject raw HTML.
+- **Styling**: Inject CSS `@media print` untuk set layout 10cm lebar, memastikan konten tidak terpotong saat dicetak.
+- **Files Affected**:
+  - `src/app/admin/page.tsx`
+  - `src/components/admin/AdminDashboard.tsx`
+  - `src/app/payment/success/page.tsx`
+- **Code implementation**:
+```tsx
+const printContent = document.getElementById('printable-label');
+const printWindow = window.open('', '_blank');
+// Inject content + CSS for exact styling
+printWindow.document.write(`<!DOCTYPE html>...<style>...-webkit-print-color-adjust: exact;</style>...`);
+printWindow.document.close();
+setTimeout(() => printWindow.print(), 500); // Wait for fonts to load
+```
+
+---
+
 ## METRICS
 | Metric | Before | After |
 |--------|--------|-------|
 | Lint Errors | 1 | 0 |
 | Lint Warnings | 47 | 4 |
 | Build Status | FAIL | PASS (after fixes) |
-| Git Commits | 2 | 8 |
+| Git Commits | 2 | 23 |
 | Env Variables | 0 | 6 (set di Vercel) |
 | RLS Policies | Unsecured | Secured ✅ |
 
 ---
 
-*Generated: 2026-05-11*
+*Generated: 2026-06-02 | NINOC Archive Studio*

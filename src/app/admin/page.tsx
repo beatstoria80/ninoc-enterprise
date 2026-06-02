@@ -3294,7 +3294,35 @@ export default function AdminDashboard() {
                   <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => window.print()} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
+                  <button onClick={() => {
+                    const printContent = document.getElementById('printable-label');
+                    if (printContent) {
+                      const printWindow = window.open('', '_blank');
+                      if (printWindow) {
+                        const styles = `
+                          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+                          body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #141414; background: #fff; font-weight: 500; -webkit-print-color-adjust: exact; }
+                          @page { size: 100mm 150mm; margin: 0; }
+                          .resi-container { width: 100mm; height: 150mm; padding: 8mm; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+                          .header { border-bottom: 2px solid #141414; padding-bottom: 4mm; margin-bottom: 4mm; display: flex; justify-content: space-between; align-items: flex-end; }
+                          .brand { font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; margin: 0; }
+                          .origin { font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+                          .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; color: #141414; margin: 0 0 2px 0; border-bottom: 1px solid #141414; display: inline-block; padding-bottom: 1px; }
+                          .value { font-size: 10px; margin: 2px 0 4mm 0; line-height: 1.4; text-transform: uppercase; }
+                          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+                          .section { border-bottom: 1px dashed #141414; padding-bottom: 2mm; margin-bottom: 4mm; }
+                          .section.no-border { border-bottom: none; }
+                          table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
+                          th { font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; text-align: left; padding: 1mm 0; border-bottom: 1px solid #141414; }
+                          td { font-size: 9px; padding: 1.5mm 0; text-transform: uppercase; border-bottom: 1px dotted #ccc; }
+                          .footer { margin-top: auto; text-align: center; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; border-top: 1px solid #141414; padding-top: 2mm; }
+                        `;
+                        printWindow.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body>${printContent.innerHTML}</body></html>`);
+                        printWindow.document.close();
+                        setTimeout(() => printWindow.print(), 500); // Wait for fonts
+                      }
+                    }
+                  }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
                     <Printer size={14} />
                     <span className="text-[10px] uppercase font-bold tracking-widest hidden sm:block">Print Resi</span>
                   </button>
@@ -3401,6 +3429,71 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* HIDDEN PRINTABLE LABEL (RENDERED FOR INNERHTML EXTRACT) */}
+              <div id="printable-label" className="hidden">
+                  <div className="resi-container">
+                    <div className="header">
+                      <div>
+                        <p className="brand">NINOC ARCHIVE</p>
+                        <p className="origin">Origin: Studio Facility</p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div className="label" style={{ marginBottom: 0 }}>Origin ID</div>
+                        <p className="value" style={{ margin: 0, fontSize: '12px' }}>{selectedOrder.id.slice(0, 8).toUpperCase()}</p>
+                      </div>
+                    </div>
+
+                    <div className="section">
+                      <div className="label">Logistics Route</div>
+                      <div className="grid-2" style={{ marginBottom: 0 }}>
+                        <div>
+                          <p className="value" style={{ margin: 0 }}>{selectedOrder.courier || 'STANDARD'} - {selectedOrder.tracking_id || 'PENDING'}</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <p className="value" style={{ margin: 0 }}>DATE: {new Date(selectedOrder.created_at).toLocaleDateString('en-GB')}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="section">
+                      <div className="label">Client Destination</div>
+                      <p className="value" style={{ marginTop: '4px' }}>
+                        {selectedOrder.shipping_address?.name}<br />
+                        {selectedOrder.shipping_address?.phone}<br />
+                        {selectedOrder.shipping_address?.address}<br />
+                        {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
+                      </p>
+                    </div>
+
+                    <div className="section no-border">
+                      <div className="label">Garment Manifest</div>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Item</th>
+                            <th style={{ textAlign: 'center', width: '20%' }}>Size</th>
+                            <th style={{ textAlign: 'center', width: '15%' }}>Qty</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedOrder.order_items?.map((item, idx) => (
+                            <tr key={idx}>
+                              <td>{item.product_name || 'GARMENT'}</td>
+                              <td style={{ textAlign: 'center' }}>{item.size || 'OS'}</td>
+                              <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="footer">
+                      HANDLE WITH CARE — ARCHIVAL PIECE<br />
+                      NINOC.CO
+                    </div>
+                  </div>
+                </div>
             </motion.div>
           </motion.div>
         )}
