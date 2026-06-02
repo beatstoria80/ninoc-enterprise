@@ -693,19 +693,22 @@ export default function AdminDashboard() {
         body: formData
       });
 
-      let data: { results?: BulkUploadResult[]; summary?: { uploaded: number }; error?: string; details?: string };
+      // Debug: Log response status
+      console.log('[Admin] Upload response status:', res.status);
 
+      const text = await res.text();
+      console.log('[Admin] Upload response text:', text);
+
+      let data;
       try {
-        data = await res.json();
+        data = JSON.parse(text);
       } catch {
-        alert('Bulk upload failed: Server returned invalid response. Please try again.');
+        alert('Server error: ' + text.slice(0, 200));
         return;
       }
 
-      if (!res.ok) {
-        const errorMsg = data.error || `Server error: ${res.status}`;
-        const details = data.details ? `\n\nDetails: ${data.details}` : '';
-        alert(`Bulk upload failed: ${errorMsg}${details}`);
+      if (!res.ok || data.error) {
+        alert('Upload failed: ' + (data.error || `HTTP ${res.status}`));
         return;
       }
 
@@ -716,14 +719,16 @@ export default function AdminDashboard() {
         const { uploaded } = data.summary;
         const total = data.results?.length || 0;
         if (uploaded === 0) {
-          alert(`Upload failed: All ${total} files failed to upload.`);
+          alert('Upload failed: All files failed.');
         } else if (uploaded < total) {
           alert(`Partially succeeded: ${uploaded}/${total} files uploaded.`);
+        } else {
+          alert(`Success: ${uploaded} files uploaded!`);
         }
       }
 
       // Update product with first successful image
-      const firstSuccess = data.results?.find((r) => r.url);
+      const firstSuccess = data.results?.find((r: BulkUploadResult) => r.url);
       if (firstSuccess) {
         setProductForm(prev => ({ ...prev, image_url: firstSuccess.url }));
         if (bulkProductLink.trim()) {
@@ -736,7 +741,8 @@ export default function AdminDashboard() {
         setActiveTab('products');
       }
     } catch (err) {
-      alert('Bulk upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      console.error('[Admin] Upload error:', err);
+      alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     } finally {
       setBulkUploading(false);
     }
