@@ -3298,8 +3298,15 @@ export default function AdminDashboard() {
                   <button onClick={() => {
                     const printContent = document.getElementById('printable-label');
                     if (printContent) {
-                      const printWindow = window.open('', '_blank', 'width=400,height=350');
-                      if (printWindow) {
+                      const iframe = document.createElement('iframe');
+                      iframe.style.position = 'absolute';
+                      iframe.style.width = '0px';
+                      iframe.style.height = '0px';
+                      iframe.style.border = 'none';
+                      document.body.appendChild(iframe);
+                      
+                      const pri = iframe.contentWindow;
+                      if (pri) {
                         const styles = `
                           @page { size: 10cm 8cm; margin: 0; }
                           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -3307,9 +3314,14 @@ export default function AdminDashboard() {
                           body { font-family: 'Courier New', Consolas, monospace; }
                           img { display: inline-block; }
                         `;
-                        printWindow.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body>${printContent.innerHTML}</body></html>`);
-                        printWindow.document.close();
-                        setTimeout(() => printWindow.print(), 300);
+                        pri.document.open();
+                        pri.document.write(`<!DOCTYPE html><html><head><title>NINOC_RESI_${selectedOrder.id.slice(0, 8)}</title><style>${styles}</style></head><body>${printContent.innerHTML}</body></html>`);
+                        pri.document.close();
+                        pri.focus();
+                        setTimeout(() => {
+                          pri.print();
+                          setTimeout(() => document.body.removeChild(iframe), 500);
+                        }, 300);
                       }
                     }
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
@@ -3322,85 +3334,90 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="p-8 space-y-8">
-                {/* Status */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Order Status</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => updateOrderStatus(selectedOrder.id, status as OrderStatus)}
-                        className={cn(
-                          "px-4 py-2 text-[10px] uppercase tracking-wider rounded-lg border transition-colors",
-                          selectedOrder.status === status
-                            ? "bg-rose text-white border-rose"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-rose"
-                        )}
-                      >
-                        {status}
-                      </button>
-                    ))}
+              <div className="p-6 flex flex-col gap-4">
+                {/* Row 1: Status & Tracking */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Status */}
+                  <div className="border border-gray-200 p-3 rounded-lg">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
+                    <div className="flex flex-wrap gap-1">
+                      {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => updateOrderStatus(selectedOrder.id, status as OrderStatus)}
+                          className={cn(
+                            "px-2 py-1 text-[9px] uppercase tracking-wider rounded border transition-colors",
+                            selectedOrder.status === status
+                              ? "bg-rose text-white border-rose"
+                              : "bg-white text-gray-600 border-gray-200 hover:border-rose"
+                          )}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tracking */}
+                  <div className="border border-gray-200 p-3 rounded-lg">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
+                    <input
+                      type="text"
+                      defaultValue={selectedOrder.tracking_id || ''}
+                      onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
+                      placeholder="Input tracking number..."
+                      className="w-full px-3 py-1.5 text-xs font-mono border border-gray-200 rounded focus:outline-none focus:border-rose/50"
+                    />
                   </div>
                 </div>
 
-                {/* Tracking */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Tracking Number</h3>
-                  <input
-                    type="text"
-                    defaultValue={selectedOrder.tracking_id || ''}
-                    onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
-                    placeholder="Enter tracking number"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                  />
-                </div>
-
-                {/* Order Items */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Items</h3>
-                  <div className="space-y-3">
-                    {selectedOrder.order_items?.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">{item.product_name || 'Product'}</p>
-                          <p className="text-sm text-gray-500">Size: {item.size || '-'} | Qty: {item.quantity}</p>
-                        </div>
-                        <p className="font-medium">IDR {item.price_at_purchase.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Shipping */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Shipping Address</h3>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="font-medium text-gray-900">{selectedOrder.shipping_address?.name}</p>
-                    <p className="text-sm text-gray-600">
+                {/* Row 2: Customer Destination */}
+                <div className="border border-gray-200 p-3 rounded-lg">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
+                  <div className="text-xs leading-relaxed text-gray-800">
+                    <span className="font-bold uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
+                    <span className="text-gray-500 font-mono">
                       {selectedOrder.shipping_address?.phone ? (
                         selectedOrder.shipping_address.phone.length > 6
                           ? selectedOrder.shipping_address.phone.slice(0, 4) + '****' + selectedOrder.shipping_address.phone.slice(-3)
                           : selectedOrder.shipping_address.phone
                       ) : '-'}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-2">{selectedOrder.shipping_address?.address}</p>
-                    <p className="text-sm text-gray-600">{selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}</p>
+                    </span>
+                    <br />
+                    {selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
                   </div>
                 </div>
 
-                {/* Summary */}
-                <div className="pt-4 border-t border-gray-100 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                {/* Row 3: Items */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Garment Items</p>
+                  </div>
+                  <div className="divide-y divide-gray-100">
+                    {selectedOrder.order_items?.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-3 text-xs">
+                        <div>
+                          <span className="font-bold text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                          <span className="text-gray-500 ml-2">SZ: {item.size || 'OS'} | QTY: {item.quantity}</span>
+                        </div>
+                        <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 4: Summary */}
+                <div className="border border-gray-200 rounded-lg p-3 text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
+                  <div className="flex justify-between">
                     <span>Value Subtotal</span>
-                    <span className="text-gray-900 font-medium">IDR {(() => {
+                    <span className="text-gray-900 font-mono">IDR {(() => {
                       const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                       return sub.toLocaleString('id-ID');
                     })()}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                  <div className="flex justify-between">
                     <span>Logistics</span>
-                    <span className="text-gray-900 font-medium">+ IDR {(() => {
+                    <span className="text-gray-900 font-mono">+ IDR {(() => {
                       const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                       const tax = Math.round(sub * 0.11);
                       const platform = 2500;
@@ -3408,20 +3425,20 @@ export default function AdminDashboard() {
                       return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
                     })()}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider">
+                  <div className="flex justify-between">
                     <span>VAT (11%)</span>
-                    <span className="text-gray-900 font-medium">+ IDR {(() => {
+                    <span className="text-gray-900 font-mono">+ IDR {(() => {
                       const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                       return Math.round(sub * 0.11).toLocaleString('id-ID');
                     })()}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider pb-4 border-b border-gray-100">
+                  <div className="flex justify-between pb-2 border-b border-gray-100">
                     <span>Platform Fee</span>
-                    <span className="text-gray-900 font-medium">+ IDR 2.500</span>
+                    <span className="text-gray-900 font-mono">+ IDR 2.500</span>
                   </div>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium">Total Investment</span>
-                    <span className="text-2xl font-medium font-display italic text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
+                  <div className="flex justify-between pt-1">
+                    <span className="font-bold text-rose">GRAND TOTAL</span>
+                    <span className="text-sm font-bold font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
               </div>

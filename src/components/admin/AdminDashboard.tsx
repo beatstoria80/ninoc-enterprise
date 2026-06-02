@@ -2342,9 +2342,16 @@ export default function AdminDashboard() {
                     onClick={() => {
                       const printContent = document.getElementById('printable-label');
                       if (printContent) {
-                        const printWindow = window.open('', '_blank', 'width=400,height=350');
-                        if (printWindow) {
-                          printWindow.document.write(`<!DOCTYPE html><html><head><title>Print Resi — NINOC</title>
+                        const iframe = document.createElement('iframe');
+                        iframe.style.position = 'absolute';
+                        iframe.style.width = '0px';
+                        iframe.style.height = '0px';
+                        iframe.style.border = 'none';
+                        document.body.appendChild(iframe);
+                        
+                        const pri = iframe.contentWindow;
+                        if (pri) {
+                          pri.document.write(`<!DOCTYPE html><html><head><title>Print Resi — NINOC</title>
 <style>
   @page { size: 10cm 8cm; margin: 0; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -2353,8 +2360,12 @@ export default function AdminDashboard() {
   img { display: inline-block; }
 </style>
 </head><body>${printContent.innerHTML}</body></html>`);
-                          printWindow.document.close();
-                          setTimeout(() => printWindow.print(), 300);
+                          pri.document.close();
+                          pri.focus();
+                          setTimeout(() => {
+                            pri.print();
+                            setTimeout(() => document.body.removeChild(iframe), 500);
+                          }, 300);
                         }
                       }
                     }}
@@ -2368,113 +2379,111 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="p-8 space-y-8">
-                {/* Status */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Order Status</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {(['pending', 'paid', 'shipped', 'delivered', 'cancelled'] as OrderStatus[]).map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => updateOrderStatus(selectedOrder.id, status)}
-                        className={cn(
-                          "px-4 py-2 rounded text-[10px] uppercase tracking-wider font-medium transition-colors",
-                          selectedOrder.status === status
-                            ? "bg-rose text-white"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        )}
-                      >
-                        {status}
-                      </button>
-                    ))}
+              <div className="p-6 flex flex-col gap-4">
+                {/* Row 1: Status & Tracking */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Status */}
+                  <div className="border border-gray-200 p-3 rounded-lg">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(['pending', 'paid', 'shipped', 'delivered', 'cancelled'] as OrderStatus[]).map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => updateOrderStatus(selectedOrder.id, status)}
+                          className={cn(
+                            "px-2 py-1 text-[9px] uppercase tracking-wider rounded border transition-colors",
+                            selectedOrder.status === status
+                              ? "bg-rose text-white border-rose"
+                              : "bg-white text-gray-600 border-gray-200 hover:border-rose"
+                          )}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tracking */}
+                  <div className="border border-gray-200 p-3 rounded-lg">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
+                    <input
+                      type="text"
+                      defaultValue={selectedOrder.tracking_id || ''}
+                      onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
+                      placeholder="Input tracking number..."
+                      className="w-full px-3 py-1.5 text-xs font-mono border border-gray-200 rounded focus:outline-none focus:border-rose/50"
+                    />
                   </div>
                 </div>
 
-                {/* Tracking ID */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-2">Tracking ID</h3>
-                  <input
-                    type="text"
-                    defaultValue={selectedOrder.tracking_id || ''}
-                    onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
-                    placeholder="Enter tracking number..."
-                    className="w-full px-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose"
-                  />
-                </div>
-
-                {/* Order Items */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Order Items</h3>
-                  <div className="space-y-4">
-                    {selectedOrder.order_items?.map((item) => (
-                      <div key={item.id} className="flex gap-4">
-                        <div className="w-16 h-20 bg-gray-100 rounded flex items-center justify-center text-gray-300 font-medium text-xs">
-                          <Package size={24} />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">{item.product_name}</p>
-                          <p className="text-sm text-gray-400">{item.quantity}x — Size {item.size || 'N/A'}</p>
-                          <p className="text-sm font-medium text-rose">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Shipping Address */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Shipping Address</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-1">
-                    <p className="font-medium text-gray-900">{selectedOrder.shipping_address?.name}</p>
-                    <p className="text-sm text-gray-600">
+                {/* Row 2: Customer Destination */}
+                <div className="border border-gray-200 p-3 rounded-lg">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
+                  <div className="text-xs leading-relaxed text-gray-800">
+                    <span className="font-bold uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
+                    <span className="text-gray-500 font-mono">
                       {selectedOrder.shipping_address?.phone ? (
                         selectedOrder.shipping_address.phone.length > 6
                           ? selectedOrder.shipping_address.phone.slice(0, 4) + '****' + selectedOrder.shipping_address.phone.slice(-3)
                           : selectedOrder.shipping_address.phone
                       ) : '-'}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-2">{selectedOrder.shipping_address?.address}</p>
-                    <p className="text-sm text-gray-600">{selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}</p>
+                    </span>
+                    <br />
+                    {selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
                   </div>
                 </div>
 
-                {/* Pricing Summary */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Summary</h3>
-                  <div className="space-y-2 border-t border-gray-100 pt-4">
-                    {(() => {
+                {/* Row 3: Items */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Garment Items</p>
+                  </div>
+                  <div className="divide-y divide-gray-100">
+                    {selectedOrder.order_items?.map((item, idx) => (
+                      <div key={item.id} className="flex justify-between items-center p-3 text-xs">
+                        <div>
+                          <span className="font-bold text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                          <span className="text-gray-500 ml-2">SZ: {item.size || 'OS'} | QTY: {item.quantity}</span>
+                        </div>
+                        <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 4: Summary */}
+                <div className="border border-gray-200 rounded-lg p-3 text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
+                  <div className="flex justify-between">
+                    <span>Value Subtotal</span>
+                    <span className="text-gray-900 font-mono">IDR {(() => {
+                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                      return sub.toLocaleString('id-ID');
+                    })()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Logistics</span>
+                    <span className="text-gray-900 font-mono">+ IDR {(() => {
                       const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                       const tax = Math.round(sub * 0.11);
-                      const platform = Math.round(sub * 0.029);
+                      const platform = 2500;
                       const shipping = selectedOrder.total_price - sub - tax - platform;
-                      return (
-                        <>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Subtotal</span>
-                            <span>IDR {sub.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Tax (11%)</span>
-                            <span>IDR {tax.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Platform</span>
-                            <span>IDR {platform.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Shipping</span>
-                            <span>{shipping > 0 ? `IDR ${shipping.toLocaleString('id-ID')}` : 'Complimentary'}
-                          </span>
-                          </div>
-                        </>
-                      );
-                    })()}
-                    <div className="border-t border-gray-200 pt-2 mt-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-900">Total</span>
-                        <span className="text-2xl font-medium font-display italic text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
-                      </div>
-                    </div>
+                      return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
+                    })()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>VAT (11%)</span>
+                    <span className="text-gray-900 font-mono">+ IDR {(() => {
+                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                      return Math.round(sub * 0.11).toLocaleString('id-ID');
+                    })()}</span>
+                  </div>
+                  <div className="flex justify-between pb-2 border-b border-gray-100">
+                    <span>Platform Fee</span>
+                    <span className="text-gray-900 font-mono">+ IDR 2.500</span>
+                  </div>
+                  <div className="flex justify-between pt-1">
+                    <span className="font-bold text-rose">GRAND TOTAL</span>
+                    <span className="text-sm font-bold font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
 
