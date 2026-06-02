@@ -616,7 +616,7 @@ export default function Home() {
               </PressButton>
             </motion.div>
 
-            {/* Mobile Metadata - Left aligned, 7px to match Browse Category */}
+            {/* Mobile Metadata - Left aligned, flush with Browse Category */}
             <div className="grid grid-cols-3 gap-0 mt-6 md:hidden">
               {[
                 { label: 'YEAR', value: '2024' },
@@ -630,8 +630,8 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
                 >
-                  <p className="text-[5px] font-medium uppercase tracking-[0.3em] text-ink/25 leading-none mt-2 mb-0.5 pl-3">{item.label}</p>
-                  <p className="text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2 pl-3">{item.value}</p>
+                  <p className="text-[5px] font-medium uppercase tracking-[0.3em] text-ink/25 leading-none mt-2 mb-0.5">{item.label}</p>
+                  <p className="text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
                 </motion.div>
               ))}
             </div>
