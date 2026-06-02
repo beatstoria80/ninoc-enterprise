@@ -1919,86 +1919,105 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-3"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-4">
                   <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics</h2>
                   <span className="text-[9px] text-gray-400">— shipment tracking</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Pending Shipments */}
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100">
-                      <h3 className="font-medium text-gray-900 uppercase tracking-wide">Pending Shipments</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* PENDING SHIPMENTS */}
+                  <div className="bg-white border border-gray-200 flex flex-col h-[calc(100vh-14rem)]">
+                    <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
+                      <h3 className="text-[10px] font-bold text-gray-900 uppercase tracking-widest">Pending Shipments</h3>
+                      <span className="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 font-bold uppercase">{orders.filter(o => o.status === 'paid').length} Orders</span>
                     </div>
-                    <div className="divide-y divide-gray-50">
-                      {orders.filter(o => o.status === 'paid').map((order) => (
-                        <div key={order.id} className="p-6">
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <p className="font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</p>
-                              <p className="text-sm text-gray-600">{order.shipping_address?.name}</p>
-                            </div>
-                            <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-amber-100 text-amber-600 rounded">
-                              Awaiting Shipment
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-500">{order.shipping_address?.city}</p>
-                            <button
-                              onClick={() => openOrderDetail(order)}
-                              className="text-[10px] uppercase tracking-wider text-rose"
-                            >
-                              Process Shipment
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      {orders.filter(o => o.status === 'paid').length === 0 && (
-                        <div className="p-12 text-center text-gray-400">
-                          <Truck size={32} className="mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">No pending shipments</p>
-                        </div>
-                      )}
+                    <div className="flex-1 overflow-y-auto bg-white">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 bg-white shadow-[0_1px_0_0_#e5e7eb] z-10">
+                          <tr>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Order ID</th>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Destination</th>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {orders.filter(o => o.status === 'paid').map((order) => (
+                            <tr key={order.id} className="hover:bg-gray-50 group transition-colors">
+                              <td className="px-3 py-2">
+                                <div className="font-mono text-[10px] text-gray-900 font-bold">{order.id.slice(0, 8).toUpperCase()}</div>
+                                <div className="text-[9px] text-gray-500">{new Date(order.created_at).toLocaleDateString('id-ID')}</div>
+                              </td>
+                              <td className="px-3 py-2">
+                                <div className="text-[10px] text-gray-900 font-medium truncate max-w-[150px]">{order.shipping_address?.name}</div>
+                                <div className="text-[9px] text-gray-500 truncate max-w-[150px]">{order.shipping_address?.city}</div>
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                <button
+                                  onClick={() => openOrderDetail(order)}
+                                  className="text-[9px] font-bold uppercase tracking-widest text-rose bg-rose/5 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  Process
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {orders.filter(o => o.status === 'paid').length === 0 && (
+                            <tr>
+                              <td colSpan={3} className="px-3 py-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
+                                No pending shipments
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
-                  {/* In Transit */}
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100">
-                      <h3 className="font-medium text-gray-900 uppercase tracking-wide">In Transit</h3>
+                  {/* IN TRANSIT */}
+                  <div className="bg-white border border-gray-200 flex flex-col h-[calc(100vh-14rem)]">
+                    <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
+                      <h3 className="text-[10px] font-bold text-gray-900 uppercase tracking-widest">In Transit</h3>
+                      <span className="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 font-bold uppercase">{orders.filter(o => o.status === 'shipped').length} Orders</span>
                     </div>
-                    <div className="divide-y divide-gray-50">
-                      {orders.filter(o => o.status === 'shipped').map((order) => (
-                        <div key={order.id} className="p-6">
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <p className="font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</p>
-                              <p className="text-sm text-gray-600">{order.shipping_address?.name}</p>
-                            </div>
-                            <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-blue-100 text-blue-600 rounded">
-                              Shipped
-                            </span>
-                          </div>
-                          {order.tracking_id && (
-                            <p className="text-sm text-gray-500 mb-3">Tracking: {order.tracking_id}</p>
+                    <div className="flex-1 overflow-y-auto bg-white">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 bg-white shadow-[0_1px_0_0_#e5e7eb] z-10">
+                          <tr>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Order ID</th>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Tracking Info</th>
+                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {orders.filter(o => o.status === 'shipped').map((order) => (
+                            <tr key={order.id} className="hover:bg-gray-50 group transition-colors">
+                              <td className="px-3 py-2">
+                                <div className="font-mono text-[10px] text-gray-900 font-bold">{order.id.slice(0, 8).toUpperCase()}</div>
+                                <div className="text-[9px] text-gray-500">{order.shipping_address?.name}</div>
+                              </td>
+                              <td className="px-3 py-2">
+                                <div className="font-mono text-[10px] text-gray-900 font-bold bg-gray-100 px-1 py-0.5 inline-block">{order.tracking_id || 'NO RESI'}</div>
+                                <div className="text-[9px] text-gray-500 mt-0.5 uppercase">{order.courier || 'Standard'}</div>
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                <button
+                                  onClick={() => openOrderDetail(order)}
+                                  className="text-[9px] font-bold uppercase tracking-widest text-ink bg-gray-100 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-200"
+                                >
+                                  Update
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {orders.filter(o => o.status === 'shipped').length === 0 && (
+                            <tr>
+                              <td colSpan={3} className="px-3 py-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
+                                No shipments in transit
+                              </td>
+                            </tr>
                           )}
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-500">{order.courier || 'Standard'}</p>
-                            <button
-                              onClick={() => openOrderDetail(order)}
-                              className="text-[10px] uppercase tracking-wider text-rose"
-                            >
-                              Update Status
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      {orders.filter(o => o.status === 'shipped').length === 0 && (
-                        <div className="p-12 text-center text-gray-400">
-                          <Truck size={32} className="mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">No shipments in transit</p>
-                        </div>
-                      )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -3899,6 +3918,8 @@ function ShippingLabel({ order }: { order: Order }) {
 
   return (
     <div style={{
+      display: 'flex',
+      flexDirection: 'column',
       width: '10cm',
       height: '8cm',
       fontFamily: "'Courier New', 'Consolas', monospace",
@@ -3916,28 +3937,27 @@ function ShippingLabel({ order }: { order: Order }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '4px 6px',
+        padding: '6px 8px',
         borderBottom: '2px solid black',
-        height: '28px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '1px' }}>NINOC</span>
-          <span style={{ fontSize: '7px', color: '#666' }}>ARCHIVE</span>
+          <span style={{ fontSize: '14px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '1px' }}>NINOC</span>
+          <span style={{ fontSize: '8px', color: '#666' }}>ARCHIVE</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {courierLogo && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain' }} />
+            <img src={courierLogo} alt={courierInfo.name} style={{ height: '20px', objectFit: 'contain' }} />
           )}
           {!courierLogo && (
-            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{courierInfo.name}</span>
+            <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{courierInfo.name}</span>
           )}
           <span style={{
-            fontSize: '8px',
+            fontSize: '9px',
             fontWeight: 'bold',
             backgroundColor: 'black',
             color: 'white',
-            padding: '1px 4px',
+            padding: '2px 6px',
             letterSpacing: '1px'
           }}>{courierInfo.service}</span>
         </div>
@@ -3945,28 +3965,34 @@ function ShippingLabel({ order }: { order: Order }) {
 
       {/* ROW 2 — Barcode + Tracking Number */}
       <div style={{
-        padding: '4px 6px',
+        padding: '8px 6px',
         borderBottom: '2px solid black',
-        textAlign: 'center'
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1
       }}>
         {trackingId ? (
           <>
-            <BarcodeCode128 value={trackingId} width={300} height={36} />
+            <BarcodeCode128 value={trackingId} width={340} height={45} />
             <div style={{
               fontWeight: 'bold',
-              fontSize: '11px',
-              letterSpacing: '2px',
-              marginTop: '2px'
+              fontSize: '13px',
+              letterSpacing: '3px',
+              marginTop: '4px'
             }}>{trackingId}</div>
           </>
         ) : (
           <div style={{
             fontWeight: 'bold',
-            fontSize: '10px',
-            padding: '8px 0',
+            fontSize: '11px',
+            padding: '12px 0',
             color: '#999',
             letterSpacing: '1px',
-            border: '1px dashed #ccc',
+            border: '2px dashed #ccc',
+            width: '80%'
           }}>AWAITING TRACKING NUMBER</div>
         )}
       </div>
@@ -3975,89 +4001,103 @@ function ShippingLabel({ order }: { order: Order }) {
       <div style={{
         display: 'flex',
         borderBottom: '2px solid black',
-        minHeight: '65px'
+        flex: 1.2
       }}>
         {/* Penerima (larger, left) */}
         <div style={{
           flex: 3,
-          padding: '4px 6px',
+          padding: '6px 8px',
           borderRight: '2px solid black',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
           <div style={{
-            fontSize: '7px',
+            fontSize: '8px',
             fontWeight: 'bold',
             letterSpacing: '1px',
-            marginBottom: '1px',
+            marginBottom: '4px',
             backgroundColor: '#e0e0e0',
-            padding: '1px 3px',
-            display: 'inline-block'
+            padding: '2px 4px',
+            display: 'inline-block',
+            alignSelf: 'flex-start'
           }}>PENERIMA / TO</div>
-          <div style={{ fontWeight: 'bold', fontSize: '11px', marginTop: '2px' }}>
+          <div style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '2px' }}>
             {order.shipping_address?.name?.toUpperCase()}
           </div>
-          <div style={{ fontSize: '9px', marginTop: '1px' }}>{order.shipping_address?.phone}</div>
-          <div style={{ fontSize: '8px', marginTop: '2px', wordBreak: 'break-word', maxHeight: '24px', overflow: 'hidden' }}>
+          <div style={{ fontSize: '10px', marginTop: '2px' }}>{order.shipping_address?.phone}</div>
+          <div style={{ fontSize: '9px', marginTop: '4px', wordBreak: 'break-word', overflow: 'hidden' }}>
             {order.shipping_address?.address}
           </div>
-          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '1px' }}>
+          <div style={{ fontWeight: 'bold', fontSize: '10px', marginTop: '2px' }}>
             {order.shipping_address?.city}, {order.shipping_address?.province || ''} {order.shipping_address?.postal_code}
           </div>
         </div>
         {/* Pengirim (smaller, right) */}
         <div style={{
           flex: 2,
-          padding: '4px 6px',
+          padding: '6px 8px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
           <div style={{
-            fontSize: '7px',
+            fontSize: '8px',
             fontWeight: 'bold',
             letterSpacing: '1px',
-            marginBottom: '1px',
+            marginBottom: '4px',
             backgroundColor: '#e0e0e0',
-            padding: '1px 3px',
-            display: 'inline-block'
+            padding: '2px 4px',
+            display: 'inline-block',
+            alignSelf: 'flex-start'
           }}>PENGIRIM / FROM</div>
-          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '2px' }}>NINOC STUDIO</div>
-          <div style={{ fontSize: '8px', marginTop: '1px' }}>0812-XXXX-XXXX</div>
-          <div style={{ fontSize: '8px', marginTop: '2px' }}>Bandung, Jawa Barat</div>
-          <div style={{ fontWeight: 'bold', fontSize: '8px' }}>40115</div>
+          <div style={{ fontWeight: 'bold', fontSize: '10px', marginTop: '2px' }}>NINOC STUDIO</div>
+          <div style={{ fontSize: '9px', marginTop: '2px' }}>0812-XXXX-XXXX</div>
+          <div style={{ fontSize: '9px', marginTop: '4px' }}>Bandung, Jawa Barat</div>
+          <div style={{ fontWeight: 'bold', fontSize: '9px' }}>40115</div>
         </div>
       </div>
 
       {/* ROW 4 — Package Info + Order ID */}
       <div style={{
         display: 'flex',
-        borderBottom: '1px solid black',
+        borderBottom: '2px solid black',
+        flex: 0.8
       }}>
         {/* Isi Paket */}
         <div style={{
           flex: 3,
-          padding: '3px 6px',
+          padding: '6px 8px',
           borderRight: '2px solid black',
-          maxHeight: '38px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
-          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '1px' }}>ISI PAKET / CONTENTS</div>
+          <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '2px' }}>ISI PAKET / CONTENTS</div>
           {order.order_items?.slice(0, 3).map((item, idx) => (
-            <div key={idx} style={{ fontSize: '8px' }}>
+            <div key={idx} style={{ fontSize: '9px' }}>
               {item.product_name} {item.size ? `(${item.size})` : ''} ×{item.quantity}
             </div>
           ))}
           {(order.order_items?.length || 0) > 3 && (
-            <div style={{ fontSize: '7px', color: '#666' }}>+{(order.order_items?.length || 0) - 3} item lainnya</div>
+            <div style={{ fontSize: '8px', color: '#666', marginTop: '2px' }}>+{(order.order_items?.length || 0) - 3} item lainnya</div>
           )}
         </div>
         {/* Order ID + Weight */}
         <div style={{
           flex: 2,
-          padding: '3px 6px',
-          textAlign: 'center'
+          padding: '6px 8px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
-          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px' }}>ORDER ID</div>
-          <div style={{ fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+          <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '1px' }}>ORDER ID</div>
+          <div style={{ fontWeight: 'bold', fontSize: '12px', letterSpacing: '1px', marginTop: '2px' }}>
             #{order.id.slice(0, 8).toUpperCase()}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2px', fontSize: '7px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '6px', fontSize: '8px', fontWeight: 'bold' }}>
             <span>Qty: {totalItems}</span>
             <span>~{totalWeight}g</span>
           </div>
@@ -4069,8 +4109,8 @@ function ShippingLabel({ order }: { order: Order }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '2px 6px',
-        fontSize: '7px',
+        padding: '4px 8px',
+        fontSize: '8px',
         color: '#444'
       }}>
         <span>{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
@@ -4080,7 +4120,7 @@ function ShippingLabel({ order }: { order: Order }) {
           backgroundColor: 'black',
           color: 'white',
           padding: '1px 4px',
-          fontSize: '7px'
+          fontSize: '8px'
         }}>FRAGILE</span>
       </div>
     </div>
