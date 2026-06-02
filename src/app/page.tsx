@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView, Variants } from 'framer-motion';
-import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, Shirt, Wrench, Sparkles } from 'lucide-react';
+import { motion, useInView, Variants, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
+import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, Shirt, Wrench, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -10,98 +10,24 @@ import { CategoryType } from '@/types';
 import DragSlider from '@/components/DragSlider';
 
 // ═══════════════════════════════════════════════════════════════
-// CINEMATIC MOTION ENGINE — NINOC STUDIO
-// Physics: [0.16, 1, 0.3, 1] — Fast out, slow settle
+// EMIL KOWALSKI ANIMATION ENGINE — NINOC STUDIO
+// Physics: Custom easing for premium feel
 // ═══════════════════════════════════════════════════════════════
 
-const MOTION = {
-  ease: [0.16, 1, 0.3, 1] as const,
-  easeSnappy: [0.4, 0, 0.2, 1] as const,
-  durationHero: 1.0,
-  durationSection: 0.8,
-  durationMobile: 0.6,
-  durationMicro: 0.4,
-} as const;
-
-// Word-level stagger for hero heading
-const wordVariants: Variants = {
-  hidden: { y: 60, opacity: 0 },
-  visible: (i: number) => ({
-    y: 0,
-    opacity: 1,
-    transition: { delay: i * 0.12, duration: MOTION.durationHero, ease: MOTION.ease },
-  }),
+const EASING = {
+  out: [0.23, 1, 0.32, 1] as const,      // Strong ease-out for UI
+  inOut: [0.77, 0, 0.175, 1] as const,    // Smooth ease-in-out
+  spring: { type: "spring" as const, stiffness: 400, damping: 30 },
+  springBounce: { type: "spring" as const, stiffness: 300, damping: 20 },
 };
 
-// Product card entrance animation — staggered sequence
-const productCardVariants: Variants = {
-  hidden: { y: 40, opacity: 0 },
-  visible: (i: number) => ({
-    y: 0,
-    opacity: 1,
-    transition: {
-      delay: i * 0.15,
-      duration: 0.8,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
-};
-
-// Nested image entrance
-const cardImageVariants: Variants = {
-  hidden: { scale: 1.05, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-// Nested content entrance
-const cardContentVariants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-// Trust icon spring bounce
-const trustIconVariants: Variants = {
-  hidden: { scale: 0.6, opacity: 0 },
-  visible: (i: number) => ({
-    scale: 1,
-    opacity: 1,
-    transition: {
-      delay: i * 0.15,
-      duration: 0.5,
-      ease: [0.34, 1.56, 0.64, 1],
-      type: 'spring',
-      stiffness: 260,
-      damping: 20,
-    },
-  }),
-};
-
-// Metadata delayed fade-in
-const metadataVariants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  visible: (i: number) => ({
-    y: 0,
-    opacity: 1,
-    transition: { delay: 0.3 + i * 0.12, duration: 0.6, ease: MOTION.ease },
-  }),
-};
-
-// Category pill variants
-const categoryPillVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: 0.5 + i * 0.1, duration: 0.6, ease: MOTION.ease },
-  }),
+const DURATION = {
+  micro: 0.1,    // 100ms - button press
+  fast: 0.15,    // 150ms - small hover
+  normal: 0.2,   // 200ms - standard
+  medium: 0.3,   // 300ms - modals
+  slow: 0.5,     // 500ms - page transitions
+  hero: 0.8,     // 800ms - hero elements
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -109,34 +35,105 @@ const categoryPillVariants: Variants = {
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  {
-    id: 'pakaian' as CategoryType,
-    label: 'Pakaian',
-    sublabel: 'Apparel',
-    icon: Shirt,
-    href: '/category?cat=pakaian',
-    spec: 'GARMENT-001',
-  },
-  {
-    id: 'utilities' as CategoryType,
-    label: 'Utilities',
-    sublabel: 'Functional',
-    icon: Wrench,
-    href: '/category?cat=utilities',
-    spec: 'UTIL-002',
-  },
-  {
-    id: 'aksesoris' as CategoryType,
-    label: 'Aksesoris',
-    sublabel: 'Accents',
-    icon: Sparkles,
-    href: '/category?cat=aksesoris',
-    spec: 'ACCS-003',
-  },
+  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: Shirt, href: '/category?cat=pakaian', spec: 'GARMENT-001' },
+  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: Wrench, href: '/category?cat=utilities', spec: 'UTIL-002' },
+  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: Sparkles, href: '/category?cat=aksesoris', spec: 'ACCS-003' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// PORTRAIT CAROUSEL — 5 images cycling on hover, 2s auto-stop
+// VARIANT DEFINITIONS
+// ═══════════════════════════════════════════════════════════════
+
+const wordVariants: Variants = {
+  hidden: { y: 60, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: { delay: i * 0.12, duration: DURATION.hero, ease: EASING.out },
+  }),
+};
+
+const productCardVariants: Variants = {
+  hidden: { y: 40, opacity: 0, scale: 0.95 },
+  visible: (i: number) => ({
+    y: 0, opacity: 1, scale: 1,
+    transition: { delay: i * 0.08, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
+const cardImageVariants: Variants = {
+  hidden: { scale: 1.08, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { duration: DURATION.slow, ease: EASING.out } },
+};
+
+const cardContentVariants: Variants = {
+  hidden: { y: 10, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { delay: 0.15, duration: DURATION.medium, ease: EASING.out } },
+};
+
+const trustIconVariants: Variants = {
+  hidden: { scale: 0.6, opacity: 0 },
+  visible: (i: number) => ({
+    scale: 1, opacity: 1,
+    transition: { delay: i * 0.12, duration: DURATION.medium, ease: [0.34, 1.56, 0.64, 1], type: 'spring' as const },
+  }),
+};
+
+const metadataVariants: Variants = {
+  hidden: { y: 10, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0, opacity: 1,
+    transition: { delay: 0.25 + i * 0.1, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
+const categoryPillVariants: Variants = {
+  hidden: { opacity: 0, x: -20, scale: 0.95 },
+  visible: (i: number) => ({
+    opacity: 1, x: 0, scale: 1,
+    transition: { delay: 0.4 + i * 0.1, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
+const fadeUpVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number = 0) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.08, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
+// ═══════════════════════════════════════════════════════════════
+// PRESS SCALE BUTTON — Emil's philosophy: buttons must feel responsive
+// ═══════════════════════════════════════════════════════════════
+
+function PressButton({ children, className = '', onClick, href, whileHover = {}, whileTap = {} }: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  href?: string;
+  whileHover?: object;
+  whileTap?: object;
+}) {
+  const content = (
+    <motion.div
+      whileHover={{ scale: 1.02, ...whileHover }}
+      whileTap={{ scale: 0.97, ...whileTap }}
+      transition={{ duration: DURATION.micro, ease: EASING.out }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+  return <button onClick={onClick}>{content}</button>;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PORTRAIT CAROUSEL — 5 images cycling on hover
 // ═══════════════════════════════════════════════════════════════
 
 const PORTRAIT_IMAGES = [
@@ -156,8 +153,8 @@ function PortraitImageCarousel() {
 
   const stopCycle = () => {
     setIsHovered(false);
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-    if (stopTimerRef.current) { clearTimeout(stopTimerRef.current); stopTimerRef.current = null; }
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
     setCurrentIndex(0);
   };
 
@@ -181,39 +178,73 @@ function PortraitImageCarousel() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1.2, ease: MOTION.ease }}
-      className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
+      transition={{ duration: DURATION.slow, ease: EASING.out }}
       onMouseEnter={startCycle}
       onMouseLeave={stopCycle}
+      className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
       style={{ cursor: 'pointer' }}
     >
       {PORTRAIT_IMAGES.map((src, i) => (
-        <div key={src} className="absolute inset-0" style={{ opacity: currentIndex === i && isHovered ? 1 : currentIndex === i && !isHovered ? 1 : 0, zIndex: currentIndex === i ? 2 : 1 }}>
-          <Image src={src} alt={`Archival Garment ${i + 1}`} fill className={`object-cover transition-all duration-500 ${isHovered ? 'grayscale-0 scale-105' : 'grayscale'}`} priority={i === 0} />
-        </div>
+        <motion.div
+          key={src}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: currentIndex === i ? 1 : 0 }}
+          transition={{ duration: 0.4, ease: EASING.inOut }}
+          style={{ zIndex: currentIndex === i ? 2 : 1 }}
+        >
+          <Image
+            src={src}
+            alt={`Archival Garment ${i + 1}`}
+            fill
+            className={`object-cover transition-all duration-500 ${isHovered ? 'grayscale-0' : 'grayscale'}`}
+            style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+            priority={i === 0}
+          />
+        </motion.div>
       ))}
-      {!isHovered && (
-        <div className="absolute inset-0 grayscale hover:grayscale-0 transition-all duration-1000 z-10 pointer-events-none">
-          <Image src={PORTRAIT_IMAGES[0]} alt="" fill className="object-cover" priority />
-        </div>
-      )}
-      {isHovered && (
-        <div className="absolute bottom-3 right-3 flex gap-1.5 z-20">
-          {PORTRAIT_IMAGES.map((_, i) => (
-            <motion.div key={i} className="w-1 h-1 rounded-full" animate={{ backgroundColor: currentIndex === i ? '#E8527A' : 'rgba(20,20,20,0.2)', scale: currentIndex === i ? 1.4 : 1 }} transition={{ duration: 0.15 }} />
-          ))}
-        </div>
-      )}
-      <div className="absolute top-2 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20">SPEC-001</div>
+
+      {/* Dot indicators */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-3 right-3 flex gap-1.5 z-20"
+          >
+            {PORTRAIT_IMAGES.map((_, i) => (
+              <motion.div
+                key={i}
+                className="w-1 h-1 rounded-full"
+                animate={{
+                  backgroundColor: currentIndex === i ? '#E8527A' : 'rgba(20,20,20,0.2)',
+                  scale: currentIndex === i ? 1.4 : 1,
+                }}
+                transition={{ duration: 0.15, ease: EASING.out }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        className="absolute top-2 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: DURATION.normal }}
+      >
+        SPEC-001
+      </motion.div>
       <div className="absolute inset-0 bg-gradient-to-t from-cr/20 to-transparent hidden md:block z-20" />
     </motion.div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PRODUCT CARD
+// PRODUCT CARD — Enhanced with Emil's principles
 // ═══════════════════════════════════════════════════════════════
 
 interface ProductCardProps {
@@ -224,70 +255,155 @@ interface ProductCardProps {
 function ProductCard({ product, index }: ProductCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
+  const [isHovered, setIsHovered] = useState(false);
 
   const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
   const CategoryIcon = categoryInfo?.icon || Shirt;
 
   return (
-    <motion.div ref={ref} variants={productCardVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
-      <Link href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5 transition-all duration-500" style={{ transition: 'all 0.5s' }}>
-        <motion.div variants={cardImageVariants} className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
+    <motion.div
+      ref={ref}
+      variants={productCardVariants}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      custom={index}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <PressButton href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
+        <motion.div
+          variants={cardImageVariants}
+          className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5"
+          animate={{ scale: isHovered ? 1.02 : 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        >
           {product.image_url ? (
-            <Image src={product.image_url} alt={product.name} fill className="object-contain transition-all duration-1000 group-hover:grayscale-0 grayscale scale-95 group-hover:scale-100" />
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-contain transition-all duration-700 grayscale group-hover:grayscale-0"
+              style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+            />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-ink/10">
               <CategoryIcon size={32} />
             </div>
           )}
-          <div className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10">NINOC {(index + 101).toString()}</div>
+
+          {/* Spec badge */}
+          <motion.div
+            className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10"
+            animate={{ opacity: isHovered ? 0.5 : 1 }}
+            transition={{ duration: DURATION.fast }}
+          >
+            NINOC {(index + 101).toString()}
+          </motion.div>
         </motion.div>
 
         <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
-          <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30">
+          <motion.p
+            className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30"
+            animate={{ opacity: isHovered ? 1 : 0.7 }}
+            transition={{ duration: DURATION.fast }}
+          >
             {categoryInfo?.label || 'Garment Origin'}
-          </p>
-          <motion.h3 className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1" whileHover={{ color: '#E8527A' }} transition={{ duration: 0.3 }}>
+          </motion.p>
+
+          <motion.h3
+            className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
+            animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+            transition={{ duration: DURATION.fast }}
+          >
             {product.name}
           </motion.h3>
-          <motion.div className="flex flex-col justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3 gap-2 md:gap-3">
+
+          <motion.div
+            className="flex flex-col justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3 gap-2 md:gap-3"
+            animate={{ opacity: isHovered ? 1 : 0.8 }}
+            transition={{ duration: DURATION.fast }}
+          >
             <div className="space-y-1">
               <p className="text-[6px] md:text-[7px] uppercase tracking-widest text-ink/40 leading-none">Archival Issue</p>
               {product.price_tag && (
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none">
+                <motion.p
+                  className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none"
+                  animate={{ scale: isHovered ? 1.05 : 1 }}
+                  transition={{ duration: DURATION.fast }}
+                >
                   {product.price_tag}
-                </p>
+                </motion.p>
               )}
             </div>
+
             <div className="flex items-center justify-between">
-              <p className="text-[9px] md:text-sm font-display font-medium italic text-ink">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-              <motion.div className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center" whileHover={{ backgroundColor: '#E8527A', color: '#ffffff' }} transition={{ duration: 0.3 }}>
-                <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
+              <motion.p
+                className="text-[9px] md:text-sm font-display font-medium italic text-ink"
+                animate={{ scale: isHovered ? 1.02 : 1 }}
+                transition={{ duration: DURATION.fast }}
+              >
+                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </motion.p>
+
+              <motion.div
+                className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center"
+                animate={{ backgroundColor: isHovered ? '#E8527A' : 'rgba(20,20,20,0.05)' }}
+                transition={{ duration: DURATION.fast }}
+              >
+                <motion.div
+                  animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : '#141414' }}
+                  transition={{ duration: DURATION.fast, ease: EASING.out }}
+                >
                   <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
                 </motion.div>
               </motion.div>
             </div>
           </motion.div>
         </motion.div>
-      </Link>
+      </PressButton>
     </motion.div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// TRUST ITEM
+// TRUST ITEM — Spring bounce on entrance
 // ═══════════════════════════════════════════════════════════════
 
 function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title: string; desc: string; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-20px' });
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div ref={ref} className="flex flex-col items-center text-center space-y-2 md:space-y-6" variants={metadataVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
-      <motion.div className="w-8 h-8 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose" variants={trustIconVariants} initial="hidden" animate={isInView ? 'visible' : 'hidden'} custom={index}>
+    <motion.div
+      ref={ref}
+      className="flex flex-col items-center text-center space-y-2 md:space-y-6 cursor-default"
+      variants={metadataVariants}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      custom={index}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div
+        className="w-8 h-8 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose"
+        variants={trustIconVariants}
+        initial="hidden"
+        animate={isInView ? 'visible' : 'hidden'}
+        custom={index}
+        whileHover={{ scale: 1.1, backgroundColor: 'rgba(232, 82, 122, 0.1)' }}
+        transition={{ duration: DURATION.fast, ease: EASING.out }}
+      >
         {icon}
       </motion.div>
       <div className="space-y-0 md:space-y-2">
-        <h3 className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest leading-none">{title}</h3>
+        <motion.h3
+          className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest leading-none"
+          animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+          transition={{ duration: DURATION.fast }}
+        >
+          {title}
+        </motion.h3>
         <p className="text-[6px] md:text-[8px] font-medium uppercase tracking-tighter md:tracking-widest text-ink/60 md:text-ink/30 leading-relaxed">{desc}</p>
       </div>
     </motion.div>
@@ -295,7 +411,7 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CATEGORY QUICK ACCESS
+// CATEGORY QUICK ACCESS — Staggered entrance
 // ═══════════════════════════════════════════════════════════════
 
 function CategoryQuickAccess() {
@@ -311,17 +427,42 @@ function CategoryQuickAccess() {
             animate="visible"
             custom={i}
           >
-            <Link
+            <PressButton
               href={cat.href}
-              className="flex items-center gap-2 md:gap-3 bg-white border border-ink/5 px-3 md:px-5 py-2 md:py-3 hover:border-rose hover:bg-rose hover:text-white group transition-all duration-300 whitespace-nowrap"
+              className="flex items-center gap-2 md:gap-3 bg-white border border-ink/5 px-3 md:px-5 py-2 md:py-3 group whitespace-nowrap"
+              whileHover={{ borderColor: '#E8527A', backgroundColor: '#E8527A' }}
+              whileTap={{ scale: 0.97 }}
             >
-              <Icon size={14} className="text-rose group-hover:text-white transition-colors" strokeWidth={1.5} />
+              <motion.div
+                animate={{ color: '#E8527A' }}
+                transition={{ duration: DURATION.fast }}
+                style={{ color: '#E8527A' }}
+              >
+                <Icon size={14} strokeWidth={1.5} />
+              </motion.div>
               <div className="flex flex-col leading-none">
-                <span className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight">{cat.label}</span>
-                <span className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40 group-hover:text-white/60 transition-colors hidden md:block">{cat.sublabel}</span>
+                <motion.span
+                  className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
+                  animate={{ color: '#141414' }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  {cat.label}
+                </motion.span>
+                <motion.span
+                  className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40 hidden md:block"
+                  animate={{ color: 'rgba(20,20,20,0.4)' }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  {cat.sublabel}
+                </motion.span>
               </div>
-              <ChevronRight size={12} className="text-ink/20 group-hover:text-white/60 transition-colors ml-1" />
-            </Link>
+              <motion.div
+                animate={{ x: 0, opacity: 0.3 }}
+                style={{ opacity: 0.3, color: '#141414' }}
+              >
+                <ChevronRight size={12} />
+              </motion.div>
+            </PressButton>
           </motion.div>
         );
       })}
@@ -337,7 +478,13 @@ function FadeUpSection({ children, delay = 0, className = '' }: { children: Reac
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-20px' });
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }} transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }} className={className}>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ duration: DURATION.medium, delay, ease: EASING.out }}
+      className={className}
+    >
       {children}
     </motion.div>
   );
@@ -358,8 +505,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase.from('products').select('*').limit(8);
-        if (error) throw error;
+        const { data } = await supabase.from('products').select('*').limit(8);
         setProducts(data || []);
       } catch (error) {
         console.error('Failed to fetch products:', error);
@@ -379,10 +525,21 @@ export default function Home() {
 
           {/* Left: Branding */}
           <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.5, ease: MOTION.ease }} className="flex items-center gap-2 text-rose">
-              <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
+              className="flex items-center gap-2 text-rose"
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: EASING.inOut }}
+              >
+                <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
+              </motion.div>
               <span className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
             </motion.div>
+
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
               {["Archival", "Apparel"].map((word, wi) => (
                 <span key={word} className="block overflow-hidden">
@@ -390,26 +547,58 @@ export default function Home() {
                 </span>
               ))}
             </h1>
-            <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7, ease: MOTION.ease }} className="text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider">
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
+              className="text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+            >
               Established for the preservation of garment integrity. <span className="hidden md:inline">Our collection represents a curated selection of technical excellence and timeless design.</span>
             </motion.p>
-            <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6, duration: 0.5, ease: MOTION.ease }}>
-              <Link href="/category" className="group inline-flex items-center gap-2 md:gap-6 text-ink hover:text-rose transition-colors duration-300 relative">
+
+            <motion.div
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: DURATION.medium, ease: EASING.out }}
+            >
+              <PressButton href="/category" className="group inline-flex items-center gap-2 md:gap-6 text-ink relative">
                 <span className="text-[7px] md:text-[11px] font-medium uppercase tracking-[0.2em] md:tracking-[0.4em]">Browse Category</span>
                 <div className="relative w-4 md:w-12 h-[1px] overflow-hidden">
-                  <motion.div className="absolute inset-0 bg-ink/20" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 1, duration: 0.8, ease: MOTION.ease }} style={{ originX: 0 }} />
-                  <motion.div className="absolute inset-0 bg-rose origin-left" initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} transition={{ duration: 0.4, ease: MOTION.ease }} />
-                  <motion.span className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" whileHover={{ x: 4 }} transition={{ duration: 0.3, ease: MOTION.ease }}>
+                  <motion.div
+                    className="absolute inset-0 bg-ink/20"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 1, duration: DURATION.slow, ease: EASING.out }}
+                    style={{ originX: 0 }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-rose origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  />
+                  <motion.span
+                    className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  >
                     <ChevronRight className="w-2 h-2 md:w-3 md:h-3 text-rose" />
                   </motion.span>
                 </div>
-              </Link>
+              </PressButton>
             </motion.div>
 
-            {/* Mobile Metadata - Relocated for balance */}
+            {/* Mobile Metadata */}
             <div className="grid grid-cols-3 gap-2 mt-4 md:hidden">
               {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
-                <motion.div key={item.label} className="space-y-0" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + i * 0.1, duration: 0.5, ease: MOTION.ease }}>
+                <motion.div
+                  key={item.label}
+                  className="space-y-0"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
+                >
                   <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">{item.label}</p>
                   <p className="text-[9px] font-medium text-ink uppercase italic leading-none">{item.value}</p>
                 </motion.div>
@@ -420,7 +609,13 @@ export default function Home() {
           {/* Middle: Portrait Carousel */}
           <div className="lg:col-span-4 relative mt-4 lg:mt-0">
             <PortraitImageCarousel />
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6, ease: MOTION.ease }} className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30">
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: DURATION.medium, ease: EASING.out }}
+              className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
+            >
               <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
               <p className="text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br />Industrial Grade Fabrics</p>
             </motion.div>
@@ -428,17 +623,36 @@ export default function Home() {
 
           {/* Right: Metadata Sidebar */}
           <div className="col-span-2 lg:col-span-4 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
-            {/* Desktop only sidebar content */}
             <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
               {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
-                <motion.div key={item.label} className="space-y-0" variants={metadataVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} custom={i}>
+                <motion.div
+                  key={item.label}
+                  className="space-y-0"
+                  variants={metadataVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.5 }}
+                  custom={i}
+                >
                   <p className="text-[8px] font-medium uppercase tracking-widest text-ink/20">{item.label}</p>
                   <p className={`text-[10px] font-medium text-ink ${i === 2 ? 'italic leading-tight' : ''}`}>{item.value}</p>
                 </motion.div>
               ))}
-              <motion.div className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ delay: 0.5, duration: 0.7, ease: MOTION.ease }}>
+
+              <motion.div
+                className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.5, duration: DURATION.medium, ease: EASING.out }}
+              >
                 <div className="flex items-center gap-3">
-                  <ShieldCheck size={18} className="text-rose" />
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: EASING.inOut }}
+                  >
+                    <ShieldCheck size={18} className="text-rose" />
+                  </motion.div>
                   <span className="text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                 </div>
                 <p className="text-[11px] font-medium uppercase leading-loose tracking-widest text-white">Every garment is authenticated through rigorous archival protocols and secure fulfillment.</p>
@@ -446,7 +660,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
       </section>
 
       {/* CATEGORY INDEX — QUICK ACCESS */}
@@ -455,33 +668,48 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: MOTION.ease }}
+          transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="flex items-end justify-between mb-4 md:mb-6"
         >
           <div className="flex items-center gap-2">
-            <Grid3X3 size={12} className="text-rose" />
+            <motion.div animate={{ rotate: [0, 360] }} transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}>
+              <Grid3X3 size={12} className="text-rose" />
+            </motion.div>
             <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
           </div>
-          <Link href="/category" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors duration-300 leading-none">
+          <PressButton href="/category" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
             View All
-          </Link>
+          </PressButton>
         </motion.div>
         <CategoryQuickAccess />
       </section>
 
-      {/* CATALOG — PURE JS POINTER DRAG */}
+      {/* CATALOG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
-        <motion.div className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7, ease: MOTION.ease }}>
+        <motion.div
+          className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: DURATION.medium, ease: EASING.out }}
+        >
           <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
-          <Link href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors duration-300 leading-none">View All</Link>
+          <PressButton href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
+            View All
+          </PressButton>
         </motion.div>
 
-        {/* DRAG SLIDER — mouse drag to scroll */}
         <div className="relative -mx-4 md:mx-0">
           <DragSlider className="flex gap-px w-full">
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[48vw] md:w-[300px] aspect-[3/4] bg-white animate-pulse flex-shrink-0" />
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="w-[48vw] md:w-[300px] aspect-[3/4] bg-white animate-pulse flex-shrink-0"
+                />
               ))
             ) : (
               products.map((product, i) => (
