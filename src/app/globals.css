@@ -336,7 +336,6 @@ input:focus, textarea:focus, select:focus {
   /* Reset page margins */
   @page {
     margin: 0;
-    size: A4;
   }
 
   /* Remove backgrounds, shadows, animations */
