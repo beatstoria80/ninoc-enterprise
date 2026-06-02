@@ -2110,197 +2110,207 @@ export default function AdminDashboard() {
                     {logisticsSelectedOrder && (
                       <motion.div
                         initial={{ width: 0, opacity: 0 }}
-                        animate={{ width: '45%', opacity: 1 }}
+                        animate={{ width: '50%', opacity: 1 }}
                         exit={{ width: 0, opacity: 0 }}
                         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                        className="border-l border-gray-200 flex flex-col overflow-hidden"
+                        className="border-l border-gray-200 flex flex-col overflow-hidden bg-white shadow-xl z-20 relative"
                       >
-                        <div className="w-full h-full flex flex-col overflow-y-auto">
-                          {/* Detail Header */}
-                          <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50/80 shrink-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-[10px] text-gray-900">#{logisticsSelectedOrder.id.slice(0, 10).toUpperCase()}</span>
-                              <span className={cn(
-                                "text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5",
-                                logisticsSelectedOrder.status === 'paid' && "bg-amber-100 text-amber-700",
-                                logisticsSelectedOrder.status === 'shipped' && "bg-blue-100 text-blue-700",
-                                logisticsSelectedOrder.status === 'delivered' && "bg-emerald-100 text-emerald-700",
-                              )}>
-                                {logisticsSelectedOrder.status === 'paid' ? 'PENDING' : logisticsSelectedOrder.status.toUpperCase()}
-                              </span>
+                        <div className="w-full h-full flex flex-col overflow-y-auto p-5 gap-5 custom-scrollbar">
+                          {/* 1. Header / Client Info */}
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-200">
+                                {logisticsSelectedOrder.shipping_address?.name ? (
+                                  <span className="text-[14px] font-medium text-gray-600">
+                                    {logisticsSelectedOrder.shipping_address.name.charAt(0).toUpperCase()}
+                                  </span>
+                                ) : (
+                                  <User size={16} className="text-gray-400" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-[11px] font-medium text-gray-900 leading-tight">{logisticsSelectedOrder.shipping_address?.name}</p>
+                                <p className="text-[9px] text-gray-500 mt-0.5 font-mono">Client ID: {logisticsSelectedOrder.user_id?.slice(0, 8) || 'GUEST'}</p>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <button
+                            <div className="flex items-center gap-2">
+                              <button 
                                 onClick={() => openOrderDetail(logisticsSelectedOrder)}
-                                className="text-[8px] uppercase tracking-[0.15em] px-2 py-1 bg-ink text-white hover:bg-rose transition-colors"
+                                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-ink transition-colors"
+                                title="View Full Order"
                               >
-                                Full Detail
+                                <Eye size={12} />
                               </button>
-                              <button
+                              <button 
                                 onClick={() => setLogisticsSelectedOrder(null)}
-                                className="p-1 hover:bg-gray-200 transition-colors"
+                                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-rose transition-colors"
                               >
                                 <X size={12} />
                               </button>
                             </div>
                           </div>
 
-                          {/* ANIMATED ROUTE MAP */}
-                          <div className="px-4 py-3 border-b border-gray-200 shrink-0">
-                            <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-2">Shipment Route Visualization</p>
-                            <div className="bg-gray-50 border border-gray-200 rounded overflow-hidden relative" style={{ height: '160px' }}>
-                              <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-                                {/* Grid lines */}
-                                {[20, 40, 60, 80].map(v => (
-                                  <React.Fragment key={v}>
-                                    <line x1={v} y1="5" x2={v} y2="95" stroke="#f0f0f0" strokeWidth="0.3" />
-                                    <line x1="5" y1={v} x2="95" y2={v} stroke="#f0f0f0" strokeWidth="0.3" />
-                                  </React.Fragment>
-                                ))}
-
-                                {/* Route path */}
-                                {(() => {
-                                  const wp = getRouteWaypoints(logisticsSelectedOrder);
-                                  const pathD = `M ${wp[0].x} ${wp[0].y} ${wp.slice(1).map(w => `L ${w.x} ${w.y}`).join(' ')}`;
-                                  return (
-                                    <>
-                                      {/* Shadow path */}
-                                      <path d={pathD} fill="none" stroke="#e5e7eb" strokeWidth="1.5" strokeDasharray="3,2" />
-                                      {/* Animated path overlay */}
-                                      <motion.path
-                                        d={pathD}
-                                        fill="none"
-                                        stroke="#E8527A"
-                                        strokeWidth="1"
-                                        initial={{ pathLength: 0, opacity: 0 }}
-                                        animate={{ pathLength: logisticsSelectedOrder.status === 'delivered' ? 1 : logisticsSelectedOrder.status === 'shipped' ? 0.65 : 0.2, opacity: 1 }}
-                                        transition={{ duration: 2, ease: 'easeInOut' }}
-                                      />
-                                      {/* Moving dot */}
-                                      {logisticsSelectedOrder.status === 'shipped' && (
-                                        <motion.circle
-                                          r="2"
-                                          fill="#E8527A"
-                                          initial={{ offsetDistance: '0%' }}
-                                          animate={{ offsetDistance: '65%' }}
-                                          transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
-                                          style={{ offsetPath: `path('${pathD}')` }}
-                                        >
-                                          <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
-                                        </motion.circle>
-                                      )}
-                                      {/* Waypoints */}
-                                      {wp.map((point, pi) => (
-                                        <g key={pi}>
-                                          {/* Pulse ring for active */}
-                                          {(pi === 0 || (logisticsSelectedOrder.status === 'shipped' && pi === 1) || logisticsSelectedOrder.status === 'delivered') && (
-                                            <circle cx={point.x} cy={point.y} r="4" fill="none" stroke={point.isOrigin ? '#141414' : '#E8527A'} strokeWidth="0.3" opacity="0.4">
-                                              <animate attributeName="r" values="3;6;3" dur="3s" repeatCount="indefinite" />
-                                              <animate attributeName="opacity" values="0.4;0;0.4" dur="3s" repeatCount="indefinite" />
-                                            </circle>
-                                          )}
-                                          {/* Point */}
-                                          <circle
-                                            cx={point.x}
-                                            cy={point.y}
-                                            r="2.5"
-                                            fill={point.isOrigin ? '#141414' : pi === wp.length - 1 ? '#E8527A' : '#6b7280'}
-                                            stroke="white"
-                                            strokeWidth="1"
-                                          />
-                                          {/* Label */}
-                                          <text
-                                            x={point.x}
-                                            y={point.y - 5}
-                                            textAnchor="middle"
-                                            style={{ fontSize: '3px', fill: '#141414', fontWeight: 500, letterSpacing: '0.5px' }}
-                                          >
-                                            {point.label.toUpperCase()}
-                                          </text>
-                                          <text
-                                            x={point.x}
-                                            y={point.y + 6}
-                                            textAnchor="middle"
-                                            style={{ fontSize: '2.5px', fill: '#9ca3af' }}
-                                          >
-                                            {point.sub}
-                                          </text>
-                                        </g>
-                                      ))}
-                                    </>
-                                  );
-                                })()}
-                              </svg>
+                          {/* 2. Order Details Grid */}
+                          <div className="grid grid-cols-4 gap-3 pt-4 border-t border-gray-100">
+                            <div>
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
+                              <p className="text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.slice(0,8).toUpperCase()}</p>
                             </div>
-                          </div>
-
-                          {/* ORDER INFO CELLS */}
-                          <div className="divide-y divide-gray-100 flex-1">
-                            {/* Destination */}
-                            <div className="px-4 py-2.5">
-                              <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Destination Manifest</p>
-                              <p className="text-[11px] text-gray-900 font-medium">{logisticsSelectedOrder.shipping_address?.name?.toUpperCase()}</p>
-                              <p className="text-[9px] text-gray-500 font-mono mt-0.5">{logisticsSelectedOrder.shipping_address?.phone}</p>
-                              <p className="text-[9px] text-gray-500 mt-1 leading-relaxed">
+                            <div className="col-span-2">
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Shipping Address</p>
+                              <p className="text-[10px] text-gray-900 leading-tight">
                                 {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.city}, {logisticsSelectedOrder.shipping_address?.postal_code}
                               </p>
                             </div>
-
-                            {/* Courier + Tracking */}
-                            <div className="px-4 py-2.5 grid grid-cols-2 gap-3">
-                              <div>
-                                <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Courier Service</p>
-                                <p className="text-[10px] text-gray-900 uppercase font-medium">{logisticsSelectedOrder.courier || 'Not Assigned'}</p>
-                              </div>
-                              <div>
-                                <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Airway Bill</p>
-                                {logisticsSelectedOrder.tracking_id ? (
-                                  <p className="font-mono text-[10px] text-gray-900 bg-gray-100 px-1.5 py-0.5 inline-block">{logisticsSelectedOrder.tracking_id}</p>
-                                ) : (
-                                  <p className="text-[10px] text-gray-300 italic">No resi assigned</p>
-                                )}
-                              </div>
+                            <div>
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Shipped</p>
+                              <p className="text-[10px] text-gray-900 leading-tight">
+                                {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID')}<br/>
+                                <span className="text-gray-500">{new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                              </p>
                             </div>
+                          </div>
 
-                            {/* Items */}
-                            <div className="px-4 py-2.5">
-                              <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1.5">Garment Manifest</p>
+                          {/* 3. Ordered Products */}
+                          <div className="pt-2">
+                            <p className="text-[9px] font-medium text-gray-900 mb-3">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
                               {logisticsSelectedOrder.order_items?.map((item, idx) => (
-                                <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-50 last:border-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[9px] text-gray-900">{item.product_name || 'PRODUCT'}</span>
-                                    <span className="text-[8px] text-gray-400">SZ:{item.size || 'OS'} × {item.quantity}</span>
+                                <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl min-w-[220px] shrink-0 items-center bg-white shadow-sm hover:shadow-md transition-shadow">
+                                  <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
+                                    <Package size={16} className="text-gray-300" />
                                   </div>
-                                  <span className="font-mono text-[9px] text-gray-600">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-gray-900 truncate font-medium">{item.product_name || 'Garment Item'}</p>
+                                    <p className="text-[8px] text-gray-500 mt-0.5">1 item • SZ:{item.size || 'OS'}</p>
+                                    <p className="text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                  </div>
                                 </div>
                               ))}
                             </div>
+                          </div>
 
-                            {/* Value summary */}
-                            <div className="px-4 py-2.5 bg-gray-50/50">
-                              <div className="flex justify-between items-center">
-                                <span className="text-[8px] uppercase tracking-[0.2em] text-gray-400">Total Investment</span>
-                                <span className="font-mono text-[11px] text-rose font-medium">IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')}</span>
+                          {/* 4. Map Visualization */}
+                          <div className="relative w-full h-[240px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-2">
+                            <svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 600 300">
+                              {/* Map background pattern to simulate streets */}
+                              <g stroke="#ffffff" strokeWidth="8" strokeLinecap="round">
+                                <path d="M-50,50 L650,250 M-50,150 L650,350 M-50,-50 L650,150" opacity="0.8" />
+                                <path d="M100,-50 L-50,350 M300,-50 L150,350 M500,-50 L350,350" opacity="0.8" />
+                                <path d="M200,0 L200,300 M450,0 L450,300" strokeWidth="12" opacity="0.6" />
+                              </g>
+                              {/* City Labels */}
+                              <text x="450" y="80" fill="#cbd5e1" fontSize="16" fontWeight="bold" letterSpacing="2" opacity="0.7">NINOC HUB</text>
+                              <text x="80" y="220" fill="#cbd5e1" fontSize="14" fontWeight="bold" letterSpacing="1" opacity="0.7">DESTINATION</text>
+
+                              {/* Route Path */}
+                              {(() => {
+                                const isDelivered = logisticsSelectedOrder.status === 'delivered';
+                                const isShipped = logisticsSelectedOrder.status === 'shipped';
+                                const pathStr = "M420,100 Q300,180 120,200";
+                                
+                                return (
+                                  <>
+                                    <path d={pathStr} fill="none" stroke="#E8527A" strokeWidth="4" />
+                                    
+                                    {/* Origin Dot */}
+                                    <circle cx="420" cy="100" r="6" fill="#141414" stroke="#ffffff" strokeWidth="3" />
+                                    
+                                    {/* Animated Truck/Pulse Icon */}
+                                    {(isShipped || isDelivered) && (
+                                      <motion.g
+                                        initial={{ offsetDistance: isDelivered ? '100%' : '0%' }}
+                                        animate={{ offsetDistance: isDelivered ? '100%' : '75%' }}
+                                        transition={{ duration: 5, ease: 'easeInOut' }}
+                                        style={{ offsetPath: `path('${pathStr}')` }}
+                                      >
+                                        <circle r="18" fill="rgba(232, 82, 122, 0.2)" />
+                                        <circle r="12" fill="#E8527A" />
+                                        <svg x="-6" y="-6" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <rect x="1" y="3" width="15" height="13" />
+                                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                          <circle cx="5.5" cy="18.5" r="2.5" />
+                                          <circle cx="18.5" cy="18.5" r="2.5" />
+                                        </svg>
+                                      </motion.g>
+                                    )}
+
+                                    {/* Destination Dot */}
+                                    <circle cx="120" cy="200" r="6" fill="#E8527A" stroke="#ffffff" strokeWidth="3" />
+                                  </>
+                                );
+                              })()}
+                            </svg>
+                          </div>
+
+                          {/* 5. Timeline */}
+                          <div className="mt-2 pt-4 flex-1">
+                            <div className="flex justify-between items-center mb-6">
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
+                                <span className="text-[8px] text-gray-400">Updated 5 mins ago</span>
                               </div>
+                              <button className="px-3 py-1.5 bg-gray-50 text-[8px] font-medium text-gray-600 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                                Refresh
+                              </button>
                             </div>
 
-                            {/* Quick Actions */}
-                            <div className="px-4 py-3 flex gap-2 shrink-0">
-                              <button
-                                onClick={() => openOrderDetail(logisticsSelectedOrder)}
-                                className="flex-1 py-2 bg-ink text-white text-[9px] uppercase tracking-[0.2em] hover:bg-rose transition-colors flex items-center justify-center gap-2"
-                              >
-                                <Eye size={12} /> View Full Order
-                              </button>
-                              <button
-                                onClick={() => {
-                                  openOrderDetail(logisticsSelectedOrder);
-                                  setTimeout(() => setIsPrintPreviewOpen(true), 200);
-                                }}
-                                className="py-2 px-3 border border-gray-200 text-[9px] uppercase tracking-[0.2em] text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-1"
-                              >
-                                <Printer size={12} /> Label
-                              </button>
+                            <div className="relative pl-3.5 border-l border-gray-200 space-y-7 ml-2">
+                              {/* Step 1: Current Status */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
+                                  <div className="w-1.5 h-1.5 bg-rose rounded-full" />
+                                </div>
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-900 font-medium">
+                                      <Truck size={10} className="text-gray-500" /> Now
+                                    </div>
+                                    <div className="text-[8px] text-gray-500 mt-1 pl-4">6:39 PM</div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">
+                                      {logisticsSelectedOrder.status === 'delivered' ? 'Delivered' : 
+                                       logisticsSelectedOrder.status === 'shipped' ? 'In transit' : 'Processing'}
+                                    </p>
+                                    <p className="text-[9px] text-gray-500 mt-1 leading-relaxed max-w-[200px]">
+                                      {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.postal_code}, {logisticsSelectedOrder.shipping_address?.city}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Step 2: Sorting Center */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
+                                      <Box size={10} /> 11:54 AM
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">In the sorting center</p>
+                                    <p className="text-[9px] text-gray-500 mt-1">NINOC HUB, Bandung</p>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Step 3: Dispatched */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
+                                      <Package size={10} /> 09:12 AM
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">Package dispatched</p>
+                                    <p className="text-[9px] text-gray-500 mt-1">NINOC STUDIO, Bandung</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
