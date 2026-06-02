@@ -474,8 +474,11 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* GRID 5 — CART (PERMANENT & COMPLETE) */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5">
+          {/* GRID 5 — CART (Mobile: hide when empty | Desktop: always visible) */}
+          <div className={cn(
+            "col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
+            isMobile && items.length === 0 ? "hidden lg:flex" : "flex"
+          )}>
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               {/* Cart Header */}
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
