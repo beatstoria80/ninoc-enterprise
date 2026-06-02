@@ -2199,8 +2199,20 @@ export default function AdminDashboard() {
                                 <path d="M100,-50 L-50,350 M300,-50 L150,350 M500,-50 L350,350" opacity="0.8" />
                                 <path d="M200,0 L200,300 M450,0 L450,300" strokeWidth="12" opacity="0.6" />
                               </g>
+                              
+                              {/* Compass UI (Timur / Barat orientation) */}
+                              <g transform="translate(40, 40)">
+                                <circle cx="0" cy="0" r="20" fill="white" stroke="#e2e8f0" strokeWidth="2" opacity="0.9" />
+                                <path d="M0,-14 L5,-3 L0,-5 L-5,-3 Z" fill="#E8527A" />
+                                <path d="M0,14 L5,3 L0,5 L-5,3 Z" fill="#94a3b8" />
+                                <text x="0" y="-17" fill="#64748b" fontSize="10" fontWeight="bold" textAnchor="middle">N</text>
+                                <text x="0" y="24" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">S</text>
+                                <text x="-18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">W</text>
+                                <text x="18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">E</text>
+                              </g>
+
                               {/* City Labels */}
-                              <text x="450" y="80" fill="#cbd5e1" fontSize="16" fontWeight="bold" letterSpacing="2" opacity="0.7">NINOC HUB</text>
+                              <text x="450" y="80" fill="#cbd5e1" fontSize="16" fontWeight="bold" letterSpacing="2" opacity="0.7">ORIGIN SENDER</text>
                               <text x="80" y="220" fill="#cbd5e1" fontSize="14" fontWeight="bold" letterSpacing="1" opacity="0.7">DESTINATION</text>
 
                               {/* Route Path */}
@@ -2222,16 +2234,19 @@ export default function AdminDashboard() {
                                         initial={{ offsetDistance: isDelivered ? '100%' : '0%' }}
                                         animate={{ offsetDistance: isDelivered ? '100%' : '75%' }}
                                         transition={{ duration: 5, ease: 'easeInOut' }}
-                                        style={{ offsetPath: `path('${pathStr}')` }}
+                                        style={{ offsetPath: `path('${pathStr}')`, offsetRotate: '0deg' }}
                                       >
                                         <circle r="18" fill="rgba(232, 82, 122, 0.2)" />
                                         <circle r="12" fill="#E8527A" />
-                                        <svg x="-6" y="-6" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                          <rect x="1" y="3" width="15" height="13" />
-                                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                          <circle cx="5.5" cy="18.5" r="2.5" />
-                                          <circle cx="18.5" cy="18.5" r="2.5" />
-                                        </svg>
+                                        {/* Truck flipped horizontally so it faces Left without being upside down */}
+                                        <g transform="scale(-1, 1) translate(0, 0)">
+                                          <svg x="-6" y="-6" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="1" y="3" width="15" height="13" />
+                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                            <circle cx="5.5" cy="18.5" r="2.5" />
+                                            <circle cx="18.5" cy="18.5" r="2.5" />
+                                          </svg>
+                                        </g>
                                       </motion.g>
                                     )}
 
@@ -2290,8 +2305,8 @@ export default function AdminDashboard() {
                                     </div>
                                   </div>
                                   <div>
-                                    <p className="text-[10px] font-medium text-gray-900">In the sorting center</p>
-                                    <p className="text-[9px] text-gray-500 mt-1">NINOC HUB, Bandung</p>
+                                    <p className="text-[10px] font-medium text-gray-900">In the sorting facility</p>
+                                    <p className="text-[9px] text-gray-500 mt-1 uppercase">{logisticsSelectedOrder.courier || 'Expedition'} Hub, Regional Branch</p>
                                   </div>
                                 </div>
                               </div>
@@ -2307,7 +2322,7 @@ export default function AdminDashboard() {
                                   </div>
                                   <div>
                                     <p className="text-[10px] font-medium text-gray-900">Package dispatched</p>
-                                    <p className="text-[9px] text-gray-500 mt-1">NINOC STUDIO, Bandung</p>
+                                    <p className="text-[9px] text-gray-500 mt-1 uppercase">Sender Origin Facility</p>
                                   </div>
                                 </div>
                               </div>
