@@ -358,6 +358,8 @@ export default function AdminDashboard() {
   const [bulkResults, setBulkResults] = useState<{ name: string; url: string; error?: string }[] | null>(null);
   const [bulkProductLink, setBulkProductLink] = useState(''); // product name to link images to
 
+  type BulkUploadResult = { name: string; url: string; error?: string };
+
   // Chat states
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
@@ -703,16 +705,24 @@ export default function AdminDashboard() {
         body: formData
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      let data: { results?: { url: string; error?: string }[]; summary?: { uploaded: number }; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        alert('Bulk upload failed: Server returned an invalid response. Make sure you are logged in as admin.');
+        return;
+      }
 
-      setBulkResults(data.results);
+      if (!res.ok) {
+        throw new Error(data.error || `Server error: ${res.status}`);
+      }
+
+      setBulkResults(data.results as BulkUploadResult[]);
 
       // Update product with first successful image
-      const firstSuccess = data.results.find((r: { url: string; error?: string }) => r.url);
+      const firstSuccess = data.results?.find((r) => r.url);
       if (firstSuccess) {
         setProductForm(prev => ({ ...prev, image_url: firstSuccess.url }));
-        // Pre-fill product name from linked name if provided
         if (bulkProductLink.trim()) {
           setProductForm(prev => ({
             ...prev,

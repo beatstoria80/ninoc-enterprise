@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Service role client — bypasses RLS for bulk admin uploads
-// Only instantiated on server-side (lazy to avoid build-time errors)
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -18,31 +19,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 });
     }
 
-    if (files.length > 100) {
+    if (files.length > 20) {
       return NextResponse.json(
-        { error: 'Maximum 100 files per request. Split into batches.' },
+        { error: 'Maximum 20 files per batch. Please split your selection.' },
         { status: 400 }
       );
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const results: { name: string; url: string; error?: string }[] = [];
     const errors: string[] = [];
 
     for (const file of files) {
       try {
-        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
         const fileName = `product-${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
         const filePath = fileName;
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const { error: uploadError } = await getSupabaseAdmin().storage
+        const { error: uploadError } = await supabaseAdmin.storage
           .from(bucketId)
           .upload(filePath, buffer, {
             contentType: file.type || 'image/jpeg',
-            upsert: false
-          });
+            upsert: false,
+            duplex: 'half' as const
+          } as Parameters<typeof supabaseAdmin.storage.from>[0] extends (bucket: string) => { upload: (path: string, fileBody: Buffer, options?: infer O) => { then: unknown } } ? O : never);
 
         if (uploadError) {
           errors.push(`${file.name}: ${uploadError.message}`);
@@ -50,7 +53,7 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        const { data: urlData } = getSupabaseAdmin().storage
+        const { data: urlData } = supabaseAdmin.storage
           .from(bucketId)
           .getPublicUrl(filePath);
 
@@ -72,8 +75,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error('[BulkUpload] Error:', err);
+    const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

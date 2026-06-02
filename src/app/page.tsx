@@ -135,7 +135,6 @@ function PressButton({ children, className = '', onClick, href, whileHover, whil
   whileTap?: Parameters<typeof motion.div>[0]['whileTap'];
 }) {
   const content = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <motion.div
       whileHover={whileHover as any}
       whileTap={whileTap as any}
