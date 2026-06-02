@@ -4,23 +4,37 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const getSupabaseAdmin = (): SupabaseClient => createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabaseAdmin = (): SupabaseClient => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export async function POST(request: NextRequest) {
-  let supabaseAdmin: SupabaseClient | null = null;
-
-  // Validate environment variables first
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return NextResponse.json(
-      { error: 'Server configuration error: Missing Supabase credentials' },
-      { status: 500 }
-    );
+  if (!url || !key) {
+    throw new Error('Missing Supabase credentials');
   }
 
+  return createClient(url, key);
+};
+
+export async function POST(request: NextRequest) {
+  // CORS headers for local development
+  const origin = request.headers.get('origin') || '*';
+
   try {
+    // Validate environment variables FIRST
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      return NextResponse.json(
+        { error: 'Missing NEXT_PUBLIC_SUPABASE_URL' },
+        { status: 500 }
+      );
+    }
+
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        { error: 'Missing SUPABASE_SERVICE_ROLE_KEY' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
     const bucketId = (formData.get('bucket') as string) || 'products';
@@ -31,49 +45,57 @@ export async function POST(request: NextRequest) {
 
     if (files.length > 20) {
       return NextResponse.json(
-        { error: 'Maximum 20 files per batch. Please split your selection.' },
+        { error: 'Maximum 20 files per batch' },
         { status: 400 }
       );
     }
 
-    supabaseAdmin = getSupabaseAdmin();
+    const supabaseAdmin = getSupabaseAdmin();
     const results: { name: string; url: string; error?: string }[] = [];
-    const errors: string[] = [];
 
     for (const file of files) {
       try {
         const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
         const fileName = `product-${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
-        const filePath = fileName;
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const { error: uploadError } = await supabaseAdmin.storage
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
           .from(bucketId)
-          .upload(filePath, buffer, {
+          .upload(fileName, buffer, {
             contentType: file.type || 'image/jpeg',
             upsert: false
           });
 
         if (uploadError) {
-          const errorMsg = uploadError.message || 'Upload failed';
-          console.error(`[BulkUpload] ${file.name}: ${errorMsg}`);
-          errors.push(`${file.name}: ${errorMsg}`);
-          results.push({ name: file.name, url: '', error: errorMsg });
+          console.error(`[Upload] Error uploading ${file.name}:`, uploadError);
+          results.push({
+            name: file.name,
+            url: '',
+            error: uploadError.message || 'Upload failed'
+          });
           continue;
         }
 
+        // Get public URL
         const { data: urlData } = supabaseAdmin.storage
           .from(bucketId)
-          .getPublicUrl(filePath);
+          .getPublicUrl(fileName);
 
-        results.push({ name: file.name, url: urlData.publicUrl });
+        results.push({
+          name: file.name,
+          url: urlData.publicUrl,
+          error: undefined
+        });
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Upload failed';
-        console.error(`[BulkUpload] ${file.name}: ${msg}`);
-        errors.push(`${file.name}: ${msg}`);
-        results.push({ name: file.name, url: '', error: msg });
+        console.error(`[Upload] Exception uploading ${file.name}:`, err);
+        results.push({
+          name: file.name,
+          url: '',
+          error: err instanceof Error ? err.message : 'Upload failed'
+        });
       }
     }
 
@@ -83,13 +105,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       results,
       summary: { total: files.length, uploaded, failed },
-      errors: errors.length > 0 ? errors : undefined
+      errors: failed > 0 ? results.filter(r => r.error).map(r => r.error) : undefined
     });
+
   } catch (err) {
-    console.error('[BulkUpload] Fatal error:', err);
+    console.error('[Upload] Fatal error:', err);
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json(
-      { error: message, details: 'Check server logs for more information' },
+      { error: message },
       { status: 500 }
     );
   }
