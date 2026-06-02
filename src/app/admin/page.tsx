@@ -9,7 +9,7 @@ import {
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
-  Upload, Printer
+  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -184,35 +184,77 @@ const SidebarItem = ({
   label,
   active,
   onClick,
-  badge
+  badge,
+  subItems
 }: {
   icon: React.ElementType;
   label: string;
   active?: boolean;
   onClick?: () => void;
   badge?: number;
-}) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "w-full flex items-center justify-between px-6 py-3.5 transition-all duration-200 border-b border-ink/5",
-      active ? "bg-rose text-white" : "text-ink/50 hover:bg-ink/5 hover:text-ink"
-    )}
-  >
-    <div className="flex items-center gap-3">
-      <Icon size={16} className={cn(active ? "text-white" : "text-current")} />
-      <span className="text-[10px] font-medium uppercase tracking-[0.3em]">{label}</span>
+  subItems?: { label: string; id: string; active?: boolean; onClick?: () => void }[];
+}) => {
+  const [isOpen, setIsOpen] = useState(active || false);
+  const hasSub = subItems && subItems.length > 0;
+
+  return (
+    <div className="w-full">
+      <button
+        onClick={() => {
+          if (hasSub) setIsOpen(!isOpen);
+          else if (onClick) onClick();
+        }}
+        className={cn(
+          "w-full flex items-center justify-between px-6 py-3 transition-all duration-200 border-b border-ink/5",
+          active ? "bg-rose text-white" : "text-ink/50 hover:bg-ink/5 hover:text-ink"
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <Icon size={16} className={cn(active ? "text-white" : "text-current")} />
+          <span className="text-[10px] font-medium uppercase tracking-[0.3em]">{label}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {badge !== undefined && badge > 0 && (
+            <span className={cn(
+              "text-[8px] px-2 py-0.5 rounded-full",
+              active ? "bg-white/20 text-white" : "bg-rose/10 text-rose"
+            )}>
+              {badge}
+            </span>
+          )}
+          {hasSub && (
+            isOpen ? <ChevronUp size={14} className={cn(active ? "text-white" : "text-ink/50")} /> : <ChevronDown size={14} className={cn(active ? "text-white" : "text-ink/50")} />
+          )}
+        </div>
+      </button>
+      {hasSub && (
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden bg-ink/[0.02]"
+            >
+              {subItems.map((sub, i) => (
+                <button
+                  key={i}
+                  onClick={sub.onClick}
+                  className={cn(
+                    "w-full text-left pl-[44px] pr-6 py-2.5 text-[9px] font-medium uppercase tracking-[0.2em] transition-colors duration-200",
+                    sub.active ? "text-rose" : "text-ink/50 hover:text-ink hover:bg-ink/[0.04]"
+                  )}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
-    {badge !== undefined && badge > 0 && (
-      <span className={cn(
-        "text-[8px] px-2 py-0.5 rounded-full",
-        active ? "bg-white/20 text-white" : "bg-rose/10 text-rose"
-      )}>
-        {badge}
-      </span>
-    )}
-  </button>
-);
+  );
+};
 
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
@@ -1015,97 +1057,104 @@ export default function AdminDashboard() {
       )}
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex w-72 bg-white border-r border-gray-100 flex-col z-50">
-        <div className="p-8 border-b border-gray-100">
-          <div className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase leading-none">NINOC</div>
-          <p className="text-[8px] uppercase tracking-[0.4em] text-gray-300 mt-2">Admin Control Center</p>
+      <aside className="hidden md:flex w-64 bg-white border-r border-ink/5 flex-col z-50 shrink-0">
+        <div className="p-6 border-b border-ink/5">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-6 h-6 bg-ink flex items-center justify-center rounded-sm">
+              <span className="text-white font-display italic font-medium text-xs">N</span>
+            </div>
+            <div className="font-display font-medium text-lg italic tracking-tighter text-ink uppercase leading-none">NINOC</div>
+          </div>
+          
+          {/* User Profile in Sidebar */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden shrink-0">
+              {adminUser?.email ? (
+                <span className="text-[10px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
+              ) : (
+                <User size={14} className="text-ink/50" />
+              )}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-[10px] font-medium text-ink truncate">{adminUser?.email?.split('@')[0] || 'Admin User'}</p>
+              <p className="text-[8px] text-ink/40 truncate">{adminUser?.email || 'admin@ninoc.com'}</p>
+            </div>
+          </div>
         </div>
-        <nav className="flex-1 overflow-y-auto py-6">
-          <div className="px-8 mb-4">
-            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Dashboard</p>
-          </div>
-          <SidebarItem icon={LayoutDashboard} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
-
-          <div className="px-8 mt-8 mb-4">
-            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Catalog</p>
-          </div>
+        <nav className="flex-1 overflow-y-auto minimal-scroll py-4">
+          <SidebarItem 
+            icon={LayoutDashboard} 
+            label="Dashboard" 
+            active={activeTab === 'overview'} 
+            onClick={() => setActiveTab('overview')} 
+          />
+          
           <SidebarItem
             icon={Package}
-            label="Products"
-            active={activeTab === 'products'}
-            onClick={() => setActiveTab('products')}
-            badge={products.length}
+            label="Product"
+            active={['products', 'upload'].includes(activeTab)}
+            subItems={[
+              { label: 'Product List', id: 'products', active: activeTab === 'products', onClick: () => setActiveTab('products') },
+              { label: 'Upload Images', id: 'upload', active: activeTab === 'upload', onClick: () => setActiveTab('upload') }
+            ]}
           />
+          
           <SidebarItem
-            icon={Upload}
-            label="Upload Images"
-            active={activeTab === 'upload'}
-            onClick={() => openBulkUpload()}
+            icon={ShoppingCart}
+            label="Transaction"
+            active={['orders', 'logistics'].includes(activeTab)}
+            badge={pendingOrders}
+            subItems={[
+              { label: 'Online Order', id: 'orders', active: activeTab === 'orders', onClick: () => setActiveTab('orders') },
+              { label: 'Logistics', id: 'logistics', active: activeTab === 'logistics', onClick: () => setActiveTab('logistics') }
+            ]}
           />
-          <SidebarItem
-            icon={Box}
-            label="Inventory"
-            active={activeTab === 'inventory'}
-            onClick={() => setActiveTab('inventory')}
-            badge={totalStock}
-          />
+          
           <SidebarItem
             icon={Users}
-            label="Customers"
+            label="Membership"
             active={activeTab === 'customers'}
             onClick={() => setActiveTab('customers')}
             badge={customers.length}
           />
-
-          <div className="px-8 mt-8 mb-4">
-            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Operations</p>
-          </div>
+          
           <SidebarItem
-            icon={ShoppingCart}
-            label="Orders"
-            active={activeTab === 'orders'}
-            onClick={() => setActiveTab('orders')}
-            badge={pendingOrders}
+            icon={Box}
+            label="Info Stock"
+            active={activeTab === 'inventory'}
+            subItems={[
+              { label: 'Stock History', id: 'inventory', active: activeTab === 'inventory', onClick: () => setActiveTab('inventory') }
+            ]}
           />
-          <SidebarItem
-            icon={Truck}
-            label="Logistics"
-            active={activeTab === 'logistics'}
-            onClick={() => setActiveTab('logistics')}
-          />
-
-          <div className="px-8 mt-8 mb-4">
-            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Finance</p>
-          </div>
+          
           <SidebarItem
             icon={DollarSign}
-            label="Finance"
+            label="Report"
             active={activeTab === 'finance'}
-            onClick={() => setActiveTab('finance')}
+            subItems={[
+              { label: 'Finance', id: 'finance', active: activeTab === 'finance', onClick: () => setActiveTab('finance') }
+            ]}
           />
-
-          <div className="px-8 mt-8 mb-4">
-            <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Support</p>
-          </div>
+          
           <SidebarItem
             icon={MessageSquare}
-            label="Messages"
+            label="Support Chat"
             active={activeTab === 'messages'}
             onClick={() => setActiveTab('messages')}
             badge={totalUnreadChats}
           />
         </nav>
 
-        <div className="p-6 border-t border-gray-100">
+        <div className="p-4 border-t border-ink/5">
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               window.location.href = '/';
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-ink/40 hover:text-rose hover:bg-rose/5 rounded transition-all"
           >
-            <LogOut size={16} />
-            <span className="text-[10px] uppercase tracking-wider">Logout</span>
+            <LogOut size={14} />
+            <span className="text-[9px] uppercase tracking-wider font-medium">Logout</span>
           </button>
         </div>
       </aside>
@@ -1113,17 +1162,58 @@ export default function AdminDashboard() {
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col overflow-hidden pt-14 md:pt-0">
         {/* Desktop Header */}
-        <header className="hidden md:flex h-12 bg-white border-b border-gray-100 px-6 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] uppercase tracking-wider text-gray-300">NINOC /</span>
-            <h1 className="text-sm font-medium text-gray-900 uppercase tracking-wide">
-              {activeTab}
+        <header className="hidden md:flex h-14 bg-white border-b border-ink/5 px-8 items-center justify-between shrink-0">
+          <div className="flex-1 flex items-center gap-2">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-ink/40">
+              {['products', 'upload'].includes(activeTab) ? 'Product / ' :
+               ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
+               ['inventory'].includes(activeTab) ? 'Info Stock / ' :
+               ['finance'].includes(activeTab) ? 'Report / ' :
+               'Dashboard / '}
+            </span>
+            <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
+              {activeTab === 'overview' ? 'Overview' :
+               activeTab === 'products' ? 'Product List' :
+               activeTab === 'upload' ? 'Upload Images' :
+               activeTab === 'orders' ? 'Online Order' :
+               activeTab === 'logistics' ? 'Logistics' :
+               activeTab === 'customers' ? 'Membership' :
+               activeTab === 'inventory' ? 'Stock History' :
+               activeTab === 'finance' ? 'Finance' :
+               activeTab === 'messages' ? 'Support Chat' : activeTab}
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[8px] uppercase tracking-widest text-emerald-600 font-medium">System Online</span>
+          
+          <div className="flex-1 max-w-md mx-8">
+            <div className="relative group">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30 group-focus-within:text-rose transition-colors" />
+              <input
+                type="text"
+                placeholder="Title"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/20"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-center justify-end gap-5">
+            <button className="relative p-1.5 text-ink/40 hover:text-ink transition-colors">
+              <Bell size={16} />
+              {pendingOrders > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
+              )}
+            </button>
+            <div className="h-6 w-px bg-ink/5 mx-1" />
+            <div className="flex items-center gap-3 cursor-pointer group">
+              <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden border border-ink/5 group-hover:border-rose/20 transition-colors">
+                {adminUser?.email ? (
+                  <span className="text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
+                ) : (
+                  <User size={12} className="text-ink/50" />
+                )}
+              </div>
+              <span className="text-[10px] font-medium text-ink group-hover:text-rose transition-colors">
+                {adminUser?.email?.split('@')[0] || 'Admin User'}
+              </span>
             </div>
           </div>
         </header>
@@ -1580,86 +1670,203 @@ export default function AdminDashboard() {
                 key="orders"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-3"
+                className="space-y-4"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Orders</h2>
-                    <span className="text-[9px] text-gray-400">— {orders.length} total</span>
+                <div className="flex items-center justify-between border-b border-ink/5 pb-4">
+                  <div>
+                    <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
+                    <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
                   </div>
+                  <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
+                    Export Data
+                  </button>
                 </div>
 
-                {/* Filters */}
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-1 max-w-md">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                {/* Status Tabs */}
+                <div className="flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
+                  {[
+                    { id: 'all', label: 'All Order', count: orders.length },
+                    { id: 'pending', label: 'New Order', count: orders.filter(o => o.status === 'pending').length },
+                    { id: 'paid', label: 'Paid', count: orders.filter(o => o.status === 'paid').length },
+                    { id: 'shipped', label: 'Sent', count: orders.filter(o => o.status === 'shipped').length },
+                    { id: 'delivered', label: 'Completed', count: orders.filter(o => o.status === 'delivered').length },
+                    { id: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id)}
+                      className={cn(
+                        "relative px-4 py-3 text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
+                        statusFilter === tab.id ? "text-rose" : "text-ink/40 hover:text-ink/70"
+                      )}
+                    >
+                      {tab.label}
+                      <span className={cn(
+                        "ml-2 px-1.5 py-0.5 text-[8px] rounded",
+                        statusFilter === tab.id ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/40"
+                      )}>
+                        {tab.count}
+                      </span>
+                      {statusFilter === tab.id && (
+                        <motion.div layoutId="orderTabIndicator" className="absolute bottom-0 left-0 right-0 h-[2px] bg-rose" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Filter Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button className="flex items-center gap-2 px-3 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:border-rose/50 hover:text-rose transition-colors">
+                      <Filter size={12} /> Filter
+                    </button>
+                    <div className="h-4 w-px bg-ink/10 mx-1" />
+                    {['Payment Method', 'Courier', 'Date Range', 'Sort By'].map((filter, i) => (
+                      <button key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-ink/5 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:bg-ink/10 transition-colors">
+                        {filter} <ChevronDown size={10} />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="relative w-full max-w-xs">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
                     <input
                       type="text"
                       placeholder="Search orders..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                      className="w-full pl-9 pr-4 py-1.5 bg-white border border-ink/10 rounded-sm text-[10px] font-medium focus:outline-none focus:border-rose/50 transition-colors placeholder:text-ink/20"
                     />
                   </div>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
                 </div>
 
-                {/* Orders Table */}
-                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Order ID</th>
-                        <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Customer</th>
-                        <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Date</th>
-                        <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Amount</th>
-                        <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Status</th>
-                        <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                      {filteredOrders.map((order) => (
-                        <tr key={order.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <span className="font-mono text-sm text-gray-900">{order.id.slice(0, 12)}...</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <p className="text-sm font-medium text-gray-900">{order.shipping_address?.name || 'Guest'}</p>
-                            <p className="text-[10px] text-gray-400">{order.shipping_address?.city || '-'}</p>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
-                            {new Date(order.created_at).toLocaleDateString('id-ID')}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span className="font-medium text-gray-900">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <StatusBadge status={order.status} />
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <button
-                              onClick={() => openOrderDetail(order)}
-                              className="px-3 py-1.5 text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
-                            >
-                              Detail
+                {/* Order Cards List */}
+                <div className="space-y-4">
+                  {filteredOrders.length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center border border-dashed border-ink/10 rounded-md">
+                      <Box size={32} className="text-ink/20 mb-3" />
+                      <p className="text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
+                    </div>
+                  ) : (
+                    filteredOrders.map((order) => (
+                      <div key={order.id} className="bg-white border border-ink/10 rounded-sm overflow-hidden hover:border-ink/20 transition-colors">
+                        {/* Card Header */}
+                        <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-ink/5 border-b border-ink/10">
+                          <div className="flex items-center gap-4">
+                            <span className="text-[11px] font-medium uppercase tracking-wider text-ink">#{order.id.slice(0, 12).toUpperCase()}</span>
+                            <span className="text-[10px] font-medium text-ink/40">{new Date(order.created_at).toLocaleString('id-ID')}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={cn(
+                              "text-[9px] uppercase tracking-wider px-2 py-1 border rounded-sm font-medium",
+                              order.status === 'pending' ? "border-amber-200 bg-amber-50 text-amber-600" :
+                              order.status === 'paid' ? "border-emerald-200 bg-emerald-50 text-emerald-600" :
+                              order.status === 'shipped' ? "border-blue-200 bg-blue-50 text-blue-600" :
+                              order.status === 'delivered' ? "border-teal-200 bg-teal-50 text-teal-600" :
+                              "border-red-200 bg-red-50 text-red-600"
+                            )}>
+                              {order.status === 'pending' ? 'Waiting Payment' : order.status}
+                            </span>
+                            <button onClick={() => openOrderDetail(order)} className="text-[10px] font-medium uppercase tracking-wider text-rose hover:text-rose/80 transition-colors">
+                              View Detail
                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+                          {/* Product Info */}
+                          <div className="col-span-1 md:col-span-1 space-y-3">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Product Info</p>
+                            {order.order_items?.slice(0, 2).map((item, idx) => (
+                              <div key={item.id || idx} className="flex gap-3">
+                                <div className="w-12 h-12 bg-ink/5 rounded-sm shrink-0 border border-ink/5">
+                                  {/* Thumbnail placeholder or image */}
+                                </div>
+                                <div>
+                                  <p className="text-[11px] font-medium text-ink line-clamp-2 leading-tight">{item.product_name}</p>
+                                  <p className="text-[9px] text-ink/40 mt-1 uppercase">Size: {item.size || '-'} | Qty: {item.quantity}</p>
+                                </div>
+                              </div>
+                            ))}
+                            {order.order_items && order.order_items.length > 2 && (
+                              <button className="text-[9px] text-rose uppercase tracking-wider font-medium">+{order.order_items.length - 2} more items</button>
+                            )}
+                          </div>
+
+                          {/* Shipping Address */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Shipping To</p>
+                            <p className="text-[11px] font-medium text-ink">{order.shipping_address?.name || 'Guest User'}</p>
+                            <p className="text-[10px] font-medium text-ink/60 font-mono mt-1">{order.shipping_address?.phone || '-'}</p>
+                            <p className="text-[10px] font-medium text-ink/40 mt-1 line-clamp-2 leading-relaxed">{order.shipping_address?.address}</p>
+                            <p className="text-[10px] font-medium text-ink/40 mt-1 uppercase">{order.shipping_address?.city}</p>
+                          </div>
+
+                          {/* Payment */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Payment</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <CreditCard size={14} className="text-ink/40" />
+                              <span className="text-[11px] font-medium text-ink uppercase tracking-wider">Midtrans</span>
+                            </div>
+                            <span className={cn(
+                              "text-[9px] uppercase tracking-wider font-medium",
+                              order.payment_status === 'success' ? "text-emerald-600" :
+                              order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                            )}>
+                              {order.payment_status}
+                            </span>
+                          </div>
+
+                          {/* Courier */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Courier</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Truck size={14} className="text-ink/40" />
+                              <span className="text-[11px] font-medium text-ink uppercase tracking-wider">{order.courier || 'Standard'}</span>
+                            </div>
+                            <p className="text-[10px] font-medium text-ink/40 font-mono mt-1">{order.tracking_id || 'No tracking ID'}</p>
+                          </div>
+                        </div>
+
+                        {/* Card Footer */}
+                        <div className="flex items-center justify-end px-4 py-3 bg-ink/5 border-t border-ink/10">
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-ink/40 mr-4">Total Amount</p>
+                          <p className="text-sm font-medium text-ink">IDR {order.total_price.toLocaleString('id-ID')}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
+
+                {/* Pagination */}
+                {filteredOrders.length > 0 && (
+                  <div className="flex items-center justify-between py-4 border-t border-ink/5 mt-4">
+                    <div className="flex items-center gap-2 text-[10px] uppercase font-medium tracking-wider text-ink/40">
+                      Show
+                      <select className="bg-transparent border border-ink/10 rounded-sm px-2 py-1 outline-none text-ink">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>50</option>
+                      </select>
+                      per page
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
+                        <ChevronLeft size={12} />
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-rose bg-rose text-white rounded-sm text-[10px] font-medium transition-colors">
+                        1
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors text-[10px] font-medium">
+                        2
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
+                        <ChevronRight size={12} />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 

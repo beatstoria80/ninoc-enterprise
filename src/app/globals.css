@@ -308,7 +308,7 @@ input:focus, textarea:focus, select:focus {
   }
 
   /* Show only the printable invoice container */
-  .print\\:block,
+  .print\:block,
   [class*="print:block"] {
     display: block !important;
     visibility: visible !important;
@@ -323,7 +323,7 @@ input:focus, textarea:focus, select:focus {
   }
 
   /* Ensure all children inside the printable block are visible */
-  .print\\:block *,
+  .print\:block *,
   [class*="print:block"] * {
     visibility: visible !important;
   }
