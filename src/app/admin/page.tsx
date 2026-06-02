@@ -3278,15 +3278,15 @@ export default function AdminDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-end"
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
             onClick={() => setIsOrderModalOpen(false)}
           >
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="w-full max-w-xl h-full bg-white overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full max-w-2xl max-h-[90vh] bg-white rounded-xl shadow-xl overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
@@ -3377,7 +3377,13 @@ export default function AdminDashboard() {
                   <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide mb-4">Shipping Address</h3>
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="font-medium text-gray-900">{selectedOrder.shipping_address?.name}</p>
-                    <p className="text-sm text-gray-600">{selectedOrder.shipping_address?.phone}</p>
+                    <p className="text-sm text-gray-600">
+                      {selectedOrder.shipping_address?.phone ? (
+                        selectedOrder.shipping_address.phone.length > 6
+                          ? selectedOrder.shipping_address.phone.slice(0, 4) + '****' + selectedOrder.shipping_address.phone.slice(-3)
+                          : selectedOrder.shipping_address.phone
+                      ) : '-'}
+                    </p>
                     <p className="text-sm text-gray-600 mt-2">{selectedOrder.shipping_address?.address}</p>
                     <p className="text-sm text-gray-600">{selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}</p>
                   </div>
