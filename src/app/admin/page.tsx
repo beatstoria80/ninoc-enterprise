@@ -640,48 +640,36 @@ export default function AdminDashboard() {
     }
   };
 
+  // ===== PRODUCT IMAGE UPLOAD (Single) =====
   const handleProductImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setIsUploadingProductImage(true);
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `product-${crypto.randomUUID()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Use API route (server-side with service role key)
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('bucket', 'products');
 
-      // Try uploading to 'products' first
-      let uploadResult = await supabase.storage
-        .from('products')
-        .upload(filePath, file);
+      const res = await fetch('/api/admin/upload-images', {
+        method: 'POST',
+        body: formData
+      });
 
-      let bucketName = 'products';
+      const data = await res.json();
 
-      // Fallback to 'avatars' if 'products' bucket is not found
-      if (uploadResult.error && uploadResult.error.message.includes('Bucket not found')) {
-        console.warn("Bucket 'products' not found. Falling back to 'avatars'.");
-        uploadResult = await supabase.storage
-          .from('avatars')
-          .upload(filePath, file);
-        bucketName = 'avatars';
-        
-        if (uploadResult.error) {
-          throw uploadResult.error;
-        } else {
-          alert("Note: Bucket 'products' was not found in your Supabase storage, so the image was successfully uploaded to 'avatars' instead. We recommend creating a public bucket named 'products' in your Supabase Dashboard.");
-        }
-      } else if (uploadResult.error) {
-        throw uploadResult.error;
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Upload failed');
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(filePath);
-
-      setProductForm({ ...productForm, image_url: publicUrl });
+      if (data.results && data.results[0]?.url) {
+        setProductForm(prev => ({ ...prev, image_url: data.results[0].url }));
+        alert('Image uploaded successfully!');
+      }
     } catch (err) {
       const error = err as Error;
-      alert('Error uploading image: ' + error.message);
+      alert('Error uploading image: ' + (error.message || 'Unknown error'));
     } finally {
       setIsUploadingProductImage(false);
     }
