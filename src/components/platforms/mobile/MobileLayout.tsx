@@ -33,9 +33,11 @@ const CartIcon = ({ active }: { active: boolean }) => (
   </svg>
 );
 
-const ChatIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2C6.48 2 2 5.58 2 10C2 12.59 3.35 14.94 5.57 16.53L4 21L8.26 18.64C9.08 19.04 9.98 19.25 10.93 19.25C12.11 19.25 13.21 18.96 14.17 18.43C15.13 17.9 15.93 17.12 16.52 16.18C17.11 15.24 17.46 14.15 17.54 13H19.94C19.99 13.91 20 14.82 20 15.75C20 20.42 16.52 24 12 24Z" strokeLinecap="round" strokeLinejoin="round" />
+// SUPPORT — headphones icon (familiar customer service symbol)
+const HeadphonesIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 14V6C3 3.79086 4.79086 2 7 2H17C19.2091 2 21 3.79086 21 6V14" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 14C3 14 4 14 5 14C6 14 7 16 7 18V19C7 20.1046 7.89543 21 9 21H10C11.1046 21 12 20.1046 12 19V18C12 16 13 14 14 14C15 14 16 16 16 18V19C16 20.1046 16.8954 21 18 21H19C20.1046 21 21 20.1046 21 19V18C21 16 21 14 21 14" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -632,13 +634,13 @@ export default function MobileLayout({
               </span>
             </Link>
 
-            {/* Chat/Support */}
+            {/* Support */}
             <PressScale
               onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))}
               className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] text-ink/30"
             >
               <div className="relative">
-                <ChatIcon />
+                <HeadphonesIcon />
                 {supportUnreadCount > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -649,7 +651,7 @@ export default function MobileLayout({
                   </motion.span>
                 )}
               </div>
-              <span className="text-[7px] font-medium uppercase tracking-wider text-ink/40">Chat</span>
+              <span className="text-[7px] font-medium uppercase tracking-wider text-ink/40">Support</span>
             </PressScale>
 
             {/* Profile */}

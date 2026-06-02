@@ -7,39 +7,34 @@ import Link from 'next/link';
 
 // ═══════════════════════════════════════════════════════════════
 // MODERN CUSTOM ICONS — NINOC STUDIO
-// Clean, geometric, distinctive design
 // ═══════════════════════════════════════════════════════════════
 
-const DiamondIcon = ({ size = 24, className = '' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M12 2L2 9L12 16L22 9L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M2 15L12 22L22 15" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M2 9V15L12 22V9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M22 9V15L12 22V9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+// STAPLES — clothing hanger
+const HangerIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3C12 3 12 5 12 6M12 6L4 10M12 6L20 10" />
+    <path d="M4 10L4 18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V10" />
+    <path d="M4 10H20" />
+    <path d="M7 14H17" />
   </svg>
 );
 
-const ChronographIcon = ({ size = 24, className = '' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M12 7V12L15 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 3V1M12 23V21M21 12H23M1 12H3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+// LIMITED — flame
+const FlameIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2C12 2 8 7 8 11C8 13.76 9.68 16 12 16C14.32 16 16 13.76 16 11C16 11 16 8 12 2Z" />
+    <path d="M12 16C12 16 10 18.5 10 20C10 21.1 10.9 22 12 22C13.1 22 14 21.1 14 20C14 18.5 12 16 12 16Z" />
+    <path d="M8 11C8 11 6 12 6 14C6 15.66 7.34 17 9 17C10.66 17 12 15.66 12 14C12 13 10 12 10 12" />
   </svg>
 );
 
-const HexagonBadgeIcon = ({ size = 24, className = '' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M12 2L20.5 7V17L12 22L3.5 17V7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M12 12V18M8 10.5L16 15.5M16 10.5L8 15.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
-  </svg>
-);
-
-const TagIcon = ({ size = 24, className = '' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M20.59 13.41L13.42 20.59C13.2343 20.778 13.0137 20.9181 12.7709 21.0031C12.5281 21.0881 12.2677 21.1163 12.005 21.0863C11.7422 21.0563 11.4822 20.9686 11.2407 20.8282C10.9991 20.6877 10.7804 20.4972 10.5967 20.267L2 11.667V2H11.667L20.267 10.596C20.4972 10.7804 20.6877 10.9991 20.8282 11.2407C20.9686 11.4822 21.0563 11.7422 21.0863 12.005C21.1163 12.2677 21.0881 12.5281 21.0031 12.7709C20.9181 13.0137 20.778 13.2343 20.59 13.42Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.5" />
+// THROWBACK — clock rewind / history
+const ClockRewindIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7V12L9 14" />
+    <path d="M9 12L7 10M9 12L7 14" />
+    <path d="M3 12H5M19 12H21" />
   </svg>
 );
 
@@ -148,11 +143,13 @@ interface CollectionCardProps {
   description: string;
   icon: React.ReactNode;
   index: number;
-  variant?: 'essential' | 'limited' | 'heritage' | 'collection';
+  variant?: 'staples' | 'limited' | 'throwback' | 'collection';
   itemCount?: number;
+  cta?: string;
+  tag?: string;
 }
 
-function CollectionCard({ title, description, icon, index, variant = 'essential', itemCount = 12 }: CollectionCardProps) {
+function CollectionCard({ title, description, icon, index, variant = 'staples', itemCount = 12, cta = 'SHOP THE DROP →', tag = 'CORE-001' }: CollectionCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -247,7 +244,7 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
               transition={{ duration: DURATION.fast }}
               className="flex items-center gap-2"
             >
-              <span className="text-[10px] md:text-xs font-medium uppercase tracking-widest">Explore</span>
+              <span className="text-[10px] md:text-xs font-medium uppercase tracking-widest">{cta}</span>
               <ArrowRight size={14} />
             </motion.div>
           </motion.div>
@@ -259,7 +256,7 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
           animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)', color: isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.4)' }}
           transition={{ duration: DURATION.fast }}
         >
-          COLLECT-{String(index + 1).padStart(3, '0')}
+          {tag}
         </motion.div>
 
         {/* Corner accent */}
@@ -285,25 +282,31 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
 export default function Collections() {
   const collections = [
     {
-      title: 'Essential',
-      description: 'Core pieces for everyday expression.',
-      icon: <DiamondIcon size={28} />,
-      variant: 'essential' as const,
+      title: 'Staples',
+      description: 'The everyday fits you reach for first.',
+      icon: <HangerIcon size={28} />,
+      variant: 'staples' as const,
       itemCount: 24,
+      cta: 'SHOP THE DROP →',
+      tag: 'CORE-001',
     },
     {
       title: 'Limited',
-      description: 'Exclusive drops in limited quantities.',
-      icon: <ChronographIcon size={28} />,
+      description: 'Gone when it\'s gone. No restock. No waiting list.',
+      icon: <FlameIcon size={28} />,
       variant: 'limited' as const,
       itemCount: 8,
+      cta: 'GRAB IT →',
+      tag: 'DROP-002',
     },
     {
-      title: 'Heritage',
-      description: 'Heritage pieces from previous seasons.',
-      icon: <HexagonBadgeIcon size={28} />,
-      variant: 'heritage' as const,
+      title: 'Throwback',
+      description: 'Previous season pieces that still go hard. Built different, still relevant.',
+      icon: <ClockRewindIcon size={28} />,
+      variant: 'throwback' as const,
       itemCount: 16,
+      cta: 'DIG IN →',
+      tag: 'ARCH-003',
     },
   ];
 
@@ -324,7 +327,7 @@ export default function Collections() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: DURATION.medium }}
           >
-            {/* Custom archive icon */}
+            {/* Custom drops icon */}
             <motion.div
               className="relative"
               animate={{ rotate: [0, 360] }}
@@ -335,7 +338,7 @@ export default function Collections() {
                 <path d="M8 5L11 6.5V9.5L8 11L5 9.5V6.5L8 5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
               </svg>
             </motion.div>
-            <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40">NINOC Archive</span>
+            <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40">Ninoc Drops</span>
           </motion.div>
 
           <motion.h1
@@ -344,6 +347,7 @@ export default function Collections() {
             initial="hidden"
             animate="visible"
             custom={0}
+            style={{ fontStyle: 'italic', fontStretch: 'condensed' }}
           >
             Collections
           </motion.h1>
@@ -354,7 +358,7 @@ export default function Collections() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: DURATION.medium }}
           >
-            Curated selections for the conscious collector.
+            Fresh cuts. Real threads. No restock.
           </motion.p>
 
           {/* Decorative line */}
@@ -378,6 +382,8 @@ export default function Collections() {
               index={index}
               variant={collection.variant}
               itemCount={collection.itemCount}
+              cta={collection.cta}
+              tag={collection.tag}
             />
           ))}
         </div>

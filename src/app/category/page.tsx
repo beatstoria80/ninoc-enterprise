@@ -2,11 +2,39 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
-import { Grid3X3, Shirt, Wrench, Sparkles, ChevronRight, ArrowLeft, Package } from 'lucide-react';
+import { Grid3X3, ChevronRight, ArrowLeft, Package } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';
+
+// ═══════════════════════════════════════════════════════════════
+// CUSTOM MODERN ICONS — NINOC STUDIO
+// ═══════════════════════════════════════════════════════════════
+
+// Pakaian (Apparel) — T-shirt icon
+const PakaianIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
+  </svg>
+);
+
+// Utilities (Functional) — Wrench/tool icon
+const UtilitiesIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+  </svg>
+);
+
+// Aksesoris (Accents) — Diamond/gem icon
+const AksesorisIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 9L12 16L22 9L12 2Z" />
+    <path d="M2 15L12 22L22 15" />
+    <path d="M2 9V15L12 22V9" />
+    <path d="M22 9V15L12 22V9" />
+  </svg>
+);
 
 // ═══════════════════════════════════════════════════════════════
 // EMIL KOWALSKI ANIMATION ENGINE — NINOC STUDIO
@@ -38,9 +66,9 @@ interface Product {
 }
 
 const CATEGORIES = [
-  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: Shirt, description: 'Outerwear, tops & bottoms', spec: 'GARMENT-001' },
-  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: Wrench, description: 'Bags, cases & gear', spec: 'UTIL-002' },
-  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: Sparkles, description: 'Jewelry & details', spec: 'ACCS-003' },
+  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: PakaianIcon, description: 'Outerwear, tops & bottoms', spec: 'GARMENT-001' },
+  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: UtilitiesIcon, description: 'Bags, cases & gear', spec: 'UTIL-002' },
+  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: AksesorisIcon, description: 'Jewelry & details', spec: 'ACCS-003' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -151,7 +179,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
           animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#E8527A' }}
           transition={{ duration: DURATION.fast }}
         >
-          <Icon size={20} strokeWidth={1.5} />
+          <Icon />
         </motion.div>
 
         {/* Content */}

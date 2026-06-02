@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView, Variants, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
-import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, Shirt, Wrench, Sparkles, ArrowRight } from 'lucide-react';
+import { motion, useInView, Variants, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -10,24 +10,51 @@ import { CategoryType } from '@/types';
 import DragSlider from '@/components/DragSlider';
 
 // ═══════════════════════════════════════════════════════════════
+// CUSTOM MODERN ICONS — NINOC STUDIO
+// ═══════════════════════════════════════════════════════════════
+
+// Pakaian (Apparel) — T-shirt icon
+const PakaianIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
+  </svg>
+);
+
+// Utilities (Functional) — Wrench/tool icon
+const UtilitiesIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+  </svg>
+);
+
+// Aksesoris (Accents) — Diamond/gem icon
+const AksesorisIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 9L12 16L22 9L12 2Z" />
+    <path d="M2 15L12 22L22 15" />
+    <path d="M2 9V15L12 22V9" />
+    <path d="M22 9V15L12 22V9" />
+  </svg>
+);
+
+// ═══════════════════════════════════════════════════════════════
 // EMIL KOWALSKI ANIMATION ENGINE — NINOC STUDIO
-// Physics: Custom easing for premium feel
 // ═══════════════════════════════════════════════════════════════
 
 const EASING = {
-  out: [0.23, 1, 0.32, 1] as const,      // Strong ease-out for UI
-  inOut: [0.77, 0, 0.175, 1] as const,    // Smooth ease-in-out
+  out: [0.23, 1, 0.32, 1] as const,
+  inOut: [0.77, 0, 0.175, 1] as const,
   spring: { type: "spring" as const, stiffness: 400, damping: 30 },
   springBounce: { type: "spring" as const, stiffness: 300, damping: 20 },
 };
 
 const DURATION = {
-  micro: 0.1,    // 100ms - button press
-  fast: 0.15,    // 150ms - small hover
-  normal: 0.2,   // 200ms - standard
-  medium: 0.3,   // 300ms - modals
-  slow: 0.5,     // 500ms - page transitions
-  hero: 0.8,     // 800ms - hero elements
+  micro: 0.1,
+  fast: 0.15,
+  normal: 0.2,
+  medium: 0.3,
+  slow: 0.5,
+  hero: 0.8,
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -35,9 +62,9 @@ const DURATION = {
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: Shirt, href: '/category?cat=pakaian', spec: 'GARMENT-001' },
-  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: Wrench, href: '/category?cat=utilities', spec: 'UTIL-002' },
-  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: Sparkles, href: '/category?cat=aksesoris', spec: 'ACCS-003' },
+  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: PakaianIcon, href: '/category?cat=pakaian', spec: 'GARMENT-001' },
+  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: UtilitiesIcon, href: '/category?cat=utilities', spec: 'UTIL-002' },
+  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: AksesorisIcon, href: '/category?cat=aksesoris', spec: 'ACCS-003' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -95,16 +122,8 @@ const categoryPillVariants: Variants = {
   }),
 };
 
-const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number = 0) => ({
-    opacity: 1, y: 0,
-    transition: { delay: i * 0.08, duration: DURATION.medium, ease: EASING.out },
-  }),
-};
-
 // ═══════════════════════════════════════════════════════════════
-// PRESS SCALE BUTTON — Emil's philosophy: buttons must feel responsive
+// PRESS SCALE BUTTON
 // ═══════════════════════════════════════════════════════════════
 
 function PressButton({ children, className = '', onClick, href, whileHover = {}, whileTap = {} }: {
@@ -126,14 +145,12 @@ function PressButton({ children, className = '', onClick, href, whileHover = {},
     </motion.div>
   );
 
-  if (href) {
-    return <Link href={href}>{content}</Link>;
-  }
+  if (href) return <Link href={href}>{content}</Link>;
   return <button onClick={onClick}>{content}</button>;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PORTRAIT CAROUSEL — 5 images cycling on hover
+// PORTRAIT CAROUSEL
 // ═══════════════════════════════════════════════════════════════
 
 const PORTRAIT_IMAGES = [
@@ -206,7 +223,6 @@ function PortraitImageCarousel() {
         </motion.div>
       ))}
 
-      {/* Dot indicators */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
@@ -244,7 +260,7 @@ function PortraitImageCarousel() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PRODUCT CARD — Enhanced with Emil's principles
+// PRODUCT CARD
 // ═══════════════════════════════════════════════════════════════
 
 interface ProductCardProps {
@@ -258,7 +274,7 @@ function ProductCard({ product, index }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
-  const CategoryIcon = categoryInfo?.icon || Shirt;
+  const CategoryIcon = categoryInfo?.icon || PakaianIcon;
 
   return (
     <motion.div
@@ -287,11 +303,10 @@ function ProductCard({ product, index }: ProductCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-ink/10">
-              <CategoryIcon size={32} />
+              <CategoryIcon />
             </div>
           )}
 
-          {/* Spec badge */}
           <motion.div
             className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10"
             animate={{ opacity: isHovered ? 0.5 : 1 }}
@@ -366,7 +381,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// TRUST ITEM — Spring bounce on entrance
+// TRUST ITEM
 // ═══════════════════════════════════════════════════════════════
 
 function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title: string; desc: string; index: number }) {
@@ -386,7 +401,7 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
       onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div
-        className="w-8 h-8 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose"
+        className="w-10 h-10 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose"
         variants={trustIconVariants}
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
@@ -411,12 +426,12 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CATEGORY QUICK ACCESS — Staggered entrance
+// CATEGORY QUICK ACCESS — Mobile optimized size
 // ═══════════════════════════════════════════════════════════════
 
 function CategoryQuickAccess() {
   return (
-    <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+    <div className="flex items-center gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-2">
       {CATEGORIES.map((cat, i) => {
         const Icon = cat.icon;
         return (
@@ -429,38 +444,50 @@ function CategoryQuickAccess() {
           >
             <PressButton
               href={cat.href}
-              className="flex items-center gap-2 md:gap-3 bg-white border border-ink/5 px-3 md:px-5 py-2 md:py-3 group whitespace-nowrap"
+              className="flex items-center gap-3 md:gap-4 bg-white border border-ink/10 px-5 py-4 md:px-6 md:py-4 group whitespace-nowrap rounded-none"
               whileHover={{ borderColor: '#E8527A', backgroundColor: '#E8527A' }}
               whileTap={{ scale: 0.97 }}
             >
+              {/* Icon container - bigger for mobile */}
               <motion.div
-                animate={{ color: '#E8527A' }}
+                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-ink/5 rounded-none"
+                animate={{ backgroundColor: '#E8527A' }}
                 transition={{ duration: DURATION.fast }}
-                style={{ color: '#E8527A' }}
               >
-                <Icon size={14} strokeWidth={1.5} />
+                <motion.div
+                  animate={{ color: '#ffffff' }}
+                  transition={{ duration: DURATION.fast }}
+                  className="text-rose"
+                >
+                  <Icon />
+                </motion.div>
               </motion.div>
-              <div className="flex flex-col leading-none">
+
+              {/* Label */}
+              <div className="flex flex-col leading-none gap-0.5">
                 <motion.span
-                  className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
+                  className="text-sm md:text-base font-display font-medium italic uppercase tracking-tight"
                   animate={{ color: '#141414' }}
                   transition={{ duration: DURATION.fast }}
                 >
                   {cat.label}
                 </motion.span>
                 <motion.span
-                  className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40 hidden md:block"
-                  animate={{ color: 'rgba(20,20,20,0.4)' }}
+                  className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
+                  animate={{ color: 'rgba(20,20,20,0.5)' }}
                   transition={{ duration: DURATION.fast }}
                 >
                   {cat.sublabel}
                 </motion.span>
               </div>
+
+              {/* Arrow */}
               <motion.div
-                animate={{ x: 0, opacity: 0.3 }}
-                style={{ opacity: 0.3, color: '#141414' }}
+                className="ml-2"
+                animate={{ x: 0, opacity: 0.4 }}
+                transition={{ duration: DURATION.fast }}
               >
-                <ChevronRight size={12} />
+                <ArrowRight size={14} />
               </motion.div>
             </PressButton>
           </motion.div>
@@ -589,18 +616,22 @@ export default function Home() {
               </PressButton>
             </motion.div>
 
-            {/* Mobile Metadata */}
-            <div className="grid grid-cols-3 gap-2 mt-4 md:hidden">
-              {[{ label: 'Year', value: '2024' }, { label: 'Loc', value: 'BDG, ID' }, { label: 'Phil', value: 'Simplicity' }].map((item, i) => (
+            {/* Mobile Metadata - Improved alignment and sizing */}
+            <div className="grid grid-cols-3 gap-4 mt-6 md:hidden">
+              {[
+                { label: 'YEAR', value: '2024' },
+                { label: 'LOC', value: 'BDG, ID' },
+                { label: 'PHIL', value: 'Simplicity' }
+              ].map((item, i) => (
                 <motion.div
                   key={item.label}
-                  className="space-y-0"
+                  className="flex flex-col items-center text-center"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
                 >
-                  <p className="text-[7px] font-medium uppercase tracking-widest text-ink/40">{item.label}</p>
-                  <p className="text-[9px] font-medium text-ink uppercase italic leading-none">{item.value}</p>
+                  <p className="text-[6px] font-medium uppercase tracking-[0.25em] text-ink/30 mb-1">{item.label}</p>
+                  <p className="text-[10px] font-medium text-ink uppercase italic leading-none tracking-tight">{item.value}</p>
                 </motion.div>
               ))}
             </div>
@@ -662,7 +693,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CATEGORY INDEX — QUICK ACCESS */}
+      {/* CATEGORY INDEX — QUICK ACCESS - Mobile optimized */}
       <section className="px-4 md:px-12 max-w-[1800px] mx-auto mt-8 md:mt-16 mb-0 md:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -727,9 +758,9 @@ export default function Home() {
       <FadeUpSection delay={0.2}>
         <section className="md:mt-40 mt-8 md:mb-40 mb-12 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
           <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-20">
-            <TrustItem icon={<ShieldCheck className="w-4 h-4 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
-            <TrustItem icon={<Zap className="w-4 h-4 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
-            <TrustItem icon={<Package className="w-4 h-4 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />
+            <TrustItem icon={<ShieldCheck className="w-5 h-5 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
+            <TrustItem icon={<Zap className="w-5 h-5 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
+            <TrustItem icon={<Package className="w-5 h-5 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />
           </div>
         </section>
       </FadeUpSection>
