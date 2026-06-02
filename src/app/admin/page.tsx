@@ -1059,26 +1059,11 @@ export default function AdminDashboard() {
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex w-64 bg-white border-r border-ink/5 flex-col z-50 shrink-0">
         <div className="p-6 border-b border-ink/5">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-ink flex items-center justify-center rounded-sm">
               <span className="text-white font-display italic font-medium text-xs">N</span>
             </div>
             <div className="font-display font-medium text-lg italic tracking-tighter text-ink uppercase leading-none">NINOC</div>
-          </div>
-          
-          {/* User Profile in Sidebar */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden shrink-0">
-              {adminUser?.email ? (
-                <span className="text-[10px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
-              ) : (
-                <User size={14} className="text-ink/50" />
-              )}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-[10px] font-medium text-ink truncate">{adminUser?.email?.split('@')[0] || 'Admin User'}</p>
-              <p className="text-[8px] text-ink/40 truncate">{adminUser?.email || 'admin@ninoc.com'}</p>
-            </div>
           </div>
         </div>
         <nav className="flex-1 overflow-y-auto minimal-scroll py-4">
@@ -1199,7 +1184,7 @@ export default function AdminDashboard() {
             <button className="relative p-1.5 text-ink/40 hover:text-ink transition-colors">
               <Bell size={16} />
               {pendingOrders > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full" />
               )}
             </button>
             <div className="h-6 w-px bg-ink/5 mx-1" />
