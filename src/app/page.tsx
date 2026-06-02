@@ -126,18 +126,19 @@ const categoryPillVariants: Variants = {
 // PRESS SCALE BUTTON
 // ═══════════════════════════════════════════════════════════════
 
-function PressButton({ children, className = '', onClick, href, whileHover = {}, whileTap = {} }: {
+function PressButton({ children, className = '', onClick, href, whileHover, whileTap }: {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
   href?: string;
-  whileHover?: object;
-  whileTap?: object;
+  whileHover?: Parameters<typeof motion.div>[0]['whileHover'];
+  whileTap?: Parameters<typeof motion.div>[0]['whileTap'];
 }) {
   const content = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <motion.div
-      whileHover={Object.keys(whileHover).length ? { scale: 1.02, ...whileHover } : { scale: 1.02 }}
-      whileTap={Object.keys(whileTap).length ? whileTap : undefined}
+      whileHover={whileHover as any}
+      whileTap={whileTap as any}
       transition={{ duration: DURATION.micro, ease: EASING.out }}
       className={className}
     >
