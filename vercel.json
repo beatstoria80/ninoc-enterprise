@@ -1,0 +1,11 @@
+{
+  "serverless": {
+    "maxDuration": 120
+  },
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 120,
+      "memory": 512
+    }
+  }
+}
