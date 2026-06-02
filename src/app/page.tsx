@@ -616,8 +616,8 @@ export default function Home() {
               </PressButton>
             </motion.div>
 
-            {/* Mobile Metadata - Improved alignment and sizing */}
-            <div className="grid grid-cols-3 gap-4 mt-6 md:hidden">
+            {/* Mobile Metadata - Tiny scale, balanced */}
+            <div className="grid grid-cols-3 gap-0 mt-6 md:hidden">
               {[
                 { label: 'YEAR', value: '2024' },
                 { label: 'LOC', value: 'BDG, ID' },
@@ -625,13 +625,13 @@ export default function Home() {
               ].map((item, i) => (
                 <motion.div
                   key={item.label}
-                  className="flex flex-col items-center text-center"
+                  className="flex flex-col items-center text-center border-x border-ink/5 first:border-l-0 last:border-r-0"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
                 >
-                  <p className="text-[6px] font-medium uppercase tracking-[0.25em] text-ink/30 mb-1">{item.label}</p>
-                  <p className="text-[10px] font-medium text-ink uppercase italic leading-none tracking-tight">{item.value}</p>
+                  <p className="text-[5px] font-medium uppercase tracking-[0.3em] text-ink/25 leading-none mt-2 mb-1">{item.label}</p>
+                  <p className="text-[9px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
                 </motion.div>
               ))}
             </div>
