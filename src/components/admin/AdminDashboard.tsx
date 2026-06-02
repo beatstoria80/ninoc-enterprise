@@ -82,6 +82,7 @@ interface ShippingAddress {
   phone: string;
   address: string;
   city: string;
+  province?: string;
   postal_code: string;
 }
 
@@ -179,120 +180,303 @@ interface Customer {
 }
 
 // ============ PRINTABLE SHIPPING LABEL ============
+// ============ BARCODE CODE128 RENDERER ============
+function encodeCode128(text: string): number[] {
+  const CODE128_B: Record<string, number> = {};
+  for (let i = 0; i < 95; i++) CODE128_B[String.fromCharCode(32 + i)] = i;
+  
+  const patterns: number[][] = [
+    [2,1,2,2,2,2],[2,2,2,1,2,2],[2,2,2,2,2,1],[1,2,1,2,2,3],[1,2,1,3,2,2],
+    [1,3,1,2,2,2],[1,2,2,2,1,3],[1,2,2,3,1,2],[1,3,2,2,1,2],[2,2,1,2,1,3],
+    [2,2,1,3,1,2],[2,3,1,2,1,2],[1,1,2,2,3,2],[1,2,2,1,3,2],[1,2,2,2,3,1],
+    [1,1,3,2,2,2],[1,2,3,1,2,2],[1,2,3,2,2,1],[2,2,3,2,1,1],[2,2,1,1,3,2],
+    [2,2,1,2,3,1],[2,1,3,2,1,2],[2,2,3,1,1,2],[3,1,2,1,3,1],[3,1,1,2,2,2],
+    [3,2,1,1,2,2],[3,2,1,2,2,1],[3,1,2,2,1,2],[3,2,2,1,1,2],[3,2,2,2,1,1],
+    [2,1,2,1,2,3],[2,1,2,3,2,1],[2,3,2,1,2,1],[1,1,1,3,2,3],[1,3,1,1,2,3],
+    [1,3,1,3,2,1],[1,1,2,3,1,3],[1,3,2,1,1,3],[1,3,2,3,1,1],[2,1,1,3,1,3],
+    [2,3,1,1,1,3],[2,3,1,3,1,1],[1,1,2,1,3,3],[1,1,2,3,3,1],[1,3,2,1,3,1],
+    [1,1,3,1,2,3],[1,1,3,3,2,1],[1,3,3,1,2,1],[3,1,3,1,2,1],[2,1,1,3,3,1],
+    [2,3,1,1,3,1],[2,1,3,1,1,3],[2,1,3,3,1,1],[2,1,3,1,3,1],[3,1,1,1,2,3],
+    [3,1,1,3,2,1],[3,3,1,1,2,1],[3,1,2,1,1,3],[3,1,2,3,1,1],[3,3,2,1,1,1],
+    [3,1,4,1,1,1],[2,2,1,4,1,1],[4,3,1,1,1,1],[1,1,1,2,2,4],[1,1,1,4,2,2],
+    [1,2,1,1,2,4],[1,2,1,4,2,1],[1,4,1,1,2,2],[1,4,1,2,2,1],[1,1,2,2,1,4],
+    [1,1,2,4,1,2],[1,2,2,1,1,4],[1,2,2,4,1,1],[1,4,2,1,1,2],[1,4,2,2,1,1],
+    [2,4,1,2,1,1],[2,2,1,1,1,4],[4,1,3,1,1,1],[2,4,1,1,1,2],[1,3,4,1,1,1],
+    [1,1,1,2,4,2],[1,2,1,1,4,2],[1,2,1,2,4,1],[1,1,4,2,1,2],[1,2,4,1,1,2],
+    [1,2,4,2,1,1],[4,1,1,2,1,2],[4,2,1,1,1,2],[4,2,1,2,1,1],[2,1,2,1,4,1],
+    [2,1,4,1,2,1],[4,1,2,1,2,1],[1,1,1,1,4,3],[1,1,1,3,4,1],[1,3,1,1,4,1],
+    [1,1,4,1,1,3],[1,1,4,3,1,1],[4,1,1,1,1,3],[4,1,1,3,1,1],[1,1,3,1,4,1],
+    [1,1,4,1,3,1],[3,1,1,1,4,1],[4,1,1,1,3,1],[2,1,1,4,1,2],[2,1,1,2,1,4],
+    [2,1,1,2,3,2],[2,3,3,1,1,1,2]
+  ];
+  
+  const startCode = 104; // Start B
+  const bars: number[] = [...patterns[startCode]];
+  let checksum = startCode;
+  
+  for (let i = 0; i < text.length; i++) {
+    const charVal = CODE128_B[text[i]] ?? 0;
+    bars.push(...patterns[charVal]);
+    checksum += charVal * (i + 1);
+  }
+  
+  bars.push(...patterns[checksum % 103]);
+  bars.push(...patterns[106]); // Stop
+  
+  return bars;
+}
+
+function BarcodeCode128({ value, width = 280, height = 50 }: { value: string; width?: number; height?: number }) {
+  if (!value) return null;
+  const bars = encodeCode128(value);
+  const totalUnits = bars.reduce((s, b) => s + b, 0);
+  const unitW = width / totalUnits;
+  
+  let x = 0;
+  const rects: React.ReactElement[] = [];
+  bars.forEach((w, i) => {
+    if (i % 2 === 0) {
+      rects.push(<rect key={i} x={x} y={0} width={w * unitW} height={height} fill="black" />);
+    }
+    x += w * unitW;
+  });
+  
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+      {rects}
+    </svg>
+  );
+}
+
+// ============ COURIER LOGO MAPPING ============
+const COURIER_LOGOS: Record<string, string> = {
+  'jne': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne reg': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne yes': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'jne oke': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
+  'sicepat': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'sicepat best': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'sicepat reg': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
+  'j&t': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
+  'j&t express': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
+  'anteraja': 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Anteraja.png',
+  'pos': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
+  'pos indonesia': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
+  'ninja': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
+  'ninja express': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
+};
+
+function getCourierLogo(courier: string | null): string | null {
+  if (!courier) return null;
+  const key = courier.toLowerCase().trim();
+  for (const [k, v] of Object.entries(COURIER_LOGOS)) {
+    if (key.includes(k)) return v;
+  }
+  return null;
+}
+
+function getCourierService(courier: string | null): { name: string; service: string } {
+  if (!courier) return { name: 'STANDARD', service: 'REG' };
+  const parts = courier.split(' ');
+  return {
+    name: parts[0]?.toUpperCase() || 'STANDARD',
+    service: parts.slice(1).join(' ').toUpperCase() || 'REG'
+  };
+}
+
+// ============ SHIPPING LABEL — 10cm × 8cm THERMAL ============
 function ShippingLabel({ order }: { order: Order }) {
-  const courier = order.courier?.toUpperCase() || 'STANDARD';
+  const courierInfo = getCourierService(order.courier);
+  const courierLogo = getCourierLogo(order.courier);
+  const trackingId = order.tracking_id || '';
+  const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+  const totalWeight = totalItems * 300; // est. 300g per item
 
   return (
     <div style={{
       width: '10cm',
-      minHeight: '8cm',
-      fontFamily: 'monospace',
-      fontSize: '10px',
+      height: '8cm',
+      fontFamily: "'Courier New', 'Consolas', monospace",
+      fontSize: '9px',
       backgroundColor: 'white',
       color: 'black',
-      padding: '0'
+      padding: '0',
+      boxSizing: 'border-box',
+      border: '2px solid black',
+      overflow: 'hidden',
+      lineHeight: 1.3
     }}>
-      {/* Header */}
+      {/* ROW 1 — Header: NINOC brand + Courier logo/name + Service */}
       <div style={{
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '6px 8px',
+        padding: '4px 6px',
         borderBottom: '2px solid black',
-        fontWeight: 'bold'
+        height: '28px'
       }}>
-        <span style={{ fontSize: '14px', fontStyle: 'italic' }}>NINOC</span>
-        <span style={{ fontSize: '12px' }}>{courier}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '1px' }}>NINOC</span>
+          <span style={{ fontSize: '7px', color: '#666' }}>ARCHIVE</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {courierLogo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain' }} />
+          )}
+          {!courierLogo && (
+            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{courierInfo.name}</span>
+          )}
+          <span style={{
+            fontSize: '8px',
+            fontWeight: 'bold',
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '1px 4px',
+            letterSpacing: '1px'
+          }}>{courierInfo.service}</span>
+        </div>
       </div>
 
-      {/* Tracking ID */}
+      {/* ROW 2 — Barcode + Tracking Number */}
       <div style={{
-        padding: '6px 8px',
+        padding: '4px 6px',
         borderBottom: '2px solid black',
         textAlign: 'center'
       }}>
-        <div style={{
-          backgroundColor: '#f0f0f0',
-          padding: '4px',
-          marginBottom: '4px',
-          fontSize: '10px',
-          letterSpacing: '2px'
-        }}>||||| ||||| ||||| |||||</div>
-        <div style={{ fontWeight: 'bold', fontSize: '11px' }}>
-          {order.tracking_id || 'AWAITING TRACKING ID'}
-        </div>
+        {trackingId ? (
+          <>
+            <BarcodeCode128 value={trackingId} width={300} height={36} />
+            <div style={{
+              fontWeight: 'bold',
+              fontSize: '11px',
+              letterSpacing: '2px',
+              marginTop: '2px'
+            }}>{trackingId}</div>
+          </>
+        ) : (
+          <div style={{
+            fontWeight: 'bold',
+            fontSize: '10px',
+            padding: '8px 0',
+            color: '#999',
+            letterSpacing: '1px',
+            border: '1px dashed #ccc',
+          }}>AWAITING TRACKING NUMBER</div>
+        )}
       </div>
 
-      {/* Sender & Receiver */}
+      {/* ROW 3 — Penerima + Pengirim (side by side) */}
       <div style={{
         display: 'flex',
-        padding: '6px 8px',
         borderBottom: '2px solid black',
-        gap: '8px',
-        fontSize: '10px'
+        minHeight: '65px'
       }}>
-        {/* Receiver */}
+        {/* Penerima (larger, left) */}
         <div style={{
-          flex: 1,
+          flex: 3,
+          padding: '4px 6px',
           borderRight: '2px solid black',
-          paddingRight: '8px'
         }}>
-          <div style={{ fontWeight: 'bold', fontSize: '8px', marginBottom: '2px' }}>PENERIMA:</div>
-          <div style={{ fontWeight: 'bold', fontSize: '11px' }}>{order.shipping_address?.name}</div>
-          <div style={{ fontSize: '10px', marginTop: '2px' }}>{order.shipping_address?.phone}</div>
-          <div style={{ fontSize: '9px', marginTop: '4px', wordBreak: 'break-word' }}>{order.shipping_address?.address}</div>
-          <div style={{ fontWeight: 'bold', fontSize: '10px', marginTop: '2px' }}>{order.shipping_address?.city}, {order.shipping_address?.postal_code}</div>
+          <div style={{
+            fontSize: '7px',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+            marginBottom: '1px',
+            backgroundColor: '#e0e0e0',
+            padding: '1px 3px',
+            display: 'inline-block'
+          }}>PENERIMA / TO</div>
+          <div style={{ fontWeight: 'bold', fontSize: '11px', marginTop: '2px' }}>
+            {order.shipping_address?.name?.toUpperCase()}
+          </div>
+          <div style={{ fontSize: '9px', marginTop: '1px' }}>{order.shipping_address?.phone}</div>
+          <div style={{ fontSize: '8px', marginTop: '2px', wordBreak: 'break-word', maxHeight: '24px', overflow: 'hidden' }}>
+            {order.shipping_address?.address}
+          </div>
+          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '1px' }}>
+            {order.shipping_address?.city}, {order.shipping_address?.province || ''} {order.shipping_address?.postal_code}
+          </div>
         </div>
-        {/* Sender */}
-        <div style={{ flex: 1, paddingLeft: '8px' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '8px', marginBottom: '2px' }}>PENGIRIM:</div>
-          <div style={{ fontWeight: 'bold', fontSize: '10px' }}>NINOC STUDIO</div>
-          <div style={{ fontSize: '9px', marginTop: '2px' }}>0812-XXXX-XXXX</div>
-          <div style={{ fontSize: '9px', marginTop: '4px' }}>Bandung, ID</div>
+        {/* Pengirim (smaller, right) */}
+        <div style={{
+          flex: 2,
+          padding: '4px 6px',
+        }}>
+          <div style={{
+            fontSize: '7px',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+            marginBottom: '1px',
+            backgroundColor: '#e0e0e0',
+            padding: '1px 3px',
+            display: 'inline-block'
+          }}>PENGIRIM / FROM</div>
+          <div style={{ fontWeight: 'bold', fontSize: '9px', marginTop: '2px' }}>NINOC STUDIO</div>
+          <div style={{ fontSize: '8px', marginTop: '1px' }}>0812-XXXX-XXXX</div>
+          <div style={{ fontSize: '8px', marginTop: '2px' }}>Bandung, Jawa Barat</div>
+          <div style={{ fontWeight: 'bold', fontSize: '8px' }}>40115</div>
         </div>
       </div>
 
-      {/* Fragile Warning */}
+      {/* ROW 4 — Package Info + Order ID */}
       <div style={{
-        backgroundColor: 'black',
-        color: 'white',
-        padding: '5px 8px',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '10px',
-        letterSpacing: '1px'
+        display: 'flex',
+        borderBottom: '1px solid black',
       }}>
-        FRAGILE - HANDLE WITH CARE
+        {/* Isi Paket */}
+        <div style={{
+          flex: 3,
+          padding: '3px 6px',
+          borderRight: '2px solid black',
+          maxHeight: '38px',
+          overflow: 'hidden'
+        }}>
+          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '1px' }}>ISI PAKET / CONTENTS</div>
+          {order.order_items?.slice(0, 3).map((item, idx) => (
+            <div key={idx} style={{ fontSize: '8px' }}>
+              {item.product_name} {item.size ? `(${item.size})` : ''} ×{item.quantity}
+            </div>
+          ))}
+          {(order.order_items?.length || 0) > 3 && (
+            <div style={{ fontSize: '7px', color: '#666' }}>+{(order.order_items?.length || 0) - 3} item lainnya</div>
+          )}
+        </div>
+        {/* Order ID + Weight */}
+        <div style={{
+          flex: 2,
+          padding: '3px 6px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px' }}>ORDER ID</div>
+          <div style={{ fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+            #{order.id.slice(0, 8).toUpperCase()}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2px', fontSize: '7px' }}>
+            <span>Qty: {totalItems}</span>
+            <span>~{totalWeight}g</span>
+          </div>
+        </div>
       </div>
 
-      {/* Items + Order ID */}
+      {/* ROW 5 — Footer */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        padding: '6px 8px',
-        borderTop: '2px solid black',
-        fontSize: '9px'
-      }}>
-        <div style={{ maxWidth: '70%' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '8px', marginBottom: '2px' }}>ISI PAKET:</div>
-          {order.order_items?.map((item, idx) => (
-            <div key={idx} style={{ fontSize: '9px' }}>- {item.product_name} ({item.quantity}x)</div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'right', fontSize: '8px' }}>
-          <div style={{ fontWeight: 'bold' }}>ORDER:</div>
-          <div style={{ fontWeight: 'bold', fontSize: '10px' }}>#{order.id.slice(0, 8).toUpperCase()}</div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{
-        borderTop: '1px solid #ccc',
-        padding: '4px 8px',
-        textAlign: 'center',
+        alignItems: 'center',
+        padding: '2px 6px',
         fontSize: '7px',
-        color: '#666'
+        color: '#444'
       }}>
-        NINOC ARCHIVE STUDIO • BANDUNG, WEST JAVA, INDONESIA
+        <span>{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+        <span style={{ letterSpacing: '0.5px' }}>NINOC ARCHIVE • BANDUNG, INDONESIA</span>
+        <span style={{
+          fontWeight: 'bold',
+          backgroundColor: 'black',
+          color: 'white',
+          padding: '1px 4px',
+          fontSize: '7px'
+        }}>FRAGILE</span>
       </div>
     </div>
   );
@@ -2158,17 +2342,25 @@ export default function AdminDashboard() {
                     onClick={() => {
                       const printContent = document.getElementById('printable-label');
                       if (printContent) {
-                        const printWindow = window.open('', '_blank');
+                        const printWindow = window.open('', '_blank', 'width=400,height=350');
                         if (printWindow) {
-                          printWindow.document.write(`<!DOCTYPE html><html><head><title>Print Resi</title><style>body{font-family:monospace;margin:0;}</style></head><body>${printContent.innerHTML}</body></html>`);
+                          printWindow.document.write(`<!DOCTYPE html><html><head><title>Print Resi — NINOC</title>
+<style>
+  @page { size: 10cm 8cm; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 10cm; height: 8cm; overflow: hidden; }
+  body { font-family: 'Courier New', Consolas, monospace; }
+  img { display: inline-block; }
+</style>
+</head><body>${printContent.innerHTML}</body></html>`);
                           printWindow.document.close();
-                          printWindow.print();
+                          setTimeout(() => printWindow.print(), 300);
                         }
                       }
                     }}
                     className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
                     <Printer size={14} />
-                    <span className="text-[10px] uppercase font-bold tracking-widest hidden sm:block">Print Resi</span>
+                    <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
                   </button>
                   <button onClick={() => setIsOrderModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                     <X size={20} />
@@ -2296,9 +2488,17 @@ export default function AdminDashboard() {
 
     <style jsx global>{`
       @media print {
+        @page { size: 10cm 8cm; margin: 0; }
         body * { visibility: hidden; }
         #printable-label, #printable-label * { visibility: visible; }
-        #printable-label { position: absolute; left: 0; top: 0; width: 10cm; }
+        #printable-label {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 10cm;
+          height: 8cm;
+          overflow: hidden;
+        }
       }
     `}</style>
   </>
