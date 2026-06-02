@@ -1,9 +1,47 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, useInView, Variants } from 'framer-motion';
-import { Sparkles, Clock, Star, ArrowRight } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+
+// ═══════════════════════════════════════════════════════════════
+// MODERN CUSTOM ICONS — NINOC STUDIO
+// Clean, geometric, distinctive design
+// ═══════════════════════════════════════════════════════════════
+
+const DiamondIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <path d="M12 2L2 9L12 16L22 9L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M2 15L12 22L22 15" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M2 9V15L12 22V9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M22 9V15L12 22V9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+
+const ChronographIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M12 7V12L15 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 3V1M12 23V21M21 12H23M1 12H3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const HexagonBadgeIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <path d="M12 2L20.5 7V17L12 22L3.5 17V7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M12 12V18M8 10.5L16 15.5M16 10.5L8 15.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+  </svg>
+);
+
+const TagIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <path d="M20.59 13.41L13.42 20.59C13.2343 20.778 13.0137 20.9181 12.7709 21.0031C12.5281 21.0881 12.2677 21.1163 12.005 21.0863C11.7422 21.0563 11.4822 20.9686 11.2407 20.8282C10.9991 20.6877 10.7804 20.4972 10.5967 20.267L2 11.667V2H11.667L20.267 10.596C20.4972 10.7804 20.6877 10.9991 20.8282 11.2407C20.9686 11.4822 21.0563 11.7422 21.0863 12.005C21.1163 12.2677 21.0881 12.5281 21.0031 12.7709C20.9181 13.0137 20.778 13.2343 20.59 13.42Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
 
 // ═══════════════════════════════════════════════════════════════
 // EMIL KOWALSKI ANIMATION ENGINE — NINOC STUDIO
@@ -64,6 +102,14 @@ const statVariants: Variants = {
   visible: (i: number) => ({
     opacity: 1, x: 0,
     transition: { delay: 0.5 + i * 0.08, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
+const dotVariants: Variants = {
+  hidden: { scale: 0 },
+  visible: (i: number) => ({
+    scale: 1,
+    transition: { delay: i * 0.1, duration: DURATION.fast, ease: [0.34, 1.56, 0.64, 1] },
   }),
 };
 
@@ -136,7 +182,7 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
         <div className="relative z-10">
           {/* Icon */}
           <motion.div
-            className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose mb-6 md:mb-8"
+            className="w-14 h-14 md:w-18 md:h-18 bg-ink/5 flex items-center justify-center text-rose mb-6 md:mb-8"
             variants={iconVariants}
             initial="hidden"
             whileInView="visible"
@@ -179,7 +225,20 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
               animate={{ color: isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.4)' }}
               transition={{ duration: DURATION.fast }}
             >
-              <Star size={12} className="fill-current" />
+              <div className="flex gap-0.5">
+                {[0, 1, 2].map((d) => (
+                  <motion.div
+                    key={d}
+                    className="w-1 h-1 bg-current rounded-full"
+                    variants={dotVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    custom={d}
+                    animate={{ scale: isHovered ? [1, 1.5, 1] : 1 }}
+                    transition={{ repeat: isHovered ? Infinity : 0, duration: 0.5, delay: d * 0.1 }}
+                  />
+                ))}
+              </div>
               <span className="text-[10px] md:text-xs font-medium uppercase tracking-widest">{itemCount} Items</span>
             </motion.div>
 
@@ -202,6 +261,18 @@ function CollectionCard({ title, description, icon, index, variant = 'essential'
         >
           COLLECT-{String(index + 1).padStart(3, '0')}
         </motion.div>
+
+        {/* Corner accent */}
+        <motion.div
+          className="absolute top-0 left-0 w-8 h-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: DURATION.fast }}
+        >
+          <svg viewBox="0 0 32 32" className="w-full h-full">
+            <path d="M0 0 L32 0 L32 32 L0 0" fill="currentColor" opacity="0.1" />
+          </svg>
+        </motion.div>
       </PressButton>
     </motion.div>
   );
@@ -216,21 +287,21 @@ export default function Collections() {
     {
       title: 'Essential',
       description: 'Core pieces for everyday expression.',
-      icon: <Sparkles size={24} strokeWidth={1.5} />,
+      icon: <DiamondIcon size={28} />,
       variant: 'essential' as const,
       itemCount: 24,
     },
     {
       title: 'Limited',
       description: 'Exclusive drops in limited quantities.',
-      icon: <Clock size={24} strokeWidth={1.5} />,
+      icon: <ChronographIcon size={28} />,
       variant: 'limited' as const,
       itemCount: 8,
     },
     {
       title: 'Heritage',
       description: 'Heritage pieces from previous seasons.',
-      icon: <Star size={24} strokeWidth={1.5} />,
+      icon: <HexagonBadgeIcon size={28} />,
       variant: 'heritage' as const,
       itemCount: 16,
     },
@@ -248,16 +319,21 @@ export default function Collections() {
           className="mb-12 md:mb-20"
         >
           <motion.div
-            className="flex items-center gap-2 mb-4 md:mb-6"
+            className="flex items-center gap-3 mb-4 md:mb-6"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: DURATION.medium }}
           >
+            {/* Custom archive icon */}
             <motion.div
+              className="relative"
               animate={{ rotate: [0, 360] }}
-              transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}
+              transition={{ repeat: Infinity, duration: 30, ease: 'linear' }}
             >
-              <Sparkles size={12} className="text-rose" />
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-rose">
+                <path d="M8 1L14 5V11L8 15L2 11V5L8 1Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+                <path d="M8 5L11 6.5V9.5L8 11L5 9.5V6.5L8 5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+              </svg>
             </motion.div>
             <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.5em] text-ink/40">NINOC Archive</span>
           </motion.div>
@@ -280,6 +356,15 @@ export default function Collections() {
           >
             Curated selections for the conscious collector.
           </motion.p>
+
+          {/* Decorative line */}
+          <motion.div
+            className="h-px bg-ink/10 mt-8 md:mt-12 max-w-md"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.3, duration: DURATION.slow, ease: EASING.out }}
+            style={{ transformOrigin: 'left' }}
+          />
         </motion.div>
 
         {/* COLLECTION GRID */}
@@ -313,7 +398,21 @@ export default function Collections() {
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: DURATION.medium }}
             >
-              <p className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30 mb-2">New Season</p>
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                {/* Season indicator dots */}
+                <div className="flex gap-1">
+                  {['#E8527A', '#141414', '#E8527A'].map((color, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: color }}
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ repeat: Infinity, duration: 2, delay: i * 0.2 }}
+                    />
+                  ))}
+                </div>
+                <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/30">New Season</span>
+              </div>
               <h2 className="text-xl md:text-3xl font-display font-medium italic text-ink uppercase tracking-tight">Spring 2026 Archive</h2>
             </motion.div>
 
@@ -344,7 +443,7 @@ export default function Collections() {
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              className="text-center"
+              className="text-center relative"
               variants={statVariants}
               initial="hidden"
               whileInView="visible"
@@ -352,10 +451,41 @@ export default function Collections() {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: DURATION.fast }}
             >
+              {/* Vertical connector */}
+              {i < 2 && (
+                <div className="absolute -right-[2.5rem] top-1/2 w-5 h-px bg-ink/10 hidden md:block" />
+              )}
               <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-ink/20 mb-1 md:mb-2">{stat.label}</p>
               <p className="text-lg md:text-2xl font-display font-medium italic text-rose">{stat.value}</p>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* FOOTER MARQUEE */}
+        <motion.div
+          className="mt-12 py-4 overflow-hidden"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            className="flex gap-12 whitespace-nowrap"
+            animate={{ x: ['0%', '-50%'] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          >
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex items-center gap-12">
+                <span className="text-[10px] font-medium uppercase tracking-[0.8em] text-ink/20">Archival Garments</span>
+                <span className="text-rose">◆</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.8em] text-ink/20">Origin Studio</span>
+                <span className="text-rose">◆</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.8em] text-ink/20">Preserved Excellence</span>
+                <span className="text-rose">◆</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.8em] text-ink/20">NINOC 2026</span>
+                <span className="text-rose">◆</span>
+              </div>
+            ))}
+          </motion.div>
         </motion.div>
 
       </div>
