@@ -136,8 +136,8 @@ function PressButton({ children, className = '', onClick, href, whileHover = {},
 }) {
   const content = (
     <motion.div
-      whileHover={{ scale: 1.02, ...whileHover }}
-      whileTap={{ scale: 0.97, ...whileTap }}
+      whileHover={Object.keys(whileHover).length ? { scale: 1.02, ...whileHover } : { scale: 1.02 }}
+      whileTap={Object.keys(whileTap).length ? whileTap : undefined}
       transition={{ duration: DURATION.micro, ease: EASING.out }}
       className={className}
     >
