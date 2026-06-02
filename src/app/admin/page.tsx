@@ -287,6 +287,7 @@ export default function AdminDashboard() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   // Financial system states
+  const [financeTab, setFinanceTab] = useState<'overview' | 'ledger' | 'pl' | 'balance' | 'tax'>('overview');
   const [productCostings, setProductCostings] = useState<Record<string, ProductCosting>>({});
   const [supplierLogs, setSupplierLogs] = useState<SupplierCostLog[]>([]);
   const [activePromos, setActivePromos] = useState<PromoImpact[]>([]);
@@ -1746,6 +1747,963 @@ export default function AdminDashboard() {
                 </motion.div>
               );
             })()}
+
+            {/* ===== ORDERS ===== */}
+            {activeTab === 'orders' && (
+              <motion.div
+                key="orders"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center justify-between border-b border-ink/5 pb-4">
+                  <div>
+                    <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
+                    <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
+                  </div>
+                  <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
+                    Export Data
+                  </button>
+                </div>
+
+                {/* Status Tabs */}
+                <div className="flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
+                  {[
+                    { id: 'all', label: 'All Order', count: orders.length },
+                    { id: 'pending', label: 'New Order', count: orders.filter(o => o.status === 'pending').length },
+                    { id: 'paid', label: 'Paid', count: orders.filter(o => o.status === 'paid').length },
+                    { id: 'shipped', label: 'Sent', count: orders.filter(o => o.status === 'shipped').length },
+                    { id: 'delivered', label: 'Completed', count: orders.filter(o => o.status === 'delivered').length },
+                    { id: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id)}
+                      className={cn(
+                        "relative px-4 py-3 text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
+                        statusFilter === tab.id ? "text-rose" : "text-ink/40 hover:text-ink/70"
+                      )}
+                    >
+                      {tab.label}
+                      <span className={cn(
+                        "ml-2 px-1.5 py-0.5 text-[8px] rounded",
+                        statusFilter === tab.id ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/40"
+                      )}>
+                        {tab.count}
+                      </span>
+                      {statusFilter === tab.id && (
+                        <motion.div layoutId="orderTabIndicator" className="absolute bottom-0 left-0 right-0 h-[2px] bg-rose" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Filter Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button className="flex items-center gap-2 px-3 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:border-rose/50 hover:text-rose transition-colors">
+                      <Filter size={12} /> Filter
+                    </button>
+                    <div className="h-4 w-px bg-ink/10 mx-1" />
+                    {['Payment Method', 'Courier', 'Date Range', 'Sort By'].map((filter, i) => (
+                      <button key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-ink/5 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:bg-ink/10 transition-colors">
+                        {filter} <ChevronDown size={10} />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="relative w-full max-w-xs">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
+                    <input
+                      type="text"
+                      placeholder="Search orders..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-1.5 bg-white border border-ink/10 rounded-sm text-[10px] font-medium focus:outline-none focus:border-rose/50 transition-colors placeholder:text-ink/20"
+                    />
+                  </div>
+                </div>
+
+                {/* Order Cards List */}
+                <div className="space-y-4">
+                  {filteredOrders.length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center border border-dashed border-ink/10 rounded-md">
+                      <Box size={32} className="text-ink/20 mb-3" />
+                      <p className="text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
+                    </div>
+                  ) : (
+                    filteredOrders.map((order) => (
+                      <div key={order.id} className="bg-white border border-ink/10 rounded-sm overflow-hidden hover:border-ink/20 transition-colors">
+                        {/* Card Header */}
+                        <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-ink/5 border-b border-ink/10">
+                          <div className="flex items-center gap-4">
+                            <span className="text-[11px] font-medium uppercase tracking-wider text-ink">#{order.id.slice(0, 12).toUpperCase()}</span>
+                            <span className="text-[10px] font-medium text-ink/40">{new Date(order.created_at).toLocaleString('id-ID')}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={cn(
+                              "text-[9px] uppercase tracking-wider px-2 py-1 border rounded-sm font-medium",
+                              order.status === 'pending' ? "border-amber-200 bg-amber-50 text-amber-600" :
+                              order.status === 'paid' ? "border-emerald-200 bg-emerald-50 text-emerald-600" :
+                              order.status === 'shipped' ? "border-blue-200 bg-blue-50 text-blue-600" :
+                              order.status === 'delivered' ? "border-teal-200 bg-teal-50 text-teal-600" :
+                              "border-red-200 bg-red-50 text-red-600"
+                            )}>
+                              {order.status === 'pending' ? 'Waiting Payment' : order.status}
+                            </span>
+                            <button onClick={() => openOrderDetail(order)} className="text-[10px] font-medium uppercase tracking-wider text-rose hover:text-rose/80 transition-colors">
+                              View Detail
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+                          {/* Product Info */}
+                          <div className="col-span-1 md:col-span-1 space-y-3">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Product Info</p>
+                            {order.order_items?.slice(0, 2).map((item, idx) => (
+                              <div key={item.id || idx} className="flex gap-3">
+                                <div className="w-12 h-12 bg-ink/5 rounded-sm shrink-0 border border-ink/5">
+                                  {/* Thumbnail placeholder or image */}
+                                </div>
+                                <div>
+                                  <p className="text-[11px] font-medium text-ink line-clamp-2 leading-tight">{item.product_name}</p>
+                                  <p className="text-[9px] text-ink/40 mt-1 uppercase">Size: {item.size || '-'} | Qty: {item.quantity}</p>
+                                </div>
+                              </div>
+                            ))}
+                            {order.order_items && order.order_items.length > 2 && (
+                              <button className="text-[9px] text-rose uppercase tracking-wider font-medium">+{order.order_items.length - 2} more items</button>
+                            )}
+                          </div>
+
+                          {/* Shipping Address */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Shipping To</p>
+                            <p className="text-[11px] font-medium text-ink">{order.shipping_address?.name || 'Guest User'}</p>
+                            <p className="text-[10px] font-medium text-ink/60 font-mono mt-1">{order.shipping_address?.phone || '-'}</p>
+                            <p className="text-[10px] font-medium text-ink/40 mt-1 line-clamp-2 leading-relaxed">{order.shipping_address?.address}</p>
+                            <p className="text-[10px] font-medium text-ink/40 mt-1 uppercase">{order.shipping_address?.city}</p>
+                          </div>
+
+                          {/* Payment */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Payment</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <CreditCard size={14} className="text-ink/40" />
+                              <span className="text-[11px] font-medium text-ink uppercase tracking-wider">Midtrans</span>
+                            </div>
+                            <span className={cn(
+                              "text-[9px] uppercase tracking-wider font-medium",
+                              order.payment_status === 'success' ? "text-emerald-600" :
+                              order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                            )}>
+                              {order.payment_status}
+                            </span>
+                          </div>
+
+                          {/* Courier */}
+                          <div className="col-span-1 md:col-span-1">
+                            <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Courier</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Truck size={14} className="text-ink/40" />
+                              <span className="text-[11px] font-medium text-ink uppercase tracking-wider">{order.courier || 'Standard'}</span>
+                            </div>
+                            <p className="text-[10px] font-medium text-ink/40 font-mono mt-1">{order.tracking_id || 'No tracking ID'}</p>
+                          </div>
+                        </div>
+
+                        {/* Card Footer */}
+                        <div className="flex items-center justify-end px-4 py-3 bg-ink/5 border-t border-ink/10">
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-ink/40 mr-4">Total Amount</p>
+                          <p className="text-sm font-medium text-ink">IDR {order.total_price.toLocaleString('id-ID')}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Pagination */}
+                {filteredOrders.length > 0 && (
+                  <div className="flex items-center justify-between py-4 border-t border-ink/5 mt-4">
+                    <div className="flex items-center gap-2 text-[10px] uppercase font-medium tracking-wider text-ink/40">
+                      Show
+                      <select className="bg-transparent border border-ink/10 rounded-sm px-2 py-1 outline-none text-ink">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>50</option>
+                      </select>
+                      per page
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
+                        <ChevronLeft size={12} />
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-rose bg-rose text-white rounded-sm text-[10px] font-medium transition-colors">
+                        1
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors text-[10px] font-medium">
+                        2
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
+                        <ChevronRight size={12} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* ===== LOGISTICS ===== */}
+            {activeTab === 'logistics' && (() => {
+              const logisticsOrders = logisticsFilter === 'all'
+                ? orders.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                : orders.filter(o => o.status === logisticsFilter);
+
+              const pendingCount = orders.filter(o => o.status === 'paid').length;
+              const inTransitCount = orders.filter(o => o.status === 'shipped').length;
+              const deliveredCount = orders.filter(o => o.status === 'delivered').length;
+              const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
+
+              const getTimeAgo = (dateStr: string) => {
+                const diff = Date.now() - new Date(dateStr).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 60) return `${mins}m`;
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return `${hrs}h`;
+                return `${Math.floor(hrs / 24)}d`;
+              };
+
+              // Animated route waypoints for the map
+              const getRouteWaypoints = (order: Order) => {
+                const city = order.shipping_address?.city?.toLowerCase() || '';
+                const province = order.shipping_address?.province?.toLowerCase() || '';
+                // Origin is always Bandung
+                const waypoints = [
+                  { label: 'NINOC STUDIO', sub: 'Bandung, Jawa Barat', x: 15, y: 70, isOrigin: true },
+                ];
+                // Intermediate hub
+                if (city.includes('jakarta') || province.includes('dki')) {
+                  waypoints.push({ label: 'Jakarta Hub', sub: 'Sorting Center', x: 35, y: 40, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 80, y: 25, isOrigin: false });
+                } else if (city.includes('surabaya') || province.includes('jawa timur')) {
+                  waypoints.push({ label: 'Semarang Hub', sub: 'Transit Point', x: 45, y: 50, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 85, y: 30, isOrigin: false });
+                } else {
+                  waypoints.push({ label: 'Regional Hub', sub: 'Sorting Facility', x: 50, y: 45, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 82, y: 28, isOrigin: false });
+                }
+                return waypoints;
+              };
+
+              return (
+              <motion.div
+                key="logistics"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-0"
+              >
+                {/* HEADER BAR */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
+                    <span className="text-[9px] text-gray-400">— shipment operations center</span>
+                  </div>
+                  <div className="text-[9px] text-gray-400 font-mono">
+                    {new Date().toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                    {' • '}
+                    <span className="text-rose">{pendingCount + inTransitCount}</span> active
+                  </div>
+                </div>
+
+                {/* STAT CELLS — 4 compact cells, no gap, cell-block */}
+                <div className="grid grid-cols-4 border border-gray-200 bg-white">
+                  {[
+                    { label: 'Awaiting Dispatch', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
+                    { label: 'In Transit', count: inTransitCount, color: 'text-blue-600', bg: 'bg-blue-50', filterKey: 'shipped' },
+                    { label: 'Delivered', count: deliveredCount, color: 'text-emerald-600', bg: 'bg-emerald-50', filterKey: 'delivered' },
+                    { label: 'Cancelled', count: cancelledCount, color: 'text-red-500', bg: 'bg-red-50', filterKey: 'cancelled' },
+                  ].map((stat, i) => (
+                    <button
+                      key={stat.filterKey}
+                      onClick={() => setLogisticsFilter(logisticsFilter === stat.filterKey ? 'all' : stat.filterKey)}
+                      className={cn(
+                        "px-3 py-2.5 text-left transition-colors relative",
+                        i < 3 && "border-r border-gray-200",
+                        logisticsFilter === stat.filterKey ? stat.bg : "hover:bg-gray-50"
+                      )}
+                    >
+                      {logisticsFilter === stat.filterKey && (
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose" />
+                      )}
+                      <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+                      <p className={cn("text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
+                <div className="flex border border-t-0 border-gray-200 bg-white" style={{ height: 'calc(100vh - 11rem)' }}>
+                  {/* LEFT: MASTER TABLE */}
+                  <div className={cn(
+                    "flex flex-col transition-all duration-300",
+                    logisticsSelectedOrder ? "w-[55%]" : "w-full"
+                  )}>
+                    {/* Table sub-header with filter & search */}
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50/80 shrink-0">
+                      <div className="flex items-center gap-1">
+                        {['all', 'paid', 'shipped', 'delivered'].map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => setLogisticsFilter(f)}
+                            className={cn(
+                              "px-2 py-1 text-[8px] uppercase tracking-[0.15em] transition-colors",
+                              logisticsFilter === f
+                                ? "bg-ink text-white"
+                                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                            )}
+                          >
+                            {f === 'all' ? 'All Active' : f === 'paid' ? 'Pending' : f === 'shipped' ? 'Transit' : 'Done'}
+                          </button>
+                        ))}
+                      </div>
+                      <span className="text-[9px] font-mono text-gray-400">{logisticsOrders.length} results</span>
+                    </div>
+
+                    {/* Dense table */}
+                    <div className="flex-1 overflow-y-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
+                          <tr>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[90px]">Order</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Status</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Destination</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Courier</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[60px]">Resi</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[80px]">Value</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[40px]">Age</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {logisticsOrders.map((order, idx) => (
+                            <tr
+                              key={order.id}
+                              onClick={() => setLogisticsSelectedOrder(logisticsSelectedOrder?.id === order.id ? null : order)}
+                              className={cn(
+                                "cursor-pointer transition-colors border-b border-gray-100",
+                                logisticsSelectedOrder?.id === order.id
+                                  ? "bg-rose/5 border-l-2 border-l-rose"
+                                  : idx % 2 === 0 ? "bg-white hover:bg-gray-50" : "bg-gray-50/30 hover:bg-gray-50"
+                              )}
+                            >
+                              <td className="px-3 py-1.5">
+                                <span className="font-mono text-[10px] text-gray-900">#{order.id.slice(0, 8).toUpperCase()}</span>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <span className={cn(
+                                  "text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5 inline-block",
+                                  order.status === 'paid' && "bg-amber-100 text-amber-700",
+                                  order.status === 'shipped' && "bg-blue-100 text-blue-700",
+                                  order.status === 'delivered' && "bg-emerald-100 text-emerald-700",
+                                  order.status === 'cancelled' && "bg-red-100 text-red-600",
+                                )}>
+                                  {order.status === 'paid' ? 'PENDING' : order.status.toUpperCase()}
+                                </span>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
+                                <div className="text-[8px] text-gray-400 truncate max-w-[120px]">{order.shipping_address?.city}</div>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <span className="text-[9px] text-gray-600 uppercase">{order.courier || '—'}</span>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                {order.tracking_id ? (
+                                  <span className="font-mono text-[9px] bg-gray-100 text-gray-800 px-1 py-0.5">{order.tracking_id.slice(-8)}</span>
+                                ) : (
+                                  <span className="text-[8px] text-gray-300">—</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-1.5 text-right">
+                                <span className="font-mono text-[9px] text-gray-700">{(order.total_price / 1000).toFixed(0)}K</span>
+                              </td>
+                              <td className="px-3 py-1.5 text-right">
+                                <span className="text-[9px] text-gray-400 font-mono">{getTimeAgo(order.created_at)}</span>
+                              </td>
+                            </tr>
+                          ))}
+                          {logisticsOrders.length === 0 && (
+                            <tr>
+                              <td colSpan={7} className="px-3 py-12 text-center text-[10px] text-gray-300 uppercase tracking-[0.3em]">
+                                No orders in this category
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* RIGHT: DETAIL + MAP PANEL */}
+                  <AnimatePresence>
+                    {logisticsSelectedOrder && (
+                      <motion.div
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: '50%', opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                        className="border-l border-gray-200 flex flex-col overflow-hidden bg-white shadow-xl z-20 relative"
+                      >
+                        <div className="w-full h-full flex flex-col overflow-y-auto p-4 gap-3 custom-scrollbar">
+                          {/* 1. Header / Client Info */}
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-200">
+                                {logisticsSelectedOrder.shipping_address?.name ? (
+                                  <span className="text-[14px] font-medium text-gray-600">
+                                    {logisticsSelectedOrder.shipping_address.name.charAt(0).toUpperCase()}
+                                  </span>
+                                ) : (
+                                  <User size={16} className="text-gray-400" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-[11px] font-medium text-gray-900 leading-tight">{logisticsSelectedOrder.shipping_address?.name}</p>
+                                <p className="text-[9px] text-gray-500 mt-0.5 font-mono">Client ID: {logisticsSelectedOrder.user_id?.slice(0, 8) || 'GUEST'}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => openOrderDetail(logisticsSelectedOrder)}
+                                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-ink transition-colors"
+                                title="View Full Order"
+                              >
+                                <Eye size={12} />
+                              </button>
+                              <button 
+                                onClick={() => setLogisticsSelectedOrder(null)}
+                                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-rose transition-colors"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 2. Order Details Grid */}
+                          <div className="grid grid-cols-4 gap-3 pt-3 border-t border-gray-100">
+                            <div>
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
+                              <p className="text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.slice(0,8).toUpperCase()}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Shipping Address</p>
+                              <p className="text-[10px] text-gray-900 leading-tight">
+                                {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.city}, {logisticsSelectedOrder.shipping_address?.postal_code}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[8px] uppercase tracking-wider text-gray-400 mb-1">Shipped</p>
+                              <p className="text-[10px] text-gray-900 leading-tight">
+                                {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID')}<br/>
+                                <span className="text-gray-500">{new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* 3. Ordered Products */}
+                          <div className="pt-1">
+                            <p className="text-[9px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                              {logisticsSelectedOrder.order_items?.map((item, idx) => (
+                                <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl min-w-[220px] shrink-0 items-center bg-white shadow-sm hover:shadow-md transition-shadow">
+                                  <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
+                                    <Package size={16} className="text-gray-300" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-gray-900 truncate font-medium">{item.product_name || 'Garment Item'}</p>
+                                    <p className="text-[8px] text-gray-500 mt-0.5">1 item • SZ:{item.size || 'OS'}</p>
+                                    <p className="text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 4. Map Visualization */}
+                          <div className="relative w-full h-[180px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-1">
+                            <svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 600 300">
+                              {/* Map background pattern to simulate streets */}
+                              <g stroke="#ffffff" strokeWidth="8" strokeLinecap="round">
+                                <path d="M-50,50 L650,250 M-50,150 L650,350 M-50,-50 L650,150" opacity="0.8" />
+                                <path d="M100,-50 L-50,350 M300,-50 L150,350 M500,-50 L350,350" opacity="0.8" />
+                                <path d="M200,0 L200,300 M450,0 L450,300" strokeWidth="12" opacity="0.6" />
+                              </g>
+                              
+                              {/* Compass UI (Timur / Barat orientation) */}
+                              <g transform="translate(40, 40)">
+                                <circle cx="0" cy="0" r="20" fill="white" stroke="#e2e8f0" strokeWidth="2" opacity="0.9" />
+                                <path d="M0,-14 L5,-3 L0,-5 L-5,-3 Z" fill="#E8527A" />
+                                <path d="M0,14 L5,3 L0,5 L-5,3 Z" fill="#94a3b8" />
+                                <text x="0" y="-17" fill="#64748b" fontSize="10" fontWeight="bold" textAnchor="middle">N</text>
+                                <text x="0" y="24" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">S</text>
+                                <text x="-18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">W</text>
+                                <text x="18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">E</text>
+                              </g>
+
+                              {/* City Labels */}
+                              <text x="450" y="80" fill="#cbd5e1" fontSize="16" fontWeight="bold" letterSpacing="2" opacity="0.7">ORIGIN SENDER</text>
+                              <text x="80" y="220" fill="#cbd5e1" fontSize="14" fontWeight="bold" letterSpacing="1" opacity="0.7">DESTINATION</text>
+
+                              {/* Route Path */}
+                              {(() => {
+                                const isDelivered = logisticsSelectedOrder.status === 'delivered';
+                                const isShipped = logisticsSelectedOrder.status === 'shipped';
+                                const pathStr = "M420,100 Q300,180 120,200";
+                                
+                                return (
+                                  <>
+                                    <path d={pathStr} fill="none" stroke="#E8527A" strokeWidth="4" />
+                                    
+                                    {/* Origin Dot */}
+                                    <circle cx="420" cy="100" r="6" fill="#141414" stroke="#ffffff" strokeWidth="3" />
+                                    
+                                    {/* Animated Truck/Pulse Icon */}
+                                    {(isShipped || isDelivered) && (
+                                      <motion.g
+                                        initial={{ offsetDistance: isDelivered ? '100%' : '0%' }}
+                                        animate={{ offsetDistance: isDelivered ? '100%' : '75%' }}
+                                        transition={{ duration: 5, ease: 'easeInOut' }}
+                                        style={{ offsetPath: `path('${pathStr}')`, offsetRotate: '0deg' }}
+                                      >
+                                        <circle r="18" fill="rgba(232, 82, 122, 0.2)" />
+                                        <circle r="12" fill="#E8527A" />
+                                        {/* Truck flipped horizontally so it faces Left without being upside down */}
+                                        <g transform="scale(-1, 1) translate(0, 0)">
+                                          <svg x="-6" y="-6" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="1" y="3" width="15" height="13" />
+                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                            <circle cx="5.5" cy="18.5" r="2.5" />
+                                            <circle cx="18.5" cy="18.5" r="2.5" />
+                                          </svg>
+                                        </g>
+                                      </motion.g>
+                                    )}
+
+                                    {/* Destination Dot */}
+                                    <circle cx="120" cy="200" r="6" fill="#E8527A" stroke="#ffffff" strokeWidth="3" />
+                                  </>
+                                );
+                              })()}
+                            </svg>
+                          </div>
+
+                          {/* 5. Timeline */}
+                          <div className="mt-0 pt-2 flex-1">
+                            <div className="flex justify-between items-center mb-3">
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
+                                <span className="text-[8px] text-gray-400">Updated 5 mins ago</span>
+                              </div>
+                              <button className="px-3 py-1.5 bg-gray-50 text-[8px] font-medium text-gray-600 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                                Refresh
+                              </button>
+                            </div>
+
+                            <div className="relative pl-3.5 border-l border-gray-200 space-y-4 ml-2">
+                              {/* Step 1: Current Status */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
+                                  <div className="w-1.5 h-1.5 bg-rose rounded-full" />
+                                </div>
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-900 font-medium">
+                                      <Truck size={10} className="text-gray-500" /> Now
+                                    </div>
+                                    <div className="text-[8px] text-gray-500 mt-1 pl-4">6:39 PM</div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">
+                                      {logisticsSelectedOrder.status === 'delivered' ? 'Delivered' : 
+                                       logisticsSelectedOrder.status === 'shipped' ? 'In transit' : 'Processing'}
+                                    </p>
+                                    <p className="text-[9px] text-gray-500 mt-1 leading-relaxed max-w-[200px]">
+                                      {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.postal_code}, {logisticsSelectedOrder.shipping_address?.city}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Step 2: Sorting Center */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
+                                      <Box size={10} /> 11:54 AM
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">In the sorting facility</p>
+                                    <p className="text-[9px] text-gray-500 mt-1 uppercase">{logisticsSelectedOrder.courier || 'Expedition'} Hub, Regional Branch</p>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Step 3: Dispatched */}
+                              <div className="relative">
+                                <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                                  <div className="w-20 shrink-0 pt-0.5">
+                                    <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
+                                      <Package size={10} /> 09:12 AM
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-medium text-gray-900">Package dispatched</p>
+                                    <p className="text-[9px] text-gray-500 mt-1 uppercase">Sender Origin Facility</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+              );
+            })()}
+
+                        {/* ===== FINANCE ===== */}
+            {activeTab === 'finance' && (() => {
+              // Accounting Mocks (In real app, this should come from a ledger/DB)
+              const grossRevenue = finance.totalRevenue;
+              
+              // Let's pretend COGS is 30% of revenue for mock
+              const cogs = grossRevenue * 0.3;
+              const grossProfit = grossRevenue - cogs;
+              
+              // OPEX Mocks
+              const opex = {
+                marketing: grossRevenue * 0.05,
+                salary: 15000000,
+                server: 500000,
+                misc: 2000000
+              };
+              const totalOpex = Object.values(opex).reduce((a, b) => a + b, 0);
+              
+              const netIncomeBeforeTax = grossProfit - totalOpex;
+              
+              // Tax Calculation (PT Perorangan - PPh Final 0.5% UMKM PP 55/2022)
+              const pphFinalTax = grossRevenue * 0.005; 
+              
+              const netIncomeAfterTax = netIncomeBeforeTax - pphFinalTax;
+
+              // Balance Sheet Mocks
+              const assets = {
+                cash: 50000000 + netIncomeAfterTax,
+                inventory: 45000000,
+                receivables: finance.pendingPayments * 500000 // mock
+              };
+              const totalAssets = Object.values(assets).reduce((a, b) => a + b, 0);
+
+              const liabilities = {
+                payables: 10000000,
+                taxPayable: pphFinalTax
+              };
+              const totalLiabilities = Object.values(liabilities).reduce((a, b) => a + b, 0);
+
+              const equity = {
+                paidInCapital: 80000000,
+                retainedEarnings: totalAssets - totalLiabilities - 80000000
+              };
+              const totalEquity = Object.values(equity).reduce((a, b) => a + b, 0);
+
+              return (
+              <motion.div
+                key="finance"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-0 h-full flex flex-col"
+              >
+                {/* Header & Internal Nav */}
+                <div className="flex flex-col gap-4 pb-4 border-b border-ink/10 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Financial Command</h2>
+                    <span className="text-[9px] text-ink/40">— accounting & tax reports</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1">
+                    {[
+                      { id: 'overview', label: 'Overview' },
+                      { id: 'ledger', label: 'Ledger' },
+                      { id: 'pl', label: 'Income Statement' },
+                      { id: 'balance', label: 'Balance Sheet' },
+                      { id: 'tax', label: 'Corporate Tax (PT)' }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setFinanceTab(tab.id as any)}
+                        className={cn(
+                          "px-4 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors border",
+                          financeTab === tab.id ? "bg-ink text-white border-ink" : "bg-white text-ink/60 border-ink/10 hover:border-ink/30 hover:text-ink"
+                        )}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+                  {/* OVERVIEW */}
+                  {financeTab === 'overview' && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-ink/10">
+                      <div className="p-6 bg-white border-b md:border-b-0 md:border-r border-ink/10">
+                        <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Total Revenue</p>
+                        <p className="text-2xl font-mono text-ink">IDR {grossRevenue.toLocaleString('id-ID')}</p>
+                        <p className="text-[9px] text-ink/40 mt-4 uppercase tracking-wider">{finance.completedOrders} completed transactions</p>
+                      </div>
+                      <div className="p-6 bg-white border-b md:border-b-0 md:border-r border-ink/10">
+                        <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Net Income (Est)</p>
+                        <p className="text-2xl font-mono text-ink">IDR {netIncomeAfterTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</p>
+                        <p className="text-[9px] text-ink/40 mt-4 uppercase tracking-wider">After Opex & Tax</p>
+                      </div>
+                      <div className="p-6 bg-white">
+                        <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Pending Receivables</p>
+                        <p className="text-2xl font-mono text-ink">{finance.pendingPayments}</p>
+                        <p className="text-[9px] text-ink/40 mt-4 uppercase tracking-wider">Awaiting settlement</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* LEDGER */}
+                  {financeTab === 'ledger' && (
+                    <div className="border border-ink/10 bg-white">
+                      <div className="grid grid-cols-12 gap-0 border-b border-ink/10 bg-ink/[0.02] overflow-x-auto min-w-[800px]">
+                        <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/10">Date</div>
+                        <div className="col-span-4 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/10">Description</div>
+                        <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/10 text-right">Debit (IDR)</div>
+                        <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-r border-ink/10 text-right">Credit (IDR)</div>
+                        <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 text-right">Balance</div>
+                      </div>
+                      <div className="min-w-[800px]">
+                        {orders.slice(0, 10).map((o, i) => (
+                          <div key={i} className="grid grid-cols-12 gap-0 border-b border-ink/5 hover:bg-ink/[0.01]">
+                            <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10">{new Date(o.created_at).toLocaleDateString('id-ID')}</div>
+                            <div className="col-span-4 p-3 text-[10px] text-ink border-r border-ink/10 truncate uppercase">Sales - Order #{o.id.slice(0,8)}</div>
+                            <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10 text-right">{o.total_price.toLocaleString('id-ID')}</div>
+                            <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10 text-right">-</div>
+                            <div className="col-span-2 p-3 text-[10px] font-mono text-ink text-right">...</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* INCOME STATEMENT */}
+                  {financeTab === 'pl' && (
+                    <div className="max-w-3xl mx-auto border border-ink/10 bg-white">
+                      <div className="p-4 border-b border-ink/10 text-center bg-ink/[0.02]">
+                        <h3 className="text-[11px] font-medium uppercase tracking-widest text-ink">Income Statement</h3>
+                        <p className="text-[9px] font-mono text-ink/40 mt-1">For the period ending {new Date().toLocaleDateString('id-ID')}</p>
+                      </div>
+                      
+                      {/* Revenue */}
+                      <div className="p-4 border-b border-ink/10">
+                        <p className="text-[9px] font-medium uppercase tracking-widest text-ink/40 mb-3">Revenue</p>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Gross Sales</span>
+                          <span>{grossRevenue.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Discounts/Returns</span>
+                          <span>(0)</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono font-medium border-t border-ink/10 pt-2 mt-2">
+                          <span>Net Sales</span>
+                          <span>{grossRevenue.toLocaleString('id-ID')}</span>
+                        </div>
+                      </div>
+
+                      {/* COGS */}
+                      <div className="p-4 border-b border-ink/10">
+                        <p className="text-[9px] font-medium uppercase tracking-widest text-ink/40 mb-3">Cost of Goods Sold (COGS)</p>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Production & Sourcing</span>
+                          <span>({cogs.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono font-medium border-t border-ink/10 pt-2 mt-2">
+                          <span>Gross Profit</span>
+                          <span>{grossProfit.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                      </div>
+
+                      {/* OPEX */}
+                      <div className="p-4 border-b border-ink/10">
+                        <p className="text-[9px] font-medium uppercase tracking-widest text-ink/40 mb-3">Operating Expenses</p>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Marketing & Ads</span>
+                          <span>({opex.marketing.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Salaries & Wages</span>
+                          <span>({opex.salary.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Server & IT</span>
+                          <span>({opex.server.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>General & Administrative</span>
+                          <span>({opex.misc.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono font-medium border-t border-ink/10 pt-2 mt-2">
+                          <span>Total Opex</span>
+                          <span>({totalOpex.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                      </div>
+
+                      {/* Net Income */}
+                      <div className="p-4 bg-ink/[0.02]">
+                        <div className="flex justify-between text-[11px] font-mono mb-2">
+                          <span>Net Income Before Tax</span>
+                          <span>{netIncomeBeforeTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] font-mono mb-2 text-rose">
+                          <span>Income Tax Expense</span>
+                          <span>({pphFinalTax.toLocaleString('id-ID', {maximumFractionDigits:0})})</span>
+                        </div>
+                        <div className="flex justify-between text-[12px] font-mono font-medium border-t-2 border-ink pt-2 mt-2">
+                          <span>Net Income</span>
+                          <span>{netIncomeAfterTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* BALANCE SHEET */}
+                  {financeTab === 'balance' && (
+                    <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 border border-ink/10 bg-white">
+                      <div className="col-span-1 md:col-span-2 p-4 border-b border-ink/10 text-center bg-ink/[0.02]">
+                        <h3 className="text-[11px] font-medium uppercase tracking-widest text-ink">Balance Sheet</h3>
+                        <p className="text-[9px] font-mono text-ink/40 mt-1">As of {new Date().toLocaleDateString('id-ID')}</p>
+                      </div>
+                      
+                      {/* Assets */}
+                      <div className="p-6 border-b md:border-b-0 md:border-r border-ink/10">
+                        <p className="text-[10px] font-medium uppercase tracking-widest text-ink mb-4 border-b border-ink/10 pb-2">Assets</p>
+                        
+                        <p className="text-[8px] uppercase tracking-widest text-ink/40 mb-2">Current Assets</p>
+                        <div className="flex justify-between text-[10px] font-mono mb-2">
+                          <span>Cash & Equivalents</span>
+                          <span>{assets.cash.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono mb-2">
+                          <span>Accounts Receivable</span>
+                          <span>{assets.receivables.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono mb-4">
+                          <span>Inventory</span>
+                          <span>{assets.inventory.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+
+                        <div className="flex justify-between text-[11px] font-mono font-medium border-t-2 border-ink pt-2 mt-6">
+                          <span>Total Assets</span>
+                          <span>{totalAssets.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                      </div>
+
+                      {/* Liabilities & Equity */}
+                      <div className="p-6">
+                        <p className="text-[10px] font-medium uppercase tracking-widest text-ink mb-4 border-b border-ink/10 pb-2">Liabilities & Equity</p>
+                        
+                        <p className="text-[8px] uppercase tracking-widest text-ink/40 mb-2">Liabilities</p>
+                        <div className="flex justify-between text-[10px] font-mono mb-2">
+                          <span>Accounts Payable</span>
+                          <span>{liabilities.payables.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono mb-4">
+                          <span>Tax Payable</span>
+                          <span>{liabilities.taxPayable.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono font-medium border-t border-ink/10 pt-2 mb-6">
+                          <span>Total Liabilities</span>
+                          <span>{totalLiabilities.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+
+                        <p className="text-[8px] uppercase tracking-widest text-ink/40 mb-2">Equity</p>
+                        <div className="flex justify-between text-[10px] font-mono mb-2">
+                          <span>Paid-in Capital</span>
+                          <span>{equity.paidInCapital.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono mb-4">
+                          <span>Retained Earnings</span>
+                          <span>{equity.retainedEarnings.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-mono font-medium border-t border-ink/10 pt-2 mb-6">
+                          <span>Total Equity</span>
+                          <span>{totalEquity.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+
+                        <div className="flex justify-between text-[11px] font-mono font-medium border-t-2 border-ink pt-2 mt-auto">
+                          <span>Total Liab. & Equity</span>
+                          <span>{(totalLiabilities + totalEquity).toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAX REPORT PT PERORANGAN */}
+                  {financeTab === 'tax' && (
+                    <div className="max-w-2xl mx-auto border border-ink/10 bg-white">
+                      <div className="p-5 border-b border-ink/10 bg-ink/[0.02] flex items-center justify-between">
+                        <div>
+                          <h3 className="text-[11px] font-medium uppercase tracking-widest text-ink">Tax Report Computation</h3>
+                          <p className="text-[9px] font-mono text-ink/40 mt-1">PT Perorangan - PPh Final UMKM (PP 55/2022)</p>
+                        </div>
+                        <div className="px-3 py-1 bg-white border border-ink/10 text-[9px] font-mono uppercase tracking-widest text-ink/60">Rate: 0.5%</div>
+                      </div>
+                      
+                      <div className="p-6 space-y-6">
+                        <div>
+                          <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Tax Base (Dasar Pengenaan Pajak)</p>
+                          <div className="flex items-center justify-between py-2 border-b border-ink/10">
+                            <span className="text-[11px] font-mono uppercase text-ink">Gross Revenue (Omzet)</span>
+                            <span className="text-[12px] font-mono text-ink">IDR {grossRevenue.toLocaleString('id-ID')}</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-1">Computation (Perhitungan)</p>
+                          <div className="flex items-center justify-between py-2 border-b border-ink/10 text-ink/60">
+                            <span className="text-[10px] font-mono uppercase">Gross Revenue x 0.5%</span>
+                            <span className="text-[10px] font-mono">{grossRevenue.toLocaleString('id-ID')} x 0.005</span>
+                          </div>
+                        </div>
+
+                        <div className="bg-ink/[0.02] border border-ink/10 p-4 mt-4 flex items-center justify-between">
+                          <span className="text-[11px] font-medium uppercase tracking-widest text-ink">Total Tax Payable (PPh Terutang)</span>
+                          <span className="text-[14px] font-mono font-medium text-rose">IDR {pphFinalTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</span>
+                        </div>
+
+                        <div className="pt-4 flex justify-end gap-3">
+                          <button className="px-4 py-2 border border-ink/10 text-ink text-[10px] uppercase font-medium tracking-wider hover:bg-ink/[0.02]">
+                            Download PDF
+                          </button>
+                          <button className="px-4 py-2 bg-ink text-white text-[10px] uppercase font-medium tracking-wider hover:bg-ink/90">
+                            Generate e-Billing
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+              );
+            })()}
+
 
             {/* ===== ORDERS ===== */}
             {activeTab === 'orders' && (
