@@ -369,6 +369,10 @@ export default function AdminDashboard() {
   const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
   const [newMessage, setNewMessage] = useState('');
 
+  // Logistics tab states
+  const [logisticsFilter, setLogisticsFilter] = useState<string>('all');
+  const [logisticsSelectedOrder, setLogisticsSelectedOrder] = useState<Order | null>(null);
+
   // Fetch logged-in admin user
   useEffect(() => {
     const fetchAdmin = async () => {
@@ -1912,59 +1916,187 @@ export default function AdminDashboard() {
             )}
 
             {/* ===== LOGISTICS ===== */}
-            {activeTab === 'logistics' && (
+            {activeTab === 'logistics' && (() => {
+              const logisticsOrders = logisticsFilter === 'all'
+                ? orders.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                : orders.filter(o => o.status === logisticsFilter);
+
+              const pendingCount = orders.filter(o => o.status === 'paid').length;
+              const inTransitCount = orders.filter(o => o.status === 'shipped').length;
+              const deliveredCount = orders.filter(o => o.status === 'delivered').length;
+              const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
+
+              const getTimeAgo = (dateStr: string) => {
+                const diff = Date.now() - new Date(dateStr).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 60) return `${mins}m`;
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return `${hrs}h`;
+                return `${Math.floor(hrs / 24)}d`;
+              };
+
+              // Animated route waypoints for the map
+              const getRouteWaypoints = (order: Order) => {
+                const city = order.shipping_address?.city?.toLowerCase() || '';
+                const province = order.shipping_address?.province?.toLowerCase() || '';
+                // Origin is always Bandung
+                const waypoints = [
+                  { label: 'NINOC STUDIO', sub: 'Bandung, Jawa Barat', x: 15, y: 70, isOrigin: true },
+                ];
+                // Intermediate hub
+                if (city.includes('jakarta') || province.includes('dki')) {
+                  waypoints.push({ label: 'Jakarta Hub', sub: 'Sorting Center', x: 35, y: 40, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 80, y: 25, isOrigin: false });
+                } else if (city.includes('surabaya') || province.includes('jawa timur')) {
+                  waypoints.push({ label: 'Semarang Hub', sub: 'Transit Point', x: 45, y: 50, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 85, y: 30, isOrigin: false });
+                } else {
+                  waypoints.push({ label: 'Regional Hub', sub: 'Sorting Facility', x: 50, y: 45, isOrigin: false });
+                  waypoints.push({ label: order.shipping_address?.city || 'Destination', sub: order.shipping_address?.name || '', x: 82, y: 28, isOrigin: false });
+                }
+                return waypoints;
+              };
+
+              return (
               <motion.div
                 key="logistics"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-3"
+                className="space-y-0"
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics</h2>
-                  <span className="text-[9px] text-gray-400">— shipment tracking</span>
+                {/* HEADER BAR */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
+                    <span className="text-[9px] text-gray-400">— shipment operations center</span>
+                  </div>
+                  <div className="text-[9px] text-gray-400 font-mono">
+                    {new Date().toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                    {' • '}
+                    <span className="text-rose">{pendingCount + inTransitCount}</span> active
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* PENDING SHIPMENTS */}
-                  <div className="bg-white border border-gray-200 flex flex-col h-[calc(100vh-14rem)]">
-                    <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
-                      <h3 className="text-[10px] font-bold text-gray-900 uppercase tracking-widest">Pending Shipments</h3>
-                      <span className="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 font-bold uppercase">{orders.filter(o => o.status === 'paid').length} Orders</span>
+                {/* STAT CELLS — 4 compact cells, no gap, cell-block */}
+                <div className="grid grid-cols-4 border border-gray-200 bg-white">
+                  {[
+                    { label: 'Awaiting Dispatch', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
+                    { label: 'In Transit', count: inTransitCount, color: 'text-blue-600', bg: 'bg-blue-50', filterKey: 'shipped' },
+                    { label: 'Delivered', count: deliveredCount, color: 'text-emerald-600', bg: 'bg-emerald-50', filterKey: 'delivered' },
+                    { label: 'Cancelled', count: cancelledCount, color: 'text-red-500', bg: 'bg-red-50', filterKey: 'cancelled' },
+                  ].map((stat, i) => (
+                    <button
+                      key={stat.filterKey}
+                      onClick={() => setLogisticsFilter(logisticsFilter === stat.filterKey ? 'all' : stat.filterKey)}
+                      className={cn(
+                        "px-3 py-2.5 text-left transition-colors relative",
+                        i < 3 && "border-r border-gray-200",
+                        logisticsFilter === stat.filterKey ? stat.bg : "hover:bg-gray-50"
+                      )}
+                    >
+                      {logisticsFilter === stat.filterKey && (
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose" />
+                      )}
+                      <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+                      <p className={cn("text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
+                <div className="flex border border-t-0 border-gray-200 bg-white" style={{ height: 'calc(100vh - 16rem)' }}>
+                  {/* LEFT: MASTER TABLE */}
+                  <div className={cn(
+                    "flex flex-col transition-all duration-300",
+                    logisticsSelectedOrder ? "w-[55%]" : "w-full"
+                  )}>
+                    {/* Table sub-header with filter & search */}
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50/80 shrink-0">
+                      <div className="flex items-center gap-1">
+                        {['all', 'paid', 'shipped', 'delivered'].map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => setLogisticsFilter(f)}
+                            className={cn(
+                              "px-2 py-1 text-[8px] uppercase tracking-[0.15em] transition-colors",
+                              logisticsFilter === f
+                                ? "bg-ink text-white"
+                                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                            )}
+                          >
+                            {f === 'all' ? 'All Active' : f === 'paid' ? 'Pending' : f === 'shipped' ? 'Transit' : 'Done'}
+                          </button>
+                        ))}
+                      </div>
+                      <span className="text-[9px] font-mono text-gray-400">{logisticsOrders.length} results</span>
                     </div>
-                    <div className="flex-1 overflow-y-auto bg-white">
+
+                    {/* Dense table */}
+                    <div className="flex-1 overflow-y-auto">
                       <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 bg-white shadow-[0_1px_0_0_#e5e7eb] z-10">
+                        <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                           <tr>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Order ID</th>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Destination</th>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500 text-right">Action</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[90px]">Order</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Status</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Destination</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400">Courier</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[60px]">Resi</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[80px]">Value</th>
+                            <th className="px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[40px]">Age</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {orders.filter(o => o.status === 'paid').map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-50 group transition-colors">
-                              <td className="px-3 py-2">
-                                <div className="font-mono text-[10px] text-gray-900 font-bold">{order.id.slice(0, 8).toUpperCase()}</div>
-                                <div className="text-[9px] text-gray-500">{new Date(order.created_at).toLocaleDateString('id-ID')}</div>
+                        <tbody>
+                          {logisticsOrders.map((order, idx) => (
+                            <tr
+                              key={order.id}
+                              onClick={() => setLogisticsSelectedOrder(logisticsSelectedOrder?.id === order.id ? null : order)}
+                              className={cn(
+                                "cursor-pointer transition-colors border-b border-gray-100",
+                                logisticsSelectedOrder?.id === order.id
+                                  ? "bg-rose/5 border-l-2 border-l-rose"
+                                  : idx % 2 === 0 ? "bg-white hover:bg-gray-50" : "bg-gray-50/30 hover:bg-gray-50"
+                              )}
+                            >
+                              <td className="px-3 py-1.5">
+                                <span className="font-mono text-[10px] text-gray-900">#{order.id.slice(0, 8).toUpperCase()}</span>
                               </td>
-                              <td className="px-3 py-2">
-                                <div className="text-[10px] text-gray-900 font-medium truncate max-w-[150px]">{order.shipping_address?.name}</div>
-                                <div className="text-[9px] text-gray-500 truncate max-w-[150px]">{order.shipping_address?.city}</div>
+                              <td className="px-3 py-1.5">
+                                <span className={cn(
+                                  "text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5 inline-block",
+                                  order.status === 'paid' && "bg-amber-100 text-amber-700",
+                                  order.status === 'shipped' && "bg-blue-100 text-blue-700",
+                                  order.status === 'delivered' && "bg-emerald-100 text-emerald-700",
+                                  order.status === 'cancelled' && "bg-red-100 text-red-600",
+                                )}>
+                                  {order.status === 'paid' ? 'PENDING' : order.status.toUpperCase()}
+                                </span>
                               </td>
-                              <td className="px-3 py-2 text-right">
-                                <button
-                                  onClick={() => openOrderDetail(order)}
-                                  className="text-[9px] font-bold uppercase tracking-widest text-rose bg-rose/5 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  Process
-                                </button>
+                              <td className="px-3 py-1.5">
+                                <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
+                                <div className="text-[8px] text-gray-400 truncate max-w-[120px]">{order.shipping_address?.city}</div>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <span className="text-[9px] text-gray-600 uppercase">{order.courier || '—'}</span>
+                              </td>
+                              <td className="px-3 py-1.5">
+                                {order.tracking_id ? (
+                                  <span className="font-mono text-[9px] bg-gray-100 text-gray-800 px-1 py-0.5">{order.tracking_id.slice(-8)}</span>
+                                ) : (
+                                  <span className="text-[8px] text-gray-300">—</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-1.5 text-right">
+                                <span className="font-mono text-[9px] text-gray-700">{(order.total_price / 1000).toFixed(0)}K</span>
+                              </td>
+                              <td className="px-3 py-1.5 text-right">
+                                <span className="text-[9px] text-gray-400 font-mono">{getTimeAgo(order.created_at)}</span>
                               </td>
                             </tr>
                           ))}
-                          {orders.filter(o => o.status === 'paid').length === 0 && (
+                          {logisticsOrders.length === 0 && (
                             <tr>
-                              <td colSpan={3} className="px-3 py-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-                                No pending shipments
+                              <td colSpan={7} className="px-3 py-12 text-center text-[10px] text-gray-300 uppercase tracking-[0.3em]">
+                                No orders in this category
                               </td>
                             </tr>
                           )}
@@ -1973,56 +2105,212 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* IN TRANSIT */}
-                  <div className="bg-white border border-gray-200 flex flex-col h-[calc(100vh-14rem)]">
-                    <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
-                      <h3 className="text-[10px] font-bold text-gray-900 uppercase tracking-widest">In Transit</h3>
-                      <span className="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 font-bold uppercase">{orders.filter(o => o.status === 'shipped').length} Orders</span>
-                    </div>
-                    <div className="flex-1 overflow-y-auto bg-white">
-                      <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 bg-white shadow-[0_1px_0_0_#e5e7eb] z-10">
-                          <tr>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Order ID</th>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500">Tracking Info</th>
-                            <th className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-gray-500 text-right">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {orders.filter(o => o.status === 'shipped').map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-50 group transition-colors">
-                              <td className="px-3 py-2">
-                                <div className="font-mono text-[10px] text-gray-900 font-bold">{order.id.slice(0, 8).toUpperCase()}</div>
-                                <div className="text-[9px] text-gray-500">{order.shipping_address?.name}</div>
-                              </td>
-                              <td className="px-3 py-2">
-                                <div className="font-mono text-[10px] text-gray-900 font-bold bg-gray-100 px-1 py-0.5 inline-block">{order.tracking_id || 'NO RESI'}</div>
-                                <div className="text-[9px] text-gray-500 mt-0.5 uppercase">{order.courier || 'Standard'}</div>
-                              </td>
-                              <td className="px-3 py-2 text-right">
-                                <button
-                                  onClick={() => openOrderDetail(order)}
-                                  className="text-[9px] font-bold uppercase tracking-widest text-ink bg-gray-100 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-200"
-                                >
-                                  Update
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                          {orders.filter(o => o.status === 'shipped').length === 0 && (
-                            <tr>
-                              <td colSpan={3} className="px-3 py-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-                                No shipments in transit
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                  {/* RIGHT: DETAIL + MAP PANEL */}
+                  <AnimatePresence>
+                    {logisticsSelectedOrder && (
+                      <motion.div
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: '45%', opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                        className="border-l border-gray-200 flex flex-col overflow-hidden"
+                      >
+                        <div className="w-full h-full flex flex-col overflow-y-auto">
+                          {/* Detail Header */}
+                          <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50/80 shrink-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-[10px] text-gray-900">#{logisticsSelectedOrder.id.slice(0, 10).toUpperCase()}</span>
+                              <span className={cn(
+                                "text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5",
+                                logisticsSelectedOrder.status === 'paid' && "bg-amber-100 text-amber-700",
+                                logisticsSelectedOrder.status === 'shipped' && "bg-blue-100 text-blue-700",
+                                logisticsSelectedOrder.status === 'delivered' && "bg-emerald-100 text-emerald-700",
+                              )}>
+                                {logisticsSelectedOrder.status === 'paid' ? 'PENDING' : logisticsSelectedOrder.status.toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => openOrderDetail(logisticsSelectedOrder)}
+                                className="text-[8px] uppercase tracking-[0.15em] px-2 py-1 bg-ink text-white hover:bg-rose transition-colors"
+                              >
+                                Full Detail
+                              </button>
+                              <button
+                                onClick={() => setLogisticsSelectedOrder(null)}
+                                className="p-1 hover:bg-gray-200 transition-colors"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* ANIMATED ROUTE MAP */}
+                          <div className="px-4 py-3 border-b border-gray-200 shrink-0">
+                            <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-2">Shipment Route Visualization</p>
+                            <div className="bg-gray-50 border border-gray-200 rounded overflow-hidden relative" style={{ height: '160px' }}>
+                              <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                                {/* Grid lines */}
+                                {[20, 40, 60, 80].map(v => (
+                                  <React.Fragment key={v}>
+                                    <line x1={v} y1="5" x2={v} y2="95" stroke="#f0f0f0" strokeWidth="0.3" />
+                                    <line x1="5" y1={v} x2="95" y2={v} stroke="#f0f0f0" strokeWidth="0.3" />
+                                  </React.Fragment>
+                                ))}
+
+                                {/* Route path */}
+                                {(() => {
+                                  const wp = getRouteWaypoints(logisticsSelectedOrder);
+                                  const pathD = `M ${wp[0].x} ${wp[0].y} ${wp.slice(1).map(w => `L ${w.x} ${w.y}`).join(' ')}`;
+                                  return (
+                                    <>
+                                      {/* Shadow path */}
+                                      <path d={pathD} fill="none" stroke="#e5e7eb" strokeWidth="1.5" strokeDasharray="3,2" />
+                                      {/* Animated path overlay */}
+                                      <motion.path
+                                        d={pathD}
+                                        fill="none"
+                                        stroke="#E8527A"
+                                        strokeWidth="1"
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: logisticsSelectedOrder.status === 'delivered' ? 1 : logisticsSelectedOrder.status === 'shipped' ? 0.65 : 0.2, opacity: 1 }}
+                                        transition={{ duration: 2, ease: 'easeInOut' }}
+                                      />
+                                      {/* Moving dot */}
+                                      {logisticsSelectedOrder.status === 'shipped' && (
+                                        <motion.circle
+                                          r="2"
+                                          fill="#E8527A"
+                                          initial={{ offsetDistance: '0%' }}
+                                          animate={{ offsetDistance: '65%' }}
+                                          transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+                                          style={{ offsetPath: `path('${pathD}')` }}
+                                        >
+                                          <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+                                        </motion.circle>
+                                      )}
+                                      {/* Waypoints */}
+                                      {wp.map((point, pi) => (
+                                        <g key={pi}>
+                                          {/* Pulse ring for active */}
+                                          {(pi === 0 || (logisticsSelectedOrder.status === 'shipped' && pi === 1) || logisticsSelectedOrder.status === 'delivered') && (
+                                            <circle cx={point.x} cy={point.y} r="4" fill="none" stroke={point.isOrigin ? '#141414' : '#E8527A'} strokeWidth="0.3" opacity="0.4">
+                                              <animate attributeName="r" values="3;6;3" dur="3s" repeatCount="indefinite" />
+                                              <animate attributeName="opacity" values="0.4;0;0.4" dur="3s" repeatCount="indefinite" />
+                                            </circle>
+                                          )}
+                                          {/* Point */}
+                                          <circle
+                                            cx={point.x}
+                                            cy={point.y}
+                                            r="2.5"
+                                            fill={point.isOrigin ? '#141414' : pi === wp.length - 1 ? '#E8527A' : '#6b7280'}
+                                            stroke="white"
+                                            strokeWidth="1"
+                                          />
+                                          {/* Label */}
+                                          <text
+                                            x={point.x}
+                                            y={point.y - 5}
+                                            textAnchor="middle"
+                                            style={{ fontSize: '3px', fill: '#141414', fontWeight: 500, letterSpacing: '0.5px' }}
+                                          >
+                                            {point.label.toUpperCase()}
+                                          </text>
+                                          <text
+                                            x={point.x}
+                                            y={point.y + 6}
+                                            textAnchor="middle"
+                                            style={{ fontSize: '2.5px', fill: '#9ca3af' }}
+                                          >
+                                            {point.sub}
+                                          </text>
+                                        </g>
+                                      ))}
+                                    </>
+                                  );
+                                })()}
+                              </svg>
+                            </div>
+                          </div>
+
+                          {/* ORDER INFO CELLS */}
+                          <div className="divide-y divide-gray-100 flex-1">
+                            {/* Destination */}
+                            <div className="px-4 py-2.5">
+                              <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Destination Manifest</p>
+                              <p className="text-[11px] text-gray-900 font-medium">{logisticsSelectedOrder.shipping_address?.name?.toUpperCase()}</p>
+                              <p className="text-[9px] text-gray-500 font-mono mt-0.5">{logisticsSelectedOrder.shipping_address?.phone}</p>
+                              <p className="text-[9px] text-gray-500 mt-1 leading-relaxed">
+                                {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.city}, {logisticsSelectedOrder.shipping_address?.postal_code}
+                              </p>
+                            </div>
+
+                            {/* Courier + Tracking */}
+                            <div className="px-4 py-2.5 grid grid-cols-2 gap-3">
+                              <div>
+                                <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Courier Service</p>
+                                <p className="text-[10px] text-gray-900 uppercase font-medium">{logisticsSelectedOrder.courier || 'Not Assigned'}</p>
+                              </div>
+                              <div>
+                                <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1">Airway Bill</p>
+                                {logisticsSelectedOrder.tracking_id ? (
+                                  <p className="font-mono text-[10px] text-gray-900 bg-gray-100 px-1.5 py-0.5 inline-block">{logisticsSelectedOrder.tracking_id}</p>
+                                ) : (
+                                  <p className="text-[10px] text-gray-300 italic">No resi assigned</p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Items */}
+                            <div className="px-4 py-2.5">
+                              <p className="text-[8px] uppercase tracking-[0.2em] text-gray-400 mb-1.5">Garment Manifest</p>
+                              {logisticsSelectedOrder.order_items?.map((item, idx) => (
+                                <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-50 last:border-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9px] text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                                    <span className="text-[8px] text-gray-400">SZ:{item.size || 'OS'} × {item.quantity}</span>
+                                  </div>
+                                  <span className="font-mono text-[9px] text-gray-600">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Value summary */}
+                            <div className="px-4 py-2.5 bg-gray-50/50">
+                              <div className="flex justify-between items-center">
+                                <span className="text-[8px] uppercase tracking-[0.2em] text-gray-400">Total Investment</span>
+                                <span className="font-mono text-[11px] text-rose font-medium">IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+
+                            {/* Quick Actions */}
+                            <div className="px-4 py-3 flex gap-2 shrink-0">
+                              <button
+                                onClick={() => openOrderDetail(logisticsSelectedOrder)}
+                                className="flex-1 py-2 bg-ink text-white text-[9px] uppercase tracking-[0.2em] hover:bg-rose transition-colors flex items-center justify-center gap-2"
+                              >
+                                <Eye size={12} /> View Full Order
+                              </button>
+                              <button
+                                onClick={() => {
+                                  openOrderDetail(logisticsSelectedOrder);
+                                  setTimeout(() => setIsPrintPreviewOpen(true), 200);
+                                }}
+                                className="py-2 px-3 border border-gray-200 text-[9px] uppercase tracking-[0.2em] text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-1"
+                              >
+                                <Printer size={12} /> Label
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
-            )}
+              );
+            })()}
 
             {/* ===== FINANCE ===== */}
             {activeTab === 'finance' && (
