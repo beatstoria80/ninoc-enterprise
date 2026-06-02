@@ -3286,14 +3286,24 @@ export default function AdminDashboard() {
               setIsPrintPreviewOpen(false);
             }}
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="w-full max-w-2xl max-h-[90vh] bg-white rounded-xl shadow-xl overflow-y-auto"
+            <div 
+              className="flex items-stretch justify-center max-h-[90vh] shadow-2xl rounded-xl max-w-full"
               onClick={e => e.stopPropagation()}
             >
+              {/* ORDER DETAIL MODAL CONTENT */}
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className={cn(
+                  "bg-white overflow-y-auto transition-all duration-300 flex flex-col relative",
+                  isPrintPreviewOpen 
+                    ? "w-[95vw] sm:w-[500px] rounded-l-xl rounded-r-none" 
+                    : "w-[95vw] sm:w-[672px] rounded-xl"
+                )}
+              >
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
@@ -3430,48 +3440,50 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
 
-            {/* PRINT PREVIEW SLIDE OUT (FROM RIGHT OF MODAL) */}
+            {/* PRINT PREVIEW ATTACHED ON RIGHT */}
             <AnimatePresence>
               {isPrintPreviewOpen && (
                 <motion.div
-                  initial={{ x: '100%', opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: '100%', opacity: 0 }}
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 400, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
                   transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  className="absolute right-0 top-0 bottom-0 w-full sm:w-[450px] bg-gray-100 rounded-r-xl shadow-[-10px_0_30px_rgba(0,0,0,0.1)] flex flex-col z-[210] border-l border-gray-200 overflow-hidden"
-                  onClick={e => e.stopPropagation()}
+                  className="bg-gray-100 rounded-r-xl border-l border-gray-200 overflow-hidden hidden sm:flex flex-col z-[210] relative"
                 >
-                  <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Label Preview</p>
-                    <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                      <X size={16} />
-                    </button>
-                  </div>
-                  
-                  {/* Label Canvas Preview - Scaled to fit */}
-                  <div className="flex-1 p-6 flex items-center justify-center overflow-auto">
-                    <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.8)', transformOrigin: 'center' }}>
-                      <ShippingLabel order={selectedOrder} />
+                  <div className="w-[400px] h-full flex flex-col">
+                    <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shrink-0">
+                      <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Label Preview</p>
+                      <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                        <X size={16} />
+                      </button>
                     </div>
-                  </div>
-                  
-                  <div className="p-4 bg-white border-t border-gray-200">
-                    <button 
-                      onClick={() => {
-                        setIsPrinting(true);
-                        setTimeout(() => {
-                          window.print();
-                          setIsPrinting(false);
-                        }, 200);
-                      }}
-                      className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
-                    >
-                      <Printer size={16} /> Print to Thermal Printer
-                    </button>
+                    
+                    {/* Label Canvas Preview - Scaled to fit */}
+                    <div className="flex-1 p-6 flex items-center justify-center overflow-auto bg-gray-50/50">
+                      <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.75)', transformOrigin: 'center' }}>
+                        <ShippingLabel order={selectedOrder} />
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-white border-t border-gray-200 shrink-0">
+                      <button 
+                        onClick={() => {
+                          setIsPrinting(true);
+                          setTimeout(() => {
+                            window.print();
+                            setIsPrinting(false);
+                          }, 200);
+                        }}
+                        className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
+                      >
+                        <Printer size={16} /> Print to Thermal Printer
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
