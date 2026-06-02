@@ -2863,13 +2863,19 @@ export default function AdminDashboard() {
                               if (!file) return;
                               setIsUploadingProductImage(true);
                               try {
-                                const fileName = `product-${crypto.randomUUID()}.${file.name.split('.').pop()}`;
-                                const { error: uploadError } = await supabase.storage
-                                  .from('products')
-                                  .upload(fileName, file);
-                                if (uploadError) throw uploadError;
-                                const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
-                                setProductForm(prev => ({ ...prev, [field]: publicUrl }));
+                                // Use API route (server-side with service role key)
+                                const formData = new FormData();
+                                formData.append('files', file);
+                                formData.append('bucket', 'products');
+                                const res = await fetch('/api/admin/upload-images', {
+                                  method: 'POST',
+                                  body: formData
+                                });
+                                const data = await res.json();
+                                if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                  throw new Error(data.error || 'Upload failed');
+                                }
+                                setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
                               } catch (err) {
                                 alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
                               } finally {
