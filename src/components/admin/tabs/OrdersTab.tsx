@@ -211,6 +211,11 @@ export function OrdersTab({
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
+  // ── Print Modal State ──
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [selectedPrintOrders, setSelectedPrintOrders] = useState<string[]>([]);
+  const [isPrinting, setIsPrinting] = useState(false);
+
   // ── Dropdown open states (only one at a time) ──
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -302,83 +307,305 @@ export function OrdersTab({
       alert('Tidak ada order valid (Status: Paid/Sent) pada filter saat ini untuk dicetak.');
       return;
     }
+    
+    // Set all valid orders as selected by default and open modal
+    setSelectedPrintOrders(validOrders.map(o => o.id));
+    setIsPrintModalOpen(true);
+  };
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+  const executePrint = () => {
+    if (selectedPrintOrders.length === 0) return;
+    setIsPrinting(true);
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Print Resi Massal - NINOC Archive</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-            body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; background: #f9fafb; color: #141414; }
-            .label-card { 
-              background: white; 
-              border: 1px dashed #d1d5db; 
-              padding: 24px; 
-              margin-bottom: 24px; 
-              border-radius: 8px;
-              width: 100%;
-              max-width: 500px;
-              page-break-inside: avoid;
-            }
-            .header { border-bottom: 2px solid #141414; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-            .brand { font-size: 18px; font-weight: 600; font-style: italic; letter-spacing: -0.05em; text-transform: uppercase; }
-            .order-info { font-size: 11px; text-transform: uppercase; font-weight: 500; text-align: right; }
-            .section-title { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 4px; }
-            .address-box { margin-bottom: 16px; }
-            .address-text { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; }
-            .address-detail { font-size: 12px; color: #374151; margin: 0; line-height: 1.5; }
-            .footer { border-top: 1px dashed #d1d5db; padding-top: 12px; margin-top: 16px; font-size: 11px; color: #374151; }
-            .item-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
-            .courier-badge { display: inline-block; padding: 4px 8px; border: 1px solid #141414; font-size: 10px; font-weight: 600; text-transform: uppercase; border-radius: 4px; margin-bottom: 12px; }
-            @media print {
-              body { background: white; padding: 0; }
-              .label-card { border: 1px solid #141414; margin: 0 0 24px 0; border-radius: 0; page-break-after: always; max-width: none; }
-            }
-          </style>
-        </head>
-        <body>
-          ${validOrders.map(order => `
-            <div class="label-card">
-              <div class="header">
-                <div class="brand">NINOC</div>
-                <div class="order-info">
-                  <div>ORDER #${order.id.slice(0, 10).toUpperCase()}</div>
-                  <div style="color: #6b7280; margin-top: 2px;">${new Date(order.created_at).toLocaleDateString('id-ID')}</div>
+    // Simulate label generation for UI/UX polish
+    setTimeout(() => {
+      setIsPrinting(false);
+      setIsPrintModalOpen(false);
+
+      const ordersToPrint = orders.filter(o => selectedPrintOrders.includes(o.id));
+      
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Label Pengiriman - NINOC Archive</title>
+            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+            <style>
+              @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
+              
+              body { 
+                font-family: 'Courier Prime', monospace; 
+                margin: 0; 
+                padding: 20px; 
+                background: #e5e7eb; 
+                color: #000;
+              }
+              
+              /* Thermal Label Standard Size (approx 100x150mm) */
+              .label { 
+                background: white; 
+                width: 100mm; 
+                min-height: 120mm;
+                padding: 4mm;
+                margin: 0 auto 20px auto; 
+                box-sizing: border-box;
+                page-break-after: always;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+              }
+
+              .label-inner {
+                border: 2px solid #000;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+              }
+
+              /* Header Section */
+              .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4mm;
+                border-bottom: 2px solid #000;
+              }
+              .brand {
+                font-family: 'Inter', sans-serif;
+                font-size: 14px;
+                font-weight: 900;
+                font-style: italic;
+                letter-spacing: -0.5px;
+              }
+              .brand span {
+                font-size: 8px;
+                font-weight: 600;
+                margin-left: 4px;
+                font-style: normal;
+                letter-spacing: 1px;
+              }
+              .courier-box {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+              }
+              .courier-badge {
+                background: #000;
+                color: #fff;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+                font-size: 10px;
+                padding: 2px 4px;
+                letter-spacing: 0.5px;
+              }
+
+              /* Barcode Section */
+              .barcode-section {
+                padding: 4mm;
+                text-align: center;
+                border-bottom: 2px solid #000;
+              }
+              .barcode-section img {
+                width: 100%;
+                height: 50px;
+                display: block;
+                margin: 0 auto;
+              }
+              .awb-text {
+                font-family: 'Courier Prime', monospace;
+                font-weight: 700;
+                font-size: 14px;
+                margin-top: 4px;
+                letter-spacing: 2px;
+              }
+
+              /* Address Grid */
+              .address-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                border-bottom: 2px solid #000;
+              }
+              .address-box {
+                padding: 4mm;
+              }
+              .address-box.left {
+                border-right: 2px solid #000;
+              }
+              .box-title {
+                font-family: 'Inter', sans-serif;
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                margin-bottom: 4px;
+                text-decoration: underline;
+              }
+              .person-name {
+                font-weight: 700;
+                font-size: 12px;
+                margin-bottom: 2px;
+                font-family: 'Inter', sans-serif;
+              }
+              .person-phone {
+                font-size: 10px;
+                margin-bottom: 6px;
+              }
+              .person-address {
+                font-size: 9px;
+                line-height: 1.3;
+              }
+
+              /* Content Grid */
+              .content-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                border-bottom: 2px solid #000;
+                flex: 1;
+              }
+              .content-box {
+                padding: 4mm;
+              }
+              .content-box.left {
+                border-right: 2px solid #000;
+              }
+              .item-line {
+                font-size: 10px;
+                line-height: 1.4;
+                margin-bottom: 2px;
+              }
+              
+              .order-id-box {
+                text-align: center;
+                padding-top: 4mm;
+              }
+              .order-id-val {
+                font-family: 'Inter', sans-serif;
+                font-size: 12px;
+                font-weight: 800;
+                margin-top: 4px;
+              }
+              .qty-val {
+                font-size: 9px;
+                margin-top: 8px;
+                display: flex;
+                justify-content: space-between;
+                padding: 0 4px;
+              }
+
+              /* Footer */
+              .footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 2mm 4mm;
+                font-size: 8px;
+              }
+              .fragile-badge {
+                background: #000;
+                color: #fff;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+                padding: 2px 6px;
+                font-size: 10px;
+                letter-spacing: 1px;
+              }
+
+              @media print {
+                body { background: white; padding: 0; }
+                .label { margin: 0; box-shadow: none; border: none; }
+                @page { margin: 0; size: 100mm 150mm; }
+              }
+            </style>
+          </head>
+          <body>
+            ${ordersToPrint.map(order => `
+              <div class="label">
+                <div class="label-inner">
+                  
+                  <div class="header">
+                    <div class="brand">NINOC <span>ARCHIVE</span></div>
+                    <div class="courier-box">
+                      <div class="courier-badge">${(order.courier || 'STD').toUpperCase().slice(0, 5)}</div>
+                    </div>
+                  </div>
+
+                  <div class="barcode-section">
+                    <svg class="barcode"
+                      jsbarcode-format="CODE128"
+                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}"
+                      jsbarcode-textmargin="0"
+                      jsbarcode-fontoptions="bold"
+                      jsbarcode-height="50"
+                      jsbarcode-displayvalue="false"
+                      jsbarcode-width="2"
+                      jsbarcode-margin="0">
+                    </svg>
+                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}</div>
+                  </div>
+
+                  <div class="address-grid">
+                    <div class="address-box left">
+                      <div class="box-title">PENERIMA / TO</div>
+                      <div class="person-name">${order.shipping_address?.name || 'GUEST'}</div>
+                      <div class="person-phone">${order.shipping_address?.phone || '-'}</div>
+                      <div class="person-address">
+                        ${order.shipping_address?.address || '-'}<br/>
+                        ${order.shipping_address?.city || '-'}
+                      </div>
+                    </div>
+                    <div class="address-box">
+                      <div class="box-title">PENGIRIM / FROM</div>
+                      <div class="person-name">NINOC STUDIO</div>
+                      <div class="person-phone">0812-XXXX-XXXX</div>
+                      <div class="person-address">
+                        Jl. Gudang Selatan No. 22<br/>
+                        Bandung, Jawa Barat<br/>
+                        40113
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="content-grid">
+                    <div class="content-box left">
+                      <div class="box-title">ISI PAKET / CONTENTS</div>
+                      ${order.order_items?.map(i => `
+                        <div class="item-line">${i.product_name} ${i.size ? `(Sz: ${i.size})` : ''} x${i.quantity}</div>
+                      `).join('') || '<div class="item-line">No items found</div>'}
+                    </div>
+                    <div class="content-box">
+                      <div class="order-id-box">
+                        <div class="box-title" style="text-decoration:none;">ORDER ID</div>
+                        <div class="order-id-val">#${order.id.slice(0, 8).toUpperCase()}</div>
+                      </div>
+                      <div class="qty-val">
+                        <span>Qty: ${order.order_items?.reduce((acc, curr) => acc + curr.quantity, 0) || 0}</span>
+                        <span>~500g</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="footer">
+                    <div>${new Date(order.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
+                    <div>NINOC ARCHIVE - BANDUNG, INDONESIA</div>
+                    <div class="fragile-badge">FRAGILE</div>
+                  </div>
+
                 </div>
               </div>
-              <div class="courier-badge">
-                ${order.courier || 'STANDARD COURIER'}
-              </div>
-              <div class="address-box">
-                <div class="section-title">Recipient (Penerima)</div>
-                <p class="address-text">${order.shipping_address?.name || 'GUEST'}</p>
-                <p class="address-detail font-mono">${order.shipping_address?.phone || '-'}</p>
-                <p class="address-detail mt-1">${order.shipping_address?.address || '-'}</p>
-                <p class="address-detail text-transform: uppercase;">${order.shipping_address?.city || '-'}</p>
-              </div>
-              <div class="footer">
-                <div class="section-title" style="margin-bottom: 8px;">Order Items</div>
-                ${order.order_items?.map(i => `
-                  <div class="item-line">
-                    <span>${i.quantity}x ${i.product_name}</span>
-                    <span>${i.size ? `Size: ${i.size}` : ''}</span>
-                  </div>
-                `).join('') || '<div class="item-line">No items found</div>'}
-              </div>
-            </div>
-          `).join('')}
-          <script>
-            window.onload = () => { setTimeout(() => { window.print(); }, 500); }
-          </script>
-        </body>
-      </html>
-    `;
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+            `).join('')}
+            
+            <script>
+              JsBarcode(".barcode").init();
+              window.onload = () => { setTimeout(() => { window.print(); }, 800); }
+            </script>
+          </body>
+        </html>
+      `;
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    }, 1500);
   };
 
   return (
