@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, X, Calendar } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, X, Calendar, Printer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 
@@ -293,6 +293,94 @@ export function OrdersTab({
     return result;
   }, [orders, statusFilter, searchQuery, paymentFilter, courierFilter, dateFrom, dateTo, sortBy]);
 
+  // ── Handle Bulk Print Resi ──
+  const handlePrintResi = () => {
+    // Filter only valid orders ready for shipping (e.g., Paid or Shipped)
+    const validOrders = filteredOrders.filter(o => o.status === 'paid' || o.status === 'shipped');
+    
+    if (validOrders.length === 0) {
+      alert('Tidak ada order valid (Status: Paid/Sent) pada filter saat ini untuk dicetak.');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Print Resi Massal - NINOC Archive</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+            body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; background: #f9fafb; color: #141414; }
+            .label-card { 
+              background: white; 
+              border: 1px dashed #d1d5db; 
+              padding: 24px; 
+              margin-bottom: 24px; 
+              border-radius: 8px;
+              width: 100%;
+              max-width: 500px;
+              page-break-inside: avoid;
+            }
+            .header { border-bottom: 2px solid #141414; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+            .brand { font-size: 18px; font-weight: 600; font-style: italic; letter-spacing: -0.05em; text-transform: uppercase; }
+            .order-info { font-size: 11px; text-transform: uppercase; font-weight: 500; text-align: right; }
+            .section-title { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 4px; }
+            .address-box { margin-bottom: 16px; }
+            .address-text { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; }
+            .address-detail { font-size: 12px; color: #374151; margin: 0; line-height: 1.5; }
+            .footer { border-top: 1px dashed #d1d5db; padding-top: 12px; margin-top: 16px; font-size: 11px; color: #374151; }
+            .item-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+            .courier-badge { display: inline-block; padding: 4px 8px; border: 1px solid #141414; font-size: 10px; font-weight: 600; text-transform: uppercase; border-radius: 4px; margin-bottom: 12px; }
+            @media print {
+              body { background: white; padding: 0; }
+              .label-card { border: 1px solid #141414; margin: 0 0 24px 0; border-radius: 0; page-break-after: always; max-width: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${validOrders.map(order => `
+            <div class="label-card">
+              <div class="header">
+                <div class="brand">NINOC</div>
+                <div class="order-info">
+                  <div>ORDER #${order.id.slice(0, 10).toUpperCase()}</div>
+                  <div style="color: #6b7280; margin-top: 2px;">${new Date(order.created_at).toLocaleDateString('id-ID')}</div>
+                </div>
+              </div>
+              <div class="courier-badge">
+                ${order.courier || 'STANDARD COURIER'}
+              </div>
+              <div class="address-box">
+                <div class="section-title">Recipient (Penerima)</div>
+                <p class="address-text">${order.shipping_address?.name || 'GUEST'}</p>
+                <p class="address-detail font-mono">${order.shipping_address?.phone || '-'}</p>
+                <p class="address-detail mt-1">${order.shipping_address?.address || '-'}</p>
+                <p class="address-detail text-transform: uppercase;">${order.shipping_address?.city || '-'}</p>
+              </div>
+              <div class="footer">
+                <div class="section-title" style="margin-bottom: 8px;">Order Items</div>
+                ${order.order_items?.map(i => `
+                  <div class="item-line">
+                    <span>${i.quantity}x ${i.product_name}</span>
+                    <span>${i.size ? `Size: ${i.size}` : ''}</span>
+                  </div>
+                `).join('') || '<div class="item-line">No items found</div>'}
+              </div>
+            </div>
+          `).join('')}
+          <script>
+            window.onload = () => { setTimeout(() => { window.print(); }, 500); }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   return (
     <motion.div
       key="orders"
@@ -305,9 +393,18 @@ export function OrdersTab({
           <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
           <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
-          Export Data
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={handlePrintResi}
+            className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
+          >
+            <Printer size={12} />
+            Print Resi Massal
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
+            Export Data
+          </button>
+        </div>
       </div>
 
       {/* Status Tabs */}
