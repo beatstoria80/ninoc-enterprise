@@ -1,9 +1,194 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, CreditCard, Truck } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, CreditCard, Truck, X, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 
+// ─── Dropdown Component ──────────────────────────────────
+function FilterDropdown({
+  label,
+  icon,
+  options,
+  value,
+  onChange,
+  isOpen,
+  onToggle,
+  onClose,
+}: {
+  label: string;
+  icon?: React.ReactNode;
+  options: { id: string; label: string }[];
+  value: string;
+  onChange: (v: string) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen, onClose]);
+
+  const activeLabel = options.find(o => o.id === value)?.label;
+  const isFiltered = value !== 'all';
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={onToggle}
+        className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+          isFiltered
+            ? "bg-rose/10 border border-rose/30 text-rose"
+            : "bg-ink/5 text-ink/60 hover:bg-ink/10"
+        )}
+      >
+        {icon}
+        {isFiltered ? activeLabel : label}
+        <ChevronDown size={10} className={cn("transition-transform", isOpen && "rotate-180")} />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-1 z-50 min-w-[180px] bg-white border border-ink/10 rounded-sm shadow-lg"
+          >
+            {options.map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => { onChange(opt.id); onClose(); }}
+                className={cn(
+                  "w-full text-left px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors",
+                  value === opt.id
+                    ? "bg-rose/5 text-rose"
+                    : "text-ink/60 hover:bg-ink/5 hover:text-ink"
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Date Range Dropdown ─────────────────────────────────
+function DateRangeDropdown({
+  dateFrom,
+  dateTo,
+  onChangeFrom,
+  onChangeTo,
+  onClear,
+  isOpen,
+  onToggle,
+  onClose,
+}: {
+  dateFrom: string;
+  dateTo: string;
+  onChangeFrom: (v: string) => void;
+  onChangeTo: (v: string) => void;
+  onClear: () => void;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen, onClose]);
+
+  const isFiltered = dateFrom || dateTo;
+  const displayLabel = isFiltered
+    ? `${dateFrom || '...'} — ${dateTo || '...'}`
+    : 'Date Range';
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={onToggle}
+        className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+          isFiltered
+            ? "bg-rose/10 border border-rose/30 text-rose"
+            : "bg-ink/5 text-ink/60 hover:bg-ink/10"
+        )}
+      >
+        <Calendar size={10} />
+        {displayLabel}
+        <ChevronDown size={10} className={cn("transition-transform", isOpen && "rotate-180")} />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-1 z-50 w-[260px] bg-white border border-ink/10 rounded-sm shadow-lg p-3 space-y-3"
+          >
+            <div>
+              <label className="text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">From</label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={e => onChangeFrom(e.target.value)}
+                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
+              />
+            </div>
+            <div>
+              <label className="text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">To</label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={e => onChangeTo(e.target.value)}
+                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
+              />
+            </div>
+            <div className="flex items-center justify-between pt-1 border-t border-ink/5">
+              <button
+                onClick={() => { onClear(); onClose(); }}
+                className="text-[9px] uppercase tracking-wider font-medium text-ink/40 hover:text-ink transition-colors"
+              >
+                Clear
+              </button>
+              <button
+                onClick={onClose}
+                className="text-[9px] uppercase tracking-wider font-medium text-rose hover:text-rose/80 transition-colors"
+              >
+                Apply
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────
 export function OrdersTab({
   orders,
   statusFilter,
@@ -19,16 +204,94 @@ export function OrdersTab({
   setSearchQuery: (s: string) => void;
   openOrderDetail: (o: Order) => void;
 }) {
-  const filteredOrders = orders.filter(order => {
-    if (statusFilter !== 'all' && order.status !== statusFilter) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return order.id.toLowerCase().includes(q) || 
-             order.shipping_address?.name.toLowerCase().includes(q) ||
-             order.shipping_address?.phone.includes(q);
+  // ── Filter states ──
+  const [paymentFilter, setPaymentFilter] = useState('all');
+  const [courierFilter, setCourierFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+
+  // ── Dropdown open states (only one at a time) ──
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const toggleDropdown = useCallback((id: string) => {
+    setOpenDropdown(prev => prev === id ? null : id);
+  }, []);
+
+  const closeDropdown = useCallback(() => {
+    setOpenDropdown(null);
+  }, []);
+
+  // ── Derive unique courier options from data ──
+  const courierOptions = useMemo(() => {
+    const unique = new Set<string>();
+    orders.forEach(o => { if (o.courier) unique.add(o.courier); });
+    return [
+      { id: 'all', label: 'All Couriers' },
+      ...Array.from(unique).sort().map(c => ({ id: c, label: c }))
+    ];
+  }, [orders]);
+
+  // ── Count active filters ──
+  const activeFilterCount = [
+    paymentFilter !== 'all',
+    courierFilter !== 'all',
+    dateFrom || dateTo,
+    sortBy !== 'all',
+  ].filter(Boolean).length;
+
+  // ── Clear all filters ──
+  const clearAllFilters = useCallback(() => {
+    setPaymentFilter('all');
+    setCourierFilter('all');
+    setSortBy('all');
+    setDateFrom('');
+    setDateTo('');
+    closeDropdown();
+  }, [closeDropdown]);
+
+  // ── Filtering + Sorting ──
+  const filteredOrders = useMemo(() => {
+    let result = orders.filter(order => {
+      // Status tab filter
+      if (statusFilter !== 'all' && order.status !== statusFilter) return false;
+      // Search query
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const match = order.id.toLowerCase().includes(q) ||
+          order.shipping_address?.name.toLowerCase().includes(q) ||
+          order.shipping_address?.phone.includes(q);
+        if (!match) return false;
+      }
+      // Payment status filter
+      if (paymentFilter !== 'all' && order.payment_status !== paymentFilter) return false;
+      // Courier filter
+      if (courierFilter !== 'all' && order.courier !== courierFilter) return false;
+      // Date range filter
+      if (dateFrom) {
+        const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+        if (orderDate < dateFrom) return false;
+      }
+      if (dateTo) {
+        const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+        if (orderDate > dateTo) return false;
+      }
+      return true;
+    });
+
+    // Sorting
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    } else if (sortBy === 'highest') {
+      result.sort((a, b) => b.total_price - a.total_price);
+    } else if (sortBy === 'lowest') {
+      result.sort((a, b) => a.total_price - b.total_price);
     }
-    return true;
-  });
+
+    return result;
+  }, [orders, statusFilter, searchQuery, paymentFilter, courierFilter, dateFrom, dateTo, sortBy]);
 
   return (
     <motion.div
@@ -82,15 +345,86 @@ export function OrdersTab({
       {/* Filter Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 py-2">
         <div className="flex flex-wrap items-center gap-2">
-          <button className="flex items-center gap-2 px-3 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:border-rose/50 hover:text-rose transition-colors">
-            <Filter size={12} /> Filter
+          {/* Master Filter Button */}
+          <button
+            onClick={activeFilterCount > 0 ? clearAllFilters : undefined}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 border rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+              activeFilterCount > 0
+                ? "border-rose/30 bg-rose/10 text-rose hover:bg-rose/20"
+                : "border-ink/10 text-ink/60"
+            )}
+          >
+            {activeFilterCount > 0 ? (
+              <>
+                <X size={10} />
+                Clear {activeFilterCount} Filter{activeFilterCount > 1 ? 's' : ''}
+              </>
+            ) : (
+              <>
+                <Filter size={12} /> Filter
+              </>
+            )}
           </button>
+
           <div className="h-4 w-px bg-ink/10 mx-1" />
-          {['Payment Method', 'Courier', 'Date Range', 'Sort By'].map((filter, i) => (
-            <button key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-ink/5 rounded-sm text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:bg-ink/10 transition-colors">
-              {filter} <ChevronDown size={10} />
-            </button>
-          ))}
+
+          {/* Payment Method Dropdown */}
+          <FilterDropdown
+            label="Payment Method"
+            options={[
+              { id: 'all', label: 'All Payment' },
+              { id: 'pending', label: 'Pending' },
+              { id: 'success', label: 'Success' },
+              { id: 'failed', label: 'Failed' },
+              { id: 'expired', label: 'Expired' },
+            ]}
+            value={paymentFilter}
+            onChange={setPaymentFilter}
+            isOpen={openDropdown === 'payment'}
+            onToggle={() => toggleDropdown('payment')}
+            onClose={closeDropdown}
+          />
+
+          {/* Courier Dropdown */}
+          <FilterDropdown
+            label="Courier"
+            options={courierOptions}
+            value={courierFilter}
+            onChange={setCourierFilter}
+            isOpen={openDropdown === 'courier'}
+            onToggle={() => toggleDropdown('courier')}
+            onClose={closeDropdown}
+          />
+
+          {/* Date Range Dropdown */}
+          <DateRangeDropdown
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onChangeFrom={setDateFrom}
+            onChangeTo={setDateTo}
+            onClear={() => { setDateFrom(''); setDateTo(''); }}
+            isOpen={openDropdown === 'date'}
+            onToggle={() => toggleDropdown('date')}
+            onClose={closeDropdown}
+          />
+
+          {/* Sort By Dropdown */}
+          <FilterDropdown
+            label="Sort By"
+            options={[
+              { id: 'all', label: 'Default' },
+              { id: 'newest', label: 'Newest First' },
+              { id: 'oldest', label: 'Oldest First' },
+              { id: 'highest', label: 'Highest Amount' },
+              { id: 'lowest', label: 'Lowest Amount' },
+            ]}
+            value={sortBy}
+            onChange={setSortBy}
+            isOpen={openDropdown === 'sort'}
+            onToggle={() => toggleDropdown('sort')}
+            onClose={closeDropdown}
+          />
         </div>
         <div className="relative w-full max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
