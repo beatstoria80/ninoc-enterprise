@@ -1325,12 +1325,7 @@ export default function AdminDashboard() {
           <AnimatePresence mode="wait">
             {/* ===== OVERVIEW ===== */}
             {activeTab === 'overview' && (
-              <motion.div
-                key="overview"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
                 {/* KPI Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
@@ -1480,7 +1475,7 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* ===== PRODUCTS ===== */}
