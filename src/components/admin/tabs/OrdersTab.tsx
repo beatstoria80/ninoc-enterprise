@@ -976,12 +976,14 @@ export function OrdersTab({
                           <div className="flex-1 flex flex-wrap items-center justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <p className="text-[11px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
-                                <span className="text-[8px] text-ink/40 font-mono">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                                <p className="text-xs font-bold text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
+                                <span className="text-[9px] text-ink/70 font-medium font-mono bg-ink/5 px-1.5 py-0.5 rounded-sm border border-ink/10">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                               </div>
-                              <p className="text-[10px] text-ink/70 mt-0.5 truncate">{order.shipping_address?.name || 'Guest'} — {order.shipping_address?.city || 'Unknown City'}</p>
-                              <p className="text-[9px] text-ink/40 mt-0.5 truncate">
-                                {order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items ({order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${order.order_items.length - 1} more` : ''})
+                              <p className="text-[11px] font-medium text-ink mt-1 truncate">
+                                {order.shipping_address?.name || 'Guest'} <span className="text-ink/30 mx-1">•</span> <span className="text-ink/70">{order.shipping_address?.city || 'Unknown City'}</span>
+                              </p>
+                              <p className="text-[10px] text-ink/60 mt-0.5 truncate">
+                                <span className="font-medium text-ink/80">{order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items</span> — {order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${order.order_items.length - 1} more` : ''}
                               </p>
                             </div>
                             <div className="flex items-center gap-4">
