@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 const CustomSalesTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-ink border border-white/10 shadow-2xl rounded-sm p-3 min-w-[150px]">
-        <p className="text-[10px] font-medium text-white/60 uppercase tracking-widest mb-2">{label} 2026</p>
-        <p className="text-lg font-bold text-white mb-1">{payload[0].value.toLocaleString('id-ID')} <span className="text-[10px] font-medium text-white/60 uppercase tracking-normal">Orders</span></p>
-        <p className="text-[9px] text-emerald-400 font-medium uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 inline-block px-1.5 py-0.5 rounded-sm">+12% vs Last Month</p>
+      <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #e5e5e5', borderRadius: '4px', padding: '12px', minWidth: '160px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
+        <p style={{ fontSize: '10px', fontWeight: 600, color: '#141414', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px' }}>{label} 2026</p>
+        <p style={{ fontSize: '20px', fontWeight: 900, color: '#141414', marginBottom: '4px' }}>{payload[0].value.toLocaleString('id-ID')} <span style={{ fontSize: '10px', fontWeight: 600, color: '#666666', textTransform: 'uppercase' }}>Orders</span></p>
+        <p style={{ fontSize: '9px', fontWeight: 600, color: '#059669', textTransform: 'uppercase', letterSpacing: '1px', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', display: 'inline-block', padding: '2px 6px', borderRadius: '2px' }}>+12% vs Last Month</p>
       </div>
     );
   }
@@ -19,15 +19,15 @@ const CustomSalesTooltip = ({ active, payload, label }: any) => {
 const CustomProfitTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-ink border border-white/20 shadow-2xl rounded-sm p-3 min-w-[150px]">
-        <p className="text-[10px] font-medium text-white uppercase tracking-widest mb-2">{label} 2026</p>
-        <p className="text-[9px] uppercase text-white mb-0.5 tracking-wider">Net Profit</p>
-        <p className="text-lg font-bold text-white mb-2">
-          <span className="text-[10px] font-medium text-white mr-1">IDR</span>
+      <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #e5e5e5', borderRadius: '4px', padding: '12px', minWidth: '160px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
+        <p style={{ fontSize: '10px', fontWeight: 600, color: '#141414', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px' }}>{label} 2026</p>
+        <p style={{ fontSize: '9px', fontWeight: 700, color: '#141414', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>Net Profit</p>
+        <p style={{ fontSize: '20px', fontWeight: 900, color: '#141414', marginBottom: '8px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#666666', marginRight: '4px' }}>IDR</span>
           {payload[0].value.toLocaleString('id-ID')}
         </p>
-        <div className="w-full bg-white/20 h-px mb-2" />
-        <p className="text-[9px] text-white font-medium uppercase tracking-wider">Target Achieved</p>
+        <div style={{ width: '100%', height: '1px', backgroundColor: '#e5e5e5', marginBottom: '8px' }} />
+        <p style={{ fontSize: '9px', fontWeight: 700, color: '#E8527A', textTransform: 'uppercase', letterSpacing: '1px' }}>Target Achieved</p>
       </div>
     );
   }
