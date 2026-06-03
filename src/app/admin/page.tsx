@@ -883,6 +883,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const navItems = [
+    { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', activeKeys: ['overview'] },
+    { 
+      id: 'catalog', icon: Package, label: 'Product', activeKeys: ['products', 'upload'],
+      subItems: [
+        { id: 'products', label: 'Product List' },
+        { id: 'upload', label: 'Upload Images' }
+      ]
+    },
+    { 
+      id: 'transaction', icon: ShoppingCart, label: 'Transaction', activeKeys: ['orders', 'logistics'], badge: pendingOrders,
+      subItems: [
+        { id: 'orders', label: 'Online Order' },
+        { id: 'logistics', label: 'Logistics' }
+      ]
+    },
+    { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
+    { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
+    { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
+    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats }
+  ];
+
   return (
     <>
     <main className="min-h-screen bg-gray-50/50 flex overflow-hidden print:hidden">
@@ -914,31 +936,31 @@ export default function AdminDashboard() {
                 <X size={16} />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto py-4">
-              <div className="px-6 mb-2">
-                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Dashboard</p>
-              </div>
-              <SidebarItem icon={LayoutDashboard} label="Overview" active={activeTab === 'overview'} onClick={() => { setActiveTab('overview'); setIsMobileMenuOpen(false); }} />
-              <div className="px-6 mt-6 mb-2">
-                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Catalog</p>
-              </div>
-              <SidebarItem icon={Package} label="Products" active={activeTab === 'products'} onClick={() => { setActiveTab('products'); setIsMobileMenuOpen(false); }} badge={products.length} />
-              <SidebarItem icon={Box} label="Inventory" active={activeTab === 'inventory'} onClick={() => { setActiveTab('inventory'); setIsMobileMenuOpen(false); }} badge={totalStock} />
-              <SidebarItem icon={Users} label="Customers" active={activeTab === 'customers'} onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }} badge={customers.length} />
-              <div className="px-6 mt-6 mb-2">
-                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Operations</p>
-              </div>
-              <SidebarItem icon={ShoppingCart} label="Orders" active={activeTab === 'orders'} onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }} badge={orders.length} />
-              <SidebarItem icon={MessageSquare} label="Support Chat" active={activeTab === 'messages'} onClick={() => { setActiveTab('messages'); setIsMobileMenuOpen(false); }} badge={totalUnreadChats} />
-              <div className="px-6 mt-6 mb-2">
-                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Finance</p>
-              </div>
-              <SidebarItem icon={TrendingUp} label="Revenue" active={activeTab === 'revenue'} onClick={() => { setActiveTab('revenue'); setIsMobileMenuOpen(false); }} />
-              <SidebarItem icon={CreditCard} label="Payments" active={activeTab === 'payments'} onClick={() => { setActiveTab('payments'); setIsMobileMenuOpen(false); }} />
-              <div className="px-6 mt-6 mb-2">
-                <p className="text-[8px] uppercase tracking-[0.3em] text-gray-300">Support</p>
-              </div>
-              <SidebarItem icon={Mail} label="Inbox" active={activeTab === 'inbox'} onClick={() => { setActiveTab('inbox'); setIsMobileMenuOpen(false); }} />
+            <nav className="flex-1 overflow-y-auto minimal-scroll py-4">
+              {navItems.map((item) => (
+                <SidebarItem 
+                  key={item.id}
+                  icon={item.icon} 
+                  label={item.label} 
+                  active={item.activeKeys.includes(activeTab)} 
+                  onClick={() => {
+                    if (!item.subItems) {
+                      setActiveTab(item.activeKeys[0]);
+                      setIsMobileMenuOpen(false);
+                    }
+                  }} 
+                  badge={item.badge}
+                  subItems={item.subItems?.map(sub => ({
+                    label: sub.label,
+                    id: sub.id,
+                    active: activeTab === sub.id,
+                    onClick: () => {
+                      setActiveTab(sub.id);
+                      setIsMobileMenuOpen(false);
+                    }
+                  }))}
+                />
+              ))}
             </nav>
             <div className="p-4 border-t border-gray-100">
               <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
@@ -961,67 +983,26 @@ export default function AdminDashboard() {
           </div>
         </div>
         <nav className="flex-1 overflow-y-auto minimal-scroll py-4">
-          <SidebarItem 
-            icon={LayoutDashboard} 
-            label="Dashboard" 
-            active={activeTab === 'overview'} 
-            onClick={() => setActiveTab('overview')} 
-          />
-          
-          <SidebarItem
-            icon={Package}
-            label="Product"
-            active={['products', 'upload'].includes(activeTab)}
-            subItems={[
-              { label: 'Product List', id: 'products', active: activeTab === 'products', onClick: () => setActiveTab('products') },
-              { label: 'Upload Images', id: 'upload', active: activeTab === 'upload', onClick: () => setActiveTab('upload') }
-            ]}
-          />
-          
-          <SidebarItem
-            icon={ShoppingCart}
-            label="Transaction"
-            active={['orders', 'logistics'].includes(activeTab)}
-            badge={pendingOrders}
-            subItems={[
-              { label: 'Online Order', id: 'orders', active: activeTab === 'orders', onClick: () => setActiveTab('orders') },
-              { label: 'Logistics', id: 'logistics', active: activeTab === 'logistics', onClick: () => setActiveTab('logistics') }
-            ]}
-          />
-          
-          <SidebarItem
-            icon={Users}
-            label="Membership"
-            active={activeTab === 'customers'}
-            onClick={() => setActiveTab('customers')}
-            badge={customers.length}
-          />
-          
-          <SidebarItem
-            icon={Box}
-            label="Info Stock"
-            active={activeTab === 'inventory'}
-            subItems={[
-              { label: 'Stock History', id: 'inventory', active: activeTab === 'inventory', onClick: () => setActiveTab('inventory') }
-            ]}
-          />
-          
-          <SidebarItem
-            icon={DollarSign}
-            label="Report"
-            active={activeTab === 'finance'}
-            subItems={[
-              { label: 'Finance', id: 'finance', active: activeTab === 'finance', onClick: () => setActiveTab('finance') }
-            ]}
-          />
-          
-          <SidebarItem
-            icon={MessageSquare}
-            label="Support Chat"
-            active={activeTab === 'messages'}
-            onClick={() => setActiveTab('messages')}
-            badge={totalUnreadChats}
-          />
+          {navItems.map((item) => (
+            <SidebarItem 
+              key={item.id}
+              icon={item.icon} 
+              label={item.label} 
+              active={item.activeKeys.includes(activeTab)} 
+              onClick={() => {
+                if (!item.subItems) {
+                  setActiveTab(item.activeKeys[0]);
+                }
+              }} 
+              badge={item.badge}
+              subItems={item.subItems?.map(sub => ({
+                label: sub.label,
+                id: sub.id,
+                active: activeTab === sub.id,
+                onClick: () => setActiveTab(sub.id)
+              }))}
+            />
+          ))}
         </nav>
 
         <div className="p-4 border-t border-ink/5">
