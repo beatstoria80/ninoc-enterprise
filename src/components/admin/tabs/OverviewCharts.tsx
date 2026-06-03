@@ -20,10 +20,10 @@ const CustomProfitTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-ink border border-ink/10 shadow-xl rounded-md p-3 min-w-[150px]">
-        <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest mb-2">{label} 2026</p>
-        <p className="text-[9px] uppercase text-white/60 mb-0.5 tracking-wider">Net Profit</p>
+        <p className="text-[10px] font-medium text-white uppercase tracking-widest mb-2">{label} 2026</p>
+        <p className="text-[9px] uppercase text-white mb-0.5 tracking-wider">Net Profit</p>
         <p className="text-lg font-bold text-white mb-2">
-          <span className="text-[10px] font-medium text-white/40 mr-1">IDR</span>
+          <span className="text-[10px] font-medium text-white mr-1">IDR</span>
           {payload[0].value.toLocaleString('id-ID')}
         </p>
         <div className="w-full bg-white/10 h-px mb-2" />
