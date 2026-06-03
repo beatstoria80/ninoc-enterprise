@@ -2500,7 +2500,7 @@ export default function AdminDashboard() {
                         {/* Area Chart */}
                         <div className="h-44">
                           <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={salesChartData} animationDuration={800}>
+                            <AreaChart data={salesChartData}>
                               <defs>
                                 <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
@@ -2652,7 +2652,7 @@ export default function AdminDashboard() {
                         </p>
                         <div className="h-40">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={profitChartData} animationDuration={800} barCategoryGap="30%">
+                            <BarChart data={profitChartData} barCategoryGap="30%">
                               <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                               <XAxis
                                 dataKey="month"
