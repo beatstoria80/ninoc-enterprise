@@ -855,10 +855,6 @@ export default function AdminDashboard() {
     fetchAdmin();
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [customerSearchQuery, setCustomerSearchQuery] = useState('');
-
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
