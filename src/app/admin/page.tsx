@@ -1963,13 +1963,13 @@ export default function AdminDashboard() {
                     </div>
                     
                     <div className="p-4 bg-white border-t border-gray-200 shrink-0">
-                      <button 
+                      <button
                         onClick={() => {
-                          setIsPrinting(true);
-                          setTimeout(() => {
-                            window.print();
-                            setIsPrinting(false);
-                          }, 200);
+                          const printWindow = window.open('', '_blank', 'width=800,height=600');
+                          if (!printWindow) return;
+                          const htmlContent = `<!DOCTYPE html><html><head><title>Print Label</title><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"><\/script><style>@page { size: 10cm 15cm; margin: 0; } body { margin: 0; padding: 0; }</style></head><body>${document.getElementById('printable-label')?.innerHTML || ''}<script>JsBarcode(".barcode").init(); window.onload = () => { setTimeout(() => { window.print(); }, 300); }<\/script></body></html>`;
+                          printWindow.document.write(htmlContent);
+                          printWindow.document.close();
                         }}
                         className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
                       >
@@ -1984,18 +1984,6 @@ export default function AdminDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* DYNAMIC NATIVE PRINT STYLES */}
-      {isPrinting && (
-        <style dangerouslySetInnerHTML={{ __html: `
-          @media print {
-            body * { visibility: hidden !important; }
-            #printable-label, #printable-label * { visibility: visible !important; }
-            #printable-label { position: absolute; left: 0; top: 0; margin: 0; padding: 0; }
-            @page { size: 10cm 8cm !important; margin: 0 !important; }
-          }
-        ` }} />
-      )}
 
       {/* ===== CUSTOMER MODAL ===== */}
       <CustomerModal
