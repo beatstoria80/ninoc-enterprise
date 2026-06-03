@@ -109,10 +109,13 @@ export default function OverviewCharts({
           </div>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 text-[9px] text-ink/60 uppercase tracking-wider font-medium">
-              <span className="w-2 h-2 rounded-sm bg-rose"></span> Peak
-            </span>
-            <span className="flex items-center gap-1.5 text-[9px] text-ink/60 uppercase tracking-wider font-medium">
-              <span className="w-2 h-2 rounded-sm bg-ink/80"></span> Normal
+              <div className="flex gap-0.5">
+                <span className="w-1.5 h-2 rounded-[1px] bg-[#141414]"></span>
+                <span className="w-1.5 h-2 rounded-[1px] bg-[#4F46E5]"></span>
+                <span className="w-1.5 h-2 rounded-[1px] bg-[#E8527A]"></span>
+                <span className="w-1.5 h-2 rounded-[1px] bg-[#F59E0B]"></span>
+              </div>
+              Monthly Performance Indexes
             </span>
           </div>
         </div>
@@ -136,13 +139,20 @@ export default function OverviewCharts({
                 animationDuration={1500}
                 animationEasing="ease-out"
               >
-                {profitData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.profit === maxProfit ? '#E8527A' : '#141414'} 
-                    fillOpacity={entry.profit === maxProfit ? 1 : 0.8}
-                  />
-                ))}
+                {profitData.map((entry, index) => {
+                  const BAR_COLORS = [
+                    '#141414', '#4F46E5', '#10B981', '#E8527A', '#F59E0B', 
+                    '#3B82F6', '#8B5CF6', '#14B8A6', '#EC4899', '#6366F1', 
+                    '#84CC16', '#64748B'
+                  ];
+                  return (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={BAR_COLORS[index % BAR_COLORS.length]} 
+                      fillOpacity={0.95}
+                    />
+                  );
+                })}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
