@@ -192,6 +192,7 @@ function DateRangeDropdown({
 // ─── Main Component ──────────────────────────────────────
 export function OrdersTab({
   orders,
+  products,
   statusFilter,
   setStatusFilter,
   searchQuery,
