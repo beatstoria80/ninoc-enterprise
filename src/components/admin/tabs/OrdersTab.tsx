@@ -513,14 +513,19 @@ export function OrdersTab({
               }
 
               @media print {
-                body { background: white; padding: 0; }
-                .label { margin: 0; box-shadow: none; border: none; }
+                body { background: white; padding: 0; margin: 0; }
+                .label { margin: 0; box-shadow: none; border: none; break-after: page; page-break-after: always; }
                 @page { margin: 0; size: 100mm 150mm; }
               }
             </style>
           </head>
           <body>
-            ${ordersToPrint.map(order => `
+            ${ordersToPrint.map(order => {
+              const maskPhone = (phone: string | undefined) => {
+                if (!phone || phone.length < 8) return phone || '-';
+                return phone.slice(0, 4) + '-****-' + phone.slice(-4);
+              };
+              return `
               <div class="label">
                 <div class="label-inner">
                   
@@ -549,7 +554,7 @@ export function OrdersTab({
                     <div class="address-box left">
                       <div class="box-title">PENERIMA / TO</div>
                       <div class="person-name">${order.shipping_address?.name || 'GUEST'}</div>
-                      <div class="person-phone">${order.shipping_address?.phone || '-'}</div>
+                      <div class="person-phone">${maskPhone(order.shipping_address?.phone)}</div>
                       <div class="person-address">
                         ${order.shipping_address?.address || '-'}<br/>
                         ${order.shipping_address?.city || '-'}
@@ -594,7 +599,7 @@ export function OrdersTab({
 
                 </div>
               </div>
-            `).join('')}
+            `}).join('')}
             
             <script>
               JsBarcode(".barcode").init();

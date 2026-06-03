@@ -222,8 +222,8 @@ export function ShippingLabel({ order }: { order: Order }) {
           </div>
           <div style={{ fontSize: '10px', marginTop: '2px' }}>
             {order.shipping_address?.phone ? (
-              order.shipping_address.phone.length > 6
-                ? order.shipping_address.phone.slice(0, 4) + '****' + order.shipping_address.phone.slice(-3)
+              order.shipping_address.phone.length >= 8
+                ? order.shipping_address.phone.slice(0, 4) + '-****-' + order.shipping_address.phone.slice(-4)
                 : order.shipping_address.phone
             ) : ''}
           </div>
