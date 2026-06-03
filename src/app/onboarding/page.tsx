@@ -137,10 +137,10 @@ export default function OnboardingPage() {
       {!isMobile && (
       <header className={bd}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-rose/10 rounded-xl flex items-center justify-center"><Package size={18} className="text-rose" /></div>
-          <span className="text-sm font-medium text-ink">Lengkapi Data Diri</span>
+          <div className="w-10 h-10 bg-rose/10 rounded-none flex items-center justify-center"><Package size={18} className="text-rose" /></div>
+          <span className="text-[10px] font-medium text-ink">Lengkapi Data Diri</span>
         </div>
-        <button onClick={logout} className="text-sm text-ink/30 hover:text-rose flex items-center gap-2"><LogOut size={16} />Batal</button>
+        <button onClick={logout} className="text-[10px] text-ink/30 hover:text-rose flex items-center gap-2"><LogOut size={14} />Batal</button>
       </header>
       )}
 
@@ -153,7 +153,7 @@ export default function OnboardingPage() {
           <button onClick={logout} className="text-ink/40 hover:text-rose flex items-center gap-2">
             <ArrowLeft size={16} />
           </button>
-          <span className="text-sm font-medium text-ink">Lengkapi Data</span>
+          <span className="text-[10px] font-medium text-ink">Lengkapi Data</span>
           <div className="w-8" />
         </div>
       )}
@@ -161,12 +161,12 @@ export default function OnboardingPage() {
       {/* Email badge */}
       <div className={bd + " bg-emerald-50"}>
         <CheckCircle size={16} className="text-emerald-500" />
-        <span className="text-sm font-medium text-emerald-700">{userEmail}</span>
+        <span className="text-[10px] font-medium text-emerald-700">{userEmail}</span>
       </div>
 
       {/* Form */}
-      <form onSubmit={submit} className="flex-1 overflow-y-auto pb-24">
-        <div className="max-w-xl mx-auto px-5 py-4 space-y-3">
+      <form onSubmit={submit} className="flex-1 overflow-y-auto pb-20">
+        <div className="max-w-xl mx-auto px-5 py-3 space-y-2">
           {/* 01 Identitas */}
           <div className={cd}>
             <div className="flex items-center gap-2 mb-2">
@@ -182,7 +182,7 @@ export default function OnboardingPage() {
           {/* 02 Alamat */}
           <div className={cd}>
             <div className="flex items-center gap-2 mb-2">
-              <span className={cr}>02</span><span className="text-sm font-medium uppercase text-rose">Alamat Lengkap</span>
+              <span className={cr}>02</span><span className="text-[10px] font-medium uppercase text-rose">Alamat Lengkap</span>
             </div>
             <div className="bg-ink/10 border border-ink/10 p-[1px] space-y-[1px]">
               {/* Provinsi */}
@@ -241,7 +241,7 @@ export default function OnboardingPage() {
       )}
 
       {/* Trust Security Bar - PLACED BELOW FORM */}
-      <div className="flex justify-center gap-12 pb-10 pt-4">
+      <div className="flex justify-center gap-12 pb-6 pt-3">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
             <Shield size={14} strokeWidth={1.5} className="text-rose/60" />

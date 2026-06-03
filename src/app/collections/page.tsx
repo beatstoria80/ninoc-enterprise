@@ -164,7 +164,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
     >
       <PressButton
         href={`/collections/${variant}`}
-        className="bg-white rounded-none p-8 md:p-12 border border-ink/5 group relative overflow-hidden block w-full"
+        className="bg-white rounded-none p-4 md:p-12 border border-ink/5 group relative overflow-hidden block w-full"
       >
         {/* Background hover effect */}
         <motion.div
@@ -179,7 +179,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
         <div className="relative z-10">
           {/* Icon */}
           <motion.div
-            className="w-14 h-14 md:w-18 md:h-18 bg-ink/5 flex items-center justify-center text-rose mb-6 md:mb-8"
+            className="w-14 h-14 md:w-18 md:h-18 bg-ink/5 flex items-center justify-center text-rose mb-3 md:mb-8"
             variants={iconVariants}
             initial="hidden"
             whileInView="visible"
@@ -195,7 +195,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
 
           {/* Title */}
           <motion.h3
-            className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight mb-3 md:mb-4"
+            className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight mb-2 md:mb-4"
             animate={{ color: isHovered ? '#ffffff' : '#141414' }}
             transition={{ duration: DURATION.fast }}
           >
@@ -204,7 +204,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
 
           {/* Description */}
           <motion.p
-            className="text-xs md:text-sm font-medium text-ink/50 mb-6 md:mb-8"
+            className="text-xs md:text-sm font-medium text-ink/50 mb-3 md:mb-8"
             animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,20,0.5)' }}
             transition={{ duration: DURATION.fast }}
           >
@@ -213,7 +213,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
 
           {/* Stats */}
           <motion.div
-            className="flex items-center justify-between pt-4 md:pt-6 border-t border-ink/10"
+            className="flex items-center justify-between pt-3 md:pt-6 border-t border-ink/10"
             animate={{ borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.1)' }}
             transition={{ duration: DURATION.fast }}
           >
@@ -319,7 +319,7 @@ export default function Collections() {
           variants={headerVariants}
           initial="hidden"
           animate="visible"
-          className="mb-12 md:mb-20"
+          className="mb-4 md:mb-20"
         >
           <motion.div
             className="flex items-center gap-3 mb-4 md:mb-6"
@@ -390,7 +390,7 @@ export default function Collections() {
 
         {/* FEATURED BANNER */}
         <motion.div
-          className="mt-16 md:mt-24 border-t border-b border-ink/5 py-8 md:py-16"
+          className="mt-6 md:mt-24 border-t border-b border-ink/5 py-4 md:py-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -437,7 +437,7 @@ export default function Collections() {
 
         {/* STATS ROW */}
         <motion.div
-          className="flex items-center justify-center gap-8 md:gap-16 py-8 md:py-12 border-b border-ink/5"
+          className="flex items-center justify-center gap-6 md:gap-16 py-4 md:py-12 border-b border-ink/5"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -469,7 +469,7 @@ export default function Collections() {
 
         {/* FOOTER MARQUEE */}
         <motion.div
-          className="mt-12 py-4 overflow-hidden"
+          className="mt-6 py-4 overflow-hidden"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}

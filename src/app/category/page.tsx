@@ -150,7 +150,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative bg-white p-6 md:p-10 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
+      className={`relative bg-white p-4 md:p-10 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
     >
       {/* Background animation on hover */}
       <motion.div
@@ -183,7 +183,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
         </motion.div>
 
         {/* Content */}
-        <div className="space-y-1 md:space-y-2 mt-4 md:mt-6">
+        <div className="space-y-1 md:space-y-2 mt-3 md:mt-6">
           <motion.h3
             className={`text-sm md:text-lg font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
             animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
@@ -349,7 +349,7 @@ export default function CategoryPage() {
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-8 md:mb-16">
+        <div className="flex items-center justify-between mb-4 md:mb-16">
           <div className="flex flex-col gap-1 md:gap-2">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -383,7 +383,7 @@ export default function CategoryPage() {
         </div>
 
         {/* CATEGORY INDEX — CELL-BLOCK GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-12 md:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-6 md:mb-20">
           {CATEGORIES.map((cat, i) => (
             <CategoryCard
               key={cat.id}
@@ -426,7 +426,7 @@ export default function CategoryPage() {
         </AnimatePresence>
 
         {/* PRODUCT GRID */}
-        <div ref={gridRef} className="border-t border-ink/5 pt-8 md:pt-12">
+        <div ref={gridRef} className="border-t border-ink/5 pt-4 md:pt-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedCategory || 'all'}
@@ -472,7 +472,7 @@ export default function CategoryPage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3, duration: DURATION.medium }}
-          className="mt-16 md:mt-24 border-t border-ink/5 pt-6 md:pt-10 flex items-center justify-between"
+          className="mt-8 md:mt-24 border-t border-ink/5 pt-4 md:pt-10 flex items-center justify-between"
         >
           <div className="flex items-center gap-8">
             <motion.div

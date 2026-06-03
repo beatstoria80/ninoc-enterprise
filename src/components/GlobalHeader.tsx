@@ -425,7 +425,7 @@ export default function GlobalHeader() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <NavLink href="/catalog">Catalog</NavLink>
+          <NavLink href="/shop">Catalog</NavLink>
           <NavLink href="/collections">Collections</NavLink>
           <NavLink href="/category">Category</NavLink>
           <NavLink href="/about">About</NavLink>
@@ -504,7 +504,7 @@ export default function GlobalHeader() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -50, opacity: 0 }}
               transition={{ duration: DURATION.medium, ease: EASING.out }}
-              className="px-6 md:px-12 py-6 md:py-10 flex items-center justify-between border-b border-ink/5"
+              className="px-4 md:px-12 py-4 md:py-10 flex items-center justify-between border-b border-ink/5"
             >
               <div className="flex items-center gap-4 md:gap-8">
                 <motion.div
@@ -540,7 +540,7 @@ export default function GlobalHeader() {
 
               {/* SECTOR 1: PRODUCT LIST */}
               <motion.div
-                className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-6 md:px-10 py-6 md:py-8 space-y-4 md:space-y-6"
+                className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-4 md:px-10 py-4 md:py-8 space-y-4 md:space-y-6"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
@@ -577,7 +577,7 @@ export default function GlobalHeader() {
 
               {/* SECTOR 2: SUMMARY & CHECKOUT */}
               <motion.div
-                className="md:col-span-5 px-6 md:px-10 py-6 md:py-8 bg-white flex flex-col"
+                className="md:col-span-5 px-4 md:px-10 py-4 md:py-8 bg-white flex flex-col"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
