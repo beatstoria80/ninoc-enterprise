@@ -15,6 +15,10 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -179,6 +183,16 @@ interface Customer {
   created_at: string;
 }
 
+interface VoucherActive {
+  id: string;
+  name: string;
+  code: string;
+  discount: number;
+  min_order: number;
+  used_count: number;
+  active_until: string;
+}
+
 // ============ SIDEBAR COMPONENT ============
 const SidebarItem = ({
   icon: Icon,
@@ -195,15 +209,15 @@ const SidebarItem = ({
   badge?: number;
   subItems?: { label: string; id: string; active?: boolean; onClick?: () => void }[];
 }) => {
-  const [isOpen, setIsOpen] = useState(active || false);
+  const [isOpen, setIsOpen] = useState(false);
   const hasSub = subItems && subItems.length > 0;
 
   return (
     <div className="w-full">
       <button
         onClick={() => {
-          if (hasSub) setIsOpen(!isOpen);
-          else if (onClick) onClick();
+          if (hasSub) setIsOpen(prev => !prev);
+          else onClick?.();
         }}
         className={cn(
           "w-full flex items-center justify-between px-6 py-3 transition-all duration-200 border-b border-ink/5",
@@ -224,34 +238,25 @@ const SidebarItem = ({
             </span>
           )}
           {hasSub && (
-            isOpen ? <ChevronUp size={14} className={cn(active ? "text-white" : "text-ink/50")} /> : <ChevronDown size={14} className={cn(active ? "text-white" : "text-ink/50")} />
+            (isOpen || active) ? <ChevronUp size={14} className={cn(active ? "text-white" : "text-ink/50")} /> : <ChevronDown size={14} className={cn(active ? "text-white" : "text-ink/50")} />
           )}
         </div>
       </button>
-      {hasSub && (
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden bg-ink/[0.02]"
+      {hasSub && (isOpen || active) && (
+        <div className="overflow-hidden bg-ink/[0.02]">
+          {subItems.map((sub, i) => (
+            <button
+              key={i}
+              onClick={sub.onClick}
+              className={cn(
+                "w-full text-left pl-[44px] pr-6 py-2.5 text-[9px] font-medium uppercase tracking-[0.2em] transition-colors duration-200",
+                sub.active ? "text-rose" : "text-ink/50 hover:text-ink hover:bg-ink/[0.04]"
+              )}
             >
-              {subItems.map((sub, i) => (
-                <button
-                  key={i}
-                  onClick={sub.onClick}
-                  className={cn(
-                    "w-full text-left pl-[44px] pr-6 py-2.5 text-[9px] font-medium uppercase tracking-[0.2em] transition-colors duration-200",
-                    sub.active ? "text-rose" : "text-ink/50 hover:text-ink hover:bg-ink/[0.04]"
-                  )}
-                >
-                  {sub.label}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {sub.label}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -301,6 +306,48 @@ export default function AdminDashboard() {
     courier_same_day_cost: 0, courier_instant_cost: 0,
     target_margin_pct: 0, selling_price: 0
   });
+
+  // Sales Analytics state
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [salesChartData, setSalesChartData] = useState(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      sales: Math.floor(Math.random() * 30) + 5,
+    }))
+  );
+  const [profitChartData, setProfitChartData] = useState(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      profit: Math.floor(Math.random() * 8000000) + 2000000,
+    }))
+  );
+  const [totalViews, setTotalViews] = useState(152);
+  const [totalOrderValue, setTotalOrderValue] = useState(10932690);
+  const [mostSoldProduct, setMostSoldProduct] = useState({ name: 'NINOC Archive Garment', count: 25 });
+
+  // Online Order tab state
+  const [orderTab, setOrderTab] = useState<'all' | 'new' | 'paid' | 'sent' | 'completed' | 'canceled'>('all');
+  const [orderSearch, setOrderSearch] = useState('');
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+  const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+  const [showCourierDropdown, setShowCourierDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([]);
+  const [selectedCouriers, setSelectedCouriers] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Mock data
+  const mockPendingOrders = [
+    { id: 'ORD-001', product: { name: 'NINOC Archive Jacket', image: 'https://picsum.photos/seed/jacket/40/40' }, date: '03 Jun 2026', customer: 'Ahmad Rizki', total: 485000 },
+    { id: 'ORD-002', product: { name: 'Urban Archive Hoodie', image: 'https://picsum.photos/seed/hoodie/40/40' }, date: '02 Jun 2026', customer: 'Siti Nurhaliza', total: 320000 },
+    { id: 'ORD-003', product: { name: 'Studio Archive Tee', image: 'https://picsum.photos/seed/tee/40/40' }, date: '02 Jun 2026', customer: 'Budi Santoso', total: 185000 },
+  ];
+  const mockVouchers: VoucherActive[] = [
+    { id: 'v1', name: 'Diskon 10% Semua Produk', code: 'ARCHIVE10', discount: 10, min_order: 200000, used_count: 45, active_until: '30 Jun 2026' },
+    { id: 'v2', name: 'Gratis Ongkir', code: 'FREESHIP', discount: 0, min_order: 300000, used_count: 128, active_until: '15 Jun 2026' },
+  ];
 
   // Fetch financial data
   const fetchFinancialData = useCallback(async () => {
@@ -877,11 +924,22 @@ export default function AdminDashboard() {
 
   // Filter data
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = searchQuery === '' ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.shipping_address?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const tabMap: Record<string, string[]> = {
+      all: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
+      new: ['pending'],
+      paid: ['paid'],
+      sent: ['shipped'],
+      completed: ['delivered'],
+      canceled: ['cancelled'],
+    };
+    const matchesTab = tabMap[orderTab]?.includes(order.status) ?? true;
+    const matchesSearch = (orderSearch === '' || orderSearch === undefined) && (searchQuery === '' || searchQuery === undefined) ||
+      order.id.toLowerCase().includes((orderSearch || searchQuery).toLowerCase()) ||
+      order.shipping_address?.name?.toLowerCase().includes((orderSearch || searchQuery).toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesDate = (!dateRange.start || new Date(order.created_at) >= new Date(dateRange.start)) &&
+      (!dateRange.end || new Date(order.created_at) <= new Date(dateRange.end));
+    return matchesTab && matchesSearch && matchesStatus && matchesDate;
   });
 
   const filteredProducts = products.filter(product =>
@@ -986,6 +1044,27 @@ export default function AdminDashboard() {
   }, [fetchChatSessions]);
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
+
+  // Realtime chart simulation
+  useEffect(() => {
+    const salesInterval = setInterval(() => {
+      setSalesChartData(prev => {
+        const next = [...prev];
+        const idx = Math.floor(Math.random() * 12);
+        next[idx] = { ...next[idx], sales: Math.max(1, next[idx].sales + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3)) };
+        return next;
+      });
+    }, 4000);
+    const profitInterval = setInterval(() => {
+      setProfitChartData(prev => {
+        const next = [...prev];
+        const idx = Math.floor(Math.random() * 12);
+        next[idx] = { ...next[idx], profit: Math.max(500000, next[idx].profit + Math.floor((Math.random() - 0.5) * 1000000)) };
+        return next;
+      });
+    }, 5000);
+    return () => { clearInterval(salesInterval); clearInterval(profitInterval); };
+  }, []);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !activeChatSession) return;
@@ -1252,7 +1331,8 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-4"
               >
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                {/* KPI Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { label: 'Total Revenue', value: `IDR ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
                     { label: 'Today Revenue', value: `IDR ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
@@ -1271,6 +1351,97 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Sales Analytic + Profit Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
+                  {/* Section A: Sales Analytic */}
+                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div className="px-5 pt-5 pb-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-900">Sales Analytic</h3>
+                          <p className="text-[10px] text-gray-400 mt-0.5">{finance.completedOrders} Sales</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+                          <span className="text-[9px] text-gray-400">Sales</span>
+                        </div>
+                      </div>
+                      <div className="h-44">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={salesChartData}>
+                            <defs>
+                              <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
+                                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                            <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} domain={[0, 35]} />
+                            <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 11 }} />
+                            <Area type="monotone" dataKey="sales" stroke="#3B82F6" strokeWidth={2} fill="url(#salesGrad)"
+                              dot={{ r: 3, fill: '#3B82F6', strokeWidth: 0 }}
+                              activeDot={{ r: 5, fill: '#3B82F6' }}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3 mt-4">
+                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] text-gray-500">Total Order</span>
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
+                          </div>
+                          <p className="text-sm font-semibold text-gray-900">Rp{totalOrderValue.toLocaleString('id-ID')}</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] text-gray-500">Total Views</span>
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
+                          </div>
+                          <p className="text-sm font-semibold text-gray-900">{totalViews}</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] text-gray-500">Most Sales</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <p className="text-[11px] font-semibold text-gray-900 truncate">{mostSoldProduct.name}</p>
+                            <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">{mostSoldProduct.count}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section B: Profit */}
+                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div className="px-5 pt-5 pb-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-sm font-semibold text-gray-900">Profit</h3>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
+                      </div>
+                      <p className="text-xl font-bold text-gray-900 mb-4">
+                        Rp{profitChartData.reduce((s, d) => s + d.profit, 0).toLocaleString('id-ID')}
+                      </p>
+                      <div className="h-44">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={profitChartData} barCategoryGap="30%">
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                            <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                            <YAxis hide />
+                            <Tooltip
+                              formatter={(value) => [`Rp${Number(value).toLocaleString('id-ID')}`, 'Profit']}
+                              contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 11 }}
+                            />
+                            <Bar dataKey="profit" fill="#3B82F6" barSize={14} radius={[4, 4, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Recent Orders */}

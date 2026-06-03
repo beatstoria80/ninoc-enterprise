@@ -4,6 +4,13 @@
     "ANTHROPIC_BASE_URL": "https://gateway.olagon.site/anthropic",
     "API_TIMEOUT_MS": "9000000"
   },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:dashboard.belidi.id)",
+      "PowerShell(npm run lint 2>&1)",
+      "PowerShell(npx tsc --noEmit 2>&1)"
+    ]
+  },
   "effortLevel": "high",
   "theme": "light"
 }
