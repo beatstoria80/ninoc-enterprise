@@ -1328,132 +1328,32 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {/* KPI Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { label: 'Total Revenue', value: `IDR ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-rose/10 text-rose' },
-                    { label: 'Today Revenue', value: `IDR ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: DollarSign, color: 'bg-emerald-500/10 text-emerald-600' },
-                    { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'bg-blue-500/10 text-blue-600' },
-                    { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'bg-amber-500/10 text-amber-600' }
-                  ].map((stat, i) => (
-                    <div key={i} className="bg-white rounded-lg p-4 border border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <div className={cn("w-8 h-8 rounded-md flex items-center justify-center shrink-0", stat.color)}>
-                          <stat.icon size={14} />
-                        </div>
-                        <div>
-                          <p className="text-[9px] uppercase tracking-widest text-gray-400">{stat.label}</p>
-                          <p className="text-sm font-medium text-gray-900">{stat.value}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Sales Analytic + Profit Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
-                  {/* Section A: Sales Analytic */}
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-5 pt-5 pb-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="text-sm font-semibold text-gray-900">Sales Analytic</h3>
-                          <p className="text-[10px] text-gray-400 mt-0.5">{finance.completedOrders} Sales</p>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
-                          <span className="text-[9px] text-gray-400">Sales</span>
-                        </div>
-                      </div>
-                      <div className="h-44">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={salesChartData}>
-                            <defs>
-                              <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
-                                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                            <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} domain={[0, 35]} />
-                            <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 11 }} />
-                            <Area type="monotone" dataKey="sales" stroke="#3B82F6" strokeWidth={2} fill="url(#salesGrad)"
-                              dot={{ r: 3, fill: '#3B82F6', strokeWidth: 0 }}
-                              activeDot={{ r: 5, fill: '#3B82F6' }}
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3 mt-4">
-                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] text-gray-500">Total Order</span>
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
-                          </div>
-                          <p className="text-sm font-semibold text-gray-900">Rp{totalOrderValue.toLocaleString('id-ID')}</p>
-                        </div>
-                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] text-gray-500">Total Views</span>
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
-                          </div>
-                          <p className="text-sm font-semibold text-gray-900">{totalViews}</p>
-                        </div>
-                        <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] text-gray-500">Most Sales</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <p className="text-[11px] font-semibold text-gray-900 truncate">{mostSoldProduct.name}</p>
-                            <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">{mostSoldProduct.count}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1">Total Revenue</p>
+                    <p className="text-sm font-medium text-gray-900">IDR {finance.totalRevenue.toLocaleString('id-ID')}</p>
                   </div>
-
-                  {/* Section B: Profit */}
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-5 pt-5 pb-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-semibold text-gray-900">Profit</h3>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
-                      </div>
-                      <p className="text-xl font-bold text-gray-900 mb-4">
-                        Rp{profitChartData.reduce((s, d) => s + d.profit, 0).toLocaleString('id-ID')}
-                      </p>
-                      <div className="h-44">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={profitChartData} barCategoryGap="30%">
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                            <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                            <YAxis hide />
-                            <Tooltip
-                              formatter={(value) => [`Rp${Number(value).toLocaleString('id-ID')}`, 'Profit']}
-                              contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 11 }}
-                            />
-                            <Bar dataKey="profit" fill="#3B82F6" barSize={14} radius={[4, 4, 0, 0]} />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1">Today Revenue</p>
+                    <p className="text-sm font-medium text-gray-900">IDR {finance.todayRevenue.toLocaleString('id-ID')}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1">Total Products</p>
+                    <p className="text-sm font-medium text-gray-900">{products.length}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1">Pending Orders</p>
+                    <p className="text-sm font-medium text-gray-900">{pendingOrders}</p>
                   </div>
                 </div>
-
                 {/* Recent Orders */}
                 <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="font-medium text-gray-900 uppercase tracking-wide">Recent Orders</h3>
-                    <button onClick={() => setActiveTab('orders')} className="text-[10px] uppercase tracking-wider text-rose">
-                      View All
-                    </button>
+                    <button onClick={() => setActiveTab('orders')} className="text-[10px] uppercase tracking-wider text-rose">View All</button>
                   </div>
                   <div className="divide-y divide-gray-50">
                     {orders.slice(0, 5).map((order) => (
-                      <div
-                        key={order.id}
-                        className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer"
-                        onClick={() => openOrderDetail(order)}
-                      >
+                      <div key={order.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer" onClick={() => openOrderDetail(order)}>
                         <div className="flex items-center gap-6">
                           <div>
                             <p className="text-[10px] uppercase tracking-wider text-gray-400">Order ID</p>
@@ -1467,7 +1367,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-6">
                           <div className="text-right">
                             <p className="text-[10px] uppercase tracking-wider text-gray-400">Amount</p>
-                            <p className="text-sm font-medium">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                            <p className="text-sm font-medium">IDR {order.total_price.toLocaleString('id-ID')}</p>
                           </div>
                           <StatusBadge status={order.status} />
                         </div>
