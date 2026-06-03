@@ -122,7 +122,7 @@ export default function OrderDetailPage() {
 
   return (
     <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white pb-32">
-      <div className="max-w-[1000px] mx-auto px-6 pt-32 md:pt-40">
+      <div className="max-w-[1000px] mx-auto px-6 pt-4 md:pt-40">
         
         {/* Header Navigation */}
         <div className="flex items-center justify-between mb-16">

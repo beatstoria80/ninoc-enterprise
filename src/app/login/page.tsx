@@ -92,7 +92,7 @@ export default function LoginPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-6 pt-24 md:pt-32",
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-6 pt-6 md:pt-32",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* MOBILE NAV BAR */}

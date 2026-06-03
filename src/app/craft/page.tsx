@@ -1,6 +1,6 @@
 export default function Craft() {
   return (
-    <main className="min-h-screen bg-cr noise pt-32 px-6 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-32 px-6 md:px-12">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-16">
           <span className="text-[10px] font-medium uppercase tracking-[0.5em] text-rose">NINOC</span>

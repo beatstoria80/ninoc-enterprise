@@ -345,7 +345,7 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise pt-20 md:pt-32 px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-32 px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}

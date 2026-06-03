@@ -80,7 +80,7 @@ export default function LegalPage() {
       </nav>
 
       {/* 2-GRID UNIFIED ARCHIVE */}
-      <div className="flex-1 pt-20 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full overflow-hidden">
+      <div className="flex-1 pt-14 md:pt-20 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full overflow-hidden">
         
         {/* Minimal Header */}
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
