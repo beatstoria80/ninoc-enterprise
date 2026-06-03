@@ -15,6 +15,10 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -177,6 +181,16 @@ interface Customer {
   total_spent: number | null;
   membership_tier: string | null;
   created_at: string;
+}
+
+interface VoucherActive {
+  id: string;
+  name: string;
+  code: string;
+  discount: number;
+  min_order: number;
+  used_count: number;
+  active_until: string;
 }
 
 // ============ PRINTABLE SHIPPING LABEL ============
@@ -793,6 +807,51 @@ export default function AdminDashboard() {
   const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
   const [newMessage, setNewMessage] = useState('');
 
+  // Sales Analytics state
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [salesChartData, setSalesChartData] = useState(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      sales: Math.floor(Math.random() * 30) + 5,
+    }))
+  );
+  const [profitChartData, setProfitChartData] = useState(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      profit: Math.floor(Math.random() * 8000000) + 2000000,
+    }))
+  );
+  const [totalViews, setTotalViews] = useState(152);
+  const [totalOrderValue, setTotalOrderValue] = useState(10932690);
+  const [mostSoldProduct, setMostSoldProduct] = useState({ name: 'NINOC Archive Garment', count: 25 });
+
+  // Online Order tab state
+  const [orderTab, setOrderTab] = useState<'all' | 'new' | 'paid' | 'sent' | 'completed' | 'canceled'>('all');
+  const [orderSearch, setOrderSearch] = useState('');
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([]);
+  const [selectedCouriers, setSelectedCouriers] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+  const [showCourierDropdown, setShowCourierDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+
+  // Mock pending orders for analytics
+  const mockPendingOrders = [
+    { id: 'ORD-001', product: { name: 'NINOC Archive Jacket', image: 'https://picsum.photos/seed/jacket/40/40' }, date: '03 Jun 2026', customer: 'Ahmad Rizki', total: 485000 },
+    { id: 'ORD-002', product: { name: 'Urban Archive Hoodie', image: 'https://picsum.photos/seed/hoodie/40/40' }, date: '02 Jun 2026', customer: 'Siti Nurhaliza', total: 320000 },
+    { id: 'ORD-003', product: { name: 'Studio Archive Tee', image: 'https://picsum.photos/seed/tee/40/40' }, date: '02 Jun 2026', customer: 'Budi Santoso', total: 185000 },
+  ];
+
+  // Mock vouchers
+  const mockVouchers: VoucherActive[] = [
+    { id: 'v1', name: 'Diskon 10% Semua Produk', code: 'ARCHIVE10', discount: 10, min_order: 200000, used_count: 45, active_until: '30 Jun 2026' },
+    { id: 'v2', name: 'Gratis Ongkir', code: 'FREESHIP', discount: 0, min_order: 300000, used_count: 128, active_until: '15 Jun 2026' },
+  ];
+
   useEffect(() => {
     const fetchAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -1274,11 +1333,21 @@ export default function AdminDashboard() {
   };
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = searchQuery === '' ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.shipping_address?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const tabMap: Record<string, string[]> = {
+      all: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
+      new: ['pending'],
+      paid: ['paid'],
+      sent: ['shipped'],
+      completed: ['delivered'],
+      canceled: ['cancelled'],
+    };
+    const matchesTab = tabMap[orderTab]?.includes(order.status) ?? true;
+    const matchesSearch = orderSearch === '' ||
+      order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order.shipping_address?.name?.toLowerCase().includes(orderSearch.toLowerCase());
+    const matchesDate = (!dateRange.start || new Date(order.created_at) >= new Date(dateRange.start)) &&
+      (!dateRange.end || new Date(order.created_at) <= new Date(dateRange.end));
+    return matchesTab && matchesSearch && matchesDate;
   });
 
   const filteredProducts = products.filter(product =>
@@ -1377,6 +1446,32 @@ export default function AdminDashboard() {
       fetchChatSessions();
     });
   }, [fetchChatSessions]);
+
+  // Realtime chart simulation
+  useEffect(() => {
+    const salesInterval = setInterval(() => {
+      setSalesChartData(prev => {
+        const next = [...prev];
+        const idx = Math.floor(Math.random() * 12);
+        next[idx] = { ...next[idx], sales: Math.max(1, next[idx].sales + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3)) };
+        return next;
+      });
+    }, 4000);
+
+    const profitInterval = setInterval(() => {
+      setProfitChartData(prev => {
+        const next = [...prev];
+        const idx = Math.floor(Math.random() * 12);
+        next[idx] = { ...next[idx], profit: Math.max(500000, next[idx].profit + Math.floor((Math.random() - 0.5) * 1000000)) };
+        return next;
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(salesInterval);
+      clearInterval(profitInterval);
+    };
+  }, []);
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
 
@@ -2350,208 +2445,599 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
-            {/* ===== SALES ANALYTICS ===== */}
+            {/* ===== SALES ANALYTICS (BelidiSeller Style) ===== */}
             {activeTab === 'analytics' && (
               <motion.div
                 key="analytics"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-3"
+                className="space-y-4"
               >
+                {/* Top Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Sales Analytics</h2>
-                    <p className="text-[9px] text-gray-400 mt-0.5">Origin Specification & Profit Overview</p>
+                    <h2 className="text-base font-semibold text-gray-900">
+                      Welcome, {adminUser?.email?.split('@')[0] || 'Admin'}
+                    </h2>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Here is a summary of your store activity today.</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[8px] uppercase tracking-widest text-gray-400">Period:</span>
-                    <select className="text-[10px] border border-gray-200 rounded px-2 py-1.5 bg-white text-ink focus:outline-none focus:border-rose/50">
-                      <option>Last 7 Days</option>
-                      <option>Last 30 Days</option>
-                      <option>This Month</option>
-                      <option>Last 3 Months</option>
+                    <span className="text-[10px] text-gray-500">Year:</span>
+                    <select
+                      value={selectedYear}
+                      onChange={e => setSelectedYear(Number(e.target.value))}
+                      className="text-[10px] border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:border-blue-400"
+                    >
+                      <option>2024</option>
+                      <option>2025</option>
+                      <option>2026</option>
                     </select>
                   </div>
                 </div>
 
-                {/* KPI Row */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { label: 'Total Investment', value: `IDR ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: TrendingUp, color: 'rose' },
-                    { label: 'Monthly Exit', value: `IDR ${finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: DollarSign, color: 'emerald' },
-                    { label: 'Daily Exit', value: `IDR ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: Box, color: 'blue' },
-                    { label: 'Completed Archive', value: finance.completedOrders.toString(), icon: Package, color: 'rose' }
-                  ].map((kpi, i) => (
-                    <div key={i} className="bg-white rounded border border-gray-100 p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={cn("w-7 h-7 rounded flex items-center justify-center", `bg-${kpi.color}/10 text-${kpi.color}`)}>
-                          <kpi.icon size={12} />
-                        </div>
-                        <p className="text-[9px] uppercase tracking-widest text-gray-400">{kpi.label}</p>
-                      </div>
-                      <p className="text-lg font-medium text-ink leading-none">{kpi.value}</p>
-                    </div>
-                  ))}
-                </div>
+                {/* Main 2-column layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
 
-                {/* Revenue & Profit Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {/* Revenue by Product */}
-                  <div className="bg-white rounded border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                      <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Revenue by Origin</h3>
-                    </div>
-                    <div className="p-4 space-y-2.5">
-                      {products.slice(0, 8).map((p) => {
-                        const orderRevenue = orders
-                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
-                          .reduce((sum, o) => {
-                            return sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0);
-                          }, 0);
-                        const maxRev = Math.max(...products.map(prod => orders.filter(o => ['paid','shipped','delivered'].includes(o.status)).reduce((s, o) => s + (o.order_items?.filter(i => i.product_id === prod.id).reduce((ss, i) => ss + (i.price_at_purchase * i.quantity), 0) || 0), 0)), 1);
-                        const pct = Math.round((orderRevenue / maxRev) * 100);
-                        return (
-                          <div key={p.id} className="flex items-center gap-3">
-                            <div className="w-16 shrink-0">
-                              <p className="text-[9px] font-medium text-ink truncate">{p.name}</p>
+                  {/* LEFT: Sales Analytic + Pending Order */}
+                  <div className="space-y-4">
+
+                    {/* Section A: Sales Analytic */}
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                      <div className="px-5 pt-5 pb-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <h3 className="text-sm font-semibold text-gray-900">Sales Analytic</h3>
+                            <p className="text-[10px] text-gray-400 mt-0.5">{finance.completedOrders} Sales</p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+                              <span className="text-[9px] text-gray-400">Sales</span>
                             </div>
-                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-rose/70 rounded-full transition-all"
-                                style={{ width: `${pct}%` }}
+                          </div>
+                        </div>
+
+                        {/* Area Chart */}
+                        <div className="h-44">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={salesChartData} animationDuration={800}>
+                              <defs>
+                                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
+                                  <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                              <XAxis
+                                dataKey="month"
+                                tick={{ fontSize: 9, fill: '#9CA3AF' }}
+                                axisLine={false}
+                                tickLine={false}
                               />
-                            </div>
-                            <div className="w-28 shrink-0 text-right">
-                              <p className="text-[10px] font-medium text-ink">
-                                IDR {orderRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {products.length === 0 && (
-                        <p className="text-[10px] text-gray-400 text-center py-4">No archive data yet.</p>
-                      )}
-                    </div>
-                  </div>
+                              <YAxis
+                                tick={{ fontSize: 9, fill: '#9CA3AF' }}
+                                axisLine={false}
+                                tickLine={false}
+                                domain={[0, 35]}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: '#fff',
+                                  border: '1px solid #E5E7EB',
+                                  borderRadius: '8px',
+                                  fontSize: '11px',
+                                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="sales"
+                                stroke="#3B82F6"
+                                strokeWidth={2}
+                                fill="url(#salesGradient)"
+                                dot={{ r: 3, fill: '#3B82F6', strokeWidth: 0 }}
+                                activeDot={{ r: 5, fill: '#3B82F6' }}
+                                animationDuration={800}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
 
-                  {/* Profit Margin by Product */}
-                  <div className="bg-white rounded border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Profit Margin</h3>
-                    </div>
-                    <div className="p-4 space-y-3">
-                      {products.slice(0, 8).map((p) => {
-                        const costing = productCostings[p.id];
-                        const soldQty = orders
-                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
-                          .reduce((sum, o) => sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + i.quantity, 0) || 0), 0);
-                        const revenue = orders
-                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
-                          .reduce((sum, o) => sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0), 0);
-                        const unitCost = costing ? costing.supplier_cost + costing.shipping_cost + costing.packaging_cost + (costing.supplier_cost * costing.operasional_pct / 100) : 0;
-                        const profitPerUnit = p.price - unitCost;
-                        const profitMargin = p.price > 0 ? Math.round((profitPerUnit / p.price) * 100) : 0;
-                        const totalProfit = soldQty * profitPerUnit;
-                        return (
-                          <div key={p.id} className="flex items-center gap-3">
-                            <div className="w-16 shrink-0">
-                              <p className="text-[9px] font-medium text-ink truncate">{p.name}</p>
-                              <p className="text-[8px] text-gray-400">×{soldQty} sold</p>
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-[8px] text-gray-400">Margin</span>
-                                <span className={cn("text-[9px] font-medium", profitMargin >= 30 ? 'text-emerald-600' : profitMargin >= 15 ? 'text-amber-600' : 'text-red-500')}>
-                                  {profitMargin}%
-                                </span>
-                              </div>
-                              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                <div
-                                  className={cn("h-full rounded-full", profitMargin >= 30 ? 'bg-emerald-500' : profitMargin >= 15 ? 'bg-amber-500' : 'bg-red-400')}
-                                  style={{ width: `${Math.min(profitMargin, 100)}%` }}
-                                />
-                              </div>
-                            </div>
-                            <div className="w-28 shrink-0 text-right">
-                              <p className="text-[9px] font-medium text-ink">
-                                {costing
-                                  ? `IDR ${totalProfit.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`
-                                  : 'No data'}
-                              </p>
-                              <p className="text-[8px] text-gray-400">
-                                {costing ? `IDR ${Math.round(profitPerUnit).toLocaleString('id-ID')}/u` : ''}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {products.length === 0 && (
-                        <p className="text-[10px] text-gray-400 text-center py-4">No archive data yet.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Order Summary Metrics */}
-                <div className="bg-white rounded border border-gray-100 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Transaction Summary</h3>
-                  </div>
-                  <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-gray-100">
-                    {[
-                      { label: 'Total Orders', value: orders.length.toString() },
-                      { label: 'Pending', value: orders.filter(o => o.status === 'pending').length.toString() },
-                      { label: 'Paid', value: orders.filter(o => o.status === 'paid').length.toString() },
-                      { label: 'Shipped', value: orders.filter(o => o.status === 'shipped').length.toString() },
-                      { label: 'Delivered', value: orders.filter(o => o.status === 'delivered').length.toString() },
-                      { label: 'Cancelled', value: orders.filter(o => o.status === 'cancelled').length.toString() }
-                    ].map((stat) => (
-                      <div key={stat.label} className="px-4 py-4 text-center">
-                        <p className="text-[8px] uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
-                        <p className="text-base font-medium text-ink">{stat.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Customer Contribution */}
-                <div className="bg-white rounded border border-gray-100 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Member Contribution</h3>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    {customers.slice(0, 6).map((cust) => {
-                      const custOrders = orders.filter(o => o.shipping_address?.name === cust.full_name || o.user_id === cust.user_id);
-                      const custSpent = custOrders.reduce((sum, o) => sum + (o.order_items?.reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0), 0);
-                      const maxSpent = Math.max(...customers.map(c => {
-                        const co = orders.filter(o => o.shipping_address?.name === c.full_name || o.user_id === c.user_id);
-                        return co.reduce((ss, o) => ss + (o.order_items?.reduce((ss2, i) => ss2 + (i.price_at_purchase * i.quantity), 0) || 0), 0);
-                      }), 1);
-                      const pct = Math.round((custSpent / maxSpent) * 100);
-                      return (
-                        <div key={cust.id} className="flex items-center gap-3 py-1.5">
-                          <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center shrink-0">
-                            <span className="text-[9px] font-medium text-ink uppercase">{cust.full_name?.charAt(0) || '?'}</span>
-                          </div>
-                          <div className="flex-1 min-w-0">
+                        {/* Metrics row */}
+                        <div className="grid grid-cols-3 gap-3 mt-4">
+                          <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-[10px] font-medium text-ink truncate">{cust.full_name}</span>
-                              <span className="text-[9px] text-gray-400 shrink-0 ml-2">{custOrders.length} orders</span>
+                              <span className="text-[9px] text-gray-500">Total Order</span>
+                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
                             </div>
-                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-rose/60 rounded-full" style={{ width: `${pct}%` }} />
-                            </div>
+                            <p className="text-sm font-semibold text-gray-900">
+                              Rp{totalOrderValue.toLocaleString('id-ID')}
+                            </p>
                           </div>
-                          <div className="w-28 shrink-0 text-right">
-                            <p className="text-[10px] font-medium text-ink">IDR {custSpent.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</p>
+                          <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] text-gray-500">Total Views</span>
+                              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
+                            </div>
+                            <p className="text-sm font-semibold text-gray-900">{totalViews}</p>
+                          </div>
+                          <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] text-gray-500">Most Sales Product</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <p className="text-[11px] font-semibold text-gray-900 truncate">{mostSoldProduct.name}</p>
+                              <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">{mostSoldProduct.count}</span>
+                            </div>
                           </div>
                         </div>
-                      );
-                    })}
-                    {customers.length === 0 && (
-                      <p className="text-[10px] text-gray-400 text-center py-4">No member data yet.</p>
-                    )}
+                      </div>
+                    </div>
+
+                    {/* Section C: Pending Order */}
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-gray-900">Pending Order</h3>
+                        <button className="text-[10px] text-blue-500 hover:text-blue-600 font-medium">See All</button>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="border-b border-gray-100">
+                            <tr>
+                              <th className="px-5 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Product Info</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Order Number</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Date</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Customer</th>
+                              <th className="px-4 py-3 text-right text-[9px] uppercase tracking-widest text-gray-400 font-medium">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {mockPendingOrders.map((order, i) => (
+                              <tr
+                                key={order.id}
+                                className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors"
+                                style={{ animationDelay: `${i * 80}ms` }}
+                              >
+                                <td className="px-5 py-3.5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                                      <Image
+                                        src={order.product.image}
+                                        alt={order.product.name}
+                                        width={36}
+                                        height={36}
+                                        className="object-cover w-full h-full"
+                                      />
+                                    </div>
+                                    <span className="text-[11px] font-medium text-gray-800">{order.product.name}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <span className="text-[10px] font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                    #{order.id}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <span className="text-[11px] text-gray-500">{order.date}</span>
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <span className="text-[11px] text-gray-700">{order.customer}</span>
+                                </td>
+                                <td className="px-4 py-3.5 text-right">
+                                  <span className="text-[11px] font-semibold text-gray-900">
+                                    Rp{order.total.toLocaleString('id-ID')}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* RIGHT: Profit + Voucher */}
+                  <div className="space-y-4">
+
+                    {/* Section B: Profit */}
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                      <div className="px-5 pt-5 pb-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="text-sm font-semibold text-gray-900">Profit</h3>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">▲ 100%</span>
+                        </div>
+                        <p className="text-xl font-bold text-gray-900 mb-4">
+                          Rp{(profitChartData.reduce((s, d) => s + d.profit, 0)).toLocaleString('id-ID')}
+                        </p>
+                        <div className="h-40">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={profitChartData} animationDuration={800} barCategoryGap="30%">
+                              <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                              <XAxis
+                                dataKey="month"
+                                tick={{ fontSize: 9, fill: '#9CA3AF' }}
+                                axisLine={false}
+                                tickLine={false}
+                              />
+                              <YAxis hide />
+                              <Tooltip
+                                formatter={(value: number) => `Rp${value.toLocaleString('id-ID')}`}
+                                contentStyle={{
+                                  backgroundColor: '#fff',
+                                  border: '1px solid #E5E7EB',
+                                  borderRadius: '8px',
+                                  fontSize: '11px',
+                                }}
+                              />
+                              <Bar
+                                dataKey="profit"
+                                fill="#3B82F6"
+                                barSize={14}
+                                radius={[4, 4, 0, 0]}
+                                animationDuration={500}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section D: Voucher Active */}
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-gray-900">Voucher Active</h3>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">{mockVouchers.length} Voucher Active</span>
+                          <button className="text-[10px] text-blue-500 hover:text-blue-600 font-medium">See All</button>
+                        </div>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        {mockVouchers.map((v) => (
+                          <div key={v.id} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                            <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+                              <span className="text-blue-500 text-sm">🎟</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-semibold text-gray-800">{v.name}</p>
+                              <p className="text-[9px] text-gray-400 mt-0.5 font-mono">Code: {v.code}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[9px] text-gray-400">{v.used_count}x used</span>
+                                <span className="text-[8px] text-gray-300">•</span>
+                                <span className="text-[9px] text-gray-400">Active until {v.active_until}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Online Order Tab */}
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  {/* Breadcrumb */}
+                  <div className="px-6 pt-5 pb-0">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <span className="text-[9px] text-gray-400">Transaction</span>
+                      <span className="text-[9px] text-gray-300">/</span>
+                      <span className="text-[9px] text-gray-700 font-medium">Online Order</span>
+                    </div>
+
+                    {/* Page Title */}
+                    <h2 className="text-base font-semibold text-gray-900 mb-4">Online Order</h2>
+
+                    {/* Tabs */}
+                    <div className="flex items-end gap-0 border-b border-gray-200">
+                      {([
+                        { key: 'all', label: 'All Order', count: orders.length },
+                        { key: 'new', label: 'New Order', count: orders.filter(o => o.status === 'pending').length },
+                        { key: 'paid', label: 'Paid', count: orders.filter(o => o.status === 'paid').length },
+                        { key: 'sent', label: 'Sent', count: orders.filter(o => o.status === 'shipped').length },
+                        { key: 'completed', label: 'Completed', count: orders.filter(o => o.status === 'delivered').length },
+                        { key: 'canceled', label: 'Canceled', count: orders.filter(o => o.status === 'cancelled').length },
+                      ] as { key: typeof orderTab; label: string; count: number }[]).map((tab) => (
+                        <button
+                          key={tab.key}
+                          onClick={() => setOrderTab(tab.key)}
+                          className="relative px-4 pb-3 text-[11px] font-medium transition-colors"
+                        >
+                          <span className={cn(orderTab === tab.key ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600')}>
+                            {tab.label}
+                          </span>
+                          <span className={cn(
+                            "ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full",
+                            orderTab === tab.key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'
+                          )}>
+                            {tab.count}
+                          </span>
+                          {orderTab === tab.key && (
+                            <motion.div
+                              layoutId="orderTabIndicator"
+                              className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
+                              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Filter Bar */}
+                  <div className="px-6 py-4 flex items-center gap-3 flex-wrap border-b border-gray-100">
+                    {/* Date Range */}
+                    <div className="relative">
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="date"
+                          value={dateRange.start}
+                          onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                          className="text-[10px] border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-700 focus:outline-none focus:border-blue-400"
+                        />
+                        <span className="text-[9px] text-gray-400">→</span>
+                        <input
+                          type="date"
+                          value={dateRange.end}
+                          onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                          className="text-[10px] border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-700 focus:outline-none focus:border-blue-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Payment Method Dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() => { setShowPaymentDropdown(!showPaymentDropdown); setShowCourierDropdown(false); setShowSortDropdown(false); }}
+                        className="flex items-center gap-1.5 text-[10px] border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-600 hover:border-blue-300 focus:outline-none focus:border-blue-400 transition-colors"
+                      >
+                        Payment Method
+                        {selectedPaymentMethods.length > 0 && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">
+                            {selectedPaymentMethods.length}
+                          </span>
+                        )}
+                        <ChevronDown size={11} />
+                      </button>
+                      <AnimatePresence>
+                        {showPaymentDropdown && (
+                          <motion.div
+                            initial={{ opacity: 0, scaleY: 0.8, transformOrigin: 'top' }}
+                            animate={{ opacity: 1, scaleY: 1 }}
+                            exit={{ opacity: 0, scaleY: 0.8 }}
+                            transition={{ duration: 0.12 }}
+                            className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+                          >
+                            {['Transfer Bank', 'QRIS', 'COD', 'Virtual Account', 'E-Wallet'].map(method => (
+                              <label key={method} className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-gray-50 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedPaymentMethods.includes(method)}
+                                  onChange={e => {
+                                    if (e.target.checked) setSelectedPaymentMethods(prev => [...prev, method]);
+                                    else setSelectedPaymentMethods(prev => prev.filter(m => m !== method));
+                                  }}
+                                  className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-400"
+                                />
+                                <span className="text-[10px] text-gray-700">{method}</span>
+                              </label>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Courier Dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() => { setShowCourierDropdown(!showCourierDropdown); setShowPaymentDropdown(false); setShowSortDropdown(false); }}
+                        className="flex items-center gap-1.5 text-[10px] border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-600 hover:border-blue-300 focus:outline-none focus:border-blue-400 transition-colors"
+                      >
+                        Courier
+                        {selectedCouriers.length > 0 && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">
+                            {selectedCouriers.length}
+                          </span>
+                        )}
+                        <ChevronDown size={11} />
+                      </button>
+                      <AnimatePresence>
+                        {showCourierDropdown && (
+                          <motion.div
+                            initial={{ opacity: 0, scaleY: 0.8, transformOrigin: 'top' }}
+                            animate={{ opacity: 1, scaleY: 1 }}
+                            exit={{ opacity: 0, scaleY: 0.8 }}
+                            transition={{ duration: 0.12 }}
+                            className="absolute top-full left-0 mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+                          >
+                            {['JNE', 'J&T', 'SiCepat', 'AnterAja', 'Ninja Express', 'GoSend', 'GrabExpress'].map(c => (
+                              <label key={c} className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-gray-50 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedCouriers.includes(c)}
+                                  onChange={e => {
+                                    if (e.target.checked) setSelectedCouriers(prev => [...prev, c]);
+                                    else setSelectedCouriers(prev => prev.filter(x => x !== c));
+                                  }}
+                                  className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500 focus:ring-blue-400"
+                                />
+                                <span className="text-[10px] text-gray-700">{c}</span>
+                              </label>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Search */}
+                    <div className="relative flex-1 min-w-[160px]">
+                      <input
+                        type="text"
+                        placeholder="Order No"
+                        value={orderSearch}
+                        onChange={e => setOrderSearch(e.target.value)}
+                        className="w-full text-[10px] border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 bg-white text-gray-700 focus:outline-none focus:border-blue-400 placeholder:text-gray-400"
+                      />
+                      <Search size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="relative">
+                      <button
+                        onClick={() => { setShowSortDropdown(!showSortDropdown); setShowPaymentDropdown(false); setShowCourierDropdown(false); }}
+                        className="flex items-center gap-1.5 text-[10px] border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-600 hover:border-blue-300 focus:outline-none focus:border-blue-400 transition-colors"
+                      >
+                        Sort: {sortBy}
+                        <ChevronDown size={11} />
+                      </button>
+                      <AnimatePresence>
+                        {showSortDropdown && (
+                          <motion.div
+                            initial={{ opacity: 0, scaleY: 0.8, transformOrigin: 'top' }}
+                            animate={{ opacity: 1, scaleY: 1 }}
+                            exit={{ opacity: 0, scaleY: 0.8 }}
+                            transition={{ duration: 0.12 }}
+                            className="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+                          >
+                            {['Newest', 'Oldest', 'Highest Total', 'Lowest Total'].map(s => (
+                              <button
+                                key={s}
+                                onClick={() => { setSortBy(s.toLowerCase().replace(' ', '_')); setShowSortDropdown(false); }}
+                                className={cn(
+                                  "w-full text-left px-3 py-2.5 text-[10px] hover:bg-gray-50 transition-colors",
+                                  sortBy === s.toLowerCase().replace(' ', '_') ? 'text-blue-600 font-medium' : 'text-gray-700'
+                                )}
+                              >
+                                {s}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Order Table */}
+                  <div className="overflow-x-auto">
+                    <AnimatePresence mode="wait">
+                      {filteredOrders.length === 0 ? (
+                        <motion.div
+                          key="empty"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="flex flex-col items-center justify-center py-16 text-gray-400"
+                        >
+                          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <MessageSquare size={28} className="text-gray-300" />
+                          </div>
+                          <p className="text-[12px] font-medium text-gray-500">Order not found</p>
+                        </motion.div>
+                      ) : (
+                        <motion.table
+                          key="table"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full"
+                        >
+                          <thead className="border-b border-gray-100">
+                            <tr>
+                              <th className="px-5 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Product Info</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Order Number</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Date</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Customer</th>
+                              <th className="px-4 py-3 text-right text-[9px] uppercase tracking-widest text-gray-400 font-medium">Total</th>
+                              <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Status</th>
+                              <th className="px-4 py-3 text-center text-[9px] uppercase tracking-widest text-gray-400 font-medium">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredOrders.slice(0, 10).map((order, i) => {
+                              const statusMap: Record<string, { label: string; color: string }> = {
+                                pending: { label: 'New Order', color: 'bg-gray-100 text-gray-600' },
+                                paid: { label: 'Paid', color: 'bg-blue-100 text-blue-600' },
+                                shipped: { label: 'Sent', color: 'bg-amber-100 text-amber-600' },
+                                delivered: { label: 'Completed', color: 'bg-emerald-100 text-emerald-600' },
+                                cancelled: { label: 'Canceled', color: 'bg-red-100 text-red-500' },
+                              };
+                              const s = statusMap[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-600' };
+                              const totalOrder = order.order_items?.reduce((sum, i) => sum + (i.price_at_purchase * i.quantity), 0) || order.total_price;
+                              return (
+                                <motion.tr
+                                  key={order.id}
+                                  initial={{ opacity: 0, y: 8 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors"
+                                >
+                                  <td className="px-5 py-3.5">
+                                    <div className="flex items-center gap-2.5">
+                                      <div className="w-8 h-8 rounded bg-gray-100 shrink-0" />
+                                      <span className="text-[11px] text-gray-700">
+                                        {order.order_items?.[0]?.product_name || 'NINOC Archive Product'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-3.5">
+                                    <span className="text-[10px] font-mono bg-gray-100 text-gray-500 px-2 py-1 rounded">
+                                      #{order.id.slice(0, 8)}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3.5 text-[11px] text-gray-500">
+                                    {new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                  </td>
+                                  <td className="px-4 py-3.5 text-[11px] text-gray-700">
+                                    {order.shipping_address?.name || 'Guest'}
+                                  </td>
+                                  <td className="px-4 py-3.5 text-right text-[11px] font-semibold text-gray-900">
+                                    Rp{totalOrder.toLocaleString('id-ID')}
+                                  </td>
+                                  <td className="px-4 py-3.5">
+                                    <span className={cn("text-[9px] px-2 py-1 rounded-full font-medium", s.color)}>
+                                      {s.label}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3.5 text-center">
+                                    <button
+                                      onClick={() => openOrderDetail(order)}
+                                      className="text-[10px] px-3 py-1.5 border border-blue-200 text-blue-500 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors font-medium"
+                                    >
+                                      Detail
+                                    </button>
+                                  </td>
+                                </motion.tr>
+                              );
+                            })}
+                          </tbody>
+                        </motion.table>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100">
+                    <p className="text-[10px] text-gray-400">Total {filteredOrders.length} items</p>
+                    <div className="flex items-center gap-2">
+                      <button className="w-7 h-7 rounded border border-gray-200 flex items-center justify-center text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-colors">
+                        <ChevronLeft size={12} />
+                      </button>
+                      <span className="text-[10px] font-medium text-gray-700">1</span>
+                      <button className="w-7 h-7 rounded border border-gray-200 flex items-center justify-center text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-colors">
+                        <ChevronRight size={12} />
+                      </button>
+                      <div className="w-px h-4 bg-gray-200 mx-1" />
+                      <select
+                        value={pageSize}
+                        onChange={e => setPageSize(Number(e.target.value))}
+                        className="text-[10px] border border-gray-200 rounded px-2 py-1 text-gray-600 bg-white"
+                      >
+                        <option value={10}>10 / page</option>
+                        <option value={25}>25 / page</option>
+                        <option value={50}>50 / page</option>
+                        <option value={100}>100 / page</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </motion.div>
