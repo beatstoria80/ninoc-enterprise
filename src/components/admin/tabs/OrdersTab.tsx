@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order, Product } from '../types';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabase';
 
 // ─── Dropdown Component ──────────────────────────────────
 function FilterDropdown({
@@ -197,7 +198,8 @@ export function OrdersTab({
   setStatusFilter,
   searchQuery,
   setSearchQuery,
-  openOrderDetail
+  openOrderDetail,
+  onUpdateOrderPrinted
 }: {
   orders: Order[];
   products: Product[];
@@ -206,6 +208,7 @@ export function OrdersTab({
   searchQuery: string;
   setSearchQuery: (s: string) => void;
   openOrderDetail: (o: Order) => void;
+  onUpdateOrderPrinted?: (orderId: string, printedAt: string) => void;
 }) {
   // ── Filter states ──
   const [paymentFilter, setPaymentFilter] = useState('all');
@@ -218,6 +221,10 @@ export function OrdersTab({
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [selectedPrintOrders, setSelectedPrintOrders] = useState<string[]>([]);
   const [isPrinting, setIsPrinting] = useState(false);
+
+  // ── Fraud Warning State ──
+  const [fraudWarningOrders, setFraudWarningOrders] = useState<Order[]>([]);
+  const [isFraudWarningOpen, setIsFraudWarningOpen] = useState(false);
 
   // ── Expanded Order (accordion) ──
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
@@ -323,15 +330,32 @@ export function OrdersTab({
     if (selectedPrintOrders.length === 0) return;
     setIsPrinting(true);
 
-    // Simulate label generation for UI/UX polish
-    setTimeout(() => {
-      setIsPrinting(false);
-      setIsPrintModalOpen(false);
+    const ordersToPrint = orders.filter(o => selectedPrintOrders.includes(o.id));
 
-      const ordersToPrint = orders.filter(o => selectedPrintOrders.includes(o.id));
-      
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
+    // ── FRAUD DETECTION: Check for already-shipped orders ──
+    const fraudOrders = ordersToPrint.filter(o =>
+      o.status === 'shipped' || o.status === 'delivered'
+    );
+
+    if (fraudOrders.length > 0) {
+      setIsPrinting(false);
+      setFraudWarningOrders(fraudOrders);
+      setIsFraudWarningOpen(true);
+      return;
+    }
+
+    // ── LOG PRINTED TIMESTAMP TO DB ──
+    const now = new Date().toISOString();
+    Promise.all(ordersToPrint.map(async (order) => {
+      await supabase.from('orders').update({ printed_at: now }).eq('id', order.id);
+    })).then(() => {
+      if (onUpdateOrderPrinted) {
+        ordersToPrint.forEach(o => onUpdateOrderPrinted(o.id, now));
+      }
+    });
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -616,7 +640,6 @@ export function OrdersTab({
       `;
       printWindow.document.write(htmlContent);
       printWindow.document.close();
-    }, 1500);
   };
 
   const handleExportData = () => {
@@ -824,26 +847,26 @@ export function OrdersTab({
         className="flex flex-col h-full space-y-4"
       >
         <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-4">
-        <div>
-          <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
-          <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
+          <div>
+            <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
+            <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History &amp; Management</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrintResi}
+              className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
+            >
+              <Printer size={12} />
+              Print Bulk Labels
+            </button>
+            <button
+              onClick={handleExportData}
+              className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
+            >
+              Export Data
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={handlePrintResi}
-            className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
-          >
-            <Printer size={12} />
-            Print Bulk Labels
-          </button>
-          <button 
-            onClick={handleExportData}
-            className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
-          >
-            Export Data
-          </button>
-        </div>
-      </div>
 
       {/* Status Tabs */}
       <div className="shrink-0 flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
@@ -1278,7 +1301,6 @@ export function OrdersTab({
     </motion.div>
 
     {/* Print Modal */}
-    <AnimatePresence>
       {isPrintModalOpen && (
         <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
           <motion.div 
@@ -1422,6 +1444,78 @@ export function OrdersTab({
                     Print Labels
                   </>
                 )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    {/* FRAUD WARNING MODAL */}
+    <AnimatePresence>
+      {isFraudWarningOpen && (
+        <div className="fixed inset-0 z-[700] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-rose/20 backdrop-blur-sm"
+            onClick={() => setIsFraudWarningOpen(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border-2 border-rose overflow-hidden"
+          >
+            {/* Header */}
+            <div className="px-6 py-4 bg-rose flex items-center gap-3">
+              <AlertTriangle size={20} className="text-white" />
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-widest">Fraud Alert</h3>
+                <p className="text-[10px] text-white/80 uppercase tracking-wider mt-0.5">Duplicate Print Blocked</p>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <p className="text-[11px] text-ink/70 leading-relaxed">
+                <span className="font-bold text-rose">{fraudWarningOrders.length} order(s)</span> yang Anda coba cetak sudah memiliki status <span className="font-bold">SHIPPED / DELIVERED</span>. Ini mengindikasikan <span className="font-bold text-rose">DUPLICATE PRINT ATTEMPT</span>.
+              </p>
+              <div className="bg-rose/5 border border-rose/20 rounded-lg overflow-hidden">
+                <table className="w-full text-[10px]">
+                  <thead>
+                    <tr className="bg-rose/10">
+                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Order ID</th>
+                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Status</th>
+                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Printed At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-rose/10">
+                    {fraudWarningOrders.map(o => (
+                      <tr key={o.id}>
+                        <td className="px-3 py-2 font-mono font-medium text-ink">{o.id.slice(0, 8).toUpperCase()}</td>
+                        <td className="px-3 py-2">
+                          <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-bold uppercase text-[9px] rounded">{o.status}</span>
+                        </td>
+                        <td className="px-3 py-2 text-ink/50 font-mono">
+                          {o.printed_at ? new Date(o.printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Unknown'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[10px] text-ink/40 text-center">
+                Hubungi supervisor jika Anda yakin perlu mencetak ulang label ini.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-ink/5 flex justify-end gap-3">
+              <button
+                onClick={() => setIsFraudWarningOpen(false)}
+                className="px-5 py-2 text-[10px] uppercase font-bold tracking-widest bg-ink text-white rounded-sm hover:bg-ink/80 transition-colors"
+              >
+                Acknowledge &amp; Close
               </button>
             </div>
           </motion.div>
