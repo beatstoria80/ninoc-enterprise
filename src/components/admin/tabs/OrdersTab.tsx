@@ -609,13 +609,14 @@ export function OrdersTab({
   };
 
   return (
-    <motion.div
-      key="orders"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
-      <div className="flex items-center justify-between border-b border-ink/5 pb-4">
+    <>
+      <motion.div
+        key="orders"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center justify-between border-b border-ink/5 pb-4">
         <div>
           <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
           <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
@@ -626,7 +627,7 @@ export function OrdersTab({
             className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
           >
             <Printer size={12} />
-            Print Resi Massal
+            Print Label
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
             Export Data
@@ -884,5 +885,150 @@ export function OrdersTab({
         </div>
       )}
     </motion.div>
+
+    {/* Print Modal */}
+    <AnimatePresence>
+      {isPrintModalOpen && (
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            onClick={() => !isPrinting && setIsPrintModalOpen(false)}
+          />
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative w-full max-w-2xl bg-white rounded-sm shadow-2xl border border-ink/10 overflow-hidden flex flex-col max-h-[85vh]"
+          >
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-ink/10 flex items-center justify-between bg-ink/[0.02]">
+              <div>
+                <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Select Orders to Print</h3>
+                <p className="text-[10px] text-ink/50 uppercase tracking-widest mt-1">Thermal Label (100x150mm)</p>
+              </div>
+              <button 
+                onClick={() => setIsPrintModalOpen(false)}
+                disabled={isPrinting}
+                className="p-2 text-ink/40 hover:text-ink transition-colors disabled:opacity-50"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Body / List */}
+            <div className="flex-1 overflow-y-auto minimal-scroll p-6 bg-white">
+              <div className="space-y-2">
+                {(() => {
+                  const validOrders = filteredOrders.filter(o => o.status === 'paid' || o.status === 'shipped');
+                  const validCount = validOrders.length;
+                  
+                  return (
+                    <>
+                      <div className="flex items-center justify-between pb-2 border-b border-ink/5 mb-4">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="checkbox" 
+                            className="hidden" 
+                            checked={selectedPrintOrders.length === validCount && validCount > 0}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedPrintOrders(validOrders.map(o => o.id));
+                              else setSelectedPrintOrders([]);
+                            }}
+                          />
+                          <div className={cn(
+                            "w-4 h-4 rounded-sm border flex items-center justify-center transition-colors",
+                            selectedPrintOrders.length === validCount && validCount > 0
+                              ? "bg-ink border-ink" : "border-ink/20 group-hover:border-ink/40"
+                          )}>
+                            {selectedPrintOrders.length === validCount && validCount > 0 && <Box size={10} className="text-white" />}
+                          </div>
+                          <span className="text-[10px] uppercase font-medium tracking-wider text-ink">Select All ({validCount})</span>
+                        </label>
+                      </div>
+
+                      {validOrders.map((order) => (
+                        <label key={order.id} className="flex items-center gap-4 p-3 border border-ink/5 rounded-sm hover:border-ink/20 cursor-pointer transition-colors group">
+                          <input 
+                            type="checkbox" 
+                            className="hidden" 
+                            checked={selectedPrintOrders.includes(order.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedPrintOrders(prev => [...prev, order.id]);
+                              else setSelectedPrintOrders(prev => prev.filter(id => id !== order.id));
+                            }}
+                          />
+                          <div className={cn(
+                            "w-4 h-4 rounded-sm border flex items-center justify-center transition-colors shrink-0",
+                            selectedPrintOrders.includes(order.id) ? "bg-ink border-ink" : "border-ink/20 group-hover:border-ink/40"
+                          )}>
+                            {selectedPrintOrders.includes(order.id) && <Box size={10} className="text-white" />}
+                          </div>
+                          
+                          <div className="flex-1 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                              <p className="text-[11px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
+                              <p className="text-[10px] text-ink/50 mt-0.5">{order.shipping_address?.name || 'Guest'}</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className={cn(
+                                "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                                order.status === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                              )}>
+                                {order.status}
+                              </span>
+                              <span className="text-[10px] font-medium text-ink/50 uppercase w-16 text-right">{order.courier || 'STD'}</span>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                      
+                      {validCount === 0 && (
+                        <div className="py-8 text-center">
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-ink/40">No valid orders found in current filter</p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-ink/10 bg-ink/[0.02] flex justify-between items-center shrink-0">
+              <span className="text-[10px] uppercase font-medium tracking-wider text-ink/50">
+                {selectedPrintOrders.length} Orders Selected
+              </span>
+              
+              <button
+                onClick={executePrint}
+                disabled={selectedPrintOrders.length === 0 || isPrinting}
+                className="relative flex items-center justify-center gap-2 px-6 py-2.5 bg-ink text-white text-[10px] uppercase font-medium tracking-wider rounded-sm hover:bg-ink/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden min-w-[160px]"
+              >
+                {isPrinting ? (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Generating...
+                  </motion.div>
+                ) : (
+                  <>
+                    <Printer size={12} />
+                    Print Labels
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  </>
   );
 }
