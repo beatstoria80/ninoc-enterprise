@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, X, Calendar, Printer } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 
@@ -215,6 +215,9 @@ export function OrdersTab({
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [selectedPrintOrders, setSelectedPrintOrders] = useState<string[]>([]);
   const [isPrinting, setIsPrinting] = useState(false);
+
+  // ── Expanded Order (accordion) ──
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   // ── Dropdown open states (only one at a time) ──
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -792,69 +795,233 @@ export function OrdersTab({
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b border-ink/5 hover:bg-ink/[0.02] transition-colors cursor-pointer group"
-                    onClick={() => openOrderDetail(order)}
-                  >
-                    <td className="px-3 py-2">
-                      <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="max-w-[120px]">
-                        <p className="text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
-                        <p className="text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="max-w-[160px]">
-                        <p className="text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
-                        {order.order_items && order.order_items.length > 1 && (
-                          <span className="text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
+                {filteredOrders.map((order) => {
+                  const isExpanded = expandedOrderId === order.id;
+                  return (
+                    <React.Fragment key={order.id}>
+                      <tr
+                        className={cn(
+                          "border-b border-ink/5 hover:bg-ink/[0.02] transition-colors cursor-pointer group",
+                          isExpanded && "bg-ink/[0.02] border-b-0"
                         )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className={cn(
-                        "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
-                        order.status === 'pending' ? "bg-amber-50 text-amber-600" :
-                        order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
-                        order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
-                        order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
-                        "bg-red-50 text-red-600"
-                      )}>
-                        {order.status === 'pending' ? 'Waiting' : order.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className={cn(
-                        "text-[9px] uppercase tracking-wider font-medium",
-                        order.payment_status === 'success' ? "text-emerald-600" :
-                        order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
-                      )}>
-                        {order.payment_status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <span className="text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); openOrderDetail(order); }}
-                        className="text-[9px] font-medium uppercase tracking-wider text-rose opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                        onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
-                        Detail
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        <td className="px-3 py-2">
+                          <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className="text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="max-w-[120px]">
+                            <p className="text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
+                            <p className="text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="max-w-[160px]">
+                            <p className="text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
+                            {order.order_items && order.order_items.length > 1 && (
+                              <span className="text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={cn(
+                            "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                            order.status === 'pending' ? "bg-amber-50 text-amber-600" :
+                            order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
+                            order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
+                            order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
+                            "bg-red-50 text-red-600"
+                          )}>
+                            {order.status === 'pending' ? 'Waiting' : order.status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={cn(
+                            "text-[9px] uppercase tracking-wider font-medium",
+                            order.payment_status === 'success' ? "text-emerald-600" :
+                            order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                          )}>
+                            {order.payment_status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className="text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <span className="text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-1">
+                            {isExpanded ? <ChevronUp size={12} className="text-rose" /> : <ChevronDown size={12} className="text-ink/30 group-hover:text-ink/60 transition-colors" />}
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* ── EXPANDABLE DETAIL ROW ── */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={9} className="p-0 border-b border-ink/10">
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                className="overflow-hidden"
+                              >
+                                <div className="bg-ink/[0.015] border-t border-ink/10 px-4 py-5">
+                                  <div className="grid grid-cols-12 gap-4">
+
+                                    {/* LEFT: Product Items with Images */}
+                                    <div className="col-span-5">
+                                      <div className="flex items-center gap-1.5 mb-3">
+                                        <Package size={11} className="text-ink/40" />
+                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Ordered Items</span>
+                                      </div>
+                                      <div className="space-y-2">
+                                        {order.order_items?.map((item, idx) => (
+                                          <div key={idx} className="flex items-center gap-3 bg-white border border-ink/5 p-2.5 rounded-sm">
+                                            <div className="w-12 h-12 bg-ink/5 border border-ink/10 rounded-sm flex items-center justify-center shrink-0 overflow-hidden">
+                                              <Package size={16} className="text-ink/20" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
+                                              <div className="flex items-center gap-2 mt-0.5">
+                                                {item.size && <span className="text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
+                                                <span className="text-[9px] font-medium text-ink/50">×{item.quantity}</span>
+                                              </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                              <p className="text-[10px] font-medium text-ink">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                              <p className="text-[9px] text-ink/40">per item</p>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      {/* Total */}
+                                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-ink/10">
+                                        <span className="text-[10px] font-medium text-ink/50 uppercase tracking-wider">Total ({order.order_items?.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                                        <span className="text-[13px] font-medium text-ink">IDR {order.total_price.toLocaleString('id-ID')}</span>
+                                      </div>
+                                    </div>
+
+                                    {/* MIDDLE: Customer & Shipping */}
+                                    <div className="col-span-4">
+                                      <div className="flex items-center gap-1.5 mb-3">
+                                        <User size={11} className="text-ink/40" />
+                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Customer &amp; Shipping</span>
+                                      </div>
+                                      <div className="bg-white border border-ink/5 p-3 rounded-sm space-y-3">
+                                        <div className="flex items-start gap-2">
+                                          <User size={10} className="text-ink/30 mt-0.5 shrink-0" />
+                                          <div>
+                                            <p className="text-[11px] font-medium text-ink">{order.shipping_address?.name || '—'}</p>
+                                            <div className="flex items-center gap-1 mt-0.5">
+                                              <Phone size={8} className="text-ink/30" />
+                                              <span className="text-[9px] text-ink/50 font-mono">
+                                                {order.shipping_address?.phone
+                                                  ? (order.shipping_address.phone.length >= 8
+                                                    ? order.shipping_address.phone.slice(0, 4) + '-****-' + order.shipping_address.phone.slice(-4)
+                                                    : order.shipping_address.phone)
+                                                  : '—'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="h-px bg-ink/5" />
+                                        <div className="flex items-start gap-2">
+                                          <MapPin size={10} className="text-ink/30 mt-0.5 shrink-0" />
+                                          <div>
+                                            <p className="text-[10px] text-ink/70 leading-relaxed">{order.shipping_address?.address || '—'}</p>
+                                            <p className="text-[10px] font-medium text-ink mt-0.5">
+                                              {order.shipping_address?.city}, {order.shipping_address?.province || ''}
+                                            </p>
+                                            <p className="text-[10px] font-medium text-ink">{order.shipping_address?.postal_code}</p>
+                                          </div>
+                                        </div>
+                                        <div className="h-px bg-ink/5" />
+                                        <div className="flex items-start gap-2">
+                                          <Truck size={10} className="text-ink/30 mt-0.5 shrink-0" />
+                                          <div>
+                                            <p className="text-[10px] font-medium text-ink uppercase">{order.courier || 'Not Assigned'}</p>
+                                            {order.tracking_id && (
+                                              <p className="text-[9px] text-ink/50 font-mono mt-0.5">Resi: {order.tracking_id}</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* RIGHT: Order Meta & Status */}
+                                    <div className="col-span-3">
+                                      <div className="flex items-center gap-1.5 mb-3">
+                                        <Hash size={11} className="text-ink/40" />
+                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Order Meta</span>
+                                      </div>
+                                      <div className="bg-white border border-ink/5 p-3 rounded-sm space-y-3">
+                                        <div>
+                                          <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Order ID</p>
+                                          <p className="text-[10px] font-medium text-ink font-mono">#{order.id.slice(0, 16).toUpperCase()}</p>
+                                        </div>
+                                        <div className="h-px bg-ink/5" />
+                                        <div>
+                                          <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Date &amp; Time</p>
+                                          <p className="text-[10px] font-medium text-ink">
+                                            {new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                          </p>
+                                        </div>
+                                        <div className="h-px bg-ink/5" />
+                                        <div className="flex items-center gap-2">
+                                          <CreditCard size={10} className="text-ink/30" />
+                                          <div>
+                                            <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Payment</p>
+                                            <span className={cn(
+                                              "text-[9px] uppercase tracking-wider font-medium",
+                                              order.payment_status === 'success' ? "text-emerald-600" :
+                                              order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                                            )}>{order.payment_status}</span>
+                                          </div>
+                                        </div>
+                                        <div className="h-px bg-ink/5" />
+                                        <div className="flex items-center gap-2">
+                                          <Clock size={10} className="text-ink/30" />
+                                          <div>
+                                            <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Status</p>
+                                            <span className={cn(
+                                              "inline-block text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium",
+                                              order.status === 'pending' ? "bg-amber-50 text-amber-600" :
+                                              order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
+                                              order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
+                                              order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
+                                              "bg-red-50 text-red-600"
+                                            )}>{order.status === 'pending' ? 'Waiting' : order.status}</span>
+                                          </div>
+                                        </div>
+                                        {order.midtrans_id && (
+                                          <>
+                                            <div className="h-px bg-ink/5" />
+                                            <div>
+                                              <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Transaction ID</p>
+                                              <p className="text-[9px] font-medium text-ink/50 font-mono break-all">{order.midtrans_id}</p>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </td>
+                          </tr>
+                        )}
+                      </AnimatePresence>
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
