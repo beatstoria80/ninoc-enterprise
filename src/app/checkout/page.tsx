@@ -413,7 +413,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
         <h2 className="text-2xl font-display font-medium italic uppercase">Empty</h2>
-        <Link href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>Back to Shop</Link>
+        <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>Back to Shop</Link>
       </div>
     );
   }

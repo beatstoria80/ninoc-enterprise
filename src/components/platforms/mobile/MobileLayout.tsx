@@ -309,7 +309,7 @@ export default function MobileLayout({
                   <BackIcon />
                 </PressScale>
               ) : (
-                <Link href="/shop" className="group flex items-center gap-2 text-ink">
+                <Link prefetch={false} href="/shop" className="group flex items-center gap-2 text-ink">
                   <PressScale className="flex items-center gap-2">
                     <motion.div
                       className="w-6 h-6 border border-ink/10 flex items-center justify-center bg-white"
@@ -532,7 +532,7 @@ export default function MobileLayout({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival</h4>
-                    <Link href="/legal" className="block text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
+                    <Link prefetch={false} href="/legal" className="block text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
                   </div>
                   <div className="space-y-3">
                     <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
@@ -589,7 +589,7 @@ export default function MobileLayout({
           <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
-            <Link href="/" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
+            <Link prefetch={false} href="/" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/') ? 1.1 : 1 }}
                 transition={{ duration: DURATION.fast }}
@@ -612,7 +612,7 @@ export default function MobileLayout({
             </Link>
 
             {/* Cart */}
-            <Link href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
+            <Link prefetch={false} href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
               <motion.div
                 animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
                 className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-ink/30")}
@@ -655,7 +655,7 @@ export default function MobileLayout({
             </PressScale>
 
             {/* Profile */}
-            <Link href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
+            <Link prefetch={false} href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
                 className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-ink/30")}

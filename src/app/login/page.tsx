@@ -110,7 +110,7 @@ export default function LoginPage() {
       {isMobile ? (
         /* MOBILE: Full width card */
         <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
+          <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
             <ArrowLeft size={14} />
             <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
           </Link>
@@ -215,7 +215,7 @@ export default function LoginPage() {
 
             {/* Guest */}
             <div className="pt-4 border-t border-ink/5">
-              <Link href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose">
+              <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose">
                 <span>Lanjut sebagai Tamu</span>
                 <ArrowRight size={12} />
               </Link>
@@ -231,7 +231,7 @@ export default function LoginPage() {
         >
           <div className="w-full md:w-[560px] lg:w-[640px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5">
+            <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
@@ -353,7 +353,7 @@ export default function LoginPage() {
 
               {/* Guest */}
               <div className="pt-4 border-t border-ink/5">
-                <Link href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose">
+                <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose">
                   <span>Lanjut sebagai Tamu</span>
                   <ArrowRight size={12} />
                 </Link>

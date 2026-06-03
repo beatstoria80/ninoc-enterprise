@@ -598,7 +598,7 @@ export default function ProductDetailPage() {
           <div className="mt-6 lg:mt-12 space-y-1">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
-              <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
+              <Link prefetch={false} href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -609,7 +609,7 @@ export default function ProductDetailPage() {
                   key={p.id}
                   className="flex-shrink-0 w-[110px] md:w-[130px]"
                 >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-1">
+                  <Link prefetch={false} href={`/shop/${p.slug}`} className="group block space-y-1">
                     <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                       <Image src={p.image_url} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -85,6 +85,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
   return (
     <Link
+      prefetch={false}
       href={href}
       className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose relative group"
       onMouseEnter={() => setIsHovered(true)}
@@ -387,7 +388,7 @@ export default function GlobalHeader() {
         {/* Logo */}
         <motion.div className="relative flex flex-col">
           <PressScale className="cursor-pointer group flex flex-col">
-            <Link href="/" className="cursor-pointer group flex flex-col">
+            <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col">
               <motion.div
                 className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none"
                 whileHover={{ scale: 1.05 }}
@@ -407,7 +408,7 @@ export default function GlobalHeader() {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: DURATION.medium, ease: EASING.out }}
               >
-                <Link href="/shop" className="absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose whitespace-nowrap group">
+                <Link prefetch={false} href="/shop" className="absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose whitespace-nowrap group">
                   <motion.span animate={{ x: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: EASING.inOut }}>
                     <ArrowLeft size={10} />
                   </motion.span>
@@ -447,7 +448,7 @@ export default function GlobalHeader() {
 
           {/* User Profile */}
           <PressScale className="text-ink/40 hover:text-rose">
-            <Link href={user ? "/profile" : "/login"} className="flex items-center">
+            <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
               {profileAvatar ? (
                 <motion.div
                   className="relative w-5 h-5"
