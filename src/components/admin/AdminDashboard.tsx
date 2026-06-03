@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Package, ShoppingCart, Plus, Search,
+  LayoutDashboard, Package, ShoppingCart, Plus, Search, Package as PackageIcon,
   TrendingUp, Box, LogOut, X, Save, Menu,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
@@ -1543,9 +1543,10 @@ export default function AdminDashboard() {
           <SidebarItem
             icon={DollarSign}
             label="Report"
-            active={activeTab === 'finance'}
+            active={['finance', 'analytics'].includes(activeTab)}
             subItems={[
-              { label: 'Finance', id: 'finance', active: activeTab === 'finance', onClick: () => setActiveTab('finance') }
+              { label: 'Finance', id: 'finance', active: activeTab === 'finance', onClick: () => setActiveTab('finance') },
+              { label: 'Sales Analytics', id: 'analytics', active: activeTab === 'analytics', onClick: () => setActiveTab('analytics') }
             ]}
           />
 
@@ -1581,7 +1582,7 @@ export default function AdminDashboard() {
               {['products', 'upload'].includes(activeTab) ? 'Product / ' :
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Info Stock / ' :
-               ['finance'].includes(activeTab) ? 'Report / ' :
+               ['finance', 'analytics'].includes(activeTab) ? 'Report / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1593,6 +1594,7 @@ export default function AdminDashboard() {
                activeTab === 'customers' ? 'Membership' :
                activeTab === 'inventory' ? 'Stock History' :
                activeTab === 'finance' ? 'Finance' :
+               activeTab === 'analytics' ? 'Sales Analytics' :
                activeTab === 'messages' ? 'Support Chat' : activeTab}
             </h1>
           </div>
@@ -2343,6 +2345,213 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ===== SALES ANALYTICS ===== */}
+            {activeTab === 'analytics' && (
+              <motion.div
+                key="analytics"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Sales Analytics</h2>
+                    <p className="text-[9px] text-gray-400 mt-0.5">Origin Specification & Profit Overview</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] uppercase tracking-widest text-gray-400">Period:</span>
+                    <select className="text-[10px] border border-gray-200 rounded px-2 py-1.5 bg-white text-ink focus:outline-none focus:border-rose/50">
+                      <option>Last 7 Days</option>
+                      <option>Last 30 Days</option>
+                      <option>This Month</option>
+                      <option>Last 3 Months</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* KPI Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Total Investment', value: `IDR ${finance.totalRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: TrendingUp, color: 'rose' },
+                    { label: 'Monthly Exit', value: `IDR ${finance.monthRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: DollarSign, color: 'emerald' },
+                    { label: 'Daily Exit', value: `IDR ${finance.todayRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`, icon: Box, color: 'blue' },
+                    { label: 'Completed Archive', value: finance.completedOrders.toString(), icon: Package, color: 'rose' }
+                  ].map((kpi, i) => (
+                    <div key={i} className="bg-white rounded border border-gray-100 p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={cn("w-7 h-7 rounded flex items-center justify-center", `bg-${kpi.color}/10 text-${kpi.color}`)}>
+                          <kpi.icon size={12} />
+                        </div>
+                        <p className="text-[9px] uppercase tracking-widest text-gray-400">{kpi.label}</p>
+                      </div>
+                      <p className="text-lg font-medium text-ink leading-none">{kpi.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Revenue & Profit Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Revenue by Product */}
+                  <div className="bg-white rounded border border-gray-100 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                      <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Revenue by Origin</h3>
+                    </div>
+                    <div className="p-4 space-y-2.5">
+                      {products.slice(0, 8).map((p) => {
+                        const orderRevenue = orders
+                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
+                          .reduce((sum, o) => {
+                            return sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0);
+                          }, 0);
+                        const maxRev = Math.max(...products.map(prod => orders.filter(o => ['paid','shipped','delivered'].includes(o.status)).reduce((s, o) => s + (o.order_items?.filter(i => i.product_id === prod.id).reduce((ss, i) => ss + (i.price_at_purchase * i.quantity), 0) || 0), 0)), 1);
+                        const pct = Math.round((orderRevenue / maxRev) * 100);
+                        return (
+                          <div key={p.id} className="flex items-center gap-3">
+                            <div className="w-16 shrink-0">
+                              <p className="text-[9px] font-medium text-ink truncate">{p.name}</p>
+                            </div>
+                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-rose/70 rounded-full transition-all"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <div className="w-28 shrink-0 text-right">
+                              <p className="text-[10px] font-medium text-ink">
+                                IDR {orderRevenue.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {products.length === 0 && (
+                        <p className="text-[10px] text-gray-400 text-center py-4">No archive data yet.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Profit Margin by Product */}
+                  <div className="bg-white rounded border border-gray-100 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Profit Margin</h3>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {products.slice(0, 8).map((p) => {
+                        const costing = productCostings[p.id];
+                        const soldQty = orders
+                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
+                          .reduce((sum, o) => sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + i.quantity, 0) || 0), 0);
+                        const revenue = orders
+                          .filter(o => ['paid','shipped','delivered'].includes(o.status))
+                          .reduce((sum, o) => sum + (o.order_items?.filter(i => i.product_id === p.id).reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0), 0);
+                        const unitCost = costing ? costing.supplier_cost + costing.shipping_cost + costing.packaging_cost + (costing.supplier_cost * costing.operasional_pct / 100) : 0;
+                        const profitPerUnit = p.price - unitCost;
+                        const profitMargin = p.price > 0 ? Math.round((profitPerUnit / p.price) * 100) : 0;
+                        const totalProfit = soldQty * profitPerUnit;
+                        return (
+                          <div key={p.id} className="flex items-center gap-3">
+                            <div className="w-16 shrink-0">
+                              <p className="text-[9px] font-medium text-ink truncate">{p.name}</p>
+                              <p className="text-[8px] text-gray-400">×{soldQty} sold</p>
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[8px] text-gray-400">Margin</span>
+                                <span className={cn("text-[9px] font-medium", profitMargin >= 30 ? 'text-emerald-600' : profitMargin >= 15 ? 'text-amber-600' : 'text-red-500')}>
+                                  {profitMargin}%
+                                </span>
+                              </div>
+                              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div
+                                  className={cn("h-full rounded-full", profitMargin >= 30 ? 'bg-emerald-500' : profitMargin >= 15 ? 'bg-amber-500' : 'bg-red-400')}
+                                  style={{ width: `${Math.min(profitMargin, 100)}%` }}
+                                />
+                              </div>
+                            </div>
+                            <div className="w-28 shrink-0 text-right">
+                              <p className="text-[9px] font-medium text-ink">
+                                {costing
+                                  ? `IDR ${totalProfit.toLocaleString('id-ID', { minimumFractionDigits: 0 })}`
+                                  : 'No data'}
+                              </p>
+                              <p className="text-[8px] text-gray-400">
+                                {costing ? `IDR ${Math.round(profitPerUnit).toLocaleString('id-ID')}/u` : ''}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {products.length === 0 && (
+                        <p className="text-[10px] text-gray-400 text-center py-4">No archive data yet.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Summary Metrics */}
+                <div className="bg-white rounded border border-gray-100 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Transaction Summary</h3>
+                  </div>
+                  <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-gray-100">
+                    {[
+                      { label: 'Total Orders', value: orders.length.toString() },
+                      { label: 'Pending', value: orders.filter(o => o.status === 'pending').length.toString() },
+                      { label: 'Paid', value: orders.filter(o => o.status === 'paid').length.toString() },
+                      { label: 'Shipped', value: orders.filter(o => o.status === 'shipped').length.toString() },
+                      { label: 'Delivered', value: orders.filter(o => o.status === 'delivered').length.toString() },
+                      { label: 'Cancelled', value: orders.filter(o => o.status === 'cancelled').length.toString() }
+                    ].map((stat) => (
+                      <div key={stat.label} className="px-4 py-4 text-center">
+                        <p className="text-[8px] uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
+                        <p className="text-base font-medium text-ink">{stat.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Customer Contribution */}
+                <div className="bg-white rounded border border-gray-100 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Member Contribution</h3>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    {customers.slice(0, 6).map((cust) => {
+                      const custOrders = orders.filter(o => o.shipping_address?.name === cust.full_name || o.user_id === cust.user_id);
+                      const custSpent = custOrders.reduce((sum, o) => sum + (o.order_items?.reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0), 0);
+                      const maxSpent = Math.max(...customers.map(c => {
+                        const co = orders.filter(o => o.shipping_address?.name === c.full_name || o.user_id === c.user_id);
+                        return co.reduce((ss, o) => ss + (o.order_items?.reduce((ss2, i) => ss2 + (i.price_at_purchase * i.quantity), 0) || 0), 0);
+                      }), 1);
+                      const pct = Math.round((custSpent / maxSpent) * 100);
+                      return (
+                        <div key={cust.id} className="flex items-center gap-3 py-1.5">
+                          <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center shrink-0">
+                            <span className="text-[9px] font-medium text-ink uppercase">{cust.full_name?.charAt(0) || '?'}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[10px] font-medium text-ink truncate">{cust.full_name}</span>
+                              <span className="text-[9px] text-gray-400 shrink-0 ml-2">{custOrders.length} orders</span>
+                            </div>
+                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-rose/60 rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                          <div className="w-28 shrink-0 text-right">
+                            <p className="text-[10px] font-medium text-ink">IDR {custSpent.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {customers.length === 0 && (
+                      <p className="text-[10px] text-gray-400 text-center py-4">No member data yet.</p>
+                    )}
                   </div>
                 </div>
               </motion.div>
