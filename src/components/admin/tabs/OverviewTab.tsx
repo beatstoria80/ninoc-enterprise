@@ -25,9 +25,9 @@ export function OverviewTab({
   profitChartData: any[];
 }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full pb-4 space-y-4">
       {/* KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-white rounded-sm p-4 border border-ink/10 flex flex-col justify-center h-24">
           <p className="text-[8px] uppercase tracking-widest text-ink/40 mb-1.5">Total Revenue</p>
           <p className="text-base font-medium text-ink tracking-tight">IDR {finance.totalRevenue.toLocaleString('id-ID')}</p>
@@ -47,17 +47,19 @@ export function OverviewTab({
       </div>
 
       {/* Restored Charts (Lazy Loaded) */}
-      <React.Suspense fallback={<div className="h-[340px] bg-ink/[0.02] animate-pulse rounded-sm border border-ink/10" />}>
-        <LazyCharts salesData={salesChartData} profitData={profitChartData} />
-      </React.Suspense>
+      <div className="shrink-0">
+        <React.Suspense fallback={<div className="h-[340px] bg-ink/[0.02] animate-pulse rounded-sm border border-ink/10" />}>
+          <LazyCharts salesData={salesChartData} profitData={profitChartData} />
+        </React.Suspense>
+      </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-sm border border-ink/10 overflow-hidden">
-        <div className="px-5 py-3 border-b border-ink/5 flex items-center justify-between bg-ink/[0.02]">
+      <div className="flex-1 flex flex-col min-h-0 bg-white rounded-sm border border-ink/10 overflow-hidden">
+        <div className="shrink-0 px-5 py-3 border-b border-ink/5 flex items-center justify-between bg-ink/[0.02]">
           <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">Recent Orders</h3>
           <button onClick={() => setActiveTab('orders')} className="text-[9px] font-medium uppercase tracking-wider text-rose hover:text-rose/80 transition-colors">View All</button>
         </div>
-        <div className="divide-y divide-ink/5">
+        <div className="flex-1 overflow-y-auto minimal-scroll divide-y divide-ink/5">
           {orders.slice(0, 5).map((order) => (
             <div key={order.id} className="px-5 py-3 flex items-center justify-between hover:bg-ink/[0.02] cursor-pointer transition-colors group" onClick={() => openOrderDetail(order)}>
               <div className="flex items-center gap-8">
