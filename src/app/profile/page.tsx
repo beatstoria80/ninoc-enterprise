@@ -280,7 +280,7 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 gap-2">
               {orders.length === 0 ? (
-                <div className="py-20 text-center border border-dashed border-ink/10 rounded-[10px]">
+                <div className="py-8 md:py-20 text-center border border-dashed border-ink/10 rounded-[10px]">
                   <p className="text-[10px] uppercase tracking-widest text-ink/30 italic">No historical records available.</p>
                 </div>
               ) : (

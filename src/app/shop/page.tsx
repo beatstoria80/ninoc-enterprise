@@ -77,7 +77,7 @@ function MobileShopView({ products }: { products: Product[] }) {
       </div>
 
       {/* Product Grid */}
-      <div className="p-4 space-y-6 pb-20">
+      <div className="p-4 space-y-4 pb-12">
         {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
           <div key={category} className="space-y-3">
             {/* Category Header */}
@@ -91,7 +91,7 @@ function MobileShopView({ products }: { products: Product[] }) {
             </div>
 
             {/* Products Grid - 2 columns */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-1.5">
               {categoryProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
@@ -119,7 +119,7 @@ function MobileShopView({ products }: { products: Product[] }) {
                       )}
                     </div>
                     {/* Info */}
-                    <div className="p-2 space-y-2 flex flex-col justify-between flex-grow">
+                    <div className="p-2 space-y-1.5 flex flex-col justify-between flex-grow">
                       <div>
                         <h3 className="text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
                           {product.name}
@@ -156,7 +156,7 @@ function MobileShopView({ products }: { products: Product[] }) {
 
         {/* Empty State */}
         {filteredProducts.length === 0 && (
-          <div className="py-20 text-center">
+          <div className="py-10 text-center">
             <p className="text-[11px] text-ink/30 uppercase tracking-wider">No products found</p>
           </div>
         )}

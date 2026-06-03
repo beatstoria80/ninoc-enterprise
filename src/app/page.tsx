@@ -286,10 +286,10 @@ function ProductCard({ product, index }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <PressButton href={`/shop/${product.slug}`} className="bg-white p-3 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
+      <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
-          className="aspect-[3/4] overflow-hidden mb-2 md:mb-3 relative bg-white border border-ink/5"
+          className="aspect-[3/4] overflow-hidden mb-1 md:mb-3 relative bg-white border border-ink/5"
           animate={{ scale: isHovered ? 1.02 : 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
@@ -334,11 +334,11 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.h3>
 
           <motion.div
-            className="flex flex-col justify-between pt-2 md:pt-3 border-t border-ink/5 mt-2 md:mt-3 gap-2 md:gap-3"
+            className="flex flex-col justify-between pt-1.5 md:pt-3 border-t border-ink/5 mt-1.5 md:mt-3 gap-1 md:gap-3"
             animate={{ opacity: isHovered ? 1 : 0.8 }}
             transition={{ duration: DURATION.fast }}
           >
-            <div className="space-y-1">
+            <div className="space-y-0.5 md:space-y-1">
               <p className="text-[6px] md:text-[7px] uppercase tracking-widest text-ink/40 leading-none">Archival Issue</p>
               {product.price_tag && (
                 <motion.p
@@ -444,7 +444,7 @@ function CategoryQuickAccess() {
           >
             <PressButton
               href={cat.href}
-              className="flex items-center gap-3 md:gap-4 bg-white border border-ink/10 px-5 py-4 md:px-6 md:py-4 group whitespace-nowrap rounded-none"
+              className="flex items-center gap-2 md:gap-4 bg-white border border-ink/10 px-3 py-2.5 md:px-6 md:py-4 group whitespace-nowrap rounded-none"
               whileHover={{ borderColor: '#E8527A', backgroundColor: '#E8527A' }}
               whileTap={{ scale: 0.97 }}
             >
@@ -700,7 +700,7 @@ export default function Home() {
       </section>
 
       {/* CATEGORY INDEX — QUICK ACCESS - Mobile optimized */}
-      <section className="px-4 md:px-12 max-w-[1800px] mx-auto mt-8 md:mt-16 mb-0 md:mb-8">
+      <section className="px-4 md:px-12 max-w-[1800px] mx-auto mt-4 md:mt-16 mb-0 md:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -762,8 +762,8 @@ export default function Home() {
 
       {/* TRUST SYMBOLS */}
       <FadeUpSection delay={0.2}>
-        <section className="md:mt-40 mt-8 md:mb-40 mb-12 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-20">
+        <section className="md:mt-40 mt-6 md:mb-40 mb-6 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-20">
             <TrustItem icon={<ShieldCheck className="w-5 h-5 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
             <TrustItem icon={<Zap className="w-5 h-5 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
             <TrustItem icon={<Package className="w-5 h-5 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />

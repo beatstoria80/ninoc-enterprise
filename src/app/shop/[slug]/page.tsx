@@ -286,8 +286,8 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col pt-4 pb-0 lg:py-1 lg:pl-0">
-            <div className="space-y-3 lg:space-y-4">
+          <div className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
+            <div className="space-y-1.5 lg:space-y-4">
               <div className="space-y-1 lg:space-y-1.5">
                 <div className="flex items-center gap-2 mb-1 lg:mb-1.5">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-ink text-white rounded-none w-fit shadow-md">
@@ -315,8 +315,8 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Spesifikasi Produk / Measurement — Tab Toggle */}
-              <div className="pt-2 pb-2 border-t border-ink/5">
-                <div className="flex items-center gap-4 mb-3">
+              <div className="pt-1.5 pb-1.5 border-t border-ink/5">
+                <div className="flex items-center gap-4 mb-2">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
                     className={`text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
@@ -337,9 +337,9 @@ export default function ProductDetailPage() {
                   </button>
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-1.5">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
                       <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
                       <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
                       <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
@@ -369,7 +369,7 @@ export default function ProductDetailPage() {
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {/* Size Selection */}
-              <div className="space-y-2 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-3 lg:pt-0">
+              <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
                 <div className="flex gap-1.5 lg:gap-2 flex-wrap">
                   {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
@@ -411,7 +411,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Quantity */}
-              <div className="space-y-1.5 lg:space-y-2 mt-4 lg:mt-0">
+              <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <div className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
                   <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Quantity</h4>
                   {availableStock > 0 ? (
@@ -438,7 +438,7 @@ export default function ProductDetailPage() {
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-4 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-3 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
@@ -595,7 +595,7 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-10 lg:mt-12 space-y-1.5">
+          <div className="mt-6 lg:mt-12 space-y-1">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
