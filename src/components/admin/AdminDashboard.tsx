@@ -2326,6 +2326,77 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
+            {/* ===== LOGISTICS ===== */}
+            {activeTab === 'logistics' && (
+              <motion.div
+                key="logistics"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Logistics</h2>
+                  <span className="text-[9px] text-gray-400">{orders.length} shipments</span>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="border-b border-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Order ID</th>
+                          <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Courier</th>
+                          <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Tracking</th>
+                          <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Customer</th>
+                          <th className="px-4 py-3 text-left text-[9px] uppercase tracking-widest text-gray-400 font-medium">Status</th>
+                          <th className="px-4 py-3 text-center text-[9px] uppercase tracking-widest text-gray-400 font-medium">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {orders.filter(o => o.status !== 'cancelled').map((order) => (
+                          <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-5 py-4">
+                              <span className="text-[10px] font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                #{order.id.slice(0, 8)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="text-[11px] font-medium text-gray-700">{order.courier || 'Standard'}</span>
+                            </td>
+                            <td className="px-4 py-4">
+                              {order.tracking_id ? (
+                                <span className="text-[10px] font-mono text-blue-600">{order.tracking_id}</span>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 italic">Awaiting</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="text-[11px] text-gray-700">{order.shipping_address?.name || 'Guest'}</span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <StatusBadge status={order.status} />
+                            </td>
+                            <td className="px-4 py-4 text-center">
+                              <button
+                                onClick={() => openOrderDetail(order)}
+                                className="text-[10px] px-3 py-1.5 border border-blue-200 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                              >
+                                Detail
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {orders.filter(o => o.status !== 'cancelled').length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="px-5 py-12 text-center text-[11px] text-gray-400">No shipments to display.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* ===== FINANCE ===== */}
             {activeTab === 'finance' && (
               <motion.div
