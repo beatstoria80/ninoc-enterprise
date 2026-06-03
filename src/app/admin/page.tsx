@@ -1967,7 +1967,114 @@ export default function AdminDashboard() {
                         onClick={() => {
                           const printWindow = window.open('', '_blank', 'width=800,height=600');
                           if (!printWindow) return;
-                          const htmlContent = `<!DOCTYPE html><html><head><title>Print Label</title><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"><\/script><style>@page { size: 10cm 15cm; margin: 0; } body { margin: 0; padding: 0; }</style></head><body>${document.getElementById('printable-label')?.innerHTML || ''}<script>JsBarcode(".barcode").init(); window.onload = () => { setTimeout(() => { window.print(); }, 300); }<\/script></body></html>`;
+                          const order = selectedOrder;
+                          const items = order?.order_items || [];
+                          const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
+                          const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Label Pengiriman - NINOC</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+  <style>
+    @page { size: 100mm 150mm; margin: 0; }
+    body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif; }
+    .label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+    .header { display: flex; border-bottom: 2px solid #000; height: 45px; }
+    .brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background: #000; color: #fff; }
+    .brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+    .brand-sub { font-size: 7px; font-weight: 600; letter-spacing: 3px; opacity: 0.8; }
+    .courier-box { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; }
+    .courier-name { font-size: 12px; font-weight: 800; }
+    .barcode-row { padding: 16px 12px; border-bottom: 2px solid #000; text-align: center; }
+    .barcode-text { font-weight: 800; font-size: 14px; letter-spacing: 4px; font-family: monospace; margin-top: 8px; }
+    .flex-row { display: flex; border-bottom: 2px solid #000; }
+    .col-left { flex: 1.6; padding: 12px; border-right: 2px solid #000; display: flex; flex-direction: column; }
+    .col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
+    .inverted-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; background: #000; color: #fff; padding: 3px 8px; display: inline-block; border-radius: 2px; }
+    .outline-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; border: 2px solid #000; padding: 1px 6px; display: inline-block; border-radius: 2px; }
+    .person-name { font-weight: 900; font-size: 15px; text-transform: uppercase; line-height: 1.1; }
+    .person-phone { font-size: 11px; font-weight: 700; margin-top: 4px; font-family: monospace; }
+    .person-address { font-size: 11px; font-weight: 500; margin-top: 8px; line-height: 1.4; color: #333; }
+    .person-city { font-weight: 800; font-size: 11px; margin-top: 6px; text-transform: uppercase; }
+    .person-zip { font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px; }
+    .content-title { font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666; }
+    .item-line { font-size: 10px; font-weight: 600; display: flex; justify-content: space-between; padding: 2px 0; }
+    .qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .qr-label { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-top: 8px; color: #666; }
+    .order-id-val { font-weight: 900; font-size: 11px; letter-spacing: 1px; font-family: monospace; }
+    .meta-pills { display: flex; justify-content: center; gap: 8px; margin-top: 8px; font-size: 9px; font-weight: 800; }
+    .pill { background: #e5e5e5; padding: 2px 6px; border-radius: 2px; }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #000; color: #fff; }
+    .footer-date { font-size: 9px; font-weight: 600; font-family: monospace; }
+    .fragile { font-weight: 900; font-size: 10px; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+  <div class="label">
+    <div class="header">
+      <div class="brand-box">
+        <div class="brand-name">NINOC</div>
+        <div class="brand-sub">STORE</div>
+      </div>
+      <div class="courier-box">
+        <span class="courier-name">${order?.courier || 'STANDARD'}</span>
+      </div>
+    </div>
+    <div class="barcode-row">
+      ${order?.tracking_id ? `
+        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="${order.tracking_id}" jsbarcode-width="2" jsbarcode-height="50" jsbarcode-displayValue="false"></svg>
+        <div class="barcode-text">${order.tracking_id}</div>
+      ` : `
+        <div style="font-weight:700;font-size:12px;padding:16px 0;color:#999;letter-spacing:2px;border:2px dashed #e5e5e5;text-align:center;">AWAITING TRACKING ID</div>
+      `}
+    </div>
+    <div class="flex-row">
+      <div class="col-left">
+        <div class="inverted-tag">TO / PENERIMA</div>
+        <div class="person-name">${order?.shipping_address?.name || 'GUEST'}</div>
+        <div class="person-phone">${order?.shipping_address?.phone || '-'}</div>
+        <div class="person-address">${order?.shipping_address?.address || '-'}</div>
+        <div class="person-city">${order?.shipping_address?.city || '-'}, ${order?.shipping_address?.province || '-'}</div>
+        <div class="person-zip">${order?.shipping_address?.postal_code || '-'}</div>
+      </div>
+      <div class="col-right">
+        <div class="outline-tag">FROM / PENGIRIM</div>
+        <div style="font-weight:800;font-size:11px;">NINOC STUDIO</div>
+        <div style="font-size:9px;font-weight:600;margin-top:2px;font-family:monospace;color:#666;">0812-XXXX-XXXX</div>
+        <div style="font-size:9px;font-weight:500;margin-top:6px;line-height:1.4;color:#444;">Bandung, Jawa Barat<br/>Indonesia</div>
+      </div>
+    </div>
+    <div class="flex-row">
+      <div class="col-left">
+        <div class="content-title">CONTENTS / ISI PAKET</div>
+        ${items.map((i: { product_name?: string; size?: string; quantity: number }) => `
+          <div class="item-line">
+            <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
+            <span style="font-weight:800;">×${i.quantity}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="col-right qr-box">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=54x54&data=${encodeURIComponent(order?.id?.toUpperCase() || '')}" alt="QR" width="54" height="54" />
+        <div class="qr-label">ORDER ID</div>
+        <div class="order-id-val">#${(order?.id || '').slice(0, 8).toUpperCase()}</div>
+        <div class="meta-pills">
+          <span class="pill">${totalItems} PCS</span>
+          <span class="pill">${totalItems * 300}g</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <span class="footer-date">${new Date(order?.created_at || '').toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}).toUpperCase()}</span>
+      <span class="fragile">FRAGILE</span>
+    </div>
+  </div>
+  <script>
+    JsBarcode(".barcode").init();
+    window.onload = () => { setTimeout(() => { window.print(); }, 500); }
+  </script>
+</body>
+</html>`;
                           printWindow.document.write(htmlContent);
                           printWindow.document.close();
                         }}
