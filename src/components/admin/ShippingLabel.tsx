@@ -1,5 +1,6 @@
 import React from 'react';
 import { Order } from './types';
+import { QRCodeSVG } from 'qrcode.react';
 
 export function encodeCode128(text: string): number[] {
   const CODE128_B: Record<string, number> = {};
@@ -294,8 +295,9 @@ export function ShippingLabel({ order }: { order: Order }) {
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '1px' }}>ORDER ID</div>
-          <div style={{ fontWeight: 'bold', fontSize: '12px', letterSpacing: '1px', marginTop: '2px' }}>
+          <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '4px' }}>ORDER ID</div>
+          <QRCodeSVG value={order.id.toUpperCase()} size={44} level="M" />
+          <div style={{ fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', marginTop: '6px' }}>
             #{order.id.slice(0, 8).toUpperCase()}
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '6px', fontSize: '8px', fontWeight: 'bold' }}>
