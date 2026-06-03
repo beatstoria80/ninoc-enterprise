@@ -1,5 +1,38 @@
-import React from 'react';
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useMemo } from 'react';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { motion } from 'framer-motion';
+
+// --- Custom Tooltips ---
+const CustomSalesTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-ink/10 shadow-xl rounded-md p-3 min-w-[150px]">
+        <p className="text-[10px] font-medium text-ink/40 uppercase tracking-widest mb-2">{label} 2026</p>
+        <p className="text-lg font-bold text-ink mb-1">{payload[0].value.toLocaleString('id-ID')} <span className="text-[10px] font-medium text-ink/40 uppercase tracking-normal">Orders</span></p>
+        <p className="text-[9px] text-emerald-600 font-medium uppercase tracking-wider bg-emerald-50 inline-block px-1.5 py-0.5 rounded-sm">+12% vs Last Month</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomProfitTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-ink border border-ink/10 shadow-xl rounded-md p-3 min-w-[150px]">
+        <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest mb-2">{label} 2026</p>
+        <p className="text-[9px] uppercase text-white/60 mb-0.5 tracking-wider">Net Profit</p>
+        <p className="text-lg font-bold text-white mb-2">
+          <span className="text-[10px] font-medium text-white/40 mr-1">IDR</span>
+          {payload[0].value.toLocaleString('id-ID')}
+        </p>
+        <div className="w-full bg-white/10 h-px mb-2" />
+        <p className="text-[9px] text-rose font-medium uppercase tracking-wider">Target Achieved</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function OverviewCharts({ 
   salesData, 
@@ -8,91 +41,113 @@ export default function OverviewCharts({
   salesData: any[], 
   profitData: any[] 
 }) {
+  
+  // Find max profit to highlight
+  const maxProfit = useMemo(() => {
+    return Math.max(...profitData.map(d => d.profit));
+  }, [profitData]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Sales Analytics */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 h-[320px]">
-        <div className="flex items-center justify-between mb-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="bg-white p-6 rounded-sm border border-ink/10 h-[340px] flex flex-col"
+      >
+        <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Sales Analytics</h3>
-            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">Order Volume by Month</p>
+            <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Sales Analytics</h3>
+            <p className="text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Order Volume by Month</p>
           </div>
-          <select className="text-[10px] uppercase font-medium bg-gray-50 border-none rounded py-1 px-2 focus:ring-0">
+          <select className="text-[10px] uppercase font-medium bg-ink/5 text-ink border-none rounded-sm py-1.5 px-2.5 focus:ring-0 outline-none cursor-pointer hover:bg-ink/10 transition-colors">
             <option>2026</option>
             <option>2025</option>
           </select>
         </div>
-        <div className="h-[200px] w-full">
+        <div className="flex-1 w-full min-h-0">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={salesData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={salesData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#E8527A" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#E8527A" stopOpacity={0.2}/>
                   <stop offset="95%" stopColor="#E8527A" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid #f3f4f6', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                itemStyle={{ color: '#111827', fontSize: '12px', fontWeight: 500 }}
-              />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9ca3af' }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9ca3af' }} />
+              <Tooltip content={<CustomSalesTooltip />} cursor={{ stroke: '#E8527A', strokeWidth: 1, strokeDasharray: '4 4' }} />
               <Area 
                 type="monotone" 
                 dataKey="sales" 
                 stroke="#E8527A" 
-                strokeWidth={2}
+                strokeWidth={3}
                 fillOpacity={1} 
                 fill="url(#colorSales)" 
-                isAnimationActive={false}
+                isAnimationActive={true}
+                animationDuration={1500}
+                animationEasing="ease-out"
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </motion.div>
 
       {/* Profit Margin */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 h-[320px]">
-        <div className="flex items-center justify-between mb-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="bg-white p-6 rounded-sm border border-ink/10 h-[340px] flex flex-col"
+      >
+        <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Profit Margin</h3>
-            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">Net Profit per Month</p>
+            <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Profit Margin</h3>
+            <p className="text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Net Profit per Month</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[10px] text-gray-500 uppercase">
-              <span className="w-2 h-2 rounded-full bg-ink"></span> Actual
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 text-[9px] text-ink/60 uppercase tracking-wider font-medium">
+              <span className="w-2 h-2 rounded-sm bg-rose"></span> Peak
+            </span>
+            <span className="flex items-center gap-1.5 text-[9px] text-ink/60 uppercase tracking-wider font-medium">
+              <span className="w-2 h-2 rounded-sm bg-ink/80"></span> Normal
             </span>
           </div>
         </div>
-        <div className="h-[200px] w-full">
+        <div className="flex-1 w-full min-h-0">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={profitData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
+            <BarChart data={profitData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9ca3af' }} dy={10} />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fontSize: 10, fill: '#9ca3af' }}
+                tick={{ fontSize: 9, fill: '#9ca3af' }}
                 tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
               />
-              <Tooltip 
-                cursor={{ fill: '#f9fafb' }}
-                contentStyle={{ borderRadius: '8px', border: '1px solid #f3f4f6', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                itemStyle={{ color: '#111827', fontSize: '12px', fontWeight: 500 }}
-                formatter={(value: any) => [`IDR ${Number(value).toLocaleString('id-ID')}`, 'Profit']}
-              />
+              <Tooltip cursor={{ fill: '#f9fafb' }} content={<CustomProfitTooltip />} />
               <Bar 
                 dataKey="profit" 
-                fill="#141414" 
-                radius={[4, 4, 0, 0]} 
+                radius={[2, 2, 0, 0]} 
                 barSize={32}
-                isAnimationActive={false}
-              />
+                isAnimationActive={true}
+                animationDuration={1500}
+                animationEasing="ease-out"
+              >
+                {profitData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.profit === maxProfit ? '#E8527A' : '#141414'} 
+                    fillOpacity={entry.profit === maxProfit ? 1 : 0.8}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
