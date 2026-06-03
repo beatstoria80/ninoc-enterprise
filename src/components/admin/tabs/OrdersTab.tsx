@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, CreditCard, Truck, X, Calendar } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Box, X, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 
@@ -438,103 +438,96 @@ export function OrdersTab({
         </div>
       </div>
 
-      {/* Order Cards List */}
-      <div className="space-y-4">
+      {/* Order Table */}
+      <div className="border border-ink/10 rounded-sm overflow-hidden">
         {filteredOrders.length === 0 ? (
-          <div className="py-12 flex flex-col items-center justify-center border border-dashed border-ink/10 rounded-md">
-            <Box size={32} className="text-ink/20 mb-3" />
+          <div className="py-12 flex flex-col items-center justify-center">
+            <Box size={24} className="text-ink/20 mb-2" />
             <p className="text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
           </div>
         ) : (
-          filteredOrders.map((order) => (
-            <div key={order.id} className="bg-white border border-ink/10 rounded-sm overflow-hidden hover:border-ink/20 transition-colors">
-              {/* Card Header */}
-              <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-ink/5 border-b border-ink/10">
-                <div className="flex items-center gap-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-ink">#{order.id.slice(0, 12).toUpperCase()}</span>
-                  <span className="text-[10px] font-medium text-ink/40">{new Date(order.created_at).toLocaleString('id-ID')}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "text-[9px] uppercase tracking-wider px-2 py-1 border rounded-sm font-medium",
-                    order.status === 'pending' ? "border-amber-200 bg-amber-50 text-amber-600" :
-                    order.status === 'paid' ? "border-emerald-200 bg-emerald-50 text-emerald-600" :
-                    order.status === 'shipped' ? "border-blue-200 bg-blue-50 text-blue-600" :
-                    order.status === 'delivered' ? "border-teal-200 bg-teal-50 text-teal-600" :
-                    "border-red-200 bg-red-50 text-red-600"
-                  )}>
-                    {order.status === 'pending' ? 'Waiting Payment' : order.status}
-                  </span>
-                  <button onClick={() => openOrderDetail(order)} className="text-[10px] font-medium uppercase tracking-wider text-rose hover:text-rose/80 transition-colors">
-                    View Detail
-                  </button>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
-                {/* Product Info */}
-                <div className="col-span-1 md:col-span-1 space-y-3">
-                  <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Product Info</p>
-                  {order.order_items?.slice(0, 2).map((item, idx) => (
-                    <div key={item.id || idx} className="flex gap-3">
-                      <div className="w-12 h-12 bg-ink/5 rounded-sm shrink-0 border border-ink/5">
-                        {/* Thumbnail placeholder or image */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-ink/[0.03] border-b border-ink/10">
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
+                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="border-b border-ink/5 hover:bg-ink/[0.02] transition-colors cursor-pointer group"
+                    onClick={() => openOrderDetail(order)}
+                  >
+                    <td className="px-3 py-2">
+                      <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="max-w-[120px]">
+                        <p className="text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
+                        <p className="text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
                       </div>
-                      <div>
-                        <p className="text-[11px] font-medium text-ink line-clamp-2 leading-tight">{item.product_name}</p>
-                        <p className="text-[9px] text-ink/40 mt-1 uppercase">Size: {item.size || '-'} | Qty: {item.quantity}</p>
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="max-w-[160px]">
+                        <p className="text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
+                        {order.order_items && order.order_items.length > 1 && (
+                          <span className="text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                  {order.order_items && order.order_items.length > 2 && (
-                    <button className="text-[9px] text-rose uppercase tracking-wider font-medium">+{order.order_items.length - 2} more items</button>
-                  )}
-                </div>
-
-                {/* Shipping Address */}
-                <div className="col-span-1 md:col-span-1">
-                  <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Shipping To</p>
-                  <p className="text-[11px] font-medium text-ink">{order.shipping_address?.name || 'Guest User'}</p>
-                  <p className="text-[10px] font-medium text-ink/60 font-mono mt-1">{order.shipping_address?.phone || '-'}</p>
-                  <p className="text-[10px] font-medium text-ink/40 mt-1 line-clamp-2 leading-relaxed">{order.shipping_address?.address}</p>
-                  <p className="text-[10px] font-medium text-ink/40 mt-1 uppercase">{order.shipping_address?.city}</p>
-                </div>
-
-                {/* Payment */}
-                <div className="col-span-1 md:col-span-1">
-                  <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Payment</p>
-                  <div className="flex items-center gap-2 mb-1">
-                    <CreditCard size={14} className="text-ink/40" />
-                    <span className="text-[11px] font-medium text-ink uppercase tracking-wider">Midtrans</span>
-                  </div>
-                  <span className={cn(
-                    "text-[9px] uppercase tracking-wider font-medium",
-                    order.payment_status === 'success' ? "text-emerald-600" :
-                    order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
-                  )}>
-                    {order.payment_status}
-                  </span>
-                </div>
-
-                {/* Courier */}
-                <div className="col-span-1 md:col-span-1">
-                  <p className="text-[9px] uppercase tracking-widest text-ink/40 mb-2">Courier</p>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Truck size={14} className="text-ink/40" />
-                    <span className="text-[11px] font-medium text-ink uppercase tracking-wider">{order.courier || 'Standard'}</span>
-                  </div>
-                  <p className="text-[10px] font-medium text-ink/40 font-mono mt-1">{order.tracking_id || 'No tracking ID'}</p>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="flex items-center justify-end px-4 py-3 bg-ink/5 border-t border-ink/10">
-                <p className="text-[10px] font-medium uppercase tracking-wider text-ink/40 mr-4">Total Amount</p>
-                <p className="text-sm font-medium text-ink">IDR {order.total_price.toLocaleString('id-ID')}</p>
-              </div>
-            </div>
-          ))
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={cn(
+                        "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                        order.status === 'pending' ? "bg-amber-50 text-amber-600" :
+                        order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
+                        order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
+                        order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
+                        "bg-red-50 text-red-600"
+                      )}>
+                        {order.status === 'pending' ? 'Waiting' : order.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={cn(
+                        "text-[9px] uppercase tracking-wider font-medium",
+                        order.payment_status === 'success' ? "text-emerald-600" :
+                        order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                      )}>
+                        {order.payment_status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <span className="text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openOrderDetail(order); }}
+                        className="text-[9px] font-medium uppercase tracking-wider text-rose opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                      >
+                        Detail
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

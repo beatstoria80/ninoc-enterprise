@@ -973,7 +973,7 @@ export default function AdminDashboard() {
       )}
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex w-64 bg-white border-r border-ink/5 flex-col z-50 shrink-0">
+      <aside className="hidden md:flex w-64 bg-white border-r border-ink/5 flex-col z-50 shrink-0 h-screen sticky top-0">
         <div className="p-6 border-b border-ink/5">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-ink flex items-center justify-center rounded-sm">
