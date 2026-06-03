@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Eye, X, Package, Truck, Box } from 'lucide-react';
+import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
+import { supabase } from '@/lib/supabase';
 
 export function LogisticsTab({
   orders,
@@ -28,8 +29,8 @@ export function LogisticsTab({
   const deliveredCount = orders.filter(o => o.status === 'delivered').length;
   const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
 
-  const [now, setNow] = React.useState<number | null>(null);
-  React.useEffect(() => {
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
     const timer = setTimeout(() => {
       setNow(Date.now());
     }, 0);
@@ -39,6 +40,84 @@ export function LogisticsTab({
   const formattedDate = now 
     ? new Date(now).toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
     : '';
+
+  // ===== SCANNER STATE =====
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [scanInput, setScanInput] = useState('');
+  const [scanStatus, setScanStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [scanMessage, setScanMessage] = useState('');
+  const scannerInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isScannerOpen && scannerInputRef.current) {
+      scannerInputRef.current.focus();
+    }
+  }, [isScannerOpen]);
+
+  const handleScanSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!scanInput.trim()) return;
+    
+    setScanStatus('loading');
+    setScanMessage('Verifying shipping label...');
+    
+    const query = scanInput.trim().toUpperCase();
+    
+    // Find in local orders
+    const targetOrder = orders.find(o => 
+      o.id.toUpperCase() === query || 
+      o.id.toUpperCase().startsWith(query.replace('NNC', '')) ||
+      (o.tracking_id && o.tracking_id.toUpperCase() === query)
+    );
+
+    if (!targetOrder) {
+      setScanStatus('error');
+      setScanMessage('Barcode not recognized in database.');
+      setScanInput('');
+      setTimeout(() => setScanStatus('idle'), 4000);
+      return;
+    }
+
+    if (targetOrder.status === 'shipped' || targetOrder.status === 'delivered') {
+      setScanStatus('error');
+      setScanMessage(`Already Dispatched (ID: #${targetOrder.id.slice(0,8).toUpperCase()})`);
+      setScanInput('');
+      setTimeout(() => setScanStatus('idle'), 4000);
+      return;
+    }
+
+    if (targetOrder.status !== 'paid') {
+      setScanStatus('error');
+      setScanMessage(`Cannot Dispatch. Current Status: ${targetOrder.status.toUpperCase()}`);
+      setScanInput('');
+      setTimeout(() => setScanStatus('idle'), 4000);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'shipped' })
+        .eq('id', targetOrder.id);
+        
+      if (error) throw error;
+
+      setScanStatus('success');
+      setScanMessage(`Success! Order #${targetOrder.id.slice(0,8).toUpperCase()} Dispatched.`);
+      
+      // Optimistic update
+      targetOrder.status = 'shipped';
+      
+    } catch (err: any) {
+      setScanStatus('error');
+      setScanMessage(err.message || 'Failed to communicate with archive server.');
+    }
+    
+    setScanInput('');
+    setTimeout(() => {
+      setScanStatus(prev => prev === 'success' || prev === 'error' ? 'idle' : prev);
+    }, 4000);
+  };
 
   const getTimeAgo = (dateStr: string) => {
     if (!now) return '-';
@@ -63,10 +142,19 @@ export function LogisticsTab({
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
           <span className="text-[9px] text-gray-400">— shipment operations center</span>
         </div>
-        <div className="text-[9px] text-gray-400 font-mono">
-          {formattedDate}
-          {' • '}
-          <span className="text-rose">{pendingCount + inTransitCount}</span> active
+        <div className="flex items-center gap-4">
+          <div className="text-[9px] text-gray-400 font-mono">
+            {formattedDate}
+            {' • '}
+            <span className="text-rose">{pendingCount + inTransitCount}</span> active
+          </div>
+          <button
+            onClick={() => setIsScannerOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded-sm text-[9px] uppercase tracking-wider font-medium hover:bg-ink/90 transition-colors"
+          >
+            <ScanBarcode size={12} />
+            Scan to Dispatch
+          </button>
         </div>
       </div>
 
@@ -426,6 +514,91 @@ export function LogisticsTab({
           )}
         </AnimatePresence>
       </div>
+
+      {/* SCANNER MODAL */}
+      <AnimatePresence>
+        {isScannerOpen && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+              onClick={() => setIsScannerOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white rounded-sm shadow-2xl border border-ink/10 overflow-hidden flex flex-col"
+            >
+              <div className="px-6 py-4 border-b border-ink/10 flex items-center justify-between bg-ink/[0.02]">
+                <div className="flex items-center gap-2">
+                  <ScanBarcode size={16} className="text-ink" />
+                  <div>
+                    <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Dispatch Verification</h3>
+                    <p className="text-[9px] text-ink/50 uppercase tracking-widest mt-0.5">Barcode Scanner Input</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsScannerOpen(false)}
+                  className="p-2 text-ink/40 hover:text-ink transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="p-8 flex flex-col items-center justify-center text-center">
+                <form onSubmit={handleScanSubmit} className="w-full">
+                  <input
+                    ref={scannerInputRef}
+                    type="text"
+                    value={scanInput}
+                    onChange={(e) => setScanInput(e.target.value)}
+                    placeholder="Scan Barcode Here..."
+                    className="w-full text-center px-4 py-3 bg-ink/[0.02] border-2 border-dashed border-ink/20 rounded-sm text-sm font-mono focus:outline-none focus:border-rose/50 transition-colors uppercase"
+                    disabled={scanStatus === 'loading'}
+                    autoComplete="off"
+                  />
+                  <button type="submit" className="hidden">Submit</button>
+                </form>
+
+                <div className="mt-6 h-[80px] flex items-center justify-center w-full">
+                  {scanStatus === 'idle' && (
+                    <div className="flex flex-col items-center text-ink/40">
+                      <ScanBarcode size={24} className="mb-2 opacity-30 animate-pulse" />
+                      <p className="text-[9px] uppercase tracking-widest font-medium">Ready to scan next label</p>
+                    </div>
+                  )}
+                  {scanStatus === 'loading' && (
+                    <div className="flex flex-col items-center text-ink">
+                      <div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin mb-2" />
+                      <p className="text-[9px] uppercase tracking-widest font-medium animate-pulse">{scanMessage}</p>
+                    </div>
+                  )}
+                  {scanStatus === 'success' && (
+                    <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-emerald-600">
+                      <CheckCircle size={28} className="mb-2" />
+                      <p className="text-[10px] uppercase tracking-widest font-medium">{scanMessage}</p>
+                    </motion.div>
+                  )}
+                  {scanStatus === 'error' && (
+                    <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-rose">
+                      <AlertCircle size={28} className="mb-2" />
+                      <p className="text-[10px] uppercase tracking-widest font-medium">{scanMessage}</p>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-6 py-4 border-t border-ink/10 bg-ink/[0.02] text-center">
+                <p className="text-[8px] uppercase tracking-widest text-ink/40">Physical barcode scanner will automatically submit upon successful read.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

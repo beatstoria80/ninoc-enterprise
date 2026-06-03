@@ -928,7 +928,7 @@ export function OrdersTab({
             <div className="flex-1 overflow-y-auto minimal-scroll p-6 bg-white">
               <div className="space-y-2">
                 {(() => {
-                  const validOrders = filteredOrders.filter(o => o.status === 'paid' || o.status === 'shipped');
+                  const validOrders = filteredOrders.filter(o => o.status === 'paid');
                   const validCount = validOrders.length;
                   
                   return (
@@ -974,9 +974,15 @@ export function OrdersTab({
                           </div>
                           
                           <div className="flex-1 flex flex-wrap items-center justify-between gap-4">
-                            <div>
-                              <p className="text-[11px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
-                              <p className="text-[10px] text-ink/50 mt-0.5">{order.shipping_address?.name || 'Guest'}</p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-[11px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
+                                <span className="text-[8px] text-ink/40 font-mono">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                              </div>
+                              <p className="text-[10px] text-ink/70 mt-0.5 truncate">{order.shipping_address?.name || 'Guest'} — {order.shipping_address?.city || 'Unknown City'}</p>
+                              <p className="text-[9px] text-ink/40 mt-0.5 truncate">
+                                {order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items ({order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${order.order_items.length - 1} more` : ''})
+                              </p>
                             </div>
                             <div className="flex items-center gap-4">
                               <span className={cn(
