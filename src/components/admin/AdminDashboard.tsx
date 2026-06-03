@@ -830,6 +830,10 @@ export default function AdminDashboard() {
   const [showCourierDropdown, setShowCourierDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [customerSearchQuery, setCustomerSearchQuery] = useState('');
+
   // Mock pending orders for analytics
   const mockPendingOrders = [
     { id: 'ORD-001', product: { name: 'NINOC Archive Jacket', image: 'https://picsum.photos/seed/jacket/40/40' }, date: '03 Jun 2026', customer: 'Ahmad Rizki', total: 485000 },
