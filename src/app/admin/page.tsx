@@ -907,7 +907,7 @@ export default function AdminDashboard() {
 
   return (
     <>
-    <main className="min-h-screen bg-gray-50/50 flex overflow-hidden print:hidden">
+    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden">
       {/* MOBILE TOP BAR */}
       <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">
@@ -1079,7 +1079,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-y-auto p-4 pb-0 md:px-6 md:pt-4 md:pb-0">
+        <section className="flex-1 overflow-y-auto minimal-scroll p-4 pb-0 md:px-6 md:pt-4 md:pb-0">
           
           {activeTab === 'overview' && (
             <OverviewTab 
