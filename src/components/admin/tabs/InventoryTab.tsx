@@ -26,9 +26,9 @@ export function InventoryTab({ products }: { products: Product[] }) {
       key="inventory"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-5 pb-10"
+      className="flex flex-col h-full pb-4 space-y-5"
     >
-      <div className="flex items-center justify-between">
+      <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Archival Catalog</h2>
           <span className="text-[9px] text-ink/40">— stock & origin specification</span>
@@ -36,7 +36,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
       </div>
 
       {/* METRICS CELL-BLOCK */}
-      <div className="grid grid-cols-4 border border-ink/10 bg-white">
+      <div className="shrink-0 grid grid-cols-4 border border-ink/10 bg-white">
         {[
           { label: 'Total Articles', value: totalProducts, highlight: false },
           { label: 'Total SKUs', value: totalSkus, highlight: false },
@@ -51,7 +51,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
       </div>
 
       {/* PRODUCTS LIST */}
-      <div className="space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto minimal-scroll space-y-4 pr-1">
         {products.map(p => {
           const pTotalStock = p.variants?.reduce((sum, v) => sum + (v.stock_quantity || 0), 0) || 0;
           return (

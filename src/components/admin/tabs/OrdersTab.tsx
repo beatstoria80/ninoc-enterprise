@@ -614,9 +614,9 @@ export function OrdersTab({
         key="orders"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-4"
+        className="flex flex-col h-full space-y-4"
       >
-        <div className="flex items-center justify-between border-b border-ink/5 pb-4">
+        <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-4">
         <div>
           <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
           <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History & Management</p>
@@ -636,7 +636,7 @@ export function OrdersTab({
       </div>
 
       {/* Status Tabs */}
-      <div className="flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
+      <div className="shrink-0 flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
         {[
           { id: 'all', label: 'All Order', count: orders.length },
           { id: 'pending', label: 'New Order', count: orders.filter(o => o.status === 'pending').length },
@@ -668,7 +668,7 @@ export function OrdersTab({
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+      <div className="shrink-0 flex flex-wrap items-center justify-between gap-4 py-2">
         <div className="flex flex-wrap items-center gap-2">
           {/* Master Filter Button */}
           <button
@@ -764,16 +764,16 @@ export function OrdersTab({
       </div>
 
       {/* Order Table */}
-      <div className="border border-ink/10 rounded-sm overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col border border-ink/10 rounded-sm overflow-hidden">
         {filteredOrders.length === 0 ? (
-          <div className="py-12 flex flex-col items-center justify-center">
+          <div className="flex-1 py-12 flex flex-col items-center justify-center">
             <Box size={24} className="text-ink/20 mb-2" />
             <p className="text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
+          <div className="flex-1 overflow-auto minimal-scroll relative bg-white">
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 z-10 bg-white">
                 <tr className="bg-ink/[0.03] border-b border-ink/10">
                   <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
                   <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
@@ -858,7 +858,7 @@ export function OrdersTab({
 
       {/* Pagination */}
       {filteredOrders.length > 0 && (
-        <div className="flex items-center justify-between py-4 border-t border-ink/5 mt-4">
+        <div className="shrink-0 flex items-center justify-between py-4 border-t border-ink/5">
           <div className="flex items-center gap-2 text-[10px] uppercase font-medium tracking-wider text-ink/40">
             Show
             <select className="bg-transparent border border-ink/10 rounded-sm px-2 py-1 outline-none text-ink">

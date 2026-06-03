@@ -27,7 +27,7 @@ export function MessagesTab({
       key="messages"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-[calc(100vh-80px)] flex gap-6"
+      className="flex-1 min-h-0 flex gap-6 pb-4"
     >
       {/* Chat List */}
       <div className="w-80 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">

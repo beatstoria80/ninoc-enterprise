@@ -30,10 +30,10 @@ export function ProductsTab({
       key="products"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-3"
+      className="flex flex-col h-full space-y-3"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Products</h2>
           <span className="text-[9px] text-gray-400">— {products.length} items</span>
@@ -48,7 +48,7 @@ export function ProductsTab({
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="shrink-0 relative">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -60,8 +60,9 @@ export function ProductsTab({
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-        {filteredProducts.map((product) => (
+      <div className="flex-1 min-h-0 overflow-y-auto minimal-scroll pb-4 relative">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          {filteredProducts.map((product) => (
           <div key={product.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden group">
             <div className="aspect-square bg-gray-50 relative">
               {product.image_url ? (
@@ -188,6 +189,7 @@ export function ProductsTab({
             </div>
           </div>
         ))}
+        </div>
       </div>
     </motion.div>
   );

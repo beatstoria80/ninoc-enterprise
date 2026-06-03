@@ -24,10 +24,10 @@ export function CustomersTab({
       key="customers"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-2"
+      className="flex flex-col h-full space-y-2 pb-4"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Customers</h2>
           <span className="text-[9px] text-gray-400">— {customers.length} members</span>
@@ -59,7 +59,7 @@ export function CustomersTab({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="shrink-0 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-rose/10 rounded-lg flex items-center justify-center">
@@ -107,7 +107,7 @@ export function CustomersTab({
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="shrink-0 relative">
         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -119,9 +119,10 @@ export function CustomersTab({
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-100">
+      <div className="flex-1 min-h-0 bg-white rounded-xl border border-gray-100 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-auto minimal-scroll relative bg-white">
+          <table className="w-full text-left border-collapse">
+            <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Customer #</th>
               <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Name</th>
@@ -230,6 +231,7 @@ export function CustomersTab({
             <p className="text-sm">No customers registered yet</p>
           </div>
         )}
+        </div>
       </div>
     </motion.div>
   );

@@ -55,10 +55,10 @@ export function LogisticsTab({
       key="logistics"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-0"
+      className="flex flex-col h-full pb-4 space-y-0"
     >
       {/* HEADER BAR */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="shrink-0 flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
           <span className="text-[9px] text-gray-400">— shipment operations center</span>
@@ -71,7 +71,7 @@ export function LogisticsTab({
       </div>
 
       {/* STAT CELLS — 4 compact cells, no gap, cell-block */}
-      <div className="grid grid-cols-4 border border-gray-200 bg-white">
+      <div className="shrink-0 grid grid-cols-4 border border-gray-200 bg-white">
         {[
           { label: 'Awaiting Dispatch', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
           { label: 'In Transit', count: inTransitCount, color: 'text-blue-600', bg: 'bg-blue-50', filterKey: 'shipped' },
@@ -97,7 +97,7 @@ export function LogisticsTab({
       </div>
 
       {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
-      <div className="flex border border-t-0 border-gray-200 bg-white" style={{ height: 'calc(100vh - 11rem)' }}>
+      <div className="flex-1 min-h-0 flex border border-t-0 border-gray-200 bg-white">
         {/* LEFT: MASTER TABLE */}
         <div className={cn(
           "flex flex-col transition-all duration-300",
