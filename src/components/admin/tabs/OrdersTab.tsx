@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Order } from '../types';
+import { Order, Product } from '../types';
+import Image from 'next/image';
 
 // ─── Dropdown Component ──────────────────────────────────
 function FilterDropdown({
@@ -198,6 +199,7 @@ export function OrdersTab({
   openOrderDetail
 }: {
   orders: Order[];
+  products: Product[];
   statusFilter: string;
   setStatusFilter: (s: string) => void;
   searchQuery: string;
@@ -616,6 +618,202 @@ export function OrdersTab({
     }, 1500);
   };
 
+  const handleExportData = () => {
+    const printWindow = window.open('', '_blank', 'width=1000,height=800');
+    if (!printWindow) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>NINOC STORE - TAX REPORT (CSV/PDF)</title>
+          <style>
+            @page { size: landscape; margin: 15mm; }
+            body { font-family: 'Inter', -apple-system, sans-serif; padding: 20px; color: #141414; }
+            .header { text-align: center; border-bottom: 2px solid #141414; padding-bottom: 20px; margin-bottom: 30px; }
+            .title { font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+            .subtitle { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #666; text-transform: uppercase; margin-top: 5px; }
+            .meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px; font-weight: 600; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 10px; }
+            th, td { border: 1px solid #e5e5e5; padding: 10px; text-align: left; }
+            th { background-color: #141414; color: white; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+            tr:nth-child(even) { background-color: #fafafa; }
+            .total-row { font-weight: 800; background-color: #f1f1f1 !important; }
+            .footer { font-size: 10px; color: #666; text-align: center; margin-top: 50px; border-top: 1px solid #e5e5e5; padding-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="title">NINOC STORE</div>
+            <div class="subtitle">Official Transaction & Tax Report</div>
+          </div>
+          <div class="meta">
+            <div>REPORT GENERATED: ${new Date().toLocaleString('id-ID')}</div>
+            <div>TOTAL RECORDS: ${filteredOrders.length}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Tax / PPN (11%)</th>
+                <th>Total Amount (IDR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredOrders.map(order => {
+                const tax = order.total_price * 0.11;
+                return \`
+                  <tr>
+                    <td>\${new Date(order.created_at).toLocaleString('id-ID')}</td>
+                    <td style="font-family: monospace;">\${order.id.slice(0, 8).toUpperCase()}</td>
+                    <td>\${order.shipping_address?.name || '-'}</td>
+                    <td>\${order.status.toUpperCase()}</td>
+                    <td>\${order.payment_status.toUpperCase()}</td>
+                    <td>\${tax.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
+                    <td>\${order.total_price.toLocaleString('id-ID')}</td>
+                  </tr>
+                \`;
+              }).join('')}
+              <tr class="total-row">
+                <td colspan="5" style="text-align: right;">GRAND TOTAL</td>
+                <td>${filteredOrders.reduce((acc, order) => acc + (order.total_price * 0.11), 0).toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
+                <td>${filteredOrders.reduce((acc, order) => acc + order.total_price, 0).toLocaleString('id-ID')}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="footer">
+            CONFIDENTIAL - Internal Use Only - System Generated Document
+          </div>
+          <script>
+            window.onload = () => { setTimeout(() => { window.print(); }, 500); }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  const handlePrintSingleLabel = (order: Order) => {
+    setSelectedPrintOrders([order.id]);
+    handlePrintResi(); // Re-use the existing logic but override the print window with just this order
+    // Note: handlePrintResi uses 'orders' filtered by selectedPrintOrders, 
+    // so we set the state and then call it. However, state updates are async, 
+    // so let's directly open the window for this order instead.
+    
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) return;
+
+    const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+    const totalWeight = totalItems * 300;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Print Label - ${order.id}</title>
+          <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+          <style>
+            @page { size: 100mm 150mm; margin: 0; }
+            body { margin: 0; padding: 0; background-color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; font-family: 'Inter', sans-serif; }
+            .label-container { width: 100mm; min-height: 150mm; border: 2px solid black; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: white; color: black; }
+            .header-row { display: flex; align-items: stretch; border-bottom: 2px solid black; height: 45px; }
+            .brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background-color: black; color: white; }
+            .brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+            .brand-sub { font-size: 7px; font-weight: 600; letter-spacing: 3px; opacity: 0.8; }
+            .courier-box { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; }
+            .barcode-row { padding: 16px 12px; border-bottom: 2px solid black; text-align: center; }
+            .barcode-text { font-weight: 800; font-size: 14px; letter-spacing: 4px; font-family: monospace; margin-top: 8px; }
+            .flex-row { display: flex; border-bottom: 2px solid black; flex: 1; }
+            .col-left { flex: 1.6; padding: 12px; border-right: 2px solid black; display: flex; flex-direction: column; }
+            .col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; }
+            .inverted-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; background-color: black; color: white; padding: 3px 8px; display: inline-block; align-self: flex-start; border-radius: 2px; }
+            .outline-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; border: 2px solid black; padding: 1px 6px; display: inline-block; align-self: flex-start; border-radius: 2px; }
+            .footer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background-color: black; color: white; }
+          </style>
+        </head>
+        <body>
+          <div class="label-container">
+            <div class="header-row">
+              <div class="brand-box">
+                <div class="brand-name">NINOC</div>
+                <div class="brand-sub">STORE</div>
+              </div>
+              <div class="courier-box">
+                <span style="font-size: 12px; font-weight: 800;">${order.courier || 'STANDARD'}</span>
+              </div>
+            </div>
+            <div class="barcode-row">
+              ${order.tracking_id ? `
+                <svg class="barcode"
+                  jsbarcode-format="CODE128"
+                  jsbarcode-value="${order.tracking_id}"
+                  jsbarcode-width="2"
+                  jsbarcode-height="50"
+                  jsbarcode-displayValue="false">
+                </svg>
+                <div class="barcode-text">${order.tracking_id}</div>
+              ` : `
+                <div style="font-weight: 700; font-size: 12px; padding: 16px 0; color: #999; letter-spacing: 2px; border: 2px dashed #e5e5e5; text-align: center;">AWAITING TRACKING ID</div>
+              `}
+            </div>
+            <div class="flex-row">
+              <div class="col-left">
+                <div class="inverted-tag">TO / PENERIMA</div>
+                <div style="font-weight: 900; font-size: 15px; text-transform: uppercase; line-height: 1.1;">${order.shipping_address?.name || '-'}</div>
+                <div style="font-size: 11px; font-weight: 700; margin-top: 4px; font-family: monospace;">${order.shipping_address?.phone || '-'}</div>
+                <div style="font-size: 11px; font-weight: 500; margin-top: 8px; line-height: 1.4; color: #333;">${order.shipping_address?.address || '-'}</div>
+                <div style="font-weight: 800; font-size: 11px; margin-top: 6px; text-transform: uppercase;">${order.shipping_address?.city || '-'}, ${order.shipping_address?.province || '-'}</div>
+                <div style="font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px;">${order.shipping_address?.postal_code || '-'}</div>
+              </div>
+              <div class="col-right">
+                <div class="outline-tag">FROM / PENGIRIM</div>
+                <div style="font-weight: 800; font-size: 11px;">NINOC STUDIO</div>
+                <div style="font-size: 9px; font-weight: 600; margin-top: 2px; font-family: monospace; color: #666;">0812-XXXX-XXXX</div>
+                <div style="font-size: 9px; font-weight: 500; margin-top: 6px; line-height: 1.4; color: #444;">Bandung, Jawa Barat<br/>Indonesia</div>
+              </div>
+            </div>
+            <div class="flex-row">
+              <div class="col-left">
+                <div style="font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666;">CONTENTS / ISI PAKET</div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  ${order.order_items?.map(item => `
+                    <div style="font-size: 10px; font-weight: 600; display: flex; justify-content: space-between;">
+                      <span style="text-transform: uppercase; color: #111;">${item.product_name} ${item.size ? `[${item.size}]` : ''}</span>
+                      <span style="font-weight: 800;">×${item.quantity}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="col-right" style="align-items: center; justify-content: center; background-color: #fafafa;">
+                <div style="font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #666;">ORDER ID</div>
+                <div style="font-weight: 900; font-size: 11px; letter-spacing: 1px; font-family: monospace;">#${order.id.slice(0,8).toUpperCase()}</div>
+                <div style="display: flex; justify-content: center; gap: 8px; width: 100%; margin-top: 8px; font-size: 9px; font-weight: 800;">
+                  <span style="background-color: #e5e5e5; padding: 2px 6px; border-radius: 2px;">${totalItems} PCS</span>
+                  <span style="background-color: #e5e5e5; padding: 2px 6px; border-radius: 2px;">${totalWeight}g</span>
+                </div>
+              </div>
+            </div>
+            <div class="footer-row">
+              <span style="font-size: 9px; font-weight: 600; font-family: monospace;">${new Date(order.created_at).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}).toUpperCase()}</span>
+              <span style="font-weight: 900; font-size: 10px; letter-spacing: 2px;">FRAGILE</span>
+            </div>
+          </div>
+          <script>
+            JsBarcode(".barcode").init();
+            window.onload = () => { setTimeout(() => { window.print(); }, 800); }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   return (
     <>
       <motion.div
@@ -635,9 +833,12 @@ export function OrdersTab({
             className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
           >
             <Printer size={12} />
-            Print Label
+            Print Bulk Labels
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors">
+          <button 
+            onClick={handleExportData}
+            className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
+          >
             Export Data
           </button>
         </div>
@@ -882,24 +1083,31 @@ export function OrdersTab({
                                         <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Ordered Items</span>
                                       </div>
                                       <div className="space-y-2">
-                                        {order.order_items?.map((item, idx) => (
-                                          <div key={idx} className="flex items-center gap-3 bg-white border border-ink/5 p-2.5 rounded-sm">
-                                            <div className="w-12 h-12 bg-ink/5 border border-ink/10 rounded-sm flex items-center justify-center shrink-0 overflow-hidden">
-                                              <Package size={16} className="text-ink/20" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                              <p className="text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
-                                              <div className="flex items-center gap-2 mt-0.5">
-                                                {item.size && <span className="text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
-                                                <span className="text-[9px] font-medium text-ink/50">×{item.quantity}</span>
+                                        {order.order_items?.map((item, idx) => {
+                                          const foundProduct = products.find(p => p.id === item.product_id);
+                                          return (
+                                            <div key={idx} className="flex items-center gap-3 bg-white border border-ink/5 p-2.5 rounded-sm">
+                                              <div className="w-12 h-12 bg-ink/5 border border-ink/10 rounded-sm flex items-center justify-center shrink-0 overflow-hidden relative">
+                                                {foundProduct?.image_url ? (
+                                                  <Image src={foundProduct.image_url} alt={item.product_name || 'Product'} fill className="object-cover" />
+                                                ) : (
+                                                  <Package size={16} className="text-ink/20" />
+                                                )}
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                  {item.size && <span className="text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
+                                                  <span className="text-[9px] font-medium text-ink/50">×{item.quantity}</span>
+                                                </div>
+                                              </div>
+                                              <div className="text-right shrink-0">
+                                                <p className="text-[10px] font-medium text-ink">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                                <p className="text-[9px] text-ink/40">per item</p>
                                               </div>
                                             </div>
-                                            <div className="text-right shrink-0">
-                                              <p className="text-[10px] font-medium text-ink">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
-                                              <p className="text-[9px] text-ink/40">per item</p>
-                                            </div>
-                                          </div>
-                                        ))}
+                                          );
+                                        })}
                                       </div>
                                       {/* Total */}
                                       <div className="flex justify-between items-center mt-3 pt-2 border-t border-ink/10">
@@ -1009,6 +1217,16 @@ export function OrdersTab({
                                             </div>
                                           </>
                                         )}
+                                      </div>
+                                      
+                                      <div className="mt-4">
+                                        <button 
+                                          onClick={(e) => { e.stopPropagation(); handlePrintSingleLabel(order); }}
+                                          className="w-full flex justify-center items-center gap-2 bg-ink text-white py-2.5 rounded-sm hover:bg-ink/90 transition-colors text-[10px] font-medium uppercase tracking-widest"
+                                        >
+                                          <Printer size={12} />
+                                          Print Shipping Label
+                                        </button>
                                       </div>
                                     </div>
 

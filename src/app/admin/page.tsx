@@ -1128,6 +1128,7 @@ export default function AdminDashboard() {
           {activeTab === 'orders' && (
             <OrdersTab 
               orders={orders}
+              products={products}
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
               searchQuery={searchQuery}
