@@ -1322,9 +1322,8 @@ export default function AdminDashboard() {
 
         {/* Content */}
         <section className="flex-1 overflow-y-auto p-4 pb-0 md:px-6 md:pt-4 md:pb-0">
-          <AnimatePresence mode="wait">
-            {/* ===== OVERVIEW ===== */}
-            {activeTab === 'overview' && (
+          {/* ===== OVERVIEW ===== */}
+          {activeTab === 'overview' && (
               <div className="space-y-4">
                 {/* KPI Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -4377,9 +4376,8 @@ export default function AdminDashboard() {
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
-        </section>
-      </div>
+          </section>
+        </div>
 
       {/* ===== PRODUCT MODAL ===== */}
       <AnimatePresence>
