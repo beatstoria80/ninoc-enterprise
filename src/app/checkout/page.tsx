@@ -285,15 +285,27 @@ export default function CheckoutPage() {
       const fetchRates = async () => {
         setLoadingShipping(true);
         try {
-          const res = await fetch('/api/shipping/rates', {
+          // Build cart items payload for Biteship
+          const biteshipItems = items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            weight: 300, // default 300g per item
+          }));
+
+          const res = await fetch('/api/biteship/rates', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ destination_area_id: formData.kecamatan })
+            body: JSON.stringify({
+              destination_area_id: formData.kecamatan,
+              items: biteshipItems,
+              couriers: 'jne,jnt,sicepat,anteraja,ninja',
+            })
           });
           const data = await res.json();
           if (data.success && data.pricing) {
             setDynamicShippingOptions(data.pricing);
-            // Optional: Auto-select if current method is invalid or reset
             setShippingMethod('');
             setShippingCost(0);
           }
@@ -305,7 +317,7 @@ export default function CheckoutPage() {
       };
       fetchRates();
     }
-  }, [formData.kecamatan]);
+  }, [formData.kecamatan, items]);
 
   // Fallback options in case API fails or hasn't loaded
   const fallbackShippingOptions = [

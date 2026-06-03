@@ -42,6 +42,12 @@ export interface Order {
   shipping_address: ShippingAddress | null;
   courier: string | null;
   tracking_id: string | null;
+  biteship_order_id?: string | null;
+  courier_driver_name?: string | null;
+  courier_driver_phone?: string | null;
+  courier_link?: string | null;
+  estimated_pickup?: string | null;
+  estimated_delivery?: string | null;
   printed_at: string | null;
   created_at: string;
   order_items?: OrderItem[];

@@ -1182,6 +1182,14 @@ export function OrdersTab({
                                             {order.tracking_id && (
                                               <p className="text-[9px] text-ink/50 font-mono mt-0.5">Resi: {order.tracking_id}</p>
                                             )}
+                                            {order.courier_driver_name && (
+                                              <p className="text-[9px] text-emerald-600 font-medium mt-1">Driver: {order.courier_driver_name}</p>
+                                            )}
+                                            {order.courier_link && (
+                                              <a href={order.courier_link} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-[8px] text-rose uppercase tracking-widest font-bold hover:underline">
+                                                Track on Courier ↗
+                                              </a>
+                                            )}
                                           </div>
                                         </div>
                                       </div>
