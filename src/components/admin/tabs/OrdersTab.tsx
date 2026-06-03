@@ -666,17 +666,17 @@ export function OrdersTab({
             <tbody>
               ${filteredOrders.map(order => {
                 const tax = order.total_price * 0.11;
-                return \`
-                  <tr>
-                    <td>\${new Date(order.created_at).toLocaleString('id-ID')}</td>
-                    <td style="font-family: monospace;">\${order.id.slice(0, 8).toUpperCase()}</td>
-                    <td>\${order.shipping_address?.name || '-'}</td>
-                    <td>\${order.status.toUpperCase()}</td>
-                    <td>\${order.payment_status.toUpperCase()}</td>
-                    <td>\${tax.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
-                    <td>\${order.total_price.toLocaleString('id-ID')}</td>
-                  </tr>
-                \`;
+                return (
+                  '<tr>' +
+                    '<td>' + new Date(order.created_at).toLocaleString('id-ID') + '</td>' +
+                    '<td style="font-family: monospace;">' + order.id.slice(0, 8).toUpperCase() + '</td>' +
+                    '<td>' + (order.shipping_address?.name || '-') + '</td>' +
+                    '<td>' + order.status.toUpperCase() + '</td>' +
+                    '<td>' + order.payment_status.toUpperCase() + '</td>' +
+                    '<td>' + tax.toLocaleString('id-ID', {maximumFractionDigits: 0}) + '</td>' +
+                    '<td>' + order.total_price.toLocaleString('id-ID') + '</td>' +
+                  '</tr>'
+                );
               }).join('')}
               <tr class="total-row">
                 <td colspan="5" style="text-align: right;">GRAND TOTAL</td>
@@ -781,12 +781,12 @@ export function OrdersTab({
               <div class="col-left">
                 <div style="font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666;">CONTENTS / ISI PAKET</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                  ${order.order_items?.map(item => `
-                    <div style="font-size: 10px; font-weight: 600; display: flex; justify-content: space-between;">
-                      <span style="text-transform: uppercase; color: #111;">${item.product_name} ${item.size ? `[${item.size}]` : ''}</span>
-                      <span style="font-weight: 800;">×${item.quantity}</span>
-                    </div>
-                  `).join('')}
+                  ${order.order_items?.map(item => (
+                    '<div style="font-size: 10px; font-weight: 600; display: flex; justify-content: space-between;">' +
+                      '<span style="text-transform: uppercase; color: #111;">' + item.product_name + (item.size ? ' [' + item.size + ']' : '') + '</span>' +
+                      '<span style="font-weight: 800;">×' + item.quantity + '</span>' +
+                    '</div>'
+                  )).join('')}
                 </div>
               </div>
               <div class="col-right" style="align-items: center; justify-content: center; background-color: #fafafa;">
