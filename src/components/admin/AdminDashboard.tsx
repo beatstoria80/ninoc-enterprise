@@ -285,12 +285,13 @@ function getCourierService(courier: string | null): { name: string; service: str
 }
 
 // ============ SHIPPING LABEL — 10cm × 8cm THERMAL ============
-function ShippingLabel({ order }: { order: Order }) {
+function ShippingLabel({ order, boxNumber = 1, totalBoxes = 1 }: { order: Order; boxNumber?: number; totalBoxes?: number }) {
   const courierInfo = getCourierService(order.courier);
   const courierLogo = getCourierLogo(order.courier);
   const trackingId = order.tracking_id || '';
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
   const totalWeight = totalItems * 300; // est. 300g per item
+  const hasManyItems = (order.order_items?.length || 0) > 5 || totalItems > 10;
 
   return (
     <div style={{
@@ -319,6 +320,11 @@ function ShippingLabel({ order }: { order: Order }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span style={{ fontSize: '14px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '1px' }}>NINOC</span>
           <span style={{ fontSize: '8px', color: '#666' }}>ARCHIVE</span>
+          {totalBoxes > 1 && (
+            <span style={{ fontSize: '10px', fontWeight: 'bold', backgroundColor: 'black', color: 'white', padding: '1px 4px', marginLeft: '6px' }}>
+              BOX {boxNumber} OF {totalBoxes}
+            </span>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {courierLogo && (
@@ -451,13 +457,18 @@ function ShippingLabel({ order }: { order: Order }) {
           justifyContent: 'center'
         }}>
           <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '2px' }}>ISI PAKET / CONTENTS</div>
-          {order.order_items?.slice(0, 3).map((item, idx) => (
-            <div key={idx} style={{ fontSize: '9px' }}>
-              {item.product_name} {item.size ? `(${item.size})` : ''} ×{item.quantity}
+          {hasManyItems ? (
+            <div style={{ fontSize: '10px', fontWeight: 'bold', marginTop: '4px', padding: '4px', border: '2px dashed black', textAlign: 'center' }}>
+              {totalItems} ITEMS.<br />[REFER TO PACKING SLIP]
             </div>
-          ))}
-          {(order.order_items?.length || 0) > 3 && (
-            <div style={{ fontSize: '8px', color: '#666', marginTop: '2px' }}>+{(order.order_items?.length || 0) - 3} item lainnya</div>
+          ) : (
+            <>
+              {order.order_items?.map((item, idx) => (
+                <div key={idx} style={{ fontSize: '9px' }}>
+                  {item.product_name} {item.size ? `(${item.size})` : ''} ×{item.quantity}
+                </div>
+              ))}
+            </>
           )}
         </div>
         {/* Order ID + Weight */}
@@ -498,6 +509,102 @@ function ShippingLabel({ order }: { order: Order }) {
           padding: '1px 4px',
           fontSize: '8px'
         }}>FRAGILE</span>
+      </div>
+    </div>
+  );
+}
+
+// ============ PACKING SLIP — A4 PAPER ============
+function PackingSlip({ order }: { order: Order }) {
+  const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+  
+  return (
+    <div style={{
+      width: '210mm',
+      minHeight: '297mm',
+      padding: '20mm',
+      backgroundColor: 'white',
+      color: 'black',
+      fontFamily: "'Courier New', 'Consolas', monospace",
+      fontSize: '12px',
+      boxSizing: 'border-box'
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ fontSize: '24px', margin: '0 0 5px 0', letterSpacing: '2px' }}>NINOC ARCHIVE</h1>
+          <p style={{ margin: 0, color: '#666' }}>PACKING SLIP / SURAT JALAN</p>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ margin: '0 0 5px 0', fontSize: '10px' }}>{new Date(order.created_at).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <div style={{ display: 'inline-block', border: '1px solid black', padding: '5px' }}>
+            <p style={{ margin: 0, fontWeight: 'bold' }}>ORDER ID</p>
+            <p style={{ margin: '2px 0 0 0', fontSize: '14px', letterSpacing: '1px' }}>#{order.id.slice(0, 8).toUpperCase()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Addresses */}
+      <div style={{ display: 'flex', gap: '40px', marginBottom: '30px' }}>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 10px 0', borderBottom: '1px dashed black', paddingBottom: '5px' }}>SHIP TO</h3>
+          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '14px' }}>{order.shipping_address?.name}</p>
+          <p style={{ margin: '0 0 5px 0' }}>Phone: {order.shipping_address?.phone}</p>
+          <p style={{ margin: '0 0 5px 0', lineHeight: 1.4 }}>
+            {order.shipping_address?.address}<br/>
+            {order.shipping_address?.city}, {order.shipping_address?.province}<br/>
+            {order.shipping_address?.postal_code}
+          </p>
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 10px 0', borderBottom: '1px dashed black', paddingBottom: '5px' }}>SHIPPING DETAILS</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr><td style={{ padding: '4px 0', color: '#666' }}>Courier</td><td style={{ padding: '4px 0', fontWeight: 'bold' }}>{order.courier?.toUpperCase() || 'STANDARD'}</td></tr>
+              <tr><td style={{ padding: '4px 0', color: '#666' }}>Tracking ID</td><td style={{ padding: '4px 0', fontWeight: 'bold' }}>{order.tracking_id || 'PENDING'}</td></tr>
+              <tr><td style={{ padding: '4px 0', color: '#666' }}>Total Items</td><td style={{ padding: '4px 0', fontWeight: 'bold' }}>{totalItems}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Item List */}
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '30px' }}>
+        <thead>
+          <tr style={{ borderBottom: '2px solid black' }}>
+            <th style={{ padding: '10px 5px', textAlign: 'center', width: '40px' }}>[ ]</th>
+            <th style={{ padding: '10px 5px', textAlign: 'left', width: '50px' }}>QTY</th>
+            <th style={{ padding: '10px 5px', textAlign: 'left' }}>ITEM DESCRIPTION</th>
+            <th style={{ padding: '10px 5px', textAlign: 'left', width: '80px' }}>SIZE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {order.order_items?.map((item, idx) => (
+            <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+              <td style={{ padding: '12px 5px', textAlign: 'center' }}>
+                <div style={{ width: '16px', height: '16px', border: '1px solid black', margin: '0 auto' }}></div>
+              </td>
+              <td style={{ padding: '12px 5px', fontWeight: 'bold' }}>{item.quantity}</td>
+              <td style={{ padding: '12px 5px' }}>
+                <span style={{ fontWeight: 'bold' }}>{item.product_name}</span>
+                {item.id && <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>SKU: {item.id.slice(0,8).toUpperCase()}</div>}
+              </td>
+              <td style={{ padding: '12px 5px', fontWeight: 'bold' }}>{item.size || 'OS'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Footer Signatures */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '60px', padding: '0 20px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ margin: '0 0 50px 0', color: '#666' }}>Picked By</p>
+          <div style={{ width: '150px', borderBottom: '1px solid black' }}></div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ margin: '0 0 50px 0', color: '#666' }}>Packed By</p>
+          <div style={{ width: '150px', borderBottom: '1px solid black' }}></div>
+        </div>
       </div>
     </div>
   );
@@ -671,6 +778,8 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [printMode, setPrintMode] = useState<'label' | 'slip'>('label');
+  const [totalBoxes, setTotalBoxes] = useState<number>(1);
 
   const [bulkFiles, setBulkFiles] = useState<File[]>([]);
   const [bulkUploading, setBulkUploading] = useState(false);
@@ -2499,7 +2608,15 @@ export default function AdminDashboard() {
 
               {/* HIDDEN PRINTABLE LABEL (RENDERED FOR INNERHTML EXTRACT) */}
               <div id="printable-label" className="hidden">
-                <ShippingLabel order={selectedOrder} />
+                {printMode === 'label' ? (
+                  Array.from({ length: totalBoxes }).map((_, i) => (
+                    <div key={i} style={{ pageBreakAfter: i < totalBoxes - 1 ? 'always' : 'auto' }}>
+                      <ShippingLabel order={selectedOrder} boxNumber={i + 1} totalBoxes={totalBoxes} />
+                    </div>
+                  ))
+                ) : (
+                  <PackingSlip order={selectedOrder} />
+                )}
               </div>
               </div>
             </motion.div>
@@ -2516,17 +2633,57 @@ export default function AdminDashboard() {
                 >
                   <div className="w-[400px] h-full flex flex-col">
                     <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shrink-0">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Label Preview</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Print Center</p>
                       <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                         <X size={16} />
                       </button>
                     </div>
+
+                    {/* Print Options */}
+                    <div className="p-4 bg-white border-b border-gray-200 shrink-0 space-y-4">
+                      <div className="flex bg-gray-100 p-1 rounded-lg">
+                        <button
+                          onClick={() => setPrintMode('label')}
+                          className={cn("flex-1 text-[10px] font-bold uppercase tracking-widest py-2 rounded-md transition-colors", printMode === 'label' ? "bg-white shadow-sm text-black" : "text-gray-500")}
+                        >
+                          Thermal (10x8)
+                        </button>
+                        <button
+                          onClick={() => setPrintMode('slip')}
+                          className={cn("flex-1 text-[10px] font-bold uppercase tracking-widest py-2 rounded-md transition-colors", printMode === 'slip' ? "bg-white shadow-sm text-black" : "text-gray-500")}
+                        >
+                          Packing Slip (A4)
+                        </button>
+                      </div>
+
+                      {printMode === 'label' && (
+                        <div>
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 block">Number of Boxes (Koli)</label>
+                          <input 
+                            type="number" 
+                            min={1} 
+                            max={10} 
+                            value={totalBoxes} 
+                            onChange={(e) => setTotalBoxes(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Label Canvas Preview - Scaled to fit */}
-                    <div className="flex-1 p-6 flex items-center justify-center overflow-auto bg-gray-50/50">
-                      <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.75)', transformOrigin: 'center' }}>
-                        <ShippingLabel order={selectedOrder} />
-                      </div>
+                    <div className="flex-1 p-6 flex flex-col gap-4 items-center overflow-auto bg-gray-50/50">
+                      {printMode === 'label' ? (
+                        Array.from({ length: totalBoxes }).map((_, i) => (
+                          <div key={i} className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.75)', transformOrigin: 'top center', marginBottom: i < totalBoxes - 1 ? '-1.5cm' : '0' }}>
+                            <ShippingLabel order={selectedOrder} boxNumber={i + 1} totalBoxes={totalBoxes} />
+                          </div>
+                        ))
+                      ) : (
+                        <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '210mm', minHeight: '297mm', transform: 'scale(0.35)', transformOrigin: 'top center', marginBottom: '-180mm' }}>
+                          <PackingSlip order={selectedOrder} />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="p-4 bg-white border-t border-gray-200 shrink-0">
@@ -2540,7 +2697,7 @@ export default function AdminDashboard() {
                         }}
                         className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
                       >
-                        <Printer size={16} /> Print to Thermal Printer
+                        <Printer size={16} /> Print {printMode === 'label' ? 'Thermal Label' : 'Packing Slip'}
                       </button>
                     </div>
                   </div>
@@ -2558,8 +2715,11 @@ export default function AdminDashboard() {
           @media print {
             body * { visibility: hidden !important; }
             #printable-label, #printable-label * { visibility: visible !important; }
-            #printable-label { position: absolute; left: 0; top: 0; margin: 0; padding: 0; }
-            @page { size: 10cm 8cm !important; margin: 0 !important; }
+            #printable-label { position: absolute; left: 0; top: 0; margin: 0; padding: 0; width: 100%; }
+            ${printMode === 'slip' 
+              ? `@page { size: A4 !important; margin: 0 !important; }`
+              : `@page { size: 10cm 8cm !important; margin: 0 !important; }`
+            }
           }
         ` }} />
       )}
