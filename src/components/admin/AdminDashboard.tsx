@@ -2662,7 +2662,7 @@ export default function AdminDashboard() {
                               />
                               <YAxis hide />
                               <Tooltip
-                                formatter={(value: number) => `Rp${value.toLocaleString('id-ID')}`}
+                                formatter={(value) => [`Rp${Number(value).toLocaleString('id-ID')}`, 'Profit']}
                                 contentStyle={{
                                   backgroundColor: '#fff',
                                   border: '1px solid #E5E7EB',
