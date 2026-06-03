@@ -7,8 +7,8 @@
 const BITESHIP_BASE_URL = 'https://api.biteship.com';
 
 function getApiKey(): string {
-  const key = process.env.BITESHIP_API_KEY || process.env.NEXT_PUBLIC_BITESHIP_API_KEY;
-  if (!key || key === 'your_biteship_api_key_here') {
+  const key = process.env.BITESHIP_API_KEY;
+  if (!key) {
     throw new Error('BITESHIP_API_KEY is not configured. Please set it in .env.local');
   }
   return key;
