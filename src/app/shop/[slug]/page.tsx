@@ -597,7 +597,7 @@ export default function ProductDetailPage() {
 
         {/* RELATED PRODUCTS SECTION - PREMIUM GRID */}
         {relatedProducts.length > 0 && (
-          <div className="mt-6 lg:mt-12 space-y-1">
+          <div className="mt-4 lg:mt-6 space-y-1">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link prefetch={false} href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
@@ -613,8 +613,10 @@ export default function ProductDetailPage() {
                 >
                   <Link prefetch={false} href={`/shop/${p.slug}`} className="group block space-y-1">
                     <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
-                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-3">
+                        <Image src={p.image_url} alt={p.name} fill className="object-contain group-hover:scale-105 transition-transform duration-700" />
+                      </div>
+                      <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     </div>
                     <div className="space-y-1 px-1">
                       <h3 className="text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
