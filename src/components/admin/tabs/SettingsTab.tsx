@@ -19,7 +19,8 @@ const SETTINGS_ITEMS = [
   { id: 'schedule', label: 'Operational Schedule', icon: Clock },
   { id: 'decoration', label: 'Store Decoration', icon: Palette },
   { id: 'delivery', label: 'Delivery Setting', icon: Truck },
-    { id: 'help-center', label: 'Help Center', icon: HelpCircle },
+  { id: 'help-guide', label: 'Help Guide', icon: HelpCircle },
+  { id: 'help-center', label: 'FAQ', icon: HelpCircle },
   { id: 'reply-template', label: 'Reply Template', icon: MessageSquare },
   { id: 'change-password', label: 'Change Password', icon: Lock },
   { id: 'seo', label: 'SEO Optimization', icon: Search },
@@ -1089,7 +1090,187 @@ function BiteshipActivationSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// SECTION: Help Center
+// SECTION: Help Guide (Customer Care, Payment Methods, Return & Refund)
+// ─────────────────────────────────────────────────────────────────────
+function HelpGuideSection() {
+  const [activeGuideTab, setActiveGuideTab] = useState<'customer-care' | 'payment' | 'return'>('customer-care');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // Customer Care
+  const [contactWA, setContactWA] = useState('');
+  const [contactEmailSupport, setContactEmailSupport] = useState('');
+  const [csHours, setCsHours] = useState('');
+  const [csNotes, setCsNotes] = useState('');
+
+  // Payment Methods
+  const [paymentGuide, setPaymentGuide] = useState('');
+  const [bankAccounts, setBankAccounts] = useState<string[]>([]);
+  const [newBank, setNewBank] = useState('');
+
+  // Return & Refund
+  const [returnPolicy, setReturnPolicy] = useState('');
+  const [returnProcess, setReturnProcess] = useState('');
+  const [refundNotes, setRefundNotes] = useState('');
+
+  const removeBankAccount = (idx: number) => {
+    setBankAccounts(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // Load from DB on mount
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('atelier_settings')
+        .select('key, value')
+        .in('key', ['help_guide_customer_care', 'help_guide_payment', 'help_guide_return']);
+      if (!data) return;
+      data.forEach((item: { key: string; value: any }) => {
+        if (item.key === 'help_guide_customer_care') {
+          if (item.value?.wa) setContactWA(item.value.wa);
+          if (item.value?.email) setContactEmailSupport(item.value.email);
+          if (item.value?.hours) setCsHours(item.value.hours);
+          if (item.value?.notes) setCsNotes(item.value.notes);
+        }
+        if (item.key === 'help_guide_payment') {
+          if (item.value?.guide) setPaymentGuide(item.value.guide);
+          if (item.value?.accounts) setBankAccounts(item.value.accounts);
+        }
+        if (item.key === 'help_guide_return') {
+          if (item.value?.policy) setReturnPolicy(item.value.policy);
+          if (item.value?.process) setReturnProcess(item.value.process);
+          if (item.value?.notes) setRefundNotes(item.value.notes);
+        }
+      });
+    }
+    load();
+  }, []);
+
+  const handleSave = async (tab: 'customer_care' | 'payment' | 'return') => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      const payload = { key: `help_guide_${tab}`, value: {} };
+      if (tab === 'customer_care') payload.value = { wa: contactWA, email: contactEmailSupport, hours: csHours, notes: csNotes };
+      if (tab === 'payment') payload.value = { guide: paymentGuide, accounts: bankAccounts };
+      if (tab === 'return') payload.value = { policy: returnPolicy, process: returnProcess, notes: refundNotes };
+      await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) { console.error(e); }
+    finally { setSaving(false); }
+  };
+
+  const GUIDE_TABS = [
+    { id: 'customer-care' as const, label: 'Customer Care' },
+    { id: 'payment' as const, label: 'Payment Method' },
+    { id: 'return' as const, label: 'Return & Refund' },
+  ];
+
+  return (
+    <SettingsSection
+      title="Help Guide"
+      subtitle="Panduan customer care, metode pembayaran, dan retur — tampil di halaman help publik"
+    >
+      {/* Tabs */}
+      <div className="flex gap-1 mb-5 border-b border-ink/5 pb-4">
+        {GUIDE_TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveGuideTab(tab.id)}
+            className={cn(
+              "px-4 py-2 text-[9px] font-semibold uppercase tracking-wider rounded-sm transition-colors",
+              activeGuideTab === tab.id ? "bg-rose text-white" : "text-ink/40 hover:bg-ink/5"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Customer Care Tab */}
+      {activeGuideTab === 'customer-care' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="WhatsApp CS">
+              <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="081234567890" />
+            </Field>
+            <Field label="Email CS">
+              <Input value={contactEmailSupport} onChange={e => setContactEmailSupport(e.target.value)} placeholder="cs@ninoc.id" />
+            </Field>
+            <Field label="Jam Operasional CS">
+              <Input value={csHours} onChange={e => setCsHours(e.target.value)} placeholder="Senin-Jumat 09:00-17:00 WIB" />
+            </Field>
+          </div>
+          <Field label="Catatan Tambahan (visible di halaman help)">
+            <Textarea value={csNotes} onChange={e => setCsNotes(e.target.value)} rows={4} placeholder="Contoh: Respon chat max 1x24 jam..." />
+          </Field>
+          <div className="flex justify-end gap-3">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('customer_care')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Method Tab */}
+      {activeGuideTab === 'payment' && (
+        <div className="space-y-4">
+          <Field label="Panduan Pembayaran (visible di halaman help)">
+            <Textarea value={paymentGuide} onChange={e => setPaymentGuide(e.target.value)} rows={5} placeholder="1. Pilih metode pembayaran&#10;2. Transfer ke rekening yang tertera&#10;3. Konfirmasi via WhatsApp..." />
+          </Field>
+          <div>
+            <Field label="Daftar Rekening (otomatis tampil di halaman help)">
+              <div className="space-y-2 mb-2">
+                {bankAccounts.map((acc, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2.5 border border-ink/10 bg-ink/[0.015]">
+                    <span className="text-[10px] font-medium flex-1">{acc}</span>
+                    <button onClick={() => removeBankAccount(i)} className="text-rose text-[8px] uppercase tracking-widest hover:underline">Hapus</button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input value={newBank} onChange={e => setNewBank(e.target.value)} placeholder="BCA 123456789 a.n. PT NINOC" className="flex-1" />
+                <button onClick={() => { if (newBank.trim()) { setBankAccounts(prev => [...prev, newBank.trim()]); setNewBank(''); } }} className="px-3 py-2 bg-ink/10 text-[9px] font-semibold uppercase tracking-wider hover:bg-ink/20 transition-colors shrink-0">+ Tambah</button>
+              </div>
+            </Field>
+          </div>
+          <div className="flex justify-end gap-3">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('payment')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Return & Refund Tab */}
+      {activeGuideTab === 'return' && (
+        <div className="space-y-4">
+          <Field label="Kebijakan Retur (visible di halaman help)">
+            <Textarea value={returnPolicy} onChange={e => setReturnPolicy(e.target.value)} rows={4} placeholder="Produk dapat diretur dalam 3x24 jam sejak diterima..." />
+          </Field>
+          <Field label="Alur Proses Retur">
+            <Textarea value={returnProcess} onChange={e => setReturnProcess(e.target.value)} rows={4} placeholder="1. Ajukan retur via halaman order&#10;2. Tim kami akan review dalam 1x24 jam&#10;3. Setelah disetujui, kirim kembali produk..." />
+          </Field>
+          <Field label="Catatan Refund">
+            <Textarea value={refundNotes} onChange={e => setRefundNotes(e.target.value)} rows={3} placeholder="Refund akan diproses 3-5 hari kerja setelah produk diterima..." />
+          </Field>
+          <div className="flex justify-end gap-3">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('return')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+    </SettingsSection>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// SECTION: Help Center (FAQ)
 // ─────────────────────────────────────────────────────────────────────
 function HelpCenterSection() {
   const [faqs, setFaqs] = useState<{id: string; q: string; a: string; active: boolean}[]>([]);
@@ -1349,6 +1530,7 @@ export function SettingsTab() {
       case 'decoration': return <DecorationSection />;
       case 'delivery': return <DeliverySection />;
       case 'biteship-activation': return <BiteshipActivationSection />;
+      case 'help-guide': return <HelpGuideSection />;
       case 'help-center': return <HelpCenterSection />;
       case 'reply-template': return <ReplyTemplateSection />;
       case 'change-password': return <ChangePasswordSection />;
