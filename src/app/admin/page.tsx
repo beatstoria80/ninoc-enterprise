@@ -30,7 +30,7 @@ import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { SidebarItem } from '@/components/admin/SidebarItem';
-import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer, VoucherActive } from '@/components/admin/types';
+import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
 
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -88,21 +88,8 @@ export default function AdminDashboard() {
 
   // Sales Analytics state
   const [selectedYear, setSelectedYear] = useState<number>(2026);
-  const [salesChartData, setSalesChartData] = useState(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-      sales: Math.floor(Math.random() * 30) + 5,
-    }))
-  );
-  const [profitChartData, setProfitChartData] = useState(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-      profit: Math.floor(Math.random() * 8000000) + 2000000,
-    }))
-  );
-  const [totalViews, setTotalViews] = useState(152);
-  const [totalOrderValue, setTotalOrderValue] = useState(10932690);
-  const [mostSoldProduct, setMostSoldProduct] = useState({ name: 'NINOC Archive Garment', count: 25 });
+  const [salesChartData, setSalesChartData] = useState<{month: string; sales: number}[]>([]);
+  const [profitChartData, setProfitChartData] = useState<{month: string; profit: number}[]>([]);
 
   // Online Order tab state
   const [orderTab, setOrderTab] = useState<'all' | 'new' | 'paid' | 'sent' | 'completed' | 'canceled'>('all');
@@ -116,17 +103,6 @@ export default function AdminDashboard() {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
-  // Mock data
-  const mockPendingOrders = [
-    { id: 'ORD-001', product: { name: 'NINOC Archive Jacket', image: 'https://picsum.photos/seed/jacket/40/40' }, date: '03 Jun 2026', customer: 'Ahmad Rizki', total: 485000 },
-    { id: 'ORD-002', product: { name: 'Urban Archive Hoodie', image: 'https://picsum.photos/seed/hoodie/40/40' }, date: '02 Jun 2026', customer: 'Siti Nurhaliza', total: 320000 },
-    { id: 'ORD-003', product: { name: 'Studio Archive Tee', image: 'https://picsum.photos/seed/tee/40/40' }, date: '02 Jun 2026', customer: 'Budi Santoso', total: 185000 },
-  ];
-  const mockVouchers: VoucherActive[] = [
-    { id: 'v1', name: 'Diskon 10% Semua Produk', code: 'ARCHIVE10', discount: 10, min_order: 200000, used_count: 45, active_until: '30 Jun 2026' },
-    { id: 'v2', name: 'Gratis Ongkir', code: 'FREESHIP', discount: 0, min_order: 300000, used_count: 128, active_until: '15 Jun 2026' },
-  ];
 
   // Fetch financial data
   const fetchFinancialData = useCallback(async () => {
@@ -823,27 +799,6 @@ export default function AdminDashboard() {
   }, [fetchChatSessions]);
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
-
-  // Realtime chart simulation
-  useEffect(() => {
-    const salesInterval = setInterval(() => {
-      setSalesChartData(prev => {
-        const next = [...prev];
-        const idx = Math.floor(Math.random() * 12);
-        next[idx] = { ...next[idx], sales: Math.max(1, next[idx].sales + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3)) };
-        return next;
-      });
-    }, 4000);
-    const profitInterval = setInterval(() => {
-      setProfitChartData(prev => {
-        const next = [...prev];
-        const idx = Math.floor(Math.random() * 12);
-        next[idx] = { ...next[idx], profit: Math.max(500000, next[idx].profit + Math.floor((Math.random() - 0.5) * 1000000)) };
-        return next;
-      });
-    }, 5000);
-    return () => { clearInterval(salesInterval); clearInterval(profitInterval); };
-  }, []);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !activeChatSession) return;

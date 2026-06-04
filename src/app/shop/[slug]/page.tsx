@@ -289,77 +289,77 @@ export default function ProductDetailPage() {
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
           <div className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
-            <div className="space-y-1.5 lg:space-y-4">
-              <div className="space-y-1 lg:space-y-1.5">
-                <div className="flex items-center gap-2 mb-1 lg:mb-1.5">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-ink text-white rounded-none w-fit shadow-md">
+            <div className="space-y-0.5 lg:space-y-1">
+              <div className="space-y-0.5 lg:space-y-1">
+                <div className="flex items-center gap-2 mb-0.5 lg:mb-1">
+                  <div className="flex items-center gap-1 px-2 py-0.5 lg:px-2.5 lg:py-1 bg-ink text-white rounded-none w-fit shadow-md">
                     <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
                   </div>
                 </div>
-                <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
+                <h1 className="text-base md:text-xl lg:text-2xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
-                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-1 lg:py-1.5 rounded-sm w-fit mt-1">
+                  <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-sm md:text-2xl lg:text-3xl font-display font-medium italic text-rose mt-1">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                <p className="text-sm md:text-base lg:text-lg font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
-              <div className="space-y-1 lg:space-y-1.5 pt-2 border-t border-ink/5">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
-                <p className="text-[13px] md:text-sm leading-relaxed text-ink/90 font-medium line-clamp-4">{product.description || 'Premium quality apparel from NINOC.'}</p>
-                <button 
+              <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
+                <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
+                <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium line-clamp-4">{product.description || 'Premium quality apparel from NINOC.'}</p>
+                <button
                   onClick={() => setIsSpecModalOpen(true)}
-                  className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
+                  className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                 >
                   + View Full Specifications
                 </button>
               </div>
 
               {/* Spesifikasi Produk / Measurement — Tab Toggle */}
-              <div className="pt-1.5 pb-1.5 border-t border-ink/5">
-                <div className="flex items-center gap-4 mb-2">
+              <div className="pt-1 border-t border-ink/5">
+                <div className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
-                    className={`text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
+                    className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
-                    Spesifikasi Produk
+                    Spesifikasi
                   </button>
                   <span className="text-ink/10">|</span>
                   <button
                     onClick={() => setActiveInfoTab('measurement')}
-                    className={`text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1.5 ${
+                    className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
-                    <Ruler size={10} className="text-rose" />
+                    <Ruler size={9} className="text-rose" />
                     Measurement (CM)
                   </button>
                 </div>
 
-                <div className="mt-1.5">
+                <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Bahan</span><span className="font-medium">Katun</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Gaya</span><span className="font-medium">Basic</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Motif</span><span className="font-medium">Lainnya</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-1"><span className="text-ink/40 uppercase tracking-widest text-[9px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px]">
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Bahan</span><span className="font-medium">Katun</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Gaya</span><span className="font-medium">Basic</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Motif</span><span className="font-medium">Lainnya</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-[9px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
                       {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
-                        <div key={s} className="flex justify-between text-[11px] font-medium border-b border-ink/5 pb-1">
+                        <div key={s} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
                           <span className="text-rose">{s.split(':')[0]}</span>
                           <span>{s.split(':')[1]}</span>
                         </div>
                       ))}
-                      <p className="text-[9px] text-ink/40 mt-1 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                      <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
                     </div>
                   )}
                 </div>

@@ -19,8 +19,7 @@ const SETTINGS_ITEMS = [
   { id: 'schedule', label: 'Operational Schedule', icon: Clock },
   { id: 'decoration', label: 'Store Decoration', icon: Palette },
   { id: 'delivery', label: 'Delivery Setting', icon: Truck },
-  { id: 'biteship-activation', label: 'Aktivasi Order API', icon: Link },
-  { id: 'help-center', label: 'Help Center', icon: HelpCircle },
+    { id: 'help-center', label: 'Help Center', icon: HelpCircle },
   { id: 'reply-template', label: 'Reply Template', icon: MessageSquare },
   { id: 'change-password', label: 'Change Password', icon: Lock },
   { id: 'seo', label: 'SEO Optimization', icon: Search },
@@ -121,12 +120,12 @@ function SaveButton({ onClick, loading }: { onClick?: () => void; loading?: bool
 // SECTION: My Store
 // ─────────────────────────────────────────────────────────────────────
 function MyStoreSection() {
-  const [storeName, setStoreName] = useState('NINOC STORE');
-  const [tagline, setTagline] = useState('Premium Archival Garment Studio');
-  const [description, setDescription] = useState('NINOC adalah brand garment archival studio yang menghadirkan koleksi apparel premium dengan desain industrial minimalist. Brand ini berdiri dengan filosofi “Archive Manifesto” yang menekankan pada estetika kolektor dan value investasi.');
-  const [contactWA, setContactWA] = useState('081234567890');
-  const [contactEmail, setContactEmail] = useState('hello@ninoc.id');
-  const [address, setAddress] = useState('Jl. Gudang Selatan No. 22, Bandung, Jawa Barat 40113');
+  const [storeName, setStoreName] = useState('');
+  const [tagline, setTagline] = useState('');
+  const [description, setDescription] = useState('');
+  const [contactWA, setContactWA] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
 
@@ -285,16 +284,16 @@ function BankAccountSection() {
 // ─────────────────────────────────────────────────────────────────────
 function ScheduleSection() {
   const [schedule, setSchedule] = useState([
-    { day: 'Senin', open: '09:00', close: '18:00', active: true },
-    { day: 'Selasa', open: '09:00', close: '18:00', active: true },
-    { day: 'Rabu', open: '09:00', close: '18:00', active: true },
-    { day: 'Kamis', open: '09:00', close: '18:00', active: true },
-    { day: 'Jumat', open: '09:00', close: '18:00', active: true },
-    { day: 'Sabtu', open: '10:00', close: '16:00', active: true },
-    { day: 'Minggu', open: '00:00', close: '00:00', active: false },
+    { day: 'Senin', open: '', close: '', active: false },
+    { day: 'Selasa', open: '', close: '', active: false },
+    { day: 'Rabu', open: '', close: '', active: false },
+    { day: 'Kamis', open: '', close: '', active: false },
+    { day: 'Jumat', open: '', close: '', active: false },
+    { day: 'Sabtu', open: '', close: '', active: false },
+    { day: 'Minggu', open: '', close: '', active: false },
   ]);
   const [autoReplyOff, setAutoReplyOff] = useState(false);
-  const [offMessage, setOffMessage] = useState('Mohon maaf, saat ini kami sedang tidak beroperasi. Pesanan Anda akan kami proses besok pukul 09:00 WIB. Terima kasih atas pengertiannya.');
+  const [offMessage, setOffMessage] = useState('');
 
   const toggleDay = (idx: number) => {
     setSchedule(prev => prev.map((s, i) => i === idx ? { ...s, active: !s.active } : s));
@@ -586,13 +585,13 @@ function DecorationSection() {
 // ─────────────────────────────────────────────────────────────────────
 function DeliverySection() {
   const [couriers, setCouriers] = useState([
-    { id: 'jne', name: 'JNE Express', active: true, cod: true, insurable: true },
-    { id: 'jnt', name: 'J&T Express', active: true, cod: true, insurable: false },
-    { id: 'sicepat', name: 'SiCepat', active: true, cod: true, insurable: true },
-    { id: 'anteraja', name: 'AnterAja', active: true, cod: false, insurable: false },
-    { id: 'pos', name: 'POS Indonesia', active: false, cod: false, insurable: true },
+    { id: 'jne', name: 'JNE Express', active: false, cod: false, insurable: false },
+    { id: 'jnt', name: 'J&T Express', active: false, cod: false, insurable: false },
+    { id: 'sicepat', name: 'SiCepat', active: false, cod: false, insurable: false },
+    { id: 'anteraja', name: 'AnterAja', active: false, cod: false, insurable: false },
+    { id: 'pos', name: 'POS Indonesia', active: false, cod: false, insurable: false },
   ]);
-  const [defaultCourier, setDefaultCourier] = useState('jne');
+  const [defaultCourier, setDefaultCourier] = useState('');
   const [autoAssign, setAutoAssign] = useState(false);
   const [sameDayActive, setSameDayActive] = useState(false);
   const [instantActive, setInstantActive] = useState(false);
@@ -675,8 +674,8 @@ function DeliverySection() {
 // SECTION: Biteship Activation
 // ─────────────────────────────────────────────────────────────────────
 function BiteshipActivationSection() {
-  const [apiKeyName, setApiKeyName] = useState('API_webhook_ninoc');
-  const [activatedCouriers, setActivatedCouriers] = useState<string[]>(['jne', 'jnt', 'sicepat']);
+  const [apiKeyName, setApiKeyName] = useState('');
+  const [activatedCouriers, setActivatedCouriers] = useState<string[]>([]);
   const [testDelivered, setTestDelivered] = useState('');
   const [testCancelled, setTestCancelled] = useState('');
   const [supportsPriceChange, setSupportsPriceChange] = useState(false);
@@ -1093,10 +1092,7 @@ function BiteshipActivationSection() {
 // SECTION: Help Center
 // ─────────────────────────────────────────────────────────────────────
 function HelpCenterSection() {
-  const [faqs, setFaqs] = useState([
-    { id: '1', q: 'Bagaimana cara melacak pesanan?', a: 'Anda dapat melacak pesanan melalui halaman "Cek Resi" atau otomatis menerima update via WhatsApp saat paket bergerak.', active: true },
-    { id: '2', q: 'Apakah bisa return/refund?', a: 'Produk dapat diretur dalam 3x24 jam sejak diterima dengan kondisi belum dicuci dan tag masih terpasang. Hubungi admin via chat.', active: true },
-  ]);
+  const [faqs, setFaqs] = useState<{id: string; q: string; a: string; active: boolean}[]>([]);
   const [newQ, setNewQ] = useState('');
   const [newA, setNewA] = useState('');
 
@@ -1139,11 +1135,7 @@ function HelpCenterSection() {
 // SECTION: Reply Template
 // ─────────────────────────────────────────────────────────────────────
 function ReplyTemplateSection() {
-  const [templates, setTemplates] = useState([
-    { id: '1', name: 'Konfirmasi Pesanan', content: 'Halo kak, terima kasih atas pesanannya! Pesanan #ORDER_ID sudah kami terima dan akan kami proses maksimal 1x24 jam. Akan kami kabari lagi setelah paket dikirim. 🙏', shortcut: '/konfirmasi', active: true },
-    { id: '2', name: 'Pemberitahuan Kirim', content: 'Hai kak, kabar baik! Pesanan #ORDER_ID sudah kami kirim via #KURIR dengan no. resi #RESI. Perkiraan tiba 2-3 hari kerja ya. Jangan lupa cek secara berkala. 📦', shortcut: '/kirim', active: true },
-    { id: '3', name: 'Reminder Payment', content: 'Halo kak, reminder nih! Pesanan #ORDER_ID belum dibayar. Mohon selesaikan pembayaran sebelum besok jam 12.00 WIB ya, agar bisa segera diproses. Terima kasih! 💳', shortcut: '/remind', active: true },
-  ]);
+  const [templates, setTemplates] = useState<{id: string; name: string; content: string; shortcut: string; active: boolean}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
 
@@ -1258,14 +1250,14 @@ function ChangePasswordSection() {
 // SECTION: SEO Optimization
 // ─────────────────────────────────────────────────────────────────────
 function SEOSection() {
-  const [metaTitle, setMetaTitle] = useState('NINOC STORE — Premium Archival Garment Studio');
-  const [metaDesc, setMetaDesc] = useState('NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist. Shop now!');
+  const [metaTitle, setMetaTitle] = useState('');
+  const [metaDesc, setMetaDesc] = useState('');
   const [ogImage, setOgImage] = useState('');
-  const [canonical, setCanonical] = useState('https://ninoc.id');
+  const [canonical, setCanonical] = useState('');
   const [sitemapActive, setSitemapActive] = useState(true);
   const [robotsTxt, setRobotsTxt] = useState(true);
   const [schema, setSchema] = useState(true);
-  const [keywords, setKeywords] = useState('ninoc, garment archival, apparel premium, industrial minimalist, fashion bandung, distro bandung');
+  const [keywords, setKeywords] = useState('');
 
   return (
     <SettingsSection

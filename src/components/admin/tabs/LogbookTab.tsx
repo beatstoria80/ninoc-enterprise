@@ -72,7 +72,7 @@ export function LogbookTab() {
     setIsEditMode(false);
     setEditingId(null);
     setFormData({
-      entry_id: `L-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      entry_id: '',
       title: '',
       slug: '',
       category: 'GARMENT STUDY',
@@ -80,6 +80,22 @@ export function LogbookTab() {
       content: '',
       published_date: format(new Date(), 'yyyy-MM-dd')
     });
+    // Generate next sequential entry_id
+    const fetchNextEntryId = async () => {
+      const { data } = await supabase
+        .from('logbook_entries')
+        .select('entry_id')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      let nextNum = 1;
+      if (data && data.length > 0) {
+        const last = data[0].entry_id;
+        const match = last.match(/^L-(\d+)$/);
+        if (match) nextNum = parseInt(match[1], 10) + 1;
+      }
+      setFormData(prev => ({ ...prev, entry_id: `L-${nextNum.toString().padStart(3, '0')}` }));
+    };
+    fetchNextEntryId();
     setIsModalOpen(true);
   };
 

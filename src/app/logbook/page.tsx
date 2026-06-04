@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, Variants } from 'framer-motion';
 import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -34,7 +34,7 @@ const itemVariants: Variants = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// DUMMY LOGBOOK DATA
+// LOGBOOK ENTRY COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
 interface LogEntry {
@@ -45,45 +45,6 @@ interface LogEntry {
   excerpt: string;
   slug: string;
 }
-
-const LOG_ENTRIES: LogEntry[] = [
-  {
-    id: 'L-012',
-    date: '2026.05.28',
-    category: 'GARMENT STUDY',
-    title: 'The Anatomy of the Perfect Drape',
-    excerpt: 'An archival analysis of heavy-weight cotton blends and how gravity influences silhouette over a ten-year wear cycle.',
-    slug: 'anatomy-of-drape',
-  },
-  {
-    id: 'L-011',
-    date: '2026.04.14',
-    category: 'BEHIND THE SEAMS',
-    title: 'Sourcing the Deadstock Heavyweight',
-    excerpt: 'Our journey to a forgotten mill in Okayama, recovering 400 yards of discontinued, selvedge-loomed canvas.',
-    slug: 'sourcing-deadstock-heavyweight',
-  },
-  {
-    id: 'L-010',
-    date: '2026.03.02',
-    category: 'MANIFESTO',
-    title: 'Why We Build for the Archive, Not the Season',
-    excerpt: 'Fast fashion decays. Archival garments appreciate. The foundational philosophy behind the NINOC construction method.',
-    slug: 'build-for-archive',
-  },
-  {
-    id: 'L-009',
-    date: '2026.01.18',
-    category: 'PROCESS',
-    title: 'Hardware Obsession: The YKK Excella Finish',
-    excerpt: 'A microscopic look at zipper tolerances and why standard hardware fails the decade test.',
-    slug: 'hardware-obsession',
-  },
-];
-
-// ═══════════════════════════════════════════════════════════════
-// LOGBOOK ENTRY COMPONENT
-// ═══════════════════════════════════════════════════════════════
 
 function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -179,7 +140,7 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
 // ═══════════════════════════════════════════════════════════════
 
 export default function LogbookPage() {
-  const [entries, setEntries] = useState<LogEntry[]>(LOG_ENTRIES);
+  const [entries, setEntries] = useState<LogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -194,25 +155,24 @@ export default function LogbookPage() {
           throw error;
         }
         
-        if (data && data.length > 0) {
-          // Map DB entries to the frontend LogEntry interface
+        if (data) {
           const formattedEntries: LogEntry[] = data.map((item: any) => ({
             id: item.entry_id,
-            date: item.published_date.replace(/-/g, '.'),
-            category: item.category,
-            title: item.title,
+            date: item.published_date ? item.published_date.replace(/-/g, '.') : '',
+            category: item.category || '',
+            title: item.title || '',
             excerpt: item.excerpt || '',
-            slug: item.slug
+            slug: item.slug || ''
           }));
           setEntries(formattedEntries);
         }
       } catch (err) {
-        console.warn('Could not fetch logbook entries from DB, falling back to dummy data.', err);
+        console.warn('Could not fetch logbook entries:', err);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchEntries();
   }, []);
 
@@ -251,6 +211,12 @@ export default function LogbookPage() {
             <div className="py-12 flex justify-center">
               <div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin" />
             </div>
+          ) : entries.length === 0 ? (
+            <div className="py-20 text-center">
+              <BookOpen size={24} className="text-ink/20 mx-auto mb-4" />
+              <p className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">No entries recorded</p>
+              <p className="text-[7px] text-ink/25 mt-2 tracking-wider">Check back soon for new archival records</p>
+            </div>
           ) : (
             entries.map((entry, index) => (
               <LogbookCard key={entry.id} entry={entry} index={index} />
@@ -258,12 +224,14 @@ export default function LogbookPage() {
           )}
 
           {/* END OF ARCHIVE MARKER */}
-          <motion.div variants={itemVariants} className="mt-12 text-center">
-            <div className="inline-flex flex-col items-center gap-2 opacity-30">
-              <div className="w-px h-8 bg-ink" />
-              <span className="text-[6px] font-mono tracking-widest uppercase">End of Records</span>
-            </div>
-          </motion.div>
+          {entries.length > 0 && (
+            <motion.div variants={itemVariants} className="mt-12 text-center">
+              <div className="inline-flex flex-col items-center gap-2 opacity-30">
+                <div className="w-px h-8 bg-ink" />
+                <span className="text-[6px] font-mono tracking-widest uppercase">End of Records</span>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
       </div>
