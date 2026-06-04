@@ -1192,8 +1192,6 @@ Ketentuan Pengiriman:
     setBankAccounts(prev => prev.filter((_, i) => i !== idx));
   };
 
-  // Shipping & Order Info
-  const [shippingInfo, setShippingInfo] = useState('');
   const [howToOrder, setHowToOrder] = useState(`Ikuti langkah mudah berikut untuk melakukan pemesanan:
 
 1. Pilih produk yang ingin Anda beli.
