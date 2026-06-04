@@ -308,9 +308,11 @@ export default function ProductDetailPage() {
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
                 <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {product.description || 'Premium quality apparel from NINOC.'}
+                  {(product.description || '').length > 200 && !isExpanded
+                    ? (product.description || '').slice(0, 200) + '…'
+                    : product.description || 'Premium quality apparel from NINOC.'}
                 </p>
-                {product.description && product.description.length > 200 && (
+                {(product.description || '').length > 200 && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
