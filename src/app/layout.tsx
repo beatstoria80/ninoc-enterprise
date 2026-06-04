@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import ClientPlatformManager from "@/components/ClientPlatformManager";
+import BrandProvider from "@/components/BrandProvider";
 import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SecurityEnforcer from "@/components/SecurityEnforcer";
@@ -146,7 +147,9 @@ export default function RootLayout({
           />
           <SecurityEnforcer />
           <ClientPlatformManager>
-            {children}
+            <BrandProvider>
+              {children}
+            </BrandProvider>
           </ClientPlatformManager>
           <div className="print:hidden">
             <SupportChat />

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/store/useCart';
+import { useBrandColor } from '@/components/BrandProvider';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
@@ -119,6 +120,8 @@ function CartItem({
   onImageClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const darkColor = { color: '#141414' };
 
   return (
     <motion.div
@@ -175,7 +178,7 @@ function CartItem({
           <div className="flex justify-between items-start">
             <motion.h3
               className="text-xs font-display font-medium italic uppercase tracking-tight"
-              animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+              animate={isHovered ? brandColor : darkColor}
               transition={{ duration: DURATION.fast }}
             >
               {item.name}
@@ -235,6 +238,8 @@ function SearchResultItem({ product, index, onClick }: {
   onClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const darkColor = { color: '#141414' };
 
   return (
     <motion.div
@@ -267,7 +272,7 @@ function SearchResultItem({ product, index, onClick }: {
         <div className="flex flex-col justify-center">
           <motion.h3
             className="text-[10px] font-medium uppercase tracking-tight"
-            animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+            animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
             {product.name}

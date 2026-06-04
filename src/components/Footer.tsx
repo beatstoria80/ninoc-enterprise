@@ -3,16 +3,18 @@
 import React from 'react';
 import { Mail, MapPin, Shield, Lock, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { useStoreName } from '@/components/BrandProvider';
 
 export default function GlobalFooter() {
+  const storeName = useStoreName();
   return (
     <footer className="bg-white border-t border-ink/5 pt-3 pb-2 px-4 md:px-8 w-full mt-auto">
       <div className="w-full flex flex-col md:flex-row justify-between items-start gap-4 md:gap-8">
-        
+
         {/* Brand Column */}
         <div className="flex flex-col gap-0.5 w-full md:max-w-[200px] lg:max-w-xs">
           <Link href="/" className="inline-block">
-            <span className="text-base font-display font-medium italic tracking-tighter text-ink leading-none">NINOC</span>
+            <span className="text-base font-display font-medium italic tracking-tighter text-ink leading-none">{storeName}</span>
           </Link>
           <p className="text-[8px] font-medium leading-relaxed text-ink/40 mt-1 uppercase tracking-widest">
             Wear the art, own the day. Premium artistic collections for the conscious mobility.
@@ -24,9 +26,9 @@ export default function GlobalFooter() {
           <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Navigation</h4>
           <div className="flex flex-col gap-1">
             {['Home', 'Shop', 'Collections', 'Craft'].map((item) => (
-              <Link 
+              <Link
                 key={item}
-                href={item === 'Home' ? '/' : `/${item.toLowerCase()}`} 
+                href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
                 className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none"
               >
                 {item}
@@ -42,10 +44,10 @@ export default function GlobalFooter() {
             Legal Specifications
           </Link>
         </div>
-          
+
         {/* Base */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NINOC Base</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{storeName} Base</h4>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
@@ -72,13 +74,13 @@ export default function GlobalFooter() {
 
       <div className="w-full mt-3 pt-2 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-2">
         <div className="flex items-center gap-3">
-          <p className="text-[7px] font-medium uppercase tracking-widest text-ink/30">© 2026 NINOC ENTERPRISE.</p>
+          <p className="text-[7px] font-medium uppercase tracking-widest text-ink/30">© 2026 {storeName} ENTERPRISE.</p>
           <div className="h-2 w-[1px] bg-ink/10 hidden md:block" />
           <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20 leading-none hidden md:block">
             Data privasi terlindungi melalui enkripsi standar. Tidak membagikan informasi pribadi ke pihak ketiga.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">

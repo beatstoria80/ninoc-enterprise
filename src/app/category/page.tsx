@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';
+import { useBrandColor } from '@/components/BrandProvider';
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM MODERN ICONS — NINOC STUDIO
@@ -140,6 +141,8 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const Icon = cat.icon;
+  const brandColor = useBrandColor();
+  const white = '#ffffff';
 
   return (
     <motion.button
@@ -176,7 +179,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
 
         {/* Icon */}
         <motion.div
-          animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#E8527A' }}
+          animate={{ color: isSelected ? white : isHovered ? white : brandColor.color }}
           transition={{ duration: DURATION.fast }}
         >
           <Icon />
@@ -226,6 +229,8 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
 
 function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const darkColor = { color: '#141414' };
 
   return (
     <motion.div
@@ -282,7 +287,7 @@ function ProductCard({ product }: { product: Product }) {
           </motion.p>
           <motion.h3
             className="text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink truncate"
-            animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+            animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
             {product.name}

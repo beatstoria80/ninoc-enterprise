@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';
 import DragSlider from '@/components/DragSlider';
+import { useBrandColor } from '@/components/BrandProvider';
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM MODERN ICONS — NINOC STUDIO
@@ -164,6 +165,7 @@ const CAROUSEL_INTERVAL = 200;
 
 function PortraitImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const brandColor = useBrandColor();
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -236,7 +238,7 @@ function PortraitImageCarousel() {
                 key={i}
                 className="w-1 h-1 rounded-full"
                 animate={{
-                  backgroundColor: currentIndex === i ? '#E8527A' : 'rgba(20,20,20,0.2)',
+                  backgroundColor: currentIndex === i ? brandColor.color : 'rgba(20,20,20,0.2)',
                   scale: currentIndex === i ? 1.4 : 1,
                 }}
                 transition={{ duration: 0.15, ease: EASING.out }}
@@ -272,6 +274,8 @@ function ProductCard({ product, index }: ProductCardProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const darkColor = { color: '#141414' };
 
   const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
   const CategoryIcon = categoryInfo?.icon || PakaianIcon;
@@ -327,7 +331,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
           <motion.h3
             className="text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
-            animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+            animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
             {product.name}
@@ -362,7 +366,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
               <motion.div
                 className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center"
-                animate={{ backgroundColor: isHovered ? '#E8527A' : 'rgba(20,20,20,0.05)' }}
+                animate={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
                 transition={{ duration: DURATION.fast }}
               >
                 <motion.div
@@ -414,7 +418,7 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
       <div className="space-y-0 md:space-y-2">
         <motion.h3
           className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest leading-none"
-          animate={{ color: isHovered ? '#E8527A' : '#141414' }}
+          animate={isHovered ? brandColor : darkColor}
           transition={{ duration: DURATION.fast }}
         >
           {title}
@@ -445,13 +449,13 @@ function CategoryQuickAccess() {
             <PressButton
               href={cat.href}
               className="flex items-center gap-2 md:gap-4 bg-white border border-ink/10 px-3 py-2.5 md:px-6 md:py-4 group whitespace-nowrap rounded-none"
-              whileHover={{ borderColor: '#E8527A', backgroundColor: '#E8527A' }}
+              whileHover={{ borderColor: brandColor.color, backgroundColor: brandColor.color }}
               whileTap={{ scale: 0.97 }}
             >
               {/* Icon container - bigger for mobile */}
               <motion.div
                 className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-ink/5 rounded-none"
-                animate={{ backgroundColor: '#E8527A' }}
+                animate={{ backgroundColor: brandColor.color }}
                 transition={{ duration: DURATION.fast }}
               >
                 <motion.div

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useSettings } from '@/store/useSettings';
 import {
   Store, CreditCard, Clock, Palette, Truck, HelpCircle,
   MessageSquare, Lock, Search, Plus, X, Save, Upload,
@@ -97,14 +98,19 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   );
 }
 
-function SaveButton({ onClick }: { onClick?: () => void }) {
+function SaveButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors"
+      disabled={loading}
+      className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <Save size={11} />
-      Save Changes
+      {loading ? (
+        <span className="inline-block w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
+      ) : (
+        <Save size={11} />
+      )}
+      {loading ? 'Saving…' : 'Save Changes'}
     </button>
   );
 }
@@ -351,10 +357,20 @@ function ScheduleSection() {
 // SECTION: Store Decoration
 // ─────────────────────────────────────────────────────────────────────
 function DecorationSection() {
-  const [storeName, setStoreName] = useState('NINOC STORE');
-  const [tagline, setTagline] = useState('Archival Garment Studio');
-  const [accentColor, setAccentColor] = useState('#E8527A');
-  const [heroBanner, setHeroBanner] = useState('');
+  const { settings, fetchSettings, updateSettings } = useSettings();
+  const [storeName, setStoreName] = useState(settings.storeName);
+  const [tagline, setTagline] = useState(settings.tagline);
+  const [accentColor, setAccentColor] = useState(settings.accentColor);
+  const [heroBanner, setHeroBanner] = useState(settings.heroBannerUrl || '');
+  const [saving, setSaving] = useState(false);
+
+  // Sync local state when settings load from DB
+  useState(() => {
+    setStoreName(settings.storeName);
+    setTagline(settings.tagline);
+    setAccentColor(settings.accentColor);
+    setHeroBanner(settings.heroBannerUrl || '');
+  });
 
   const mockProducts = [
     { name: 'Archive Jacket 001', price: '485.000', badge: 'BEST SELLER' },
@@ -507,7 +523,18 @@ function DecorationSection() {
 
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton
+          loading={saving}
+          onClick={async () => {
+            setSaving(true);
+            try {
+              await updateSettings({ storeName, tagline, accentColor, heroBannerUrl: heroBanner });
+              await fetchSettings();
+            } finally {
+              setSaving(false);
+            }
+          }}
+        />
       </div>
     </SettingsSection>
   );

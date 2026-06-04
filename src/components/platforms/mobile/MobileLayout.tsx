@@ -7,6 +7,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { useBrandColor } from '@/components/BrandProvider';
 import Image from 'next/image';
 
 function cn(...inputs: ClassValue[]) {
@@ -217,6 +218,7 @@ export default function MobileLayout({
   const [isSearching, setIsSearching] = useState(false);
   const [supportUnreadCount, setSupportUnreadCount] = useState(0);
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const brandColor = useBrandColor();
 
   const { scrollY } = useScroll();
 
@@ -313,7 +315,7 @@ export default function MobileLayout({
                   <PressScale className="flex items-center gap-2">
                     <motion.div
                       className="w-6 h-6 border border-ink/10 flex items-center justify-center bg-white"
-                      whileHover={{ borderColor: '#E8527A', color: '#E8527A' }}
+                      whileHover={{ borderColor: brandColor.color, color: brandColor.color }}
                     >
                       <BackIcon />
                     </motion.div>
@@ -370,7 +372,7 @@ export default function MobileLayout({
                 <div className="flex items-center gap-3">
                   <motion.div
                     className="flex-1 relative flex items-center gap-3 bg-ink/[0.03] px-4 py-2.5 border border-ink/[0.05]"
-                    animate={{ borderColor: '#E8527A' }}
+                    animate={{ borderColor: brandColor.color }}
                   >
                     <SearchIcon />
                     <input

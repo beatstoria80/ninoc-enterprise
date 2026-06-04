@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useBrandColor } from '@/components/BrandProvider';
 import Link from 'next/link';
 
 // ═══════════════════════════════════════════════════════════════
@@ -151,6 +152,9 @@ interface CollectionCardProps {
 
 function CollectionCard({ title, description, icon, index, variant = 'staples', itemCount = 12, cta = 'SHOP THE DROP →', tag = 'CORE-001' }: CollectionCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const white = '#ffffff';
+  const darkColor = { color: '#141414' };
 
   return (
     <motion.div
@@ -186,7 +190,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
             custom={index}
             animate={{
               backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)',
-              color: isHovered ? '#ffffff' : '#E8527A',
+              color: isHovered ? white : brandColor.color,
             }}
             transition={{ duration: DURATION.fast }}
           >
@@ -240,7 +244,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
             </motion.div>
 
             <motion.div
-              animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : '#E8527A' }}
+              animate={{ x: isHovered ? 4 : 0, color: isHovered ? white : brandColor.color }}
               transition={{ duration: DURATION.fast }}
               className="flex items-center gap-2"
             >
@@ -407,7 +411,7 @@ export default function Collections() {
               <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
                 {/* Season indicator dots */}
                 <div className="flex gap-1">
-                  {['#E8527A', '#141414', '#E8527A'].map((color, i) => (
+                  {[brandColor.color, '#141414', brandColor.color].map((color, i) => (
                     <motion.div
                       key={i}
                       className="w-1.5 h-1.5 rounded-full"
@@ -425,7 +429,7 @@ export default function Collections() {
             <PressButton
               href="/shop"
               className="flex items-center gap-3 bg-ink text-white px-6 md:px-10 py-3 md:py-4 group"
-              whileHover={{ backgroundColor: '#E8527A' }}
+              whileHover={{ backgroundColor: brandColor.color }}
             >
               <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.3em]">Browse Catalog</span>
               <motion.div animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
