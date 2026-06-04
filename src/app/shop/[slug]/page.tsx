@@ -347,13 +347,13 @@ export default function ProductDetailPage() {
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px]">
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Jenis Atasan</span><span className="font-medium">Kaos</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Bahan</span><span className="font-medium">Katun</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Gaya</span><span className="font-medium">Basic</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Motif</span><span className="font-medium">Lainnya</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Panjang Lengan</span><span className="font-medium">Lengan Pendek</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Garis Leher</span><span className="font-medium">Kerah Bulat</span></div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px]">
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Jenis Atasan</span><span className="font-semibold">Kaos</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Bahan</span><span className="font-semibold">Katun</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Gaya</span><span className="font-semibold">Basic</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Motif</span><span className="font-semibold">Lainnya</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Panjang Lengan</span><span className="font-semibold">Lengan Pendek</span></div>
+                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Garis Leher</span><span className="font-semibold">Kerah Bulat</span></div>
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
