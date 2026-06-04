@@ -528,7 +528,7 @@ export default function ProductDetailPage() {
                                 <Trash2 size={12} strokeWidth={2} />
                               </button>
                             </div>
-                            <span className="text-[8px] font-medium text-ink/30 uppercase tracking-wider mb-auto mt-0.5">
+                            <span className="text-[8px] font-medium text-ink/60 uppercase tracking-wider mb-auto mt-0.5">
                                     {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
                                   </span>
                             
