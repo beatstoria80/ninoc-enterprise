@@ -342,11 +342,12 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
 
-        {/* STICKY NAVIGATION WRAPPER */}
-        <div className="sticky top-0 z-50 bg-cr/95 backdrop-blur-md pb-2 pt-2 md:pt-4 -mx-4 px-4 md:-mx-12 md:px-12 border-b border-ink/5 mb-4 shadow-sm">
+        {/* FIXED NAVIGATION WRAPPER */}
+        <div className="fixed top-14 md:top-[88px] left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-b border-ink/5 shadow-sm">
+          <div className="max-w-[1800px] mx-auto px-4 md:px-12 pb-2 pt-2 md:pt-4">
           {/* HEADER */}
           <div className="flex items-center justify-between mb-2 md:mb-3">
             <motion.h1
@@ -403,10 +404,14 @@ export default function CategoryPage() {
               </motion.div>
             )}
           </AnimatePresence>
+          </div>
         </div>
 
+        {/* SPACER FOR FIXED HEADER */}
+        <div className="h-[140px] md:h-[160px]" />
+
         {/* PRODUCT GRID */}
-        <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
+        <div ref={gridRef} className="pb-32 md:pb-40">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedCategory || 'all'}
@@ -446,14 +451,14 @@ export default function CategoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* STATS FOOTER */}
+        {/* FIXED STATS FOOTER */}
         <motion.div
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: DURATION.medium }}
-          className="mt-6 md:mt-8 border-t border-ink/5 pt-3 md:pt-4 flex items-center justify-between"
+          className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5"
         >
+          <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <motion.div
               className="space-y-0.5"
@@ -479,6 +484,7 @@ export default function CategoryPage() {
               <ChevronRight size={14} />
             </motion.div>
           </PressButton>
+          </div>
         </motion.div>
 
       </div>
