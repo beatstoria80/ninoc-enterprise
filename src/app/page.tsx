@@ -667,7 +667,7 @@ export default function Home() {
           </div>
 
           {/* Right: Metadata Sidebar */}
-          <div className="col-span-2 lg:col-span-4 lg:pt-[450px] -mt-10 md:mt-0 lg:mt-0">
+          <div className="col-span-2 lg:col-span-4 lg:pt-20 -mt-10 md:mt-0 lg:mt-0">
             <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
               {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
                 <motion.div
