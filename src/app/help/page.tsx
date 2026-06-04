@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
 interface HelpSection {
@@ -20,12 +20,39 @@ const HELP_SECTIONS: HelpSection[] = [
   { key: 'help_guide_privacy', label: 'Privacy', icon: 'PP' },
 ];
 
+// Default fallback content for each section (shown when DB has no saved data)
+const DEFAULT_VALUES: Record<string, any> = {
+  help_guide_customer_care: {
+    wa: '08211983774',
+    email: 'cs@ninoc.id',
+    hours: 'Senin–Sabtu, 08.00–17.00 WIB',
+    notes: 'Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan hubungi customer service kami melalui WhatsApp.',
+  },
+  help_guide_payment: {
+    guide: 'Kami menyediakan berbagai metode pembayaran yang aman dan mudah untuk kenyamanan Anda.\n\nMetode Pembayaran yang Tersedia:\n\n• Transfer Bank (BCA, Mandiri, BRI, BNI)\n• Virtual Account\n• QRIS\n• Kartu Debit/Kredit (jika tersedia)\n\nProses Pembayaran:\n\n1. Pilih produk yang ingin dibeli.\n2. Lanjutkan ke halaman checkout.\n3. Pilih metode pembayaran yang diinginkan.\n4. Ikuti instruksi pembayaran.\n5. Setelah pembayaran berhasil, pesanan akan otomatis diproses.',
+    accounts: [],
+  },
+  help_guide_return: {
+    policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 3 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.',
+    process: '1. Hubungi customer service kami melalui WhatsApp.\n2. Sertakan nomor pesanan, foto produk, dan penjelasan kendala.\n3. Tim kami akan melakukan verifikasi.\n4. Jika disetujui, kami akan memberikan instruksi pengembalian barang atau proses refund.\n\nEstimasi Proses:\n\n• Verifikasi: 1–2 hari kerja\n• Refund: 3–7 hari kerja setelah persetujuan',
+    notes: 'Refund akan dikembalikan melalui metode pembayaran awal atau transfer bank. Biaya pengiriman retur ditanggung sesuai hasil verifikasi.',
+  },
+  help_guide_shipping: {
+    info: 'Terima kasih telah berbelanja di toko kami.\n\nKami memproses pesanan setiap hari kerja (Senin–Sabtu) pukul 08.00–17.00 WIB.\n\nEstimasi Pengiriman:\n\nJabodetabek: 1–2 hari kerja\nPulau Jawa: 2–4 hari kerja\nLuar Pulau Jawa: 3–7 hari kerja\n\nKetentuan Pengiriman:\n\n• Pesanan yang masuk sebelum pukul 15.00 WIB akan diproses di hari yang sama.\n• Nomor resi akan dikirim otomatis setelah pesanan dikirim.',
+    area: 'Kami mengirim ke seluruh Indonesia',
+  },
+  help_guide_how_to_order: 'Ikuti langkah mudah berikut untuk melakukan pemesanan:\n\n1. Pilih produk yang ingin Anda beli.\n2. Klik tombol Tambah ke Keranjang atau Beli Sekarang.\n3. Masukkan jumlah produk yang diinginkan.\n4. Isi data pengiriman dengan lengkap.\n5. Pilih metode pembayaran yang tersedia.\n6. Klik Buat Pesanan.\n7. Lakukan pembayaran sesuai instruksi.\n8. Pesanan Anda akan segera kami proses setelah pembayaran terverifikasi.\n\nCatatan:\n\n• Pastikan alamat dan nomor WhatsApp yang Anda masukkan sudah benar.\n• Simpan nomor pesanan untuk memudahkan pengecekan status.',
+  help_guide_how_to_track: 'Setelah pesanan Anda dikirim, kami akan memberikan nomor resi pengiriman melalui WhatsApp atau email yang terdaftar.\n\nCara Melacak Pesanan:\n\n1. Salin nomor resi yang telah kami kirimkan.\n2. Kunjungi website resmi jasa pengiriman yang digunakan.\n3. Masukkan nomor resi pada kolom pelacakan.\n4. Klik tombol Lacak.\n5. Informasi status pengiriman akan ditampilkan oleh pihak ekspedisi.',
+  help_guide_terms: 'Dengan mengakses dan bertransaksi di toko kami, Anda dianggap telah membaca, memahami, dan menyetujui syarat dan ketentuan berikut:\n\nKetentuan Umum\n\n• Seluruh harga produk ditampilkan dalam Rupiah (IDR).\n• Stok dan harga produk dapat berubah sewaktu-waktu tanpa pemberitahuan sebelumnya.\n• Pesanan akan diproses setelah pembayaran berhasil diterima dan diverifikasi.\n• Pembeli wajib memastikan data pemesanan dan alamat pengiriman sudah benar.',
+  help_guide_privacy: 'Kami menghargai kepercayaan Anda dan berkomitmen untuk menjaga keamanan serta kerahasiaan setiap data pribadi yang diberikan saat menggunakan layanan dan melakukan transaksi di toko kami.\n\nInformasi yang kami kumpulkan digunakan secara terbatas untuk keperluan:\n\n• Pemrosesan dan konfirmasi pesanan\n• Pengiriman produk\n• Verifikasi pembayaran\n• Layanan pelanggan dan penanganan keluhan',
+};
+
 interface SettingItem {
   key: string;
   value: any;
 }
 
-function SectionContent({ value, key }: { value: any; key: string }) {
+function SectionContent({ value, sectionKey }: { value: any; sectionKey: string }) {
   if (!value) return null;
 
   // Object with guide + accounts (payment)
@@ -171,17 +198,41 @@ export default function HelpPage() {
     load();
   }, []);
 
-  const activeItem = settings[activeSection];
+  // Merge DB data with defaults — always show content
+  const activeItem = useMemo(() => {
+    const dbItem = settings[activeSection];
+    if (dbItem) return dbItem;
+    // Fallback to default values
+    const defaultVal = DEFAULT_VALUES[activeSection];
+    if (defaultVal) return { key: activeSection, value: defaultVal };
+    return null;
+  }, [settings, activeSection]);
 
   return (
     <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
+      {/* Exit Navigation — static top bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-ink/5">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-ink/40 hover:text-ink transition-colors group"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
+              <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
+          </Link>
+          <span className="text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium">Help Guide</span>
+        </div>
+      </div>
+
       {/* Main Layout */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-24 pb-20">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-16 pb-20">
         {/* Title */}
         <div className="border-b border-ink/5 pb-4 mb-0">
           <div className="flex items-baseline gap-4">
             <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Help Guide</h1>
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-semibold">ARCHIVAL CATALOG</span>
+            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-medium">ARCHIVAL CATALOG</span>
           </div>
           <p className="text-[9px] text-ink/30 mt-2 uppercase tracking-widest">Panduan customer care, pembayaran, pengiriman, dan ketentuan lainnya</p>
         </div>
@@ -244,7 +295,7 @@ export default function HelpPage() {
                     </p>
                   </div>
                 </div>
-                <SectionContent value={activeItem.value} key={activeItem.key} />
+                <SectionContent value={activeItem.value} sectionKey={activeItem.key} />
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-40 gap-3 text-ink/20">
