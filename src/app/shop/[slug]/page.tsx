@@ -307,16 +307,20 @@ export default function ProductDetailPage() {
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
-                <p className={cn("text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap", !isExpanded && "line-clamp-4")}>{product.description || 'Premium quality apparel from NINOC.'}</p>
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
-                >
-                  {isExpanded ? 'Less' : 'More'}
-                </button>
+                <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
+                  {product.description || 'Premium quality apparel from NINOC.'}
+                </p>
+                {product.description && product.description.length > 200 && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
+                  >
+                    {isExpanded ? 'Less' : 'More'}
+                  </button>
+                )}
               </div>
 
-              {/* Spesifikasi Produk / Measurement — Visible by default */}
+              {/* Spesifikasi Produk / Measurement — Always visible */}
               <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5">
                 <div className="flex items-center gap-3 mb-1.5">
                   <button
@@ -379,7 +383,7 @@ export default function ProductDetailPage() {
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "w-10 h-10 lg:w-12 lg:h-12 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border",
+                        "w-9 h-9 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border",
                         effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
@@ -440,7 +444,7 @@ export default function ProductDetailPage() {
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-3 lg:py-5 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-3 lg:py-3 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
