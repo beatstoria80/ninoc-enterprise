@@ -214,35 +214,35 @@ function SectionContent({ value }: { value: any }) {
     );
   }
 
-  // Return & Refund: policy + process + notes
-  if (typeof value === 'object' && (value.policy || value.process)) {
+  // Return & Refund: policy + process + notes — 3-column grid
+  if (typeof value === 'object' && (value.policy || value.process || value.notes)) {
     return (
-      <div className="space-y-7">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {value.policy && (
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-5 bg-rose/40" />
+          <div className="border border-ink/8 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-4 bg-rose/40" />
               <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/60">Kebijakan Retur</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
+            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
           </div>
         )}
         {value.process && (
-          <div className="border-t border-ink/5 pt-6">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-5 bg-ink/10" />
-              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30">Alur Proses Retur</p>
+          <div className="border border-ink/8 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-4 bg-ink/10" />
+              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/40">Alur Proses</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
+            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
           </div>
         )}
         {value.notes && (
-          <div className="border-t border-ink/5 pt-6">
+          <div className="border border-ink/8 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-5 bg-ink/5" />
-              <p className="text-[8px] uppercase tracking-[0.2em] font-medium text-ink/20">Catatan</p>
+              <div className="w-1 h-4 bg-ink/5" />
+              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30">Catatan</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
+            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
           </div>
         )}
       </div>
@@ -322,7 +322,7 @@ export default function HelpPage() {
 
             {/* Left: Section Tabs */}
             <div className="lg:border-r lg:border-ink/5 lg:pr-0">
-              <nav className="flex lg:flex-col gap-0 overflow-x-auto lg:overflow-visible no-scrollbar lg:pt-6 pb-3 lg:pb-0">
+              <nav className="flex lg:flex-col gap-0 pb-3 lg:pb-0">
                 {HELP_SECTIONS.map((section) => {
                   const isActive = activeSection === section.key;
                   return (
