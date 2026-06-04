@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import GlobalFooter from '@/components/Footer';
 
 interface HelpSection {
   key: string;
@@ -289,10 +288,9 @@ export default function HelpPage() {
   const activeMeta = HELP_SECTIONS.find((s) => s.key === activeSection);
 
   return (
-    <>
-      <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
-        {/* Exit Navigation — static top bar */}
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-ink/5">
+    <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
+      {/* Exit Navigation — static top bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-ink/5">
           <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex items-center justify-between h-11">
             <Link
               href="/"
@@ -398,7 +396,5 @@ export default function HelpPage() {
           </p>
         </div>
       </main>
-      <GlobalFooter />
-    </>
   );
 }
