@@ -351,72 +351,160 @@ function ScheduleSection() {
 // SECTION: Store Decoration
 // ─────────────────────────────────────────────────────────────────────
 function DecorationSection() {
-  const [banners, setBanners] = useState([
-    { id: '1', url: '', alt: 'Banner Utama', position: 'hero', active: true },
-  ]);
+  const [storeName, setStoreName] = useState('NINOC STORE');
+  const [tagline, setTagline] = useState('Archival Garment Studio');
   const [accentColor, setAccentColor] = useState('#E8527A');
-  const [fontStyle, setFontStyle] = useState('Inter');
-  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('light');
+  const [heroBanner, setHeroBanner] = useState('');
+
+  const mockProducts = [
+    { name: 'Archive Jacket 001', price: '485.000', badge: 'BEST SELLER' },
+    { name: 'Industrial Hoodie', price: '320.000', badge: '' },
+    { name: 'Manifesto Tee', price: '185.000', badge: 'NEW' },
+    { name: 'Studio Cap', price: '95.000', badge: '' },
+  ];
+
+  const collections = [
+    { name: 'Archive Collection' },
+    { name: 'Industrial Series' },
+    { name: 'Studio Essentials' },
+  ];
 
   return (
-    <SettingsSection
-      title="Store Decoration"
-      subtitle="Customize tampilan visual storefront"
-    >
+    <SettingsSection title="Store Decoration" subtitle="Preview storefront decoration — live update saat ketik">
       <div className="space-y-5">
-        <div>
-          <p className="text-[9px] uppercase tracking-widest text-ink/50 font-medium mb-3">Hero Banner</p>
-          <div className="border border-dashed border-ink/20 rounded-sm p-8 text-center bg-ink/[0.015] hover:border-rose/30 transition-colors cursor-pointer">
-            <Upload size={24} className="text-ink/20 mx-auto mb-2" />
-            <p className="text-[10px] text-ink/50 font-medium">Upload Hero Banner</p>
-            <p className="text-[8px] text-ink/30 mt-1">JPG/PNG, 1920x600px, max 3MB</p>
+
+        {/* Browser Preview Frame */}
+        <div className="rounded-sm overflow-hidden border border-ink/10">
+          {/* Browser chrome */}
+          <div className="bg-ink/5 px-3 py-1.5 flex items-center gap-1.5">
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-red-400/40" />
+              <div className="w-2 h-2 rounded-full bg-amber-400/40" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
+            </div>
+            <div className="flex-1 bg-white border border-ink/10 rounded px-2 py-0.5 text-[7px] text-ink/30 font-mono truncate">
+              ninoc.id
+            </div>
+          </div>
+
+          {/* Website content */}
+          <div className="bg-white">
+            {/* Top nav */}
+            <div className="border-b border-ink/5 px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-sm flex items-center justify-center text-white text-[8px] font-black" style={{ backgroundColor: '#141414' }}>N</div>
+                <span className="text-[9px] font-black tracking-tight text-ink uppercase">{storeName || 'NINOC STORE'}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {['Shop', 'About', 'Craft', 'Collections'].map(link => (
+                  <span key={link} className="text-[7px] text-ink/40 font-medium uppercase tracking-wider">{link}</span>
+                ))}
+                <div className="w-4 h-4 rounded-full bg-ink/5" />
+              </div>
+            </div>
+
+            {/* Hero Banner */}
+            <div
+              className="relative h-28 overflow-hidden"
+              style={{
+                background: heroBanner
+                  ? `url(${heroBanner}) center/cover no-repeat`
+                  : `linear-gradient(135deg, #141414 0%, #1a1a1a 60%, ${accentColor}22 100%`
+              }}
+            >
+              <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-black/10 transition-colors group">
+                <Upload size={16} className="text-white/40 group-hover:text-white/70 transition-colors" />
+                <span className="text-[7px] text-white/40 group-hover:text-white/70 mt-1 transition-colors">Upload Hero Banner</span>
+                <input type="file" accept="image/*" className="hidden" onChange={e => {
+                  const f = e.target.files?.[0];
+                  if (f) setHeroBanner(URL.createObjectURL(f));
+                }} />
+              </label>
+              {!heroBanner && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
+                  <p className="text-[7px] text-white/30 mt-1">{tagline || 'Archival Garment Studio'}</p>
+                  <button
+                    className="mt-3 px-4 py-1 text-[7px] uppercase tracking-widest font-semibold rounded-sm text-white transition-colors"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    Shop Now
+                  </button>
+                </div>
+              )}
+              <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
+            </div>
+
+            {/* Product Grid */}
+            <div className="px-4 py-3">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-ink">New Arrivals</p>
+                <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {mockProducts.map((p, i) => (
+                  <div key={i} className="border border-ink/5 rounded-sm overflow-hidden">
+                    <div className="aspect-square bg-ink/[0.03] relative flex items-center justify-center">
+                      <Package size={20} className="text-ink/10" />
+                      {p.badge && (
+                        <span
+                          className="absolute top-1.5 left-1.5 text-[6px] uppercase tracking-widest font-black text-white px-1.5 py-0.5 rounded-sm"
+                          style={{ backgroundColor: accentColor }}
+                        >
+                          {p.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-1.5">
+                      <p className="text-[7px] font-semibold text-ink leading-tight truncate">{p.name}</p>
+                      <p className="text-[7px] font-bold mt-0.5" style={{ color: accentColor }}>
+                        IDR {p.price}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Collections Row */}
+            <div className="px-4 pb-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[9px] font-black uppercase tracking-widest text-ink">Collections</p>
+                <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {collections.map((col, i) => (
+                  <div key={i} className="aspect-[4/3] rounded-sm border border-dashed border-ink/10 bg-ink/[0.02] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-rose/30 transition-colors">
+                    <Upload size={12} className="text-ink/20" />
+                    <span className="text-[7px] text-ink/30 text-center px-1">{col.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Editable Controls */}
         <div className="grid grid-cols-3 gap-4">
-          <Field label="Accent Color">
+          <Field label="Nama Toko (preview)">
+            <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="NINOC STORE" className="text-[10px]" />
+          </Field>
+          <Field label="Tagline">
+            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Archival Garment Studio" className="text-[10px]" />
+          </Field>
+          <Field label="Accent Color (brand)">
             <div className="flex items-center gap-2">
-              <input type="color" value={accentColor} onChange={e => setAccentColor(e.target.value)} className="w-8 h-8 rounded-sm border border-ink/10 cursor-pointer" />
+              <input
+                type="color"
+                value={accentColor}
+                onChange={e => setAccentColor(e.target.value)}
+                className="w-8 h-8 rounded-sm border border-ink/10 cursor-pointer shrink-0"
+              />
               <Input value={accentColor} onChange={e => setAccentColor(e.target.value)} className="flex-1 font-mono text-[10px]" />
             </div>
           </Field>
-          <Field label="Primary Font">
-            <select className="w-full px-3 py-2 text-[11px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40">
-              <option>Inter</option>
-              <option>Helvetica Neue</option>
-              <option>DM Sans</option>
-              <option>Plus Jakarta Sans</option>
-            </select>
-          </Field>
-          <Field label="Theme">
-            <div className="flex items-center gap-1">
-              {(['light', 'dark', 'auto'] as const).map(t => (
-                <button
-                  key={t}
-                  onClick={() => setTheme(t)}
-                  className={cn(
-                    "flex-1 py-2 text-[8px] uppercase tracking-widest rounded-sm border transition-colors",
-                    theme === t ? "bg-rose text-white border-rose" : "border-ink/10 text-ink/40 hover:border-ink/30"
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </Field>
         </div>
-        <div>
-          <p className="text-[9px] uppercase tracking-widest text-ink/50 font-medium mb-2">Featured Collections Banner</p>
-          <div className="grid grid-cols-3 gap-2">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="aspect-video border border-dashed border-ink/20 rounded-sm bg-ink/[0.015] flex items-center justify-center hover:border-rose/30 transition-colors cursor-pointer">
-                <div className="text-center">
-                  <Plus size={14} className="text-ink/20 mx-auto mb-1" />
-                  <p className="text-[7px] text-ink/30">Collection {i}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
         <SaveButton />
@@ -425,7 +513,7 @@ function DecorationSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────
+// SECTION: Delivery
 // SECTION: Delivery Setting
 // ─────────────────────────────────────────────────────────────────────
 function DeliverySection() {
