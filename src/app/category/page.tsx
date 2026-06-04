@@ -164,48 +164,47 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
         style={{ zIndex: 0 }}
       />
 
-      {/* Content with z-index */}
-      <div className="relative z-10">
-        {/* Spec Badge */}
-        <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2">
-          <motion.span
-            className={`text-[6px] font-mono tracking-tighter px-1 py-0.5 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/40'}`}
-            animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {cat.spec}
-          </motion.span>
-        </div>
-
+      {/* Content — single-row inline */}
+      <div className="relative z-10 flex items-center gap-2 md:gap-3 w-full">
         {/* Icon */}
         <motion.div
+          className="flex-shrink-0"
           animate={{ color: isSelected ? white : isHovered ? white : brandColor.color }}
           transition={{ duration: DURATION.fast }}
         >
           <Icon />
         </motion.div>
 
-        {/* Content */}
-        <div className="flex items-center gap-2">
+        {/* Label + Sublabel */}
+        <div className="flex items-center gap-1.5 min-w-0">
           <motion.h3
-            className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
+            className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight whitespace-nowrap ${isSelected ? 'text-white' : 'text-ink'}`}
             animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
             transition={{ duration: DURATION.fast }}
           >
             {cat.label}
           </motion.h3>
-          <motion.p
-            className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest ${isSelected ? 'text-white/60' : 'text-ink/30'}`}
-            animate={{ color: isSelected ? 'rgba(255,255,255,0.6)' : isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.3)' }}
+          <motion.span
+            className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${isSelected ? 'text-white/50' : 'text-ink/25'}`}
+            animate={{ color: isSelected ? 'rgba(255,255,255,0.5)' : isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.25)' }}
             transition={{ duration: DURATION.fast }}
           >
             — {cat.sublabel}
-          </motion.p>
+          </motion.span>
         </div>
 
-        {/* Arrow Indicator */}
+        {/* Spec Badge */}
+        <motion.span
+          className={`ml-auto text-[6px] font-mono tracking-tighter px-1 py-0.5 flex-shrink-0 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/30'}`}
+          animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }}
+          transition={{ duration: DURATION.fast }}
+        >
+          {cat.spec}
+        </motion.span>
+
+        {/* Arrow */}
         <motion.div
-          className={`ml-auto ${isSelected ? 'text-white' : 'text-ink/20'}`}
+          className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-ink/20'}`}
           animate={{ x: isSelected || isHovered ? 2 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
           transition={{ duration: DURATION.fast }}
         >
@@ -386,24 +385,18 @@ export default function CategoryPage() {
         <AnimatePresence>
           {selectedCategory && (
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
               transition={{ duration: DURATION.fast, ease: EASING.out }}
-              className="flex items-center justify-between mb-6"
+              className="flex items-center justify-between py-1.5 overflow-hidden"
             >
-              <div className="flex items-center gap-3">
-                <span className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/40">Filtering:</span>
-                <motion.span
-                  className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  {CATEGORIES.find((c) => c.id === selectedCategory)?.label}
-                </motion.span>
+              <div className="flex items-center gap-2">
+                <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
+                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span>
               </div>
-              <PressButton onClick={() => setSelectedCategory(null)} className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose">
-                Clear Filter
+              <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
+                Clear
               </PressButton>
             </motion.div>
           )}
