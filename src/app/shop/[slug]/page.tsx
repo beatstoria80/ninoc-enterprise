@@ -314,7 +314,7 @@ export default function ProductDetailPage() {
                 </p>
                 {(product.description || '').length > 200 && (
                   <button
-                    onClick={() => setIsExpanded(!isExpanded)}
+                    onClick={() => { setIsExpanded(true); setActiveInfoTab('specs'); }}
                     className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
                     {isExpanded ? 'Less' : 'More'}
