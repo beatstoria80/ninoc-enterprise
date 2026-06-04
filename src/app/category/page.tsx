@@ -153,7 +153,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative bg-white p-3 md:p-5 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
+      className={`relative bg-white p-2.5 md:p-3 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
     >
       {/* Background animation on hover */}
       <motion.div
@@ -167,7 +167,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
       {/* Content with z-index */}
       <div className="relative z-10">
         {/* Spec Badge */}
-        <div className="absolute top-2 right-2 md:top-4 md:right-4">
+        <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2">
           <motion.span
             className={`text-[6px] font-mono tracking-tighter px-1 py-0.5 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/40'}`}
             animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }}
@@ -186,9 +186,9 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
         </motion.div>
 
         {/* Content */}
-        <div className="space-y-1 md:space-y-2 mt-3 md:mt-6">
+        <div className="space-y-0.5 mt-1.5 md:mt-2">
           <motion.h3
-            className={`text-sm md:text-lg font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
+            className={`text-xs md:text-sm font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
             animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
             transition={{ duration: DURATION.fast }}
           >
@@ -212,7 +212,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
 
         {/* Arrow Indicator */}
         <motion.div
-          className={`absolute bottom-4 right-4 md:bottom-6 md:right-6 ${isSelected ? 'text-white' : 'text-ink/30'}`}
+          className={`absolute bottom-2 right-2 md:bottom-3 md:right-3 ${isSelected ? 'text-white' : 'text-ink/30'}`}
           animate={{ x: isSelected || isHovered ? 4 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.3)' }}
           transition={{ duration: DURATION.fast }}
         >
