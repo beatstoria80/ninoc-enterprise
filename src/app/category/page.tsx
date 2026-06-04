@@ -342,11 +342,11 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12">
-      <div className="max-w-[1800px] mx-auto">
+    <main className="h-[100dvh] overflow-hidden bg-cr noise pt-4 md:pt-20 px-4 md:px-12 flex flex-col pb-4 md:pb-6">
+      <div className="max-w-[1800px] mx-auto w-full h-full flex flex-col">
 
-        {/* STICKY NAVIGATION WRAPPER */}
-        <div className="sticky top-0 z-50 bg-cr/95 backdrop-blur-md pb-2 pt-2 md:pt-4 -mx-4 px-4 md:-mx-12 md:px-12 border-b border-ink/5 mb-4 shadow-sm">
+        {/* STATIC NAVIGATION WRAPPER */}
+        <div className="flex-shrink-0 border-b border-ink/5 mb-4">
           {/* HEADER */}
           <div className="flex items-center justify-between mb-2 md:mb-3">
             <motion.h1
@@ -405,8 +405,8 @@ export default function CategoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* PRODUCT GRID */}
-        <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
+        {/* PRODUCT GRID - SCROLLABLE AREA */}
+        <div ref={gridRef} className="flex-1 overflow-y-auto no-scrollbar pt-1 md:pt-2 pb-4 -mx-4 px-4 md:-mx-12 md:px-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedCategory || 'all'}
@@ -446,13 +446,12 @@ export default function CategoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* STATS FOOTER */}
+        {/* STATS FOOTER - FIXED AT BOTTOM */}
         <motion.div
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: DURATION.medium }}
-          className="mt-6 md:mt-8 border-t border-ink/5 pt-3 md:pt-4 flex items-center justify-between"
+          className="flex-shrink-0 mt-2 md:mt-4 border-t border-ink/5 pt-3 md:pt-4 flex items-center justify-between"
         >
           <div className="flex items-center gap-8">
             <motion.div
