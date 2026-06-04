@@ -49,7 +49,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
 
   // Platform detection for mobile-specific UI
@@ -307,7 +307,7 @@ export default function ProductDetailPage() {
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
-                <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium line-clamp-4">{product.description || 'Premium quality apparel from NINOC.'}</p>
+                <p className={cn("text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap", !isExpanded && "line-clamp-4")}>{product.description || 'Premium quality apparel from NINOC.'}</p>
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
@@ -316,9 +316,8 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Spesifikasi Produk / Measurement — Hidden by default, show when expanded */}
-              {isExpanded && (
-              <div className="pt-1 border-t border-ink/5">
+              {/* Spesifikasi Produk / Measurement — Visible by default */}
+              <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5">
                 <div className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
@@ -365,7 +364,6 @@ export default function ProductDetailPage() {
                   )}
                 </div>
               </div>
-              )}
             </div>
           </div>
 
