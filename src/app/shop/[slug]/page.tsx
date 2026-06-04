@@ -322,8 +322,8 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Spesifikasi Produk / Measurement — Always visible */}
-              <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5">
+              {/* Spesifikasi / Measurement — Sticky, stays at top when description expands */}
+              <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
                 <div className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
