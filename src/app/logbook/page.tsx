@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 
 // ═══════════════════════════════════════════════════════════════
@@ -178,6 +179,43 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
 // ═══════════════════════════════════════════════════════════════
 
 export default function LogbookPage() {
+  const [entries, setEntries] = useState<LogEntry[]>(LOG_ENTRIES);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('logbook_entries')
+          .select('*')
+          .order('published_date', { ascending: false });
+        
+        if (error) {
+          throw error;
+        }
+        
+        if (data && data.length > 0) {
+          // Map DB entries to the frontend LogEntry interface
+          const formattedEntries: LogEntry[] = data.map((item: any) => ({
+            id: item.entry_id,
+            date: item.published_date.replace(/-/g, '.'),
+            category: item.category,
+            title: item.title,
+            excerpt: item.excerpt || '',
+            slug: item.slug
+          }));
+          setEntries(formattedEntries);
+        }
+      } catch (err) {
+        console.warn('Could not fetch logbook entries from DB, falling back to dummy data.', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchEntries();
+  }, []);
+
   return (
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1200px] mx-auto">
@@ -209,9 +247,15 @@ export default function LogbookPage() {
           animate="visible"
           className="flex flex-col"
         >
-          {LOG_ENTRIES.map((entry, index) => (
-            <LogbookCard key={entry.id} entry={entry} index={index} />
-          ))}
+          {isLoading ? (
+            <div className="py-12 flex justify-center">
+              <div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin" />
+            </div>
+          ) : (
+            entries.map((entry, index) => (
+              <LogbookCard key={entry.id} entry={entry} index={index} />
+            ))
+          )}
 
           {/* END OF ARCHIVE MARKER */}
           <motion.div variants={itemVariants} className="mt-12 text-center">
