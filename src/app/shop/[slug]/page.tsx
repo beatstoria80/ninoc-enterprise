@@ -335,7 +335,7 @@ export default function ProductDetailPage() {
                   </button>
                   <span className="text-ink/10">|</span>
                   <button
-                    onClick={() => setActiveInfoTab('measurement')}
+                    onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
                     className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
