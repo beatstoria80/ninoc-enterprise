@@ -153,7 +153,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative bg-white p-2.5 md:p-3 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
+      className={`relative bg-white py-1.5 px-2.5 md:py-2 md:px-3 text-left group overflow-hidden flex items-center gap-2.5 md:gap-3 ${isSelected ? 'bg-ink text-white' : ''}`}
     >
       {/* Background animation on hover */}
       <motion.div
@@ -186,37 +186,30 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
         </motion.div>
 
         {/* Content */}
-        <div className="space-y-0.5 mt-1.5 md:mt-2">
+        <div className="flex items-center gap-2">
           <motion.h3
-            className={`text-xs md:text-sm font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
+            className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight ${isSelected ? 'text-white' : 'text-ink'}`}
             animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
             transition={{ duration: DURATION.fast }}
           >
             {cat.label}
           </motion.h3>
           <motion.p
-            className={`text-[8px] md:text-[9px] font-medium uppercase tracking-widest ${isSelected ? 'text-white/60' : 'text-ink/40'}`}
-            animate={{ color: isSelected ? 'rgba(255,255,255,0.6)' : isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.4)' }}
+            className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest ${isSelected ? 'text-white/60' : 'text-ink/30'}`}
+            animate={{ color: isSelected ? 'rgba(255,255,255,0.6)' : isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.3)' }}
             transition={{ duration: DURATION.fast }}
           >
-            {cat.sublabel}
-          </motion.p>
-          <motion.p
-            className={`text-[9px] md:text-[10px] font-medium leading-relaxed hidden md:block ${isSelected ? 'text-white/80' : 'text-ink/60'}`}
-            animate={{ color: isSelected ? 'rgba(255,255,255,0.8)' : isHovered ? 'rgba(255,255,255,0.8)' : 'rgba(20,20,20,0.6)' }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {cat.description}
+            — {cat.sublabel}
           </motion.p>
         </div>
 
         {/* Arrow Indicator */}
         <motion.div
-          className={`absolute bottom-2 right-2 md:bottom-3 md:right-3 ${isSelected ? 'text-white' : 'text-ink/30'}`}
-          animate={{ x: isSelected || isHovered ? 4 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.3)' }}
+          className={`ml-auto ${isSelected ? 'text-white' : 'text-ink/20'}`}
+          animate={{ x: isSelected || isHovered ? 2 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
           transition={{ duration: DURATION.fast }}
         >
-          <ChevronRight size={16} strokeWidth={1.5} />
+          <ChevronRight size={12} strokeWidth={1.5} />
         </motion.div>
       </div>
     </motion.button>
@@ -354,41 +347,27 @@ export default function CategoryPage() {
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <div className="flex flex-col gap-1 md:gap-2">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: DURATION.normal, ease: EASING.out }}
-              className="flex items-center gap-2"
-            >
-              <motion.div animate={{ rotate: [0, 360] }} transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}>
-                <Grid3X3 size={12} className="text-rose" />
-              </motion.div>
-              <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40">Archival Catalog</span>
-            </motion.div>
+        <div className="flex items-center justify-between mb-2 md:mb-3">
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.normal, ease: EASING.out }}
+            className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
+          >
+            <Grid3X3 size={10} className="text-rose" />
+            Category Index
+          </motion.h1>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: DURATION.slow, ease: EASING.out }}
-              className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none"
-            >
-              Category Index
-            </motion.h1>
-          </div>
-
-          {/* Mobile Back */}
           <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
             <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-              <ArrowLeft size={12} />
+              <ArrowLeft size={10} />
             </motion.div>
-            <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.3em]">Exit</span>
+            <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
           </PressButton>
         </div>
 
-        {/* CATEGORY INDEX — CELL-BLOCK GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-4 md:mb-6">
+        {/* CATEGORY INDEX — COMPACT INLINE GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
           {CATEGORIES.map((cat, i) => (
             <CategoryCard
               key={cat.id}
