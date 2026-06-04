@@ -9,7 +9,7 @@ import {
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
-  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter
+  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -24,6 +24,7 @@ import { LogisticsTab } from '@/components/admin/tabs/LogisticsTab';
 import { FinanceTab } from '@/components/admin/tabs/FinanceTab';
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
 import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
+import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -902,7 +903,8 @@ export default function AdminDashboard() {
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
     { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
-    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats }
+    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
+    { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
   ];
 
   return (
@@ -1040,7 +1042,8 @@ export default function AdminDashboard() {
                activeTab === 'customers' ? 'Membership' :
                activeTab === 'inventory' ? 'Stock History' :
                activeTab === 'finance' ? 'Finance' :
-               activeTab === 'messages' ? 'Support Chat' : activeTab}
+               activeTab === 'messages' ? 'Support Chat' :
+               activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
           
@@ -1184,6 +1187,8 @@ export default function AdminDashboard() {
               setIsCustomerModalOpen={setIsCustomerModalOpen}
             />
           )}
+
+          {activeTab === 'settings' && <SettingsTab />}
 
         </section>
         </div>
