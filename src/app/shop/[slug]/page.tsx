@@ -49,7 +49,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [isSpecModalOpen, setIsSpecModalOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
 
   // Platform detection for mobile-specific UI
@@ -309,14 +309,15 @@ export default function ProductDetailPage() {
                 <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
                 <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium line-clamp-4">{product.description || 'Premium quality apparel from NINOC.'}</p>
                 <button
-                  onClick={() => setIsSpecModalOpen(true)}
+                  onClick={() => setIsExpanded(!isExpanded)}
                   className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                 >
-                  + View Full Specifications
+                  {isExpanded ? 'Less' : 'More'}
                 </button>
               </div>
 
-              {/* Spesifikasi Produk / Measurement — Tab Toggle */}
+              {/* Spesifikasi Produk / Measurement — Hidden by default, show when expanded */}
+              {isExpanded && (
               <div className="pt-1 border-t border-ink/5">
                 <div className="flex items-center gap-3 mb-1.5">
                   <button
@@ -364,6 +365,7 @@ export default function ProductDetailPage() {
                   )}
                 </div>
               </div>
+              )}
             </div>
           </div>
 
@@ -640,65 +642,6 @@ export default function ProductDetailPage() {
         imageUrl={fullscreenImage}
         onClose={() => setFullscreenImage(null)}
       />
-
-      {/* Specifications Popup Modal */}
-      <AnimatePresence>
-        {isSpecModalOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsSpecModalOpen(false)}
-              className="fixed inset-0 bg-ink/60 backdrop-blur-sm z-[200]"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[500px] bg-white shadow-2xl z-[201] rounded-none overflow-hidden flex flex-col max-h-[85vh]"
-            >
-              {/* Modal Header */}
-              <div className="flex justify-between items-center p-5 border-b border-ink/5 bg-ink/[0.02]">
-                <h3 className="text-sm font-display font-medium italic uppercase tracking-wider text-ink">Product Specifications</h3>
-                <button 
-                  onClick={() => setIsSpecModalOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-white transition-colors border border-transparent hover:border-ink/5 shadow-sm"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-5 md:p-6 overflow-y-auto minimal-scroll space-y-6">
-                {/* Data Table */}
-                {product.specifications && product.specifications.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Information</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-y-1.5 sm:gap-y-3 gap-x-4 text-[11px] font-medium pt-1">
-                      {product.specifications.map((spec, idx) => (
-                        <React.Fragment key={idx}>
-                          <span className="text-ink/40 uppercase tracking-widest text-[9px] sm:text-[11px] sm:normal-case sm:tracking-normal mt-2 sm:mt-0">{spec.label}</span>
-                          <span className="text-ink">{spec.value}</span>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Full Description */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-2">Description</h4>
-                  <div className="text-[12px] leading-relaxed text-ink/80 font-medium whitespace-pre-wrap">
-                    {product.description || 'Premium quality apparel from NINOC.'}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
     </main>
   );
