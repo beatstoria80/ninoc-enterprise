@@ -475,14 +475,14 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-20 pb-24 space-y-3" : "pt-36 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-20 pb-24 space-y-3" : "pt-20 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
               <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
-              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Financial Specification</h2>
+              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
             </div>
             
             <div className="bg-white border border-ink/10 rounded-none p-4 space-y-4 shadow-sm">
@@ -551,7 +551,7 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-display font-medium italic text-ink/30">01</span>
-                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Origin Specification</h2>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
                 </div>
               </div>
               
@@ -721,7 +721,7 @@ export default function CheckoutPage() {
             <div className="sticky top-20 space-y-4">
               <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
                 <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
-                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Financial Specification</h2>
+                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
               </div>
               
               <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
