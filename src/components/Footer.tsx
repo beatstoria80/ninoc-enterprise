@@ -43,6 +43,12 @@ export default function GlobalFooter() {
           <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
             Legal Specifications
           </Link>
+          <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+            Help Guide
+          </Link>
+          <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+            Track Order
+          </Link>
         </div>
 
         {/* Base */}
