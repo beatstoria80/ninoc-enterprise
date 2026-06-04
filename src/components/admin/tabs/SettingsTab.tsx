@@ -1093,29 +1093,189 @@ function BiteshipActivationSection() {
 // SECTION: Help Guide (Customer Care, Payment Methods, Return & Refund)
 // ─────────────────────────────────────────────────────────────────────
 function HelpGuideSection() {
-  const [activeGuideTab, setActiveGuideTab] = useState<'customer-care' | 'payment' | 'return'>('customer-care');
+  const [activeGuideTab, setActiveGuideTab] = useState<'customer-care' | 'payment' | 'return' | 'shipping' | 'how-to-order' | 'how-to-track' | 'terms' | 'privacy'>('customer-care');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedMsg, setSavedMsg] = useState('');
 
   // Customer Care
-  const [contactWA, setContactWA] = useState('');
+  const [contactWA, setContactWA] = useState('08211983774');
   const [contactEmailSupport, setContactEmailSupport] = useState('');
-  const [csHours, setCsHours] = useState('');
-  const [csNotes, setCsNotes] = useState('');
+  const [csHours, setCsHours] = useState('Senin–Sabtu, 08.00–17.00 WIB');
+  const [csNotes, setCsNotes] = useState('Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan hubungi customer service kami melalui WhatsApp.');
 
   // Payment Methods
-  const [paymentGuide, setPaymentGuide] = useState('');
+  const [paymentGuide, setPaymentGuide] = useState(`Kami menyediakan berbagai metode pembayaran yang aman dan mudah untuk kenyamanan Anda.
+
+Metode Pembayaran yang Tersedia:
+
+• Transfer Bank (BCA, Mandiri, BRI, BNI)
+• Virtual Account
+• QRIS
+• Kartu Debit/Kredit (jika tersedia)
+
+Proses Pembayaran:
+
+1. Pilih produk yang ingin dibeli.
+2. Lanjutkan ke halaman checkout.
+3. Pilih metode pembayaran yang diinginkan.
+4. Ikuti instruksi pembayaran.
+5. Setelah pembayaran berhasil, pesanan akan otomatis diproses.
+
+Informasi Penting:
+
+• Pesanan akan diproses setelah pembayaran terverifikasi.
+• Batas waktu pembayaran mengikuti ketentuan sistem.
+• Jika pembayaran gagal, Anda dapat mencoba kembali dengan metode lain.
+• Simpan bukti pembayaran untuk referensi jika diperlukan.`);
   const [bankAccounts, setBankAccounts] = useState<string[]>([]);
   const [newBank, setNewBank] = useState('');
 
   // Return & Refund
-  const [returnPolicy, setReturnPolicy] = useState('');
-  const [returnProcess, setReturnProcess] = useState('');
+  const [returnPolicy, setReturnPolicy] = useState(`Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.
+
+Syarat Pengajuan:
+
+• Produk diterima dalam kondisi rusak atau cacat.
+• Produk yang dikirim tidak sesuai dengan pesanan.
+• Pengajuan dilakukan maksimal 3 x 24 jam setelah barang diterima.
+• Produk belum digunakan dan masih dalam kondisi lengkap.`);
+
+  const [returnProcess, setReturnProcess] = useState(`1. Hubungi customer service kami melalui WhatsApp.
+2. Sertakan nomor pesanan, foto produk, dan penjelasan kendala.
+3. Tim kami akan melakukan verifikasi.
+4. Jika disetujui, kami akan memberikan instruksi pengembalian barang atau proses refund.
+
+Estimasi Proses:
+
+• Verifikasi: 1–2 hari kerja
+• Refund: 3–7 hari kerja setelah persetujuan
+
+Catatan:
+
+• Refund akan dikembalikan melalui metode pembayaran awal atau transfer bank.
+• Biaya pengiriman retur ditanggung sesuai hasil verifikasi.`);
+
   const [refundNotes, setRefundNotes] = useState('');
+
+  // Shipping Area
+  const [shippingArea, setShippingArea] = useState('Kami mengirim ke seluruh Indonesia');
+
+  const [shippingInfo, setShippingInfo] = useState(`Terima kasih telah berbelanja di toko kami.
+
+Kami memproses pesanan setiap hari kerja (Senin–Sabtu) pukul 08.00–17.00 WIB.
+
+Estimasi Pengiriman:
+
+Jabodetabek: 1–2 hari kerja
+Pulau Jawa: 2–4 hari kerja
+Luar Pulau Jawa: 3–7 hari kerja
+
+Jasa Pengiriman:
+
+Kami bekerja sama dengan berbagai ekspedisi terpercaya seperti:
+
+JNE
+J&T Express
+SiCepat
+AnterAja
+Pos Indonesia
+
+Ketentuan Pengiriman:
+
+• Pesanan yang masuk sebelum pukul 15.00 WIB akan diproses di hari yang sama.
+• Pesanan setelah pukul 15.00 WIB akan diproses pada hari kerja berikutnya.
+• Nomor resi akan dikirim otomatis setelah pesanan dikirim.
+• Estimasi pengiriman dapat berubah tergantung lokasi dan kondisi ekspedisi.`);
 
   const removeBankAccount = (idx: number) => {
     setBankAccounts(prev => prev.filter((_, i) => i !== idx));
   };
+
+  // Shipping & Order Info
+  const [shippingInfo, setShippingInfo] = useState('');
+  const [howToOrder, setHowToOrder] = useState(`Ikuti langkah mudah berikut untuk melakukan pemesanan:
+
+1. Pilih produk yang ingin Anda beli.
+2. Klik tombol Tambah ke Keranjang atau Beli Sekarang.
+3. Masukkan jumlah produk yang diinginkan.
+4. Isi data pengiriman dengan lengkap.
+5. Pilih metode pembayaran yang tersedia.
+6. Klik Buat Pesanan.
+7. Lakukan pembayaran sesuai instruksi.
+8. Pesanan Anda akan segera kami proses setelah pembayaran terverifikasi.
+
+Catatan:
+
+• Pastikan alamat dan nomor WhatsApp yang Anda masukkan sudah benar.
+• Simpan nomor pesanan untuk memudahkan pengecekan status.`);
+  const [howToTrack, setHowToTrack] = useState(`Setelah pesanan Anda dikirim, kami akan memberikan nomor resi pengiriman melalui WhatsApp atau email yang terdaftar.
+
+Cara Melacak Pesanan:
+
+1. Salin nomor resi yang telah kami kirimkan.
+2. Kunjungi website resmi jasa pengiriman yang digunakan.
+3. Masukkan nomor resi pada kolom pelacakan.
+4. Klik tombol Lacak.
+5. Informasi status pengiriman akan ditampilkan oleh pihak ekspedisi.
+
+Informasi Penting:
+
+• Nomor resi biasanya tersedia dalam waktu 1 x 24 jam setelah pesanan dikirim.
+• Pembaruan status pengiriman mengikuti sistem dari pihak ekspedisi.
+• Jika Anda belum menerima nomor resi, silakan hubungi customer service kami.
+
+Hubungi Customer Service:
+
+Jika mengalami kesulitan dalam melacak pesanan, tim kami siap membantu melalui WhatsApp pada jam operasional.
+
+Jam Operasional: Senin–Sabtu, 08.00–17.00 WIB`);
+  const [termsText, setTermsText] = useState(`Dengan mengakses dan bertransaksi di toko kami, Anda dianggap telah membaca, memahami, dan menyetujui syarat dan ketentuan berikut:
+
+Ketentuan Umum
+
+• Seluruh harga produk ditampilkan dalam Rupiah (IDR).
+• Stok dan harga produk dapat berubah sewaktu-waktu tanpa pemberitahuan sebelumnya.
+• Pesanan akan diproses setelah pembayaran berhasil diterima dan diverifikasi.
+• Pembeli wajib memastikan data pemesanan dan alamat pengiriman sudah benar.
+• Estimasi pengiriman mengikuti kebijakan jasa ekspedisi yang dipilih.
+• Keluhan terkait produk dapat diajukan sesuai kebijakan Return & Refund yang berlaku.
+• Kami berhak membatalkan pesanan apabila terjadi kendala stok, kesalahan harga, atau indikasi transaksi yang tidak wajar.
+
+Tanggung Jawab Pembeli
+
+• Membaca deskripsi produk dengan teliti sebelum melakukan pembelian.
+• Memberikan informasi yang akurat dan lengkap.
+• Melakukan pembayaran sesuai batas waktu yang ditentukan.
+
+Tanggung Jawab Penjual
+
+• Mengirim produk sesuai pesanan.
+• Menjaga kualitas produk sebelum dikirim.
+• Memberikan layanan pelanggan yang responsif.
+
+Persetujuan
+
+Dengan menyelesaikan transaksi, Anda dianggap telah menyetujui seluruh syarat dan ketentuan yang berlaku di toko kami.`);
+  const [privacyText, setPrivacyText] = useState(`Kami menghargai kepercayaan Anda dan berkomitmen untuk menjaga keamanan serta kerahasiaan setiap data pribadi yang diberikan saat menggunakan layanan dan melakukan transaksi di toko kami.
+
+Informasi yang kami kumpulkan, termasuk nama, nomor telepon, alamat email, alamat pengiriman, serta data transaksi, digunakan secara terbatas untuk keperluan:
+
+• Pemrosesan dan konfirmasi pesanan
+• Pengiriman produk
+• Verifikasi pembayaran
+• Layanan pelanggan dan penanganan keluhan
+• Penyampaian informasi terkait pesanan dan promosi (jika disetujui)
+
+Seluruh data pelanggan dikelola dengan standar keamanan yang wajar dan tidak akan diperjualbelikan, disewakan, maupun dibagikan kepada pihak ketiga, kecuali kepada mitra pembayaran dan jasa logistik yang diperlukan untuk menyelesaikan transaksi.
+
+Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, memahami, dan menyetujui Kebijakan Privasi ini.`);
+
+  const GUIDE_KEYS = [
+    'help_guide_customer_care', 'help_guide_payment', 'help_guide_return',
+    'help_guide_shipping', 'help_guide_how_to_order', 'help_guide_how_to_track',
+    'help_guide_terms', 'help_guide_privacy',
+  ];
 
   // Load from DB on mount
   useEffect(() => {
@@ -1123,7 +1283,7 @@ function HelpGuideSection() {
       const { data } = await supabase
         .from('atelier_settings')
         .select('key, value')
-        .in('key', ['help_guide_customer_care', 'help_guide_payment', 'help_guide_return']);
+        .in('key', GUIDE_KEYS);
       if (!data) return;
       data.forEach((item: { key: string; value: any }) => {
         if (item.key === 'help_guide_customer_care') {
@@ -1141,30 +1301,57 @@ function HelpGuideSection() {
           if (item.value?.process) setReturnProcess(item.value.process);
           if (item.value?.notes) setRefundNotes(item.value.notes);
         }
+        if (item.key === 'help_guide_shipping') {
+          if (item.value?.info) setShippingInfo(item.value.info);
+          if (item.value?.area) setShippingArea(item.value.area);
+        }
+        if (item.key === 'help_guide_how_to_order') {
+          if (item.value) setHowToOrder(item.value);
+        }
+        if (item.key === 'help_guide_how_to_track') {
+          if (item.value) setHowToTrack(item.value);
+        }
+        if (item.key === 'help_guide_terms') {
+          if (item.value) setTermsText(item.value);
+        }
+        if (item.key === 'help_guide_privacy') {
+          if (item.value) setPrivacyText(item.value);
+        }
       });
     }
     load();
-  }, []);
+  }, GUIDE_KEYS);
 
-  const handleSave = async (tab: 'customer_care' | 'payment' | 'return') => {
+  const handleSave = async (tab: string) => {
     setSaving(true);
-    setSaved(false);
+    setSavedMsg('');
     try {
-      const payload = { key: `help_guide_${tab}`, value: {} };
+      const payload = { key: `help_guide_${tab}`, value: {} as any };
       if (tab === 'customer_care') payload.value = { wa: contactWA, email: contactEmailSupport, hours: csHours, notes: csNotes };
       if (tab === 'payment') payload.value = { guide: paymentGuide, accounts: bankAccounts };
       if (tab === 'return') payload.value = { policy: returnPolicy, process: returnProcess, notes: refundNotes };
-      await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      if (tab === 'shipping') payload.value = { info: shippingInfo, area: shippingArea };
+      if (tab === 'how_to_order') payload.value = howToOrder;
+      if (tab === 'how_to_track') payload.value = howToTrack;
+      if (tab === 'terms') payload.value = termsText;
+      if (tab === 'privacy') payload.value = privacyText;
+      const res = await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error('Save failed');
+      setSavedMsg('Tersimpan ✓');
+      setTimeout(() => setSavedMsg(''), 3000);
     } catch (e) { console.error(e); }
     finally { setSaving(false); }
   };
 
   const GUIDE_TABS = [
     { id: 'customer-care' as const, label: 'Customer Care' },
-    { id: 'payment' as const, label: 'Payment Method' },
+    { id: 'payment' as const, label: 'Payment' },
     { id: 'return' as const, label: 'Return & Refund' },
+    { id: 'shipping' as const, label: 'Shipping' },
+    { id: 'how-to-order' as const, label: 'How to Order' },
+    { id: 'how-to-track' as const, label: 'Tracking' },
+    { id: 'terms' as const, label: 'Terms' },
+    { id: 'privacy' as const, label: 'Privacy' },
   ];
 
   return (
@@ -1193,17 +1380,22 @@ function HelpGuideSection() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="WhatsApp CS">
-              <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="081234567890" />
+              <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="08211983774" />
             </Field>
             <Field label="Email CS">
               <Input value={contactEmailSupport} onChange={e => setContactEmailSupport(e.target.value)} placeholder="cs@ninoc.id" />
             </Field>
             <Field label="Jam Operasional CS">
-              <Input value={csHours} onChange={e => setCsHours(e.target.value)} placeholder="Senin-Jumat 09:00-17:00 WIB" />
+              <Input value={csHours} onChange={e => setCsHours(e.target.value)} placeholder="Senin-Sabtu, 08.00–17.00 WIB" />
             </Field>
           </div>
           <Field label="Catatan Tambahan (visible di halaman help)">
-            <Textarea value={csNotes} onChange={e => setCsNotes(e.target.value)} rows={4} placeholder="Contoh: Respon chat max 1x24 jam..." />
+            <Textarea
+              value={csNotes}
+              onChange={e => setCsNotes(e.target.value)}
+              rows={5}
+              placeholder="Untuk pertanyaan mengenai pembayaran, retur, atau refund..."
+            />
           </Field>
           <div className="flex justify-end gap-3">
             {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
@@ -1218,7 +1410,12 @@ function HelpGuideSection() {
       {activeGuideTab === 'payment' && (
         <div className="space-y-4">
           <Field label="Panduan Pembayaran (visible di halaman help)">
-            <Textarea value={paymentGuide} onChange={e => setPaymentGuide(e.target.value)} rows={5} placeholder="1. Pilih metode pembayaran&#10;2. Transfer ke rekening yang tertera&#10;3. Konfirmasi via WhatsApp..." />
+            <Textarea
+              value={paymentGuide}
+              onChange={e => setPaymentGuide(e.target.value)}
+              rows={18}
+              placeholder="Kami menyediakan berbagai metode pembayaran..."
+            />
           </Field>
           <div>
             <Field label="Daftar Rekening (otomatis tampil di halaman help)">
@@ -1249,17 +1446,110 @@ function HelpGuideSection() {
       {activeGuideTab === 'return' && (
         <div className="space-y-4">
           <Field label="Kebijakan Retur (visible di halaman help)">
-            <Textarea value={returnPolicy} onChange={e => setReturnPolicy(e.target.value)} rows={4} placeholder="Produk dapat diretur dalam 3x24 jam sejak diterima..." />
+            <Textarea
+              value={returnPolicy}
+              onChange={e => setReturnPolicy(e.target.value)}
+              rows={16}
+              placeholder="Kepuasan pelanggan adalah prioritas kami..."
+            />
           </Field>
           <Field label="Alur Proses Retur">
-            <Textarea value={returnProcess} onChange={e => setReturnProcess(e.target.value)} rows={4} placeholder="1. Ajukan retur via halaman order&#10;2. Tim kami akan review dalam 1x24 jam&#10;3. Setelah disetujui, kirim kembali produk..." />
+            <Textarea
+              value={returnProcess}
+              onChange={e => setReturnProcess(e.target.value)}
+              rows={10}
+              placeholder="Hubungi customer service kami melalui WhatsApp..."
+            />
           </Field>
           <Field label="Catatan Refund">
-            <Textarea value={refundNotes} onChange={e => setRefundNotes(e.target.value)} rows={3} placeholder="Refund akan diproses 3-5 hari kerja setelah produk diterima..." />
+            <Textarea
+              value={refundNotes}
+              onChange={e => setRefundNotes(e.target.value)}
+              rows={6}
+              placeholder="Refund akan dikembalikan melalui metode pembayaran awal..."
+            />
           </Field>
           <div className="flex justify-end gap-3">
             {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
             <button onClick={() => handleSave('return')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Shipping Info Tab */}
+      {activeGuideTab === 'shipping' && (
+        <div className="space-y-4">
+          <Field label="Informasi Pengiriman Umum (tampil di halaman help)">
+            <Textarea value={shippingInfo} onChange={e => setShippingInfo(e.target.value)} rows={5} placeholder="Kami mengirim via JNE, J&T, SiCepat, dan kurir lain sesuai pilihan saat checkout..." />
+          </Field>
+          <Field label="Catatan Area Pengiriman">
+            <Input value={shippingArea} onChange={e => setShippingArea(e.target.value)} placeholder="Kami mengirim ke seluruh Indonesia" />
+          </Field>
+          <div className="flex justify-end">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('shipping')} disabled={saving} className="px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* How to Order Tab */}
+      {activeGuideTab === 'how-to-order' && (
+        <div className="space-y-4">
+          <Field label="Cara Memesan">
+            <Textarea value={howToOrder} onChange={e => setHowToOrder(e.target.value)} rows={8} placeholder="1. Pilih produk yang diinginkan&#10;2. Pilih size dan jumlah&#10;3. Masukkan ke keranjang&#10;4. Checkout dan isi alamat&#10;5. Pilih metode pembayaran&#10;6. Transfer dan konfirmasi" />
+          </Field>
+          <div className="flex justify-end">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('how_to_order')} disabled={saving} className="px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* How to Track Tab */}
+      {activeGuideTab === 'how-to-track' && (
+        <div className="space-y-4">
+          <Field label="Cara Melacak Pesanan">
+            <Textarea value={howToTrack} onChange={e => setHowToTrack(e.target.value)} rows={6} placeholder="1. Buka halaman Order History di profil&#10;2. Pilih pesanan yang ingin dilacak&#10;3. Nomor resi tersedia setelah pesanan dikirim&#10;4. Klik nomor resi untuk melacak di website kurir" />
+          </Field>
+          <div className="flex justify-end">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('how_to_track')} disabled={saving} className="px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Terms Tab */}
+      {activeGuideTab === 'terms' && (
+        <div className="space-y-4">
+          <Field label="Syarat & Ketentuan">
+            <Textarea value={termsText} onChange={e => setTermsText(e.target.value)} rows={12} placeholder="Syarat dan Ketentuan Penggunaan&#10;&#10;Dengan mengakses dan menggunakan website NINOC..." />
+          </Field>
+          <div className="flex justify-end">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('terms')} disabled={saving} className="px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Tab */}
+      {activeGuideTab === 'privacy' && (
+        <div className="space-y-4">
+          <Field label="Kebijakan Privasi">
+            <Textarea value={privacyText} onChange={e => setPrivacyText(e.target.value)} rows={12} placeholder="Kebijakan Privasi&#10;&#10;NINOC menghargai privasi Anda..." />
+          </Field>
+          <div className="flex justify-end">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('privacy')} disabled={saving} className="px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
