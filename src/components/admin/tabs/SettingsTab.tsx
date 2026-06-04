@@ -129,6 +129,37 @@ function MyStoreSection() {
   const [address, setAddress] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'my_store_info').single();
+        if (data?.value) {
+          if (data.value.storeName) setStoreName(data.value.storeName);
+          if (data.value.tagline) setTagline(data.value.tagline);
+          if (data.value.description) setDescription(data.value.description);
+          if (data.value.contactWA) setContactWA(data.value.contactWA);
+          if (data.value.contactEmail) setContactEmail(data.value.contactEmail);
+          if (data.value.address) setAddress(data.value.address);
+          if (data.value.logoUrl) setLogoUrl(data.value.logoUrl);
+          if (data.value.faviconUrl) setFaviconUrl(data.value.faviconUrl);
+        }
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        key: 'my_store_info',
+        value: { storeName, tagline, description, contactWA, contactEmail, address, logoUrl, faviconUrl }
+      };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
 
   return (
     <SettingsSection
@@ -176,7 +207,7 @@ function MyStoreSection() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
@@ -194,6 +225,27 @@ function BankAccountSection() {
   const [newBank, setNewBank] = useState('');
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'bank_accounts').single();
+        if (data?.value?.accounts) {
+          setAccounts(data.value.accounts);
+        }
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = { key: 'bank_accounts', value: { accounts } };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
 
   const toggleDefault = (id: string) => {
     setAccounts(prev => prev.map(a => ({ ...a, is_default: a.id === id })));
@@ -243,7 +295,7 @@ function BankAccountSection() {
                   Set Default
                 </button>
               )}
-              <button className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 transition-colors">Hapus</button>
+              <button onClick={() => setAccounts(prev => prev.filter(a => a.id !== acc.id))} className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 transition-colors">Hapus</button>
             </div>
           </div>
         ))}
@@ -274,7 +326,7 @@ function BankAccountSection() {
         )}
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
@@ -295,6 +347,29 @@ function ScheduleSection() {
   ]);
   const [autoReplyOff, setAutoReplyOff] = useState(false);
   const [offMessage, setOffMessage] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'operational_schedule').single();
+        if (data?.value) {
+          if (data.value.schedule) setSchedule(data.value.schedule);
+          if (data.value.autoReplyOff !== undefined) setAutoReplyOff(data.value.autoReplyOff);
+          if (data.value.offMessage) setOffMessage(data.value.offMessage);
+        }
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = { key: 'operational_schedule', value: { schedule, autoReplyOff, offMessage } };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
 
   const toggleDay = (idx: number) => {
     setSchedule(prev => prev.map((s, i) => i === idx ? { ...s, active: !s.active } : s));
@@ -349,7 +424,7 @@ function ScheduleSection() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
@@ -1608,6 +1683,32 @@ function HelpCenterSection() {
   const [faqs, setFaqs] = useState<{id: string; q: string; a: string; active: boolean}[]>([]);
   const [newQ, setNewQ] = useState('');
   const [newA, setNewA] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'faq_settings').single();
+        if (data?.value?.faqs) setFaqs(data.value.faqs);
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = { key: 'faq_settings', value: { faqs } };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
+
+  const addFaq = () => {
+    if (!newQ || !newA) return;
+    setFaqs(prev => [...prev, { id: Date.now().toString(), q: newQ, a: newA, active: true }]);
+    setNewQ('');
+    setNewA('');
+  };
 
   return (
     <SettingsSection
@@ -1622,7 +1723,7 @@ function HelpCenterSection() {
                 <span className="text-[7px] uppercase tracking-widest bg-ink/5 text-ink/40 px-1.5 py-0.5 rounded-sm font-medium mt-0.5 shrink-0">Q</span>
                 <p className="text-[10px] font-semibold text-ink">{faq.q}</p>
               </div>
-              <button className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 shrink-0">Hapus</button>
+              <button onClick={() => setFaqs(prev => prev.filter(f => f.id !== faq.id))} className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 shrink-0">Hapus</button>
             </div>
             <div className="ml-5 mt-2">
               <span className="text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-medium">A</span>
@@ -1635,10 +1736,10 @@ function HelpCenterSection() {
         <p className="text-[9px] uppercase tracking-widest text-ink/40 font-medium">Tambah FAQ</p>
         <Input value={newQ} onChange={e => setNewQ(e.target.value)} placeholder="Pertanyaan" />
         <Textarea value={newA} onChange={e => setNewA(e.target.value)} rows={2} placeholder="Jawaban" />
-        <button className="px-4 py-1.5 bg-ink/10 text-ink/50 text-[9px] uppercase tracking-widest rounded-sm hover:bg-ink/20 transition-colors">+ Tambah FAQ</button>
+        <button onClick={addFaq} className="px-4 py-1.5 bg-ink/10 text-ink/50 text-[9px] uppercase tracking-widest rounded-sm hover:bg-ink/20 transition-colors">+ Tambah FAQ</button>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
@@ -1651,6 +1752,25 @@ function ReplyTemplateSection() {
   const [templates, setTemplates] = useState<{id: string; name: string; content: string; shortcut: string; active: boolean}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'reply_templates').single();
+        if (data?.value?.templates) setTemplates(data.value.templates);
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = { key: 'reply_templates', value: { templates } };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
 
   return (
     <SettingsSection
@@ -1671,7 +1791,7 @@ function ReplyTemplateSection() {
               <div className="flex items-center gap-3">
                 <Toggle checked={t.active} onChange={() => {}} />
                 <button className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-rose">Edit</button>
-                <button className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500">Hapus</button>
+                <button onClick={() => setTemplates(prev => prev.filter(x => x.id !== t.id))} className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500">Hapus</button>
               </div>
             </div>
             <div className="px-3.5 py-2.5">
@@ -1684,7 +1804,7 @@ function ReplyTemplateSection() {
         <Plus size={12} /> Tambah Template
       </button>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
@@ -1771,6 +1891,37 @@ function SEOSection() {
   const [robotsTxt, setRobotsTxt] = useState(true);
   const [schema, setSchema] = useState(true);
   const [keywords, setKeywords] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'seo_settings').single();
+        if (data?.value) {
+          if (data.value.metaTitle) setMetaTitle(data.value.metaTitle);
+          if (data.value.metaDesc) setMetaDesc(data.value.metaDesc);
+          if (data.value.ogImage) setOgImage(data.value.ogImage);
+          if (data.value.canonical) setCanonical(data.value.canonical);
+          if (data.value.sitemapActive !== undefined) setSitemapActive(data.value.sitemapActive);
+          if (data.value.robotsTxt !== undefined) setRobotsTxt(data.value.robotsTxt);
+          if (data.value.schema !== undefined) setSchema(data.value.schema);
+          if (data.value.keywords) setKeywords(data.value.keywords);
+        }
+      } catch (err) { console.error(err); }
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        key: 'seo_settings',
+        value: { metaTitle, metaDesc, ogImage, canonical, sitemapActive, robotsTxt, schema, keywords }
+      };
+      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+    } catch (e) { console.error(e); } finally { setSaving(false); }
+  };
 
   return (
     <SettingsSection
@@ -1842,7 +1993,7 @@ function SEOSection() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
