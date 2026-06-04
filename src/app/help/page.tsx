@@ -102,22 +102,8 @@ export default function HelpPage() {
 
   return (
     <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
-      {/* Header */}
-      <header className="fixed top-0 inset-x-0 z-50 glass border-b border-ink/5 px-6 py-4 flex items-center justify-between">
-        <Link href="/shop" className="flex items-center gap-2 text-ink/30 hover:text-ink transition-all group">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="group-hover:-translate-x-1 transition-transform">
-            <path d="M10 7H4M4 7L7 4M4 7L7 10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="text-[9px] uppercase tracking-[0.25em] font-semibold">Return to Archive</span>
-        </Link>
-        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none">
-          <span className="font-display font-medium italic text-rose text-lg tracking-tighter uppercase">NINOC</span>
-        </div>
-        <div className="w-16" />
-      </header>
-
       {/* Main Layout */}
-      <div className="pt-20 max-w-[1200px] mx-auto px-6 pb-20">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 pt-24 pb-20">
         {/* Title */}
         <div className="border-b border-ink/5 pb-4 mb-0">
           <div className="flex items-baseline gap-4">
