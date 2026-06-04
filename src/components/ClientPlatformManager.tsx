@@ -50,13 +50,15 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     );
   }
 
+  const showGlobalFooter = showGlobalHeader && pathname !== '/category';
+
   return (
     <div className="min-h-screen flex flex-col bg-cr">
       {showGlobalHeader && <div className="print:hidden"><GlobalHeader /></div>}
       <div className="flex-1">
         {children}
       </div>
-      {showGlobalHeader && <div className="print:hidden"><GlobalFooter /></div>}
+      {showGlobalFooter && <div className="print:hidden"><GlobalFooter /></div>}
     </div>
   );
 }
