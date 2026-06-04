@@ -322,12 +322,11 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Spesifikasi / Measurement — HIDE when description is expanded */}
-              {!isExpanded && (
+              {/* Spesifikasi / Measurement — Always visible */}
               <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
                 <div className="flex items-center gap-3 mb-1.5">
                   <button
-                    onClick={() => { setActiveInfoTab('specs'); setIsExpanded(false); }}
+                    onClick={() => setActiveInfoTab('specs')}
                     className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
@@ -336,7 +335,7 @@ export default function ProductDetailPage() {
                   </button>
                   <span className="text-ink/10">|</span>
                   <button
-                    onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
+                    onClick={() => setActiveInfoTab('measurement')}
                     className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
@@ -371,7 +370,6 @@ export default function ProductDetailPage() {
                   )}
                 </div>
               </div>
-              )}
             </div>
           </div>
 
