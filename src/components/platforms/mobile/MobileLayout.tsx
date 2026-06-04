@@ -284,6 +284,7 @@ export default function MobileLayout({
     { href: '/shop', label: 'Catalog' },
     { href: '/collections', label: 'Collections' },
     { href: '/category', label: 'Category' },
+    { href: '/logbook', label: 'Logbook' },
     { href: '/about', label: 'About' },
   ];
 

@@ -434,6 +434,7 @@ export default function GlobalHeader() {
           <NavLink href="/shop">Catalog</NavLink>
           <NavLink href="/collections">Collections</NavLink>
           <NavLink href="/category">Category</NavLink>
+          <NavLink href="/logbook">Logbook</NavLink>
           <NavLink href="/about">About</NavLink>
         </motion.div>
 
