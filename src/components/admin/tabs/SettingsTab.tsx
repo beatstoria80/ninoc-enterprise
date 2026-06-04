@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '@/store/useSettings';
+import { supabase } from '@/lib/supabase';
 import {
   Store, CreditCard, Clock, Palette, Truck, HelpCircle,
   MessageSquare, Lock, Search, Plus, X, Save, Upload,
@@ -372,18 +373,38 @@ function DecorationSection() {
     setHeroBanner(settings.heroBannerUrl || '');
   });
 
-  const mockProducts = [
-    { name: 'Archive Jacket 001', price: '485.000', badge: 'BEST SELLER' },
-    { name: 'Industrial Hoodie', price: '320.000', badge: '' },
-    { name: 'Manifesto Tee', price: '185.000', badge: 'NEW' },
-    { name: 'Studio Cap', price: '95.000', badge: '' },
-  ];
+  // Fetch real products from DB
+  const [products, setProducts] = useState<Array<{id: string; name: string; price: number; badge?: string}>>([]);
+  const [categories, setCategories] = useState<Array<{id: string; label: string}>>([]);
 
-  const collections = [
-    { name: 'Archive Collection' },
-    { name: 'Industrial Series' },
-    { name: 'Studio Essentials' },
-  ];
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, price, is_featured, category')
+        .order('created_at', { ascending: false })
+        .limit(4);
+      if (data) {
+        setProducts(data.map(p => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          badge: p.is_featured ? 'BEST SELLER' : undefined,
+        })));
+      }
+
+      // Fetch categories
+      const { data: catData } = await supabase
+        .from('products')
+        .select('category')
+        .limit(20);
+      if (catData) {
+        const unique = [...new Map(catData.map(c => [c.category, c.category])).keys()] as string[];
+        setCategories(unique.map(cat => ({ id: cat, label: cat.charAt(0).toUpperCase() + cat.slice(1) })).slice(0, 3));
+      }
+    }
+    load();
+  }, []);
 
   return (
     <SettingsSection title="Store Decoration" subtitle="Preview storefront decoration — live update saat ketik">
@@ -458,8 +479,8 @@ function DecorationSection() {
                 <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {mockProducts.map((p, i) => (
-                  <div key={i} className="border border-ink/5 rounded-sm overflow-hidden">
+                {products.length > 0 ? products.map((p) => (
+                  <div key={p.id} className="border border-ink/5 rounded-sm overflow-hidden">
                     <div className="aspect-square bg-ink/[0.03] relative flex items-center justify-center">
                       <Package size={20} className="text-ink/10" />
                       {p.badge && (
@@ -474,11 +495,23 @@ function DecorationSection() {
                     <div className="p-1.5">
                       <p className="text-[7px] font-semibold text-ink leading-tight truncate">{p.name}</p>
                       <p className="text-[7px] font-bold mt-0.5" style={{ color: accentColor }}>
-                        IDR {p.price}
+                        IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
                       </p>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  [1,2,3,4].map(i => (
+                    <div key={i} className="border border-ink/5 rounded-sm overflow-hidden">
+                      <div className="aspect-square bg-ink/[0.03] relative flex items-center justify-center">
+                        <Package size={20} className="text-ink/10" />
+                      </div>
+                      <div className="p-1.5">
+                        <div className="h-2 w-3/4 bg-ink/[0.05] rounded-sm mb-1" />
+                        <div className="h-2 w-1/2 bg-ink/[0.05] rounded-sm" />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -489,12 +522,19 @@ function DecorationSection() {
                 <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {collections.map((col, i) => (
-                  <div key={i} className="aspect-[4/3] rounded-sm border border-dashed border-ink/10 bg-ink/[0.02] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-rose/30 transition-colors">
+                {categories.length > 0 ? categories.map((col) => (
+                  <div key={col.id} className="aspect-[4/3] rounded-sm border border-dashed border-ink/10 bg-ink/[0.02] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-rose/30 transition-colors">
                     <Upload size={12} className="text-ink/20" />
-                    <span className="text-[7px] text-ink/30 text-center px-1">{col.name}</span>
+                    <span className="text-[7px] text-ink/30 text-center px-1">{col.label}</span>
                   </div>
-                ))}
+                )) : (
+                  [1,2,3].map(i => (
+                    <div key={i} className="aspect-[4/3] rounded-sm border border-dashed border-ink/10 bg-ink/[0.02] flex flex-col items-center justify-center gap-1">
+                      <div className="w-3 h-3 bg-ink/[0.05] rounded-sm" />
+                      <div className="w-8 h-2 bg-ink/[0.05] rounded-sm" />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
