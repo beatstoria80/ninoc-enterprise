@@ -83,7 +83,7 @@ export default function HelpPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/admin/settings');
+        const res = await fetch('/api/help');
         const json = await res.json();
         const data: SettingItem[] = json.data || [];
         const map: Record<string, SettingItem> = {};
