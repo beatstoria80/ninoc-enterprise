@@ -266,10 +266,10 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
                     </div>
 
                     {/* Product Details Container */}
-                    <div className="p-4 flex flex-col flex-grow justify-between gap-4">
+                    <div className="p-2.5 flex flex-col flex-grow justify-between gap-2">
                       {/* Title & Category */}
                       <div>
-                        <h3 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
+                        <h3 className="text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
                           {product.name}
                         </h3>
                         <p className="text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
@@ -278,19 +278,19 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
                       </div>
 
                       {/* Price & Meta Footer */}
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {product.price_tag === 'REDEEM' ? (
-                          <div className="text-sm md:text-base font-display font-medium italic text-rose">
+                          <div className="text-[10px] md:text-xs font-display font-medium italic text-rose">
                             {(product.price ?? 0).toLocaleString('id-ID')} POINTS
                           </div>
                         ) : (
-                          <div className="text-sm md:text-base font-display font-medium italic text-rose">
+                          <div className="text-[10px] md:text-xs font-display font-medium italic text-rose">
                             IDR {(product.price ?? 0).toLocaleString('id-ID')}
                           </div>
                         )}
 
                         {/* Metadata Row */}
-                        <div className="flex items-center justify-between pt-2.5 border-t border-ink/5">
+                        <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                           <div className="flex items-center gap-1.5 opacity-40">
                             <ArrowRight size={10} className="group-hover/card:translate-x-1 group-hover/card:text-rose transition-all" />
                             <span className="text-[8px] font-medium uppercase tracking-[0.2em]">View Spec</span>
