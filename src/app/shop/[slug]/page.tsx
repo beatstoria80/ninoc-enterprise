@@ -292,17 +292,17 @@ export default function ProductDetailPage() {
             <div className="space-y-0.5 lg:space-y-1">
               <div className="space-y-0.5 lg:space-y-1">
                 <div className="flex items-center gap-2 mb-0.5 lg:mb-1">
-                  <div className="flex items-center gap-1 px-2 py-0.5 lg:px-2.5 lg:py-1 bg-ink text-white rounded-none w-fit shadow-md">
-                    <span className="text-[7px] lg:text-[8px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-ink text-white rounded-none w-fit shadow-md">
+                    <span className="text-[6px] lg:text-[7px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
                   </div>
                 </div>
-                <h1 className="text-base md:text-xl lg:text-2xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
+                <h1 className="text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>
                 {product.price_tag && (
                   <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
                   </div>
                 )}
-                <p className="text-sm md:text-base lg:text-lg font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                <p className="text-[11px] md:text-sm lg:text-base font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
