@@ -190,22 +190,24 @@ export default function ProductDetailPage() {
 
 
         {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[100px_1.1fr_1fr_1fr_0.9fr] lg:items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-[85px_1.5fr_1fr_1fr_0.9fr] lg:items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP (Desktop Only) */}
-          <div className="hidden lg:flex flex-col gap-2 overflow-y-auto no-scrollbar max-h-[55vh] relative pt-2">
+          <div className="hidden lg:block relative h-full w-full">
+            <div className="absolute inset-0 flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImageIndex(i)}
                   className={cn(
-                    "w-full aspect-[4/5] rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
+                    "w-full aspect-square rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
                     activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
                   )}
                 >
-                  <Image src={img} style={{ objectFit: 'contain', padding: '6px' }} alt="" fill sizes="100px" />
+                  <Image src={img} className="object-contain p-1.5" alt="" fill sizes="100px" />
                 </button>
               ))}
+            </div>
           </div>
 
           {/* GRID 2 — MAIN IMAGE / MOBILE CAROUSEL */}
@@ -243,7 +245,7 @@ export default function ProductDetailPage() {
                       positionClass
                     )}
                   >
-                    <Image src={img} alt={`${product.name} ${idx}`} fill style={{ objectFit: 'contain', padding: '16px' }} className="select-none pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
+                    <Image src={img} alt={`${product.name} ${idx}`} fill className="object-contain p-4 select-none pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
                   </div>
                 );
               })}
@@ -251,13 +253,13 @@ export default function ProductDetailPage() {
 
             {/* DESKTOP: Single Main Image */}
             <div className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
-                <Image
-                  src={images[activeImageIndex]}
-                  alt={product.name}
-                  fill
-                  style={{ objectFit: 'contain', padding: '8px' }}
-                  sizes="(max-width: 768px) 50vw, 30vw"
-                />
+              <Image
+                src={images[activeImageIndex]}
+                alt={product.name}
+                fill
+                className="object-contain p-2"
+                sizes="(max-width: 768px) 50vw, 30vw"
+              />
             </div>
 
             {/* Navigation Arrows (Outside Box, Inside Column Padding) */}
