@@ -284,6 +284,7 @@ function CollectionCard({ title, description, icon, index, variant = 'staples', 
 // ═══════════════════════════════════════════════════════════════
 
 export default function Collections() {
+  const brandColor = useBrandColor();
   const collections = [
     {
       title: 'Staples',

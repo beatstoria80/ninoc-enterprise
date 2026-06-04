@@ -392,6 +392,8 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-20px' });
   const [isHovered, setIsHovered] = useState(false);
+  const brandColor = useBrandColor();
+  const darkColor = { color: '#141414' };
 
   return (
     <motion.div
@@ -434,6 +436,8 @@ function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title:
 // ═══════════════════════════════════════════════════════════════
 
 function CategoryQuickAccess() {
+  const brandColor = useBrandColor();
+
   return (
     <div className="flex items-center gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-2">
       {CATEGORIES.map((cat, i) => {
