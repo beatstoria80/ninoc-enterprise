@@ -190,7 +190,7 @@ export default function ProductDetailPage() {
 
 
         {/* ARCHIVAL LAYOUT: Flex Stack (Mobile) | 5-GRID (Desktop) */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[85px_1.25fr_1fr_1fr_0.9fr] lg:items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-[85px_1.25fr_1fr_1fr_0.9fr] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
           
           {/* GRID 1 — THUMBNAIL STRIP (Desktop Only) */}
           <div className="hidden lg:block relative h-full w-full">
@@ -288,9 +288,9 @@ export default function ProductDetailPage() {
           </div>
 
           {/* GRID 3 — GARMENT SPECIFICATION */}
-          <div className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
-            <div className="space-y-0.5 lg:space-y-1">
-              <div className="space-y-0.5 lg:space-y-1">
+          <div className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:h-full">
+            <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
+              <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <div className="flex items-center gap-2 mb-0.5 lg:mb-1">
                   <div className="flex items-center gap-1.5 px-2 py-0.5 bg-ink text-white rounded-none w-fit shadow-md">
                     <span className="text-[6px] lg:text-[7px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
@@ -605,7 +605,7 @@ export default function ProductDetailPage() {
         {relatedProducts.length > 0 && (
           <div className="mt-4 lg:mt-6 space-y-1">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
-              <h2 className="text-xs md:text-sm font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+              <h2 className="text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
               <Link prefetch={false} href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
