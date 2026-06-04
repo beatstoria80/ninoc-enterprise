@@ -318,16 +318,15 @@ export default function HelpPage() {
         <div className="mb-8">
           <div className="flex items-baseline gap-4">
             <h1 className="font-display font-medium italic text-3xl tracking-tighter uppercase text-ink">Help Guide</h1>
-            <span className="text-[8px] uppercase tracking-[0.2em] text-ink/25 font-medium">ARCHIVAL CATALOG</span>
           </div>
           <p className="text-[9px] text-ink/30 mt-2 uppercase tracking-[0.15em]">Panduan customer care, pembayaran, pengiriman, dan ketentuan lainnya</p>
         </div>
 
         {/* Content Grid: Sidebar + Content */}
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row lg:items-start">
 
-          {/* Section Tabs — Sidebar (wider) */}
-          <div className="lg:w-[240px] shrink-0 lg:border-r lg:border-ink/5">
+          {/* Section Tabs — Sidebar (wider & sticky) */}
+          <div className="lg:w-[240px] shrink-0 lg:border-r lg:border-ink/5 lg:sticky lg:top-[88px] lg:self-start w-full lg:z-10 bg-white">
             <div className="flex lg:flex-col gap-0 overflow-x-auto lg:overflow-visible no-scrollbar">
               {HELP_SECTIONS.map((section) => (
                 <button
