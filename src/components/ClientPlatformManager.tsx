@@ -50,7 +50,9 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     );
   }
 
-  const showGlobalFooter = showGlobalHeader && pathname !== '/category';
+  const isCategoryPage = pathname === '/category';
+  const isCollectionsPage = pathname === '/collections';
+  const showGlobalFooter = showGlobalHeader && !isCategoryPage && !isCollectionsPage;
 
   return (
     <div className="min-h-screen flex flex-col bg-cr">
