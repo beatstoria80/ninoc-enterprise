@@ -135,44 +135,42 @@ function SectionContent({ value }: { value: any }) {
   // Customer care: wa/email/hours/notes
   if (typeof value === 'object' && (value.wa || value.email || value.hours)) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-3">
         {value.wa && (
-          <div className="flex items-center gap-4 p-4 border border-ink/8">
-            <div className="w-9 h-9 bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-3 p-3 border border-ink/8">
+            <div className="w-8 h-8 bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
               <IconWhatsApp />
             </div>
             <div>
               <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">WhatsApp</p>
-              <p className="text-[13px] font-semibold text-ink mt-0.5">{value.wa}</p>
+              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.wa}</p>
             </div>
           </div>
         )}
         {value.email && (
-          <div className="flex items-center gap-4 p-4 border border-ink/8">
-            <div className="w-9 h-9 bg-ink/[0.03] border border-ink/8 flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-3 p-3 border border-ink/8">
+            <div className="w-8 h-8 bg-ink/[0.03] border border-ink/8 flex items-center justify-center shrink-0">
               <IconEmail />
             </div>
             <div>
               <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">Email</p>
-              <p className="text-[13px] font-semibold text-ink mt-0.5">{value.email}</p>
+              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.email}</p>
             </div>
           </div>
         )}
         {value.hours && (
-          <div className="flex items-center gap-4 p-4 border border-ink/8">
-            <div className="w-9 h-9 bg-ink/[0.03] border border-ink/8 flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-3 p-3 border border-ink/8">
+            <div className="w-8 h-8 bg-ink/[0.03] border border-ink/8 flex items-center justify-center shrink-0">
               <IconClock />
             </div>
             <div>
               <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">Jam Operasional</p>
-              <p className="text-[13px] font-semibold text-ink mt-0.5">{value.hours}</p>
+              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.hours}</p>
             </div>
           </div>
         )}
         {value.notes && (
-          <div className="pt-4 border-t border-ink/5">
-            <p className="text-[11px] leading-[1.9] text-ink/50 font-medium">{value.notes}</p>
-          </div>
+          <p className="text-[10px] leading-[1.8] text-ink/50 font-medium pt-2 border-t border-ink/5">{value.notes}</p>
         )}
       </div>
     );
@@ -181,16 +179,16 @@ function SectionContent({ value }: { value: any }) {
   // Payment: guide + accounts
   if (typeof value === 'object' && value.guide) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-3">
         <SplitText text={value.guide} />
         {value.accounts?.length > 0 && (
-          <div className="pt-5 border-t border-ink/5">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30 mb-3">Rekening Tujuan</p>
-            <div className="space-y-2">
+          <div className="pt-3 border-t border-ink/5">
+            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30 mb-2">Rekening Tujuan</p>
+            <div className="space-y-1.5">
               {value.accounts.map((acc: string, i: number) => (
-                <div key={i} className="flex items-start gap-3 p-3 border border-ink/8 bg-ink/[0.015]">
+                <div key={i} className="flex items-start gap-2 p-2 border border-ink/8 bg-ink/[0.015]">
                   <span className="text-[8px] font-semibold text-rose/40 mt-0.5 w-4 text-center">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-[11px] font-medium text-ink">{acc}</span>
+                  <span className="text-[10px] font-medium text-ink">{acc}</span>
                 </div>
               ))}
             </div>
@@ -203,12 +201,10 @@ function SectionContent({ value }: { value: any }) {
   // Shipping: info + area
   if (typeof value === 'object' && value.info) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-3">
         <SplitText text={value.info} />
         {value.area && (
-          <div className="pt-4 border-t border-ink/5">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/50">{value.area}</p>
-          </div>
+          <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/50 pt-3 border-t border-ink/5">{value.area}</p>
         )}
       </div>
     );
@@ -217,32 +213,23 @@ function SectionContent({ value }: { value: any }) {
   // Return & Refund: policy + process + notes — 3-column grid
   if (typeof value === 'object' && (value.policy || value.process || value.notes)) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {value.policy && (
-          <div className="border border-ink/8 p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-rose/40" />
-              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/60">Kebijakan Retur</p>
-            </div>
-            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
+          <div className="border border-ink/8 p-4">
+            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/60 mb-2">Kebijakan Retur</p>
+            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
           </div>
         )}
         {value.process && (
-          <div className="border border-ink/8 p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-ink/10" />
-              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/40">Alur Proses</p>
-            </div>
-            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
+          <div className="border border-ink/8 p-4">
+            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/40 mb-2">Alur Proses</p>
+            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
           </div>
         )}
         {value.notes && (
-          <div className="border border-ink/8 p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-ink/5" />
-              <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30">Catatan</p>
-            </div>
-            <p className="text-[11px] leading-[1.9] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
+          <div className="border border-ink/8 p-4">
+            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30 mb-2">Catatan</p>
+            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
           </div>
         )}
       </div>
@@ -308,21 +295,21 @@ export default function HelpPage() {
         </div>
 
         {/* Main Layout */}
-        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-[72px] pb-12">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-[72px] pb-4">
 
           {/* Title Block */}
-          <div className="mb-8">
+          <div className="mb-4">
             <div className="flex items-baseline gap-4">
-              <h1 className="font-display font-medium italic text-3xl tracking-tighter uppercase text-ink">Help Guide</h1>
+              <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Help Guide</h1>
             </div>
           </div>
 
           {/* 2-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-0 border-t border-ink/5">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-0 border-t border-ink/5">
 
             {/* Left: Section Tabs */}
-            <div className="lg:border-r lg:border-ink/5 lg:pr-0">
-              <nav className="flex lg:flex-col gap-0 pb-3 lg:pb-0">
+            <div className="lg:border-r lg:border-ink/5">
+              <nav className="flex lg:flex-col gap-0">
                 {HELP_SECTIONS.map((section) => {
                   const isActive = activeSection === section.key;
                   return (
@@ -330,7 +317,7 @@ export default function HelpPage() {
                       key={section.key}
                       onClick={() => setActiveSection(section.key)}
                       className={`
-                        shrink-0 flex items-center gap-3 px-4 py-3 lg:px-5 lg:py-4
+                        shrink-0 flex items-center gap-2 px-3 py-2.5 lg:px-4 lg:py-3
                         border-b lg:border-b lg:border-r lg:border-l lg:border-t
                         transition-all text-left whitespace-nowrap w-full
                         ${isActive
@@ -340,7 +327,7 @@ export default function HelpPage() {
                       `}
                     >
                       <span className={`
-                        w-8 h-8 rounded-sm flex items-center justify-center shrink-0
+                        w-7 h-7 rounded-sm flex items-center justify-center shrink-0
                         ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/30'}
                       `}>
                         {section.icon}
@@ -353,23 +340,23 @@ export default function HelpPage() {
             </div>
 
             {/* Right: Content Area */}
-            <div className="lg:pl-10 pt-6 lg:pt-6 min-w-0 pb-16">
+            <div className="lg:pl-8 pt-4 lg:pt-4 min-w-0 pb-8">
               {loading ? (
-                <div className="flex items-center justify-center h-60">
-                  <div className="w-6 h-6 border border-ink/10 border-t-rose rounded-full animate-spin" />
+                <div className="flex items-center justify-center h-40">
+                  <div className="w-5 h-5 border border-ink/10 border-t-rose rounded-full animate-spin" />
                 </div>
               ) : activeItem ? (
                 <>
                   {/* Section Header */}
-                  <div className="flex items-center gap-4 mb-8 pb-6 border-b border-ink/5">
-                    <div className="w-10 h-10 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
+                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-ink/5">
+                    <div className="w-8 h-8 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
                       <span className="text-ink/30">{activeMeta?.icon}</span>
                     </div>
                     <div>
-                      <h2 className="text-[13px] font-medium uppercase tracking-[0.15em] text-ink">
+                      <h2 className="text-[12px] font-medium uppercase tracking-[0.15em] text-ink">
                         {activeMeta?.label}
                       </h2>
-                      <p className="text-[8px] text-ink/25 uppercase tracking-[0.2em] mt-1">
+                      <p className="text-[8px] text-ink/25 uppercase tracking-[0.2em] mt-0.5">
                         {activeItem.key.replace('help_guide_', '').replace(/_/g, ' ').toUpperCase()}
                       </p>
                     </div>
@@ -378,9 +365,9 @@ export default function HelpPage() {
                   <SectionContent value={activeItem.value} />
                 </>
               ) : (
-                <div className="flex flex-col items-center justify-center h-60 gap-3 text-ink/20">
-                  <div className="w-10 h-10 border border-ink/8 flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-ink/20">
+                  <div className="w-8 h-8 border border-ink/8 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <path d="M7 1v6M7 10v1M2 7h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
                     </svg>
                   </div>
