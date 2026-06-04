@@ -342,76 +342,68 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1800px] mx-auto">
 
-        {/* FIXED NAVIGATION WRAPPER */}
-        <div className="fixed top-14 md:top-[88px] left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-b border-ink/5 shadow-sm">
-          <div className="max-w-[1800px] mx-auto px-4 md:px-12 pb-2 pt-2 md:pt-4">
-          {/* HEADER */}
-          <div className="flex items-center justify-between mb-2 md:mb-3">
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: DURATION.normal, ease: EASING.out }}
-              className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
-            >
-              <Grid3X3 size={10} className="text-rose" />
-              Category Index
-            </motion.h1>
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-2 md:mb-3">
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.normal, ease: EASING.out }}
+            className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
+          >
+            <Grid3X3 size={10} className="text-rose" />
+            Category Index
+          </motion.h1>
 
-            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
-              <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-                <ArrowLeft size={10} />
-              </motion.div>
-              <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
-            </PressButton>
-          </div>
-
-          {/* CATEGORY INDEX — COMPACT INLINE GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-2">
-            {CATEGORIES.map((cat, i) => (
-              <CategoryCard
-                key={cat.id}
-                cat={cat}
-                index={i}
-                isSelected={selectedCategory === cat.id}
-                onClick={() => {
-                  setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
-                  gridRef.current?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              />
-            ))}
-          </div>
-
-          {/* ACTIVE FILTER DISPLAY */}
-          <AnimatePresence>
-            {selectedCategory && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: DURATION.fast, ease: EASING.out }}
-                className="flex items-center justify-between py-1.5 overflow-hidden"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
-                  <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span>
-                </div>
-                <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
-                  Clear
-                </PressButton>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          </div>
+          <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
+            <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+              <ArrowLeft size={10} />
+            </motion.div>
+            <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
+          </PressButton>
         </div>
 
-        {/* SPACER FOR FIXED HEADER */}
-        <div className="h-[140px] md:h-[160px]" />
+        {/* CATEGORY INDEX — COMPACT INLINE GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
+          {CATEGORIES.map((cat, i) => (
+            <CategoryCard
+              key={cat.id}
+              cat={cat}
+              index={i}
+              isSelected={selectedCategory === cat.id}
+              onClick={() => {
+                setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
+                gridRef.current?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
+          ))}
+        </div>
+
+        {/* ACTIVE FILTER DISPLAY */}
+        <AnimatePresence>
+          {selectedCategory && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: DURATION.fast, ease: EASING.out }}
+              className="flex items-center justify-between py-1.5 overflow-hidden mb-3"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
+                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span>
+              </div>
+              <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
+                Clear
+              </PressButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* PRODUCT GRID */}
-        <div ref={gridRef} className="pb-32 md:pb-40">
+        <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedCategory || 'all'}
