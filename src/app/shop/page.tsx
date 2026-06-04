@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingBag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
@@ -29,7 +30,7 @@ interface Product {
 // ===============================
 // MOBILE SHOP VIEW (iOS Native)
 // ===============================
-function MobileShopView({ products }: { products: Product[] }) {
+function MobileShopView({ products, initialCategory }: { products: Product[], initialCategory: string }) {
   // Category keys must match DB values: 'pakaian' | 'utilities' | 'aksesoris'
   const categoryMap: Record<string, string> = {
     'All': 'All',
@@ -38,7 +39,7 @@ function MobileShopView({ products }: { products: Product[] }) {
     'Accessories': 'aksesoris',
   };
   const displayCategories = Object.keys(categoryMap);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const filteredProducts = selectedCategory === 'All'
@@ -174,7 +175,7 @@ function MobileShopView({ products }: { products: Product[] }) {
 // ===============================
 // DESKTOP SHOP VIEW
 // ===============================
-function DesktopShopView({ products }: { products: Product[] }) {
+function DesktopShopView({ products, initialCategory }: { products: Product[], initialCategory: string }) {
   // Category keys must match DB values: 'pakaian' | 'utilities' | 'aksesoris'
   const categoryMap: Record<string, string> = {
     'All': 'All',
@@ -183,7 +184,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
     'Accessories': 'aksesoris',
   };
   const displayCategories = Object.keys(categoryMap);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
 
   const filteredProducts = selectedCategory === 'All'
     ? products
@@ -325,6 +326,12 @@ function DesktopShopView({ products }: { products: Product[] }) {
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get('filter');
+  
+  // Validate the filter param matches our allowed categories, otherwise fallback to 'All'
+  const allowedCategories = ['All', 'Fashion', 'Utilities', 'Accessories'];
+  const initialCategory = filterParam && allowedCategories.includes(filterParam) ? filterParam : 'All';
 
   // Platform detection - starts as MOBILE to prevent SSR flash
   const { isMobile } = useDevice();
@@ -362,9 +369,9 @@ export default function ShopPage() {
   // SEPARATE UI PER PLATFORM
   // Mobile (iOS Native Feel)
   if (isMobile) {
-    return <MobileShopView products={products} />;
+    return <MobileShopView products={products} initialCategory={initialCategory} />;
   }
 
   // Desktop (Original Design)
-  return <DesktopShopView products={products} />;
+  return <DesktopShopView products={products} initialCategory={initialCategory} />;
 }
