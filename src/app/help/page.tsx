@@ -114,6 +114,32 @@ interface SettingItem {
 }
 
 /* ─────────────────────────────────────────────
+   Helper Component for 2-Column Text Layout
+   ───────────────────────────────────────────── */
+function SplitText({ text }: { text: string }) {
+  const paragraphs = text.split(/\n\s*\n/).filter(Boolean);
+  
+  if (paragraphs.length <= 1) {
+    return (
+      <div className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">
+        {text}
+      </div>
+    );
+  }
+  
+  const mid = Math.ceil(paragraphs.length / 2);
+  const col1 = paragraphs.slice(0, mid).join('\n\n');
+  const col2 = paragraphs.slice(mid).join('\n\n');
+  
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 text-[12px] leading-[1.9] text-ink/60 font-medium">
+      <div className="whitespace-pre-line">{col1}</div>
+      <div className="whitespace-pre-line">{col2}</div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    Section Content Renderer — expanded layout
    ───────────────────────────────────────────── */
 function SectionContent({ value, sectionKey }: { value: any; sectionKey: string }) {
@@ -122,14 +148,12 @@ function SectionContent({ value, sectionKey }: { value: any; sectionKey: string 
   // Object with guide + accounts (payment)
   if (typeof value === 'object' && value.guide) {
     return (
-      <div className="space-y-6">
-        <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium max-w-[640px]">
-          {value.guide}
-        </p>
+      <div className="space-y-8">
+        <SplitText text={value.guide} />
         {value.accounts?.length > 0 && (
-          <div className="space-y-2 border-t border-ink/5 pt-6">
+          <div className="space-y-3 border-t border-ink/5 pt-6">
             <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-ink/30 mb-3">Rekening Tujuan</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {value.accounts.map((acc: string, i: number) => (
                 <div key={i} className="flex items-center gap-3 px-4 py-3 border border-ink/5 bg-ink/[0.015]">
                   <span className="text-[9px] font-medium text-rose/50 shrink-0 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
@@ -146,14 +170,12 @@ function SectionContent({ value, sectionKey }: { value: any; sectionKey: string 
   // Object with info + area (shipping)
   if (typeof value === 'object' && value.info) {
     return (
-      <div className="space-y-6">
-        <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium max-w-[640px]">
-          {value.info}
-        </p>
+      <div className="space-y-8">
+        <SplitText text={value.info} />
         {value.area && (
-          <div className="flex items-center gap-3 border-t border-ink/5 pt-5">
-            <div className="w-7 h-7 border border-ink/8 flex items-center justify-center bg-ink/[0.02] shrink-0">
-              <IconMapPin className="w-3.5 h-3.5 text-ink/30" />
+          <div className="flex items-center gap-4 border-t border-ink/5 pt-6">
+            <div className="w-8 h-8 border border-ink/8 flex items-center justify-center bg-ink/[0.02] shrink-0">
+              <IconMapPin className="w-4 h-4 text-ink/30" />
             </div>
             <p className="text-[10px] font-medium text-ink/40 uppercase tracking-[0.15em]">
               {value.area}
@@ -218,45 +240,46 @@ function SectionContent({ value, sectionKey }: { value: any; sectionKey: string 
   // Object with policy/process/notes (return & refund)
   if (typeof value === 'object' && (value.policy || value.process)) {
     return (
-      <div className="space-y-6">
-        {value.policy && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-rose/40" />
-              <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-rose/60">Kebijakan Retur</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
+        <div className="space-y-6">
+          {value.policy && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-4 bg-rose/40" />
+                <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-rose/60">Kebijakan Retur</p>
+              </div>
+              <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium max-w-[640px]">{value.policy}</p>
-          </div>
-        )}
-        {value.process && (
-          <div className="border-t border-ink/5 pt-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-rose/40" />
-              <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-rose/60">Alur Proses Retur</p>
+          )}
+        </div>
+        
+        <div className="space-y-8">
+          {value.process && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-4 bg-rose/40" />
+                <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-rose/60">Alur Proses Retur</p>
+              </div>
+              <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium max-w-[640px]">{value.process}</p>
-          </div>
-        )}
-        {value.notes && (
-          <div className="border-t border-ink/5 pt-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-ink/10" />
-              <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-ink/30">Catatan</p>
+          )}
+          {value.notes && (
+            <div className="border-t border-ink/5 pt-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-4 bg-ink/10" />
+                <p className="text-[9px] uppercase tracking-[0.2em] font-medium text-ink/30">Catatan</p>
+              </div>
+              <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
             </div>
-            <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/50 font-medium max-w-[640px]">{value.notes}</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }
 
   // Plain string or plain object
   const str = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
-  return (
-    <p className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium max-w-[640px]">
-      {str}
-    </p>
-  );
+  return <SplitText text={str} />;
 }
 
 export default function HelpPage() {
