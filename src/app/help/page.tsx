@@ -295,17 +295,17 @@ export default function HelpPage() {
         </div>
 
         {/* Main Layout */}
-        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-[72px] pb-4">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-[72px]">
 
           {/* Title Block */}
-          <div className="mb-4">
+          <div className="mb-2">
             <div className="flex items-baseline gap-4">
-              <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Help Guide</h1>
+              <h1 className="font-display font-medium italic text-xl tracking-tighter uppercase text-ink">Help Guide</h1>
             </div>
           </div>
 
           {/* 2-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-0 border-t border-ink/5">
+          <div className="grid grid-cols-1 lg:grid-cols-[160px_1fr] gap-0 border-t border-ink/5">
 
             {/* Left: Section Tabs */}
             <div className="lg:border-r lg:border-ink/5">
@@ -317,9 +317,9 @@ export default function HelpPage() {
                       key={section.key}
                       onClick={() => setActiveSection(section.key)}
                       className={`
-                        shrink-0 flex items-center gap-2 px-3 py-2.5 lg:px-4 lg:py-3
+                        shrink-0 flex items-center gap-2 px-3 py-2 lg:px-3 lg:py-2
                         border-b lg:border-b lg:border-r lg:border-l lg:border-t
-                        transition-all text-left whitespace-nowrap w-full
+                        transition-all text-left w-full
                         ${isActive
                           ? 'bg-rose text-white border-rose lg:border-rose'
                           : 'text-ink/40 hover:text-ink hover:bg-ink/[0.02] border-transparent'
@@ -327,12 +327,12 @@ export default function HelpPage() {
                       `}
                     >
                       <span className={`
-                        w-7 h-7 rounded-sm flex items-center justify-center shrink-0
+                        w-6 h-6 rounded-sm flex items-center justify-center shrink-0
                         ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/30'}
                       `}>
                         {section.icon}
                       </span>
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.1em]">{section.label}</span>
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.08em]">{section.label}</span>
                     </button>
                   );
                 })}
@@ -340,7 +340,7 @@ export default function HelpPage() {
             </div>
 
             {/* Right: Content Area */}
-            <div className="lg:pl-8 pt-4 lg:pt-4 min-w-0 pb-8">
+            <div className="lg:pl-6 pt-3 lg:pt-3 min-w-0 pb-6">
               {loading ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="w-5 h-5 border border-ink/10 border-t-rose rounded-full animate-spin" />
@@ -348,15 +348,15 @@ export default function HelpPage() {
               ) : activeItem ? (
                 <>
                   {/* Section Header */}
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-ink/5">
-                    <div className="w-8 h-8 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
+                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-ink/5">
+                    <div className="w-7 h-7 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
                       <span className="text-ink/30">{activeMeta?.icon}</span>
                     </div>
                     <div>
-                      <h2 className="text-[12px] font-medium uppercase tracking-[0.15em] text-ink">
+                      <h2 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">
                         {activeMeta?.label}
                       </h2>
-                      <p className="text-[8px] text-ink/25 uppercase tracking-[0.2em] mt-0.5">
+                      <p className="text-[8px] text-ink/25 uppercase tracking-[0.2em]">
                         {activeItem.key.replace('help_guide_', '').replace(/_/g, ' ').toUpperCase()}
                       </p>
                     </div>
@@ -379,11 +379,6 @@ export default function HelpPage() {
         </div>
 
         {/* Footer note */}
-        <div className="border-t border-ink/5 px-6 py-5">
-          <p className="text-[8px] text-ink/20 uppercase tracking-[0.2em] text-center font-medium">
-            Informasi di halaman ini dikelola oleh Studio dan dapat diubah sewaktu-waktu
-          </p>
-        </div>
       </main>
       <GlobalFooter />
     </>
