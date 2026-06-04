@@ -1,6 +1,7 @@
 import React from 'react';
 import { FinanceSummary, Product, Order } from '../types';
 import { StatusBadge } from '../StatusBadge';
+import { OverviewMetrics } from './OverviewMetrics';
 
 // Lazy load the charts to prevent the freeze issue caused by Recharts + Framer Motion
 const LazyCharts = React.lazy(() => import('./OverviewCharts'));
@@ -52,6 +53,9 @@ export function OverviewTab({
           <LazyCharts salesData={salesChartData} profitData={profitChartData} />
         </React.Suspense>
       </div>
+
+      {/* ── Real-time Indicators & Analytics ── */}
+      <OverviewMetrics orders={orders} products={products} />
 
       {/* Recent Orders */}
       <div className="flex-1 flex flex-col min-h-0 bg-white rounded-sm border border-ink/10 overflow-hidden">
