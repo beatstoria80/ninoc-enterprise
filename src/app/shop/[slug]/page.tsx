@@ -49,7 +49,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
 
   // Platform detection for mobile-specific UI
