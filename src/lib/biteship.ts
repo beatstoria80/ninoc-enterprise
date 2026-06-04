@@ -236,6 +236,24 @@ export async function getBiteshipOrder(orderId: string): Promise<BiteshipOrderDe
 }
 
 // ============================================================
+// CANCEL ORDER
+// ============================================================
+
+export interface BiteshipCancelOrderResponse {
+  success: boolean;
+  message: string;
+  status: string;
+  id: string;
+}
+
+export async function cancelBiteshipOrder(orderId: string, reason: string): Promise<BiteshipCancelOrderResponse> {
+  return biteshipFetch<BiteshipCancelOrderResponse>(`/v1/orders/${orderId}`, {
+    method: 'DELETE',
+    body: JSON.stringify({ cancellation_reason: reason }),
+  });
+}
+
+// ============================================================
 // COURIER MAPPING
 // ============================================================
 

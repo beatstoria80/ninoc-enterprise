@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '@/store/useSettings';
 import { supabase } from '@/lib/supabase';
 import {
   Store, CreditCard, Clock, Palette, Truck, HelpCircle,
   MessageSquare, Lock, Search, Plus, X, Save, Upload,
-  ChevronRight, Eye, EyeOff, Globe, Bell, Package,
-  FileText, Shield, Database, Star, MapPin, Phone, Mail, Link
+  ChevronRight, Eye, EyeOff, Globe, Bell,
+  FileText, Shield, Database, Star, MapPin, Phone, Mail, Link, Package
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -19,6 +19,7 @@ const SETTINGS_ITEMS = [
   { id: 'schedule', label: 'Operational Schedule', icon: Clock },
   { id: 'decoration', label: 'Store Decoration', icon: Palette },
   { id: 'delivery', label: 'Delivery Setting', icon: Truck },
+  { id: 'biteship-activation', label: 'Aktivasi Order API', icon: Link },
   { id: 'help-center', label: 'Help Center', icon: HelpCircle },
   { id: 'reply-template', label: 'Reply Template', icon: MessageSquare },
   { id: 'change-password', label: 'Change Password', icon: Lock },
@@ -671,6 +672,424 @@ function DeliverySection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// SECTION: Biteship Activation
+// ─────────────────────────────────────────────────────────────────────
+function BiteshipActivationSection() {
+  const [apiKeyName, setApiKeyName] = useState('API_webhook_ninoc');
+  const [activatedCouriers, setActivatedCouriers] = useState<string[]>(['jne', 'jnt', 'sicepat']);
+  const [testDelivered, setTestDelivered] = useState('');
+  const [testCancelled, setTestCancelled] = useState('');
+  const [supportsPriceChange, setSupportsPriceChange] = useState(false);
+  const [supportsResiChange, setSupportsResiChange] = useState(false);
+  const [hasInsurance, setHasInsurance] = useState(false);
+  const [hasCod, setHasCod] = useState(false);
+  const [usesOwnResi, setUsesOwnResi] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerType, setPickerType] = useState<'delivered' | 'cancelled'>('delivered');
+  const [pickerOrders, setPickerOrders] = useState<any[]>([]);
+  const [pickerLoading, setPickerLoading] = useState(false);
+
+  const ALL_COURIERS = [
+    { id: 'jne', label: 'JNE Express' },
+    { id: 'jnt', label: 'J&T Express' },
+    { id: 'sicepat', label: 'SiCepat' },
+    { id: 'tiki', label: 'TIKI' },
+    { id: 'pos', label: 'POS Indonesia' },
+    { id: 'anteraja', label: 'AnterAja' },
+    { id: 'ninja', label: 'Ninja Van' },
+  ];
+
+  const toggleCourier = (id: string) => {
+    setActivatedCouriers(prev =>
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
+  const openPicker = async (type: 'delivered' | 'cancelled') => {
+    setPickerType(type);
+    setPickerOpen(true);
+    setPickerLoading(true);
+    try {
+      const res = await fetch(`/api/admin/orders?status=${type}&limit=50`);
+      const data = await res.json();
+      setPickerOrders(data.orders || []);
+    } catch (e) {
+      console.error('Failed to load orders:', e);
+      setPickerOrders([]);
+    } finally {
+      setPickerLoading(false);
+    }
+  };
+
+  const selectOrder = (orderId: string) => {
+    if (pickerType === 'delivered') {
+      setTestDelivered(orderId);
+    } else {
+      setTestCancelled(orderId);
+    }
+    setPickerOpen(false);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      const payload = {
+        key: 'biteship_activation',
+        value: {
+          api_key_name: apiKeyName,
+          activated_couriers: activatedCouriers,
+          test_order_delivered: testDelivered,
+          test_order_cancelled: testCancelled,
+          supports_price_change: supportsPriceChange,
+          supports_resi_change: supportsResiChange,
+          has_insurance: hasInsurance,
+          has_cod: hasCod,
+          uses_own_resi: usesOwnResi,
+        },
+      };
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Save failed');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error('[BiteshipActivation] save error:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SettingsSection
+      title="Formulir Aktivasi Order API"
+      subtitle="Konfigurasi API Biteship untuk pemrosesan pesanan dan pelacakan real-time"
+    >
+      {/* 1. Pilih Kunci API */}
+      <div className="mb-6">
+        <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+          1 — Pilih Kunci API
+        </p>
+        <div className="border border-ink/10 rounded-sm p-4 bg-ink/[0.015]">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 flex-1">
+              <input
+                type="radio"
+                id="api-webhook-ninoc"
+                checked={apiKeyName === 'API_webhook_ninoc'}
+                onChange={() => setApiKeyName('API_webhook_ninoc')}
+                className="accent-rose"
+              />
+              <label htmlFor="api-webhook-ninoc" className="text-[10px] font-semibold text-ink cursor-pointer">
+                API_webhook_ninoc
+              </label>
+            </div>
+            <span className="text-[7px] uppercase tracking-widest bg-emerald-50 text-emerald-600 font-bold px-2 py-1 rounded-sm">Production</span>
+          </div>
+          <p className="text-[8px] text-ink/30 mt-2 ml-5">
+            Biteship Production Key — digunakan untuk membuat waybill dan tracking real-time
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Pilih Kurir yang Diaktifkan */}
+      <div className="mb-6">
+        <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+          2 — Pilih Kurir yang Akan Diaktifkan
+        </p>
+        <div className="border border-ink/10 rounded-sm p-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {ALL_COURIERS.map(c => {
+              const isActive = activatedCouriers.includes(c.id);
+              return (
+                <div
+                  key={c.id}
+                  onClick={() => toggleCourier(c.id)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 border rounded-sm cursor-pointer transition-all",
+                    isActive
+                      ? "border-rose bg-rose/[0.04]"
+                      : "border-ink/10 hover:border-ink/30"
+                  )}
+                >
+                  <div className={cn(
+                    "w-3 h-3 rounded-sm border flex items-center justify-center transition-colors",
+                    isActive ? "bg-rose border-rose" : "border-ink/30 bg-white"
+                  )}>
+                    {isActive && (
+                      <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                        <path d="M1.5 4L3.5 6L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-semibold",
+                    isActive ? "text-rose" : "text-ink/50"
+                  )}>
+                    {c.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-[8px] text-ink/30 mt-3">
+            {activatedCouriers.length} kurir dipilih
+          </p>
+        </div>
+      </div>
+
+      {/* 3. Test Order IDs */}
+      <div className="mb-6">
+        <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+          3 — ID Pesanan Test
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border border-ink/10 rounded-sm p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[8px] uppercase tracking-widest text-ink/40 font-medium">
+                Test Delivered (status "delivered")
+              </label>
+              <span className="text-[7px] text-emerald-600 font-bold">Delivered</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={testDelivered}
+                onChange={e => setTestDelivered(e.target.value)}
+                placeholder="ID pesanan delivered"
+                className="flex-1 px-3 py-2 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20"
+              />
+              <button
+                onClick={() => openPicker('delivered')}
+                className="px-3 py-2 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/60 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
+              >
+                Browse
+              </button>
+            </div>
+            {testDelivered && (
+              <p className="text-[7px] text-rose/70">Selected: {testDelivered}</p>
+            )}
+            <p className="text-[7px] text-ink/25 leading-relaxed">
+              <span className="font-semibold">Pelajari simulasi test order:</span>{' '}
+              Gunakan order dengan status akhir "delivered" untuk menguji verifikasi tracking sukses.
+            </p>
+          </div>
+          <div className="border border-ink/10 rounded-sm p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[8px] uppercase tracking-widest text-ink/40 font-medium">
+                Test Cancelled (status "cancelled")
+              </label>
+              <span className="text-[7px] text-red-500 font-bold">Cancelled</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={testCancelled}
+                onChange={e => setTestCancelled(e.target.value)}
+                placeholder="ID pesanan cancelled"
+                className="flex-1 px-3 py-2 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20"
+              />
+              <button
+                onClick={() => openPicker('cancelled')}
+                className="px-3 py-2 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/60 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
+              >
+                Browse
+              </button>
+            </div>
+            {testCancelled && (
+              <p className="text-[7px] text-rose/70">Selected: {testCancelled}</p>
+            )}
+            <p className="text-[7px] text-ink/25 leading-relaxed">
+              <span className="font-semibold">Pelajari simulasi test order:</span>{' '}
+              Gunakan order dengan status "cancelled" atau "rejected" untuk menguji skenario kegagalan.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Periksa */}
+      <div className="mb-6">
+        <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+          4 — Periksa Jika Diperlukan
+        </p>
+        <div className="border border-ink/10 rounded-sm divide-y divide-ink/5">
+          {[
+            { checked: supportsPriceChange, onChange: setSupportsPriceChange, label: 'Aplikasi dapat menangani perubahan harga pengiriman' },
+            { checked: supportsResiChange, onChange: setSupportsResiChange, label: 'Aplikasi dapat menangani perubahan resi pengiriman' },
+            { checked: hasInsurance, onChange: setHasInsurance, label: 'Memiliki pesanan yang mencakup asuransi' },
+            { checked: hasCod, onChange: setHasCod, label: 'Memiliki pesanan dengan Cash on Delivery (COD)' },
+            { checked: usesOwnResi, onChange: setUsesOwnResi, label: 'Menggunakan resi pengiriman sendiri' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-3 px-4 py-3 cursor-pointer" onClick={() => item.onChange(!item.checked)}>
+              <div className={cn(
+                "w-3.5 h-3.5 rounded-sm border flex items-center justify-center transition-colors shrink-0",
+                item.checked ? "bg-rose border-rose" : "border-ink/30 bg-white"
+              )}>
+                {item.checked && (
+                  <svg width="9" height="9" viewBox="0 0 8 8" fill="none">
+                    <path d="M1.5 4L3.5 6L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+              <span className={cn(
+                "text-[9px] leading-relaxed",
+                item.checked ? "text-ink font-semibold" : "text-ink/50"
+              )}>
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[8px] text-ink/30 mt-2">Centang semua yang berlaku</p>
+      </div>
+
+      {/* Order Picker Modal */}
+      <AnimatePresence>
+        {pickerOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40"
+            onClick={() => setPickerOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="bg-white w-[480px] max-h-[480px] border border-ink/10 rounded-sm shadow-lg overflow-hidden flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-ink/5 bg-ink/[0.02]">
+                <div>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-widest text-ink">
+                    Pilih Order — {pickerType === 'delivered' ? 'Status Delivered' : 'Status Cancelled'}
+                  </h3>
+                  <p className="text-[8px] text-ink/40 mt-0.5">Klik order untuk dipilih sebagai test ID</p>
+                </div>
+                <button
+                  onClick={() => setPickerOpen(false)}
+                  className="text-ink/30 hover:text-ink transition-colors p-1"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* List */}
+              <div className="flex-1 overflow-y-auto">
+                {pickerLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <span className="inline-block w-5 h-5 border-2 border-ink/20 border-t-rose rounded-full animate-spin" />
+                  </div>
+                ) : pickerOrders.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <Package size={24} className="text-ink/20 mb-3" />
+                    <p className="text-[10px] font-semibold text-ink/40">Belum ada order dengan status "{pickerType}"</p>
+                    <p className="text-[8px] text-ink/25 mt-1">Order akan muncul setelah ada pesanan dengan status ini</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-ink/5">
+                    {pickerOrders.map(order => (
+                      <div
+                        key={order.id}
+                        onClick={() => selectOrder(order.id)}
+                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-rose/[0.03] transition-colors"
+                      >
+                        <div className={cn(
+                          "w-3 h-3 rounded-sm border flex items-center justify-center shrink-0",
+                          (pickerType === 'delivered' ? testDelivered : testCancelled) === order.id
+                            ? "bg-rose border-rose"
+                            : "border-ink/20 bg-white"
+                        )}>
+                          {(pickerType === 'delivered' ? testDelivered : testCancelled) === order.id && (
+                            <svg width="7" height="7" viewBox="0 0 8 8" fill="none">
+                              <path d="M1.5 4L3.5 6L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-bold text-ink font-mono">{order.id.slice(0, 18)}…</span>
+                            <span className={cn(
+                              "text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-bold",
+                              pickerType === 'delivered'
+                                ? "bg-emerald-50 text-emerald-600"
+                                : "bg-red-50 text-red-500"
+                            )}>
+                              {pickerType}
+                            </span>
+                          </div>
+                          {order.tracking_id && (
+                            <p className="text-[7px] text-ink/30 mt-0.5">Resi: {order.tracking_id}</p>
+                          )}
+                          <p className="text-[7px] text-ink/30 mt-0.5">
+                            {order.customer_name || 'Unknown'} · {order.courier || '—'}
+                          </p>
+                        </div>
+                        <span className="text-[8px] text-ink/30 shrink-0">
+                          {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID') : '—'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-4 py-3 border-t border-ink/5 flex justify-end">
+                <button
+                  onClick={() => setPickerOpen(false)}
+                  className="px-4 py-2 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/50 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors"
+                >
+                  Tutup
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          {saved && (
+            <span className="text-[9px] text-emerald-600 font-semibold flex items-center gap-1">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <circle cx="5" cy="5" r="4" fill="#2E7D32"/>
+                <path d="M2.5 5L4.5 7L7.5 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Tersimpan
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[8px] text-ink/30">
+            {activatedCouriers.length} kurir aktif · {apiKeyName}
+          </span>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50"
+          >
+            {saving ? (
+              <span className="inline-block w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Save size={11} />
+            )}
+            {saving ? 'Saving…' : 'Simpan Aktivasi'}
+          </button>
+        </div>
+      </div>
+    </SettingsSection>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // SECTION: Help Center
 // ─────────────────────────────────────────────────────────────────────
 function HelpCenterSection() {
@@ -937,6 +1356,7 @@ export function SettingsTab() {
       case 'schedule': return <ScheduleSection />;
       case 'decoration': return <DecorationSection />;
       case 'delivery': return <DeliverySection />;
+      case 'biteship-activation': return <BiteshipActivationSection />;
       case 'help-center': return <HelpCenterSection />;
       case 'reply-template': return <ReplyTemplateSection />;
       case 'change-password': return <ChangePasswordSection />;
