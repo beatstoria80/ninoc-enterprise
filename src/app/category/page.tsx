@@ -153,7 +153,7 @@ function CategoryCard({ cat, index, isSelected, onClick }: {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative bg-white p-4 md:p-10 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
+      className={`relative bg-white p-3 md:p-5 text-left group overflow-hidden ${isSelected ? 'bg-ink text-white' : ''}`}
     >
       {/* Background animation on hover */}
       <motion.div
@@ -350,11 +350,11 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-32 px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-4 md:mb-16">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
           <div className="flex flex-col gap-1 md:gap-2">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -372,7 +372,7 @@ export default function CategoryPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: DURATION.slow, ease: EASING.out }}
-              className="text-2xl md:text-5xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none"
+              className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none"
             >
               Category Index
             </motion.h1>
@@ -388,7 +388,7 @@ export default function CategoryPage() {
         </div>
 
         {/* CATEGORY INDEX — CELL-BLOCK GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-6 md:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-4 md:mb-6">
           {CATEGORIES.map((cat, i) => (
             <CategoryCard
               key={cat.id}
@@ -431,7 +431,7 @@ export default function CategoryPage() {
         </AnimatePresence>
 
         {/* PRODUCT GRID */}
-        <div ref={gridRef} className="border-t border-ink/5 pt-4 md:pt-12">
+        <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedCategory || 'all'}
@@ -477,7 +477,7 @@ export default function CategoryPage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3, duration: DURATION.medium }}
-          className="mt-8 md:mt-24 border-t border-ink/5 pt-4 md:pt-10 flex items-center justify-between"
+          className="mt-6 md:mt-8 border-t border-ink/5 pt-3 md:pt-4 flex items-center justify-between"
         >
           <div className="flex items-center gap-8">
             <motion.div
