@@ -596,9 +596,53 @@ function DeliverySection() {
   const [autoAssign, setAutoAssign] = useState(false);
   const [sameDayActive, setSameDayActive] = useState(false);
   const [instantActive, setInstantActive] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase
+          .from('atelier_settings')
+          .select('value')
+          .eq('key', 'delivery_settings')
+          .single();
+          
+        if (data?.value) {
+          if (data.value.couriers) setCouriers(data.value.couriers);
+          if (data.value.defaultCourier) setDefaultCourier(data.value.defaultCourier);
+          if (data.value.autoAssign !== undefined) setAutoAssign(data.value.autoAssign);
+          if (data.value.sameDayActive !== undefined) setSameDayActive(data.value.sameDayActive);
+          if (data.value.instantActive !== undefined) setInstantActive(data.value.instantActive);
+        }
+      } catch (err) {
+        console.error('Error loading delivery settings:', err);
+      }
+    }
+    load();
+  }, []);
 
   const toggleCourier = (id: string) => {
     setCouriers(prev => prev.map(c => c.id === id ? { ...c, active: !c.active } : c));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        key: 'delivery_settings',
+        value: { couriers, defaultCourier, autoAssign, sameDayActive, instantActive }
+      };
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Save failed');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -665,7 +709,7 @@ function DeliverySection() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton />
+        <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
   );
