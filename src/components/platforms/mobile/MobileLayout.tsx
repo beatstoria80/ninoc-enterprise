@@ -288,7 +288,7 @@ export default function MobileLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-cr ios-native-layout flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-cr ios-native-layout flex flex-col" style={{ overflowX: 'clip' }}>
 
       {/* Safe area top spacer */}
       <div className="h-[env(safe-area-inset-top)] bg-white/95" />

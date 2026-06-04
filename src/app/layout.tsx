@@ -134,7 +134,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col overflow-x-hidden minimal-scroll">
+      <body className="min-h-full flex flex-col minimal-scroll" style={{ overflowX: 'clip' }}>
         <SmoothScrollProvider>
           <Script
             src={
