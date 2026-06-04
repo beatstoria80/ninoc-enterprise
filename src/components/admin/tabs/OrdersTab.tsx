@@ -1186,7 +1186,7 @@ export function OrdersTab({
                                               <p className="text-[9px] text-emerald-600 font-medium mt-1">Driver: {order.courier_driver_name}</p>
                                             )}
                                             {order.courier_link && (
-                                              <a href={order.courier_link} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-[8px] text-rose uppercase tracking-widest font-bold hover:underline">
+                                              <a href={order.courier_link} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-[8px] text-rose uppercase tracking-widest font-medium hover:underline">
                                                 Track on Courier ↗
                                               </a>
                                             )}
@@ -1392,7 +1392,7 @@ export function OrdersTab({
                           <div className="flex-1 flex flex-wrap items-center justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <p className="text-xs font-bold text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
+                                <p className="text-xs font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
                                 <span className="text-[9px] text-ink/70 font-medium font-mono bg-ink/5 px-1.5 py-0.5 rounded-sm border border-ink/10">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                               </div>
                               <p className="text-[11px] font-medium text-ink mt-1 truncate">
@@ -1478,7 +1478,7 @@ export function OrdersTab({
             <div className="px-6 py-4 bg-rose flex items-center gap-3">
               <AlertTriangle size={20} className="text-white" />
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-widest">Fraud Alert</h3>
+                <h3 className="text-sm font-medium text-white uppercase tracking-widest">Fraud Alert</h3>
                 <p className="text-[10px] text-white/80 uppercase tracking-wider mt-0.5">Duplicate Print Blocked</p>
               </div>
             </div>
@@ -1486,15 +1486,15 @@ export function OrdersTab({
             {/* Body */}
             <div className="p-6 space-y-4">
               <p className="text-[11px] text-ink/70 leading-relaxed">
-                <span className="font-bold text-rose">{fraudWarningOrders.length} order(s)</span> yang Anda coba cetak sudah memiliki status <span className="font-bold">SHIPPED / DELIVERED</span>. Ini mengindikasikan <span className="font-bold text-rose">DUPLICATE PRINT ATTEMPT</span>.
+                <span className="font-medium text-rose">{fraudWarningOrders.length} order(s)</span> yang Anda coba cetak sudah memiliki status <span className="font-medium">SHIPPED / DELIVERED</span>. Ini mengindikasikan <span className="font-medium text-rose">DUPLICATE PRINT ATTEMPT</span>.
               </p>
               <div className="bg-rose/5 border border-rose/20 rounded-lg overflow-hidden">
                 <table className="w-full text-[10px]">
                   <thead>
                     <tr className="bg-rose/10">
-                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Order ID</th>
-                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Status</th>
-                      <th className="px-3 py-2 text-left font-bold text-ink/60 uppercase tracking-widest">Printed At</th>
+                      <th className="px-3 py-2 text-left font-medium text-ink/60 uppercase tracking-widest">Order ID</th>
+                      <th className="px-3 py-2 text-left font-medium text-ink/60 uppercase tracking-widest">Status</th>
+                      <th className="px-3 py-2 text-left font-medium text-ink/60 uppercase tracking-widest">Printed At</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-rose/10">
@@ -1502,7 +1502,7 @@ export function OrdersTab({
                       <tr key={o.id}>
                         <td className="px-3 py-2 font-mono font-medium text-ink">{o.id.slice(0, 8).toUpperCase()}</td>
                         <td className="px-3 py-2">
-                          <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-bold uppercase text-[9px] rounded">{o.status}</span>
+                          <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium uppercase text-[9px] rounded">{o.status}</span>
                         </td>
                         <td className="px-3 py-2 text-ink/50 font-mono">
                           {o.printed_at ? new Date(o.printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Unknown'}
@@ -1521,7 +1521,7 @@ export function OrdersTab({
             <div className="px-6 py-4 bg-ink/5 flex justify-end gap-3">
               <button
                 onClick={() => setIsFraudWarningOpen(false)}
-                className="px-5 py-2 text-[10px] uppercase font-bold tracking-widest bg-ink text-white rounded-sm hover:bg-ink/80 transition-colors"
+                className="px-5 py-2 text-[10px] uppercase font-medium tracking-widest bg-ink text-white rounded-sm hover:bg-ink/80 transition-colors"
               >
                 Acknowledge &amp; Close
               </button>

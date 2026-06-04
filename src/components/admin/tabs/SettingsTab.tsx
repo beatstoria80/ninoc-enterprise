@@ -231,7 +231,7 @@ function BankAccountSection() {
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-semibold text-ink">{acc.bank}</span>
                 {acc.is_default && (
-                  <span className="text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-bold">DEFAULT</span>
+                  <span className="text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-medium">DEFAULT</span>
                 )}
               </div>
               <p className="text-[10px] font-medium text-ink/70 mt-0.5">{acc.account_name}</p>
@@ -250,7 +250,7 @@ function BankAccountSection() {
 
         {showAdd ? (
           <div className="border border-rose/30 rounded-sm p-4 bg-rose/5 space-y-3">
-            <p className="text-[9px] font-bold text-rose uppercase tracking-widest">Tambah Rekening Baru</p>
+            <p className="text-[9px] font-medium text-rose uppercase tracking-widest">Tambah Rekening Baru</p>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Nama Bank">
                 <Input value={newBank} onChange={e => setNewBank(e.target.value)} placeholder="BCA" />
@@ -430,8 +430,8 @@ function DecorationSection() {
             {/* Top nav */}
             <div className="border-b border-ink/5 px-4 py-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-sm flex items-center justify-center text-white text-[8px] font-black" style={{ backgroundColor: '#141414' }}>N</div>
-                <span className="text-[9px] font-black tracking-tight text-ink uppercase">{storeName || 'NINOC STORE'}</span>
+                <div className="w-5 h-5 rounded-sm flex items-center justify-center text-white text-[8px] font-medium" style={{ backgroundColor: '#141414' }}>N</div>
+                <span className="text-[9px] font-medium tracking-tight text-ink uppercase">{storeName || 'NINOC STORE'}</span>
               </div>
               <div className="flex items-center gap-3">
                 {['Shop', 'About', 'Craft', 'Collections'].map(link => (
@@ -460,7 +460,7 @@ function DecorationSection() {
               </label>
               {!heroBanner && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
+                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
                   <p className="text-[7px] text-white/30 mt-1">{tagline || 'Archival Garment Studio'}</p>
                   <button
                     className="mt-3 px-4 py-1 text-[7px] uppercase tracking-widest font-semibold rounded-sm text-white transition-colors"
@@ -476,7 +476,7 @@ function DecorationSection() {
             {/* Product Grid */}
             <div className="px-4 py-3">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[9px] font-black uppercase tracking-widest text-ink">New Arrivals</p>
+                <p className="text-[9px] font-medium uppercase tracking-widest text-ink">New Arrivals</p>
                 <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -486,7 +486,7 @@ function DecorationSection() {
                       <Package size={20} className="text-ink/10" />
                       {p.badge && (
                         <span
-                          className="absolute top-1.5 left-1.5 text-[6px] uppercase tracking-widest font-black text-white px-1.5 py-0.5 rounded-sm"
+                          className="absolute top-1.5 left-1.5 text-[6px] uppercase tracking-widest font-medium text-white px-1.5 py-0.5 rounded-sm"
                           style={{ backgroundColor: accentColor }}
                         >
                           {p.badge}
@@ -495,7 +495,7 @@ function DecorationSection() {
                     </div>
                     <div className="p-1.5">
                       <p className="text-[7px] font-semibold text-ink leading-tight truncate">{p.name}</p>
-                      <p className="text-[7px] font-bold mt-0.5" style={{ color: accentColor }}>
+                      <p className="text-[7px] font-medium mt-0.5" style={{ color: accentColor }}>
                         IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
                       </p>
                     </div>
@@ -519,7 +519,7 @@ function DecorationSection() {
             {/* Collections Row */}
             <div className="px-4 pb-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-ink">Collections</p>
+                <p className="text-[9px] font-medium uppercase tracking-widest text-ink">Collections</p>
                 <span className="text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -617,14 +617,14 @@ function DeliverySection() {
                   <span className="text-[10px] font-semibold text-ink">{c.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={cn("text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.cod ? "bg-emerald-50 text-emerald-600 font-bold" : "bg-ink/5 text-ink/30")}>COD</span>
-                  <span className={cn("text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.insurable ? "bg-blue-50 text-blue-600 font-bold" : "bg-ink/5 text-ink/30")}>Asuransi</span>
+                  <span className={cn("text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.cod ? "bg-emerald-50 text-emerald-600 font-medium" : "bg-ink/5 text-ink/30")}>COD</span>
+                  <span className={cn("text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.insurable ? "bg-blue-50 text-blue-600 font-medium" : "bg-ink/5 text-ink/30")}>Asuransi</span>
                 </div>
                 <button
                   onClick={() => setDefaultCourier(c.id)}
                   className={cn(
                     "text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm border transition-colors",
-                    defaultCourier === c.id ? "border-rose text-rose font-bold" : "border-ink/10 text-ink/30 hover:border-ink/30"
+                    defaultCourier === c.id ? "border-rose text-rose font-medium" : "border-ink/10 text-ink/30 hover:border-ink/30"
                   )}
                 >
                   Default
@@ -789,7 +789,7 @@ function BiteshipActivationSection() {
                 API_webhook_ninoc
               </label>
             </div>
-            <span className="text-[7px] uppercase tracking-widest bg-emerald-50 text-emerald-600 font-bold px-2 py-1 rounded-sm">Production</span>
+            <span className="text-[7px] uppercase tracking-widest bg-emerald-50 text-emerald-600 font-medium px-2 py-1 rounded-sm">Production</span>
           </div>
           <p className="text-[8px] text-ink/30 mt-2 ml-5">
             Biteship Production Key — digunakan untuk membuat waybill dan tracking real-time
@@ -852,9 +852,9 @@ function BiteshipActivationSection() {
           <div className="border border-ink/10 rounded-sm p-4 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[8px] uppercase tracking-widest text-ink/40 font-medium">
-                Test Delivered (status "delivered")
+                Test Delivered (status &quot;delivered&quot;)
               </label>
-              <span className="text-[7px] text-emerald-600 font-bold">Delivered</span>
+              <span className="text-[7px] text-emerald-600 font-medium">Delivered</span>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -876,15 +876,15 @@ function BiteshipActivationSection() {
             )}
             <p className="text-[7px] text-ink/25 leading-relaxed">
               <span className="font-semibold">Pelajari simulasi test order:</span>{' '}
-              Gunakan order dengan status akhir "delivered" untuk menguji verifikasi tracking sukses.
+              Gunakan order dengan status akhir &quot;delivered&quot; untuk menguji verifikasi tracking sukses.
             </p>
           </div>
           <div className="border border-ink/10 rounded-sm p-4 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[8px] uppercase tracking-widest text-ink/40 font-medium">
-                Test Cancelled (status "cancelled")
+                Test Cancelled (status &quot;cancelled&quot;)
               </label>
-              <span className="text-[7px] text-red-500 font-bold">Cancelled</span>
+              <span className="text-[7px] text-red-500 font-medium">Cancelled</span>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -906,7 +906,7 @@ function BiteshipActivationSection() {
             )}
             <p className="text-[7px] text-ink/25 leading-relaxed">
               <span className="font-semibold">Pelajari simulasi test order:</span>{' '}
-              Gunakan order dengan status "cancelled" atau "rejected" untuk menguji skenario kegagalan.
+              Gunakan order dengan status &quot;cancelled&quot; atau &quot;rejected&quot; untuk menguji skenario kegagalan.
             </p>
           </div>
         </div>
@@ -990,7 +990,7 @@ function BiteshipActivationSection() {
                 ) : pickerOrders.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <Package size={24} className="text-ink/20 mb-3" />
-                    <p className="text-[10px] font-semibold text-ink/40">Belum ada order dengan status "{pickerType}"</p>
+                    <p className="text-[10px] font-semibold text-ink/40">Belum ada order dengan status &quot;{pickerType}&quot;</p>
                     <p className="text-[8px] text-ink/25 mt-1">Order akan muncul setelah ada pesanan dengan status ini</p>
                   </div>
                 ) : (
@@ -1015,9 +1015,9 @@ function BiteshipActivationSection() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-bold text-ink font-mono">{order.id.slice(0, 18)}…</span>
+                            <span className="text-[9px] font-medium text-ink font-mono">{order.id.slice(0, 18)}…</span>
                             <span className={cn(
-                              "text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-bold",
+                              "text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-medium",
                               pickerType === 'delivered'
                                 ? "bg-emerald-50 text-emerald-600"
                                 : "bg-red-50 text-red-500"
@@ -1110,13 +1110,13 @@ function HelpCenterSection() {
           <div key={faq.id} className="border border-ink/10 rounded-sm p-4 bg-white">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-2">
-                <span className="text-[7px] uppercase tracking-widest bg-ink/5 text-ink/40 px-1.5 py-0.5 rounded-sm font-bold mt-0.5 shrink-0">Q</span>
+                <span className="text-[7px] uppercase tracking-widest bg-ink/5 text-ink/40 px-1.5 py-0.5 rounded-sm font-medium mt-0.5 shrink-0">Q</span>
                 <p className="text-[10px] font-semibold text-ink">{faq.q}</p>
               </div>
               <button className="text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 shrink-0">Hapus</button>
             </div>
             <div className="ml-5 mt-2">
-              <span className="text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-bold">A</span>
+              <span className="text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-medium">A</span>
               <p className="text-[9px] text-ink/60 mt-1.5 leading-relaxed">{faq.a}</p>
             </div>
           </div>
@@ -1232,7 +1232,7 @@ function ChangePasswordSection() {
                 ))}
               </div>
               <span className={cn(
-                "text-[7px] font-bold uppercase tracking-widest",
+                "text-[7px] font-medium uppercase tracking-widest",
                 strength === 'strong' ? 'text-emerald-600' : strength === 'medium' ? 'text-amber-600' : strength === 'weak' ? 'text-red-500' : 'text-ink/20'
               )}>
                 {strength === 'strong' ? 'Kuat' : strength === 'medium' ? 'Sedang' : strength === 'weak' ? 'Lemah' : ''}
@@ -1246,7 +1246,7 @@ function ChangePasswordSection() {
             <p className="text-[7px] text-red-500 mt-1">Password tidak cocok</p>
           )}
         </Field>
-        <button className="w-full py-2.5 bg-rose text-white text-[10px] uppercase tracking-widest font-bold rounded-sm hover:bg-rose/90 transition-colors">
+        <button className="w-full py-2.5 bg-rose text-white text-[10px] uppercase tracking-widest font-medium rounded-sm hover:bg-rose/90 transition-colors">
           Update Password
         </button>
       </div>

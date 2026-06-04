@@ -1733,7 +1733,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
                     <span className="text-[10px] font-medium text-gray-700">Total Cost</span>
-                    <span className="text-[10px] font-bold text-rose">
+                    <span className="text-[10px] font-medium text-rose">
                       IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * (1 + costingForm.operasional_pct / 100) * (1 + costingForm.tax_rate / 100)).toLocaleString('id-ID')}
                     </span>
                   </div>
@@ -1820,7 +1820,7 @@ export default function AdminDashboard() {
                     setIsPrintPreviewOpen(true);
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
                     <Printer size={14} />
-                    <span className="text-[10px] uppercase font-bold tracking-widest hidden sm:block">Print Resi</span>
+                    <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
                   </button>
                   <button onClick={() => {
                     setIsOrderModalOpen(false);
@@ -1836,7 +1836,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Status */}
                   <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
+                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
                     <div className="flex flex-wrap gap-1">
                       {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
                         <button
@@ -1857,7 +1857,7 @@ export default function AdminDashboard() {
 
                   {/* Tracking */}
                   <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
+                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
                     <input
                       type="text"
                       defaultValue={selectedOrder.tracking_id || ''}
@@ -1870,9 +1870,9 @@ export default function AdminDashboard() {
 
                 {/* Row 2: Customer Destination */}
                 <div className="border border-gray-200 p-3 rounded-lg">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
+                  <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
                   <div className="text-xs leading-relaxed text-gray-800">
-                    <span className="font-bold uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
+                    <span className="font-medium uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
                     <span className="text-gray-500 font-mono">
                       {selectedOrder.shipping_address?.phone || '-'}
                     </span>
@@ -1884,13 +1884,13 @@ export default function AdminDashboard() {
                 {/* Row 3: Items */}
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Garment Items</p>
+                    <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
                   </div>
                   <div className="divide-y divide-gray-100">
                     {selectedOrder.order_items?.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center p-3 text-xs">
                         <div>
-                          <span className="font-bold text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                          <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
                           <span className="text-gray-500 ml-2">SZ: {item.size || 'OS'} | QTY: {item.quantity}</span>
                         </div>
                         <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
@@ -1930,8 +1930,8 @@ export default function AdminDashboard() {
                     <span className="text-gray-900 font-mono">+ IDR 2.500</span>
                   </div>
                   <div className="flex justify-between pt-1">
-                    <span className="font-bold text-rose">GRAND TOTAL</span>
-                    <span className="text-sm font-bold font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
+                    <span className="font-medium text-rose">GRAND TOTAL</span>
+                    <span className="text-sm font-medium font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
               </div>
@@ -1954,7 +1954,7 @@ export default function AdminDashboard() {
                 >
                   <div className="w-[400px] h-full flex flex-col">
                     <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shrink-0">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-900">Label Preview</p>
+                      <p className="text-xs font-medium uppercase tracking-widest text-gray-900">Label Preview</p>
                       <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                         <X size={16} />
                       </button>
@@ -2083,7 +2083,7 @@ export default function AdminDashboard() {
                           printWindow.document.write(htmlContent);
                           printWindow.document.close();
                         }}
-                        className="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
+                        className="w-full py-3 bg-black text-white font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
                       >
                         <Printer size={16} /> Print to Thermal Printer
                       </button>

@@ -258,7 +258,7 @@ function DesktopShopView({ products }: { products: Product[] }) {
 
                       {/* Hover Overlay */}
                       <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center z-0 pointer-events-none">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-0 group-hover/card:scale-100 transition-transform duration-300 shadow-xl">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-95 opacity-0 group-hover/card:scale-100 group-hover/card:opacity-100 transition-all duration-200 ease-out shadow-xl">
                           <ShoppingBag size={18} />
                         </div>
                       </div>

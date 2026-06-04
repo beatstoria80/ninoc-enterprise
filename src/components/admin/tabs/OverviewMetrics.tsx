@@ -214,7 +214,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
               const pct = Math.round((product.totalRevenue / maxRev) * 100);
               return (
                 <div key={product.id} className="flex items-center gap-2">
-                  <span className="text-[7px] font-bold text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
+                  <span className="text-[7px] font-medium text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-[9px] font-medium text-ink truncate leading-none">{product.name}</span>

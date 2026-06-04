@@ -234,8 +234,8 @@ export default function SuccessPage() {
                      <div className="bg-emerald-50/50 border border-emerald-500/20 p-4 md:p-6 rounded-none relative overflow-hidden border-b-0 md:border-b">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
                         <div className="flex items-center gap-3 mb-1.5 relative">
-                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
-                          <span className="bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
+                          <h4 className="text-[12px] font-medium uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
+                          <span className="bg-emerald-500 text-white text-[8px] font-medium px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
                         </div>
                         <p className="text-[9px] font-medium tracking-[0.15em] text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
                           <Clock size={12} strokeWidth={2} /> Just Now • System Authenticated
@@ -253,7 +253,7 @@ export default function SuccessPage() {
                      </div>
                      <div className="p-4 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all border-b-0 md:border-b">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
+                          <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
                         </div>
                         <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Pending Quality Control</p>
                      </div>
@@ -269,7 +269,7 @@ export default function SuccessPage() {
                      </div>
                      <div className="p-4 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <h4 className="text-[12px] font-bold uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
+                          <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                         </div>
                         <p className="text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
                      </div>
@@ -322,10 +322,10 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
       <div className="flex justify-between items-start border-b-[3px] border-black pb-6 mb-6">
         <div>
           <h1 className="font-display font-medium text-4xl italic uppercase tracking-tighter mb-1">NINOC</h1>
-          <p className="text-[10px] tracking-[0.2em] uppercase font-bold">Archival Studio Investment</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase font-medium">Archival Studio Investment</p>
         </div>
         <div className="text-right">
-          <h2 className="text-xl font-bold uppercase tracking-wider mb-2">Invoice</h2>
+          <h2 className="text-xl font-medium uppercase tracking-wider mb-2">Invoice</h2>
           <p className="text-xs font-mono">{order?.id ? order.id.toUpperCase() : 'INV-82390192'}</p>
           <p className="text-[10px] uppercase mt-1">{order?.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
         </div>
@@ -334,16 +334,16 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
       {/* Customer Info */}
       <div className="grid grid-cols-2 gap-12 mb-8 text-sm">
         <div>
-          <p className="text-[9px] uppercase tracking-widest font-bold mb-2 border-b border-black/20 pb-1">Billed To</p>
-          <p className="font-bold">{order?.customer_name || 'Customer Name'}</p>
+          <p className="text-[9px] uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Billed To</p>
+          <p className="font-medium">{order?.customer_name || 'Customer Name'}</p>
           <p className="text-xs mt-1">{order?.shipping_address?.email || 'customer@email.com'}</p>
           <p className="text-xs font-mono">{order?.shipping_address?.phone || '+62 812-XXXX-XXXX'}</p>
         </div>
         <div>
-          <p className="text-[9px] uppercase tracking-widest font-bold mb-2 border-b border-black/20 pb-1">Shipped To</p>
+          <p className="text-[9px] uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Shipped To</p>
           <p className="text-xs">{order?.shipping_address?.address || 'Jakarta Selatan, DKI Jakarta'}</p>
           <p className="text-xs">{order?.shipping_address?.city || '12345'}, {order?.shipping_address?.postal_code || 'Indonesia'}</p>
-          <p className="text-[10px] font-bold mt-2 uppercase tracking-wider">Via <span className="font-bold underline">{order?.courier || courierName}</span></p>
+          <p className="text-[10px] font-medium mt-2 uppercase tracking-wider">Via <span className="font-medium underline">{order?.courier || courierName}</span></p>
         </div>
       </div>
 
@@ -361,7 +361,7 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
           {order?.order_items ? (
             order.order_items.map((item: any) => (
               <tr key={item.id} className="border-b border-black/10">
-                <td className="py-4 font-sans font-bold text-sm uppercase">{item.product_name} {item.size ? `(Size ${item.size})` : ''}</td>
+                <td className="py-4 font-sans font-medium text-sm uppercase">{item.product_name} {item.size ? `(Size ${item.size})` : ''}</td>
                 <td className="py-4 text-center">{item.quantity}</td>
                 <td className="py-4 text-right">IDR {item.price_at_purchase.toLocaleString('id-ID')}</td>
                 <td className="py-4 text-right">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</td>
@@ -369,7 +369,7 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
             ))
           ) : (
             <tr className="border-b border-black/10">
-              <td className="py-4 font-sans font-bold text-sm uppercase">Origin Specification Garment (Mockup)</td>
+              <td className="py-4 font-sans font-medium text-sm uppercase">Origin Specification Garment (Mockup)</td>
               <td className="py-4 text-center">1</td>
               <td className="py-4 text-right">IDR 1,499,000</td>
               <td className="py-4 text-right">IDR 1,499,000</td>
@@ -384,14 +384,14 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
           {order ? (
             <>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Subtotal</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Subtotal</span>
                 <span className="font-mono">IDR {(() => {
                   const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                   return sub.toLocaleString('id-ID');
                 })()}</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Logistics</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Logistics</span>
                 <span className="font-mono">IDR {(() => {
                   const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                   const tax = Math.round(sub * 0.11);
@@ -401,42 +401,42 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
                 })()}</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">VAT (11%)</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">VAT (11%)</span>
                 <span className="font-mono">IDR {(() => {
                   const sub = order.order_items?.reduce((acc: number, item: any) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
                   return Math.round(sub * 0.11).toLocaleString('id-ID');
                 })()}</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Platform Fee</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Platform Fee</span>
                 <span className="font-mono">IDR 2,500</span>
               </div>
               <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">
-                <span className="font-bold uppercase tracking-widest">Total Investment</span>
-                <span className="font-bold font-mono text-lg">IDR {order.total_price.toLocaleString('id-ID')}</span>
+                <span className="font-medium uppercase tracking-widest">Total Investment</span>
+                <span className="font-medium font-mono text-lg">IDR {order.total_price.toLocaleString('id-ID')}</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Subtotal</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Subtotal</span>
                 <span className="font-mono">IDR 1,499,000</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Logistics</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Logistics</span>
                 <span className="font-mono">IDR 25,000</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">VAT (11%)</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">VAT (11%)</span>
                 <span className="font-mono">IDR 164,890</span>
               </div>
               <div className="flex justify-between border-b border-black/10 pb-1">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Platform Fee</span>
+                <span className="text-[10px] uppercase tracking-widest font-medium">Platform Fee</span>
                 <span className="font-mono">IDR 2,500</span>
               </div>
               <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">
-                <span className="font-bold uppercase tracking-widest">Total Investment</span>
-                <span className="font-bold font-mono text-lg">IDR 1,691,390</span>
+                <span className="font-medium uppercase tracking-widest">Total Investment</span>
+                <span className="font-medium font-mono text-lg">IDR 1,691,390</span>
               </div>
             </>
           )}
@@ -445,7 +445,7 @@ function InvoiceMockup({ courierName, order }: { courierName: string, order?: an
 
       {/* Footer */}
       <div className="mt-16 pt-8 border-t border-black/20 text-center">
-        <p className="text-[8px] uppercase tracking-[0.3em] font-bold">This document is a valid proof of transaction generated electronically.</p>
+        <p className="text-[8px] uppercase tracking-[0.3em] font-medium">This document is a valid proof of transaction generated electronically.</p>
       </div>
     </div>
   );
