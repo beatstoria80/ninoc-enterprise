@@ -345,62 +345,65 @@ export default function CategoryPage() {
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-2 md:mb-3">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: DURATION.normal, ease: EASING.out }}
-            className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
-          >
-            <Grid3X3 size={10} className="text-rose" />
-            Category Index
-          </motion.h1>
-
-          <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
-            <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-              <ArrowLeft size={10} />
-            </motion.div>
-            <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
-          </PressButton>
-        </div>
-
-        {/* CATEGORY INDEX — COMPACT INLINE GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
-          {CATEGORIES.map((cat, i) => (
-            <CategoryCard
-              key={cat.id}
-              cat={cat}
-              index={i}
-              isSelected={selectedCategory === cat.id}
-              onClick={() => {
-                setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
-                gridRef.current?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            />
-          ))}
-        </div>
-
-        {/* ACTIVE FILTER DISPLAY */}
-        <AnimatePresence>
-          {selectedCategory && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: DURATION.fast, ease: EASING.out }}
-              className="flex items-center justify-between py-1.5 overflow-hidden"
+        {/* STICKY NAVIGATION WRAPPER */}
+        <div className="sticky top-0 z-50 bg-cr/95 backdrop-blur-md pb-2 pt-2 md:pt-4 -mx-4 px-4 md:-mx-12 md:px-12 border-b border-ink/5 mb-4 shadow-sm">
+          {/* HEADER */}
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: DURATION.normal, ease: EASING.out }}
+              className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
             >
-              <div className="flex items-center gap-2">
-                <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
-                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span>
-              </div>
-              <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
-                Clear
-              </PressButton>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <Grid3X3 size={10} className="text-rose" />
+              Category Index
+            </motion.h1>
+
+            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
+              <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+                <ArrowLeft size={10} />
+              </motion.div>
+              <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
+            </PressButton>
+          </div>
+
+          {/* CATEGORY INDEX — COMPACT INLINE GRID */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-2">
+            {CATEGORIES.map((cat, i) => (
+              <CategoryCard
+                key={cat.id}
+                cat={cat}
+                index={i}
+                isSelected={selectedCategory === cat.id}
+                onClick={() => {
+                  setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
+                  gridRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              />
+            ))}
+          </div>
+
+          {/* ACTIVE FILTER DISPLAY */}
+          <AnimatePresence>
+            {selectedCategory && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: DURATION.fast, ease: EASING.out }}
+                className="flex items-center justify-between py-1.5 overflow-hidden"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
+                  <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span>
+                </div>
+                <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
+                  Clear
+                </PressButton>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* PRODUCT GRID */}
         <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
