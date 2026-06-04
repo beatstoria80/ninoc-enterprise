@@ -700,7 +700,7 @@ export default function Home() {
                   </motion.div>
                   <span className="text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                 </div>
-                <p className="text-[11px] font-medium uppercase leading-loose tracking-widest text-white">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</p>
+                <div className="text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</div>
               </motion.div>
             </div>
           </div>
