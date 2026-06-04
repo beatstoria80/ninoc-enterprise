@@ -25,7 +25,7 @@ interface SettingItem {
   value: any;
 }
 
-function SectionContent({ value, type }: { value: any; type: string }) {
+function SectionContent({ value, key }: { value: any; key: string }) {
   if (!value) return null;
 
   // Object with guide + accounts (payment)
@@ -66,10 +66,83 @@ function SectionContent({ value, type }: { value: any; type: string }) {
     );
   }
 
-  // Plain string
+  // Object with wa/email/hours/notes (customer care)
+  if (typeof value === 'object' && (value.wa || value.email || value.hours)) {
+    return (
+      <div className="space-y-4">
+        {value.wa && (
+          <div className="flex items-center gap-3 p-3 border border-ink/5 bg-ink/[0.02]">
+            <div className="w-6 h-6 bg-rose/10 border border-rose/20 flex items-center justify-center shrink-0">
+              <span className="text-[7px] font-semibold text-rose">WA</span>
+            </div>
+            <div>
+              <p className="text-[8px] uppercase tracking-widest text-ink/30">WhatsApp</p>
+              <p className="text-[11px] font-semibold text-ink">{value.wa}</p>
+            </div>
+          </div>
+        )}
+        {value.email && (
+          <div className="flex items-center gap-3 p-3 border border-ink/5 bg-ink/[0.02]">
+            <div className="w-6 h-6 bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0">
+              <span className="text-[7px] font-semibold text-ink/40">@</span>
+            </div>
+            <div>
+              <p className="text-[8px] uppercase tracking-widest text-ink/30">Email</p>
+              <p className="text-[11px] font-semibold text-ink">{value.email}</p>
+            </div>
+          </div>
+        )}
+        {value.hours && (
+          <div className="flex items-center gap-3 p-3 border border-ink/5 bg-ink/[0.02]">
+            <div className="w-6 h-6 bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0">
+              <span className="text-[7px] font-semibold text-ink/40">JH</span>
+            </div>
+            <div>
+              <p className="text-[8px] uppercase tracking-widest text-ink/30">Jam Operasional</p>
+              <p className="text-[11px] font-semibold text-ink">{value.hours}</p>
+            </div>
+          </div>
+        )}
+        {value.notes && (
+          <p className="text-[10px] leading-relaxed whitespace-pre-line text-ink/50 font-medium border-t border-ink/5 pt-3">
+            {value.notes}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Object with policy/process/notes (return & refund)
+  if (typeof value === 'object' && (value.policy || value.process)) {
+    return (
+      <div className="space-y-4">
+        {value.policy && (
+          <div>
+            <p className="text-[8px] uppercase tracking-widest font-semibold text-rose/50 mb-2">Kebijakan Retur</p>
+            <p className="text-[10px] leading-relaxed whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
+          </div>
+        )}
+        {value.process && (
+          <div className="border-t border-ink/5 pt-4">
+            <p className="text-[8px] uppercase tracking-widest font-semibold text-rose/50 mb-2">Alur Proses Retur</p>
+            <p className="text-[10px] leading-relaxed whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
+          </div>
+        )}
+        {value.notes && (
+          <div className="border-t border-ink/5 pt-4">
+            <p className="text-[8px] uppercase tracking-widest font-semibold text-rose/50 mb-2">Catatan</p>
+            <p className="text-[10px] leading-relaxed whitespace-pre-line text-ink/60 font-medium">{value.notes}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Plain string or plain object
+  const str = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
   return (
     <p className="text-[10px] leading-relaxed whitespace-pre-line text-ink/60 font-medium">
-      {value}
+      {str}
     </p>
   );
 }
@@ -171,7 +244,7 @@ export default function HelpPage() {
                     </p>
                   </div>
                 </div>
-                <SectionContent value={activeItem.value} type={activeItem.key} />
+                <SectionContent value={activeItem.value} key={activeItem.key} />
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-40 gap-3 text-ink/20">
