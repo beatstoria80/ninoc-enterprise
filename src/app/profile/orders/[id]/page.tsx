@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AnimatedShippingMap from '../../_components/AnimatedShippingMap';
+import { ReturnModal } from './_components/ReturnModal';
 
 interface Order {
   id: string;
@@ -55,6 +56,9 @@ export default function OrderDetailPage() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [trackingLogs, setTrackingLogs] = useState<TrackingLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState('');
+  const [returnRequest, setReturnRequest] = useState<{ id: string; status: string } | null>(null);
+  const [showReturnModal, setShowReturnModal] = useState(false);
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -66,6 +70,8 @@ export default function OrderDetailPage() {
         router.push('/login');
         return;
       }
+
+      setUserId(authUser.id);
 
       // 1. Fetch Order Header (enforce user_id check — prevents IDOR)
       const { data: orderData } = await supabase
@@ -95,6 +101,15 @@ export default function OrderDetailPage() {
         .eq('order_id', id)
         .order('created_at', { ascending: false });
       setTrackingLogs(logData || []);
+
+      // 4. Check for existing return request
+      const { data: returnData } = await supabase
+        .from('order_returns')
+        .select('id, status')
+        .eq('order_id', id)
+        .eq('user_id', authUser.id)
+        .single();
+      if (returnData) setReturnRequest(returnData);
 
       setIsLoading(false);
     };
@@ -216,6 +231,35 @@ export default function OrderDetailPage() {
                 <p className="text-[8px] uppercase tracking-widest text-ink/30">Total Investment Value</p>
                 <p className="text-xl font-display italic tracking-tight">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
+
+              {/* Return Request CTA — only for delivered orders without active return */}
+              {order.status === 'delivered' && !returnRequest && (
+                <button
+                  onClick={() => setShowReturnModal(true)}
+                  className="w-full py-3 border border-rose/30 text-rose hover:bg-rose/5 text-[9px] font-semibold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={12} />
+                  Ajukan Retur / Exchange
+                </button>
+              )}
+
+              {/* Return Request Status */}
+              {returnRequest && (
+                <div className="border border-amber-200 bg-amber-50 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <RefreshCw size={12} className="text-amber-500" />
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-amber-600">Retur Pending</p>
+                    </div>
+                    <span className="text-[8px] uppercase tracking-widest px-2 py-0.5 bg-amber-200 text-amber-700">
+                      {returnRequest.status}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-amber-600/70">
+                    Retur sedang diproses oleh tim kami. Kami akan menghubungi Anda segera.
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Shipping Metadata */}
@@ -242,6 +286,29 @@ export default function OrderDetailPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Return Request Modal */}
+      <AnimatePresence>
+        {showReturnModal && userId && (
+          <ReturnModal
+            orderId={order.id}
+            userId={userId}
+            items={items.map(i => ({
+              id: i.id,
+              product_name: i.product_name || 'Unknown Product',
+              size: i.size || '',
+              quantity: i.quantity,
+              price_at_purchase: i.price_at_purchase,
+            }))}
+            onClose={() => setShowReturnModal(false)}
+            onSuccess={() => {
+              setReturnRequest({ id: 'pending', status: 'requested' });
+              setShowReturnModal(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
     </main>
   );
 }

@@ -9,7 +9,7 @@ import {
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
-  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen
+  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -26,6 +26,7 @@ import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
 import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
+import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -857,6 +858,7 @@ export default function AdminDashboard() {
       ]
     },
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
+    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
     { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
@@ -1110,6 +1112,10 @@ export default function AdminDashboard() {
 
           {activeTab === 'logbook' && (
             <LogbookTab />
+          )}
+
+          {activeTab === 'returns' && (
+            <ReturnsTab />
           )}
 
           {activeTab === 'finance' && (

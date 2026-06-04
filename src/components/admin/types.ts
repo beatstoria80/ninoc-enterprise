@@ -174,3 +174,29 @@ export interface VoucherActive {
   used_count: number;
   active_until: string;
 }
+
+export type ReturnStatus = 'requested' | 'approved' | 'rejected' | 'received' | 'completed';
+export type ReturnType = 'refund' | 'exchange';
+
+export interface ReturnItem {
+  id: string;
+  return_id: string;
+  order_item_id: string;
+  quantity: number;
+  reason: string;
+}
+
+export interface ReturnRequest {
+  id: string;
+  order_id: string;
+  user_id: string;
+  type: ReturnType;
+  status: ReturnStatus;
+  reason: string;
+  admin_notes: string | null;
+  refund_amount: number | null;
+  created_at: string;
+  updated_at: string;
+  order?: Order;
+  items?: ReturnItem[];
+}
