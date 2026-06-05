@@ -96,7 +96,7 @@ interface SupportTicket {
 interface SupportMessage {
   id: string;
   ticket_id: string;
-  sender_id: string;
+  sender_id: string | null;
   sender_role: 'customer' | 'admin';
   message: string;
   created_at: string;
@@ -691,17 +691,18 @@ export default function SupportChat() {
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
         } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
-          // Normal auto-reply
+          // Normal auto-reply — optimistic update + persist
+          const autoReplyMsg: SupportMessage = {
+            id: `ar-${Date.now()}`,
+            ticket_id: targetTicket.id,
+            sender_id: null,
+            sender_role: 'admin',
+            message: classification.template.content,
+            created_at: new Date().toISOString(),
+            is_auto_reply: true,
+          };
+          setChatMessages(prev => [...prev, autoReplyMsg]);
           await sendAutoReply(targetTicket.id, classification.template.content);
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
-
-          // Refresh chat to show the auto-reply message
-          const { data: updatedMsgs } = await supabase
-            .from('support_messages')
-            .select('*')
-            .eq('ticket_id', targetTicket.id)
-            .order('created_at', { ascending: true });
-          if (updatedMsgs) setChatMessages(updatedMsgs);
         }
       }
     }
@@ -718,7 +719,7 @@ export default function SupportChat() {
     const optimisticMsg: SupportMessage = {
       id: tempId,
       ticket_id: tempId,
-      sender_id: '',
+      sender_id: null,
       sender_role: 'customer',
       message: msgToSend,
       created_at: new Date().toISOString()
@@ -750,7 +751,7 @@ export default function SupportChat() {
           const errorMsg: SupportMessage = {
             id: `err-${Date.now()}`,
             ticket_id: tempId,
-            sender_id: '',
+            sender_id: null,
             sender_role: 'admin',
             message: 'Maaf, gagal membuat tiket. Silakan coba lagi atau login terlebih dahulu.',
             created_at: new Date().toISOString(),
@@ -786,7 +787,7 @@ export default function SupportChat() {
           const errorMsg: SupportMessage = {
             id: `err-${Date.now()}`,
             ticket_id: tempId,
-            sender_id: '',
+            sender_id: null,
             sender_role: 'admin',
             message: 'Maaf, gagal mengirim pesan. Silakan coba lagi.',
             created_at: new Date().toISOString(),
@@ -826,16 +827,18 @@ export default function SupportChat() {
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
             } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
+              // Optimistic update + persist
+              const autoReplyMsg: SupportMessage = {
+                id: `ar-${Date.now()}`,
+                ticket_id: genTicket.id,
+                sender_id: null,
+                sender_role: 'admin',
+                message: classification.template.content,
+                created_at: new Date().toISOString(),
+                is_auto_reply: true,
+              };
+              setChatMessages(prev => [...prev, autoReplyMsg]);
               await sendAutoReply(genTicket.id, classification.template.content);
-              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
-
-              // Refresh chat to show the auto-reply message
-              const { data: updatedMsgs } = await supabase
-                .from('support_messages')
-                .select('*')
-                .eq('ticket_id', genTicket.id)
-                .order('created_at', { ascending: true });
-              if (updatedMsgs) setChatMessages(updatedMsgs);
             }
           }
         }
@@ -845,7 +848,7 @@ export default function SupportChat() {
         const errorMsg: SupportMessage = {
           id: `err-${Date.now()}`,
           ticket_id: '',
-          sender_id: '',
+          sender_id: null,
           sender_role: 'admin',
           message: 'Maaf, gagal memulai chat. Silakan coba lagi.',
           created_at: new Date().toISOString(),
@@ -859,7 +862,7 @@ export default function SupportChat() {
       const errorMsg: SupportMessage = {
         id: `err-${Date.now()}`,
         ticket_id: '',
-        sender_id: '',
+        sender_id: null,
         sender_role: 'admin',
         message: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
         created_at: new Date().toISOString(),
