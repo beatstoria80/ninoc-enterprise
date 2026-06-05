@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
       video_filename,
       ticket_id,
       user_id: body_user_id,
+      guest_email,
     } = body;
 
     if (!order_id || !reason || !reason_label) {
@@ -63,20 +64,38 @@ export async function POST(req: NextRequest) {
     }
 
     if (!video_url) {
-      return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum提交 retur' }, { status: 400 });
+      return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum submit retur' }, { status: 400 });
     }
 
     // Get current user (guest or authenticated)
     const { data: { user } } = await supabase.auth.getUser();
     const uid = user?.id || body_user_id || null;
 
-    // Duplicate check:不许 duplicate retur for same order in pending/reviewed state
+    // If no user_id, guest_email is required
+    if (!uid && !guest_email?.includes('@')) {
+      return NextResponse.json({ error: 'Email wajib diisi untuk guest (contoh: nama@email.com)' }, { status: 400 });
+    }
+
+    // Duplicate check: check by user_id OR by order_id + guest_email
     if (uid) {
       const { data: existing } = await adminClient
         .from('retur_requests')
         .select('id, status')
         .eq('order_id', order_id)
         .eq('user_id', uid)
+        .in('status', ['pending', 'reviewed'])
+        .maybeSingle();
+      if (existing) {
+        return NextResponse.json({
+          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`
+        }, { status: 409 });
+      }
+    } else if (guest_email) {
+      const { data: existing } = await adminClient
+        .from('retur_requests')
+        .select('id, status')
+        .eq('order_id', order_id)
+        .eq('guest_email', guest_email)
         .in('status', ['pending', 'reviewed'])
         .maybeSingle();
       if (existing) {
@@ -95,6 +114,7 @@ export async function POST(req: NextRequest) {
       .from('retur_requests')
       .insert({
         user_id: uid,
+        guest_email: uid ? null : guest_email,
         order_id,
         reason,
         reason_label,

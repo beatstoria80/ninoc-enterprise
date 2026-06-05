@@ -3,25 +3,30 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ReturForm } from '@/components/ReturForm';
 import { ReturStatus } from '@/components/ReturStatus';
 import { supabase } from '@/lib/supabase';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export default function ReturPage() {
-  const router = useRouter();
   const [view, setView] = useState<'form' | 'status'>('form');
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) router.push('/login');
-      else setCheckingAuth(false);
+      setUser(user);
+      setCheckingAuth(false);
     };
     checkAuth();
-  }, [router]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -29,11 +34,11 @@ export default function ReturPage() {
       <div className="bg-white border-b border-ink/5 sticky top-0 z-10">
         <div className="max-w-md mx-auto px-5 py-3 flex items-center justify-between">
           <Link
-            href="/profile"
+            href="/"
             className="flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-[9px] uppercase tracking-widest">Profile</span>
+            <span className="text-[9px] uppercase tracking-widest">Home</span>
           </Link>
           <h1 className="text-[10px] font-semibold uppercase tracking-widest text-ink">
             Retur & Refund
@@ -76,7 +81,13 @@ export default function ReturPage() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
               >
+                {!user && (
+                  <div className="mb-3 px-4 py-3 bg-amber-50 border border-amber-100 rounded-sm">
+                    <p className="text-[9px] text-amber-700 font-semibold">Guest Mode — Isi email untuk submit retur tanpa login</p>
+                  </div>
+                )}
                 <ReturForm
+                  isGuest={!user}
                   className="border border-ink/5 rounded-sm shadow-sm"
                   onSuccess={() => {
                     setView('status');
@@ -93,7 +104,16 @@ export default function ReturPage() {
                 className="border border-ink/5 bg-white rounded-sm shadow-sm"
               >
                 <div className="p-5">
-                  <ReturStatus />
+                  {user ? (
+                    <ReturStatus />
+                  ) : (
+                    <div className="text-center py-8 space-y-3">
+                      <p className="text-[10px] text-ink/40 uppercase tracking-wider">Login untuk melihat status retur</p>
+                      <Link href="/login" className="inline-block px-6 py-2 bg-rose text-white text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">
+                        Login
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

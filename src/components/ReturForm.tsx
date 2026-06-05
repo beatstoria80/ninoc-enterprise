@@ -11,6 +11,7 @@ import {
 
 interface ReturFormProps {
   orderId?: string;
+  isGuest?: boolean;
   onSuccess?: (returId: string) => void;
   onClose?: () => void;
   className?: string;
@@ -87,9 +88,10 @@ const TERMS = [
   'NINOC berhak menolak pengajuan yang tidak memenuhi syarat',
 ];
 
-export function ReturForm({ orderId: initialOrderId, onSuccess, onClose, className }: ReturFormProps) {
+export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess, onClose, className }: ReturFormProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [orderId, setOrderId] = useState(initialOrderId || '');
+  const [guestEmail, setGuestEmail] = useState('');
   const [reason, setReason] = useState('');
   const [reasonLabel, setReasonLabel] = useState('');
   const [description, setDescription] = useState('');
@@ -151,7 +153,7 @@ export function ReturForm({ orderId: initialOrderId, onSuccess, onClose, classNa
     }
   };
 
-  const canProceedStep1 = orderId.trim().length >= 4 && reason !== '';
+  const canProceedStep1 = orderId.trim().length >= 4 && reason !== '' && (!isGuest || (guestEmail.includes('@') && guestEmail.includes('.')));
   const canProceedStep2 = description.trim().length >= 10 && videoFile !== null && termsAccepted && termsScrolled;
   const canSubmit = canProceedStep1 && canProceedStep2 && !isSubmitting;
 
@@ -178,22 +180,33 @@ export function ReturForm({ orderId: initialOrderId, onSuccess, onClose, classNa
         finalVideoUrl = urlData.publicUrl;
       }
 
-      // 2. Create retur request
+      // 2. Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // 3. Create retur request
+      const payload: Record<string, unknown> = {
+        order_id: orderId.trim(),
+        reason,
+        reason_label: reasonLabel,
+        description: description.trim(),
+        video_url: finalVideoUrl,
+        video_duration_seconds: videoDuration,
+        video_filename: videoFile?.name || '',
+      };
+
+      if (user) {
+        payload.user_id = user.id;
+      } else {
+        payload.guest_email = guestEmail.trim();
+      }
+
       const res = await fetch('/api/retur', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          order_id: orderId.trim(),
-          reason,
-          reason_label: reasonLabel,
-          description: description.trim(),
-          video_url: finalVideoUrl,
-          video_duration_seconds: videoDuration,
-          video_filename: videoFile?.name || '',
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal提交 retur');
+      if (!res.ok) throw new Error(data.error || 'Gagal submit retur');
 
       setSubmittedId(data.retur_request?.id || '');
       setSubmitted(true);
@@ -320,6 +333,23 @@ export function ReturForm({ orderId: initialOrderId, onSuccess, onClose, classNa
               />
               <p className="text-[7px] text-ink/20 mt-1">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
             </div>
+
+            {/* Guest Email */}
+            {isGuest && (
+              <div>
+                <label className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">
+                  Email <span className="text-rose">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={guestEmail}
+                  onChange={e => setGuestEmail(e.target.value)}
+                  placeholder="nama@email.com"
+                  className="w-full px-3 py-2.5 border border-ink/10 text-[11px] font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
+                />
+                <p className="text-[7px] text-ink/20 mt-1">Kami akan hubungi Anda via email untuk update status retur</p>
+              </div>
+            )}
 
             {/* Reason */}
             <div>
