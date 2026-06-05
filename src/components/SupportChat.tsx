@@ -291,6 +291,46 @@ type ClassificationResult =
   | { type: 'nsfw_reject'; message: string }
   | { type: 'english_bilingual'; template: PlaceholderConfig };
 
+// ─── Fallback content per category (works even if DB placeholders are empty) ─
+const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
+  greeting: {
+    label: 'Salam Pembuka',
+    content: 'Halo! Terima kasih telah menghubungi NINOC. Kami siap membantu Anda. Silakan ceritakan keluhan Anda, ya 🙂'
+  },
+  return: {
+    label: 'Panduan Retur',
+    content: 'Maaf mendengar Anda ingin mengajukan retur. Berikut langkah yang perlu Anda lakukan:\n\n1️⃣ Siapkan nomor pesanan (Order ID)\n2️⃣ Foto barang yang akan diretur\n3️⃣ Ceritakan alasan retur (rusak, salah ukuran, tidak sesuai deskripsi)\n4️⃣ Tim kami akan memproses dalam 1x24 jam\n\nMohon sertakan Order ID agar kami bisa membantu lebih cepat ya 🙏'
+  },
+  shipping: {
+    label: 'Info Pengiriman',
+    content: 'Untuk melacak pesanan Anda, silakan:\n\n1️⃣ Siapkan nomor resi (AWB/waybill)\n2️⃣ Ketik nomor resi di kolom "Lacak Pesanan"\n3️⃣ Atau cek langsung di menu "Pesanan Saya"\n\nJika belum menerima resi, kemungkinan pesanan masih dalam proses pengiriman. Mohon tunggu1-2 hari kerja ya 🙏'
+  },
+  payment: {
+    label: 'Info Pembayaran',
+    content: 'Kami menerima pembayaran melalui:\n\n💳 Midtrans (Virtual Account, GoPay, OVO, Dana)\n🏦 Transfer bank lokal\n💵 COD (Cash on Delivery)\n\nJika ada masalah pembayaran, silakan kirimkan bukti transfer dan Order ID Anda. Tim kami akan segera mengecek 🙏'
+  },
+  product: {
+    label: 'Info Produk',
+    content: 'Terima kasih atas pertanyaan Anda tentang produk kami. Silakan ceritakan:\n\n📦 Nama produk atau model yang Anda maksud\n📏 Ukuran, warna, atau varian yang Anda cari\n❓ Pertanyaan spesifik Anda\n\nTim kami akan merespons dengan informasi terbaru 🙏'
+  },
+  complaint: {
+    label: 'Keluhan Pelanggan',
+    content: 'Kami sangat menyesal mendengar pengalaman Anda. Setiap masukan sangat berharga bagi kami.\n\nMohon ceritakan:\n1️⃣ Nomor pesanan (Order ID)\n2️⃣ Detail keluhan Anda\n3️⃣ Foto pendukung (jika ada)\n\nTim kami akan segera menindaklanjuti dan memberikan solusi terbaik 🙏'
+  },
+  general: {
+    label: 'Respons Umum',
+    content: 'Terima kasih telah menghubungi NINOC. Kami akan membantu sebaik mungkin.\n\nSilakan ceritakan pertanyaan Anda dan tim kami akan merespons secepat mungkin 🙏'
+  },
+  closing: {
+    label: 'Penutup',
+    content: 'Terima kasih telah menghubungi NINOC! Jika ada pertanyaan lain, jangan ragu untuk bertanya lagi. Semoga hari Anda menyenangkan 🙏'
+  },
+  english: {
+    label: 'English Bilingual',
+    content: 'Hello! Thank you for reaching out to NINOC. We\'re happy to help! Please tell us your question and our team will respond shortly. 🙏'
+  }
+};
+
 // ─── Classify incoming message ────────────────────────────────────────────────
 function classifyMessage(
   message: string,
@@ -331,15 +371,12 @@ function classifyMessage(
     if (lower.includes(keyword)) {
       const engTpl = placeholders.find(p => p.category === 'english');
       if (engTpl) return { type: 'english_bilingual', template: engTpl };
-      // Fallback: extend greeting with English hint
-      const fallback = placeholders.find(p => p.category === 'greeting');
-      if (fallback) {
+      // Fallback to FALLBACK_CONTENT
+      const fb = FALLBACK_CONTENT['english'];
+      if (fb) {
         return {
           type: 'english_bilingual',
-          template: {
-            ...fallback,
-            content: fallback.content + '\n\n— This is an automated reply. Our team will respond in English shortly. 🙏'
-          }
+          template: { id: 'fb-english', label: fb.label, content: fb.content, category: 'english' }
         };
       }
     }
@@ -352,17 +389,28 @@ function classifyMessage(
     const keywords = AUTO_REPLY_RULES[cat] || [];
     for (const keyword of keywords) {
       if (lower.includes(keyword)) {
+        // Prefer DB placeholder, fall back to FALLBACK_CONTENT
         const tpl = placeholders.find(p => p.category === cat);
         if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
+        const fb = FALLBACK_CONTENT[cat];
+        if (fb) {
+          return {
+            type: 'auto_reply',
+            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat }
+          };
+        }
       }
     }
   }
 
-  // 5. Default greeting
+  // 5. Default — always respond (never silent)
   const defaultTpl = placeholders.find(p => p.category === 'greeting');
-  return defaultTpl
-    ? { type: 'auto_reply', template: defaultTpl, category: 'greeting' }
-    : { type: 'nsfw_reject', message: 'Halo! Terima kasih telah menghubungi NINOC. Tim kami akan segera merespons.' };
+  if (defaultTpl) return { type: 'auto_reply', template: defaultTpl, category: 'greeting' };
+  const fb = FALLBACK_CONTENT['greeting'];
+  return {
+    type: 'auto_reply',
+    template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' }
+  };
 }
 
 // ─── Send auto-reply to a ticket ────────────────────────────────────────────
@@ -426,8 +474,8 @@ export default function SupportChat() {
   const [showNotifCard, setShowNotifCard] = useState(false);
   const [lastNotif, setLastNotif] = useState<{ subject: string; message: string; from: string } | null>(null);
   const [placeholders, setPlaceholders] = useState<PlaceholderConfig[]>([]);
-  // Track auto-reply sent per ticket ID (Map for multi-ticket support)
-  const [autoReplySentMap, setAutoReplySentMap] = useState<Map<string, boolean>>(new Map());
+  // Track auto-reply sent per message hash to prevent duplicate replies
+  const [autoReplySentSet, setAutoReplySentSet] = useState<Set<string>>(new Set());
   
   // Dispatch unread count to other components (like MobileLayout)
   useEffect(() => {
@@ -449,11 +497,8 @@ export default function SupportChat() {
   const openTicket = useCallback(async (ticket: SupportTicket) => {
     setActiveTicket(ticket);
     setActiveTab('chat');
-    setAutoReplySentMap(prev => {
-      const next = new Map(prev);
-      next.set(ticket.id, true);
-      return next;
-    });
+    // Reset auto-reply tracking for this ticket session
+    setAutoReplySentSet(new Set());
     const { data } = await supabase
       .from('support_messages')
       .select('*')
@@ -582,6 +627,7 @@ export default function SupportChat() {
       setActiveTicket(data);
       setActiveTab('chat');
       setChatMessages([]);
+      setAutoReplySentSet(new Set());
       setMessage('');
       setSubject('');
       setOrderId('');
@@ -620,40 +666,32 @@ export default function SupportChat() {
       });
       setMessage('');
 
-      // Auto-reply: classify message and respond accordingly (only once per ticket)
-      // Use targetTicket (the resolved ticket), not activeTicket (may be stale)
-      if (targetTicket && !autoReplySentMap.get(targetTicket.id)) {
+      // Auto-reply: classify and respond to EVERY message (not gated per-ticket)
+      // Prevent duplicate reply for same message using hash
+      const replyKey = `${targetTicket.id}|${msgToSend.trim()}`;
+      if (targetTicket && !autoReplySentSet.has(replyKey)) {
+        setAutoReplySentSet(prev => {
+          const next = new Set(prev);
+          next.add(replyKey);
+          return next;
+        });
+
         const classification = classifyMessage(msgToSend.trim(), placeholders);
 
         if (classification.type === 'nsfw_reject') {
           // Silent reject — send warning to customer, flag ticket
-          setAutoReplySentMap(prev => {
-            const next = new Map(prev);
-            next.set(targetTicket!.id, true);
-            return next;
-          });
           await sendCustomerNotification(targetTicket.id, classification.message);
           await flagTicket(targetTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
         } else if (classification.type === 'sara_warn') {
           // Send warning + flag to admin
-          setAutoReplySentMap(prev => {
-            const next = new Map(prev);
-            next.set(targetTicket!.id, true);
-            return next;
-          });
           await sendCustomerNotification(targetTicket.id, classification.template.content);
           await flagTicket(targetTicket.id, classification.message, 'sara');
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
         } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
           // Normal auto-reply
-          setAutoReplySentMap(prev => {
-            const next = new Map(prev);
-            next.set(targetTicket!.id, true);
-            return next;
-          });
           await sendAutoReply(targetTicket.id, classification.template.content);
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
@@ -766,36 +804,28 @@ export default function SupportChat() {
           setActiveTicket(genTicket);
           setActiveTab('chat');
 
-          // Auto-reply for general inquiry using classification (per-ticket tracking)
-          if (!autoReplySentMap.get(genTicket.id)) {
+          // Auto-reply: classify and respond to EVERY message (not gated per-ticket)
+          const replyKey = `${genTicket.id}|${msgToSend}`;
+          if (!autoReplySentSet.has(replyKey)) {
+            setAutoReplySentSet(prev => {
+              const next = new Set(prev);
+              next.add(replyKey);
+              return next;
+            });
+
             const classification = classifyMessage(msgToSend, placeholders);
 
             if (classification.type === 'nsfw_reject') {
-              setAutoReplySentMap(prev => {
-                const next = new Map(prev);
-                next.set(genTicket!.id, true);
-                return next;
-              });
               await sendCustomerNotification(genTicket.id, classification.message);
               await flagTicket(genTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
             } else if (classification.type === 'sara_warn') {
-              setAutoReplySentMap(prev => {
-                const next = new Map(prev);
-                next.set(genTicket!.id, true);
-                return next;
-              });
               await sendCustomerNotification(genTicket.id, classification.template.content);
               await flagTicket(genTicket.id, `SARA: ${msgToSend.slice(0, 100)}`, 'sara');
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
             } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
-              setAutoReplySentMap(prev => {
-                const next = new Map(prev);
-                next.set(genTicket!.id, true);
-                return next;
-              });
               await sendAutoReply(genTicket.id, classification.template.content);
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
