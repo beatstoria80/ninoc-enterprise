@@ -241,7 +241,7 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'bitch', 'btch', 'b1tch', 'bitc',
     'whore', 'ho', 'hoes',
     'nigger', 'nigga', 'nigg', 'nig', 'niger', 'nigerian',
-    'retard', 'tard', 'ret', 'retert',
+    'retard', 'tard', 'retert',
     'slut', 'slu', 'slag',
     'faggot', 'fagot', 'fggt', 'fagot',
     'asshole', 'ashole', 'azz', 'azzhole',
@@ -383,7 +383,7 @@ function classifyMessage(
   }
 
   // 4. Category matching — priority order
-  const categoryPriority = ['complaint', 'return', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
+  const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
 
   for (const cat of categoryPriority) {
     const keywords = AUTO_REPLY_RULES[cat] || [];
