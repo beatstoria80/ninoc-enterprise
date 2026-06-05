@@ -1437,7 +1437,8 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
       });
     }
     load();
-  }, GUIDE_KEYS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async (tab: string) => {
     setSaving(true);

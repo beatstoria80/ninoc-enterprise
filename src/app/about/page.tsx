@@ -67,87 +67,90 @@ export default function About() {
   return (
     <div className="h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white overflow-hidden pt-14 md:pt-24">
       {/* TOP BAR — language switcher + brand */}
-      <div className="shrink-0 flex items-center justify-between px-4 md:px-8 py-2 border-b border-ink/5 z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 bg-rose/10 rounded-full flex items-center justify-center">
-            <span className="text-[6px] font-bold text-rose uppercase">{lang}</span>
+      <div className="shrink-0 border-b border-ink/5 z-50">
+        <div className="flex items-center justify-between px-4 md:px-8 lg:px-12 py-2 md:py-3 max-w-7xl mx-auto w-full">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-rose/10 rounded-full flex items-center justify-center">
+              <span className="text-[6px] md:text-[8px] font-bold text-rose uppercase">{lang}</span>
+            </div>
+            <span className="text-[7px] md:text-[9px] font-medium uppercase tracking-[0.3em] md:tracking-[0.4em] text-ink/40">{content[lang].label}</span>
           </div>
-          <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/40">{content[lang].label}</span>
-        </div>
-        <div className="flex items-center gap-1 bg-ink/5 rounded-full px-1 py-0.5">
-          <button
-            onClick={() => setLang('ID')}
-            className={`px-2 py-0.5 text-[7px] font-medium rounded-full transition-all ${lang === 'ID' ? 'bg-rose text-white' : 'text-ink/40 hover:text-ink'}`}
-          >
-            ID
-          </button>
-          <span className="text-ink/10 text-[8px]">|</span>
-          <button
-            onClick={() => setLang('EN')}
-            className={`px-2 py-0.5 text-[7px] font-medium rounded-full transition-all ${lang === 'EN' ? 'bg-rose text-white' : 'text-ink/40 hover:text-ink'}`}
-          >
-            EN
-          </button>
+          <div className="flex items-center gap-1 bg-ink/5 rounded-full px-1 py-0.5 md:px-1.5 md:py-1">
+            <button
+              onClick={() => setLang('ID')}
+              className={`px-2 py-0.5 md:px-3 md:py-1 text-[7px] md:text-[9px] font-medium rounded-full transition-all duration-200 ease-out ${lang === 'ID' ? 'bg-rose text-white shadow-sm' : 'text-ink/40 hover:text-ink hover:bg-ink/10'}`}
+            >
+              ID
+            </button>
+            <span className="text-ink/10 text-[8px] md:text-[10px]">|</span>
+            <button
+              onClick={() => setLang('EN')}
+              className={`px-2 py-0.5 md:px-3 md:py-1 text-[7px] md:text-[9px] font-medium rounded-full transition-all duration-200 ease-out ${lang === 'EN' ? 'bg-rose text-white shadow-sm' : 'text-ink/40 hover:text-ink hover:bg-ink/10'}`}
+            >
+              EN
+            </button>
+          </div>
         </div>
       </div>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 min-h-0 overflow-hidden">
-        <div className="h-full flex flex-col px-4 md:px-8">
+        <div className="h-full flex flex-col px-4 md:px-8 lg:px-12 max-w-7xl mx-auto w-full">
 
           {/* Title Block */}
-          <div className="shrink-0 pt-1 md:pt-6 pb-1 md:pb-2">
-            <p className="text-[6px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-rose">{t.label}</p>
-            <h1 className="font-display font-medium italic text-lg md:text-3xl tracking-tighter uppercase text-ink leading-[0.85]">{t.title}</h1>
-            <p className="text-[7px] md:text-[9px] font-medium text-ink/40 uppercase tracking-wider mt-0.5">{t.tagline}</p>
+          <div className="shrink-0 pt-3 md:pt-10 lg:pt-14 pb-3 md:pb-8">
+            <p className="text-[6px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-rose mb-1.5 md:mb-3">{t.label}</p>
+            <h1 className="font-display font-medium italic text-lg md:text-5xl lg:text-7xl tracking-tighter uppercase text-ink leading-[0.85]">{t.title}</h1>
+            <p className="text-[7px] md:text-xs font-medium text-ink/40 uppercase tracking-[0.2em] mt-1.5 md:mt-4">{t.tagline}</p>
           </div>
 
           {/* Content Grid */}
-          <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5 overflow-hidden border-t border-ink/5 pt-1.5 md:pt-2">
+          <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-12 lg:gap-24 overflow-hidden border-t border-ink/5 pt-3 md:pt-8 lg:pt-10">
 
             {/* Left: Story & Philosophy — scrollable */}
-            <div className="overflow-y-auto no-scrollbar space-y-2 md:space-y-4 pr-1">
-              <div className="space-y-0.5 md:space-y-1">
-                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.story.heading}</h3>
-                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.story.body}</p>
+            <div className="md:col-span-6 lg:col-span-5 overflow-y-auto no-scrollbar space-y-4 md:space-y-10 pr-2 pb-8">
+              <div className="space-y-1 md:space-y-4">
+                <h3 className="text-[10px] md:text-xl font-display font-medium italic uppercase tracking-tight text-ink">{t.story.heading}</h3>
+                <p className="text-[8px] md:text-sm lg:text-base font-medium text-ink/60 leading-relaxed md:leading-loose">{t.story.body}</p>
               </div>
-              <div className="space-y-0.5 md:space-y-1">
-                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.philosophy.heading}</h3>
-                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.philosophy.body}</p>
+              <div className="space-y-1 md:space-y-4">
+                <h3 className="text-[10px] md:text-xl font-display font-medium italic uppercase tracking-tight text-ink">{t.philosophy.heading}</h3>
+                <p className="text-[8px] md:text-sm lg:text-base font-medium text-ink/60 leading-relaxed md:leading-loose">{t.philosophy.body}</p>
               </div>
-              <div className="space-y-0.5 md:space-y-1">
-                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.mission.heading}</h3>
-                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.mission.body}</p>
+              <div className="space-y-1 md:space-y-4">
+                <h3 className="text-[10px] md:text-xl font-display font-medium italic uppercase tracking-tight text-ink">{t.mission.heading}</h3>
+                <p className="text-[8px] md:text-sm lg:text-base font-medium text-ink/60 leading-relaxed md:leading-loose">{t.mission.body}</p>
               </div>
             </div>
 
             {/* Right: Visual + Stats */}
-            <div className="flex flex-col gap-1.5 md:gap-2 overflow-hidden pb-2 md:pb-0">
+            <div className="md:col-span-6 lg:col-span-7 flex flex-col gap-3 md:gap-6 lg:gap-8 overflow-hidden pb-4 md:pb-8">
               {/* Image placeholder */}
-              <div className="hidden md:flex h-24 bg-white rounded-lg border border-ink/5 items-center justify-center shrink-0">
-                <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">{t.image}</span>
+              <div className="hidden md:flex h-32 lg:h-56 bg-ink/[0.02] rounded-xl lg:rounded-3xl border border-ink/5 items-center justify-center shrink-0 transition-colors duration-500 hover:bg-ink/[0.04]">
+                <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/30">{t.image}</span>
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-1 md:gap-1.5 shrink-0">
-                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
-                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.est.label}</p>
-                  <p className="text-[9px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.est.value}</p>
+              <div className="grid grid-cols-3 gap-2 md:gap-4 shrink-0">
+                <div className="bg-white border border-ink/5 p-2 md:p-5 lg:p-6 rounded-md md:rounded-2xl transition-all duration-300 hover:shadow-sm hover:border-ink/10">
+                  <p className="text-[4px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">{t.stats.est.label}</p>
+                  <p className="text-[9px] md:text-2xl font-display font-medium italic text-ink mt-1.5">{t.stats.est.value}</p>
                 </div>
-                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
-                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.location.label}</p>
-                  <p className="text-[9px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.location.value}</p>
+                <div className="bg-white border border-ink/5 p-2 md:p-5 lg:p-6 rounded-md md:rounded-2xl transition-all duration-300 hover:shadow-sm hover:border-ink/10">
+                  <p className="text-[4px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">{t.stats.location.label}</p>
+                  <p className="text-[9px] md:text-2xl font-display font-medium italic text-ink mt-1.5">{t.stats.location.value}</p>
                 </div>
-                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
-                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.contact.label}</p>
-                  <p className="text-[6px] md:text-[9px] font-display font-medium italic text-rose mt-0.5 break-all">{t.stats.contact.value}</p>
+                <div className="bg-white border border-ink/5 p-2 md:p-5 lg:p-6 rounded-md md:rounded-2xl transition-all duration-300 hover:shadow-sm hover:border-ink/10">
+                  <p className="text-[4px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">{t.stats.contact.label}</p>
+                  <p className="text-[6px] md:text-sm font-display font-medium italic text-rose mt-2 md:mt-3 break-all">{t.stats.contact.value}</p>
                 </div>
               </div>
 
               {/* Tagline */}
-              <div className="bg-ink p-2 md:p-4 rounded-md md:rounded-lg shrink-0">
-                <p className="text-[6px] md:text-[9px] font-medium uppercase leading-normal md:leading-loose tracking-widest text-white/70">{t.verified.label}</p>
-                <p className="text-[6px] md:text-[10px] font-medium uppercase leading-tight md:leading-relaxed tracking-wider text-white mt-0.5">{t.verified.body}</p>
+              <div className="bg-ink p-3 md:p-6 lg:p-8 rounded-lg md:rounded-3xl shrink-0 flex-1 flex flex-col justify-center relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out"></div>
+                <p className="text-[6px] md:text-[10px] font-medium uppercase leading-normal tracking-[0.3em] text-white/50 mb-1.5 md:mb-3 relative z-10">{t.verified.label}</p>
+                <p className="text-[6px] md:text-sm lg:text-lg font-medium uppercase leading-relaxed tracking-wider text-white max-w-lg relative z-10">{t.verified.body}</p>
               </div>
             </div>
           </div>

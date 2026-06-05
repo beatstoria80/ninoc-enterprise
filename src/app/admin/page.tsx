@@ -9,7 +9,8 @@ import {
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
-  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw
+  Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
+  Tag
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -27,6 +28,7 @@ import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
+import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -863,6 +865,7 @@ export default function AdminDashboard() {
     { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
+    { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'] },
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
   ];
 
@@ -990,6 +993,7 @@ export default function AdminDashboard() {
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Info Stock / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
+               ['messages', 'placeholders'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1002,6 +1006,7 @@ export default function AdminDashboard() {
                activeTab === 'inventory' ? 'Stock History' :
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
+               activeTab === 'placeholders' ? 'Placeholder' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
@@ -1133,7 +1138,7 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'messages' && (
-            <MessagesTab 
+            <MessagesTab
               chatSessions={chatSessions}
               activeChatSession={activeChatSession}
               setActiveChatSession={setActiveChatSession}
@@ -1143,6 +1148,8 @@ export default function AdminDashboard() {
               fetchChatSessions={fetchChatSessions}
             />
           )}
+
+          {activeTab === 'placeholders' && <PlaceholderTab />}
 
           {activeTab === 'customers' && (
             <CustomersTab 
