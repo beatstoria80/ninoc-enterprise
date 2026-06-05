@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut } from 'lucide-react';
+import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -267,6 +267,23 @@ export default function ProfilePage() {
               Studio Exit
             </button>
           </div>
+
+          {/* Returns CTA */}
+          <Link
+            href="/profile/returns"
+            className="group flex items-center justify-between p-4 border border-rose/10 bg-rose/[0.02] rounded-[4px] hover:border-rose/20 hover:bg-rose/[0.04] transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-rose/10 rounded-sm flex items-center justify-center">
+                <RefreshCw size={13} className="text-rose" />
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-ink">Return Tracker</p>
+                <p className="text-[8px] text-ink/40">Lacak status pengajuan retur & refund</p>
+              </div>
+            </div>
+            <ChevronRight size={12} className="text-rose/50 group-hover:text-rose group-hover:translate-x-1 transition-all" />
+          </Link>
 
           {/* Section: Activity Logs (Orders) */}
           <div className="space-y-4">

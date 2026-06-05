@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, ChevronDown, Search, Tag, Plus } from 'lucide-react';
+import { MessageSquare, Send, X, Search, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ChatSession } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -236,7 +236,8 @@ export function MessagesTab({
                             <button
                               key={p.id}
                               onClick={() => {
-                                setNewMessage(prev => prev ? `${prev}\n\n${p.content}` : p.content);
+                                const current = newMessage;
+                                setNewMessage(current ? `${current}\n\n${p.content}` : p.content);
                                 setPlaceholderOpen(false);
                                 setPlaceholderSearch('');
                               }}
