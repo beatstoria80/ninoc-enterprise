@@ -329,7 +329,8 @@ type ClassificationResult =
   | { type: 'nsfw_reject'; message: string }
   | { type: 'english_bilingual'; template: PlaceholderConfig }
   | { type: 'clarify'; category: string; suggestions: string[] }
-  | { type: 'tracking_lookup'; trackingId: string; source: 'order' | 'resi' };
+  | { type: 'tracking_lookup'; trackingId: string; source: 'order' | 'resi' }
+  | { type: 'excess_payment' };
 
 // ─── Clarify suggestions per category ──────────────────────────────────────
 const CLARIFY_SUGGESTIONS: Record<string, string[]> = {
@@ -378,6 +379,10 @@ const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
   english: {
     label: 'English Bilingual',
     content: 'Hello! Thank you for reaching out to NINOC. We\'re happy to help! Please tell us your question and our team will respond shortly. 🙏'
+  },
+  excess_payment: {
+    label: 'Kelebihan Bayar',
+    content: 'Kami memahami ada kelebihan pembayaran. Tenang, dana akan kami proses refund ya 🙏\n\n🔢 Sertakan **Order ID** agar kami bisa cek nominalnya\n💰 Refund akan dikembalikan ke metode pembayaran Anda\n⏱️ Proses refund 1-3 hari kerja\n\nTim kami akan segera menindak lanjuti 🙏'
   }
 };
 
@@ -507,6 +512,17 @@ function classifyMessage(
   const tracking = extractTrackingId(message);
   if (tracking) {
     return { type: 'tracking_lookup', trackingId: tracking.id, source: tracking.source };
+  }
+
+  // 2c. Check for excess payment / overpay — refund request
+  const excessPatterns = [
+    'kelebihan bayar', 'lebih bayar', 'lebih bayar', 'kelebihan transfer',
+    'lebih transfer', 'nominal lebih', 'uang lebih', 'refund lebih',
+    'pembayaran lebih', 'transfer lebih', 'dana lebih', 'saldo lebih',
+    'uang lebih', 'overpay', 'excess payment', 'excess', 'salah nominal'
+  ];
+  if (excessPatterns.some(p => lower.includes(p))) {
+    return { type: 'excess_payment' };
   }
 
   // 3. Check English — bilingual friendly response
@@ -914,6 +930,20 @@ export default function SupportChat() {
           setChatMessages(prev => [...prev, trackingMsg]);
           await sendAutoReply(targetTicket.id, reply);
 
+        } else if (classification.type === 'excess_payment') {
+          const fb = FALLBACK_CONTENT['excess_payment'];
+          const excessMsg: SupportMessage = {
+            id: `ar-${Date.now()}`,
+            ticket_id: targetTicket.id,
+            sender_id: null,
+            sender_role: 'admin',
+            message: fb.content,
+            created_at: new Date().toISOString(),
+            is_auto_reply: true,
+          };
+          setChatMessages(prev => [...prev, excessMsg]);
+          await sendAutoReply(targetTicket.id, fb.content);
+
         } else if (classification.type === 'clarify') {
           // Clarify — suggest topic options to user
           const suggestions = classification.suggestions || [];
@@ -1079,6 +1109,20 @@ export default function SupportChat() {
               };
               setChatMessages(prev => [...prev, trackingMsg]);
               await sendAutoReply(genTicket.id, reply);
+
+            } else if (classification.type === 'excess_payment') {
+              const fb = FALLBACK_CONTENT['excess_payment'];
+              const excessMsg: SupportMessage = {
+                id: `ar-${Date.now()}`,
+                ticket_id: genTicket.id,
+                sender_id: null,
+                sender_role: 'admin',
+                message: fb.content,
+                created_at: new Date().toISOString(),
+                is_auto_reply: true,
+              };
+              setChatMessages(prev => [...prev, excessMsg]);
+              await sendAutoReply(genTicket.id, fb.content);
 
             } else if (classification.type === 'clarify') {
               const suggestions = classification.suggestions || [];
