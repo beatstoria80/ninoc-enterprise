@@ -4,56 +4,58 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, RefreshCw, Clock, CheckCircle, Truck, Package, XCircle, AlertCircle, ChevronRight } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Clock, CheckCircle, XCircle, Package, ChevronRight, AlertCircle, Eye, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
-import { ReturnModal } from '../../../app/profile/orders/[id]/_components/ReturnModal';
 
-interface OrderReturn {
+interface ReturRequest {
   id: string;
   order_id: string;
-  type: 'refund' | 'exchange';
-  status: 'requested' | 'approved' | 'rejected' | 'received' | 'completed';
   reason: string;
+  reason_label: string;
+  description: string | null;
+  video_url: string | null;
+  video_duration_seconds: number | null;
+  status: 'pending' | 'reviewed' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+  fraud_suspected: boolean | null;
+  fraud_reasons: string[] | null;
   admin_notes: string | null;
+  refund_amount: number | null;
+  refund_method: string | null;
   created_at: string;
   updated_at: string;
-}
-
-interface Order {
-  id: string;
-  total_price: number;
-  status: string;
-  created_at: string;
-  order_items?: { id: string; product_name?: string; size?: string; quantity: number; price_at_purchase: number }[];
-}
-
-interface ReturnWithOrder extends OrderReturn {
-  order?: Order;
+  resolved_at: string | null;
 }
 
 const STATUS_FLOW = [
-  { key: 'requested', label: 'Diajukan', icon: Clock, color: 'text-amber-500 bg-amber-50 border-amber-200' },
-  { key: 'approved', label: 'Disetujui', icon: CheckCircle, color: 'text-blue-500 bg-blue-50 border-blue-200' },
-  { key: 'rejected', label: 'Ditolak', icon: XCircle, color: 'text-red-500 bg-red-50 border-red-200' },
-  { key: 'received', label: 'Diterima', icon: Package, color: 'text-purple-500 bg-purple-50 border-purple-200' },
-  { key: 'completed', label: 'Selesai', icon: CheckCircle, color: 'text-emerald-500 bg-emerald-50 border-emerald-200' },
+  { key: 'pending',   label: 'Diajukan',   icon: Clock,       color: 'bg-amber-50 border-amber-200 text-amber-600' },
+  { key: 'reviewed',  label: 'Reviewed',   icon: Eye,        color: 'bg-blue-50 border-blue-200 text-blue-600' },
+  { key: 'approved',  label: 'Disetujui',  icon: CheckCircle, color: 'bg-emerald-50 border-emerald-200 text-emerald-600' },
+  { key: 'rejected',  label: 'Ditolak',    icon: XCircle,     color: 'bg-red-50 border-red-200 text-red-600' },
+  { key: 'completed', label: 'Selesai',    icon: CheckCircle, color: 'bg-gray-50 border-gray-200 text-gray-500' },
 ];
 
-const TYPE_CONFIG = {
-  refund: { label: 'Refund', color: 'bg-blue-50 text-blue-600' },
-  exchange: { label: 'Exchange', color: 'bg-purple-50 text-purple-600' },
+const REASON_LABELS: Record<string, string> = {
+  rusak_cacat: 'Barang Rusak / Cacat Produksi',
+  salah_ukuran: 'Salah Ukuran',
+  salah_warna: 'Salah Warna / Model',
+  tidak_sesuai: 'Tidak Sesuai Deskripsi',
+  lainnya: 'Lainnya',
 };
 
 const EASING = { out: [0.23, 1, 0.32, 1] } as const;
 
+function formatDate(str: string) {
+  return new Date(str).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
 export default function ReturnsPage() {
   const router = useRouter();
-  const [returns, setReturns] = useState<ReturnWithOrder[]>([]);
+  const [returns, setReturns] = useState<ReturRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [orderDetailModal, setOrderDetailModal] = useState<{ order: Order; items: Order['order_items'] } | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchReturns = useCallback(async () => {
     setIsLoading(true);
@@ -61,27 +63,13 @@ export default function ReturnsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push('/login'); return; }
 
-      const { data: returnData } = await supabase
-        .from('order_returns')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (!returnData) { setIsLoading(false); return; }
-
-      // Fetch orders for each return
-      const ordersMap = await Promise.all(
-        returnData.map(async (ret) => {
-          const { data: orderData } = await supabase
-            .from('orders')
-            .select('*, order_items(*)')
-            .eq('id', ret.order_id)
-            .single();
-          return { ...ret, order: orderData };
-        })
-      );
-
-      setReturns(ordersMap as ReturnWithOrder[]);
+      const params = new URLSearchParams();
+      params.set('user_id', user.id);
+      params.set('limit', '50');
+      const res = await fetch(`/api/retur?${params}`);
+      const json = await res.json();
+      const data: ReturRequest[] = json.retur_requests || [];
+      setReturns(data);
     } catch (err) {
       console.error('[ReturnsPage] fetch error:', err);
     } finally {
@@ -93,9 +81,15 @@ export default function ReturnsPage() {
     queueMicrotask(() => { fetchReturns(); });
   }, [fetchReturns]);
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchReturns();
+    setRefreshing(false);
+  };
+
   const filtered = returns.filter(r => {
-    if (filter === 'pending') return ['requested', 'approved', 'received'].includes(r.status);
-    if (filter === 'completed') return ['completed', 'rejected'].includes(r.status);
+    if (filter === 'pending') return ['pending', 'reviewed', 'approved'].includes(r.status);
+    if (filter === 'completed') return ['completed', 'rejected', 'cancelled'].includes(r.status);
     return true;
   });
 
@@ -116,8 +110,14 @@ export default function ReturnsPage() {
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-1.5 mb-6 overflow-x-auto no-scrollbar shrink-0">
+        {/* Filter Tabs + Refresh */}
+        <div className="flex items-center gap-3 mb-6 overflow-x-auto no-scrollbar shrink-0">
+          <button
+            onClick={handleRefresh}
+            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/30 hover:text-rose hover:border-rose/30 transition-colors shrink-0"
+          >
+            <RefreshCw size={10} className={cn('transition-transform', refreshing && 'animate-spin')} />
+          </button>
           {([
             { id: 'all' as const, label: 'All' },
             { id: 'pending' as const, label: 'Active' },
@@ -132,9 +132,9 @@ export default function ReturnsPage() {
               )}
             >
               {tab.label}
-              {tab.id === 'pending' && returns.filter(r => ['requested', 'approved', 'received'].includes(r.status)).length > 0 && (
+              {tab.id === 'pending' && returns.filter(r => ['pending', 'reviewed'].includes(r.status)).length > 0 && (
                 <span className="ml-2 px-1.5 py-0.5 text-[7px] rounded-sm bg-rose/10 text-rose">
-                  {returns.filter(r => ['requested', 'approved', 'received'].includes(r.status)).length}
+                  {returns.filter(r => ['pending', 'reviewed'].includes(r.status)).length}
                 </span>
               )}
             </button>
@@ -167,8 +167,8 @@ export default function ReturnsPage() {
           <div className="space-y-4">
             {filtered.map((ret, idx) => {
               const statusIdx = getStatusIndex(ret.status);
-              const StatusIcon = STATUS_FLOW[statusIdx]?.icon || Clock;
-              const statusCfg = STATUS_FLOW[statusIdx];
+              const statusCfg = STATUS_FLOW[statusIdx] ?? STATUS_FLOW[0];
+              const StatusIcon = statusCfg.icon;
 
               return (
                 <motion.div
@@ -183,47 +183,33 @@ export default function ReturnsPage() {
                     onClick={() => setExpandedId(expandedId === ret.id ? null : ret.id)}
                     className="w-full p-4 flex items-center gap-4 text-left"
                   >
-                    {/* Status Icon */}
-                    <div className={cn(
-                      "w-9 h-9 rounded-sm flex items-center justify-center shrink-0 border",
-                      statusCfg?.color || 'bg-ink/5 text-ink/30 border-ink/10'
-                    )}>
+                    <div className={cn("w-9 h-9 rounded-sm flex items-center justify-center shrink-0 border", statusCfg.color)}>
                       <StatusIcon size={14} strokeWidth={1.5} />
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={cn(
-                          "px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-widest rounded-sm border",
-                          TYPE_CONFIG[ret.type]?.color || 'bg-gray-50 text-gray-500 border-gray-200'
-                        )}>
-                          {TYPE_CONFIG[ret.type]?.label || ret.type}
+                        <span className="text-[10px] font-semibold text-ink uppercase tracking-wider font-mono">{ret.order_id}</span>
+                        <span className={cn('px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-widest rounded-sm border', statusCfg.color)}>
+                          {statusCfg.label}
                         </span>
-                        <span className="text-[7px] text-ink/30 font-mono">#{ret.id.slice(0, 8)}</span>
+                        {ret.fraud_suspected && (
+                          <span className="px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
+                            <AlertCircle size={8} /> Fraud?
+                          </span>
+                        )}
                       </div>
-                      <p className="text-[10px] font-medium text-ink uppercase tracking-wider">
-                        {ret.order?.order_items?.map(i => i.product_name).filter(Boolean).join(', ') || 'Order Item'}
-                      </p>
-                      <p className="text-[7px] text-ink/30 mt-0.5 uppercase tracking-tight">
-                        {new Date(ret.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      <p className="text-[7px] text-ink/30 mt-0.5">
+                        {REASON_LABELS[ret.reason] || ret.reason_label || ret.reason} · {formatDate(ret.created_at)}
                       </p>
                     </div>
-
-                    {/* Amount */}
-                    <div className="text-right shrink-0">
-                      <p className="text-[11px] font-display italic font-medium text-rose">
-                        IDR {(ret.order?.total_price || 0).toLocaleString('id-ID')}
-                      </p>
-                      <p className={cn(
-                        "text-[7px] font-semibold uppercase tracking-widest mt-0.5",
-                        statusCfg?.color.split(' ')[1] || 'text-ink/30'
-                      )}>
-                        {statusCfg?.label || ret.status}
-                      </p>
-                    </div>
-
-                    {/* Expand Icon */}
+                    {ret.refund_amount && (
+                      <div className="text-right shrink-0">
+                        <p className="text-[11px] font-display italic font-medium text-emerald-600">
+                          IDR {ret.refund_amount.toLocaleString('id-ID')}
+                        </p>
+                        <p className="text-[7px] text-ink/30">Refund</p>
+                      </div>
+                    )}
                     <motion.div
                       animate={{ rotate: expandedId === ret.id ? 90 : 0 }}
                       transition={{ duration: 0.15 }}
@@ -245,7 +231,7 @@ export default function ReturnsPage() {
                       >
                         <div className="px-4 pb-4 pt-0 space-y-4 border-t border-ink/5">
 
-                          {/* Timeline */}
+                          {/* Timeline — accurate for all statuses */}
                           <div className="pt-4">
                             <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-3">Status Timeline</p>
                             <div className="flex items-center gap-0">
@@ -278,10 +264,7 @@ export default function ReturnsPage() {
                                       </p>
                                     </div>
                                     {i < STATUS_FLOW.length - 1 && (
-                                      <div className={cn(
-                                        "flex-1 h-px mx-1 mb-4 transition-colors",
-                                        i < statusIdx ? "bg-emerald-400" : "bg-ink/5"
-                                      )} />
+                                      <div className={cn("flex-1 h-px mx-1 mb-4 transition-colors", i < statusIdx ? "bg-emerald-400" : "bg-ink/5")} />
                                     )}
                                   </React.Fragment>
                                 );
@@ -289,11 +272,45 @@ export default function ReturnsPage() {
                             </div>
                           </div>
 
-                          {/* Reason */}
-                          <div className="bg-ink/[0.01] border border-ink/5 p-3 rounded-sm">
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">Alasan Retur</p>
-                            <p className="text-[10px] text-ink/70 leading-relaxed">{ret.reason}</p>
-                          </div>
+                          {/* Description */}
+                          {ret.description && (
+                            <div className="bg-ink/[0.01] border border-ink/5 p-3 rounded-sm">
+                              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">Deskripsi</p>
+                              <p className="text-[10px] text-ink/70 leading-relaxed">{ret.description}</p>
+                            </div>
+                          )}
+
+                          {/* Video Evidence */}
+                          {ret.video_url && (
+                            <div className="border border-ink/5 rounded-sm overflow-hidden">
+                              <div className="px-3 pt-3 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30">Bukti Video Unboxing</p>
+                                  {ret.video_duration_seconds && (
+                                    <span className="text-[7px] text-ink/20">{ret.video_duration_seconds}s · 1-shot</span>
+                                  )}
+                                </div>
+                                {ret.fraud_suspected && (
+                                  <span className="px-2 py-1 bg-red-50 text-red-500 text-[7px] font-bold uppercase tracking-wider border border-red-100 rounded-sm">Fraud Flagged</span>
+                                )}
+                              </div>
+                              <video
+                                src={ret.video_url}
+                                controls
+                                preload="metadata"
+                                className="w-full aspect-video bg-black mt-2"
+                              />
+                              {ret.fraud_reasons && ret.fraud_reasons.length > 0 && (
+                                <div className="px-3 pb-3 pt-2 space-y-1">
+                                  {ret.fraud_reasons.map((r, i) => (
+                                    <p key={i} className="text-[8px] text-red-400 flex items-start gap-1">
+                                      <AlertCircle size={9} className="shrink-0 mt-0.5" />{r}
+                                    </p>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                           {/* Admin Notes */}
                           {ret.admin_notes && (
@@ -303,51 +320,34 @@ export default function ReturnsPage() {
                             </div>
                           )}
 
-                          {/* Items */}
-                          {ret.order?.order_items && ret.order.order_items.length > 0 && (
-                            <div>
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Item yang Diretur</p>
-                              <div className="space-y-1.5">
-                                {ret.order.order_items.map((item, i) => (
-                                  <div key={i} className="flex items-center justify-between p-2 bg-ink/[0.01] border border-ink/5 rounded-sm">
-                                    <div className="flex items-center gap-2">
-                                      <Package size={10} className="text-ink/30" />
-                                      <span className="text-[9px] font-medium text-ink uppercase">{item.product_name}</span>
-                                      <span className="text-[7px] text-ink/30">SZ {item.size}</span>
-                                      <span className="text-[7px] text-ink/30">×{item.quantity}</span>
-                                    </div>
-                                    <span className="text-[9px] font-mono text-ink/60">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
-                                  </div>
-                                ))}
-                              </div>
+                          {/* Refund Approved Banner */}
+                          {ret.status === 'approved' && ret.refund_amount && (
+                            <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-sm space-y-1">
+                              <p className="text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1.5">Refund Disetujui</p>
+                              <p className="text-[13px] font-display italic font-bold text-emerald-700">
+                                IDR {ret.refund_amount.toLocaleString('id-ID')}
+                              </p>
+                              <p className="text-[8px] text-emerald-500/70 mt-1">
+                                {ret.refund_method === 'transfer' ? 'Dana ditransfer ke rekening Anda' : 'Refund via metode pembayaran asli'}
+                              </p>
                             </div>
                           )}
 
-                          {/* View Order Link */}
-                          {ret.order && (
-                            <Link
-                              href={`/profile/orders/${ret.order_id}`}
-                              className="flex items-center justify-between p-3 border border-ink/5 rounded-sm hover:border-rose/20 hover:bg-rose/[0.02] transition-all group"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Truck size={11} className="text-ink/30 group-hover:text-rose transition-colors" />
-                                <span className="text-[9px] font-medium text-ink/50 group-hover:text-rose uppercase tracking-wider transition-colors">View Order Detail</span>
-                              </div>
-                              <ChevronRight size={10} className="text-ink/20 group-hover:text-rose transition-colors" />
-                            </Link>
-                          )}
-
                           {/* Policy Info */}
-                          {ret.status !== 'completed' && ret.status !== 'rejected' && (
+                          {!['completed', 'rejected', 'cancelled'].includes(ret.status) && (
                             <div className="bg-rose/[0.02] border border-rose/10 p-3 rounded-sm space-y-1">
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses Retur</p>
+                              <p className="text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses</p>
                               <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
-                                Klaim maksimal 2x24 jam setelah barang diterima (bukti video 1-shot wajib)
+                                Pengajuan maksimal 2x24 jam setelah barang diterima
                               </p>
                               <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
-                                Refund diproses 3-5 hari kerja setelah barang diterima
+                                Bukti video 1-shot tanpa edit WAJIB
+                              </p>
+                              <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                                <span className="text-rose/40 font-bold shrink-0">•</span>
+                                Refund diproses 3–7 hari kerja setelah persetujuan
                               </p>
                             </div>
                           )}

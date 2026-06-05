@@ -1,14 +1,27 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ReturForm } from '@/components/ReturForm';
 import { ReturStatus } from '@/components/ReturStatus';
+import { supabase } from '@/lib/supabase';
 
 export default function ReturPage() {
+  const router = useRouter();
   const [view, setView] = useState<'form' | 'status'>('form');
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) router.push('/login');
+      else setCheckingAuth(false);
+    };
+    checkAuth();
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -49,37 +62,43 @@ export default function ReturPage() {
 
       {/* Content */}
       <div className="max-w-md mx-auto px-5 py-4">
-        <AnimatePresence mode="wait">
-          {view === 'form' ? (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ReturForm
-                className="border border-ink/5 rounded-sm shadow-sm"
-                onSuccess={() => {
-                  setView('status');
-                }}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="status"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="border border-ink/5 bg-white rounded-sm shadow-sm"
-            >
-              <div className="p-5">
-                <ReturStatus />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {checkingAuth ? (
+          <div className="flex justify-center py-20">
+            <div className="w-6 h-6 border border-ink/10 border-t-rose rounded-full animate-spin" />
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {view === 'form' ? (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ReturForm
+                  className="border border-ink/5 rounded-sm shadow-sm"
+                  onSuccess={() => {
+                    setView('status');
+                  }}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="status"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="border border-ink/5 bg-white rounded-sm shadow-sm"
+              >
+                <div className="p-5">
+                  <ReturStatus />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </div>
   );

@@ -271,7 +271,7 @@ export function ReturTab() {
   const [returs, setReturs] = useState<ReturRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ReturRequest | null>(null);
-  const [statusFilter, setStatusFilter] = useState('pending');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
 
   const fetchReturs = useCallback(async () => {
@@ -289,10 +289,9 @@ export function ReturTab() {
     }
   }, [statusFilter]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { fetchReturs(); }, [fetchReturs]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { if (selected) fetchReturs(); }, [fetchReturs, selected]);
+  useEffect(() => { queueMicrotask(() => { fetchReturs(); }); }, [fetchReturs]);
+
+  const handleSelectAndRefresh = (r: ReturRequest) => { setSelected(r); };
 
   const filtered = returs.filter(r =>
     !search || r.order_id.toLowerCase().includes(search.toLowerCase()) || r.reason_label.toLowerCase().includes(search.toLowerCase())
@@ -354,7 +353,7 @@ export function ReturTab() {
               return (
                 <button
                   key={r.id}
-                  onClick={() => setSelected(r)}
+                  onClick={() => handleSelectAndRefresh(r)}
                   className={cn(
                     'w-full p-3 text-left border-b border-ink/5 transition-colors',
                     selected?.id === r.id ? 'bg-rose/[0.03] border-l-2 border-l-rose' : 'hover:bg-ink/[0.01]'
@@ -382,7 +381,7 @@ export function ReturTab() {
           <ReturDetail
             retur={selected}
             onClose={() => setSelected(null)}
-            onRefresh={() => { fetchReturs(); if (selected) setSelected({ ...selected, status: selected.status }); }}
+            onRefresh={() => { fetchReturs(); setSelected(null); }}
           />
         ) : (
           <div className="h-full flex items-center justify-center">

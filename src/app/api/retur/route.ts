@@ -55,22 +55,46 @@ export async function POST(req: NextRequest) {
       video_duration_seconds,
       video_filename,
       ticket_id,
+      user_id: body_user_id,
     } = body;
 
     if (!order_id || !reason || !reason_label) {
       return NextResponse.json({ error: 'order_id, reason, and reason_label are required' }, { status: 400 });
     }
 
+    if (!video_url) {
+      return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum提交 retur' }, { status: 400 });
+    }
+
     // Get current user (guest or authenticated)
     const { data: { user } } = await supabase.auth.getUser();
+    const uid = user?.id || body_user_id || null;
 
-    // Fraud detection: flag if video duration < 10 seconds
-    const fraudSuspected = video_duration_seconds && video_duration_seconds < 10;
+    // Duplicate check:不许 duplicate retur for same order in pending/reviewed state
+    if (uid) {
+      const { data: existing } = await adminClient
+        .from('retur_requests')
+        .select('id, status')
+        .eq('order_id', order_id)
+        .eq('user_id', uid)
+        .in('status', ['pending', 'reviewed'])
+        .maybeSingle();
+      if (existing) {
+        return NextResponse.json({
+          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`
+        }, { status: 409 });
+      }
+    }
+
+    // Fraud detection: flag if video duration < 30 seconds
+    const fraudSuspected = video_duration_seconds && video_duration_seconds < 30;
+    const fraudReasons: string[] = [];
+    if (fraudSuspected) fraudReasons.push('Durasi video kurang dari 30 detik — kurang dari minimum yang diizinkan (1-shot, 30 detik)');
 
     const { data, error } = await adminClient
       .from('retur_requests')
       .insert({
-        user_id: user?.id || null,
+        user_id: uid,
         order_id,
         reason,
         reason_label,
@@ -81,7 +105,7 @@ export async function POST(req: NextRequest) {
         ticket_id,
         status: 'pending',
         fraud_suspected: fraudSuspected,
-        fraud_reasons: fraudSuspected ? ['Video duration less than 10 seconds'] : [],
+        fraud_reasons: fraudReasons,
       })
       .select()
       .single();
@@ -89,9 +113,9 @@ export async function POST(req: NextRequest) {
     if (error) throw error;
 
     // Log activity
-    if (user?.id) {
+    if (uid) {
       await adminClient.from('customer_activity_log').insert({
-        user_id: user.id,
+        user_id: uid,
         activity_type: 'retur_submitted',
         description: `Retur diajukan untuk order ${order_id}`,
         metadata: { retur_id: data.id, order_id, reason },
