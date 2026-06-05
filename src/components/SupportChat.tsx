@@ -411,11 +411,15 @@ export default function SupportChat() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'new_ticket' | 'chat'>('home');
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(null);
   const [message, setMessage] = useState('');
   const [chatMessages, setChatMessages] = useState<SupportMessage[]>([]);
+
+  const [subject, setSubject] = useState('');
+  const [orderId, setOrderId] = useState('');
+  const [category, setCategory] = useState('');
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [notifCount, setNotifCount] = useState(0);
@@ -548,7 +552,31 @@ export default function SupportChat() {
     }
   }, [chatMessages]);
 
-
+  const startNewTicket = async () => {
+    if (!subject || !category || !user) return;
+    const { data } = await supabase
+      .from('support_tickets')
+      .insert({
+        user_id: user.id,
+        subject,
+        order_id: orderId || null,
+        category,
+        status: 'open'
+      })
+      .select()
+      .single();
+    if (data) {
+      setTickets(prev => [data, ...prev]);
+      setActiveTicket(data);
+      setActiveTab('chat');
+      setChatMessages([]);
+      setAutoReplySent(null);
+      setMessage('');
+      setSubject('');
+      setOrderId('');
+      setCategory('');
+    }
+  };
 
   const sendMessage = async (overrideMessage?: string, overrideTicket?: SupportTicket) => {
     const msgToSend = overrideMessage || message;
@@ -922,28 +950,10 @@ export default function SupportChat() {
                             <motion.button
                               key={action.id}
                               whileTap={{ scale: 0.97 }}
-                              onClick={async () => {
-                                if (!user) return;
-                                // Directly create ticket and open chat
-                                const { data } = await supabase
-                                  .from('support_tickets')
-                                  .insert({
-                                    user_id: user.id,
-                                    subject: action.subject,
-                                    order_id: null,
-                                    category: action.category,
-                                    status: 'open'
-                                  })
-                                  .select()
-                                  .single();
-                                if (data) {
-                                  setTickets(prev => [data, ...prev]);
-                                  setActiveTicket(data);
-                                  setActiveTab('chat');
-                                  setChatMessages([]);
-                                  setAutoReplySent(null);
-                                  setMessage('');
-                                }
+                              onClick={() => {
+                                setSubject(action.subject);
+                                setCategory(action.category);
+                                setActiveTab('new_ticket');
                               }}
                               className={cn(
                                 "flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all duration-200 text-left",
@@ -1022,8 +1032,49 @@ export default function SupportChat() {
                   </motion.div>
                 )}
 
+                {activeTab === 'new_ticket' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-4 space-y-3 flex-1 flex flex-col justify-center relative bg-white"
+                  >
+                    <motion.button
+                      whileHover={{ x: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setActiveTab('home')}
+                      className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1 absolute top-4 left-4"
+                    >
+                      <ArrowLeft size={8} /> Back
+                    </motion.button>
+                    
+                    <div className="text-center space-y-1 mb-4 pt-6">
+                      <p className="text-[6px] font-medium uppercase tracking-widest text-ink/40">Topik Terpilih</p>
+                      <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink">{subject}</h4>
+                    </div>
 
-
+                    <div className="space-y-3 bg-ink/[0.02] p-4 rounded-xl border border-ink/5">
+                      <div className="space-y-1.5 text-center">
+                        <label className="text-[7px] font-medium uppercase tracking-widest text-ink/50">Punya ID Pesanan? (Opsional)</label>
+                        <input 
+                          type="text" 
+                          value={orderId} 
+                          onChange={(e) => setOrderId(e.target.value)} 
+                          placeholder="Contoh: NINOC-12345" 
+                          className="w-full bg-white border border-ink/10 rounded-lg py-2.5 px-3 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:border-rose/30 focus:shadow-sm transition-all text-center" 
+                        />
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={startNewTicket}
+                        className="w-full bg-ink text-white py-2.5 rounded-lg text-[9px] font-medium uppercase tracking-[0.2em] mt-3 hover:bg-rose transition-colors duration-200"
+                      >
+                        Mulai Chat
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
 
                 {activeTab === 'chat' && (
                   <motion.div
