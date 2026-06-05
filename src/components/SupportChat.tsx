@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus, Zap } from 'lucide-react';
+import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { clsx, type ClassValue } from 'clsx';
@@ -10,6 +10,77 @@ import { twMerge } from 'tailwind-merge';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+// ─── Quick Action Buttons ──────────────────────────────────────────────────────
+const QUICK_ACTIONS = [
+  {
+    id: 'track',
+    label: 'Lacak Pesanan',
+    sublabel: 'Cek status & resi',
+    icon: 'Truck',
+    color: 'bg-blue-50 border-blue-100 text-blue-600',
+    iconColor: 'text-blue-500',
+    subject: 'Tracking Pesanan',
+    category: 'shipping',
+    placeholder: 'Ketik nomor pesanan atau resi Anda...',
+  },
+  {
+    id: 'return',
+    label: 'Ajukan Retur',
+    sublabel: 'Refund atau tukar barang',
+    icon: 'RefreshCw',
+    color: 'bg-rose/10 border-rose/10 text-rose',
+    iconColor: 'text-rose',
+    subject: 'Pengajuan Retur / Refund',
+    category: 'return',
+    placeholder: 'Ketik nomor pesanan dan masalah yang dialami...',
+  },
+  {
+    id: 'product',
+    label: 'Tanya Produk',
+    sublabel: 'Stok, ukuran, warna',
+    icon: 'Package',
+    color: 'bg-purple-50 border-purple-100 text-purple-600',
+    iconColor: 'text-purple-500',
+    subject: 'Tanya Stok & Produk',
+    category: 'product',
+    placeholder: 'Ketik nama produk atau pertanyaan Anda...',
+  },
+  {
+    id: 'payment',
+    label: 'Masalah Bayar',
+    sublabel: 'Transfer, Midtrans, COD',
+    icon: 'CreditCard',
+    color: 'bg-amber-50 border-amber-100 text-amber-600',
+    iconColor: 'text-amber-500',
+    subject: 'Masalah Pembayaran',
+    category: 'payment',
+    placeholder: 'Ketik nomor pesanan dan masalah pembayarannya...',
+  },
+  {
+    id: 'other',
+    label: 'Lainnya',
+    sublabel: 'Pertanyaan umum',
+    icon: 'MessageSquare',
+    color: 'bg-ink/5 border-ink/10 text-ink/60',
+    iconColor: 'text-ink/40',
+    subject: 'Pertanyaan Lainnya',
+    category: 'other',
+    placeholder: 'Ketik pertanyaan Anda...',
+  },
+];
+
+// ─── Icon helper ────────────────────────────────────────────────────────────
+function QuickIcon({ name, className }: { name: string; className?: string }) {
+  switch (name) {
+    case 'Truck': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 8 23 16 16 16 16 13 1 13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>;
+    case 'RefreshCw': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
+    case 'Package': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 9.4 7.5 3.5"/><path d="m21 21-5.97-5.97a8.04 8.04 0 0 0-.91-11.6 8.1 8.1 0 0 0-12.22 0 8.06 8.06 0 0 0 .91 11.6l5.97 5.97"/><path d="M3.27 6.96 8 12l4.73-5.04"/><path d="M20.73 17 16 12l4.73-5.04"/></svg>;
+    case 'CreditCard': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>;
+    case 'MessageSquare': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+    default: return null;
+  }
 }
 
 interface SupportTicket {
@@ -340,14 +411,12 @@ export default function SupportChat() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'new_ticket' | 'chat'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'chat'>('home');
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(null);
   const [message, setMessage] = useState('');
   const [chatMessages, setChatMessages] = useState<SupportMessage[]>([]);
-  const [subject, setSubject] = useState('');
-  const [orderId, setOrderId] = useState('');
-  const [category, setCategory] = useState('');
+
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [notifCount, setNotifCount] = useState(0);
   const [showNotifCard, setShowNotifCard] = useState(false);
@@ -479,27 +548,7 @@ export default function SupportChat() {
     }
   }, [chatMessages]);
 
-  const startNewTicket = async () => {
-    if (!subject || !category || !user) return;
-    const { data } = await supabase
-      .from('support_tickets')
-      .insert({
-        user_id: user.id,
-        subject,
-        order_id: orderId,
-        category,
-        status: 'open'
-      })
-      .select()
-      .single();
-    if (data) {
-      setTickets([data, ...tickets]);
-      openTicket(data);
-      setSubject('');
-      setOrderId('');
-      setCategory('');
-    }
-  };
+
 
   const sendMessage = async (overrideMessage?: string, overrideTicket?: SupportTicket) => {
     const msgToSend = overrideMessage || message;
@@ -864,146 +913,117 @@ export default function SupportChat() {
                     exit={{ opacity: 0, y: -10 }}
                     className="flex flex-col h-full overflow-hidden bg-white"
                   >
-                    <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-6">
-                      {/* QUICK ACTION HEADER */}
-                      <div className="flex items-center justify-between">
-                        <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support Center</p>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setActiveTab('new_ticket')}
-                          className="text-[8px] font-medium uppercase tracking-widest text-rose hover:text-ink transition-colors flex items-center gap-1.5"
-                        >
-                          <Plus size={10} /> New Ticket
-                        </motion.button>
+                    <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+                      {/* QUICK ACTION GRID */}
+                      <div>
+                        <p className="text-[6px] font-medium uppercase tracking-[0.15em] text-ink/30 mb-3">Pilih Topik</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {QUICK_ACTIONS.map((action) => (
+                            <motion.button
+                              key={action.id}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={async () => {
+                                if (!user) return;
+                                // Directly create ticket and open chat
+                                const { data } = await supabase
+                                  .from('support_tickets')
+                                  .insert({
+                                    user_id: user.id,
+                                    subject: action.subject,
+                                    order_id: null,
+                                    category: action.category,
+                                    status: 'open'
+                                  })
+                                  .select()
+                                  .single();
+                                if (data) {
+                                  setTickets(prev => [data, ...prev]);
+                                  setActiveTicket(data);
+                                  setActiveTab('chat');
+                                  setChatMessages([]);
+                                  setAutoReplySent(null);
+                                  setMessage('');
+                                }
+                              }}
+                              className={cn(
+                                "flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all duration-200 text-left",
+                                action.color,
+                                "hover:shadow-sm hover:-translate-y-0.5"
+                              )}
+                            >
+                              <QuickIcon name={action.icon} className={action.iconColor} />
+                              <div>
+                                <p className="text-[9px] font-semibold uppercase tracking-wide leading-tight">{action.label}</p>
+                                <p className="text-[7px] opacity-60 leading-snug">{action.sublabel}</p>
+                              </div>
+                            </motion.button>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* ACTIVE CONVERSATIONS LIST */}
-                      <div className="space-y-3">
-                        <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/10">Active Conversations</p>
+                      {/* ACTIVE CONVERSATIONS */}
+                      <div>
+                        <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15 mb-2">Percakapan Aktif</p>
                         {tickets.length > 0 ? (
                           <div className="space-y-1">
-                            {tickets.map((t, i) => (
+                            {tickets.slice(0, 5).map((t, i) => (
                               <motion.button
                                 key={t.id}
                                 initial={{ opacity: 0, x: -5 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.03 }}
-                                whileHover={{ x: 2 }}
+                                transition={{ delay: i * 0.04 }}
                                 whileTap={{ scale: 0.99 }}
                                 onClick={() => openTicket(t)}
-                                className="w-full flex items-center justify-between p-3 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-300 text-left group"
+                                className="w-full flex items-center justify-between p-2.5 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-200 text-left group"
                               >
                                 <div className="min-w-0 flex-1">
                                   <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
-                                  <p className="text-[6px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">#{t.id.split('-')[0]} • {t.status}</p>
+                                  <p className="text-[6px] font-medium text-ink/30 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
                                 </div>
-                                <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-300 ml-3 flex-shrink-0" />
+                                <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
                               </motion.button>
                             ))}
                           </div>
                         ) : (
-                          <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 opacity-20">
-                            <MessageSquare size={24} strokeWidth={1} />
-                            <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">Inbox Empty</p>
+                          <div className="py-8 flex flex-col items-center justify-center text-center space-y-2 opacity-25">
+                            <MessageSquare size={18} strokeWidth={1} />
+                            <p className="text-[7px] italic text-ink/40 uppercase tracking-widest">Belum ada percakapan</p>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* PROMINENT BOTTOM INPUT - FIXED FOR CLICK */}
-                    <div className="relative z-10 p-3 bg-white border-t border-ink/5">
-                      <div className="flex items-end gap-1.5">
-                        <textarea
-                          ref={textareaRef}
-                          rows={1}
-                          value={message}
-                          onChange={(e) => {
-                            if (e.target.value.length <= 500) {
-                              setMessage(e.target.value);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              startGeneralChat();
-                            }
-                          }}
-                          placeholder="Direct inquiry..."
-                          autoComplete="off"
-                          className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px] focus:shadow-md"
-                        />
+                    {/* BOTTOM INPUT — always visible for quick type-in */}
+                    <div className="relative z-10 p-3 bg-white border-t border-ink/5 shrink-0">
+                      <textarea
+                        ref={textareaRef}
+                        rows={1}
+                        value={message}
+                        onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
+                        placeholder="Ketik pertanyaan Anda..."
+                        className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
+                      />
+                      <div className="flex items-end gap-1 mt-1.5">
+                        <p className="flex-1 text-[5px] text-ink/15 uppercase tracking-widest font-medium">
+                          {user ? 'Studio Direct' : 'Guest Mode — chat aktif'}
+                        </p>
                         <button
                           onClick={startGeneralChat}
-                          className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90"
-                          aria-label="Send message"
+                          className="flex items-center gap-1 text-[6px] uppercase tracking-widest text-ink/20 hover:text-rose transition-colors font-semibold"
                         >
-                          <Send size={13} strokeWidth={2} />
+                          Kirim <Send size={10} />
                         </button>
-                      </div>
-                      <div className="flex justify-between items-center px-0.5">
-                        <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15">
-                          {user ? "Studio Direct Channel" : "Guest Mode — Chat Active"}
-                        </p>
-                        <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
+                        <span className={cn('text-[5px]', message.length > 450 ? 'text-rose font-semibold' : 'text-ink/15')}>
                           {message.length}/500
-                        </p>
+                        </span>
                       </div>
                     </div>
                   </motion.div>
                 )}
 
-                {activeTab === 'new_ticket' && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="p-4 space-y-3 flex-1 overflow-y-auto no-scrollbar"
-                  >
-                    <motion.button
-                      whileHover={{ x: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setActiveTab('home')}
-                      className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1"
-                    >
-                      <ArrowLeft size={8} /> Back
-                    </motion.button>
-                    <div className="space-y-2.5">
-                      <div className="space-y-1">
-                        <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Subject</label>
-                        <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="..." className="w-full bg-ink/5 border-none rounded-lg py-1.5 px-2.5 text-[9px] font-medium outline-none placeholder:text-ink/15" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Order ID</label>
-                        <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="NINOC-..." className="w-full bg-ink/5 border-none rounded-lg py-1.5 px-2.5 text-[9px] font-medium outline-none placeholder:text-ink/15" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[6px] font-medium uppercase tracking-widest text-ink/35 ml-0.5">Category</label>
-                        <div className="grid grid-cols-2 gap-1">
-                          {[{ v: 'product', l: 'Product' }, { v: 'shipping', l: 'Shipping' }, { v: 'payment', l: 'Payment' }, { v: 'other', l: 'Other' }].map(cat => (
-                            <motion.button
-                              key={cat.v}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => setCategory(cat.v)}
-                              className={`py-1.5 rounded-lg text-[7px] font-medium uppercase tracking-widest border transition-all duration-150 ${category === cat.v ? 'border-rose text-rose bg-rose/5' : 'border-ink/5 text-ink/25'}`}
-                            >
-                              {cat.l}
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={startNewTicket}
-                        className="w-full bg-ink text-white py-2.5 rounded-xl text-[8px] font-medium uppercase tracking-[0.2em] mt-1 hover:bg-rose transition-colors duration-200"
-                      >
-                        Open Ticket
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                )}
+
+
 
                 {activeTab === 'chat' && (
                   <motion.div
