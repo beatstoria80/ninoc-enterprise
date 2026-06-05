@@ -3,8 +3,6 @@
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import GlobalFooter from '@/components/Footer';
 
 function cn(...inputs: ClassValue[]) {
@@ -21,38 +19,21 @@ export default function About() {
         isIPhone && "pt-[env(safe-area-inset-top)]"
       )}
     >
-      {/* TOP BAR — static, shrink */}
-      <div className="shrink-0 bg-white border-b border-ink/5 z-50">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between h-11">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-ink/40 hover:text-ink transition-colors group cursor-pointer"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
-              <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
-          </Link>
-          <span className="text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium hidden md:block">About</span>
-        </div>
-      </div>
-
-      {/* MAIN CONTENT — flex fill, scrollable */}
+      {/* MAIN CONTENT — starts below GlobalHeader */}
       <main className="flex-1 min-h-0 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-full flex flex-col">
 
-          {/* Title Block */}
-          <div className="shrink-0 pt-6 md:pt-8 pb-2">
-            <div className="flex items-baseline gap-3">
-              <h1 className="font-display font-medium italic text-xl md:text-2xl tracking-tighter uppercase text-ink">About Us</h1>
-            </div>
-            <p className="text-[9px] md:text-[10px] font-medium text-ink/50 uppercase tracking-wider mt-1">NINOC ENTERPRISE — Born in Bandung. Made for the world.</p>
+          {/* Title Block — below GlobalHeader */}
+          <div className="shrink-0 pt-8 md:pt-10 pb-2">
+            <p className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-rose mb-1">NINOC ENTERPRISE</p>
+            <h1 className="font-display font-medium italic text-2xl md:text-4xl tracking-tighter uppercase text-ink leading-[0.85]">About Us</h1>
+            <p className="text-[9px] md:text-[10px] font-medium text-ink/50 uppercase tracking-wider mt-1">Born in Bandung. Made for the world.</p>
           </div>
 
-          {/* Content Grid — fills remaining space */}
+          {/* Content Grid */}
           <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 overflow-hidden border-t border-ink/5 pt-3">
 
-            {/* Left: Story & Philosophy */}
+            {/* Left: Story & Philosophy — scrollable */}
             <div className="overflow-y-auto no-scrollbar space-y-4 md:space-y-5 pr-1">
               <div className="space-y-1.5">
                 <h3 className="text-base md:text-xl font-display font-medium italic uppercase tracking-tight text-ink">Our Story</h3>
@@ -109,7 +90,7 @@ export default function About() {
         </div>
       </main>
 
-      {/* FOOTER — always visible at bottom */}
+      {/* FOOTER */}
       <div className="shrink-0">
         <GlobalFooter />
       </div>
