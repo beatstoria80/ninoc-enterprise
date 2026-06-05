@@ -175,7 +175,9 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'salah', 'kacau', 'belum', 'belum ada', 'lama', 'lambat', 'nunggu', 'ditipu',
     'palsu', 'tidak sesuai', 'beda', 'salah kirim', 'salah warna', 'salah ukuran',
     'tidak dapat', 'tidak sampai', 'tidak ada', 'belum terima', 'belum dapet',
-    'masalah', 'problem', 'issue', 'belum sampai', 'overdue', 'hilang', 'rusak parah'
+    'masalah', 'problem', 'issue', 'belum sampai', 'overdue', 'hilang', 'rusak parah',
+    'komplain', 'complain', 'compalin', 'komplain', 'komplen', 'komplai', 'complaint',
+    'kesal', 'marah', 'emosi', 'prot', 'protest', 'kesal', 'ngadu', 'aduan'
   ],
   // General Inquiry
   general: [
