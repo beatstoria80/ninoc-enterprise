@@ -298,7 +298,7 @@ export default function HelpPage() {
         <div className="max-w-[1400px] mx-auto px-6 sm:px-10 h-full flex flex-col">
 
           {/* Title Block */}
-          <div className="shrink-0 pt-12 pb-2">
+          <div className="shrink-0 pt-[120px] pb-2">
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-xl tracking-tighter uppercase text-ink">Help Guide</h1>
             </div>
