@@ -126,10 +126,13 @@ function SimplePieChart({ data }: { data: { category: string; count: number; per
     color: COLORS[i % COLORS.length],
   }));
 
-  const positioned = slices.reduce<typeof slices & { offset: number }[]>((acc, s) => {
-    const offset = acc.length > 0 ? acc[acc.length - 1].offset + acc[acc.length - 1].dash + acc[acc.length - 1].gap : 0;
-    return [...acc, { ...s, offset }];
-  }, []);
+  type SliceWithOffset = { dash: number; gap: number; color: string; offset: number };
+  const positioned: SliceWithOffset[] = slices.reduce<SliceWithOffset[]>(
+    (acc, s) => {
+      const offset = acc.length > 0 ? acc[acc.length - 1].offset + acc[acc.length - 1].dash + acc[acc.length - 1].gap : 0;
+      return [...acc, { dash: s.dash, gap: s.gap, color: s.color, offset }];
+    }, []
+  );
 
     return (
     <div className="flex items-center gap-4">
