@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ArrowLeft, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown, Check, User, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
@@ -28,6 +29,8 @@ export default function OnboardingPage() {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [regencies, setRegencies] = useState<Regency[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
+  const [activeStep, setActiveStep] = useState<1 | 2>(1);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const [f, setF] = useState({
     fn: '', ln: '', phone: '', prov: '', provName: '', city: '', cityName: '', dist: '', distName: '', vill: '', rt: '', rw: '', postal: ''
@@ -79,12 +82,16 @@ export default function OnboardingPage() {
     });
   };
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateStep1 = () => {
     const errs: string[] = [];
     if (!f.fn.trim()) errs.push('Nama depan');
     if (!f.ln.trim()) errs.push('Nama belakang');
     if (!f.phone.trim()) errs.push('Telepon');
+    return errs;
+  };
+
+  const validateStep2 = () => {
+    const errs: string[] = [];
     if (!f.prov) errs.push('Provinsi');
     if (!f.city) errs.push('Kota');
     if (!f.dist) errs.push('Kecamatan');
@@ -92,6 +99,19 @@ export default function OnboardingPage() {
     if (!f.rt.trim()) errs.push('RT');
     if (!f.rw.trim()) errs.push('RW');
     if (!f.postal.trim()) errs.push('Kode Pos');
+    return errs;
+  };
+
+  const goToStep2 = () => {
+    const errs = validateStep1();
+    if (errs.length > 0) { setErrors(errs); setShowError(true); return; }
+    setCompletedSteps(prev => [...new Set([...prev, 1])]);
+    setActiveStep(2);
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs = validateStep2();
     if (errs.length > 0) { setErrors(errs); setShowError(true); return; }
     setIsSaving(true);
     const addr = `${f.vill}, RT ${f.rt}/RW ${f.rw}, Kec. ${f.distName}, ${f.cityName}, ${f.provName}`;
@@ -106,164 +126,345 @@ export default function OnboardingPage() {
     });
   };
 
-  if (isLoading) return <main className="min-h-screen bg-white flex items-center justify-center"><div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" /></main>;
+  if (isLoading) return (
+    <main className="min-h-screen bg-cr flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" />
+    </main>
+  );
 
-  const ip = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-3 text-[10px] font-medium tracking-widest uppercase text-ink outline-none placeholder:text-ink/30";
-  const sl = "w-full bg-ink/[0.03] border border-ink/10 focus:border-rose rounded-none py-3 px-3 text-[10px] font-medium tracking-widest uppercase text-ink outline-none appearance-none cursor-pointer";
-  const lb = "text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-1.5 block";
-  const bd = "bg-white border-b border-ink/5 px-5 py-3 flex items-center justify-between";
-  const cd = "px-5 py-4 space-y-3";
-  const gr = "grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10";
-  const cr = "text-[8px] font-medium text-rose bg-rose/10 px-2 py-1 rounded-none";
+  const inputStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm font-medium text-ink outline-none placeholder:text-ink/20 transition-colors";
+  const selectStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm font-medium text-ink outline-none appearance-none cursor-pointer transition-colors";
+
+  const steps = [
+    { id: 1, label: 'Identitas Diri', icon: User },
+    { id: 2, label: 'Alamat Lengkap', icon: MapPin },
+  ];
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col",
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col items-center justify-start pt-8 md:pt-16 px-4 pb-8",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
-      {/* Header - Desktop only */}
-      {!isMobile && (
-      <header className={bd}>
+      {/* Header */}
+      <div className="w-full max-w-md flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-rose/10 rounded-none flex items-center justify-center"><Package size={18} className="text-rose" /></div>
-          <span className="text-[10px] font-medium text-ink">Lengkapi Data Diri</span>
+          <div className="w-10 h-10 bg-rose/10 rounded-lg flex items-center justify-center">
+            <Package size={18} className="text-rose" />
+          </div>
+          <div>
+            <p className="text-xs font-medium text-ink uppercase tracking-wider">Lengkapi Data</p>
+            <p className="text-[10px] text-ink/30 uppercase tracking-widest">Step {activeStep} of 2</p>
+          </div>
         </div>
-        <button onClick={logout} className="text-[10px] text-ink/30 hover:text-rose flex items-center gap-2"><LogOut size={14} />Batal</button>
-      </header>
-      )}
-
-      {/* Mobile Header - Show title and back button */}
-      {isMobile && (
-        <div className={cn(
-          "flex items-center justify-between px-4 py-3 bg-white border-b border-ink/5",
-          isIPhone && "pt-10"
-        )}>
-          <button onClick={logout} className="text-ink/40 hover:text-rose flex items-center gap-2">
-            <ArrowLeft size={16} />
-          </button>
-          <span className="text-[10px] font-medium text-ink">Lengkapi Data</span>
-          <div className="w-8" />
-        </div>
-      )}
-
-      {/* Email badge */}
-      <div className={bd + " bg-emerald-50"}>
-        <CheckCircle size={16} className="text-emerald-500" />
-        <span className="text-[10px] font-medium text-emerald-700">{userEmail}</span>
+        <button onClick={logout} className="text-[10px] text-ink/30 hover:text-rose uppercase tracking-wider flex items-center gap-2">
+          <LogOut size={14} />Batal
+        </button>
       </div>
 
-      {/* Form */}
-      <form onSubmit={submit} className="flex-1 overflow-y-auto pb-20">
-        <div className="max-w-xl mx-auto px-5 py-3 space-y-2">
-          {/* 01 Identitas */}
-          <div className={cd}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={cr}>01</span><span className="text-[10px] font-medium uppercase tracking-widest text-rose">Identitas Diri</span>
-            </div>
-            <div className={gr}>
-              <div className="bg-white"><label className={lb}>Nama Depan</label><input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="JOHN" /></div>
-              <div className="bg-white"><label className={lb}>Nama Belakang</label><input value={f.ln} onChange={e => set('ln', e.target.value)} className={ip} placeholder="DOE" /></div>
-            </div>
-            <div className="bg-ink/10 border border-ink/10 p-[1px]"><div className="bg-white"><label className={lb}>Nomor Telepon</label><input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={ip} placeholder="081234567890" /></div></div>
-          </div>
-
-          {/* 02 Alamat */}
-          <div className={cd}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={cr}>02</span><span className="text-[10px] font-medium uppercase text-rose">Alamat Lengkap</span>
-            </div>
-            <div className="bg-ink/10 border border-ink/10 p-[1px] space-y-[1px]">
-              {/* Provinsi */}
-              <div className="relative bg-white">
-                <select value={f.prov} onChange={e => set('prov', e.target.value)} className={sl}>
-                  <option value="">PILIH PROVINSI</option>
-                  {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
-              </div>
-              {/* Kota */}
-              <div className="relative bg-white">
-                <select value={f.city} onChange={e => set('city', e.target.value)} disabled={!f.prov} className={sl}>
-                  <option value="">PILIH KOTA/KABUPATEN</option>
-                  {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
-              </div>
-              {/* Kecamatan */}
-              <div className="relative bg-white">
-                <select value={f.dist} onChange={e => set('dist', e.target.value)} disabled={!f.city} className={sl}>
-                  <option value="">PILIH KECAMATAN</option>
-                  {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
-              </div>
-            </div>
-            {/* Fields */}
-            <div className="grid grid-cols-2 gap-[1px] bg-ink/10 border border-ink/10 mt-[1px]">
-              <div className="bg-white"><label className={lb}>Kel/Desa</label><input value={f.vill} onChange={e => set('vill', e.target.value)} className={ip} placeholder="SUKAJADI" /></div>
-              <div className="bg-white"><label className={lb}>RT</label><input value={f.rt} onChange={e => set('rt', e.target.value)} className={ip} placeholder="001" /></div>
-              <div className="bg-white"><label className={lb}>RW</label><input value={f.rw} onChange={e => set('rw', e.target.value)} className={ip} placeholder="005" /></div>
-              <div className="bg-white"><label className={lb}>Kode Pos</label><input value={f.postal} onChange={e => set('postal', e.target.value)} className={ip} placeholder="40111" /></div>
-            </div>
-          </div>
-
-          {/* Submit */}
-          {!isMobile ? (
-          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-none text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
-            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={14} /></>}
-          </button>
-          ) : null}
+      {/* Card Container */}
+      <div className="w-full max-w-md">
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center gap-3 mb-6">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            const isActive = activeStep === step.id;
+            const isCompleted = completedSteps.includes(step.id);
+            return (
+              <React.Fragment key={step.id}>
+                <motion.div
+                  initial={false}
+                  animate={{
+                    backgroundColor: isActive || isCompleted ? '#e11c28' : 'white',
+                    borderColor: isActive || isCompleted ? '#e11c28' : '#e5e7eb',
+                    color: isActive || isCompleted ? 'white' : '#9ca3af'
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className="w-9 h-9 rounded-lg border-2 flex items-center justify-center"
+                >
+                  {isCompleted ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} strokeWidth={1.5} />}
+                </motion.div>
+                <span className={cn(
+                  "text-[10px] font-medium uppercase tracking-wider",
+                  isActive || isCompleted ? "text-rose" : "text-ink/30"
+                )}>
+                  {step.label}
+                </span>
+                {i < steps.length - 1 && (
+                  <div className={cn(
+                    "flex-1 h-px max-w-[40px]",
+                    isCompleted ? "bg-rose" : "bg-ink/10"
+                  )} />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
-      </form>
 
-      {/* MOBILE STICKY SUBMIT BUTTON */}
-      {isMobile && (
-        <div className={cn(
-          "fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-ink/10 p-4",
-          isIPhone && "pb-[env(safe-area-inset-bottom)]"
-        )}>
-          <button type="submit" disabled={isSaving} className="w-full bg-ink text-white py-4 rounded-none text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50">
-            {isSaving ? 'Menyimpan...' : <><span>Simpan & Lanjutkan</span><ArrowRight size={14} /></>}
-          </button>
-        </div>
-      )}
+        {/* Email Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 mb-4"
+        >
+          <CheckCircle size={16} className="text-emerald-500 shrink-0" />
+          <span className="text-xs font-medium text-emerald-700 truncate">{userEmail}</span>
+        </motion.div>
 
-      {/* Trust Security Bar - PLACED BELOW FORM */}
-      <div className="flex justify-center gap-12 pb-6 pt-3">
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-            <Shield size={14} strokeWidth={1.5} className="text-rose/60" />
+        {/* Form Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden"
+        >
+          <AnimatePresence mode="wait">
+            {/* STEP 1: Identitas */}
+            {activeStep === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="p-5 space-y-4"
+              >
+                <div className="flex items-center gap-2 pb-3 border-b border-ink/5">
+                  <span className="text-[9px] font-bold text-rose bg-rose/10 px-2 py-1 rounded-md uppercase tracking-widest">01</span>
+                  <span className="text-xs font-semibold uppercase tracking-widest text-ink">Identitas Diri</span>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nama Depan</label>
+                      <input
+                        value={f.fn}
+                        onChange={e => set('fn', e.target.value)}
+                        className={inputStyle}
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nama Belakang</label>
+                      <input
+                        value={f.ln}
+                        onChange={e => set('ln', e.target.value)}
+                        className={inputStyle}
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nomor Telepon</label>
+                    <input
+                      type="tel"
+                      value={f.phone}
+                      onChange={e => set('phone', e.target.value)}
+                      className={inputStyle}
+                      placeholder="081234567890"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={goToStep2}
+                  className="w-full bg-ink text-white py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors"
+                >
+                  <span>Lanjut ke Alamat</span>
+                  <ArrowRight size={14} />
+                </button>
+              </motion.div>
+            )}
+
+            {/* STEP 2: Alamat */}
+            {activeStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="p-5 space-y-4"
+              >
+                <div className="flex items-center gap-2 pb-3 border-b border-ink/5">
+                  <span className="text-[9px] font-bold text-rose bg-rose/10 px-2 py-1 rounded-md uppercase tracking-widest">02</span>
+                  <span className="text-xs font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Dropdowns */}
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <select
+                        value={f.prov}
+                        onChange={e => set('prov', e.target.value)}
+                        className={selectStyle}
+                      >
+                        <option value="">Pilih Provinsi</option>
+                        {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={f.city}
+                        onChange={e => set('city', e.target.value)}
+                        disabled={!f.prov}
+                        className={cn(selectStyle, !f.prov && "opacity-50 cursor-not-allowed")}
+                      >
+                        <option value="">Pilih Kota/Kabupaten</option>
+                        {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={f.dist}
+                        onChange={e => set('dist', e.target.value)}
+                        disabled={!f.city}
+                        className={cn(selectStyle, !f.city && "opacity-50 cursor-not-allowed")}
+                      >
+                        <option value="">Pilih Kecamatan</option>
+                        {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Text Fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kel/Desa</label>
+                      <input
+                        value={f.vill}
+                        onChange={e => set('vill', e.target.value)}
+                        className={inputStyle}
+                        placeholder="Sukajadi"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kode Pos</label>
+                      <input
+                        value={f.postal}
+                        onChange={e => set('postal', e.target.value)}
+                        className={inputStyle}
+                        placeholder="40111"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">RT</label>
+                      <input
+                        value={f.rt}
+                        onChange={e => set('rt', e.target.value)}
+                        className={inputStyle}
+                        placeholder="001"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">RW</label>
+                      <input
+                        value={f.rw}
+                        onChange={e => set('rw', e.target.value)}
+                        className={inputStyle}
+                        placeholder="005"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStep(1)}
+                    className="flex-1 bg-ink/5 text-ink py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
+                  >
+                    <span>Kembali</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="flex-1 bg-ink text-white py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors"
+                  >
+                    {isSaving ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <><span>Simpan</span><ArrowRight size={14} /></>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Trust Badges */}
+        <div className="flex justify-center gap-8 mt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Shield size={12} strokeWidth={1.5} className="text-rose/60" />
+            </div>
+            <div>
+              <span className="text-[9px] font-medium uppercase tracking-wider text-ink">Aman</span>
+              <span className="text-[8px] text-ink/20 block">Proteksi Data</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Aman</span>
-            <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Proteksi Data</span>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-            <Lock size={14} strokeWidth={1.5} className="text-rose/60" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Enkripsi</span>
-            <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">SSL Terjamin</span>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Lock size={12} strokeWidth={1.5} className="text-rose/60" />
+            </div>
+            <div>
+              <span className="text-[9px] font-medium uppercase tracking-wider text-ink">Enkripsi</span>
+              <span className="text-[8px] text-ink/20 block">SSL Terjamin</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Error Modal */}
-      {showError && (
-        <div className="fixed inset-0 bg-ink/60 z-50 flex items-center justify-center" onClick={() => setShowError(false)}>
-          <div className="bg-white rounded-xl p-6 mx-4 max-w-sm w-full shadow-2xl">
-            <button onClick={() => setShowError(false)} className="absolute top-4 right-4 text-ink/30"><X size={20} /></button>
-            <div className="w-14 h-14 bg-rose/10 rounded-full flex items-center justify-center mx-auto mb-4"><AlertTriangle size={24} className="text-rose" /></div>
-            <h3 className="text-base font-medium text-center mb-3">Data Belum Lengkap</h3>
-            <ul className="space-y-2 mb-5">
-              {errors.map(e => <li key={e} className="text-sm text-ink/50">• {e}</li>)}
-            </ul>
-            <button onClick={() => setShowError(false)} className="w-full py-3 bg-ink text-white rounded-lg text-sm font-medium">Mengerti</button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showError && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-ink/60 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowError(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-14 h-14 bg-rose/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle size={24} className="text-rose" />
+              </div>
+              <h3 className="text-base font-semibold text-center mb-2 text-ink">Data Belum Lengkap</h3>
+              <p className="text-xs text-ink/50 text-center mb-5">Pastikan semua field terisi dengan benar</p>
+              <ul className="space-y-1.5 mb-5">
+                {errors.map(e => (
+                  <li key={e} className="text-xs text-ink/60 flex items-center gap-2">
+                    <div className="w-1 h-1 bg-rose rounded-full shrink-0" />
+                    {e}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => setShowError(false)}
+                className="w-full py-3 bg-ink text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-rose transition-colors"
+              >
+                Mengerti
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
