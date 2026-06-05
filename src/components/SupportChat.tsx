@@ -295,16 +295,21 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
   ],
 };
 
-// ─── Fuzzy matching helper ──────────────────────────────────────────────────
-// Check if keyword matches message (exact or within 2 char difference = typo)
+// ─── Word-boundary keyword match ──────────────────────────────────────────────
+// Matches keyword as a whole word (with word boundaries), not as substring.
+// This prevents 're' from matching 'return', 'ka' from matching 'kapok', etc.
 function keywordMatch(message: string, keyword: string): boolean {
-  if (message.includes(keyword)) return true;
-  // Fuzzy: allow 1-2 character typo for words >= 4 chars
-  if (keyword.length >= 4) {
-    const diff = Math.abs(message.length - keyword.length);
-    if (diff <= 2 && (message.includes(keyword.slice(0, -1)) || message.includes(keyword + ' '))) return true;
+  if (message.includes(keyword)) {
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(?:^|\\s|\\b|[,!?.:;'"-])(${escaped})(?:$|\\s|\\b|[,!?.:;'"-])`, 'i');
+    return regex.test(message);
   }
   return false;
+}
+
+// ─── Substring keyword match (for category keywords — no boundary needed) ─────
+function hasKeyword(message: string, keyword: string): boolean {
+  return message.includes(keyword);
 }
 
 // ─── Classification Result ──────────────────────────────────────────────────
@@ -384,7 +389,7 @@ function classifyMessage(
 
   // 1. Check NSFW first — HIGHEST PRIORITY, REJECT silently + flag
   for (const keyword of AUTO_REPLY_RULES.nsfw) {
-    if (lower.includes(keyword)) {
+    if (keywordMatch(lower, keyword)) {
       return {
         type: 'nsfw_reject',
         message: '⚠️ Kami tidak dapat memproses pesan ini karena mengandung konten yang tidak pantas. Silakan kirim ulang dengan bahasa yang sopan.'
@@ -392,9 +397,9 @@ function classifyMessage(
     }
   }
 
-  // 2. Check SARA — WARNING + flag to admin
+  // 2. Check SARA — WARNING + flag to admin (word-boundary to avoid false positives)
   for (const keyword of AUTO_REPLY_RULES.sara) {
-    if (lower.includes(keyword)) {
+    if (keywordMatch(lower, keyword)) {
       return {
         type: 'sara_warn',
         template: {
@@ -409,7 +414,7 @@ function classifyMessage(
 
   // 3. Check English — bilingual friendly response
   for (const keyword of AUTO_REPLY_RULES.english) {
-    if (lower.includes(keyword)) {
+    if (hasKeyword(lower, keyword)) {
       const fb = FALLBACK_CONTENT['english'];
       return {
         type: 'english_bilingual',
@@ -418,22 +423,33 @@ function classifyMessage(
     }
   }
 
-  // 4. Category matching — priority order with fuzzy match
+  // 4. Category matching — priority order (substring match for categories)
   const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
   let matchedCategory = '';
-  let matchScore = 0;
 
   for (const cat of categoryPriority) {
     const keywords = AUTO_REPLY_RULES[cat] || [];
     for (const keyword of keywords) {
-      if (keywordMatch(lower, keyword)) {
-        matchScore++;
-        if (!matchedCategory) matchedCategory = cat;
-        // Prefer category with most keyword matches
-        if (cat === matchedCategory) {
+      // Exact substring match
+      if (hasKeyword(lower, keyword)) {
+        matchedCategory = cat;
+        break;
+      }
+    }
+    if (matchedCategory) break;
+  }
+
+  // Fallback: try partial/fuzzy match (e.g. "refun" matches "refund")
+  if (!matchedCategory) {
+    for (const cat of categoryPriority) {
+      const keywords = AUTO_REPLY_RULES[cat] || [];
+      for (const keyword of keywords) {
+        if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) {
           matchedCategory = cat;
+          break;
         }
       }
+      if (matchedCategory) break;
     }
   }
 
@@ -450,32 +466,12 @@ function classifyMessage(
     }
   }
 
-  // 5. Fuzzy scan — partial word match for typos
-  for (const cat of categoryPriority) {
-    const keywords = AUTO_REPLY_RULES[cat] || [];
-    for (const keyword of keywords) {
-      if (keyword.length >= 3 && lower.includes(keyword.slice(0, -1))) {
-        const tpl = placeholders.find(p => p.category === cat);
-        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
-        const fb = FALLBACK_CONTENT[cat];
-        if (fb) {
-          return {
-            type: 'auto_reply',
-            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
-            category: cat
-          };
-        }
-      }
-    }
-  }
-
-  // 6. Unclear message — clarify with suggestions
+  // 5. Unclear message — clarify with suggestions
   const allKeywords = categoryPriority.flatMap(cat => AUTO_REPLY_RULES[cat] || []);
   const words = lower.split(/\s+/).filter(w => w.length >= 3);
   const hasTopic = words.some(w => allKeywords.some(k => k.includes(w) || w.includes(k)));
 
   if (!hasTopic) {
-    // Pick the closest matching category based on partial words
     const suggestions = CLARIFY_SUGGESTIONS[matchedCategory] || [
       'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
     ];
@@ -486,7 +482,7 @@ function classifyMessage(
     };
   }
 
-  // 7. Default — always respond (never silent)
+  // 6. Default — always respond (never silent)
   const fb = FALLBACK_CONTENT['greeting'];
   return {
     type: 'auto_reply',
