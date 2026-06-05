@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 interface OrderItem {
   id: string;
@@ -351,12 +352,7 @@ export default function TrackPage() {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-ink/5 px-6 py-4 mt-12">
-        <p className="text-[8px] text-ink/20 uppercase tracking-widest text-center">
-          Pesanan salah? Hubungi customer service via WhatsApp untuk bantuan
-        </p>
-      </div>
+      <Footer />
     </main>
   );
 }
