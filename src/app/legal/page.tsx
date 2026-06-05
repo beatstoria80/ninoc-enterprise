@@ -58,7 +58,7 @@ export default function LegalPage() {
   const t = content[lang];
 
   return (
-    <main className="min-h-screen bg-cr noise flex flex-col">
+    <main className="h-screen bg-cr noise overflow-hidden flex flex-col">
       {/* COMPACT NAV */}
       <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-4 flex items-center justify-between glass border-b border-ink/5">
         <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
@@ -81,7 +81,7 @@ export default function LegalPage() {
       </nav>
 
       {/* 2-GRID UNIFIED ARCHIVE */}
-      <div className="flex-1 pt-24 md:pt-32 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full">
+      <div className="flex-1 min-h-0 pt-16 md:pt-20 pb-4 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full">
         
         {/* Minimal Header */}
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
@@ -96,25 +96,25 @@ export default function LegalPage() {
         </div>
 
         {/* OPEN ARCHIVE LAYOUT - NO CARDS */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8">
+        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 pt-4">
           
           {/* Sector A: TERMS & CONDITIONS */}
-          <div className="space-y-8">
-             <div className="flex items-center justify-between border-b border-ink/10 pb-2">
+          <div className="space-y-4">
+             <div className="flex items-center justify-between border-b border-ink/10 pb-1">
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.terms.title}</h2>
                 </div>
                 <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 01</span>
              </div>
              
-             <div className="space-y-6">
+             <div className="space-y-3">
                 {t.terms.sections.map((s) => (
-                  <div key={s.id} className="space-y-2">
+                  <div key={s.id} className="space-y-1">
                      <div className="flex items-center gap-4">
                         <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
                         <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[11px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8 max-w-md">
+                     <p className="text-[10px] font-medium leading-tight text-ink/60 uppercase tracking-wide pl-8 max-w-md">
                         {s.text}
                      </p>
                   </div>
@@ -123,34 +123,34 @@ export default function LegalPage() {
           </div>
 
           {/* Sector B: PRIVACY POLICY */}
-          <div className="space-y-8">
-             <div className="flex items-center justify-between border-b border-ink/10 pb-2">
+          <div className="space-y-4">
+             <div className="flex items-center justify-between border-b border-ink/10 pb-1">
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.privacy.title}</h2>
                 </div>
                 <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 02</span>
              </div>
 
-             <div className="space-y-6">
+             <div className="space-y-3">
                 {t.privacy.sections.map((s) => (
-                  <div key={s.id} className="space-y-2">
+                  <div key={s.id} className="space-y-1">
                      <div className="flex items-center gap-4">
                         <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
                         <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[11px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8 max-w-md">
+                     <p className="text-[10px] font-medium leading-tight text-ink/60 uppercase tracking-wide pl-8 max-w-md">
                         {s.text}
                      </p>
                   </div>
                 ))}
              </div>
 
-             <div className="pt-12 border-t border-ink/5 space-y-4">
+             <div className="pt-4 border-t border-ink/5 space-y-2">
                 <div className="flex items-center gap-3">
                    <Shield size={10} className="text-rose/40" />
                    <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol</span>
                 </div>
-                <p className="text-[9px] text-ink/20 uppercase tracking-[0.1em] leading-relaxed max-w-xs">
+                <p className="text-[8px] text-ink/20 uppercase tracking-[0.1em] leading-tight max-w-xs">
                    THIS DOCUMENT IS LEGALLY BINDING. ALL MODIFICATIONS ARE LOGGED IN THE ORIGIN SPECIFICATION.
                 </p>
              </div>
