@@ -553,11 +553,11 @@ export default function SupportChat() {
   }, [chatMessages]);
 
   const startNewTicket = async () => {
-    if (!subject || !category || !user) return;
+    if (!subject || !category) return;
     const { data } = await supabase
       .from('support_tickets')
       .insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         subject,
         order_id: orderId || null,
         category,
