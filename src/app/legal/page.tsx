@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowLeft, Scale, Globe, Shield } from 'lucide-react';
+import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
+import GlobalFooter from '@/components/Footer';
 
 export default function LegalPage() {
   const [lang, setLang] = useState<'ID' | 'EN'>('ID');
@@ -57,7 +58,7 @@ export default function LegalPage() {
   const t = content[lang];
 
   return (
-    <main className="h-screen bg-cr noise overflow-hidden flex flex-col">
+    <main className="min-h-screen bg-cr noise flex flex-col">
       {/* COMPACT NAV */}
       <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-4 flex items-center justify-between glass border-b border-ink/5">
         <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
@@ -80,7 +81,7 @@ export default function LegalPage() {
       </nav>
 
       {/* 2-GRID UNIFIED ARCHIVE */}
-      <div className="flex-1 pt-14 md:pt-20 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full overflow-hidden">
+      <div className="flex-1 pt-24 md:pt-32 pb-12 px-6 md:px-12 flex flex-col max-w-[1800px] mx-auto w-full">
         
         {/* Minimal Header */}
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
@@ -95,10 +96,10 @@ export default function LegalPage() {
         </div>
 
         {/* OPEN ARCHIVE LAYOUT - NO CARDS */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 overflow-y-auto no-scrollbar pt-12">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8">
           
           {/* Sector A: TERMS & CONDITIONS */}
-          <div className="space-y-12">
+          <div className="space-y-8">
              <div className="flex items-center justify-between border-b border-ink/10 pb-2">
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.terms.title}</h2>
@@ -106,7 +107,7 @@ export default function LegalPage() {
                 <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 01</span>
              </div>
              
-             <div className="space-y-10">
+             <div className="space-y-6">
                 {t.terms.sections.map((s) => (
                   <div key={s.id} className="space-y-2">
                      <div className="flex items-center gap-4">
@@ -122,7 +123,7 @@ export default function LegalPage() {
           </div>
 
           {/* Sector B: PRIVACY POLICY */}
-          <div className="space-y-12">
+          <div className="space-y-8">
              <div className="flex items-center justify-between border-b border-ink/10 pb-2">
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.privacy.title}</h2>
@@ -130,7 +131,7 @@ export default function LegalPage() {
                 <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 02</span>
              </div>
 
-             <div className="space-y-10">
+             <div className="space-y-6">
                 {t.privacy.sections.map((s) => (
                   <div key={s.id} className="space-y-2">
                      <div className="flex items-center gap-4">
@@ -156,22 +157,9 @@ export default function LegalPage() {
           </div>
 
         </div>
-
-        {/* Global Legal Footer */}
-        <div className="mt-12 pt-8 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-60">
-          <div className="flex gap-8">
-             <div className="flex items-center gap-2">
-                <Globe size={10} strokeWidth={1.5} />
-                <span className="text-[7px] font-medium uppercase tracking-widest">Global Protocol</span>
-             </div>
-             <div className="flex items-center gap-2">
-                <Scale size={10} strokeWidth={1.5} />
-                <span className="text-[7px] font-medium uppercase tracking-widest">Legal Integrity</span>
-             </div>
-          </div>
-          <p className="text-[7px] font-medium uppercase tracking-[0.5em] text-ink">NINOC ENTERPRISE — HIGH-DENSITY LEGAL SPECS v2.1</p>
-        </div>
       </div>
+      
+      <GlobalFooter />
     </main>
   );
 }
