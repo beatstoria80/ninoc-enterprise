@@ -660,6 +660,7 @@ function DecorationSection() {
 // SECTION: Delivery Setting
 // ─────────────────────────────────────────────────────────────────────
 function DeliverySection() {
+  const [isLoading, setIsLoading] = useState(true);
   const [couriers, setCouriers] = useState([
     { id: 'jne', name: 'JNE Express', active: false, cod: false, insurable: false },
     { id: 'jnt', name: 'J&T Express', active: false, cod: false, insurable: false },
@@ -670,7 +671,9 @@ function DeliverySection() {
   const [defaultCourier, setDefaultCourier] = useState('');
   const [autoAssign, setAutoAssign] = useState(false);
   const [sameDayActive, setSameDayActive] = useState(false);
+  const [sameDayFee, setSameDayFee] = useState('');
   const [instantActive, setInstantActive] = useState(false);
+  const [instantFee, setInstantFee] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -681,16 +684,20 @@ function DeliverySection() {
           .select('value')
           .eq('key', 'delivery_settings')
           .single();
-          
+
         if (data?.value) {
           if (data.value.couriers) setCouriers(data.value.couriers);
           if (data.value.defaultCourier) setDefaultCourier(data.value.defaultCourier);
           if (data.value.autoAssign !== undefined) setAutoAssign(data.value.autoAssign);
           if (data.value.sameDayActive !== undefined) setSameDayActive(data.value.sameDayActive);
+          if (data.value.sameDayFee !== undefined) setSameDayFee(data.value.sameDayFee ?? '');
           if (data.value.instantActive !== undefined) setInstantActive(data.value.instantActive);
+          if (data.value.instantFee !== undefined) setInstantFee(data.value.instantFee ?? '');
         }
       } catch (err) {
         console.error('Error loading delivery settings:', err);
+      } finally {
+        setIsLoading(false);
       }
     }
     load();
@@ -705,7 +712,15 @@ function DeliverySection() {
     try {
       const payload = {
         key: 'delivery_settings',
-        value: { couriers, defaultCourier, autoAssign, sameDayActive, instantActive }
+        value: {
+          couriers,
+          defaultCourier,
+          autoAssign,
+          sameDayActive,
+          sameDayFee,
+          instantActive,
+          instantFee,
+        }
       };
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
@@ -719,6 +734,16 @@ function DeliverySection() {
       setSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <SettingsSection title="Delivery Setting" subtitle="Konfigurasi kurir aktif dan metode pengiriman">
+        <div className="flex items-center justify-center py-16">
+          <div className="w-5 h-5 border-2 border-ink/20 border-t-rose rounded-full animate-spin" />
+        </div>
+      </SettingsSection>
+    );
+  }
 
   return (
     <SettingsSection
@@ -743,7 +768,7 @@ function DeliverySection() {
                   onClick={() => setDefaultCourier(c.id)}
                   className={cn(
                     "text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm border transition-colors",
-                    defaultCourier === c.id ? "border-rose text-rose font-medium" : "border-ink/10 text-ink/30 hover:border-ink/30"
+                    defaultCourier === c.id ? "border-rose text-rose font-medium bg-rose/5" : "border-ink/10 text-ink/30 hover:border-ink/30"
                   )}
                 >
                   Default
@@ -760,7 +785,13 @@ function DeliverySection() {
               <Toggle checked={sameDayActive} onChange={setSameDayActive} />
             </div>
             {sameDayActive && (
-              <Input type="number" placeholder="Add fee (IDR)" className="text-[10px]" />
+              <Input
+                type="number"
+                value={sameDayFee}
+                onChange={e => setSameDayFee(e.target.value)}
+                placeholder="Biaya (IDR)"
+                className="text-[10px]"
+              />
             )}
           </div>
           <div className="border border-ink/10 rounded-sm p-3.5 space-y-2">
@@ -770,7 +801,13 @@ function DeliverySection() {
               <Toggle checked={instantActive} onChange={setInstantActive} />
             </div>
             {instantActive && (
-              <Input type="number" placeholder="Add fee (IDR)" className="text-[10px]" />
+              <Input
+                type="number"
+                value={instantFee}
+                onChange={e => setInstantFee(e.target.value)}
+                placeholder="Biaya (IDR)"
+                className="text-[10px]"
+              />
             )}
           </div>
           <div className="border border-ink/10 rounded-sm p-3.5 space-y-2">
