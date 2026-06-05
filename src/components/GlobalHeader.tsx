@@ -675,6 +675,7 @@ export default function GlobalHeader() {
               </motion.div>
 
             </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

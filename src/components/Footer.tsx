@@ -25,13 +25,19 @@ export default function GlobalFooter() {
         <div className="flex flex-col gap-1.5">
           <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Navigation</h4>
           <div className="flex flex-col gap-1">
-            {['Home', 'Shop', 'Collections', 'Craft'].map((item) => (
+            {[
+              { label: 'Catalog', href: '/shop' },
+              { label: 'Collections', href: '/collections' },
+              { label: 'Category', href: '/category' },
+              { label: 'Logbook', href: '/logbook' },
+              { label: 'About', href: '/about' }
+            ].map((item) => (
               <Link
-                key={item}
-                href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                key={item.label}
+                href={item.href}
                 className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none"
               >
-                {item}
+                {item.label}
               </Link>
             ))}
           </div>
@@ -41,7 +47,7 @@ export default function GlobalFooter() {
         <div className="flex flex-col gap-1.5">
           <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Legal Info</h4>
           <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
-            Legal Specifications
+            Terms & Conditions
           </Link>
           <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
             Help Guide
