@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Package, CheckCircle, AlertTriangle, Shield, Lock, LogOut, ChevronDown, Check, User, MapPin, Search, X } from 'lucide-react';
+import { ArrowRight, Package, CheckCircle, AlertTriangle, Shield, Lock, LogOut, ChevronDown, Check, User, MapPin, Search, ChevronUp, Home, MapPinned } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
@@ -17,7 +17,7 @@ interface Province { id: string; name: string; }
 interface Regency { id: string; name: string; }
 interface District { id: string; name: string; }
 
-// ─── Custom Dropdown Component ───────────────────────────────────────────────
+// ─── Custom Dropdown ────────────────────────────────────────────────────────
 function CustomDropdown({
   value,
   options,
@@ -38,7 +38,6 @@ function CustomDropdown({
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = options.find(o => o.id === value);
-
   const filtered = searchable && search
     ? options.filter(o => o.name.toLowerCase().includes(search.toLowerCase()))
     : options;
@@ -58,7 +57,7 @@ function CustomDropdown({
         disabled={disabled}
         onClick={() => { if (!disabled) setOpen(o => !o); setSearch(''); }}
         className={cn(
-          "w-full flex items-center justify-between bg-white border rounded-lg py-3 px-4 text-sm transition-colors",
+          "w-full flex items-center justify-between bg-white border rounded-lg py-2.5 px-3.5 text-xs transition-colors",
           open ? "border-rose ring-2 ring-rose/10" : "border-ink/10 hover:border-ink/20",
           disabled && "opacity-50 cursor-not-allowed",
           !selected && "text-ink/30"
@@ -67,13 +66,7 @@ function CustomDropdown({
         <span className={cn(selected ? "text-ink font-medium" : "text-ink/30")}>
           {selected ? selected.name : placeholder}
         </span>
-        <ChevronDown
-          size={16}
-          className={cn(
-            "text-ink/20 shrink-0 transition-transform",
-            open && "rotate-180"
-          )}
-        />
+        <ChevronDown size={14} className={cn("text-ink/20 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
 
       <AnimatePresence>
@@ -88,23 +81,20 @@ function CustomDropdown({
             {searchable && (
               <div className="p-2 border-b border-ink/5">
                 <div className="relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/20" />
+                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/20" />
                   <input
                     autoFocus
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     placeholder="Ketik untuk cari..."
-                    className="w-full pl-8 pr-3 py-2 text-xs border border-ink/10 rounded-md outline-none focus:border-rose/40 placeholder:text-ink/20"
+                    className="w-full pl-7 pr-3 py-2 text-xs border border-ink/10 rounded-md outline-none focus:border-rose/40 placeholder:text-ink/20"
                   />
                 </div>
               </div>
             )}
-
-            <div className="max-h-48 overflow-y-auto minimal-scroll">
+            <div className="max-h-44 overflow-y-auto minimal-scroll">
               {filtered.length === 0 ? (
-                <div className="px-4 py-6 text-center">
-                  <p className="text-xs text-ink/30">Tidak ditemukan</p>
-                </div>
+                <div className="px-4 py-5 text-center"><p className="text-xs text-ink/30">Tidak ditemukan</p></div>
               ) : (
                 filtered.map(opt => (
                   <button
@@ -112,14 +102,12 @@ function CustomDropdown({
                     type="button"
                     onClick={() => { onChange(opt.id, opt.name); setOpen(false); setSearch(''); }}
                     className={cn(
-                      "w-full px-4 py-2.5 text-left text-sm flex items-center justify-between hover:bg-rose/5 transition-colors",
+                      "w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-rose/5 transition-colors",
                       opt.id === value && "bg-rose/5"
                     )}
                   >
-                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-ink")}>
-                      {opt.name}
-                    </span>
-                    {opt.id === value && <Check size={14} className="text-rose shrink-0" />}
+                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-ink")}>{opt.name}</span>
+                    {opt.id === value && <Check size={12} className="text-rose shrink-0" />}
                   </button>
                 ))
               )}
@@ -131,7 +119,47 @@ function CustomDropdown({
   );
 }
 
-// ─── Main Page ──────────────────────────────────────────────────────────────
+// ─── Collapsible Section ───────────────────────────────────────────────────
+function Section({ icon: Icon, label, children, defaultOpen = false }: {
+  icon: React.ElementType;
+  label: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-ink/5 rounded-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-ink/[0.02] hover:bg-ink/[0.04] transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Icon size={14} className="text-rose" strokeWidth={1.5} />
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-ink">{label}</span>
+        </div>
+       <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown size={14} className="text-ink/30" />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="p-4 space-y-3">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Main Page ─────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router = useRouter();
   const { isMobile, isIPhone } = useDevice();
@@ -148,7 +176,10 @@ export default function OnboardingPage() {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const [f, setF] = useState({
-    fn: '', ln: '', phone: '', prov: '', provName: '', city: '', cityName: '', dist: '', distName: '', vill: '', rt: '', rw: '', postal: ''
+    fn: '', ln: '', phone: '',
+    street: '', house_number: '',
+    prov: '', provName: '', city: '', cityName: '', dist: '', distName: '',
+    vill: '', rt: '', rw: '', postal: ''
   });
 
   useEffect(() => {
@@ -207,10 +238,12 @@ export default function OnboardingPage() {
 
   const validateStep2 = () => {
     const errs: string[] = [];
+    if (!f.street.trim()) errs.push('Nama jalan');
+    if (!f.house_number.trim()) errs.push('Nomor rumah');
     if (!f.prov) errs.push('Provinsi');
     if (!f.city) errs.push('Kota');
     if (!f.dist) errs.push('Kecamatan');
-    if (!f.vill.trim()) errs.push('Kelurahan');
+    if (!f.vill.trim()) errs.push('Kel/Desa');
     if (!f.rt.trim()) errs.push('RT');
     if (!f.rw.trim()) errs.push('RW');
     if (!f.postal.trim()) errs.push('Kode Pos');
@@ -229,11 +262,15 @@ export default function OnboardingPage() {
     const errs = validateStep2();
     if (errs.length > 0) { setErrors(errs); setShowError(true); return; }
     setIsSaving(true);
-    const addr = `${f.vill}, RT ${f.rt}/RW ${f.rw}, Kec. ${f.distName}, ${f.cityName}, ${f.provName}`;
+    const addr = `${f.house_number} ${f.street}, ${f.vill}, RT ${f.rt}/RW ${f.rw}, Kec. ${f.distName}, ${f.cityName}, ${f.provName}`;
     supabase.from('customer_profiles').upsert({
       user_id: userId, email: userEmail, full_name: `${f.fn} ${f.ln}`,
-      first_name: f.fn, last_name: f.ln, phone: f.phone, address: addr,
-      street: addr, city: f.cityName, province: f.provName, postal_code: f.postal,
+      first_name: f.fn, last_name: f.ln, phone: f.phone,
+      street: `${f.house_number} ${f.street}`,
+      house_number: f.house_number,
+      address: addr,
+      city: f.cityName, province: f.provName, postal_code: f.postal,
+      rt: f.rt, rw: f.rw,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' }).then(({ error }) => {
       if (error) { alert(error.message); setIsSaving(false); return; }
@@ -247,7 +284,7 @@ export default function OnboardingPage() {
     </main>
   );
 
-  const inputStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm font-medium text-ink outline-none placeholder:text-ink/20 transition-colors";
+  const inputStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-2.5 px-3.5 text-xs font-medium text-ink outline-none placeholder:text-ink/20 transition-colors";
 
   const steps = [
     { id: 1, label: 'Identitas Diri', icon: User },
@@ -256,29 +293,29 @@ export default function OnboardingPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col items-center justify-start pt-8 md:pt-16 px-4 pb-8",
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col items-center justify-start pt-8 md:pt-16 px-4 pb-6",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* Header */}
-      <div className="w-full max-w-md flex items-center justify-between mb-6">
+      <div className="w-full max-w-md flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-rose/10 rounded-lg flex items-center justify-center">
-            <Package size={18} className="text-rose" />
+          <div className="w-9 h-9 bg-rose/10 rounded-lg flex items-center justify-center">
+            <Package size={16} className="text-rose" />
           </div>
           <div>
-            <p className="text-xs font-medium text-ink uppercase tracking-wider">Lengkapi Data</p>
-            <p className="text-[10px] text-ink/30 uppercase tracking-widest">Step {activeStep} of 2</p>
+            <p className="text-[10px] font-medium text-ink uppercase tracking-wider">Lengkapi Data</p>
+            <p className="text-[9px] text-ink/30 uppercase tracking-widest">Step {activeStep} of 2</p>
           </div>
         </div>
-        <button onClick={logout} className="text-[10px] text-ink/30 hover:text-rose uppercase tracking-wider flex items-center gap-2">
-          <LogOut size={14} />Batal
+        <button onClick={logout} className="text-[9px] text-ink/30 hover:text-rose uppercase tracking-wider flex items-center gap-1.5">
+          <LogOut size={12} />Batal
         </button>
       </div>
 
       {/* Card Container */}
       <div className="w-full max-w-md">
         {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="flex items-center justify-center gap-2 mb-5">
           {steps.map((step, i) => {
             const Icon = step.icon;
             const isActive = activeStep === step.id;
@@ -293,21 +330,15 @@ export default function OnboardingPage() {
                     color: isActive || isCompleted ? 'white' : '#9ca3af'
                   }}
                   transition={{ duration: 0.2 }}
-                  className="w-9 h-9 rounded-lg border-2 flex items-center justify-center"
+                  className="w-8 h-8 rounded-lg border-2 flex items-center justify-center"
                 >
-                  {isCompleted ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} strokeWidth={1.5} />}
+                  {isCompleted ? <Check size={14} strokeWidth={2.5} /> : <Icon size={14} strokeWidth={1.5} />}
                 </motion.div>
-                <span className={cn(
-                  "text-[10px] font-medium uppercase tracking-wider",
-                  isActive || isCompleted ? "text-rose" : "text-ink/30"
-                )}>
+                <span className={cn("text-[9px] font-medium uppercase tracking-wider", isActive || isCompleted ? "text-rose" : "text-ink/30")}>
                   {step.label}
                 </span>
                 {i < steps.length - 1 && (
-                  <div className={cn(
-                    "flex-1 h-px max-w-[40px]",
-                    isCompleted ? "bg-rose" : "bg-ink/10"
-                  )} />
+                  <div className={cn("flex-1 h-px max-w-[32px]", isCompleted ? "bg-rose" : "bg-ink/10")} />
                 )}
               </React.Fragment>
             );
@@ -316,197 +347,146 @@ export default function OnboardingPage() {
 
         {/* Email Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 mb-4"
+          className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3.5 py-2.5 mb-4"
         >
-          <CheckCircle size={16} className="text-emerald-500 shrink-0" />
-          <span className="text-xs font-medium text-emerald-700 truncate">{userEmail}</span>
+          <CheckCircle size={14} className="text-emerald-500 shrink-0" />
+          <span className="text-[10px] font-medium text-emerald-700 truncate">{userEmail}</span>
         </motion.div>
 
         {/* Form Card */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden"
         >
           <AnimatePresence mode="wait">
-            {/* STEP 1: Identitas */}
+            {/* STEP 1 */}
             {activeStep === 1 && (
               <motion.div
                 key="step1"
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-                className="p-5 space-y-4"
+                exit={{ opacity: 0, x: 16 }}
+                transition={{ duration: 0.18 }}
+                className="p-4 space-y-3"
               >
                 <div className="flex items-center gap-2 pb-3 border-b border-ink/5">
-                  <span className="text-[9px] font-bold text-rose bg-rose/10 px-2 py-1 rounded-md uppercase tracking-widest">01</span>
-                  <span className="text-xs font-semibold uppercase tracking-widest text-ink">Identitas Diri</span>
+                  <span className="text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">01</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-ink">Identitas Diri</span>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nama Depan</label>
-                      <input
-                        value={f.fn}
-                        onChange={e => set('fn', e.target.value)}
-                        className={inputStyle}
-                        placeholder="John"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nama Belakang</label>
-                      <input
-                        value={f.ln}
-                        onChange={e => set('ln', e.target.value)}
-                        className={inputStyle}
-                        placeholder="Doe"
-                      />
-                    </div>
-                  </div>
-
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Nomor Telepon</label>
-                    <input
-                      type="tel"
-                      value={f.phone}
-                      onChange={e => set('phone', e.target.value)}
-                      className={inputStyle}
-                      placeholder="081234567890"
-                    />
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Nama Depan</label>
+                    <input value={f.fn} onChange={e => set('fn', e.target.value)} className={inputStyle} placeholder="John" />
                   </div>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Nama Belakang</label>
+                    <input value={f.ln} onChange={e => set('ln', e.target.value)} className={inputStyle} placeholder="Doe" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Nomor Telepon</label>
+                  <input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={inputStyle} placeholder="081234567890" />
                 </div>
 
                 <button
                   type="button"
                   onClick={goToStep2}
-                  className="w-full bg-ink text-white py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors"
+                  className="w-full bg-ink text-white py-3 rounded-lg text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors mt-1"
                 >
                   <span>Lanjut ke Alamat</span>
-                  <ArrowRight size={14} />
+                  <ArrowRight size={12} />
                 </button>
               </motion.div>
             )}
 
-            {/* STEP 2: Alamat */}
+            {/* STEP 2 */}
             {activeStep === 2 && (
               <motion.div
                 key="step2"
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="p-5 space-y-4"
+                exit={{ opacity: 0, x: -16 }}
+                transition={{ duration: 0.18 }}
+                className="p-4 space-y-2.5"
               >
                 <div className="flex items-center gap-2 pb-3 border-b border-ink/5">
-                  <span className="text-[9px] font-bold text-rose bg-rose/10 px-2 py-1 rounded-md uppercase tracking-widest">02</span>
-                  <span className="text-xs font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
+                  <span className="text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">02</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
                 </div>
 
-                <div className="space-y-4">
-                  {/* Custom Dropdowns */}
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Provinsi</label>
-                      <CustomDropdown
-                        value={f.prov}
-                        options={provinces}
-                        onChange={(id, name) => set('prov', id)}
-                        placeholder="Pilih Provinsi"
-                        searchable
-                      />
-                    </div>
+                {/* Section: Detail Jalan */}
+                <Section icon={Home} label="Detail Jalan" defaultOpen>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Nama Jalan / Jalan</label>
+                    <input value={f.street} onChange={e => set('street', e.target.value)} className={inputStyle} placeholder="Jl. Asia Afrika" />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Nomor Rumah</label>
+                    <input value={f.house_number} onChange={e => set('house_number', e.target.value)} className={inputStyle} placeholder="No. 22" />
+                  </div>
+                </Section>
 
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kota / Kabupaten</label>
-                      <CustomDropdown
-                        value={f.city}
-                        options={regencies}
-                        onChange={(id, name) => set('city', id)}
-                        placeholder="Pilih Kota/Kabupaten"
-                        disabled={!f.prov}
-                        searchable
-                      />
-                    </div>
+                {/* Section: Lokasi Wilayah */}
+                <Section icon={MapPinned} label="Lokasi Wilayah" defaultOpen>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Provinsi</label>
+                    <CustomDropdown value={f.prov} options={provinces} onChange={(id) => set('prov', id)} placeholder="Pilih Provinsi" searchable />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Kota / Kabupaten</label>
+                    <CustomDropdown value={f.city} options={regencies} onChange={(id) => set('city', id)} placeholder="Pilih Kota/Kabupaten" disabled={!f.prov} searchable />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Kecamatan</label>
+                    <CustomDropdown value={f.dist} options={districts} onChange={(id) => set('dist', id)} placeholder="Pilih Kecamatan" disabled={!f.city} searchable />
+                  </div>
+                </Section>
 
+                {/* Section: Detail Lainnya */}
+                <Section icon={MapPin} label="Detail Lainnya" defaultOpen>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Kel / Desa</label>
+                    <input value={f.vill} onChange={e => set('vill', e.target.value)} className={inputStyle} placeholder="Sukajadi" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kecamatan</label>
-                      <CustomDropdown
-                        value={f.dist}
-                        options={districts}
-                        onChange={(id, name) => set('dist', id)}
-                        placeholder="Pilih Kecamatan"
-                        disabled={!f.city}
-                        searchable
-                      />
+                      <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">RT</label>
+                      <input value={f.rt} onChange={e => set('rt', e.target.value)} className={inputStyle} placeholder="001" />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">RW</label>
+                      <input value={f.rw} onChange={e => set('rw', e.target.value)} className={inputStyle} placeholder="005" />
                     </div>
                   </div>
-
-                  {/* Text Fields */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kel/Desa</label>
-                      <input
-                        value={f.vill}
-                        onChange={e => set('vill', e.target.value)}
-                        className={inputStyle}
-                        placeholder="Sukajadi"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kode Pos</label>
-                      <input
-                        value={f.postal}
-                        onChange={e => set('postal', e.target.value)}
-                        className={inputStyle}
-                        placeholder="40111"
-                      />
-                    </div>
+                  <div>
+                    <label className="text-[9px] font-medium uppercase tracking-wider text-ink/50 mb-1.5 block">Kode Pos</label>
+                    <input value={f.postal} onChange={e => set('postal', e.target.value)} className={inputStyle} placeholder="40111" />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">RT</label>
-                      <input
-                        value={f.rt}
-                        onChange={e => set('rt', e.target.value)}
-                        className={inputStyle}
-                        placeholder="001"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">RW</label>
-                      <input
-                        value={f.rw}
-                        onChange={e => set('rw', e.target.value)}
-                        className={inputStyle}
-                        placeholder="005"
-                      />
-                    </div>
-                  </div>
-                </div>
+                </Section>
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-2 pt-1">
                   <button
                     type="button"
                     onClick={() => setActiveStep(1)}
-                    className="flex-1 bg-ink/5 text-ink py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
+                    className="flex-1 bg-ink/5 text-ink py-3 rounded-lg text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
                   >
-                    <span>Kembali</span>
+                    Kembali
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex-1 bg-ink text-white py-3.5 rounded-lg text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors"
+                    className="flex-1 bg-ink text-white py-3 rounded-lg text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors"
                   >
                     {isSaving ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <><span>Simpan</span><ArrowRight size={14} /></>
+                      <><span>Simpan</span><ArrowRight size={12} /></>
                     )}
                   </button>
                 </div>
@@ -516,24 +496,18 @@ export default function OnboardingPage() {
         </motion.div>
 
         {/* Trust Badges */}
-        <div className="flex justify-center gap-8 mt-6">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-              <Shield size={12} strokeWidth={1.5} className="text-rose/60" />
+        <div className="flex justify-center gap-6 mt-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-6 h-6 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Shield size={10} strokeWidth={1.5} className="text-rose/60" />
             </div>
-            <div>
-              <span className="text-[9px] font-medium uppercase tracking-wider text-ink">Aman</span>
-              <span className="text-[8px] text-ink/20 block">Proteksi Data</span>
-            </div>
+            <span className="text-[8px] font-medium uppercase tracking-wider text-ink">Aman</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-              <Lock size={12} strokeWidth={1.5} className="text-rose/60" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-6 h-6 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Lock size={10} strokeWidth={1.5} className="text-rose/60" />
             </div>
-            <div>
-              <span className="text-[9px] font-medium uppercase tracking-wider text-ink">Enkripsi</span>
-              <span className="text-[8px] text-ink/20 block">SSL Terjamin</span>
-            </div>
+            <span className="text-[8px] font-medium uppercase tracking-wider text-ink">Enkripsi</span>
           </div>
         </div>
       </div>
@@ -552,25 +526,24 @@ export default function OnboardingPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+              className="bg-white rounded-xl p-5 max-w-sm w-full shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-14 h-14 bg-rose/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle size={24} className="text-rose" />
+              <div className="w-12 h-12 bg-rose/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <AlertTriangle size={20} className="text-rose" />
               </div>
-              <h3 className="text-base font-semibold text-center mb-2 text-ink">Data Belum Lengkap</h3>
-              <p className="text-xs text-ink/50 text-center mb-5">Pastikan semua field terisi dengan benar</p>
-              <ul className="space-y-1.5 mb-5">
+              <h3 className="text-sm font-semibold text-center mb-1 text-ink">Data Belum Lengkap</h3>
+              <p className="text-[10px] text-ink/50 text-center mb-4">Pastikan semua field terisi</p>
+              <ul className="space-y-1 mb-4">
                 {errors.map(e => (
-                  <li key={e} className="text-xs text-ink/60 flex items-center gap-2">
-                    <div className="w-1 h-1 bg-rose rounded-full shrink-0" />
-                    {e}
+                  <li key={e} className="text-[10px] text-ink/60 flex items-center gap-2">
+                    <div className="w-1 h-1 bg-rose rounded-full shrink-0" />{e}
                   </li>
                 ))}
               </ul>
               <button
                 onClick={() => setShowError(false)}
-                className="w-full py-3 bg-ink text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-rose transition-colors"
+                className="w-full py-2.5 bg-ink text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors"
               >
                 Mengerti
               </button>
