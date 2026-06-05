@@ -40,7 +40,7 @@ export default function ReturPage() {
     <div className="min-h-screen bg-white">
       {/* ── PAGE HEADER ── */}
       <div className="pt-8 md:pt-8 px-6 md:px-12 max-w-[1400px] mx-auto">
-        <div className="flex items-baseline gap-4 border-b border-ink/5 pb-2">
+        <div className="flex items-center justify-between border-b border-ink/5 pb-2">
           <Link
             href="/"
             className="flex items-center gap-2 text-ink/30 hover:text-rose transition-colors group"
