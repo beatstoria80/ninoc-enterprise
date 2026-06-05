@@ -303,7 +303,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
         </div>
         <div className="flex justify-between mt-1">
           {['Order ID', 'Alasan', 'Syarat'].map((label, i) => (
-            <p key={label} className={cn('text-[7px] mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/20')}>{label}</p>
+            <p key={label} className={cn('text-[8px] mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/30')}>{label}</p>
           ))}
         </div>
       </div>
@@ -321,7 +321,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
           >
             {/* Order ID */}
             <div>
-              <label className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">
+              <label className="text-[9px] font-semibold uppercase tracking-widest text-ink/60 block mb-1.5">
                 Order ID / Nomor Pesanan <span className="text-rose">*</span>
               </label>
               <input
@@ -337,7 +337,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             {/* Guest Email */}
             {isGuest && (
               <div>
-                <label className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">
+                <label className="text-[9px] font-semibold uppercase tracking-widest text-ink/60 block mb-1.5">
                   Email <span className="text-rose">*</span>
                 </label>
                 <input
@@ -353,7 +353,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
 
             {/* Reason */}
             <div>
-              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 mb-2">Alasan Retur <span className="text-rose">*</span></p>
+              <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/60 mb-2">Alasan Retur <span className="text-rose">*</span></p>
               <div className="space-y-1.5">
                 {RETUR_REASONS.map((r) => {
                   const selected = reason === r.value;
@@ -427,7 +427,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             {/* Description */}
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-[7px] font-semibold uppercase tracking-widest text-ink/40">
+                <label className="text-[9px] font-semibold uppercase tracking-widest text-ink/60">
                   Deskripsi Masalah <span className="text-rose">*</span>
                 </label>
                 <span className={cn('text-[7px]', description.length < 10 ? 'text-ink/20' : 'text-emerald-500')}>
@@ -448,7 +448,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
 
             {/* Video Upload */}
             <div>
-              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 mb-2">
+              <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/60 mb-2">
                 Bukti Unboxing Video <span className="text-rose">*</span>
               </p>
               {!videoFile ? (
@@ -548,7 +548,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
 
             {/* Syarat & Ketentuan */}
             <div>
-              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/40 mb-2">
+              <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/60 mb-2">
                 Syarat & Ketentuan <span className="text-rose">*</span>
               </p>
               <div
