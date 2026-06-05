@@ -17,10 +17,10 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   // Hide GlobalHeader/Footer on admin pages, checkout page, and terms page (desktop)
   const isAdminPage = pathname?.startsWith('/admin');
   const isCheckoutPage = pathname === '/checkout';
-  const isTermsPage = pathname === '/terms';
+  const isLegalPage = pathname === '/legal';
   const isHelpPage = pathname === '/help';
   const isTrackPage = pathname === '/track';
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isTermsPage && !isHelpPage && !isTrackPage;
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
