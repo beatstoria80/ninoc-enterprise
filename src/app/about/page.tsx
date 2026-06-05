@@ -24,7 +24,7 @@ export default function About() {
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-full flex flex-col">
 
           {/* Title Block — below GlobalHeader */}
-          <div className="shrink-0 pt-32 md:pt-40 pb-2">
+          <div className="shrink-0 pt-4 md:pt-40 pb-2">
             <p className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-rose mb-1">NINOC ENTERPRISE</p>
             <h1 className="font-display font-medium italic text-2xl md:text-4xl tracking-tighter uppercase text-ink leading-[0.85]">About Us</h1>
             <p className="text-[9px] md:text-[10px] font-medium text-ink/50 uppercase tracking-wider mt-1">Born in Bandung. Made for the world.</p>
