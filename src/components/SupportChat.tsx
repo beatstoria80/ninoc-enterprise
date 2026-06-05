@@ -621,40 +621,49 @@ export default function SupportChat() {
       setMessage('');
 
       // Auto-reply: classify message and respond accordingly (only once per ticket)
-      if (activeTicket && !autoReplySentMap.get(activeTicket.id)) {
+      // Use targetTicket (the resolved ticket), not activeTicket (may be stale)
+      if (targetTicket && !autoReplySentMap.get(targetTicket.id)) {
         const classification = classifyMessage(msgToSend.trim(), placeholders);
 
         if (classification.type === 'nsfw_reject') {
           // Silent reject — send warning to customer, flag ticket
           setAutoReplySentMap(prev => {
             const next = new Map(prev);
-            next.set(activeTicket!.id, true);
+            next.set(targetTicket!.id, true);
             return next;
           });
-          await sendCustomerNotification(activeTicket.id, classification.message);
-          await flagTicket(activeTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+          await sendCustomerNotification(targetTicket.id, classification.message);
+          await flagTicket(targetTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
         } else if (classification.type === 'sara_warn') {
           // Send warning + flag to admin
           setAutoReplySentMap(prev => {
             const next = new Map(prev);
-            next.set(activeTicket!.id, true);
+            next.set(targetTicket!.id, true);
             return next;
           });
-          await sendCustomerNotification(activeTicket.id, classification.template.content);
-          await flagTicket(activeTicket.id, classification.message, 'sara');
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+          await sendCustomerNotification(targetTicket.id, classification.template.content);
+          await flagTicket(targetTicket.id, classification.message, 'sara');
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
 
         } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
           // Normal auto-reply
           setAutoReplySentMap(prev => {
             const next = new Map(prev);
-            next.set(activeTicket!.id, true);
+            next.set(targetTicket!.id, true);
             return next;
           });
-          await sendAutoReply(activeTicket.id, classification.template.content);
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+          await sendAutoReply(targetTicket.id, classification.template.content);
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
+
+          // Refresh chat to show the auto-reply message
+          const { data: updatedMsgs } = await supabase
+            .from('support_messages')
+            .select('*')
+            .eq('ticket_id', targetTicket.id)
+            .order('created_at', { ascending: true });
+          if (updatedMsgs) setChatMessages(updatedMsgs);
         }
       }
     }
@@ -789,6 +798,14 @@ export default function SupportChat() {
               });
               await sendAutoReply(genTicket.id, classification.template.content);
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+
+              // Refresh chat to show the auto-reply message
+              const { data: updatedMsgs } = await supabase
+                .from('support_messages')
+                .select('*')
+                .eq('ticket_id', genTicket.id)
+                .order('created_at', { ascending: true });
+              if (updatedMsgs) setChatMessages(updatedMsgs);
             }
           }
         }
