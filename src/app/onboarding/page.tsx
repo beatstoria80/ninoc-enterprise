@@ -449,7 +449,8 @@ export default function OnboardingPage() {
                     Kembali
                   </button>
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={submit}
                     disabled={isSaving}
                     className="flex-1 bg-ink text-white py-3 rounded-lg text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors"
                   >
