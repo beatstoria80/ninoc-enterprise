@@ -426,71 +426,69 @@ function classifyMessage(
     }
   }
 
-  // 4. Category matching — priority order (substring match for categories)
-  const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
-  let matchedCategory = '';
+  // 4. Category matching — FIRST PRIORITY (before greeting)
+  // Scan ALL categories and pick the first match found
+  const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing'];
 
   for (const cat of categoryPriority) {
     const keywords = AUTO_REPLY_RULES[cat] || [];
     for (const keyword of keywords) {
-      // Exact substring match
       if (hasKeyword(lower, keyword)) {
-        matchedCategory = cat;
-        break;
-      }
-    }
-    if (matchedCategory) break;
-  }
-
-  // Fallback: try partial/fuzzy match (e.g. "refun" matches "refund")
-  if (!matchedCategory) {
-    for (const cat of categoryPriority) {
-      const keywords = AUTO_REPLY_RULES[cat] || [];
-      for (const keyword of keywords) {
-        if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) {
-          matchedCategory = cat;
-          break;
+        const tpl = placeholders.find(p => p.category === cat);
+        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
+        const fb = FALLBACK_CONTENT[cat];
+        if (fb) {
+          return {
+            type: 'auto_reply',
+            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
+            category: cat
+          };
         }
       }
-      if (matchedCategory) break;
     }
   }
 
-  if (matchedCategory) {
-    const tpl = placeholders.find(p => p.category === matchedCategory);
-    if (tpl) return { type: 'auto_reply', template: tpl, category: matchedCategory };
-    const fb = FALLBACK_CONTENT[matchedCategory];
-    if (fb) {
-      return {
-        type: 'auto_reply',
-        template: { id: `fb-${matchedCategory}`, label: fb.label, content: fb.content, category: matchedCategory },
-        category: matchedCategory
-      };
+  // Fallback: partial/fuzzy match (e.g. "refun" matches "refund")
+  for (const cat of categoryPriority) {
+    const keywords = AUTO_REPLY_RULES[cat] || [];
+    for (const keyword of keywords) {
+      if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) {
+        const tpl = placeholders.find(p => p.category === cat);
+        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
+        const fb = FALLBACK_CONTENT[cat];
+        if (fb) {
+          return {
+            type: 'auto_reply',
+            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
+            category: cat
+          };
+        }
+      }
     }
   }
 
-  // 5. Unclear message — clarify with suggestions
-  const allKeywords = categoryPriority.flatMap(cat => AUTO_REPLY_RULES[cat] || []);
-  const words = lower.split(/\s+/).filter(w => w.length >= 3);
-  const hasTopic = words.some(w => allKeywords.some(k => k.includes(w) || w.includes(k)));
+  // 5. No category matched — use greeting or clarify
+  const greetingKeywords = AUTO_REPLY_RULES['greeting'] || [];
+  const hasGreeting = greetingKeywords.some(k => hasKeyword(lower, k));
 
-  if (!hasTopic) {
-    const suggestions = CLARIFY_SUGGESTIONS[matchedCategory] || [
-      'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
-    ];
+  if (hasGreeting) {
+    // Friendly greeting — check for pending context from previous messages
+    const fb = FALLBACK_CONTENT['greeting'];
     return {
-      type: 'clarify',
-      category: matchedCategory || 'general',
-      suggestions
+      type: 'auto_reply',
+      template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
+      category: 'greeting'
     };
   }
 
-  // 6. Default — always respond (never silent)
-  const fb = FALLBACK_CONTENT['greeting'];
+  // 6. Truly unclear — clarify with suggestions
+  const suggestions = CLARIFY_SUGGESTIONS['general'] || [
+    'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
+  ];
   return {
-    type: 'auto_reply',
-    template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
-    category: 'greeting'
+    type: 'clarify',
+    category: 'general',
+    suggestions
   };
 }
 
