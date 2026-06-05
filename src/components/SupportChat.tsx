@@ -140,7 +140,8 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'belum sampai', 'kapan sampai',
     'estimasi', 'eta', 'ekspedisi', 'kurir', 'antar', 'diantar', 'jne', 'jnt',
     'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', 'cargo',
-    'selesai dikirim', 'sedang dikirim', 'dalam perjalanan', 'proses kirim'
+    'selesai dikirim', 'sedang dikirim', 'dalam perjalanan', 'proses kirim',
+    'tracking', 'track', 'trace', 'status kirim', 'posisi barang', 'lokasi paket'
   ],
   // Payment & Transaction
   payment: [
@@ -452,37 +453,47 @@ function classifyMessage(
     .map(([cat]) => cat);
 
   if (matchedCategories.length > 0) {
-    // Collect all relevant content
-    const parts: string[] = [];
+    // SMART COMBINED RESPONSE — intelligent routing based on category combination
+    const hasShipping = matchedCategories.includes('shipping');
+    const hasReturn = matchedCategories.includes('return');
+    const hasComplaint = matchedCategories.includes('complaint');
 
-    for (const cat of matchedCategories) {
-      const tpl = placeholders.find(p => p.category === cat);
-      if (tpl) parts.push(tpl.content);
-      else {
+    let smartContent = '';
+
+    // Case: shipping + return (barang belum sampai tapi mau retur)
+    if (hasShipping && hasReturn) {
+      smartContent = `Kami memahami pesanan Anda belum juga sampai dan Anda ingin mengajukan retur. Sebelum memastikan retur, Yuk kita tracking dulu ya! 🗺️\n\nBerikut langkah lacak pesanan Anda:\n\n📦 **Cara Tracking:**\n1️⃣ Buka menu "Lacak Pesanan" atau ketik nomor resi (AWB) yang telah diberikan\n2️⃣ Cek di website ekspedisi (JNE/J&T/SiCepat/AnterAja dll) sesuai kurir yang digunakan\n3️⃣ Atau ketik nomor resi di kolom "Lacak Pesanan" di website kami\n\n⚠️ **Jika Paket Terlambat / Stuck:**\n- Trouble di pihak ekspedisi (cuaca, gudang overload, alamat kurang jelas) bisa terjadi\n- Tim kami akan memantau dan menghubungi pihak kurir untuk accelerasi\n- Mohon bersabar 1-2 hari kerja ya 🙏\n\n✅ **Jika Sudah 7+ hari tidak ada update:**\n- Silakan hubungi tim kami dengan menyertakan Order ID\n- Kami akan bantu claim ke pihak ekspedisi\n\n📋 **Info Retur:**\n- Retur bisa diajukan setelah status terkonfirmasi "Hilang / Tidak Sampai"\n- Siapkan foto paket dan nomor resi\n- Tim kami akan proses dalam 1x24 jam setelah data lengkap\n\nSemoga paketnya segera sampai ya! Semangat 🙏`;
+    }
+    // Case: shipping + complaint (belum sampai + komplain)
+    else if (hasShipping && hasComplaint) {
+      smartContent = `Kami memahami kekhawatiran Anda atas pesanan yang belum sampai. Yuk kita cek statusnya dulu ya! 📦\n\n🗺️ **Langkah Tracking:**\n1️⃣ Buka menu "Lacak Pesanan"\n2️⃣ Masukkan nomor resi (AWB) yang telah dikirim via email/SMS\n3️⃣ Cek di website ekspedisi terkait\n\n⚠️ **Jika Paket Stuck / Terlambat:**\n- Kami akan bantu follow-up ke pihak kurir\n- Mohon tunggu 1-2 hari kerja untuk update dari tim\n- Jika lebih dari estimasi, tim akan bantu claim\n\nTerima kasih sudah sabar menunggu 🙏 Tim kami terus memantau pesanan Anda.`;
+    }
+    // Case: return + complaint (retur + komplain)
+    else if (hasReturn && hasComplaint) {
+      smartContent = `Kami mendengar keluhan Anda dan memahami keinginan untuk retur. Mohon ceritakan lebih detail ya 🙏\n\n📋 **Info Retur:**\n1️⃣ Siapkan nomor Order ID\n2️⃣ Ceritakan alasan retur: rusak, salah ukuran, tidak sesuai deskripsi?\n3️⃣ Siapkan foto barang jika ada masalah kualitas\n4️⃣ Tim kami akan proses dalam 1x24 jam\n\nKami sangat menghargai masukan Anda dan akan segera menindak lanjuti ✅`;
+    }
+    // Case: multiple categories (general fallback)
+    else if (matchedCategories.length > 1) {
+      smartContent = `Kami memahami beberapa hal dari pesan Anda. Berikut informasi yang bisa membantu:\n\n${matchedCategories.map((cat) => {
+        const tpl = placeholders.find(p => p.category === cat);
         const fb = FALLBACK_CONTENT[cat];
-        if (fb) parts.push(fb.content);
-      }
+        return `📌 **${cat.toUpperCase()}**\n${tpl?.content || fb?.content || ''}`;
+      }).join('\n\n')}`;
     }
-
-    if (parts.length > 0) {
-      const combined = matchedCategories.length > 1
-        ? `Kami memahami beberapa hal dari pesan Anda. Berikut informasi yang bisa membantu:\n\n${parts.map((p, i) => `${'📌'} **${matchedCategories[i].toUpperCase()}**\n${p}`).join('\n\n')}`
-        : parts[0];
-
+    // Case: single category
+    else {
       const topCat = matchedCategories[0];
-      const combinedTpl = placeholders.find(p => p.category === topCat) || {
-        id: `combo-${topCat}`,
-        label: `${matchedCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' + ')}`,
-        content: combined,
-        category: topCat
-      };
-
-      return {
-        type: 'auto_reply',
-        template: { ...combinedTpl, content: combined },
-        category: topCat
-      };
+      const tpl = placeholders.find(p => p.category === topCat);
+      const fb = FALLBACK_CONTENT[topCat];
+      smartContent = tpl?.content || fb?.content || '';
     }
+
+    const topCat = matchedCategories[0];
+    return {
+      type: 'auto_reply',
+      template: { id: `smart-${matchedCategories.join('-')}`, label: matchedCategories.join(' + '), content: smartContent, category: topCat },
+      category: topCat
+    };
   }
 
   // 6. No category matched — check for greeting keywords
