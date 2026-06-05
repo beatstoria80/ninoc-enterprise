@@ -65,7 +65,7 @@ export default function About() {
   const t = content[lang];
 
   return (
-    <div className="h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white overflow-hidden pt-14 md:pt-24">
       {/* TOP BAR — language switcher + brand */}
       <div className="shrink-0 flex items-center justify-between px-4 md:px-8 py-2 border-b border-ink/5 z-50">
         <div className="flex items-center gap-2">
