@@ -139,7 +139,7 @@ function CartItem({
     >
       <motion.div
         onClick={onImageClick}
-        className="w-20 h-24 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5 cursor-pointer"
+        className="w-16 h-20 bg-white rounded-none overflow-hidden flex-shrink-0 relative border border-ink/5 cursor-pointer"
         whileHover={{ scale: 1.02 }}
         transition={{ duration: DURATION.fast, ease: EASING.out }}
       >
@@ -547,7 +547,7 @@ export default function GlobalHeader() {
 
               {/* SECTOR 1: PRODUCT LIST */}
               <motion.div
-                className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-4 md:px-10 py-4 md:py-8 space-y-4 md:space-y-6"
+                className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-3 md:px-6 py-3 md:py-6 space-y-3 md:space-y-4"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
@@ -584,7 +584,7 @@ export default function GlobalHeader() {
 
               {/* SECTOR 2: SUMMARY & CHECKOUT */}
               <motion.div
-                className="md:col-span-5 px-4 md:px-10 py-4 md:py-8 bg-white flex flex-col"
+                className="md:col-span-5 px-3 md:px-6 py-3 md:py-6 bg-white flex flex-col"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
