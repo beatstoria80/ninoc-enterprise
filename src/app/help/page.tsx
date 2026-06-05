@@ -83,7 +83,7 @@ const DEFAULT_VALUES: Record<string, any> = {
     wa: '08211983774',
     email: 'cs@ninoc.id',
     hours: 'Senin–Sabtu, 08.00–17.00 WIB',
-    notes: 'Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan hubungi customer service kami melalui WhatsApp.',
+    notes: 'Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan buat tiket bantuan melalui fitur Support Chat di pojok kanan bawah.',
   },
   help_guide_payment: {
     guide: 'Kami menyediakan berbagai metode pembayaran yang aman dan mudah untuk kenyamanan Anda.\n\nMetode Pembayaran yang Tersedia:\n\n• Transfer Bank (BCA, Mandiri, BRI, BNI)\n• Virtual Account\n• QRIS\n• Kartu Debit/Kredit (jika tersedia)\n\nProses Pembayaran:\n\n1. Pilih produk yang ingin dibeli.\n2. Lanjutkan ke halaman checkout.\n3. Pilih metode pembayaran yang diinginkan.\n4. Ikuti instruksi pembayaran.\n5. Setelah pembayaran berhasil, pesanan akan otomatis diproses.',
@@ -91,7 +91,7 @@ const DEFAULT_VALUES: Record<string, any> = {
   },
   help_guide_return: {
     policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 3 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.',
-    process: '1. Hubungi customer service kami melalui WhatsApp.\n2. Sertakan nomor pesanan, foto produk, dan penjelasan kendala.\n3. Tim kami akan melakukan verifikasi.\n4. Jika disetujui, kami akan memberikan instruksi pengembalian barang atau proses refund.\n\nEstimasi Proses:\n\n• Verifikasi: 1–2 hari kerja\n• Refund: 3–7 hari kerja setelah persetujuan',
+    process: '1. Buka fitur Support Chat di pojok kanan bawah layar.\n2. Buat tiket baru dengan memilih topik "Retur & Refund".\n3. Sertakan nomor pesanan, foto produk, dan penjelasan kendala.\n4. Tim kami akan melakukan verifikasi dan merespon instruksi selanjutnya melalui tiket tersebut.\n\nEstimasi Proses:\n\n• Verifikasi: 1–2 hari kerja\n• Refund: 3–7 hari kerja setelah persetujuan',
     notes: 'Refund akan dikembalikan melalui metode pembayaran awal atau transfer bank. Biaya pengiriman retur ditanggung sesuai hasil verifikasi.',
   },
   help_guide_shipping: {

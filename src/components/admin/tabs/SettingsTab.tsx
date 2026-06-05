@@ -1221,7 +1221,7 @@ function HelpGuideSection() {
   const [contactWA, setContactWA] = useState('08211983774');
   const [contactEmailSupport, setContactEmailSupport] = useState('');
   const [csHours, setCsHours] = useState('Senin–Sabtu, 08.00–17.00 WIB');
-  const [csNotes, setCsNotes] = useState('Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan hubungi customer service kami melalui WhatsApp.');
+  const [csNotes, setCsNotes] = useState('Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan buat tiket bantuan melalui fitur Support Chat di pojok kanan bawah.');
 
   // Payment Methods
   const [paymentGuide, setPaymentGuide] = useState(`Kami menyediakan berbagai metode pembayaran yang aman dan mudah untuk kenyamanan Anda.
