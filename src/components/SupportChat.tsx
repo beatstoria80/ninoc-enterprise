@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus } from 'lucide-react';
+import { MessageSquare, X, Send, ChevronRight, ArrowLeft, Plus, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { clsx, type ClassValue } from 'clsx';
@@ -29,6 +29,51 @@ interface SupportMessage {
   sender_role: 'customer' | 'admin';
   message: string;
   created_at: string;
+  is_auto_reply?: boolean;
+}
+
+interface PlaceholderConfig {
+  id: string;
+  label: string;
+  content: string;
+  category: string;
+}
+
+// ─── Auto-Reply Keyword Map ───────────────────────────────────────────────────
+const AUTO_REPLY_RULES: Record<string, string[]> = {
+  greeting: ['halo', 'hai', 'hallo', 'hi', 'pagi', 'siang', 'sore', 'malam', 'apa kabar', 'good morning'],
+  return: ['retur', 'refund', 'tukar', 'exchange', 'kembalikan', 'barang rusak', 'cacat', 'size salah', 'tidak cocok', 'kirim ulang', 'return'],
+  shipping: ['kirim', 'pesanan', 'order', 'tracking', 'lacak', 'resi', 'delivery', 'bawa', 'sampai', 'pengiriman', 'estimasi', 'kapan', 'belum sampai'],
+  payment: ['bayar', 'transfer', 'midtrans', 'pembayaran', 'transfer', 'bukti', 'lunas', 'pending', 'gagal', 'error payment', 'bukti transfer'],
+};
+
+// ─── Find best auto-reply based on message content ────────────────────────────
+function findAutoReply(message: string, placeholders: PlaceholderConfig[]): PlaceholderConfig | null {
+  const lower = message.toLowerCase().trim();
+
+  for (const [category, keywords] of Object.entries(AUTO_REPLY_RULES)) {
+    for (const keyword of keywords) {
+      if (lower.includes(keyword)) {
+        // Return first matching placeholder in this category
+        const match = placeholders.find(p => p.category === category);
+        if (match) return match;
+      }
+    }
+  }
+
+  // Default to greeting category
+  return placeholders.find(p => p.category === 'greeting') || null;
+}
+
+// ─── Send auto-reply to a ticket ────────────────────────────────────────────
+async function sendAutoReply(ticketId: string, content: string): Promise<void> {
+  await supabase.from('support_messages').insert({
+    ticket_id: ticketId,
+    sender_id: null,
+    sender_role: 'admin',
+    message: content,
+    is_auto_reply: true,
+  });
 }
 
 export default function SupportChat() {
@@ -48,6 +93,8 @@ export default function SupportChat() {
   const [notifCount, setNotifCount] = useState(0);
   const [showNotifCard, setShowNotifCard] = useState(false);
   const [lastNotif, setLastNotif] = useState<{ subject: string; message: string; from: string } | null>(null);
+  const [placeholders, setPlaceholders] = useState<PlaceholderConfig[]>([]);
+  const [autoReplySent, setAutoReplySent] = useState<string | null>(null);
   
   // Dispatch unread count to other components (like MobileLayout)
   useEffect(() => {
@@ -69,13 +116,13 @@ export default function SupportChat() {
   const openTicket = useCallback(async (ticket: SupportTicket) => {
     setActiveTicket(ticket);
     setActiveTab('chat');
+    setAutoReplySent(null); // Reset auto-reply flag for new ticket
     const { data } = await supabase
       .from('support_messages')
       .select('*')
       .eq('ticket_id', ticket.id)
       .order('created_at', { ascending: true });
     if (data) setChatMessages(data);
-    // Mark messages as read when opening
     hasUnreadRef.current = false;
     setNotifCount(0);
   }, []);
@@ -100,6 +147,20 @@ export default function SupportChat() {
     };
     fetchUser();
   }, [fetchTickets]);
+
+  // Fetch placeholders for auto-reply
+  useEffect(() => {
+    const fetchPlaceholders = async () => {
+      try {
+        const res = await fetch('/api/placeholders');
+        const data = await res.json();
+        if (data.placeholders) setPlaceholders(data.placeholders);
+      } catch (err) {
+        console.error('[SupportChat] fetch placeholders error:', err);
+      }
+    };
+    fetchPlaceholders();
+  }, []);
 
   // Real-time subscription for new admin messages
   useEffect(() => {
@@ -211,6 +272,17 @@ export default function SupportChat() {
         return [...prev, data];
       });
       setMessage('');
+
+      // Auto-reply: trigger after customer sends a message (only once per session)
+      if (activeTicket && !autoReplySent) {
+        const autoReply = findAutoReply(msgToSend.trim(), placeholders);
+        if (autoReply) {
+          setAutoReplySent(activeTicket.id);
+          await sendAutoReply(activeTicket.id, autoReply.content);
+          // Trigger realtime refresh by dispatching event
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+        }
+      }
     }
   };
 
@@ -281,6 +353,14 @@ export default function SupportChat() {
           );
           setActiveTicket(genTicket);
           setActiveTab('chat');
+
+          // Auto-reply for general inquiry (only once per new ticket)
+          const autoReply = findAutoReply(msgToSend, placeholders);
+          if (autoReply && !autoReplySent) {
+            setAutoReplySent(genTicket.id);
+            await sendAutoReply(genTicket.id, autoReply.content);
+            window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+          }
         }
       }
     } catch (err) {
