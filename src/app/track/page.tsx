@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import { X } from 'lucide-react';
 
 interface OrderItem {
   id: string;
@@ -121,15 +122,24 @@ export default function TrackPage() {
   const isCancelled = order?.status === 'cancelled';
 
   return (
-    <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white pb-24">
-      <div className="pt-20 max-w-[800px] mx-auto px-4 sm:px-6">
+    <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
+      <div className="flex-1 pt-20 max-w-[800px] w-full mx-auto px-4 sm:px-6 pb-24">
         {/* Page Title */}
-        <div className="border-b border-ink/5 pb-4 mb-6">
-          <div className="flex items-baseline gap-4">
-            <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-semibold">GUEST ACCESS</span>
+        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start">
+          <div>
+            <div className="flex items-baseline gap-4">
+              <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
+              <span className="text-[8px] uppercase tracking-widest text-ink/30 font-semibold">GUEST ACCESS</span>
+            </div>
+            <p className="text-[9px] text-ink/30 mt-2 uppercase tracking-widest">Lacak status pesanan tanpa perlu login</p>
           </div>
-          <p className="text-[9px] text-ink/30 mt-2 uppercase tracking-widest">Lacak status pesanan tanpa perlu login</p>
+          <Link
+            href="/"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0"
+            title="Kembali ke Beranda"
+          >
+            <X size={14} strokeWidth={1.5} />
+          </Link>
         </div>
 
         {/* Search Form */}
