@@ -41,37 +41,200 @@ interface PlaceholderConfig {
 
 // ─── Auto-Reply Keyword Map ───────────────────────────────────────────────────
 const AUTO_REPLY_RULES: Record<string, string[]> = {
-  greeting: ['halo', 'hai', 'hallo', 'hi', 'pagi', 'siang', 'sore', 'malam', 'apa kabar', 'good morning'],
-  return: ['retur', 'refund', 'tukar', 'exchange', 'kembalikan', 'barang rusak', 'cacat', 'size salah', 'tidak cocok', 'kirim ulang', 'return'],
-  shipping: ['kirim', 'pesanan', 'order', 'tracking', 'lacak', 'resi', 'delivery', 'bawa', 'sampai', 'pengiriman', 'estimasi', 'kapan', 'belum sampai'],
-  payment: ['bayar', 'transfer', 'midtrans', 'pembayaran', 'transfer', 'bukti', 'lunas', 'pending', 'gagal', 'error payment', 'bukti transfer'],
+  // Greeting — friendly first contact
+  greeting: [
+    'halo', 'hai', 'hallo', 'hi', 'hey', 'yo', 'pagi', 'siang', 'sore', 'malam',
+    'apa kabar', 'good morning', 'good evening', 'good night', 'selamat'
+  ],
+  // Return & Refund — product issue requests
+  return: [
+    'retur', 'refund', 'tukar', 'exchange', 'kembalikan', 'barang rusak', 'cacat',
+    'size salah', 'tidak cocok', 'kirim ulang', 'return', 'garansi', 'komplain',
+    'ganti barang', 'tukar barang', 'uang kembali', 'refund dana'
+  ],
+  // Shipping & Logistics
+  shipping: [
+    'kirim', 'pesanan', 'order', 'tracking', 'lacak', 'resi', 'delivery', 'bawa',
+    'sampai', 'pengiriman', 'estimasi', 'kapan sampai', 'belum sampai',
+    'resi', 'waybill', 'AWB', 'ekspedisi', 'kurir', 'diantar', 'antar'
+  ],
+  // Payment & Transaction
+  payment: [
+    'bayar', 'transfer', 'midtrans', 'pembayaran', 'bukti', 'lunas', 'pending',
+    'gagal', 'error payment', 'bukti transfer', 'konfirmasi bayar', 'sudah transfer',
+    'belum transfer', 'virtual account', 'va', 'rekening', 'metode bayar'
+  ],
+  // English — detected language triggers friendly bilingual response
+  english: [
+    'how are', 'how do', 'how can', 'what is', 'what are', 'where is', 'where are',
+    'when will', 'when is', 'can i', 'can you', 'could you', 'would you', 'please',
+    'help', 'order', 'track', 'shipping', 'return', 'refund', 'exchange',
+    'payment', 'price', 'cost', 'buy', 'purchase', 'item', 'product', 'stock',
+    'size', 'available', 'hello', 'hi there', 'good day', 'thank you', 'thanks',
+    'want to', 'need to', 'looking for', 'is there', 'are there'
+  ],
+  // Product Inquiry
+  product: [
+    'stock', 'tersedia', 'available', 'ada', 'size', 'ukuran', 'warna', 'color',
+    'katalog', 'catalog', 'product', 'model', 'bahan', 'material', 'gramasi',
+    'berat', 'panjang', 'lebar', 'size chart', 'chart'
+  ],
+  // Complaint & General Dissatisfaction
+  complaint: [
+    'kecewa', 'buruk', 'jelek', 'difitnah', 'tidak puas', 'protes', 'keluhan',
+    'salah', 'kacau', 'belum', 'belum ada', 'lama', 'lambat', 'nunggu', 'ditipu',
+    'palsu', 'tidak sesuai', 'tidak sesuai deskripsi', 'beda', 'beda dari foto'
+  ],
+  // General Inquiry
+  general: [
+    'informasi', 'studio', 'ninoc', 'brand', 'tentang', 'siapa', 'alamat',
+    'jam', 'buka', 'tutup', 'kontak', 'whatsapp', 'WA', 'telepon', 'email'
+  ],
+  // SARA — HATEFUL / DISCRIMINATORY content → WARNING + FLAG
+  sara: [
+    // Indonesian slurs
+    'bangsat', 'kafir', 'babi', 'anjing', 'goblok', 'idiot', 'bodoh', 'tolol',
+    'ngaca', 'kaum', 'suku', 'etnis', 'ras', 'sara', 'diskriminasi', 'hitam',
+    'putih', 'cina', 'arab', 'jawa', 'sunda', 'papua', 'amber', 'minang',
+    // English hate
+    'fuck', 'shit', 'bitch', 'whore', 'nigger', 'retard', 'slut', 'faggot',
+    // General discrimination
+    'bodoh sekali', 'goblok sekali', 'k看不起', '低能', '黑人侮辱'
+  ],
+  // NSFW — PORNOGRAPHIC / SEXUAL content → REJECT + FLAG
+  nsfw: [
+    // Indonesian
+    'kontol', 'memek', 'ngentot', 'pepek', 'toket', 'bubungan', 'situ',
+    'ngulum', 'ngewe', 'ngenital', 'coli', 'masturbat', 'porno', 'pornografi',
+    'telanjang', 'seks', 'sex', 'anal', 'vagina', 'penis', 'erotis', 'mesum',
+    // English
+    'porn', 'xxx', 'nude', 'naked', 'sexy', 'erotic', 'nsfw', 'adult content',
+    'strip', 'escort', ' prostitute', 'fucking', 'horny', 'dick', 'pussy',
+    // Combined
+    'pornografi', 'konten dewasa', 'adult content', 'sex tape', 'video mesum'
+  ],
+  // Closing
+  closing: ['terima kasih', 'makasih', 'terima kasih banyak', 'bye', 'sampai jumpa', 'goodbye', 'terimakasi', 'mantap', 'oke', 'siap', 'all good', 'solved']
 };
 
-// ─── Find best auto-reply based on message content ────────────────────────────
-function findAutoReply(message: string, placeholders: PlaceholderConfig[]): PlaceholderConfig | null {
+// ─── Classification Result ──────────────────────────────────────────────────
+type ClassificationResult =
+  | { type: 'auto_reply'; template: PlaceholderConfig; category: string }
+  | { type: 'sara_warn'; template: PlaceholderConfig; message: string }
+  | { type: 'nsfw_reject'; message: string }
+  | { type: 'english_bilingual'; template: PlaceholderConfig };
+
+// ─── Classify incoming message ────────────────────────────────────────────────
+function classifyMessage(
+  message: string,
+  placeholders: PlaceholderConfig[]
+): ClassificationResult {
   const lower = message.toLowerCase().trim();
 
-  for (const [category, keywords] of Object.entries(AUTO_REPLY_RULES)) {
-    for (const keyword of keywords) {
-      if (lower.includes(keyword)) {
-        // Return first matching placeholder in this category
-        const match = placeholders.find(p => p.category === category);
-        if (match) return match;
+  // 1. Check NSFW first — HIGHEST PRIORITY, REJECT silently + flag
+  for (const keyword of AUTO_REPLY_RULES.nsfw) {
+    if (lower.includes(keyword)) {
+      const rejectTpl = placeholders.find(p => p.category === 'nsfw_reject');
+      return {
+        type: 'nsfw_reject',
+        message: rejectTpl?.content ||
+          '⚠️ Kami tidak dapat memproses pesan ini karena mengandung konten yang tidak pantas. Silakan kirim ulang dengan bahasa yang sopan.'
+      };
+    }
+  }
+
+  // 2. Check SARA — WARNING + flag to admin
+  for (const keyword of AUTO_REPLY_RULES.sara) {
+    if (lower.includes(keyword)) {
+      const warnTpl = placeholders.find(p => p.category === 'sara_warn');
+      return {
+        type: 'sara_warn',
+        template: warnTpl || {
+          id: 'sara-default', label: 'SARA Warning', content:
+            '⚠️ Kami memperhatikan pesan Anda mengandung konten yang kurang pantas. Silakan kirim ulang dengan bahasa yang sopan. Tim kami akan meninjau pesan ini.',
+          category: 'sara_warn'
+        },
+        message: `[FLAGGED - SARA] Kata trigger: "${keyword}" — customer: ${message.slice(0, 100)}`
+      };
+    }
+  }
+
+  // 3. Check English — bilingual friendly response
+  for (const keyword of AUTO_REPLY_RULES.english) {
+    if (lower.includes(keyword)) {
+      const engTpl = placeholders.find(p => p.category === 'english');
+      if (engTpl) return { type: 'english_bilingual', template: engTpl };
+      // Fallback: extend greeting with English hint
+      const fallback = placeholders.find(p => p.category === 'greeting');
+      if (fallback) {
+        return {
+          type: 'english_bilingual',
+          template: {
+            ...fallback,
+            content: fallback.content + '\n\n— This is an automated reply. Our team will respond in English shortly. 🙏'
+          }
+        };
       }
     }
   }
 
-  // Default to greeting category
-  return placeholders.find(p => p.category === 'greeting') || null;
+  // 4. Category matching — priority order
+  const categoryPriority = ['complaint', 'return', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
+
+  for (const cat of categoryPriority) {
+    const keywords = AUTO_REPLY_RULES[cat] || [];
+    for (const keyword of keywords) {
+      if (lower.includes(keyword)) {
+        const tpl = placeholders.find(p => p.category === cat);
+        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
+      }
+    }
+  }
+
+  // 5. Default greeting
+  const defaultTpl = placeholders.find(p => p.category === 'greeting');
+  return defaultTpl
+    ? { type: 'auto_reply', template: defaultTpl, category: 'greeting' }
+    : { type: 'nsfw_reject', message: 'Halo! Terima kasih telah menghubungi NINOC. Tim kami akan segera merespons.' };
 }
 
 // ─── Send auto-reply to a ticket ────────────────────────────────────────────
-async function sendAutoReply(ticketId: string, content: string): Promise<void> {
+async function sendAutoReply(ticketId: string, content: string, isFlag = false): Promise<void> {
   await supabase.from('support_messages').insert({
     ticket_id: ticketId,
     sender_id: null,
     sender_role: 'admin',
     message: content,
+    is_auto_reply: true,
+    is_flagged: isFlag,
+  });
+}
+
+// ─── Flag ticket for admin review ──────────────────────────────────────────
+async function flagTicket(ticketId: string, reason: string, severity: 'sara' | 'nsfw'): Promise<void> {
+  await supabase.from('support_tickets').update({
+    status: 'flagged',
+    flagged_reason: reason,
+    flagged_at: new Date().toISOString(),
+    flagged_severity: severity,
+  }).eq('id', ticketId);
+
+  // Also send flag notification to admin via channel
+  const channel = supabase.channel('flagged-ticket-alert');
+  await channel.send({
+    type: 'broadcast',
+    event: 'ticket-flagged',
+    payload: { ticketId, reason, severity }
+  });
+}
+
+// ─── Send notification to customer ──────────────────────────────────────────
+async function sendCustomerNotification(ticketId: string, message: string): Promise<void> {
+  await supabase.from('support_messages').insert({
+    ticket_id: ticketId,
+    sender_id: null,
+    sender_role: 'admin',
+    message,
     is_auto_reply: true,
   });
 }
@@ -273,13 +436,28 @@ export default function SupportChat() {
       });
       setMessage('');
 
-      // Auto-reply: trigger after customer sends a message (only once per session)
+      // Auto-reply: classify message and respond accordingly (only once per session)
       if (activeTicket && !autoReplySent) {
-        const autoReply = findAutoReply(msgToSend.trim(), placeholders);
-        if (autoReply) {
+        const classification = classifyMessage(msgToSend.trim(), placeholders);
+
+        if (classification.type === 'nsfw_reject') {
+          // Silent reject — send warning to customer, flag ticket
           setAutoReplySent(activeTicket.id);
-          await sendAutoReply(activeTicket.id, autoReply.content);
-          // Trigger realtime refresh by dispatching event
+          await sendCustomerNotification(activeTicket.id, classification.message);
+          await flagTicket(activeTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+
+        } else if (classification.type === 'sara_warn') {
+          // Send warning + flag to admin
+          setAutoReplySent(activeTicket.id);
+          await sendCustomerNotification(activeTicket.id, classification.template.content);
+          await flagTicket(activeTicket.id, classification.message, 'sara');
+          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
+
+        } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
+          // Normal auto-reply
+          setAutoReplySent(activeTicket.id);
+          await sendAutoReply(activeTicket.id, classification.template.content);
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
         }
       }
@@ -354,12 +532,27 @@ export default function SupportChat() {
           setActiveTicket(genTicket);
           setActiveTab('chat');
 
-          // Auto-reply for general inquiry (only once per new ticket)
-          const autoReply = findAutoReply(msgToSend, placeholders);
-          if (autoReply && !autoReplySent) {
-            setAutoReplySent(genTicket.id);
-            await sendAutoReply(genTicket.id, autoReply.content);
-            window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+          // Auto-reply for general inquiry using classification
+          if (!autoReplySent) {
+            const classification = classifyMessage(msgToSend, placeholders);
+
+            if (classification.type === 'nsfw_reject') {
+              setAutoReplySent(genTicket.id);
+              await sendCustomerNotification(genTicket.id, classification.message);
+              await flagTicket(genTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
+              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+
+            } else if (classification.type === 'sara_warn') {
+              setAutoReplySent(genTicket.id);
+              await sendCustomerNotification(genTicket.id, classification.template.content);
+              await flagTicket(genTicket.id, `SARA: ${msgToSend.slice(0, 100)}`, 'sara');
+              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+
+            } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
+              setAutoReplySent(genTicket.id);
+              await sendAutoReply(genTicket.id, classification.template.content);
+              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
+            }
           }
         }
       }

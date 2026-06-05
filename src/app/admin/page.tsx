@@ -10,7 +10,7 @@ import {
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
-  Tag
+  Tag, ShieldAlert
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -29,6 +29,7 @@ import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
+import { FlaggedTab } from '@/components/admin/tabs/FlaggedTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -867,6 +868,7 @@ export default function AdminDashboard() {
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
     { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'] },
+    { id: 'flagged', icon: ShieldAlert, label: 'Flagged', activeKeys: ['flagged'] },
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
   ];
 
@@ -994,7 +996,7 @@ export default function AdminDashboard() {
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Info Stock / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
-               ['messages', 'placeholders'].includes(activeTab) ? 'Support / ' :
+               ['messages', 'placeholders', 'flagged'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1008,6 +1010,7 @@ export default function AdminDashboard() {
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' ? 'Placeholder' :
+               activeTab === 'flagged' ? 'Flagged' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
@@ -1151,6 +1154,8 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
+
+          {activeTab === 'flagged' && <FlaggedTab />}
 
           {activeTab === 'customers' && (
             <CustomersTab 
