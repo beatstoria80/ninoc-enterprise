@@ -115,25 +115,38 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
   // Greeting — friendly first contact
   greeting: [
     'halo', 'hai', 'hallo', 'hi', 'hey', 'yo', 'pagi', 'siang', 'sore', 'malam',
-    'apa kabar', 'good morning', 'good evening', 'good night', 'selamat'
+    'apa kabar', 'good morning', 'good evening', 'good night', 'selamat',
+    'assalamualaikum', 'waalaikumussalam', 'permisi', 'tanya', 'bertanya',
+    'bales', 'balesan', 'chat', 'kirim pesan', 'hubungi', 'kontak'
   ],
   // Return & Refund — product issue requests
   return: [
-    'retur', 'refund', 'tukar', 'exchange', 'kembalikan', 'barang rusak', 'cacat',
-    'size salah', 'tidak cocok', 'kirim ulang', 'return', 'garansi', 'komplain',
-    'ganti barang', 'tukar barang', 'uang kembali', 'refund dana'
+    'retur', 'return', 'balikin', 'balikan', 'balikin barang', 'refund', 'refun',
+    'refon', 'refundkan', 'tukar', 'tuker', 'tukar barang', 'tukeran', 'exchange',
+    'swap', 'ganti', 'ganti barang', 'ganti size', 'ganti ukuran', 'ganti warna',
+    'salah size', 'salah ukuran', 'salah barang', 'barang salah', 'rusak',
+    'cacat', 'defect', 'barang rusak', 'barang cacat', 'kirim ulang', 'repeat',
+    'uang kembali', 'dana kembali', 'uang balik', 'refund dana', 'garansi',
+    'claim garansi', 'warranty', 'komplain', 'keluhan barang', 'barang bermasalah',
+    'tidak sesuai', 'tidak sama', 'beda dari foto', 'beda sama foto'
   ],
   // Shipping & Logistics
   shipping: [
-    'kirim', 'pesanan', 'order', 'tracking', 'lacak', 'resi', 'delivery', 'bawa',
-    'sampai', 'pengiriman', 'estimasi', 'kapan sampai', 'belum sampai',
-    'resi', 'waybill', 'AWB', 'ekspedisi', 'kurir', 'diantar', 'antar'
+    'kirim', 'dikirim', 'pengiriman', 'pesanan', 'order', 'tracking', 'lacak',
+    'lacak pesanan', 'lacak order', 'resi', 'no resi', 'nomor resi', 'tracking number',
+    'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'belum sampai', 'kapan sampai',
+    'estimasi', 'eta', 'ekspedisi', 'kurir', 'antar', 'diantar', 'jne', 'jnt',
+    'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', ' Cargo'
   ],
   // Payment & Transaction
   payment: [
-    'bayar', 'transfer', 'midtrans', 'pembayaran', 'bukti', 'lunas', 'pending',
-    'gagal', 'error payment', 'bukti transfer', 'konfirmasi bayar', 'sudah transfer',
-    'belum transfer', 'virtual account', 'va', 'rekening', 'metode bayar'
+    'bayar', 'bayarin', 'pembayaran', 'bayar transfer', 'lunas', 'pending',
+    'gagal', 'failed', 'error payment', 'transaction error', 'bukti transfer',
+    'transfer berhasil', 'sudah transfer', 'belum transfer', 'virtual account',
+    'va', 'vA', 'bank transfer', 'btpn', 'bca', 'mandiri', 'bni', 'bri', 'sinarmas',
+    'e-wallet', 'ewallet', 'ovo', 'gopay', 'dana', 'shopee pay', 'spay',
+    'cod', 'cash on delivery', 'cicilan', 'installment', 'gagal bayar',
+    'payment method', 'metode bayar', 'midtrans', 'duitku', 'bill', 'tagihan'
   ],
   // English — detected language triggers friendly bilingual response
   english: [
@@ -146,20 +159,26 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
   ],
   // Product Inquiry
   product: [
-    'stock', 'tersedia', 'available', 'ada', 'size', 'ukuran', 'warna', 'color',
-    'katalog', 'catalog', 'product', 'model', 'bahan', 'material', 'gramasi',
-    'berat', 'panjang', 'lebar', 'size chart', 'chart'
+    'stock', 'tersedia', 'available', 'ada', 'ready', 'ready stock', 'sold out',
+    'out of stock', 'preorder', 'size chart', 'chart', 'size guide', 'ukur',
+    'warna', 'color', 'colour', 'motif', 'model', 'bahan', 'material', 'kualitas',
+    'quality', 'katalog', 'catalog', 'product', 'item', 'barang', 'produk',
+    'berat', 'weight', 'dimensi', 'measurement', 'panjang', 'lebar', 'tinggi',
+    'diskon', 'sale', 'promo', 'harga', 'price', 'cost', 'berapa', 'range harga'
   ],
   // Complaint & General Dissatisfaction
   complaint: [
     'kecewa', 'buruk', 'jelek', 'difitnah', 'tidak puas', 'protes', 'keluhan',
     'salah', 'kacau', 'belum', 'belum ada', 'lama', 'lambat', 'nunggu', 'ditipu',
-    'palsu', 'tidak sesuai', 'tidak sesuai deskripsi', 'beda', 'beda dari foto'
+    'palsu', 'tidak sesuai', 'beda', 'salah kirim', 'salah warna', 'salah ukuran',
+    'tidak dapat', 'tidak sampai', 'tidak ada', 'belum terima', 'belum dapet',
+    'masalah', 'problem', 'issue', 'belum sampai', 'overdue', 'hilang', 'rusak parah'
   ],
   // General Inquiry
   general: [
     'informasi', 'studio', 'ninoc', 'brand', 'tentang', 'siapa', 'alamat',
-    'jam', 'buka', 'tutup', 'kontak', 'whatsapp', 'WA', 'telepon', 'email'
+    'jam', 'buka', 'tutup', 'kontak', 'whatsapp', 'WA', 'telepon', 'email',
+    'ig', 'instagram', 'toko', 'shop', 'store', 'location', 'lokasi', 'maps'
   ],
   // SARA / PROfanity / PErkataan Buruk — WARNING + FLAG
   sara: [
@@ -171,11 +190,11 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'anjir', 'ajg', 'anjg', 'bangsat', 'brengsek', 'bego', 'bem', 'bemgok', 'bengak',
     'buta', 'cilaka', 'cuk', 'dancuk', 'dasar', 'deek', 'dongok', 'dos', 'gblk', 'gblok',
     'geblek', 'gelo', 'gila', 'gilo', 'gki', 'goblog', 'goblok', 'goblo', 'gokil',
-    'golok', 'guoblo', 'hayang', 'hedoh', 'heng', 'het', 'hoe', 'hof', 'idiot',
+    'golok', 'guoblo', 'hayang', 'hedoh', 'heng', 'het', 'hoe', 'hof',
     'itil', 'jablay', 'jali', 'jancok', 'jeng', 'jle', 'ka', 'kafir', 'kampret',
     'kampret', 'kancut', 'kari', 'katok', 'keparat', 'kescuk', 'kimak', 'kisluk',
-    'kontol', 'korosi', 'kudy', 'lalau', 'lancang', 'lebay', 'lehu', 'lok', 'lucu',
-    'mampus', 'mampus lu', 'mampus kau', 'mampus kamu', 'matamu', 'mblook', 'meki', 'memek',
+    'korosi', 'kudy', 'lalau', 'lancang', 'lebay', 'lehu', 'lok', 'lucu',
+    'mampus', 'mampus lu', 'mampus kau', 'mampus kamu', 'matamu', 'mblook', 'meki',
     'mEnchu', 'mencuk', 'mgg', 'minggat', 'mli', 'mls', 'mn', 'monyek', 'monyet',
     'ngacak', 'ngacung', 'ngalah', 'ngambe', 'ngamo', 'nganya', 'ngantri', 'ngapa',
     'ngapa2', 'ngapain', 'ngapakes', 'ngarep', 'ngatip', 'ngawur', 'ngebacot',
@@ -206,18 +225,18 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'ngungut', 'nguntat', 'ngupil', 'ngupuk', 'ngur', 'ngurem', 'ngusuk', 'ngutok',
     'njir', 'njrit', 'njur', 'nkr', 'nnt', 'nov', 'npr', 'nt', 'ntar', 'ntkt', 'ntr',
     'ntut', 'nyet', 'nyole', 'ony', 'oy', 'pak', 'palkon', 'pante', 'pantek', 'pantat',
-    'pari', 'park', 'pcak', 'pe', 'pecac', 'pecat', 'peju', 'peju', 'pelak', 'peli',
+    'pari', 'park', 'pcak', 'pe', 'pecac', 'pecat', 'peju', 'pelak', 'peli',
     'pen', 'peng', 'pentung', 'perkosa', 'pesing', 'pest', 'pi', 'pik', 'pimpong',
     'pising', 'pit', 'pitut', 'pok', 'porn', 'pos', 'prec', 'prest', 'prim', 'prof',
     'puki', 'puk', 'pukima', 'pulus', 'pung', 'pura', 'puruk', 'racun', 'radak',
-    'rahmat', 'rame', 'randa', 'rangkek', 'rap', 'rapa', 'ratek', 'rim', 'risih',
-    'rit', 'rom', 'rotic', 'rotok', 'ruk', 'rungi', 'rusuh', 'saha', 'sakar', 'sakti',
+    'rame', 'randa', 'rangkek', 'rap', 'rapa', 'ratek', 'rim', 'risih',
+    'rit', 'rom', 'rotic', 'rotok', 'ruk', 'rungi', 'rusuh',
     'salak', 'sam', 'sambar', 'same', 'sampah', 'samping', 'sampun', 'samsak', 'sanda',
-    'sandung', 'sang', 'sanga', 'sanggam', 'sangkak', 'sangkar', 'sangkem', 'sap', 'sapi',
+    'sandung', 'sang', 'sanga', 'sanggam', 'sangkak', 'sangkar', 'sangkem',
     'satre', 'sawawa', 'se', 'sed', 'segan', 'segers', 'sekeng', 'sekop', 'seks', 'sel',
     'seng', 'sengkul', 'sep', 'ser', 'serak', 'set', 'si', 'silang', 'sing', 'siu',
     'sle', 'smp', 'sok', 'sot', 'sting', 'su', 'suci', 'suka', 'sukma', 'sulteng',
-    'sum', 'sun', 'sung', 'sup', 'suster', 'tabok', 'taek', 'taek', 'tai', 'tak',
+    'sum', 'sun', 'sung', 'sup', 'suster', 'tabok', 'taek', 'tai', 'tak',
     'tampol', 'tan', 'tanding', 'tangkok', 'tarek', 'tek', 'tem', 'teng', 'tepol',
     'ti', 'tilang', 'tj', 'to', 'toak', 'toba', 'tobak', 'tobo', 'tok', 'tokcer',
     'tolan', 'tolol', 'tolot', 'tom', 'tong', 'tonjok', 'tontong', 'top', 'tran', 'trash',
@@ -226,18 +245,10 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'ula', 'uli', 'ulk', 'ull', 'uluk', 'ulul', 'um', 'umm', 'umuk', 'un', 'uncang',
     'uncet', 'undan', 'undi', 'undur', 'ung', 'unggas', 'ungkit', 'ungok', 'unik',
     'unit', 'unpol', 'untu', 'untut', 'up', 'ur', 'urat', 'uri', 'us', 'usil', 'ut',
-    'utut', 'vagina', 'wage', 'wah', 'wahyu', 'wak', 'waktu', 'wan', 'wang', 'wantek',
-    'war', 'ware', 'warga', 'wates', 'waya', 'we', 'wej', 'wek', 'wel', 'welu',
-    'weton', 'wi', 'wiru', 'wis', 'wit', 'wiwit', 'wl', 'wls', 'wn', 'wolu', 'wort',
-    'wortel', 'wp', 'ws', 'wt', 'ya', 'yag', 'yak', 'yal', 'yam', 'yang', 'yank', 'yao',
-    'yau', 'yeg', 'yek', 'yel', 'yen', 'yeo', 'yer', 'yes', 'yet', 'yg', 'yoh', 'yok',
-    'yon', 'you', 'yp', 'yud', 'yuh', 'yuk', 'yus', 'za', 'zab', 'zai', 'zal', 'zam',
-    'zan', 'zap', 'zayn', 'ze', 'zeb', 'zee', 'zen', 'zer', 'zest', 'zetta', 'zh',
-    'zi', 'ziet', 'zig', 'zil', 'zinc', 'zip', 'zit', 'zl', 'zm', 'zn', 'zo', 'zom',
-    'zoo', 'zp', 'zr', 'zs', 'zt', 'zu', 'zuk', 'zw', 'zx', 'zy', 'zz',
+    'utut',
     // English profanity
-    'fuck', 'fck', 'fuk', 'fuq', 'phuck', 'fukn', 'fukin', 'fukn',
-    'shit', 'sht', 'shyt', 'sh1t', 'sh1t',
+    'fuck', 'fck', 'fuk', 'fuq', 'phuck', 'fukn', 'fukin',
+    'shit', 'sht', 'shyt', 'sh1t',
     'bitch', 'btch', 'b1tch', 'bitc',
     'whore', 'ho', 'hoes',
     'nigger', 'nigga', 'nigg', 'nig', 'niger', 'nigerian',
@@ -249,13 +260,12 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'cunt', 'c0unt', 'cnt',
     'dick', 'dck', 'dik', 'dickhead',
     'pussy', 'puss', 'pusy', 'pussee',
-    'cock', 'cok', 'c0ck', 'cokcok',
+    'cock', 'cok', 'c0ck',
     'damn', 'dmn', 'dam',
     'hell', 'h3ll', 'hll',
     'stupid', 'stpd', 'stupidass',
     'dumb', 'dum', 'dmb',
     'moron', 'mrn', 'moro',
-    'idiot', 'iidiot',
     'loser', 'luser', 'lusr',
     'ugly', 'ug1y', 'ugli',
     'jerk', 'jrk', 'jerkk',
@@ -263,33 +273,57 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'crap', 'crp', 'krapp',
     'suck', 'suk', 'sck',
     'scum', 'scumbag',
-    // Other languages / mixed
+    // Combined
     'bodoh sekali', 'goblok sekali', 'gila lu', 'gila kau', 'goblok lu', 'bangsat lu',
     'anjing lu', 'babi lu', 'kafir lu', 'muka kau', 'bakal kau', 'binatang kau',
     'dewa kecewa', 'nista', 'ASUSUL', 'dajal', 'iblis'
   ],
   // NSFW — PORNOGRAPHIC / SEXUAL content → REJECT + FLAG
   nsfw: [
-    // Indonesian
     'kontol', 'memek', 'ngentot', 'pepek', 'toket', 'bubungan', 'situ',
     'ngulum', 'ngewe', 'ngenital', 'coli', 'masturbat', 'porno', 'pornografi',
     'telanjang', 'seks', 'sex', 'anal', 'vagina', 'penis', 'erotis', 'mesum',
-    // English
     'porn', 'xxx', 'nude', 'naked', 'sexy', 'erotic', 'nsfw', 'adult content',
-    'strip', 'escort', ' prostitute', 'fucking', 'horny', 'dick', 'pussy',
-    // Combined
+    'strip', 'escort', 'prostitute', 'fucking', 'horny',
     'pornografi', 'konten dewasa', 'adult content', 'sex tape', 'video mesum'
   ],
   // Closing
-  closing: ['terima kasih', 'makasih', 'terima kasih banyak', 'bye', 'sampai jumpa', 'goodbye', 'terimakasi', 'mantap', 'oke', 'siap', 'all good', 'solved']
+  closing: [
+    'terima kasih', 'makasih', 'terima kasih banyak', 'bye', 'sampai jumpa',
+    'goodbye', 'terimakasi', 'mantap', 'oke', 'siap', 'all good', 'solved',
+    'beres', 'selesai', 'udh selesai', 'udah beres', 'makasih banyak', 'trims'
+  ],
 };
+
+// ─── Fuzzy matching helper ──────────────────────────────────────────────────
+// Check if keyword matches message (exact or within 2 char difference = typo)
+function keywordMatch(message: string, keyword: string): boolean {
+  if (message.includes(keyword)) return true;
+  // Fuzzy: allow 1-2 character typo for words >= 4 chars
+  if (keyword.length >= 4) {
+    const diff = Math.abs(message.length - keyword.length);
+    if (diff <= 2 && (message.includes(keyword.slice(0, -1)) || message.includes(keyword + ' '))) return true;
+  }
+  return false;
+}
 
 // ─── Classification Result ──────────────────────────────────────────────────
 type ClassificationResult =
   | { type: 'auto_reply'; template: PlaceholderConfig; category: string }
   | { type: 'sara_warn'; template: PlaceholderConfig; message: string }
   | { type: 'nsfw_reject'; message: string }
-  | { type: 'english_bilingual'; template: PlaceholderConfig };
+  | { type: 'english_bilingual'; template: PlaceholderConfig }
+  | { type: 'clarify'; category: string; suggestions: string[] };
+
+// ─── Clarify suggestions per category ──────────────────────────────────────
+const CLARIFY_SUGGESTIONS: Record<string, string[]> = {
+  return: ['Retur / Refund barang', 'Tukar ukuran / warna', 'Barang rusak / cacat', 'Salah barang dikirim', 'Lihat status retur'],
+  shipping: ['Lacak nomor resi', 'Cek estimasi pengiriman', 'Pesanan belum sampai', 'Ubah alamat pengiriman', 'Info ongkir'],
+  payment: ['Konfirmasi pembayaran', 'Gagal bayar', 'Refund transfer', 'Metode pembayaran', 'Cek status payment'],
+  product: ['Cek stok produk', 'Tanya ukuran / warna', 'Info harga terbaru', 'Size chart', 'Rekomendasi produk'],
+  complaint: ['Keluhan pesanan', 'Barang rusak', 'Lama pengiriman', 'Salah barang', 'Pengiriman belum sampai'],
+  general: ['Jam operasional', 'Alamat toko', 'Kontak WhatsApp', 'Info promo', 'Lihat katalog produk'],
+};
 
 // ─── Fallback content per category (works even if DB placeholders are empty) ─
 const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
@@ -338,14 +372,22 @@ function classifyMessage(
 ): ClassificationResult {
   const lower = message.toLowerCase().trim();
 
+  // 0. Quick check — empty or too short
+  if (!lower || lower.length < 2) {
+    const fb = FALLBACK_CONTENT['greeting'];
+    return {
+      type: 'auto_reply',
+      template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
+      category: 'greeting'
+    };
+  }
+
   // 1. Check NSFW first — HIGHEST PRIORITY, REJECT silently + flag
   for (const keyword of AUTO_REPLY_RULES.nsfw) {
     if (lower.includes(keyword)) {
-      const rejectTpl = placeholders.find(p => p.category === 'nsfw_reject');
       return {
         type: 'nsfw_reject',
-        message: rejectTpl?.content ||
-          '⚠️ Kami tidak dapat memproses pesan ini karena mengandung konten yang tidak pantas. Silakan kirim ulang dengan bahasa yang sopan.'
+        message: '⚠️ Kami tidak dapat memproses pesan ini karena mengandung konten yang tidak pantas. Silakan kirim ulang dengan bahasa yang sopan.'
       };
     }
   }
@@ -353,10 +395,9 @@ function classifyMessage(
   // 2. Check SARA — WARNING + flag to admin
   for (const keyword of AUTO_REPLY_RULES.sara) {
     if (lower.includes(keyword)) {
-      const warnTpl = placeholders.find(p => p.category === 'sara_warn');
       return {
         type: 'sara_warn',
-        template: warnTpl || {
+        template: {
           id: 'sara-default', label: 'SARA Warning', content:
             '⚠️ Kami memperhatikan pesan Anda mengandung konten yang kurang pantas. Silakan kirim ulang dengan bahasa yang sopan. Tim kami akan meninjau pesan ini.',
           category: 'sara_warn'
@@ -369,27 +410,51 @@ function classifyMessage(
   // 3. Check English — bilingual friendly response
   for (const keyword of AUTO_REPLY_RULES.english) {
     if (lower.includes(keyword)) {
-      const engTpl = placeholders.find(p => p.category === 'english');
-      if (engTpl) return { type: 'english_bilingual', template: engTpl };
-      // Fallback to FALLBACK_CONTENT
       const fb = FALLBACK_CONTENT['english'];
-      if (fb) {
-        return {
-          type: 'english_bilingual',
-          template: { id: 'fb-english', label: fb.label, content: fb.content, category: 'english' }
-        };
-      }
+      return {
+        type: 'english_bilingual',
+        template: { id: 'fb-english', label: fb.label, content: fb.content, category: 'english' }
+      };
     }
   }
 
-  // 4. Category matching — priority order
+  // 4. Category matching — priority order with fuzzy match
   const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing', 'greeting'];
+  let matchedCategory = '';
+  let matchScore = 0;
 
   for (const cat of categoryPriority) {
     const keywords = AUTO_REPLY_RULES[cat] || [];
     for (const keyword of keywords) {
-      if (lower.includes(keyword)) {
-        // Prefer DB placeholder, fall back to FALLBACK_CONTENT
+      if (keywordMatch(lower, keyword)) {
+        matchScore++;
+        if (!matchedCategory) matchedCategory = cat;
+        // Prefer category with most keyword matches
+        if (cat === matchedCategory) {
+          matchedCategory = cat;
+        }
+      }
+    }
+  }
+
+  if (matchedCategory) {
+    const tpl = placeholders.find(p => p.category === matchedCategory);
+    if (tpl) return { type: 'auto_reply', template: tpl, category: matchedCategory };
+    const fb = FALLBACK_CONTENT[matchedCategory];
+    if (fb) {
+      return {
+        type: 'auto_reply',
+        template: { id: `fb-${matchedCategory}`, label: fb.label, content: fb.content, category: matchedCategory },
+        category: matchedCategory
+      };
+    }
+  }
+
+  // 5. Fuzzy scan — partial word match for typos
+  for (const cat of categoryPriority) {
+    const keywords = AUTO_REPLY_RULES[cat] || [];
+    for (const keyword of keywords) {
+      if (keyword.length >= 3 && lower.includes(keyword.slice(0, -1))) {
         const tpl = placeholders.find(p => p.category === cat);
         if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
         const fb = FALLBACK_CONTENT[cat];
@@ -404,9 +469,24 @@ function classifyMessage(
     }
   }
 
-  // 5. Default — always respond (never silent)
-  const defaultTpl = placeholders.find(p => p.category === 'greeting');
-  if (defaultTpl) return { type: 'auto_reply', template: defaultTpl, category: 'greeting' };
+  // 6. Unclear message — clarify with suggestions
+  const allKeywords = categoryPriority.flatMap(cat => AUTO_REPLY_RULES[cat] || []);
+  const words = lower.split(/\s+/).filter(w => w.length >= 3);
+  const hasTopic = words.some(w => allKeywords.some(k => k.includes(w) || w.includes(k)));
+
+  if (!hasTopic) {
+    // Pick the closest matching category based on partial words
+    const suggestions = CLARIFY_SUGGESTIONS[matchedCategory] || [
+      'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
+    ];
+    return {
+      type: 'clarify',
+      category: matchedCategory || 'general',
+      suggestions
+    };
+  }
+
+  // 7. Default — always respond (never silent)
   const fb = FALLBACK_CONTENT['greeting'];
   return {
     type: 'auto_reply',
@@ -705,6 +785,22 @@ export default function SupportChat() {
           };
           setChatMessages(prev => [...prev, autoReplyMsg]);
           await sendAutoReply(targetTicket.id, classification.template.content);
+
+        } else if (classification.type === 'clarify') {
+          // Clarify — suggest topic options to user
+          const suggestions = classification.suggestions || [];
+          const clarifyContent = `Hmm, kami kurang yakin dengan yang Anda maksud. Bisa diperjelas? Atau pilih topik di bawah ini:\n\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nAtau ceritakan lebih detail ya 🙏`;
+          const clarifyMsg: SupportMessage = {
+            id: `ar-${Date.now()}`,
+            ticket_id: targetTicket.id,
+            sender_id: null,
+            sender_role: 'admin',
+            message: clarifyContent,
+            created_at: new Date().toISOString(),
+            is_auto_reply: true,
+          };
+          setChatMessages(prev => [...prev, clarifyMsg]);
+          await sendAutoReply(targetTicket.id, clarifyContent);
         }
       }
     }
@@ -841,6 +937,21 @@ export default function SupportChat() {
               };
               setChatMessages(prev => [...prev, autoReplyMsg]);
               await sendAutoReply(genTicket.id, classification.template.content);
+
+            } else if (classification.type === 'clarify') {
+              const suggestions = classification.suggestions || [];
+              const clarifyContent = `Hmm, kami kurang yakin dengan yang Anda maksud. Bisa diperjelas? Atau pilih topik di bawah ini:\n\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nAtau ceritakan lebih detail ya 🙏`;
+              const clarifyMsg: SupportMessage = {
+                id: `ar-${Date.now()}`,
+                ticket_id: genTicket.id,
+                sender_id: null,
+                sender_role: 'admin',
+                message: clarifyContent,
+                created_at: new Date().toISOString(),
+                is_auto_reply: true,
+              };
+              setChatMessages(prev => [...prev, clarifyMsg]);
+              await sendAutoReply(genTicket.id, clarifyContent);
             }
           }
         }
