@@ -328,7 +328,8 @@ type ClassificationResult =
   | { type: 'sara_warn'; template: PlaceholderConfig; message: string }
   | { type: 'nsfw_reject'; message: string }
   | { type: 'english_bilingual'; template: PlaceholderConfig }
-  | { type: 'clarify'; category: string; suggestions: string[] };
+  | { type: 'clarify'; category: string; suggestions: string[] }
+  | { type: 'tracking_lookup'; trackingId: string; source: 'order' | 'resi' };
 
 // ─── Clarify suggestions per category ──────────────────────────────────────
 const CLARIFY_SUGGESTIONS: Record<string, string[]> = {
@@ -380,6 +381,86 @@ const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
   }
 };
 
+// ─── Extract Order ID / Resi from message ───────────────────────────────────
+function extractTrackingId(message: string): { id: string; source: 'order' | 'resi' } | null {
+  // Order ID format: NCO-XXXXXXXX (e.g. NCO-A1B2C3D4)
+  const orderMatch = message.match(/\b(NCO-[A-Z0-9]{6,20})\b/i);
+  if (orderMatch) return { id: orderMatch[1].toUpperCase(), source: 'order' };
+
+  // Resi: pure numeric, 8-30 digits (common courier AWB patterns)
+  const resiMatch = message.match(/\b(\d{8,30})\b/);
+  if (resiMatch) return { id: resiMatch[1], source: 'resi' };
+
+  return null;
+}
+
+// ─── Fetch real tracking data and format response ──────────────────────────
+async function handleTrackingLookup(ticketId: string, trackingId: string, source: 'order' | 'resi') {
+  try {
+    let orderData: Record<string, unknown> | null = null;
+
+    // Source 'order': lookup via Order ID + phone (guest access needs phone)
+    if (source === 'order') {
+      const res = await fetch(`/api/track?order_number=${encodeURIComponent(trackingId)}&phone=`);
+      // If no phone provided, order lookup fails — fall through to resi lookup
+      if (res.ok) {
+        const json = await res.json();
+        orderData = json;
+      }
+    }
+
+    // Source 'resi': lookup via Biteship tracking API
+    if (source === 'resi' || !orderData) {
+      const res = await fetch(`/api/biteship/track/${encodeURIComponent(trackingId)}`);
+      if (res.ok) {
+        const json = await res.json();
+        orderData = { tracking: json };
+      }
+    }
+
+    if (!orderData) {
+      return 'Maaf, kami tidak bisa menemukan data untuk nomor tersebut. Coba pastikan Order ID / Resi-nya benar, ya 🙏';
+    }
+
+    // Format response from real data
+    let response = '';
+
+    if (source === 'order' && orderData.order) {
+      const o = orderData.order as Record<string, unknown>;
+      const statusMap: Record<string, string> = {
+        pending: 'Menunggu Pembayaran',
+        paid: 'Sudah Dibayar, Diproses',
+        shipped: 'Sedang Dikirim',
+        delivered: 'Sudah Sampai',
+        cancelled: 'Dibatalkan',
+      };
+      const status = statusMap[(o.status as string) || ''] || (o.status as string) || 'Unknown';
+      response = `✅ **Ditemukan!**\n\n📦 **Order:** ${o.order_number}\n📊 **Status:** ${status}\n💰 **Total:** IDR ${Number(o.total_price).toLocaleString('id-ID')}\n🚚 **Kurir:** ${o.courier || '-'}\n\n`;
+      if (o.tracking_id) {
+        response += `🔢 **Resi:** ${o.tracking_id}`;
+      }
+      response += '\n\nLacak lengkap di halaman Pesanan Saya ya 🙏';
+    } else if (orderData.tracking) {
+      const t = orderData.tracking as Record<string, unknown>;
+      const status = (t.status as string) || 'Unknown';
+      const courier = (t.courier_name as string) || (t.courier_company as string) || 'Kurir';
+      response = `✅ **Ditemukan!**\n\n🔢 **Resi:** ${trackingId}\n🚚 **Kurir:** ${courier}\n📊 **Status:** ${status}\n\n`;
+      const history = (t.history as Array<{ status: string; message: string; occurred_at: string }>) || [];
+      if (history.length > 0) {
+        const last = history[history.length - 1];
+        response += `📍 **Update Terakhir:**\n${last.message}\n\n`;
+      }
+      response += 'Lacak lengkap di menu Lacak Pesanan ya 🙏';
+    } else {
+      response = `✅ **Ditemukan!** Data order dalam proses. Cek halaman Pesanan Saya untuk info lengkap 🙏`;
+    }
+
+    return response;
+  } catch {
+    return 'Maaf, gagal mengambil data tracking. Coba beberapa saat lagi ya 🙏';
+  }
+}
+
 // ─── Classify incoming message ────────────────────────────────────────────────
 function classifyMessage(
   message: string,
@@ -420,6 +501,12 @@ function classifyMessage(
         message: `[FLAGGED - SARA] Kata trigger: "${keyword}" — customer: ${message.slice(0, 100)}`
       };
     }
+  }
+
+  // 2b. Check for Order ID or Resi — PRIORITY: if user sends a number, track it
+  const tracking = extractTrackingId(message);
+  if (tracking) {
+    return { type: 'tracking_lookup', trackingId: tracking.id, source: tracking.source };
   }
 
   // 3. Check English — bilingual friendly response
@@ -812,6 +899,21 @@ export default function SupportChat() {
           setChatMessages(prev => [...prev, autoReplyMsg]);
           await sendAutoReply(targetTicket.id, classification.template.content);
 
+        } else if (classification.type === 'tracking_lookup') {
+          // Real tracking lookup — fetch from database
+          const reply = await handleTrackingLookup(targetTicket.id, classification.trackingId, classification.source);
+          const trackingMsg: SupportMessage = {
+            id: `ar-${Date.now()}`,
+            ticket_id: targetTicket.id,
+            sender_id: null,
+            sender_role: 'admin',
+            message: reply,
+            created_at: new Date().toISOString(),
+            is_auto_reply: true,
+          };
+          setChatMessages(prev => [...prev, trackingMsg]);
+          await sendAutoReply(targetTicket.id, reply);
+
         } else if (classification.type === 'clarify') {
           // Clarify — suggest topic options to user
           const suggestions = classification.suggestions || [];
@@ -963,6 +1065,20 @@ export default function SupportChat() {
               };
               setChatMessages(prev => [...prev, autoReplyMsg]);
               await sendAutoReply(genTicket.id, classification.template.content);
+
+            } else if (classification.type === 'tracking_lookup') {
+              const reply = await handleTrackingLookup(genTicket.id, classification.trackingId, classification.source);
+              const trackingMsg: SupportMessage = {
+                id: `ar-${Date.now()}`,
+                ticket_id: genTicket.id,
+                sender_id: null,
+                sender_role: 'admin',
+                message: reply,
+                created_at: new Date().toISOString(),
+                is_auto_reply: true,
+              };
+              setChatMessages(prev => [...prev, trackingMsg]);
+              await sendAutoReply(genTicket.id, reply);
 
             } else if (classification.type === 'clarify') {
               const suggestions = classification.suggestions || [];
