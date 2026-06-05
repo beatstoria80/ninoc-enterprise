@@ -117,7 +117,10 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'halo', 'hai', 'hallo', 'hi', 'hey', 'yo', 'pagi', 'siang', 'sore', 'malam',
     'apa kabar', 'good morning', 'good evening', 'good night', 'selamat',
     'assalamualaikum', 'waalaikumussalam', 'permisi', 'tanya', 'bertanya',
-    'bales', 'balesan', 'chat', 'kirim pesan', 'hubungi', 'kontak'
+    'bales', 'balesan', 'chat', 'kirim pesan', 'hubungi', 'kontak',
+    // Generic questions
+    'gimana', 'gmn', 'gmn sih', 'bgaimana', 'caranya', 'caranya gimana',
+    'kenapa', 'mengapa', 'apa itu', 'apa sih', 'kok', 'bisa gak', 'bisa nggak'
   ],
   // Return & Refund — product issue requests
   return: [
