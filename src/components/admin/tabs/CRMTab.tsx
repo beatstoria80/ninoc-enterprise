@@ -169,21 +169,21 @@ export function CRMTab() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const doFetch = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/crm/analytics?period=${period}`);
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        console.error('[CRMTab]', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    doFetch();
+  const fetchAnalytics = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/crm/analytics?period=${period}`);
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error('[CRMTab]', err);
+    } finally {
+      setLoading(false);
+    }
   }, [period]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchAnalytics(); }, [fetchAnalytics]);
 
   const s = data?.summary;
 
