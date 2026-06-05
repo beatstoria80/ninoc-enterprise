@@ -137,7 +137,8 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
   shipping: [
     'kirim', 'dikirim', 'pengiriman', 'pesanan', 'order', 'tracking', 'lacak',
     'lacak pesanan', 'lacak order', 'resi', 'no resi', 'nomor resi', 'tracking number',
-    'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'belum sampai', 'kapan sampai',
+    'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'sampe', 'belum sampai',
+    'blm sampe', 'blm nyampe', 'kapan sampai', 'kapan nyampe',
     'estimasi', 'eta', 'ekspedisi', 'kurir', 'antar', 'diantar', 'jne', 'jnt',
     'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', 'cargo',
     'selesai dikirim', 'sedang dikirim', 'dalam perjalanan', 'proses kirim',
@@ -332,7 +333,7 @@ type ClassificationResult =
 // ─── Clarify suggestions per category ──────────────────────────────────────
 const CLARIFY_SUGGESTIONS: Record<string, string[]> = {
   return: ['Retur / Refund barang', 'Tukar ukuran / warna', 'Barang rusak / cacat', 'Salah barang dikirim', 'Lihat status retur'],
-  shipping: ['Lacak nomor resi', 'Cek estimasi pengiriman', 'Pesanan belum sampai', 'Ubah alamat pengiriman', 'Info ongkir'],
+  shipping: ['Lacak dengan Order ID', 'Lacak dengan Resi/AWB', 'Pesanan belum nyampe', 'Cek estimasi pengiriman', 'Info ongkir'],
   payment: ['Konfirmasi pembayaran', 'Gagal bayar', 'Refund transfer', 'Metode pembayaran', 'Cek status payment'],
   product: ['Cek stok produk', 'Tanya ukuran / warna', 'Info harga terbaru', 'Size chart', 'Rekomendasi produk'],
   complaint: ['Keluhan pesanan', 'Barang rusak', 'Lama pengiriman', 'Salah barang', 'Pengiriman belum sampai'],
@@ -351,7 +352,7 @@ const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
   },
   shipping: {
     label: 'Info Pengiriman',
-    content: 'Untuk melacak pesanan Anda, silakan:\n\n1️⃣ Siapkan nomor resi (AWB/waybill)\n2️⃣ Ketik nomor resi di kolom "Lacak Pesanan"\n3️⃣ Atau cek langsung di menu "Pesanan Saya"\n\nJika belum menerima resi, kemungkinan pesanan masih dalam proses pengiriman. Mohon tunggu1-2 hari kerja ya 🙏'
+    content: 'Biar bisa kami lacak, tolong berikan nomor berikut ya:\n\n🔢 **Order ID** — ada di email atau halaman Pesanan Saya\n🔢 **Nomor Resi (AWB)** — jika sudah ada dari ekspedisi\n\nKetik salah satunya di kolom chat, dan kami akan langsung cek statusnya 🙏'
   },
   payment: {
     label: 'Info Pembayaran',
@@ -359,7 +360,7 @@ const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
   },
   product: {
     label: 'Info Produk',
-    content: 'Terima kasih atas pertanyaan Anda tentang produk kami. Silakan ceritakan:\n\n📦 Nama produk atau model yang Anda maksud\n📏 Ukuran, warna, atau varian yang Anda cari\n❓ Pertanyaan spesifik Anda\n\nTim kami akan merespons dengan informasi terbaru 🙏'
+    content: 'Terima kasih sudah bertanya! Biar kami bisa bantu dengan tepat, tolong berikan info berikut ya:\n\n📦 Nama atau model produknya\n📏 Ukuran, warna, atau varian yang Anda cari\n❓ Pertanyaan spesifiknya apa\n\nTim kami akan segera merespons dengan info yang paling akurat 🙏'
   },
   complaint: {
     label: 'Keluhan Pelanggan',
