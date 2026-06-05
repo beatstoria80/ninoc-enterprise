@@ -428,53 +428,65 @@ function classifyMessage(
     }
   }
 
-  // 4. Category matching — FIRST PRIORITY (before greeting)
-  // Scan ALL categories and pick the first match found
+  // 4. Score ALL categories — find all matching keywords
   const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing'];
+  const categoryScores: Record<string, number> = {};
 
   for (const cat of categoryPriority) {
     const keywords = AUTO_REPLY_RULES[cat] || [];
+    let score = 0;
     for (const keyword of keywords) {
-      if (hasKeyword(lower, keyword)) {
-        const tpl = placeholders.find(p => p.category === cat);
-        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
+      if (hasKeyword(lower, keyword)) score++;
+      // Partial match for typos (e.g. "refun" → "refund")
+      if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) score++;
+    }
+    if (score > 0) categoryScores[cat] = score;
+  }
+
+  // 5. If any category matched — build comprehensive reply
+  const matchedCategories = Object.entries(categoryScores)
+    .sort((a, b) => b[1] - a[1]) // sort by score descending
+    .map(([cat]) => cat);
+
+  if (matchedCategories.length > 0) {
+    // Collect all relevant content
+    const parts: string[] = [];
+
+    for (const cat of matchedCategories) {
+      const tpl = placeholders.find(p => p.category === cat);
+      if (tpl) parts.push(tpl.content);
+      else {
         const fb = FALLBACK_CONTENT[cat];
-        if (fb) {
-          return {
-            type: 'auto_reply',
-            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
-            category: cat
-          };
-        }
+        if (fb) parts.push(fb.content);
       }
+    }
+
+    if (parts.length > 0) {
+      const combined = matchedCategories.length > 1
+        ? `Kami memahami beberapa hal dari pesan Anda. Berikut informasi yang bisa membantu:\n\n${parts.map((p, i) => `${'📌'} **${matchedCategories[i].toUpperCase()}**\n${p}`).join('\n\n')}`
+        : parts[0];
+
+      const topCat = matchedCategories[0];
+      const combinedTpl = placeholders.find(p => p.category === topCat) || {
+        id: `combo-${topCat}`,
+        label: `${matchedCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' + ')}`,
+        content: combined,
+        category: topCat
+      };
+
+      return {
+        type: 'auto_reply',
+        template: { ...combinedTpl, content: combined },
+        category: topCat
+      };
     }
   }
 
-  // Fallback: partial/fuzzy match (e.g. "refun" matches "refund")
-  for (const cat of categoryPriority) {
-    const keywords = AUTO_REPLY_RULES[cat] || [];
-    for (const keyword of keywords) {
-      if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) {
-        const tpl = placeholders.find(p => p.category === cat);
-        if (tpl) return { type: 'auto_reply', template: tpl, category: cat };
-        const fb = FALLBACK_CONTENT[cat];
-        if (fb) {
-          return {
-            type: 'auto_reply',
-            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
-            category: cat
-          };
-        }
-      }
-    }
-  }
-
-  // 5. No category matched — use greeting or clarify
+  // 6. No category matched — check for greeting keywords
   const greetingKeywords = AUTO_REPLY_RULES['greeting'] || [];
   const hasGreeting = greetingKeywords.some(k => hasKeyword(lower, k));
 
   if (hasGreeting) {
-    // Friendly greeting — check for pending context from previous messages
     const fb = FALLBACK_CONTENT['greeting'];
     return {
       type: 'auto_reply',
@@ -483,7 +495,7 @@ function classifyMessage(
     };
   }
 
-  // 6. Truly unclear — clarify with suggestions
+  // 7. Truly unclear — clarify with suggestions
   const suggestions = CLARIFY_SUGGESTIONS['general'] || [
     'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
   ];
