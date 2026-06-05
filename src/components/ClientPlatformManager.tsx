@@ -20,7 +20,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isLegalPage = pathname === '/legal';
   const isHelpPage = pathname === '/help';
   const isTrackPage = pathname === '/track';
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage;
+  const isProfilePage = pathname?.startsWith('/profile');
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -45,7 +46,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       <MobileLayout
         cartCount={items.length}
         hideTabBar={pathname === '/checkout'}
-        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track'}
+        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile')}
       >
         {children}
       </MobileLayout>
