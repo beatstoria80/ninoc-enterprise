@@ -503,15 +503,15 @@ export default function GlobalHeader() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: DURATION.normal }}
-            className="fixed inset-0 z-[300] bg-cr noise flex flex-col overflow-hidden"
-          >
-            {/* Header Area */}
+            className="fixed inset-0 z-[300] bg-cr noise flex items-center justify-center overflow-auto">
+            {/* Cart Content — centered max-width container */}
+            <div className="w-full max-w-[1200px] h-full flex flex-col">
             <motion.div
               initial={{ y: -50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -50, opacity: 0 }}
               transition={{ duration: DURATION.medium, ease: EASING.out }}
-              className="px-3 md:px-8 py-3 md:py-6 flex items-center justify-between border-b border-ink/5"
+              className="px-4 md:px-10 py-3 md:py-6 flex items-center justify-between border-b border-ink/5"
             >
               <div className="flex items-center gap-4 md:gap-8">
                 <motion.div
