@@ -19,7 +19,7 @@ export default function LegalPage() {
           { id: "02", title: "Overview", text: "By using this Site, you agree to these Terms, guidelines and rules. If you do not agree, you must exit the Site immediately." },
           { id: "03", title: "Modification", text: "NINOC reserves the right to change prices and content at any time without prior notice. Continued use constitutes agreement." },
           { id: "04", title: "Shipment", text: "Risk of loss passes to you upon our delivery to the carrier. All items are made pursuant to a shipment contract." },
-          { id: "05", title: "Returns", text: "Items must be returned within 7 days in original condition. Sale items are not eligible for returns." }
+          { id: "05", title: "Returns", text: "Items must be returned within 3 days (3x24 hours) in unused, original condition." }
         ]
       },
       privacy: {
@@ -41,7 +41,7 @@ export default function LegalPage() {
           { id: "02", title: "Ringkasan", text: "Dengan menggunakan Situs ini, Anda menyetujui Syarat dan Ketentuan ini, serta ketentuan, pedoman, atau aturan lain yang berlaku. Jika tidak setuju, silakan tinggalkan Situs." },
           { id: "03", title: "Perubahan", text: "NINOC berhak mengubah harga dan konten kapan saja tanpa pemberitahuan. Penggunaan berkelanjutan adalah bentuk persetujuan." },
           { id: "04", title: "Pengiriman", text: "Risiko kehilangan berpindah tangan setelah penyerahan barang ke pihak ekspedisi berdasarkan kontrak pengiriman." },
-          { id: "05", title: "Pengembalian", text: "Barang harus dikembalikan dalam 7 hari dengan kondisi asli. Barang diskon tidak dapat dikembalikan." }
+          { id: "05", title: "Pengembalian", text: "Pengajuan maksimal 3x24 jam setelah barang diterima. Produk belum digunakan dan dalam kondisi lengkap." }
         ]
       },
       privacy: {
