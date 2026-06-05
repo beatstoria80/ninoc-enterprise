@@ -141,7 +141,8 @@ export default function TrackPage() {
                 value={orderNumber}
                 onChange={e => setOrderNumber(e.target.value)}
                 placeholder="NC-20250604-XXXX"
-                className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none placeholder:text-ink/20 uppercase tracking-wider"
+                className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/20 uppercase tracking-wider"
+                aria-label="Order number"
               />
             </div>
             <div className="space-y-1">
@@ -151,7 +152,8 @@ export default function TrackPage() {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="08xxxxxxxxxx"
-                className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none placeholder:text-ink/20"
+                className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/20"
+                aria-label="Phone number"
               />
             </div>
           </div>
@@ -163,7 +165,7 @@ export default function TrackPage() {
           <button
             type="submit"
             disabled={loading || !orderNumber.trim() || !phone.trim()}
-            className="mt-3 w-full py-3 bg-rose text-white text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="mt-3 w-full py-3 bg-rose text-white text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
           >
             {loading ? 'Loading…' : 'Lacak Pesanan'}
           </button>
@@ -259,7 +261,8 @@ export default function TrackPage() {
                   {order.tracking_id && (
                     <button
                       onClick={() => navigator.clipboard.writeText(order.tracking_id!)}
-                      className="text-[8px] font-semibold uppercase tracking-widest text-rose hover:underline"
+                      className="text-[8px] font-semibold uppercase tracking-widest text-rose hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm"
+                      aria-label="Copy tracking ID"
                     >
                       Copy
                     </button>
@@ -319,10 +322,10 @@ export default function TrackPage() {
 
             {/* CTA */}
             <div className="flex gap-3 pt-2">
-              <Link href="/help" className="flex-1 py-3 text-[9px] uppercase tracking-widest font-semibold text-center border border-ink/10 text-ink/50 hover:border-ink/20 hover:text-ink transition-colors">
+              <Link href="/help" className="flex-1 py-3 text-[9px] uppercase tracking-widest font-semibold text-center border border-ink/10 text-ink/50 hover:border-ink/20 hover:text-ink transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
                 Help Guide
               </Link>
-              <button onClick={() => { setOrder(null); setSearched(false); setOrderNumber(''); setPhone(''); }} className="flex-1 py-3 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold text-center hover:bg-rose/90 transition-colors">
+              <button onClick={() => { setOrder(null); setSearched(false); setOrderNumber(''); setPhone(''); }} className="flex-1 py-3 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold text-center hover:bg-rose/90 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-sm">
                 Lacak Pesanan Lain
               </button>
             </div>

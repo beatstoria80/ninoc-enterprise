@@ -13,7 +13,7 @@ export default function GlobalFooter() {
 
         {/* Brand Column */}
         <div className="flex flex-col gap-0.5 w-full md:max-w-[200px] lg:max-w-xs">
-          <Link href="/" className="inline-block">
+          <Link href="/" className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             <span className="text-base font-display font-medium italic tracking-tighter text-ink leading-none">{storeName}</span>
           </Link>
           <p className="text-[8px] font-medium leading-relaxed text-ink/40 mt-1 uppercase tracking-widest">
@@ -35,7 +35,7 @@ export default function GlobalFooter() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none"
+                className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm"
               >
                 {item.label}
               </Link>
@@ -46,13 +46,13 @@ export default function GlobalFooter() {
         {/* Legal */}
         <div className="flex flex-col gap-1.5">
           <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Legal Info</h4>
-          <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+          <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             Terms & Conditions
           </Link>
-          <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+          <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             Help Guide
           </Link>
-          <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none">
+          <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             Track Order
           </Link>
         </div>
@@ -69,13 +69,13 @@ export default function GlobalFooter() {
             </div>
             <div className="flex items-center gap-1.5">
               <Mail size={9} className="text-rose flex-shrink-0" />
-              <a href="mailto:beatstoria.ai@gmail.com" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors lowercase">
+              <a href="mailto:beatstoria.ai@gmail.com" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
                 beatstoria.ai@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-1.5">
               <Phone size={9} className="text-rose flex-shrink-0" />
-              <a href="tel:+628211983774" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors">
+              <a href="tel:+628211983774" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
                 +62 8211983774
               </a>
             </div>

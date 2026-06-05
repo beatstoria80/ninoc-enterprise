@@ -43,6 +43,19 @@ body {
   overflow-y: auto;
 }
 
+/* Detect reduced motion and apply attribute */
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    body {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
 /* Minimal Elegant Scrollbar Utility - Archive Aesthetic */
 .minimal-scroll {
   scrollbar-width: thin !important;
@@ -282,6 +295,62 @@ input:focus, textarea:focus, select:focus {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Focus ring utilities — WCAG accessible */
+.focus-ring {
+  @apply outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2;
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  @apply absolute -top-10 left-4 z-[9999] bg-rose text-white px-4 py-2 text-sm font-medium;
+  transition: top 0.2s ease;
+}
+.skip-to-content:focus {
+  @apply top-4;
+}
+
+/* High contrast interactive elements */
+.interactive {
+  @apply relative cursor-pointer;
+}
+.interactive::after {
+  content: '';
+  @apply absolute inset-0 rounded-md;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.interactive:focus-visible::after {
+  @apply outline-2 outline-rose outline-offset-2;
+  opacity: 1;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable parallax, floating, continuous animations */
+  .animate-blob,
+  .badge-pulse,
+  .shimmer {
+    animation: none !important;
+  }
+
+  /* Disable Framer Motion effects */
+  [data-reduced-motion="true"] * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* ============================================

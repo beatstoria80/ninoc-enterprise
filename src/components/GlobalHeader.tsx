@@ -72,6 +72,26 @@ function PressScale({ children, className = '', onClick, disabled }: {
   );
 }
 
+function PressButton({ children, className = '', onClick, disabled }: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <motion.button
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: disabled ? 1 : 0.97 }}
+      transition={{ duration: DURATION.micro, ease: EASING.out }}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(className, "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md")}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════
 // NAV LINK WITH SPRING HOVER
 // ═══════════════════════════════════════════════════════════════
@@ -88,7 +108,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       prefetch={false}
       href={href}
-      className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose relative group"
+      className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -567,16 +587,11 @@ export default function GlobalHeader() {
                   </AnimatePresence>
                 ) : (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 0.2, scale: 1 }}
                     className="h-full flex flex-col items-center justify-center text-center space-y-4"
                   >
-                    <motion.div
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: EASING.inOut }}
-                    >
+                    <div className="text-ink/20">
                       <ShoppingCart size={36} />
-                    </motion.div>
+                    </div>
                     <p className="text-[10px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
                   </motion.div>
                 )}
@@ -650,7 +665,7 @@ export default function GlobalHeader() {
                         <Link
                           href="/checkout"
                           onClick={() => setIsCartOpen(false)}
-                          className="w-full bg-ink text-white py-3.5 rounded-none font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group"
+                          className="w-full bg-ink text-white py-3.5 font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
                         >
                           <motion.span
                             whileHover={{ x: 4 }}
@@ -660,14 +675,12 @@ export default function GlobalHeader() {
                             <span>Checkout</span>
                           </motion.span>
                         </Link>
-                        <motion.div
+                        <div
                           className="flex items-center justify-center gap-2 opacity-30 grayscale"
-                          animate={{ opacity: [0.3, 0.5, 0.3] }}
-                          transition={{ repeat: Infinity, duration: 3, ease: EASING.inOut }}
                         >
                           <ShieldCheck size={12} />
                           <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
-                        </motion.div>
+                        </div>
                       </motion.div>
                     </div>
                   </motion.div>

@@ -9,6 +9,12 @@ import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';
 import DragSlider from '@/components/DragSlider';
 import { useBrandColor } from '@/components/BrandProvider';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM MODERN ICONS — NINOC STUDIO
@@ -135,19 +141,23 @@ function PressButton({ children, className = '', onClick, href, whileHover, whil
   whileHover?: Parameters<typeof motion.div>[0]['whileHover'];
   whileTap?: Parameters<typeof motion.div>[0]['whileTap'];
 }) {
-  const content = (
+  const inner = (
     <motion.div
       whileHover={whileHover as any}
       whileTap={whileTap as any}
       transition={{ duration: DURATION.micro, ease: EASING.out }}
-      className={className}
+      className={cn(className, "cursor-pointer")}
     >
       {children}
     </motion.div>
   );
 
-  if (href) return <Link href={href}>{content}</Link>;
-  return <button onClick={onClick}>{content}</button>;
+  if (href) return <Link prefetch={false} href={href}>{inner}</Link>;
+  return (
+    <button onClick={onClick} type="button" className="w-auto bg-transparent border-none p-0 m-0">
+      {inner}
+    </button>
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -161,7 +171,7 @@ const PORTRAIT_IMAGES = [
   "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1000&auto=format&fit=crop",
 ];
-const CAROUSEL_INTERVAL = 200;
+const CAROUSEL_INTERVAL = 150;
 
 function PortraitImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -566,12 +576,7 @@ export default function Home() {
               transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
               className="flex items-center gap-2 text-rose"
             >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: EASING.inOut }}
-              >
-                <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              </motion.div>
+              <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
               <span className="text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
             </motion.div>
 
@@ -692,12 +697,9 @@ export default function Home() {
                 transition={{ delay: 0.5, duration: DURATION.medium, ease: EASING.out }}
               >
                 <div className="flex items-center gap-3">
-                  <motion.div
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: EASING.inOut }}
-                  >
-                    <ShieldCheck size={18} className="text-rose" />
-                  </motion.div>
+                  <div className="text-rose">
+                    <ShieldCheck size={18} />
+                  </div>
                   <span className="text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                 </div>
                 <div className="text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</div>
@@ -717,9 +719,9 @@ export default function Home() {
           className="flex items-end justify-between mb-4 md:mb-6"
         >
           <div className="flex items-center gap-2">
-            <motion.div animate={{ rotate: [0, 360] }} transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}>
-              <Grid3X3 size={12} className="text-rose" />
-            </motion.div>
+            <div className="text-rose">
+              <Grid3X3 size={12} />
+            </div>
             <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
           </div>
           <PressButton href="/category" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">

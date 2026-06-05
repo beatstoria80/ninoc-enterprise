@@ -83,6 +83,7 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         {/* Structured Data — Organization */}
@@ -135,6 +136,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col minimal-scroll">
+        {/* Skip to main content — Accessibility */}
+        <a href="#main-content" className="skip-to-content">Skip to content</a>
+        <script dangerouslySetInnerHTML={{ __html: `try{var m=window.matchMedia('(prefers-reduced-motion: reduce)');document.body.dataset.reducedMotion=m.matches?'true':'false';m.addEventListener('change',function(e){document.body.dataset.reducedMotion=e.matches?'true':'false'});}catch(e){}` }} />
         <SmoothScrollProvider>
           <Script
             src={
@@ -148,7 +152,9 @@ export default function RootLayout({
           <SecurityEnforcer />
           <ClientPlatformManager>
             <BrandProvider>
-              {children}
+              <main id="main-content">
+                {children}
+              </main>
             </BrandProvider>
           </ClientPlatformManager>
           <div className="print:hidden">
