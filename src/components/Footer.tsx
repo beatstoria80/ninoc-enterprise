@@ -55,6 +55,9 @@ export default function GlobalFooter() {
           <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             Track Order
           </Link>
+          <Link href="/retur" className="text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+            Retur & Refund
+          </Link>
         </div>
 
         {/* Base */}

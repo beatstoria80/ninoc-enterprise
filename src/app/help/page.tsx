@@ -92,7 +92,7 @@ const DEFAULT_VALUES: Record<string, any> = {
   help_guide_return: {
     policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 2 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.\n• Bukti unboxing video WAJIB — 1-shot tanpa edit, potong, atau henti.\n• Label & tag masih menempel.\n• Timestamp/waktu terlihat jelas di rekaman.',
     process: '1. Buka fitur Support Chat di pojok kanan bawah layar.\n2. Buat tiket baru dengan memilih topik "Retur & Refund".\n3. Sertakan nomor pesanan, foto produk, deskripsi kendala, dan bukti video unboxing (1-shot).\n4. Tim kami akan melakukan verifikasi dalam 1–2 hari kerja.\n5. Refund diproses 3–7 hari kerja setelah persetujuan.\n\nPanduan Video Unboxing:\n\n• Rekam saat membuka paket dari keadaan tertutup.\n• Tunjukkan kondisi barang dengan jelas.\n• WAJIB 1-shot — tanpa edit, potong, henti, atau sisipkan adegan.\n• Timestamp/waktu harus terlihat jelas.\n• Minimal durasi 30 detik.',
-    notes: '• Bukti video 1-shot tanpa edit adalah WAJIB — tanpa video, pengajuan tidak dapat diproses.\n• Refund dikembalikan melalui metode pembayaran awal atau transfer bank.\n• Biaya pengiriman retur ditanggung sesuai hasil verifikasi.\n• NINOC berhak menolak pengajuan yang tidak memenuhi syarat.',
+    notes: '• Bukti video 1-shot tanpa edit adalah WAJIB — tanpa video, pengajuan tidak dapat diproses.\n• Refund dikembalikan melalui metode pembayaran awal atau transfer bank.\n• Biaya pengiriman retur ditanggung sesuai hasil verifikasi.\n• NINOC berhak menolak pengajuan yang tidak memenuhi syarat.\n• Pengajuan bisa dilakukan tanpa login — cukup siapkan Order ID dan email aktif.',
   },
   help_guide_shipping: {
     info: 'Terima kasih telah berbelanja di toko kami.\n\nKami memproses pesanan setiap hari kerja (Senin–Sabtu) pukul 08.00–17.00 WIB.\n\nEstimasi Pengiriman:\n\nJabodetabek: 1–2 hari kerja\nPulau Jawa: 2–4 hari kerja\nLuar Pulau Jawa: 3–7 hari kerja\n\nKetentuan Pengiriman:\n\n• Pesanan yang masuk sebelum pukul 15.00 WIB akan diproses di hari yang sama.\n• Nomor resi akan dikirim otomatis setelah pesanan dikirim.',
@@ -352,7 +352,7 @@ export default function HelpPage() {
                     <div className="w-7 h-7 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
                       <span className="text-ink/30">{activeMeta?.icon}</span>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h2 className="text-[13px] font-medium uppercase tracking-[0.15em] text-ink">
                         {activeMeta?.label}
                       </h2>
@@ -360,6 +360,14 @@ export default function HelpPage() {
                         {activeItem.key.replace('help_guide_', '').replace(/_/g, ' ').toUpperCase()}
                       </p>
                     </div>
+                    {activeSection === 'help_guide_return' && (
+                      <Link
+                        href="/retur"
+                        className="shrink-0 px-3 py-1.5 bg-rose text-white text-[8px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
+                      >
+                        Ajukan Retur
+                      </Link>
+                    )}
                   </div>
                   {/* Section Body */}
                   <SectionContent value={activeItem.value} />

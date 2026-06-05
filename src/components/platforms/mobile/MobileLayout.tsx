@@ -137,9 +137,10 @@ interface MenuItemProps {
   index: number;
   onClick: () => void;
   isActive?: boolean;
+  highlight?: boolean;
 }
 
-function MenuItem({ href, label, index, onClick, isActive = false }: MenuItemProps) {
+function MenuItem({ href, label, index, onClick, isActive = false, highlight = false }: MenuItemProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -155,13 +156,15 @@ function MenuItem({ href, label, index, onClick, isActive = false }: MenuItemPro
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
           "flex items-center justify-between px-4 py-4 border-b border-ink/5 group transition-colors",
-          isActive ? "bg-ink/5" : "hover:bg-ink/5"
+          isActive ? "bg-ink/5" : "hover:bg-ink/5",
+          highlight && "bg-rose/[0.03] hover:bg-rose/[0.05]"
         )}
       >
         <motion.span
           className={cn(
             "text-[11px] font-medium uppercase tracking-[0.3em]",
-            isActive ? "text-rose" : "text-ink group-hover:text-rose"
+            isActive ? "text-rose" : "text-ink group-hover:text-rose",
+            highlight && "text-rose font-semibold"
           )}
           animate={{ x: isHovered ? 4 : 0 }}
           transition={{ duration: DURATION.fast }}
@@ -172,7 +175,13 @@ function MenuItem({ href, label, index, onClick, isActive = false }: MenuItemPro
           animate={{ x: isHovered ? 0 : -4, opacity: isHovered ? 1 : 0.3 }}
           transition={{ duration: DURATION.fast }}
         >
-          <ArrowRightIcon />
+          {highlight ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          ) : (
+            <ArrowRightIcon />
+          )}
         </motion.div>
       </Link>
     </motion.div>
@@ -287,6 +296,7 @@ export default function MobileLayout({
     { href: '/logbook', label: 'Logbook' },
     { href: '/track', label: 'Lacak Pesanan' },
     { href: '/about', label: 'About' },
+    { href: '/retur', label: 'Retur & Refund', highlight: true },
   ];
 
   return (
@@ -498,6 +508,7 @@ export default function MobileLayout({
                     index={index}
                     onClick={() => setIsMenuOpen(false)}
                     isActive={pathname === item.href}
+                    highlight={item.highlight}
                   />
                 ))}
               </div>
