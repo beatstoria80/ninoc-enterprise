@@ -173,32 +173,14 @@ export default function ProfilePage() {
   return (
     <main className={cn("min-h-screen bg-white selection:bg-ink selection:text-white pb-32 font-medium", isIPhone && "ios-mobile-layout")}>
       {cropImageSrc && (
-        <ImageCropper 
+        <ImageCropper
           imageSrc={cropImageSrc}
           onClose={() => setCropImageSrc(null)}
           onCropComplete={handleCropComplete}
         />
       )}
 
-      {/* MOBILE NAV BAR */}
-      {isMobile && (
-        <nav className={cn(
-          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
-          isIPhone && "pt-[env(safe-area-inset-top)]"
-        )}>
-          <div className="flex items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-center gap-2 text-ink/40">
-              <ArrowLeft size={16} />
-            </Link>
-            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
-            <button onClick={handleLogout} className="w-8 h-8 flex items-center justify-end text-ink/40 hover:text-rose transition-colors">
-              <LogOut size={16} />
-            </button>
-          </div>
-        </nav>
-      )}
-
-      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-32 md:pt-32")}>
+      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-6 md:pt-8")}>
 
         {!isMobile && (
         <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-6 group">
