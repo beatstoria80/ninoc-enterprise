@@ -139,7 +139,8 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'lacak pesanan', 'lacak order', 'resi', 'no resi', 'nomor resi', 'tracking number',
     'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'belum sampai', 'kapan sampai',
     'estimasi', 'eta', 'ekspedisi', 'kurir', 'antar', 'diantar', 'jne', 'jnt',
-    'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', ' Cargo'
+    'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', 'cargo',
+    'selesai dikirim', 'sedang dikirim', 'dalam perjalanan', 'proses kirim'
   ],
   // Payment & Transaction
   payment: [
@@ -177,7 +178,9 @@ const AUTO_REPLY_RULES: Record<string, string[]> = {
     'tidak dapat', 'tidak sampai', 'tidak ada', 'belum terima', 'belum dapet',
     'masalah', 'problem', 'issue', 'belum sampai', 'overdue', 'hilang', 'rusak parah',
     'komplain', 'complain', 'compalin', 'komplain', 'komplen', 'komplai', 'complaint',
-    'kesal', 'marah', 'emosi', 'prot', 'protest', 'kesal', 'ngadu', 'aduan'
+    'kesal', 'marah', 'emosi', 'prot', 'protest', 'kesal', 'ngadu', 'aduan',
+    'barang belum', 'barang tidak', 'barang belum sampai', 'belum barang',
+    'ditunda', 'delay', 'mundur', 'cancel', 'dibatalkan'
   ],
   // General Inquiry
   general: [
