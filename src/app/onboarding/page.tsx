@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Package, CheckCircle, AlertTriangle, X, Shield, Lock, LogOut, ChevronDown, Check, User, MapPin } from 'lucide-react';
+import { ArrowRight, Package, CheckCircle, AlertTriangle, Shield, Lock, LogOut, ChevronDown, Check, User, MapPin, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
@@ -17,6 +17,121 @@ interface Province { id: string; name: string; }
 interface Regency { id: string; name: string; }
 interface District { id: string; name: string; }
 
+// ─── Custom Dropdown Component ───────────────────────────────────────────────
+function CustomDropdown({
+  value,
+  options,
+  onChange,
+  placeholder,
+  disabled,
+  searchable = false,
+}: {
+  value: string;
+  options: { id: string; name: string }[];
+  onChange: (id: string, name: string) => void;
+  placeholder: string;
+  disabled?: boolean;
+  searchable?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
+  const selected = options.find(o => o.id === value);
+
+  const filtered = searchable && search
+    ? options.filter(o => o.name.toLowerCase().includes(search.toLowerCase()))
+    : options;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => { if (!disabled) setOpen(o => !o); setSearch(''); }}
+        className={cn(
+          "w-full flex items-center justify-between bg-white border rounded-lg py-3 px-4 text-sm transition-colors",
+          open ? "border-rose ring-2 ring-rose/10" : "border-ink/10 hover:border-ink/20",
+          disabled && "opacity-50 cursor-not-allowed",
+          !selected && "text-ink/30"
+        )}
+      >
+        <span className={cn(selected ? "text-ink font-medium" : "text-ink/30")}>
+          {selected ? selected.name : placeholder}
+        </span>
+        <ChevronDown
+          size={16}
+          className={cn(
+            "text-ink/20 shrink-0 transition-transform",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 right-0 mt-1 bg-white border border-ink/10 rounded-lg shadow-xl z-50 overflow-hidden"
+          >
+            {searchable && (
+              <div className="p-2 border-b border-ink/5">
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/20" />
+                  <input
+                    autoFocus
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="Ketik untuk cari..."
+                    className="w-full pl-8 pr-3 py-2 text-xs border border-ink/10 rounded-md outline-none focus:border-rose/40 placeholder:text-ink/20"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="max-h-48 overflow-y-auto minimal-scroll">
+              {filtered.length === 0 ? (
+                <div className="px-4 py-6 text-center">
+                  <p className="text-xs text-ink/30">Tidak ditemukan</p>
+                </div>
+              ) : (
+                filtered.map(opt => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => { onChange(opt.id, opt.name); setOpen(false); setSearch(''); }}
+                    className={cn(
+                      "w-full px-4 py-2.5 text-left text-sm flex items-center justify-between hover:bg-rose/5 transition-colors",
+                      opt.id === value && "bg-rose/5"
+                    )}
+                  >
+                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-ink")}>
+                      {opt.name}
+                    </span>
+                    {opt.id === value && <Check size={14} className="text-rose shrink-0" />}
+                  </button>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Main Page ──────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router = useRouter();
   const { isMobile, isIPhone } = useDevice();
@@ -133,7 +248,6 @@ export default function OnboardingPage() {
   );
 
   const inputStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm font-medium text-ink outline-none placeholder:text-ink/20 transition-colors";
-  const selectStyle = "w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-4 text-sm font-medium text-ink outline-none appearance-none cursor-pointer transition-colors";
 
   const steps = [
     { id: 1, label: 'Identitas Diri', icon: User },
@@ -293,42 +407,41 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {/* Dropdowns */}
+                  {/* Custom Dropdowns */}
                   <div className="space-y-3">
-                    <div className="relative">
-                      <select
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Provinsi</label>
+                      <CustomDropdown
                         value={f.prov}
-                        onChange={e => set('prov', e.target.value)}
-                        className={selectStyle}
-                      >
-                        <option value="">Pilih Provinsi</option>
-                        {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                      </select>
-                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                        options={provinces}
+                        onChange={(id, name) => set('prov', id)}
+                        placeholder="Pilih Provinsi"
+                        searchable
+                      />
                     </div>
-                    <div className="relative">
-                      <select
+
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kota / Kabupaten</label>
+                      <CustomDropdown
                         value={f.city}
-                        onChange={e => set('city', e.target.value)}
+                        options={regencies}
+                        onChange={(id, name) => set('city', id)}
+                        placeholder="Pilih Kota/Kabupaten"
                         disabled={!f.prov}
-                        className={cn(selectStyle, !f.prov && "opacity-50 cursor-not-allowed")}
-                      >
-                        <option value="">Pilih Kota/Kabupaten</option>
-                        {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                      </select>
-                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                        searchable
+                      />
                     </div>
-                    <div className="relative">
-                      <select
+
+                    <div>
+                      <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50 mb-2 block">Kecamatan</label>
+                      <CustomDropdown
                         value={f.dist}
-                        onChange={e => set('dist', e.target.value)}
+                        options={districts}
+                        onChange={(id, name) => set('dist', id)}
+                        placeholder="Pilih Kecamatan"
                         disabled={!f.city}
-                        className={cn(selectStyle, !f.city && "opacity-50 cursor-not-allowed")}
-                      >
-                        <option value="">Pilih Kecamatan</option>
-                        {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                      </select>
-                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/20 pointer-events-none" />
+                        searchable
+                      />
                     </div>
                   </div>
 
