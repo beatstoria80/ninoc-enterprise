@@ -113,7 +113,7 @@ function SplitText({ text }: { text: string }) {
   const paragraphs = text.split(/\n\s*\n/).filter(Boolean);
   if (paragraphs.length <= 1) {
     return (
-      <div className="text-[12px] leading-[1.9] whitespace-pre-line text-ink/60 font-medium">
+      <div className="text-[13px] leading-[1.9] whitespace-pre-line text-ink font-medium">
         {text}
       </div>
     );
@@ -122,7 +122,7 @@ function SplitText({ text }: { text: string }) {
   const col1 = paragraphs.slice(0, mid).join('\n\n');
   const col2 = paragraphs.slice(mid).join('\n\n');
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 text-[12px] leading-[1.9] text-ink/60 font-medium">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 text-[13px] leading-[1.9] text-ink font-medium">
       <div className="whitespace-pre-line">{col1}</div>
       <div className="whitespace-pre-line">{col2}</div>
     </div>
@@ -142,8 +142,8 @@ function SectionContent({ value }: { value: any }) {
               <IconWhatsApp />
             </div>
             <div>
-              <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">WhatsApp</p>
-              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.wa}</p>
+              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">WhatsApp</p>
+              <p className="text-[13px] font-medium text-ink mt-0.5">{value.wa}</p>
             </div>
           </div>
         )}
@@ -153,8 +153,8 @@ function SectionContent({ value }: { value: any }) {
               <IconEmail />
             </div>
             <div>
-              <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">Email</p>
-              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.email}</p>
+              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Email</p>
+              <p className="text-[13px] font-medium text-ink mt-0.5">{value.email}</p>
             </div>
           </div>
         )}
@@ -164,13 +164,13 @@ function SectionContent({ value }: { value: any }) {
               <IconClock />
             </div>
             <div>
-              <p className="text-[7px] uppercase tracking-[0.2em] text-ink/30 font-medium">Jam Operasional</p>
-              <p className="text-[11px] font-semibold text-ink mt-0.5">{value.hours}</p>
+              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Jam Operasional</p>
+              <p className="text-[13px] font-medium text-ink mt-0.5">{value.hours}</p>
             </div>
           </div>
         )}
         {value.notes && (
-          <p className="text-[10px] leading-[1.8] text-ink/50 font-medium pt-2 border-t border-ink/5">{value.notes}</p>
+          <p className="text-[13px] leading-[1.8] text-ink font-medium pt-2 border-t border-ink/5">{value.notes}</p>
         )}
       </div>
     );
@@ -183,12 +183,12 @@ function SectionContent({ value }: { value: any }) {
         <SplitText text={value.guide} />
         {value.accounts?.length > 0 && (
           <div className="pt-3 border-t border-ink/5">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30 mb-2">Rekening Tujuan</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Rekening Tujuan</p>
             <div className="space-y-1.5">
               {value.accounts.map((acc: string, i: number) => (
                 <div key={i} className="flex items-start gap-2 p-2 border border-ink/8 bg-ink/[0.015]">
-                  <span className="text-[8px] font-semibold text-rose/40 mt-0.5 w-4 text-center">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-[10px] font-medium text-ink">{acc}</span>
+                  <span className="text-[10px] font-medium text-rose mt-0.5 w-4 text-center">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-[13px] font-medium text-ink">{acc}</span>
                 </div>
               ))}
             </div>
@@ -204,7 +204,7 @@ function SectionContent({ value }: { value: any }) {
       <div className="space-y-3">
         <SplitText text={value.info} />
         {value.area && (
-          <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/50 pt-3 border-t border-ink/5">{value.area}</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-rose pt-3 border-t border-ink/5">{value.area}</p>
         )}
       </div>
     );
@@ -216,20 +216,20 @@ function SectionContent({ value }: { value: any }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {value.policy && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-rose/60 mb-2">Kebijakan Retur</p>
-            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/60 font-medium">{value.policy}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-rose mb-2">Kebijakan Retur</p>
+            <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.policy}</p>
           </div>
         )}
         {value.process && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/40 mb-2">Alur Proses</p>
-            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/60 font-medium">{value.process}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Alur Proses</p>
+            <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.process}</p>
           </div>
         )}
         {value.notes && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[8px] uppercase tracking-[0.2em] font-semibold text-ink/30 mb-2">Catatan</p>
-            <p className="text-[10px] leading-[1.8] whitespace-pre-line text-ink/50 font-medium">{value.notes}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Catatan</p>
+            <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.notes}</p>
           </div>
         )}
       </div>
@@ -332,7 +332,7 @@ export default function HelpPage() {
                       `}>
                         {section.icon}
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.08em]">{section.label}</span>
+                      <span className="text-[10px] font-medium uppercase tracking-[0.08em]">{section.label}</span>
                     </button>
                   );
                 })}
@@ -353,10 +353,10 @@ export default function HelpPage() {
                       <span className="text-ink/30">{activeMeta?.icon}</span>
                     </div>
                     <div>
-                      <h2 className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink">
+                      <h2 className="text-[13px] font-medium uppercase tracking-[0.15em] text-ink">
                         {activeMeta?.label}
                       </h2>
-                      <p className="text-[8px] text-ink/25 uppercase tracking-[0.2em]">
+                      <p className="text-[9px] text-ink/50 uppercase tracking-[0.2em]">
                         {activeItem.key.replace('help_guide_', '').replace(/_/g, ' ').toUpperCase()}
                       </p>
                     </div>
