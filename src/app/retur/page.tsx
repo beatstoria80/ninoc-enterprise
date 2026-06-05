@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw, Shield, Clock, Video, Check } from 'lucide-react';
+import { RefreshCw, Shield, Clock, Video, Check } from 'lucide-react';
 import { ReturForm } from '@/components/ReturForm';
 import { ReturStatus } from '@/components/ReturStatus';
 import { supabase } from '@/lib/supabase';
@@ -14,10 +14,10 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const TRUST_BADGES = [
-  { icon: Clock, label: '2x24 Jam', desc: 'Batas klaim' },
-  { icon: Video, label: '1-Shot', desc: 'Video tanpa edit' },
-  { icon: Shield, label: 'Aman', desc: 'Data terenkripsi' },
+const TRUST_ITEMS = [
+  { icon: Clock, label: '2x24 Jam', sub: 'Batas klaim' },
+  { icon: Video, label: '1-Shot', sub: 'Video tanpa edit' },
+  { icon: Shield, label: 'Aman', sub: 'Data terenkripsi' },
 ];
 
 export default function ReturPage() {
@@ -38,134 +38,192 @@ export default function ReturPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ── TOP BAR ── Tidak overlap dengan global header ── */}
-      <div className="sticky top-0 z-20 bg-white border-b border-ink/5">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
+      {/* ── PAGE HEADER (mirrors GlobalHeader height, no overlap) ── */}
+      <div className="pt-32 md:pt-32 px-6 md:px-12 max-w-[1400px] mx-auto">
+        <div className="flex items-baseline gap-4 border-b border-ink/5 pb-2">
           <Link
             href="/"
             className="flex items-center gap-2 text-ink/30 hover:text-rose transition-colors group"
           >
-            <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-[9px] uppercase tracking-widest">Home</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="group-hover:-translate-x-0.5 transition-transform">
+              <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-rose/10 rounded-full flex items-center justify-center">
-              <RefreshCw size={10} className="text-rose" />
-            </div>
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-ink">Retur & Refund</span>
-          </div>
-          <div className="w-16" />
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="max-w-lg mx-auto px-5 flex gap-0">
-          {[
-            { id: 'form' as const, label: 'Ajukan Retur' },
-            { id: 'status' as const, label: 'Status' },
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setView(tab.id)}
-              className={cn(
-                'pb-2.5 px-3 text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors',
-                view === tab.id
-                  ? 'border-rose text-rose'
-                  : 'border-transparent text-ink/30 hover:text-ink/60'
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <h1 className="font-display font-medium italic text-xl tracking-tighter uppercase text-ink">Return & Refund</h1>
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div className="max-w-lg mx-auto px-5 py-6">
+      {/* ── MAIN CONTENT — 2-GRID LAYOUT ── */}
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-6 pb-20">
 
-        {/* ANIMATE VIEW SWITCH */}
-        <AnimatePresence mode="wait">
-          {view === 'form' ? (
-            <motion.div key="form" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+        {/* ── LEFT: FORM / STATUS ── */}
+        <div className="lg:grid lg:grid-cols-[1fr_340px] gap-6">
 
-              {/* HERO SECTION */}
-              <div className="mb-6">
-                {/* Trust Badges Row */}
-                <div className="grid grid-cols-3 gap-2 mb-5">
-                  {TRUST_BADGES.map((badge) => {
-                    const Icon = badge.icon;
-                    return (
-                      <div key={badge.label} className="flex flex-col items-center gap-1.5 p-3 border border-ink/5 rounded-sm bg-ink/[0.01]">
-                        <div className="w-7 h-7 bg-rose/10 rounded-full flex items-center justify-center">
-                          <Icon size={13} className="text-rose" strokeWidth={1.5} />
+          {/* Main Panel */}
+          <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
+            {/* Panel Header */}
+            <div className="px-5 py-4 border-b border-ink/5 flex items-center gap-3 bg-ink/[0.01]">
+              <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center shrink-0">
+                <RefreshCw size={14} className="text-rose" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-ink uppercase tracking-wider">Pengajuan Retur</p>
+                <p className="text-[8px] text-ink/30 mt-0.5 uppercase tracking-widest">Form submission</p>
+              </div>
+              {/* Tab Switcher */}
+              <div className="ml-auto flex gap-0">
+                {([
+                  { id: 'form' as const, label: 'Ajukan' },
+                  { id: 'status' as const, label: 'Status' },
+                ]).map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setView(tab.id)}
+                    className={cn(
+                      'pb-2.5 px-3 text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors',
+                      view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/30 hover:text-ink/60'
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Panel Body */}
+            <div className="p-5">
+              <AnimatePresence mode="wait">
+                {view === 'form' ? (
+                  <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    {/* Guest Banner */}
+                    {isGuest && (
+                      <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-100 rounded-sm flex items-start gap-2">
+                        <div className="w-4 h-4 bg-amber-200 rounded-full flex items-center justify-center mt-0.5 shrink-0">
+                          <span className="text-[7px] font-bold text-amber-700">!</span>
                         </div>
-                        <span className="text-[10px] font-semibold text-ink uppercase tracking-wider">{badge.label}</span>
-                        <span className="text-[7px] text-ink/30 uppercase tracking-widest">{badge.desc}</span>
+                        <p className="text-[9px] text-amber-800 leading-relaxed">
+                          Guest Mode — Submit sebagai tamu. Isi email aktif untuk receive update dari tim kami.
+                        </p>
+                      </div>
+                    )}
+                    <ReturForm
+                      isGuest={isGuest}
+                      onSuccess={() => setView('status')}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div key="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    {user ? (
+                      <ReturStatus />
+                    ) : (
+                      <div className="text-center py-16 space-y-4">
+                        <div className="w-14 h-14 bg-ink/5 rounded-full flex items-center justify-center mx-auto">
+                          <RefreshCw size={22} className="text-ink/20" strokeWidth={1} />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink/40">Login untuk Melihat Status</p>
+                          <p className="text-[9px] text-ink/20 mt-1">Cek status pengajuan retur yang pernah Anda ajukan</p>
+                        </div>
+                        <Link href="/login" className="inline-block px-6 py-2.5 bg-rose text-white text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">
+                          Login
+                        </Link>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* ── RIGHT: INFO SIDEBAR ── */}
+          <div className="space-y-4 lg:pt-0 pt-4">
+
+            {/* Trust Badges Card */}
+            <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
+                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/30">Kebijakan Retur</p>
+              </div>
+              <div className="p-4 space-y-3">
+                {/* 3 Trust Items */}
+                <div className="grid grid-cols-3 gap-2">
+                  {TRUST_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.label} className="flex flex-col items-center gap-1.5 p-3 bg-ink/[0.02] border border-ink/5 rounded-sm">
+                        <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center">
+                          <Icon size={14} className="text-rose" strokeWidth={1.5} />
+                        </div>
+                        <span className="text-[10px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
+                        <span className="text-[7px] text-ink/30 uppercase tracking-widest">{item.sub}</span>
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Hero Text */}
-                <h1 className="text-xl font-display italic font-medium text-ink uppercase tracking-tight leading-tight mb-2">
-                  Ajukan Retur & Refund
-                </h1>
-                <p className="text-[11px] text-ink/40 leading-relaxed mb-1">
-                  Klaim retur maksimal <span className="text-rose font-semibold">2 x 24 jam</span> setelah barang diterima.
-                  Wajib sertakan bukti video unboxing <span className="text-rose font-semibold">1-shot tanpa edit</span>.
+                {/* Policy Checklist */}
+                <div className="bg-rose/[0.02] border border-rose/10 rounded-sm p-3 space-y-1.5">
+                  {[
+                    'Klaim maksimal 2x24 jam setelah barang diterima',
+                    'Bukti video 1-shot tanpa edit WAJIB',
+                    'Guest bisa ajukan tanpa login',
+                    'Refund 3-7 hari kerja setelah persetujuan',
+                    'Label & tag masih menempel',
+                    'Barang belum digunakan / dicuci',
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <div className="w-3.5 h-3.5 bg-rose/10 rounded-full flex items-center justify-center mt-0.5 shrink-0">
+                        <Check size={7} className="text-rose" strokeWidth={2.5} />
+                      </div>
+                      <p className="text-[9px] text-ink/50 leading-relaxed">{text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <Link
+                  href="/help"
+                  className="block w-full text-center py-2 text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
+                >
+                  Baca Help Guide Lengkap
+                </Link>
+              </div>
+            </div>
+
+            {/* How-to Card */}
+            <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
+                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/30">Alur Pengajuan</p>
+              </div>
+              <div className="p-4 space-y-2">
+                {[
+                  { num: '01', text: 'Siapkan Order ID dari email konfirmasi' },
+                  { num: '02', text: 'Rekam video unboxing 1-shot (min 30 detik)' },
+                  { num: '03', text: 'Isi form dengan lengkap & akurat' },
+                  { num: '04', text: 'Submit & tunggu review 1-2 hari kerja' },
+                ].map((step) => (
+                  <div key={step.num} className="flex items-start gap-3">
+                    <span className="text-[8px] font-bold text-rose shrink-0 mt-0.5">{step.num}</span>
+                    <p className="text-[9px] text-ink/50 leading-relaxed">{step.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Guest Info */}
+            {isGuest && (
+              <div className="border border-amber-100 bg-amber-50 rounded-sm p-4 space-y-2">
+                <p className="text-[10px] font-semibold text-amber-800 uppercase tracking-wider">Info Guest</p>
+                <p className="text-[9px] text-amber-700 leading-relaxed">
+                  Anda submit sebagai <strong>tamu</strong>. Kami akan hubungi via email untuk update status pengajuan.
                 </p>
-                <p className="text-[10px] text-ink/20">
-                  Guest bisa ajukan tanpa login — siapkan Order ID dan email aktif.
+                <p className="text-[8px] text-amber-600 leading-relaxed">
+                  Sudah punya akun? <Link href="/login" className="underline hover:text-amber-800">Login</Link> untuk lacak retur lebih mudah.
                 </p>
               </div>
-
-              {/* Guest Banner */}
-              {isGuest && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-4 px-4 py-3 bg-amber-50 border border-amber-100 rounded-sm flex items-start gap-2"
-                >
-                  <div className="w-4 h-4 bg-amber-200 rounded-full flex items-center justify-center mt-0.5 shrink-0">
-                    <span className="text-[7px] font-bold text-amber-700">!</span>
-                  </div>
-                  <p className="text-[9px] text-amber-800 leading-relaxed">
-                    Guest Mode — Anda submit sebagai tamu. Isi email aktif untuk receive update status dari tim kami.
-                  </p>
-                </motion.div>
-              )}
-
-              {/* The Form */}
-              <ReturForm
-                isGuest={isGuest}
-                className="border border-ink/5 rounded-sm shadow-sm"
-                onSuccess={() => setView('status')}
-              />
-            </motion.div>
-
-          ) : (
-            <motion.div key="status" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-              {user ? (
-                <ReturStatus />
-              ) : (
-                <div className="text-center py-16 space-y-4">
-                  <div className="w-14 h-14 bg-ink/5 rounded-full flex items-center justify-center mx-auto">
-                    <RefreshCw size={22} className="text-ink/20" strokeWidth={1} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-widest text-ink/40">Login untuk Melihat Status</p>
-                    <p className="text-[9px] text-ink/20 mt-1">Cek status pengajuan retur yang pernah Anda ajukan</p>
-                  </div>
-                  <Link
-                    href="/login"
-                    className="inline-block px-6 py-2.5 bg-rose text-white text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
-                  >
-                    Login
-                  </Link>
-                </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
