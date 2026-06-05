@@ -37,7 +37,7 @@ export default function ReturPage() {
   const isGuest = !user;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white no-scrollbar overflow-x-hidden">
       {/* ── PAGE HEADER ── */}
       <div className="pt-8 md:pt-8 px-6 md:px-12 max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
