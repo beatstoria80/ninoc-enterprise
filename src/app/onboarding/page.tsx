@@ -148,7 +148,7 @@ export default function OnboardingPage() {
     fn: '', ln: '', phone: '',
     street: '', house_number: '',
     prov: '', provName: '', city: '', cityName: '', dist: '', distName: '',
-    vill: '', rt: '', rw: '', postal: ''
+    villId: '', vill: '', rt: '', rw: '', postal: ''
   });
 
   useEffect(() => {
@@ -188,11 +188,13 @@ export default function OnboardingPage() {
   const set = (k: string, v: string) => {
     setF(p => {
       const n = { ...p, [k]: v };
-      if (k === 'prov') { n.city = ''; n.cityName = ''; n.dist = ''; n.distName = ''; }
-      if (k === 'city') { n.dist = ''; n.distName = ''; }
+      if (k === 'prov') { n.city = ''; n.cityName = ''; n.dist = ''; n.distName = ''; n.villId = ''; n.vill = ''; }
+      if (k === 'city') { n.dist = ''; n.distName = ''; n.villId = ''; n.vill = ''; }
+      if (k === 'dist') { n.villId = ''; n.vill = ''; }
       if (k === 'prov') { const px = provinces.find(x => x.id === v); n.provName = px?.name || ''; }
       if (k === 'city') { const cx = regencies.find(x => x.id === v); n.cityName = cx?.name || ''; }
       if (k === 'dist') { const dx = districts.find(x => x.id === v); n.distName = dx?.name || ''; }
+      if (k === 'villId') { const vx = villages.find(x => x.id === v); n.vill = vx?.name || ''; }
       return n;
     });
   };
@@ -212,7 +214,7 @@ export default function OnboardingPage() {
     if (!f.prov) errs.push('Provinsi');
     if (!f.city) errs.push('Kota');
     if (!f.dist) errs.push('Kecamatan');
-    if (!f.vill.trim()) errs.push('Kel/Desa');
+    if (!f.villId.trim()) errs.push('Kel/Desa');
     if (!f.rt.trim()) errs.push('RT');
     if (!f.rw.trim()) errs.push('RW');
     if (!f.postal.trim()) errs.push('Kode Pos');
@@ -422,9 +424,9 @@ export default function OnboardingPage() {
                   <div>
                     <FL>Kel / Desa</FL>
                     <CustomDropdown
-                      value={f.vill}
+                      value={f.villId}
                       options={villages}
-                      onChange={(id, name) => { set('vill', id); setF(p => ({ ...p, vill: name })); }}
+                      onChange={(id, name) => { set('villId', id); }}
                       placeholder="Pilih Kel/Desa"
                       disabled={!f.dist}
                       searchable
