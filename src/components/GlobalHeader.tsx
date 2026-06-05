@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -470,6 +470,15 @@ export default function GlobalHeader() {
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Search size={20} strokeWidth={1.5} />
             </motion.div>
+          </PressScale>
+
+          {/* Tracking Button */}
+          <PressScale className="text-ink/40 hover:text-rose">
+            <Link prefetch={false} href="/track" className="flex items-center">
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Truck size={20} strokeWidth={1.5} />
+              </motion.div>
+            </Link>
           </PressScale>
 
           {/* User Profile */}

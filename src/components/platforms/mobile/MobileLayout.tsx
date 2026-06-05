@@ -285,6 +285,7 @@ export default function MobileLayout({
     { href: '/collections', label: 'Collections' },
     { href: '/category', label: 'Category' },
     { href: '/logbook', label: 'Logbook' },
+    { href: '/track', label: 'Lacak Pesanan' },
     { href: '/about', label: 'About' },
   ];
 
