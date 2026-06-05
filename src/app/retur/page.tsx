@@ -38,8 +38,8 @@ export default function ReturPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ── PAGE HEADER (mirrors GlobalHeader height, no overlap) ── */}
-      <div className="pt-32 md:pt-32 px-6 md:px-12 max-w-[1400px] mx-auto">
+      {/* ── PAGE HEADER ── */}
+      <div className="pt-8 md:pt-8 px-6 md:px-12 max-w-[1400px] mx-auto">
         <div className="flex items-baseline gap-4 border-b border-ink/5 pb-2">
           <Link
             href="/"
