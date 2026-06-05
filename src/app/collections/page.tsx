@@ -5,8 +5,14 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Layers, ChevronRight, ArrowLeft, Package } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM ICONS — NINOC STUDIO
@@ -126,19 +132,23 @@ function PressButton({ children, className = '', onClick, href }: {
   onClick?: () => void;
   href?: string;
 }) {
-  const content = (
+  const inner = (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
       transition={{ duration: DURATION.micro, ease: EASING.out }}
-      className={className}
+      className={cn(className, "cursor-pointer")}
     >
       {children}
     </motion.div>
   );
 
-  if (href) return <Link href={href}>{content}</Link>;
-  return <button onClick={onClick}>{content}</button>;
+  if (href) return <Link prefetch={false} href={href}>{inner}</Link>;
+  return (
+    <button onClick={onClick} type="button" className="w-auto bg-transparent border-none p-0 m-0">
+      {inner}
+    </button>
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -381,9 +391,7 @@ export default function CollectionsPage() {
           </motion.h1>
 
           <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
-            <motion.div animate={{ x: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-              <ArrowLeft size={10} />
-            </motion.div>
+            <ArrowLeft size={10} className="rotate-180" />
             <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
           </PressButton>
         </div>
@@ -494,9 +502,7 @@ export default function CollectionsPage() {
             </div>
             <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
               <span className="text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
-              <motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-                <ChevronRight size={14} />
-              </motion.div>
+              <ChevronRight size={14} />
             </PressButton>
           </div>
         </motion.div>

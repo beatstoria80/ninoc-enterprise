@@ -177,7 +177,7 @@ export default function LogbookPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
+    <main className="min-h-screen bg-cr noise pt-8 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1200px] mx-auto">
         
         {/* COMPACT HEADER */}
