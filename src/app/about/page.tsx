@@ -96,58 +96,58 @@ export default function About() {
         <div className="h-full flex flex-col px-4 md:px-8">
 
           {/* Title Block */}
-          <div className="shrink-0 pt-3 md:pt-6 pb-2">
-            <p className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-rose">{t.label}</p>
-            <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tighter uppercase text-ink leading-[0.85]">{t.title}</h1>
-            <p className="text-[8px] md:text-[9px] font-medium text-ink/40 uppercase tracking-wider mt-0.5">{t.tagline}</p>
+          <div className="shrink-0 pt-1 md:pt-6 pb-1 md:pb-2">
+            <p className="text-[6px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-rose">{t.label}</p>
+            <h1 className="font-display font-medium italic text-lg md:text-3xl tracking-tighter uppercase text-ink leading-[0.85]">{t.title}</h1>
+            <p className="text-[7px] md:text-[9px] font-medium text-ink/40 uppercase tracking-wider mt-0.5">{t.tagline}</p>
           </div>
 
           {/* Content Grid */}
-          <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 overflow-hidden border-t border-ink/5 pt-2">
+          <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5 overflow-hidden border-t border-ink/5 pt-1.5 md:pt-2">
 
             {/* Left: Story & Philosophy — scrollable */}
-            <div className="overflow-y-auto no-scrollbar space-y-3 md:space-y-4 pr-1">
-              <div className="space-y-1">
-                <h3 className="text-[11px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.story.heading}</h3>
-                <p className="text-[9px] md:text-[11px] font-medium text-ink/50 leading-relaxed">{t.story.body}</p>
+            <div className="overflow-y-auto no-scrollbar space-y-2 md:space-y-4 pr-1">
+              <div className="space-y-0.5 md:space-y-1">
+                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.story.heading}</h3>
+                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.story.body}</p>
               </div>
-              <div className="space-y-1">
-                <h3 className="text-[11px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.philosophy.heading}</h3>
-                <p className="text-[9px] md:text-[11px] font-medium text-ink/50 leading-relaxed">{t.philosophy.body}</p>
+              <div className="space-y-0.5 md:space-y-1">
+                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.philosophy.heading}</h3>
+                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.philosophy.body}</p>
               </div>
-              <div className="space-y-1">
-                <h3 className="text-[11px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.mission.heading}</h3>
-                <p className="text-[9px] md:text-[11px] font-medium text-ink/50 leading-relaxed">{t.mission.body}</p>
+              <div className="space-y-0.5 md:space-y-1">
+                <h3 className="text-[10px] md:text-sm font-display font-medium italic uppercase tracking-tight text-ink">{t.mission.heading}</h3>
+                <p className="text-[8px] md:text-[11px] font-medium text-ink/50 leading-tight md:leading-relaxed">{t.mission.body}</p>
               </div>
             </div>
 
             {/* Right: Visual + Stats */}
-            <div className="flex flex-col gap-2 overflow-hidden">
+            <div className="flex flex-col gap-1.5 md:gap-2 overflow-hidden pb-2 md:pb-0">
               {/* Image placeholder */}
-              <div className="h-16 md:h-24 bg-white rounded-lg border border-ink/5 flex items-center justify-center shrink-0">
-                <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-widest text-ink/20">{t.image}</span>
+              <div className="hidden md:flex h-24 bg-white rounded-lg border border-ink/5 items-center justify-center shrink-0">
+                <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">{t.image}</span>
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-1.5 shrink-0">
-                <div className="bg-white border border-ink/5 p-2 rounded-lg">
-                  <p className="text-[5px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.est.label}</p>
-                  <p className="text-[11px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.est.value}</p>
+              <div className="grid grid-cols-3 gap-1 md:gap-1.5 shrink-0">
+                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
+                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.est.label}</p>
+                  <p className="text-[9px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.est.value}</p>
                 </div>
-                <div className="bg-white border border-ink/5 p-2 rounded-lg">
-                  <p className="text-[5px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.location.label}</p>
-                  <p className="text-[11px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.location.value}</p>
+                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
+                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.location.label}</p>
+                  <p className="text-[9px] md:text-sm font-display font-medium italic text-ink mt-0.5">{t.stats.location.value}</p>
                 </div>
-                <div className="bg-white border border-ink/5 p-2 rounded-lg">
-                  <p className="text-[5px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.contact.label}</p>
-                  <p className="text-[8px] md:text-[9px] font-display font-medium italic text-rose mt-0.5">{t.stats.contact.value}</p>
+                <div className="bg-white border border-ink/5 p-1 md:p-2 rounded-md md:rounded-lg">
+                  <p className="text-[4px] md:text-[6px] font-medium uppercase tracking-widest text-ink/20">{t.stats.contact.label}</p>
+                  <p className="text-[6px] md:text-[9px] font-display font-medium italic text-rose mt-0.5 break-all">{t.stats.contact.value}</p>
                 </div>
               </div>
 
               {/* Tagline */}
-              <div className="bg-ink p-3 md:p-4 rounded-lg shrink-0">
-                <p className="text-[8px] md:text-[9px] font-medium uppercase leading-loose tracking-widest text-white/70">{t.verified.label}</p>
-                <p className="text-[8px] md:text-[10px] font-medium uppercase leading-relaxed tracking-wider text-white mt-0.5">{t.verified.body}</p>
+              <div className="bg-ink p-2 md:p-4 rounded-md md:rounded-lg shrink-0">
+                <p className="text-[6px] md:text-[9px] font-medium uppercase leading-normal md:leading-loose tracking-widest text-white/70">{t.verified.label}</p>
+                <p className="text-[6px] md:text-[10px] font-medium uppercase leading-tight md:leading-relaxed tracking-wider text-white mt-0.5">{t.verified.body}</p>
               </div>
             </div>
           </div>
