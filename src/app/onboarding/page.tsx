@@ -16,6 +16,7 @@ function cn(...inputs: ClassValue[]) {
 interface Province { id: string; name: string; }
 interface Regency { id: string; name: string; }
 interface District { id: string; name: string; }
+interface Village { id: string; name: string; }
 
 // ─── Custom Dropdown ────────────────────────────────────────────────────────
 function CustomDropdown({
@@ -139,6 +140,7 @@ export default function OnboardingPage() {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [regencies, setRegencies] = useState<Regency[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
+  const [villages, setVillages] = useState<Village[]>([]);
   const [activeStep, setActiveStep] = useState<1 | 2>(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
@@ -419,11 +421,24 @@ export default function OnboardingPage() {
                 <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                   <div>
                     <FL>Kel / Desa</FL>
-                    <input value={f.vill} onChange={e => set('vill', e.target.value)} className={ip} placeholder="Sukajadi" />
+                    <CustomDropdown
+                      value={f.vill}
+                      options={villages}
+                      onChange={(id, name) => { set('vill', id); setF(p => ({ ...p, vill: name })); }}
+                      placeholder="Pilih Kel/Desa"
+                      disabled={!f.dist}
+                      searchable
+                    />
                   </div>
                   <div>
                     <FL>Kode Pos</FL>
-                    <input value={f.postal} onChange={e => set('postal', e.target.value)} className={ip} placeholder="40111" />
+                    <CustomDropdown
+                      value={f.postal}
+                      options={villages.map(v => ({ id: v.id, name: '' }))}
+                      onChange={(id) => { setF(p => ({ ...p, postal: '' })); }}
+                      placeholder={f.vill ? "Otomatis" : "Pilih Kel/Desa dulu"}
+                      disabled
+                    />
                   </div>
                 </div>
 
