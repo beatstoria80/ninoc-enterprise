@@ -747,8 +747,21 @@ export default function SupportChat() {
                           transition={{ duration: 0.2 }}
                           className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className={`max-w-[80%] px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
-                            {m.message}
+                          <div className="max-w-[80%]">
+                            <div className={`px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
+                              {m.message}
+                            </div>
+                            {(m.sender_role === 'admin' || m.is_auto_reply) && (
+                              <div className={`flex items-center gap-1 mt-0.5 ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
+                                {m.is_auto_reply ? (
+                                  <span className="text-[5px] text-rose/60 uppercase tracking-widest font-medium flex items-center gap-0.5">
+                                    <Zap size={6} strokeWidth={2} /> Auto-reply
+                                  </span>
+                                ) : (
+                                  <span className="text-[5px] text-ink/20 uppercase tracking-widest">Studio</span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       ))}

@@ -137,7 +137,7 @@ export default function About() {
             {/* Tagline */}
             <div className="bg-ink p-4 md:p-5 lg:p-6 rounded-xl lg:rounded-[16px] flex flex-col justify-center relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out"></div>
-              <p className="text-[7px] md:text-[8px] font-bold uppercase leading-normal tracking-[0.3em] text-white/50 mb-1 md:mb-1.5 relative z-10">{t.verified.label}</p>
+              <p className="text-[7px] md:text-[8px] font-bold uppercase leading-normal tracking-[0.3em] text-white mb-1 md:mb-1.5 relative z-10">{t.verified.label}</p>
               <p className="text-[9px] md:text-[10px] lg:text-xs font-medium uppercase leading-relaxed tracking-wider text-white max-w-lg relative z-10">{t.verified.body}</p>
             </div>
           </div>

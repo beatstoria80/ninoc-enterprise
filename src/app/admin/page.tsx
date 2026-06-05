@@ -742,7 +742,8 @@ export default function AdminDashboard() {
               sender: m.sender_role as 'customer' | 'admin',
               message: m.message,
               timestamp: m.created_at,
-              is_read: m.is_read ?? true
+              is_read: m.is_read ?? true,
+              is_auto_reply: m.is_auto_reply ?? false
             }))
           };
         });

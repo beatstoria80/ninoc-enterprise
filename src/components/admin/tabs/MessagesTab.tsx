@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, Search, Tag } from 'lucide-react';
+import { MessageSquare, Send, X, Search, Tag, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ChatSession } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -172,8 +172,10 @@ export function MessagesTab({
                   )}>
                     <div className={cn(
                       "p-4 rounded-[5px] text-[10px] leading-relaxed",
-                      msg.sender === 'admin' 
-                        ? "bg-ink text-white shadow-lg shadow-ink/5" 
+                      msg.sender === 'admin'
+                        ? msg.is_auto_reply
+                          ? "bg-rose/10 border border-rose/20 text-ink shadow-sm"
+                          : "bg-ink text-white shadow-lg shadow-ink/5"
                         : "bg-ink/[0.03] text-ink border border-ink/5"
                     )}>
                       {msg.message}
@@ -187,7 +189,12 @@ export function MessagesTab({
                       </span>
                       {msg.sender === 'admin' && (
                         <span className={cn("text-[6px] font-medium uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
-                          {msg.is_read ? 'PROCESSED' : 'SENT'}
+                          {msg.is_auto_reply ? (
+                            <span className="flex items-center gap-1">
+                              <Zap size={8} className="text-rose" strokeWidth={2} />
+                              AUTO
+                            </span>
+                          ) : msg.is_read ? 'PROCESSED' : 'SENT'}
                         </span>
                       )}
                     </div>

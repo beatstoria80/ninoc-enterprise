@@ -124,6 +124,7 @@ export interface ChatMessage {
   message: string;
   timestamp: string;
   is_read: boolean;
+  is_auto_reply?: boolean;
 }
 
 export interface ChatSession {
