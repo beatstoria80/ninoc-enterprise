@@ -121,18 +121,6 @@ export default function OnboardingPage() {
       "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
-      {/* MOBILE NAV BAR */}
-      {isMobile && (
-        <nav className={cn(
-          "fixed top-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-b border-ink/5",
-          isIPhone && "pt-[env(safe-area-inset-top)]"
-        )}>
-          <div className="flex items-center justify-center py-3">
-            <div className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</div>
-          </div>
-        </nav>
-      )}
-
       {/* Header - Desktop only */}
       {!isMobile && (
       <header className={bd}>

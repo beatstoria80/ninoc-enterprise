@@ -14,7 +14,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const [isMobile, setIsMobile] = useState(true);
   const { items } = useCart();
 
-  // Hide GlobalHeader/Footer on admin pages, checkout, legal, help, track, profile, retur
+  // Hide GlobalHeader/Footer on admin pages, checkout, legal, help, track, profile, retur, onboarding
   const isAdminPage = pathname?.startsWith('/admin');
   const isCheckoutPage = pathname === '/checkout';
   const isLegalPage = pathname === '/legal';
@@ -22,7 +22,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isTrackPage = pathname === '/track';
   const isProfilePage = pathname?.startsWith('/profile');
   const isReturPage = pathname === '/retur';
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage;
+  const isOnboardingPage = pathname === '/onboarding';
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -47,7 +48,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       <MobileLayout
         cartCount={items.length}
         hideTabBar={pathname === '/checkout'}
-        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile') || pathname === '/retur'}
+        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile') || pathname === '/retur' || pathname === '/onboarding'}
       >
         {children}
       </MobileLayout>
