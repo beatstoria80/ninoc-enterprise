@@ -426,7 +426,8 @@ export default function SupportChat() {
   const [showNotifCard, setShowNotifCard] = useState(false);
   const [lastNotif, setLastNotif] = useState<{ subject: string; message: string; from: string } | null>(null);
   const [placeholders, setPlaceholders] = useState<PlaceholderConfig[]>([]);
-  const [autoReplySent, setAutoReplySent] = useState<string | null>(null);
+  // Track auto-reply sent per ticket ID (Map for multi-ticket support)
+  const [autoReplySentMap, setAutoReplySentMap] = useState<Map<string, boolean>>(new Map());
   
   // Dispatch unread count to other components (like MobileLayout)
   useEffect(() => {
@@ -448,7 +449,11 @@ export default function SupportChat() {
   const openTicket = useCallback(async (ticket: SupportTicket) => {
     setActiveTicket(ticket);
     setActiveTab('chat');
-    setAutoReplySent(null); // Reset auto-reply flag for new ticket
+    setAutoReplySentMap(prev => {
+      const next = new Map(prev);
+      next.set(ticket.id, true);
+      return next;
+    });
     const { data } = await supabase
       .from('support_messages')
       .select('*')
@@ -544,7 +549,7 @@ export default function SupportChat() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [tickets, activeTab, activeTicket]);
+  }, [activeTicket, tickets, activeTab]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -554,7 +559,7 @@ export default function SupportChat() {
 
   const startNewTicket = async () => {
     if (!subject || !category) return;
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('support_tickets')
       .insert({
         user_id: user?.id || null,
@@ -565,12 +570,18 @@ export default function SupportChat() {
       })
       .select()
       .single();
+
+    if (error) {
+      alert(`Error creating ticket: ${error.message}`);
+      console.error("Ticket Insert Error:", error);
+      return;
+    }
+
     if (data) {
       setTickets(prev => [data, ...prev]);
       setActiveTicket(data);
       setActiveTab('chat');
       setChatMessages([]);
-      setAutoReplySent(null);
       setMessage('');
       setSubject('');
       setOrderId('');
@@ -609,27 +620,39 @@ export default function SupportChat() {
       });
       setMessage('');
 
-      // Auto-reply: classify message and respond accordingly (only once per session)
-      if (activeTicket && !autoReplySent) {
+      // Auto-reply: classify message and respond accordingly (only once per ticket)
+      if (activeTicket && !autoReplySentMap.get(activeTicket.id)) {
         const classification = classifyMessage(msgToSend.trim(), placeholders);
 
         if (classification.type === 'nsfw_reject') {
           // Silent reject — send warning to customer, flag ticket
-          setAutoReplySent(activeTicket.id);
+          setAutoReplySentMap(prev => {
+            const next = new Map(prev);
+            next.set(activeTicket!.id, true);
+            return next;
+          });
           await sendCustomerNotification(activeTicket.id, classification.message);
           await flagTicket(activeTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
 
         } else if (classification.type === 'sara_warn') {
           // Send warning + flag to admin
-          setAutoReplySent(activeTicket.id);
+          setAutoReplySentMap(prev => {
+            const next = new Map(prev);
+            next.set(activeTicket!.id, true);
+            return next;
+          });
           await sendCustomerNotification(activeTicket.id, classification.template.content);
           await flagTicket(activeTicket.id, classification.message, 'sara');
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
 
         } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
           // Normal auto-reply
-          setAutoReplySent(activeTicket.id);
+          setAutoReplySentMap(prev => {
+            const next = new Map(prev);
+            next.set(activeTicket!.id, true);
+            return next;
+          });
           await sendAutoReply(activeTicket.id, classification.template.content);
           window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: activeTicket.id } }));
         }
@@ -661,7 +684,7 @@ export default function SupportChat() {
       let genTicket = tickets.find(t => t.subject === 'General Inquiry');
 
       if (!genTicket) {
-        const { data: ticketData } = await supabase
+        const { data: ticketData, error: ticketError } = await supabase
           .from('support_tickets')
           .insert({
             user_id: user?.id || null,
@@ -671,6 +694,25 @@ export default function SupportChat() {
           })
           .select()
           .single();
+
+        if (ticketError) {
+          console.error('[startGeneralChat] Ticket insert error:', ticketError);
+          // Remove optimistic message on error
+          setChatMessages(prev => prev.filter(m => m.id !== tempId));
+          // Show user-friendly error
+          const errorMsg: SupportMessage = {
+            id: `err-${Date.now()}`,
+            ticket_id: tempId,
+            sender_id: '',
+            sender_role: 'admin',
+            message: 'Maaf, gagal membuat tiket. Silakan coba lagi atau login terlebih dahulu.',
+            created_at: new Date().toISOString(),
+            is_auto_reply: true
+          };
+          setChatMessages(prev => [...prev, errorMsg]);
+          return;
+        }
+
         if (ticketData) {
           genTicket = ticketData;
           setTickets(prev => [ticketData, ...prev]);
@@ -679,7 +721,7 @@ export default function SupportChat() {
 
       if (genTicket) {
         // Insert message
-        const { data: savedMsg, error } = await supabase
+        const { data: savedMsg, error: msgError } = await supabase
           .from('support_messages')
           .insert({
             ticket_id: genTicket.id,
@@ -690,10 +732,20 @@ export default function SupportChat() {
           .select()
           .single();
 
-        if (error) {
-          console.error('[startGeneralChat] Insert error:', error);
+        if (msgError) {
+          console.error('[startGeneralChat] Message insert error:', msgError);
           // Remove optimistic message on error
           setChatMessages(prev => prev.filter(m => m.id !== tempId));
+          const errorMsg: SupportMessage = {
+            id: `err-${Date.now()}`,
+            ticket_id: tempId,
+            sender_id: '',
+            sender_role: 'admin',
+            message: 'Maaf, gagal mengirim pesan. Silakan coba lagi.',
+            created_at: new Date().toISOString(),
+            is_auto_reply: true
+          };
+          setChatMessages(prev => [...prev, errorMsg]);
           return;
         }
 
@@ -705,34 +757,68 @@ export default function SupportChat() {
           setActiveTicket(genTicket);
           setActiveTab('chat');
 
-          // Auto-reply for general inquiry using classification
-          if (!autoReplySent) {
+          // Auto-reply for general inquiry using classification (per-ticket tracking)
+          if (!autoReplySentMap.get(genTicket.id)) {
             const classification = classifyMessage(msgToSend, placeholders);
 
             if (classification.type === 'nsfw_reject') {
-              setAutoReplySent(genTicket.id);
+              setAutoReplySentMap(prev => {
+                const next = new Map(prev);
+                next.set(genTicket!.id, true);
+                return next;
+              });
               await sendCustomerNotification(genTicket.id, classification.message);
               await flagTicket(genTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
             } else if (classification.type === 'sara_warn') {
-              setAutoReplySent(genTicket.id);
+              setAutoReplySentMap(prev => {
+                const next = new Map(prev);
+                next.set(genTicket!.id, true);
+                return next;
+              });
               await sendCustomerNotification(genTicket.id, classification.template.content);
               await flagTicket(genTicket.id, `SARA: ${msgToSend.slice(0, 100)}`, 'sara');
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
 
             } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
-              setAutoReplySent(genTicket.id);
+              setAutoReplySentMap(prev => {
+                const next = new Map(prev);
+                next.set(genTicket!.id, true);
+                return next;
+              });
               await sendAutoReply(genTicket.id, classification.template.content);
               window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
             }
           }
         }
+      } else {
+        // No genTicket found/created — show error message
+        setChatMessages(prev => prev.filter(m => m.id !== tempId));
+        const errorMsg: SupportMessage = {
+          id: `err-${Date.now()}`,
+          ticket_id: '',
+          sender_id: '',
+          sender_role: 'admin',
+          message: 'Maaf, gagal memulai chat. Silakan coba lagi.',
+          created_at: new Date().toISOString(),
+          is_auto_reply: true
+        };
+        setChatMessages(prev => [...prev, errorMsg]);
       }
     } catch (err) {
       console.error('[startGeneralChat] Error:', err);
-      // Remove optimistic message on error
       setChatMessages(prev => prev.filter(m => m.id !== tempId));
+      const errorMsg: SupportMessage = {
+        id: `err-${Date.now()}`,
+        ticket_id: '',
+        sender_id: '',
+        sender_role: 'admin',
+        message: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
+        created_at: new Date().toISOString(),
+        is_auto_reply: true
+      };
+      setChatMessages(prev => [...prev, errorMsg]);
     }
   };
 
