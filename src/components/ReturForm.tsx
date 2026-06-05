@@ -82,7 +82,7 @@ const RETUR_REASONS = [
 const TERMS = [
   'Barang belum digunakan, dicuci, atau dimodifikasi',
   'Label & tag masih menempel',
-  'Bukti unboxing video diambil dalam 1 kali rekam tanpa edit/henti',
+  'Bukti unboxing video diambil dalam 1-shot tanpa edit, potong, atau henti',
   'Informasi yang diberikan adalah benar dan akurat',
   'NINOC berhak menolak pengajuan yang tidak memenuhi syarat',
 ];
@@ -501,12 +501,12 @@ export function ReturForm({ orderId: initialOrderId, onSuccess, onClose, classNa
                 }}
               />
               <div className="mt-2 bg-blue-50 border border-blue-100 rounded-sm p-2.5 space-y-1">
-                <p className="text-[7px] font-bold uppercase tracking-widest text-blue-600">📋 Panduan Video Unboxing</p>
+                <p className="text-[7px] font-bold uppercase tracking-widest text-blue-600">📋 Panduan Video Unboxing (1-Shot — Tanpa Edit)</p>
                 {[
                   'Rekam saat membuka paket dari keadaan tertutup',
                   'Tunjukkan kondisi barang dengan jelas',
-                  'Wajib 1-shot tanpa edit, potong, atau henti',
-                  'Timestamp/waktu harus terlihat jelas',
+                  'WAJIB 1-shot — tanpa edit, potong, henti, atau sisipkan adegan',
+                  'Timestamp/waktu harus terlihat jelas di rekaman',
                   'Minimal durasi 30 detik',
                 ].map((t, i) => (
                   <p key={i} className="text-[7px] text-blue-400 leading-relaxed flex items-start gap-1.5">

@@ -90,7 +90,7 @@ const DEFAULT_VALUES: Record<string, any> = {
     accounts: [],
   },
   help_guide_return: {
-    policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 3 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.',
+    policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 2 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.',
     process: '1. Buka fitur Support Chat di pojok kanan bawah layar.\n2. Buat tiket baru dengan memilih topik "Retur & Refund".\n3. Sertakan nomor pesanan, foto produk, dan penjelasan kendala.\n4. Tim kami akan melakukan verifikasi dan merespon instruksi selanjutnya melalui tiket tersebut.\n\nEstimasi Proses:\n\n• Verifikasi: 1–2 hari kerja\n• Refund: 3–7 hari kerja setelah persetujuan',
     notes: 'Refund akan dikembalikan melalui metode pembayaran awal atau transfer bank. Biaya pengiriman retur ditanggung sesuai hasil verifikasi.',
   },

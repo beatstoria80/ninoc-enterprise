@@ -343,7 +343,7 @@ export default function ReturnsPage() {
                               <p className="text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses Retur</p>
                               <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
-                                Setelah disetujui, silakan kirimkan barang ke alamat kami dalam 7 hari
+                                Klaim maksimal 2x24 jam setelah barang diterima (bukti video 1-shot wajib)
                               </p>
                               <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
