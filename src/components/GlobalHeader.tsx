@@ -511,7 +511,7 @@ export default function GlobalHeader() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -50, opacity: 0 }}
               transition={{ duration: DURATION.medium, ease: EASING.out }}
-              className="px-4 md:px-12 py-4 md:py-10 flex items-center justify-between border-b border-ink/5"
+              className="px-3 md:px-8 py-3 md:py-6 flex items-center justify-between border-b border-ink/5"
             >
               <div className="flex items-center gap-4 md:gap-8">
                 <motion.div

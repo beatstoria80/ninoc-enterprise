@@ -276,39 +276,39 @@ export default function HelpPage() {
   const activeMeta = HELP_SECTIONS.find((s) => s.key === activeSection);
 
   return (
-    <>
-    <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
+    <div className="h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white overflow-hidden">
       {/* Exit Navigation — static top bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-ink/5">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex items-center justify-between h-11">
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 text-ink/40 hover:text-ink transition-colors group"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
-                <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
-            </Link>
-            <span className="text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium hidden sm:block">Help Guide</span>
-          </div>
+      <div className="shrink-0 bg-white border-b border-ink/5 z-50">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex items-center justify-between h-11">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 text-ink/40 hover:text-ink transition-colors group"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
+              <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
+          </Link>
+          <span className="text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium hidden sm:block">Help Guide</span>
         </div>
+      </div>
 
-        {/* Main Layout */}
-        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-[72px]">
+      {/* Main Content — fills remaining space */}
+      <main className="flex-1 min-h-0 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 h-full flex flex-col">
 
           {/* Title Block */}
-          <div className="mb-2">
+          <div className="shrink-0 py-2">
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-xl tracking-tighter uppercase text-ink">Help Guide</h1>
             </div>
           </div>
 
-          {/* 2-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[160px_1fr] gap-0 border-t border-ink/5">
+          {/* 2-Column Layout — fills remaining space */}
+          <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[160px_1fr] gap-0 border-t border-ink/5">
 
             {/* Left: Section Tabs */}
-            <div className="lg:border-r lg:border-ink/5">
+            <div className="lg:border-r lg:border-ink/5 overflow-y-auto">
               <nav className="flex lg:flex-col gap-0">
                 {HELP_SECTIONS.map((section) => {
                   const isActive = activeSection === section.key;
@@ -339,8 +339,8 @@ export default function HelpPage() {
               </nav>
             </div>
 
-            {/* Right: Content Area */}
-            <div className="lg:pl-6 pt-3 lg:pt-3 min-w-0 pb-6">
+            {/* Right: Content Area — scrollable internally */}
+            <div className="lg:pl-6 pt-3 lg:pt-3 min-w-0 overflow-y-auto pb-4">
               {loading ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="w-5 h-5 border border-ink/10 border-t-rose rounded-full animate-spin" />
@@ -377,10 +377,12 @@ export default function HelpPage() {
             </div>
           </div>
         </div>
-
-        {/* Footer note */}
       </main>
-      <GlobalFooter />
-    </>
+
+      {/* Footer — always visible at bottom */}
+      <div className="shrink-0">
+        <GlobalFooter />
+      </div>
+    </div>
   );
 }
