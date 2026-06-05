@@ -396,7 +396,8 @@ function classifyMessage(
         if (fb) {
           return {
             type: 'auto_reply',
-            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat }
+            template: { id: `fb-${cat}`, label: fb.label, content: fb.content, category: cat },
+            category: cat
           };
         }
       }
@@ -409,7 +410,8 @@ function classifyMessage(
   const fb = FALLBACK_CONTENT['greeting'];
   return {
     type: 'auto_reply',
-    template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' }
+    template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
+    category: 'greeting'
   };
 }
 
