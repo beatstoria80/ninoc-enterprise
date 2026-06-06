@@ -19,7 +19,7 @@ const poppins = Poppins({
   weight: ["400", "700", "900"],
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.id';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
   },
   verification: {
-    google: 'your-google-site-verification-code', // ← replace with actual verification code
+    google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
   },
 };
 
