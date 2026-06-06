@@ -164,6 +164,8 @@ export interface Customer {
   total_spent: number | null;
   membership_tier: string | null;
   created_at: string;
+  birth_date: string | null;
+  gender: string | null;
 }
 
 export interface VoucherActive {

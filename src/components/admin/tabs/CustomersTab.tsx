@@ -48,6 +48,8 @@ export function CustomersTab({
               city: '',
               province: '',
               postal_code: '',
+              birth_date: '',
+              gender: '',
             });
             setIsCustomerModalOpen(true);
           }}
@@ -211,7 +213,9 @@ export function CustomersTab({
                             rw: customer.rw || '',
                             city: customer.city || '',
                             province: customer.province || '',
-                            postal_code: customer.postal_code || ''
+                            postal_code: customer.postal_code || '',
+                            birth_date: customer.birth_date || '',
+                            gender: customer.gender || ''
                           });
                           setIsCustomerModalOpen(true);
                         }}

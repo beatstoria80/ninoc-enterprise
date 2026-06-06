@@ -157,7 +157,9 @@ export default function AdminDashboard() {
     rw: '',
     city: '',
     province: '',
-    postal_code: ''
+    postal_code: '',
+    birth_date: '',
+    gender: ''
   });
 
   // Order detail
@@ -610,6 +612,8 @@ export default function AdminDashboard() {
             city: customerForm.city,
             province: customerForm.province,
             postal_code: customerForm.postal_code,
+            birth_date: customerForm.birth_date || null,
+            gender: customerForm.gender || null,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedCustomer.id);

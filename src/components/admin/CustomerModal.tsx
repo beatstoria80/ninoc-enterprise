@@ -27,6 +27,8 @@ export function CustomerModal({
     city: string;
     province: string;
     postal_code: string;
+    birth_date: string;
+    gender: string;
   };
   setForm: React.Dispatch<React.SetStateAction<{
     email: string;
@@ -41,6 +43,8 @@ export function CustomerModal({
     city: string;
     province: string;
     postal_code: string;
+    birth_date: string;
+    gender: string;
   }>>;
   onSave: () => void;
 }) {
@@ -133,6 +137,30 @@ export function CustomerModal({
                     placeholder="Full name"
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tanggal Lahir</label>
+                    <input
+                      type="date"
+                      value={form.birth_date}
+                      onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Jenis Kelamin</label>
+                    <select
+                      value={form.gender}
+                      onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50 bg-white"
+                    >
+                      <option value="">Pilih</option>
+                      <option value="male">Laki-laki</option>
+                      <option value="female">Perempuan</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
