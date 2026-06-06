@@ -182,7 +182,7 @@ export async function GET() {
     .from('wa_broadcast_queue')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'sent')
-    .gte('sent_at', new Date().setHours(0, 0, 0, 0).toISOString());
+    .gte('sent_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
 
   return NextResponse.json({
     pending: pending || 0,
