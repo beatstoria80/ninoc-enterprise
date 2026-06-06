@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Order } from '@/components/admin/types';
 
