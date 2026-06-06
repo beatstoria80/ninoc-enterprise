@@ -319,7 +319,7 @@ export default function OrderDetailPage() {
           className="flex items-center gap-2 px-4 py-2.5 bg-ink text-white rounded-full shadow-lg hover:bg-rose transition-colors text-[9px] font-semibold uppercase tracking-widest"
         >
           <Printer size={12} />
-          Download Invoice
+          Invoice A5
         </button>
       </div>
 

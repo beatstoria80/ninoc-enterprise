@@ -69,8 +69,8 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        width: '210mm',
-        minHeight: '297mm',
+        width: '148mm',
+        minHeight: '210mm',
         backgroundColor: 'white',
         color: '#111',
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -96,11 +96,11 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: '16px 24px',
+          padding: '12px 16px',
           gap: '2px',
         }}>
-          <span style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '-1px', lineHeight: 1 }}>NINOC</span>
-          <span style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '4px', opacity: 0.7 }}>STUDIO</span>
+          <span style={{ fontSize: '22px', fontWeight: '900', letterSpacing: '-1px', lineHeight: 1 }}>NINOC</span>
+          <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '4px', opacity: 0.7 }}>STUDIO</span>
           <span style={{ fontSize: '9px', opacity: 0.5, marginTop: '4px' }}>Bandung, Jawa Barat — Indonesia</span>
         </div>
 
@@ -110,12 +110,12 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: '16px 24px',
+          padding: '12px 16px',
           alignItems: 'flex-end',
           gap: '4px',
         }}>
-          <span style={{ fontSize: '22px', fontWeight: '900', letterSpacing: '2px', color: '#111' }}>INVOICE</span>
-          <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '1px', fontFamily: 'monospace', color: '#444' }}>{orderNumber}</span>
+          <span style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '2px', color: '#111' }}>INVOICE</span>
+          <span style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '1px', fontFamily: 'monospace', color: '#444' }}>{orderNumber}</span>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginTop: '4px' }}>
             <span style={{ fontSize: '9px', color: '#888', letterSpacing: '1px' }}>TANGGAL</span>
             <span style={{ fontSize: '11px', fontWeight: '700', color: '#111' }}>{formatDate(order.created_at)}</span>
@@ -278,7 +278,7 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
 
         {/* QR Code */}
         <div style={{ width: '200px', padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <QRCodeSVG value={order.id.toUpperCase()} size={80} level="M" />
+          <QRCodeSVG value={order.id.toUpperCase()} size={60} level="M" />
           <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '2px', color: '#888', textAlign: 'center' }}>SCAN UNTUK VERIFIKASI</span>
           <span style={{ fontSize: '10px', fontWeight: '900', fontFamily: 'monospace', color: '#111', letterSpacing: '1px' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
         </div>
@@ -288,7 +288,7 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
       {/* FOOTER */}
       {/* ══════════════════════════════════════════════════ */}
       <div style={{
-        padding: '16px 24px',
+        padding: '12px 16px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -372,7 +372,7 @@ export function PrintableInvoice({ order }: { order: Order }) {
       <style>{`
         @media print {
           @page {
-            size: A4;
+            size: A5;
             margin: 0;
           }
           body * {
@@ -386,7 +386,7 @@ export function PrintableInvoice({ order }: { order: Order }) {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            width: 210mm !important;
+            width: 148mm !important;
             z-index: 9999 !important;
             opacity: 1 !important;
             pointerEvents: auto !important;
