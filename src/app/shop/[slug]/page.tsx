@@ -27,6 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? product.description.slice(0, 160)
     : `Beli ${product.name} dari NINOC — Premium Archival Garment Studio. IDR ${product.price?.toLocaleString('id-ID')}.`;
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl },
+      { '@type': 'ListItem', position: 2, name: 'Shop', item: `${baseUrl}/shop` },
+      { '@type': 'ListItem', position: 3, name: product.name, item: `${baseUrl}/shop/${slug}` },
+    ],
+  };
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -70,66 +80,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${baseUrl}/shop/${slug}`,
     },
     other: {
-      'product-schema': JSON.stringify(productSchema),
+      'script:ld+json': JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [productSchema, breadcrumbSchema],
+      }),
     },
   };
 }
 
 export default async function ShopProductPage({ params }: Props) {
   const { slug } = await params;
-
-  const { data: product } = await supabase
-    .from('products')
-    .select('name, description, price, image_url, category, price_tag')
-    .eq('slug', slug)
-    .single();
-
-  const productSchema = product ? {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.description?.slice(0, 160) || '',
-    image: product.image_url ? [product.image_url] : [],
-    url: `${BASE_URL}/shop/${slug}`,
-    brand: { '@type': 'Brand', name: 'NINOC' },
-    offers: {
-      '@type': 'Offer',
-      price: product.price,
-      priceCurrency: 'IDR',
-      availability: product.price_tag === 'PREORDER'
-        ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/InStock',
-      url: `${BASE_URL}/shop/${slug}`,
-    },
-  } : null;
-
-  return (
-    <>
-      {/* Structured Data — Breadcrumb */}
-      {product && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BreadcrumbList',
-              itemListElement: [
-                { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
-                { '@type': 'ListItem', position: 2, name: 'Shop', item: `${BASE_URL}/shop` },
-                { '@type': 'ListItem', position: 3, name: product.name, item: `${BASE_URL}/shop/${slug}` },
-              ],
-            }),
-          }}
-        />
-      )}
-      {/* Structured Data — Product */}
-      {productSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-      )}
-      <ShopProductClient slug={slug} />
-    </>
-  );
+  return <ShopProductClient slug={slug} />;
 }

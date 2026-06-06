@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
 
+// ISR — regenerate sitemap every 1 hour so new products get indexed
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
