@@ -167,11 +167,12 @@ export default function OnboardingPage() {
     }
   }, [f.city]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
+    useEffect(() => {
     if (f.dist) {
-      setVillages([]);
-      fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${f.dist}.json`).then(r => r.json()).then(setVillages).catch(() => {});
+      fetch(`/api/wilayah/villages?districtId=${f.dist}`)
+        .then(r => r.json())
+        .then(data => { if (Array.isArray(data)) setVillages(data); })
+        .catch(() => {});
     }
   }, [f.dist]);
 

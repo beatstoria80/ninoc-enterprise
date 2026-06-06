@@ -8,7 +8,9 @@
     "allow": [
       "WebFetch(domain:dashboard.belidi.id)",
       "PowerShell(npm run lint 2>&1)",
-      "PowerShell(npx tsc --noEmit 2>&1)"
+      "PowerShell(npx tsc --noEmit 2>&1)",
+      "Skill(run)",
+      "Skill(run:*)"
     ]
   },
   "effortLevel": "high",
