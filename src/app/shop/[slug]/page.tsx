@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import ShopProductClient from './ShopProductClient';
 
@@ -8,7 +7,7 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export default async function ShopProductPage({ params }: Props) {
   const { slug } = await params;
 
   const { data: product } = await supabase
@@ -18,10 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   if (!product) {
-    return { title: 'Product Not Found' };
+    return <ShopProductClient slug={slug} />;
   }
 
-  const title = `${product.name}${product.price_tag ? ` — ${product.price_tag}` : ''}`;
   const description = product.description
     ? product.description.slice(0, 160)
     : `Beli ${product.name} dari NINOC — Premium Archival Garment Studio. IDR ${product.price?.toLocaleString('id-ID')}.`;
@@ -55,34 +53,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ],
   };
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${product.name} | NINOC STORE`,
-      description,
-      url: `${BASE_URL}/shop/${slug}`,
-      images: product.image_url
-        ? [{ url: product.image_url, width: 800, height: 800, alt: product.name }]
-        : [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: product.name }],
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${product.name} | NINOC STORE`,
-      description,
-      images: product.image_url ? [product.image_url] : [`${BASE_URL}/og-image.png`],
-    },
-    alternates: {
-      canonical: `${BASE_URL}/shop/${slug}`,
-    },
-    other: {
-      'application/ld+json': JSON.stringify({ '@context': 'https://schema.org', '@graph': [productSchema, breadcrumbSchema] }),
-    },
-  };
-}
-
-export default async function ShopProductPage({ params }: Props) {
-  const { slug } = await params;
-  return <ShopProductClient slug={slug} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <ShopProductClient slug={slug} />
+    </>
+  );
 }
