@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck, RefreshCw, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AnimatedShippingMap from '../../_components/AnimatedShippingMap';
 import { ReturnModal } from './_components/ReturnModal';
+import { PrintableInvoice } from '@/components/Invoice';
 
 interface Order {
   id: string;
@@ -116,6 +117,8 @@ export default function OrderDetailPage() {
 
     fetchOrderData();
   }, [id, router]);
+
+  const printInvoice = () => { window.print(); };
 
   if (isLoading || !order) {
     return (
@@ -308,6 +311,20 @@ export default function OrderDetailPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Download Invoice */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={printInvoice}
+          className="flex items-center gap-2 px-4 py-2.5 bg-ink text-white rounded-full shadow-lg hover:bg-rose transition-colors text-[9px] font-semibold uppercase tracking-widest"
+        >
+          <Printer size={12} />
+          Download Invoice
+        </button>
+      </div>
+
+      {/* Printable Invoice (hidden, triggered by window.print()) */}
+      <PrintableInvoice order={order as any} />
 
     </main>
   );
