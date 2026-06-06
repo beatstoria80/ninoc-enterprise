@@ -29,8 +29,6 @@ import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
-import { FlaggedTab } from '@/components/admin/tabs/FlaggedTab';
-import { CRMTab } from '@/components/admin/tabs/CRMTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -873,8 +871,6 @@ export default function AdminDashboard() {
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
     { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'] },
-    { id: 'flagged', icon: ShieldAlert, label: 'Flagged', activeKeys: ['flagged'] },
-    { id: 'analytics', icon: TrendingUp, label: 'Analytics', activeKeys: ['analytics'] },
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
   ];
 
@@ -1002,7 +998,7 @@ export default function AdminDashboard() {
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Info Stock / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
-               ['messages', 'placeholders', 'flagged'].includes(activeTab) ? 'Support / ' :
+               ['messages', 'placeholders'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1016,7 +1012,6 @@ export default function AdminDashboard() {
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' ? 'Placeholder' :
-               activeTab === 'flagged' ? 'Flagged' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
@@ -1160,10 +1155,6 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
-
-          {activeTab === 'flagged' && <FlaggedTab />}
-
-          {activeTab === 'analytics' && <CRMTab />}
 
           {activeTab === 'customers' && (
             <CustomersTab 
