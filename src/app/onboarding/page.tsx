@@ -251,6 +251,7 @@ export default function OnboardingPage() {
       address: addr,
       city: f.cityName, province: f.provName, postal_code: f.postal,
       rt: f.rt, rw: f.rw,
+      kecamatan: f.distName, kelurahan: f.vill,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' }).then(({ error }) => {
       if (error) { alert(error.message); setIsSaving(false); return; }
