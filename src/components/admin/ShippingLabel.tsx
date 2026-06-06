@@ -143,7 +143,7 @@ export function ShippingLabel({ order }: { order: Order }) {
           color: 'white'
         }}>
           <span style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.5px', lineHeight: 1 }}>NINOC</span>
-          <span style={{ fontSize: '7px', fontWeight: '600', letterSpacing: '3px', opacity: 0.8 }}>STORE</span>
+          <span style={{ fontSize: '7px', fontWeight: '600', letterSpacing: '3px', opacity: 0.8 }}>NINOC STUDIO</span>
         </div>
         <div style={{ 
           flex: 1, 
