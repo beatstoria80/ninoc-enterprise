@@ -480,7 +480,7 @@ Tim NINOC Enterprise`,
       'bukti transfer', 'transfer berhasil', 'sudah transfer', 'belum transfer',
       'virtual account', 'va', 'vA', 'bank transfer',
       'e-wallet', 'ewallet', 'ovo', 'gopay', 'dana', 'shopee pay', 'spay',
-      'cod', 'cash on delivery', 'cicilan', 'installment',
+      'cicilan', 'installment',
       'midtrans', 'duitku', 'bill', 'tagihan',
       'konfirmasi', 'konfirmasi pembayaran', 'confirm payment',
       'bukti', 'struk', 'receipt',
@@ -511,8 +511,8 @@ Tim NINOC Enterprise`,
 • Virtual Account (BCA, Mandiri, BNI, BRI)
 • E-Wallet (OVO, GoPay, Dana, ShopeePay)
 • QRIS
+• Kartu kredit / debit
 • Transfer bank langsung
-• COD (Cash on Delivery)
 
 Mohon kirimkan **Order ID** atau **nomor VA** yang bermasalah — tim kami akan cek dan bantu selesaikan 🙏
 
@@ -552,29 +552,28 @@ Tim NINOC Enterprise`,
       {
         priority: 3,
         trigger: 'cod|cash on delivery|tunai|bayarCOD|bayar cash',
-        content: `Terima kasih bertanya tentang pembayaran COD (Cash on Delivery)! 😊
+        content: `Terima kasih sudah bertanya! 😊
 
-💵 **Info Pembayaran COD:**
+Saat ini NINOC Enterprise belum menyediakan opsi pembayaran COD (Cash on Delivery). Berikut metode pembayaran yang tersedia:
 
-✅ **Keunggulan COD:**
-• Bayar saat barang diterima
-• Tidak perlu transfer dulu
-• Cocok untuk yang belum punya rekening / e-wallet
+💳 **Metode Pembayaran:**
+• Virtual Account (BCA, Mandiri, BNI, BRI, BTPN)
+• E-Wallet (OVO, GoPay, Dana, ShopeePay)
+• QRIS
+• Kartu kredit / debit
+• Transfer bank langsung
 
-📋 **Syarat COD:**
-• Berlaku untuk beberapa metode pengiriman (tergantung lokasi)
-• Maksimal nominal pesanan [Rp X] (informasikan ke customer jika ada limit)
-• Cash terima kepada kurir saat pengiriman
+📱 **Cara Bayar:**
+1️⃣ Pilih produk dan masukkan ke keranjang
+2️⃣ Checkout dan pilih metode pembayaran
+3️⃣ Selesaikan pembayaran via bank / e-wallet yang dipilih
+4️⃣ Pesanan akan diproses setelah pembayaran terkonfirmasi
 
-⚠️ **Catatan Penting:**
-• Siapkan uang pas saat kurir datang
-• Jika ada masalah saat pengiriman, bisa langsung sampaikan ke kurir
-• Jika tidak ada yang di lokasi, kurir akan mengontak Anda untuk penjadwalan ulang
+💡 **Tips:**
+• Pembayaran via VA biasanya terverifikasi dalam 1-5 menit
+• Simpan bukti transfer jika perlu konfirmasi manual
 
-📱 **Info lebih lanjut:**
-Kirimkan **Order ID** atau **nama produk** yang Anda pesan — tim kami akan cek apakah eligible COD untuk pesanan Anda.
-
-Terima kasih 🙏
+Mohon maaf atas ketidaknyamanannya. Apakah ada yang bisa kami bantu dengan metode pembayaran di atas? 🙏
 
 Tim NINOC Enterprise`,
       },
@@ -615,10 +614,7 @@ Tim NINOC Enterprise`,
 • E-Wallet (OVO, GoPay, Dana, ShopeePay)
 • QRIS
 • Kartu kredit / debit
-
-**Offline:**
 • Transfer bank langsung
-• COD (Cash on Delivery)
 
 📋 **Masalah Umum & Solusi:**
 
