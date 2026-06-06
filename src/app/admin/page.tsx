@@ -29,6 +29,7 @@ import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
+import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -656,10 +657,30 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      await supabase
-        .from('orders')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+      // If marking as shipped, use the dedicated shipping API (sends WA notification)
+      if (status === 'shipped') {
+        const res = await fetch('/api/whatsapp/shipping', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: orderId,
+            tracking_id: null, // tracking_id set separately via updateTrackingId
+            courier_name: null,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          console.warn('[updateOrderStatus] Shipping API failed:', data.error);
+          // Still update the status even if WA fails
+        } else if (data.success) {
+          console.log('[updateOrderStatus] Shipping WA sent for order', orderId);
+        }
+      } else {
+        await supabase
+          .from('orders')
+          .update({ status, updated_at: new Date().toISOString() })
+          .eq('id', orderId);
+      }
       fetchData();
       if (selectedOrder?.id === orderId) {
         setSelectedOrder({ ...selectedOrder, status });
@@ -870,6 +891,7 @@ export default function AdminDashboard() {
     { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
+    { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'] },
     { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'] },
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
   ];
@@ -998,7 +1020,7 @@ export default function AdminDashboard() {
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Info Stock / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
-               ['messages', 'placeholders'].includes(activeTab) ? 'Support / ' :
+               ['messages', 'placeholders', 'wabroadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1011,7 +1033,7 @@ export default function AdminDashboard() {
                activeTab === 'inventory' ? 'Stock History' :
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
-               activeTab === 'placeholders' ? 'Placeholder' :
+               activeTab === 'placeholders' || activeTab === 'wabroadcast' ? 'Placeholder / WA Broadcast' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
@@ -1155,6 +1177,8 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
+
+          {activeTab === 'wabroadcast' && <WABroadcastTab />}
 
           {activeTab === 'customers' && (
             <CustomersTab 
