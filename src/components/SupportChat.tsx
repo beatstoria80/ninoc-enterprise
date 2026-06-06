@@ -12,76 +12,1021 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// ─── Quick Action Buttons ──────────────────────────────────────────────────────
-const QUICK_ACTIONS = [
-  {
-    id: 'track',
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTO REPLY CONFIGURATION — Semua respons auto-reply di sini
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface ReplyCategory {
+  label: string;
+  icon: string;
+  color: string;
+  iconColor: string;
+  subject: string;
+  placeholder: string;
+  keywords: string[];
+  responses: {
+    priority: number;
+    trigger: string;
+    content: string;
+  }[];
+  defaultResponse: string;
+}
+
+const AUTO_REPLY_CONFIG: Record<string, ReplyCategory> = {
+  // ───────────────────────────────────────────────────────────────
+  // SHIPPING / TRACKING — Lacak Pesanan
+  // ───────────────────────────────────────────────────────────────
+  shipping: {
     label: 'Lacak Pesanan',
-    sublabel: 'Cek status & resi',
     icon: 'Truck',
     color: 'bg-blue-50 border-blue-100 text-blue-600',
     iconColor: 'text-blue-500',
     subject: 'Tracking Pesanan',
-    category: 'shipping',
-    placeholder: 'Ketik nomor pesanan atau resi Anda...',
+    placeholder: 'Ketik nomor Order ID atau resi pengiriman...',
+    keywords: [
+      'lacak', 'tracking', 'track', 'resi', 'awb', 'tracking number',
+      'kirim', 'dikirim', 'pengiriman', 'pesanan', 'order',
+      'delivered', 'delivery', 'sampai', 'sampe', 'belum sampai', 'blm sampe',
+      'estimasi', 'eta', 'kurir', 'ekspedisi', 'jne', 'j&t', 'jnt',
+      'sicepat', 'anteraja', 'anteraja', 'siCepat', 'pos', 'wahana',
+      'dalam perjalanan', 'sedang dikirim', 'proses kirim',
+      'status kirim', 'posisi barang', 'lokasi paket', 'barang saya',
+      'paket', 'package', 'package delivery',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'sudah sampai|sudah diterima|udah sampai|udh sampai|sampe|sampe|diterima',
+        content: `Halo! Terima kasih sudah menghubungi NINOC. 😊
+
+Kami memahami Anda menanyakan status pengiriman. Berikut langkah lacak pesanan:
+
+📦 **Cara Lacak:**
+1️⃣ Buka email / SMS yang kami kirim saat barang dikemas
+2️⃣ Salin **nomor resi (AWB)** — contoh: JD014200000019830400
+3️⃣ Buka website ekspedisi terkait (JNE / J&T / SiCepat / AnterAja)
+4️⃣ Paste nomor resi di kolom tracking
+
+🔗 **Link Tracking Langsung:**
+• JNE: https://track.jne.co.id
+• J&T: https://jet.co.id/track
+• SiCepat: https://www.sicepat.com/check-awb
+• AnterAja: https://anteraja.id/tracking
+
+📱 **Atau lacak via chat ini:**
+Ketik **NCO-XXXXXXXX** (Order ID dari email konfirmasi) dan kami bantu lacak langsung.
+
+Jika ada kendala (paket stuck, terlambat, rusak), silakan ceritakan nomor pesanan dan resinya — tim kami akan bantu follow-up ke pihak kurir 🙏`,
+      },
+      {
+        priority: 2,
+        trigger: 'belum|sedang|proses|pending|menunggu|still|still',
+        content: `Kami mengerti pesanan Anda sedang dalam proses. 🕐
+
+📋 **Status Pengiriman:**
+Setelah pembayaran berhasil, pesanan diproses 1-2 hari kerja. Setelah itu:
+1️⃣ Barang dikemas dan diberikan ke kurir
+2️⃣ Kami kirim email/SMS berisi **nomor resi (AWB)**
+3️⃣ Bisa dilacak di website ekspedisi
+
+⏱️ **Estimasi Pengiriman:**
+• Same Day: 2-6 jam (kota yang dituju)
+• Instant: 1-3 jam
+• Reguler: 2-5 hari kerja (tergantung jarak)
+
+📦 **Cara Cek Status:**
+Ketik **Order ID** (format: NCO-XXXXXXXX) di chat ini — kami bantu lacak langsung.
+
+Jika sudah melebihi estimasi, tolong kirimkan nomor pesanan dan tim kami akan segera follow-up 🙏`,
+      },
+      {
+        priority: 3,
+        trigger: 'stuck|macet|terlambat|lambat|delay|overdue|batal|delay',
+        content: `Kami memahami kekhawatiran Anda atas keterlambatan pengiriman. Kami ikut prihatin dan akan bantu semaksimal mungkin. 🙏
+
+📋 **Langkah yang Bisa Kami Lakukan:**
+1️⃣ Mohon kirimkan **nomor Order ID** atau **nomor resi (AWB)** melalui chat ini
+2️⃣ Tim kami akan langsung **follow-up ke pihak ekspedisi** untuk mengcek posisi paket
+3️⃣ Jika paket hilang atau rusak, kami akan proses claim ke pihak kurir
+
+⚠️ **Kemungkinan Keterlambatan:**
+• Cuaca buruk / bencana alam
+• Gudang ekspedisi overload (misal saat tanggal kembar 11.11)
+• Alamat tujuan kurang lengkap / tidak jelas
+• Tinggi perayaan / hari libur
+
+Mohon kirimkan nomor pesanan dan resinya ya — kami akan tangani secepat mungkin 🙏
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Halo! Terima kasih menghubungi NINOC. 😊
+
+Untuk melacak pesanan, silakan:
+1️⃣ Buka email / SMS konfirmasi pengiriman dari NINOC
+2️⃣ Salin **nomor resi (AWB)** yang tertera
+3️⃣ Lacak di website ekspedisi terkait (JNE / J&T / SiCepat / AnterAja)
+
+📱 **Atau ketik Order ID** (format: NCO-XXXXXXXX) di sini — tim kami bantu lacak langsung.
+
+Jika ada masalah (paket tidak sampai, rusak, stuck), tolong berikan nomor resi dan tim kami akan follow-up 🙏`,
   },
-  {
-    id: 'return',
+
+  // ───────────────────────────────────────────────────────────────
+  // RETURN / REFUND — Ajukan Retur
+  // ───────────────────────────────────────────────────────────────
+  return: {
     label: 'Ajukan Retur',
-    sublabel: 'Refund atau tukar barang',
     icon: 'RefreshCw',
     color: 'bg-rose/10 border-rose/10 text-rose',
     iconColor: 'text-rose',
     subject: 'Pengajuan Retur / Refund',
-    category: 'return',
-    placeholder: 'Ketik nomor pesanan dan masalah yang dialami...',
+    placeholder: 'Ketik nomor pesanan dan alasan retur...',
+    keywords: [
+      'retur', 'return', 'balikin', 'balikan', 'balikin barang',
+      'refund', 'refun', 'refundkan',
+      'tukar', 'tuker', 'tukar barang', 'tukeran', 'exchange', 'swap',
+      'ganti', 'ganti barang', 'ganti size', 'ganti ukuran', 'ganti warna',
+      'salah size', 'salah ukuran', 'salah barang', 'barang salah',
+      'uang kembali', 'dana kembali', 'uang balik', 'refund dana',
+      'garansi', 'claim garansi', 'warranty',
+      'cacat', 'defect', 'barang rusak', 'barang cacat',
+      'rusak', 'komplain', 'keluhan barang', 'barang bermasalah',
+      'tidak sesuai', 'beda dari foto', 'beda sama foto', 'beda sama deskripsi',
+      'produk tidak sesuai', 'size tidak cocok', 'warna tidak sesuai',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'salah|keliru|salah kirim|salah barang|salah size|salah warna|salah ukuran|salah model',
+        content: `Kami sangat menyesal terjadi kesalahan pengiriman. Kami minta maaf atas ketidaknyamanannya. 🙏
+
+📋 **Langkah Pengajuan Retur (Salah Kirim):**
+
+1️⃣ **Siapkan Bukti:**
+   • Foto produk yang diterima
+   • Foto label pengiriman
+   • Foto packaging
+
+2️⃣ **Kirim ke Chat Ini:**
+   Format: "PENGAJUAN RETUR — Order ID: [nomor] — Alasan: [salah kirim barang]"
+
+3️⃣ **Tim Kami Akan:**
+   • Verifikasi dalam 1x24 jam kerja
+   • Kirimkan label pengembalian (jika diperlukan)
+   • Proses refund / kirim barang pengganti sesuai kebijakan
+
+⚠️ **Syarat Retur:**
+• Barang belum digunakan / dicuci / dirangkai
+• Label & tag masih menempel
+• Dikemas kembali dengan benar
+• Disertakan bukti unboxing (foto/video saat buka paket)
+
+Mohon kirimkan **Order ID** dan **foto barang** yang diterima ya 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 2,
+        trigger: 'rusak|cacat|defect|pecah|sobek|不合格',
+        content: `Kami turut prihatin mendengar barang yang Anda terima dalam kondisi rusak/cacat. Mohon maaf atas ketidaknyamanannya. 🙏
+
+📋 **Langkah Pengajuan Retur (Barang Rusak / Cacat):**
+
+1️⃣ **Siapkan Bukti (WAJIB):**
+   • Foto barang dari beberapa sudut (tunjukkan kerusakan)
+   • Foto label pengiriman
+   • Video unboxing 1-shot (rekam saat buka paket, tanpa edit/henti)
+
+2️⃣ **Kirim ke Chat Ini:**
+   Format: "PENGAJUAN RETUR — Order ID: [nomor] — Alasan: [barang rusak/cacat]"
+
+3️⃣ **Tim Kami Akan:**
+   • Verifikasi dalam 1x24 jam kerja
+   • Foto kerusakan akan kami teruskan ke tim quality
+   • Proses refund atau kirim barang pengganti
+
+⚠️ **Catatan Penting:**
+• Kerusakan karena kesalahan produksi (bukan karena pengiriman) = eligible retur
+• Kerusakan karena kesalahan sendiri (jatuh, robek, dll) = tidak eligible
+• Bukti video unboxing sangat membantu proses klaim
+
+Mohon kirimkan **Order ID** dan **foto/video kerusakan** ya 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 3,
+        trigger: 'refund|uang kembali|dana kembali|uang balik|refund dana|pengembalian dana',
+        content: `Kami memahami Anda ingin mengajukan refund. Berikut informasi lengkapnya: 🙏
+
+💰 **Jenis Refund di NINOC:**
+
+**1. Refund Otomatis (Pembayaran Gagal / Timeout)**
+• Dana kembali otomatis dalam 1-3 hari kerja
+•depends on bank masing-masing
+• Tidak perlu ajukan manual
+
+**2. Refund Karena Retur / Pembatalan**
+• Setelah barang diterima dan diverifikasi
+• Proses 3-7 hari kerja
+• Dana kembali ke metode pembayaran awal
+
+**3. Kelebihan Bayar**
+• Jika ada selisih pembayaran
+• Proses 3-5 hari kerja
+
+📋 **Cara Ajukan Refund Manual:**
+Kirimkan ke chat ini:
+• Order ID
+• Bukti transfer / screenshot payment
+• Alasan refund
+
+Tim kami akan proses secepat mungkin 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 4,
+        trigger: 'tukar|tukar barang|tukar size|tukar ukuran|tukar warna|tukar model|exchange',
+        content: `Kami siap membantu proses penukaran barang. Berikut langkah-langkahnya: 🙏
+
+📋 **Langkah Penukaran Barang:**
+
+1️⃣ **Pastikan Termasuk Kategori yang Bisa Ditukar:**
+   • Salah ukuran (size S jadi M, dst)
+   • Salah warna (minta biru ternyata putih)
+   • Salah model (beda dari yang dipesan)
+   • CACAT / RUSAK dari pihak produksi
+
+2️⃣ **Tidak Eligible Tukar:**
+   • Sudah dipakai / dicuci / dirubah
+   • Kerusakan karena kesalahan sendiri
+   • Lebih dari 7 hari setelah diterima
+
+3️⃣ **Proses Tukar:**
+   • Kirimkan **Order ID** + **foto barang** + **alasan tukar** ke chat ini
+   • Tim kami akan memberikan instruksi pengiriman
+   • Setelah barang diterima, kami kirim barang pengganti
+
+📦 **Biaya Tukar:**
+• Salah pihak NINOC (salah kirim, cacat produksi) = FREE
+• Salah pihak customer (salah size, beda warna pilihan) = biaya kirim ditanggung customer
+
+Mohon kirimkan **Order ID** dan **foto** ya 🙏
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Halo! Terima kasih sudah menghubungi NINOC tentang pengajuan retur/refund. Kami siap membantu. 🙏
+
+📋 **Kategori Retur yang Bisa Diajukan:**
+
+✅ **Eligible Retur:**
+• Barang rusak / cacat produksi
+• Salah kirim (size, warna, model tidak sesuai)
+• Tidak sesuai deskripsi produk
+• Barang hilang dalam perjalanan
+
+❌ **Tidak Eligible Retur:**
+• Sudah dipakai / dicuci / dimodifikasi
+• Kerusakan karena kesalahan customer
+• Lebih dari 7 hari setelah diterima
+
+📋 **Langkah Pengajuan:**
+1️⃣ Siapkan **Order ID** dan **foto/video bukti**
+2️⃣ Kirim ke chat ini dengan format:
+   "PENGAJUAN RETUR — Order ID: [nomor] — Alasan: [ceritakan]"
+
+3️⃣ Tim kami akan proses dalam **1x24 jam kerja**
+
+⚠️ **Syarat Wajib:**
+• Bukti unboxing video 1-shot (tanpa edit, durasi min 30 detik)
+• Label & tag masih menempel
+• Barang dikemas kembali dengan benar
+
+Kirimkan nomor pesanan dan detail permasalahannya ya 🙏
+
+Tim NINOC Enterprise`,
   },
-  {
-    id: 'product',
+
+  // ───────────────────────────────────────────────────────────────
+  // PRODUCT — Tanya Produk, Stok, Ukuran
+  // ───────────────────────────────────────────────────────────────
+  product: {
     label: 'Tanya Produk',
-    sublabel: 'Stok, ukuran, warna',
     icon: 'Package',
     color: 'bg-purple-50 border-purple-100 text-purple-600',
     iconColor: 'text-purple-500',
     subject: 'Tanya Stok & Produk',
-    category: 'product',
     placeholder: 'Ketik nama produk atau pertanyaan Anda...',
+    keywords: [
+      'stock', 'tersedia', 'available', 'ada', 'ready', 'ready stock',
+      'out of stock', 'sold out', 'preorder',
+      'size chart', 'chart', 'size guide', 'ukur',
+      'warna', 'color', 'colour', 'motif', 'model',
+      'bahan', 'material', 'kualitas', 'quality',
+      'katalog', 'catalog', 'product', 'item', 'barang', 'produk',
+      'berat', 'weight', 'dimensi', 'measurement', 'panjang', 'lebar', 'tinggi',
+      'harga', 'price', 'cost', 'berapa', 'range harga',
+      'diskon', 'sale', 'promo', 'promosi', 'diskon',
+      'ini apa', 'apa itu', 'product ini', 'barang ini',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'stock|tersedia|ada|ready|available|ready stock|stok',
+        content: `Terima kasih sudah bertanya! 😊
+
+Kami dengan senang hati membantu informasi produk. Untuk memberikan info yang akurat, tolong berikan:
+
+📦 **Info yang Membantu:**
+• Nama produk atau model yang Anda cari
+• Ukuran yang Anda butuhkan
+• Warna yang Anda inginkan
+• Kuantitas yang diperlukan
+
+💡 **Tips:**
+• Kunjungi halaman **Shop** di website kami untuk lihat katalog lengkap
+• Filter berdasarkan kategori, warna, dan ukuran
+• Setiap produk menampilkan **stok real-time**
+
+📱 **Cara Cek Stok Cepat:**
+Ketik nama produk di sini, contoh: "T-Shirt NINOC size M warna hitam" — tim kami akan cek stoknya.
+
+ Atau langsung hubungi via WhatsApp: [nomor WA] untuk respons lebih cepat 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 2,
+        trigger: 'size|ukuran|chart|guide|ukur',
+        content: `Terima kasih bertanya tentang sizing! Berikut panduan lengkapnya: 📏
+
+📐 **Panduan Ukuran NINOC:**
+
+Kami menyediakan **Size Guide** di setiap halaman produk. Berikut cara mengaksesnya:
+
+1️⃣ Buka halaman produk yang Anda minati
+2️⃣ Scroll ke bawah, cari bagian **"Size Guide"** atau **"Ukuran"**
+3️⃣ Terdapat tabel ukuran (S, M, L, XL, XXL) dengan:
+   • Lingkar dada (cm)
+   • Panjang badan (cm)
+   • Lingkar bahu (cm)
+   • Toleransi ±1-2cm
+
+📏 **Tips Mengukur Body:**
+• Gunakan pita ukur / meteran
+• Ukur bagian yang paling lebar (biasanya dada / dada)
+• Jangan terlalu ketat atau longgar
+
+💡 **Jika Still Ragu:**
+Kirimkan ke chat ini:
+• Tinggi badan Anda
+• Berat badan Anda
+• Bagian yang biasanya tight / longgar di baju
+
+Tim kami akan bantu rekomendasikan size yang pas 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 3,
+        trigger: 'harga|price|cost|berapa|range|mahal|cheap',
+        content: `Terima kasih sudah bertanya! Berikut info harga produk NINOC: 💰
+
+📋 **Info Harga:**
+
+💡 **Untuk info harga produk tertentu:**
+Ketik nama produk yang Anda maksud — tim kami akan memberikan info harga terbaru.
+
+🎁 **Benefit Belanja di NINOC:**
+• ✅ Produk original dengan kualitas terjamin
+• ✅ Gratis ongkir (syarat & ketentuan berlaku)
+• ✅ Garansi 7 hari untuk produk cacat produksi
+• ✅ Promo diskon rutin setiap minggu
+• ✅ Reward point untuk setiap pembelian
+
+📱 **Cek Promo Terbaru:**
+Kunjungi halaman **Shop** atau ketik "promo" di chat ini untuk info diskon yang sedang berlaku.
+
+Ada produk tertentu yang ingin Anda ketahui harganya? Silakan ketik nama produknya 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 4,
+        trigger: 'warna|color|colour|motif|model|varian',
+        content: `Terima kasih sudah bertanya! Berikut info warna dan variasi produk NINOC: 🎨
+
+🎨 **Pilihan Warna:**
+Setiap produk memiliki pilihan warna yang berbeda-beda. Untuk melihat warna yang tersedia:
+
+1️⃣ Buka halaman produk di website
+2️⃣ Cari **pilihan warna** (biasanya di bawah gambar produk)
+3️⃣ Klik untuk melihat foto setiap warna
+
+📦 **Info Varian:**
+• Warna yang Ready = bisa langsung dipesan
+• Warna yang Preorder = perlu menunggu 3-7 hari
+• Warna Sold Out = sementara tidak tersedia
+
+💡 **Tanya Warna Spesifik:**
+Ketik nama produk + warna yang Anda cari — contoh: "Kemeja NINOC warna sage" — tim kami akan cek ketersediaannya.
+
+🎁 **Tips:**
+• Foto warna di website bisa sedikit berbeda dengan warna asli (effek cahaya / layar)
+• Jika ragu, jangan ragu untuk bertanya sebelum checkout 🙏
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Terima kasih sudah bertanya tentang produk NINOC! 😊
+
+Untuk memberikan informasi yang tepat, tolong beritahu kami:
+
+📦 **Yang Bisa Kami Bantu:**
+• ✅ Cek stok produk tertentu
+• ✅ Info ukuran & size guide
+• ✅ Info warna & variasi yang tersedia
+• ✅ Harga & promo terbaru
+• ✅ Rekomendasi produk yang cocok
+• ✅ Info bahan & kualitas produk
+
+📱 **Cara Cepat:**
+Ketik nama produk yang Anda cari — tim kami akan cek langsung dan memberikan info akurat.
+
+🌐 **Atau kunjungi langsung:**
+Kunjungi halaman **Shop** di website kami untuk lihat katalog lengkap dengan filter warna, ukuran, dan kategori.
+
+Kami siap membantu! 🙏
+
+Tim NINOC Enterprise`,
   },
-  {
-    id: 'payment',
+
+  // ───────────────────────────────────────────────────────────────
+  // PAYMENT — Masalah Pembayaran
+  // ───────────────────────────────────────────────────────────────
+  payment: {
     label: 'Masalah Bayar',
-    sublabel: 'Transfer, Midtrans, COD',
     icon: 'CreditCard',
     color: 'bg-amber-50 border-amber-100 text-amber-600',
     iconColor: 'text-amber-500',
     subject: 'Masalah Pembayaran',
-    category: 'payment',
     placeholder: 'Ketik nomor pesanan dan masalah pembayarannya...',
+    keywords: [
+      'bayar', 'bayarin', 'pembayaran', 'bayar transfer', 'lunas',
+      'gagal', 'failed', 'error payment', 'transaction error',
+      'bukti transfer', 'transfer berhasil', 'sudah transfer', 'belum transfer',
+      'virtual account', 'va', 'vA', 'bank transfer',
+      'e-wallet', 'ewallet', 'ovo', 'gopay', 'dana', 'shopee pay', 'spay',
+      'cod', 'cash on delivery', 'cicilan', 'installment',
+      'midtrans', 'duitku', 'bill', 'tagihan',
+      'konfirmasi', 'konfirmasi pembayaran', 'confirm payment',
+      'bukti', 'struk', 'receipt',
+      'metode bayar', 'payment method', 'cara bayar',
+      'overpaid', 'kelebihan', 'lebih bayar', 'lebih transfer',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'gagal|failed|error|timeout|pending|struk|struck|struck',
+        content: `Kami memahami ada masalah dengan pembayaran Anda. Mari kami bantu selesaikan. 🙏
+
+❌ **Pembayaran Gagal / Error:**
+
+📋 **Kemungkinan Penyebab:**
+1️⃣ **Saldo tidak cukup** — pastikan saldo cukup sebelum bayar
+2️⃣ **VA expired** — Virtual Account kedaluwarsa (24 jam setelah生成)
+3️⃣ **Transfer ke rekening salah** — pastikan nomor VA sesuai persis
+4️⃣ **Koneksi timeout** — coba ulangi dengan koneksi internet stabil
+5️⃣ **Bank maintenance** — coba lagi di lain waktu
+
+📱 **Langkah yang Bisa Dilakukan:**
+1️⃣ Buka halaman **Pesanan Saya** di website
+2️⃣ Cek status pesanan — jika masih pending, coba bayarkan lagi
+3️⃣ Jika sudah expired, buat pesanan baru dengan payment method lain
+
+💳 **Metode Pembayaran yang Tersedia:**
+• Virtual Account (BCA, Mandiri, BNI, BRI)
+• E-Wallet (OVO, GoPay, Dana, ShopeePay)
+• QRIS
+• Transfer bank langsung
+• COD (Cash on Delivery)
+
+Mohon kirimkan **Order ID** atau **nomor VA** yang bermasalah — tim kami akan cek dan bantu selesaikan 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 2,
+        trigger: 'konfirmasi|confirm|bukti transfer|struk|payment proof|receipt|sudah transfer|sdh transfer|udah transfer|udh transfer',
+        content: `Terima kasih telah melakukan pembayaran! Berikut panduan konfirmasi: 🙏
+
+✅ **Langkah Konfirmasi Pembayaran:**
+
+**Otomatis (Paling Cepat):**
+Setelah Anda transfer, sistem Midtrans akan otomatis mendeteksi dalam 1-5 menit. **Tidak perlu konfirmasi manual** — cukup tunggu email konfirmasi pembayaran dari kami.
+
+**Manual (Jika belum masuk setelah 30 menit):**
+1️⃣ Buka halaman **Pesanan Saya** di website
+2️⃣ Klik pesanan yang ingin dikonfirmasi
+3️⃣ Upload **bukti transfer** (foto/ screenshot struk)
+4️⃣ Tim kami akan verifikasi dalam 1x24 jam kerja
+
+📋 **Info yang Perlu Disertakan:**
+• Order ID: NCO-XXXXXXXX
+• Tanggal & jam transfer
+• Jumlah transfer
+• Bank yang digunakan
+• Foto bukti transfer
+
+⚠️ **Penting:**
+• Pastikan nominal transfer **persis sama** dengan total pesanan
+• Jika ada selisih (lebih/kurang), tolong informasikan segera
+
+Kirimkan bukti transfer dan Order ID ke chat ini ya 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 3,
+        trigger: 'cod|cash on delivery|tunai|bayarCOD|bayar cash',
+        content: `Terima kasih bertanya tentang pembayaran COD (Cash on Delivery)! 😊
+
+💵 **Info Pembayaran COD:**
+
+✅ **Keunggulan COD:**
+• Bayar saat barang diterima
+• Tidak perlu transfer dulu
+• Cocok untuk yang belum punya rekening / e-wallet
+
+📋 **Syarat COD:**
+• Berlaku untuk beberapa metode pengiriman (tergantung lokasi)
+• Maksimal nominal pesanan [Rp X] (informasikan ke customer jika ada limit)
+• Cash terima kepada kurir saat pengiriman
+
+⚠️ **Catatan Penting:**
+• Siapkan uang pas saat kurir datang
+• Jika ada masalah saat pengiriman, bisa langsung sampaikan ke kurir
+• Jika tidak ada yang di lokasi, kurir akan mengontak Anda untuk penjadwalan ulang
+
+📱 **Info lebih lanjut:**
+Kirimkan **Order ID** atau **nama produk** yang Anda pesan — tim kami akan cek apakah eligible COD untuk pesanan Anda.
+
+Terima kasih 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 4,
+        trigger: 'overpaid|kelebihan|lebih bayar|lebih transfer|lebih nominal|refund lebih|refund overpay',
+        content: `Terima kasih telah melaporkan kelebihan pembayaran. Kami sangat menghargai kejujuran Anda. 🙏
+
+💰 **Proses Refund Kelebihan Bayar:**
+
+📋 **Langkah yang Akan Kami Lakukan:**
+1️⃣ Tim finance akan memverifikasi nominal kelebihan
+2️⃣ Dana akan dikembalikan ke **metode pembayaran awal** Anda
+3️⃣ Proses refund dalam **3-5 hari kerja**
+
+📋 **Info yang Perlu Disertakan:**
+• Order ID: NCO-XXXXXXXX
+• Nominal yang dibayarkan
+• Nominal yang seharusnya
+• Bukti transfer / screenshot
+
+⚠️ **Penting:**
+• Refund akan dikirim ke rekening/ e-wallet yang digunakan saat pembayaran
+• Jika menggunakan transfer bank, refund ke rekening dengan nama yang sama
+• Proses refund tidak dipungut biaya apapun
+
+Mohon kirimkan **Order ID** dan **bukti transfer** ke chat ini ya 🙏 — tim kami akan proses secepat mungkin.
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Halo! Terima kasih telah menghubungi NINOC tentang masalah pembayaran. Kami siap membantu. 🙏
+
+💳 **Metode Pembayaran yang Tersedia:**
+
+**Online:**
+• Virtual Account (BCA, Mandiri, BNI, BRI, BTPN)
+• E-Wallet (OVO, GoPay, Dana, ShopeePay)
+• QRIS
+• Kartu kredit / debit
+
+**Offline:**
+• Transfer bank langsung
+• COD (Cash on Delivery)
+
+📋 **Masalah Umum & Solusi:**
+
+❌ **Pembayaran Gagal:**
+→ Buka halaman Pesanan Saya, coba bayarkan lagi dengan metode berbeda
+
+❌ **Sudah Transfer Tapi Status Belum Update:**
+→ Tunggu 5-30 menit, sistem auto-sync dari Midtrans
+
+❌ **VA Expired:**
+→ Buat pesanan baru dan bayarkan sebelum expired
+
+❌ **Kelebihan Bayar:**
+→ Kirimkan bukti transfer + Order ID — kami proses refund 3-5 hari kerja
+
+📱 **Bantuan Cepat:**
+Kirimkan **Order ID** dan **deskripsi masalah** ke chat ini — tim kami akan bantu selesaikan secepat mungkin.
+
+Terima kasih 🙏
+
+Tim NINOC Enterprise`,
   },
-  {
-    id: 'other',
+
+  // ───────────────────────────────────────────────────────────────
+  // COMPLAINT — Keluhan Umum
+  // ───────────────────────────────────────────────────────────────
+  complaint: {
+    label: 'Keluhan',
+    icon: 'AlertCircle',
+    color: 'bg-red-50 border-red-100 text-red-600',
+    iconColor: 'text-red-500',
+    subject: 'Keluhan Pelanggan',
+    placeholder: 'Ceritakan keluhan Anda...',
+    keywords: [
+      'kecewa', 'buruk', 'jelek', 'tidak puas', 'protes', 'keluhan',
+      'kacau', 'masalah', 'problem', 'issue', 'gangguan',
+      'ditunda', 'delay', 'mundur', 'cancel', 'dibatalkan',
+      'hilang', 'rusak parah', 'overdue',
+      'kesal', 'marah', 'emosi', 'protest', 'ngadu', 'aduan',
+      'tidak ada', 'tidak bisa', 'gagal', 'error',
+      'disappointed', 'bad', 'poor', 'terrible', 'worst',
+      'not good', 'not satisfied', 'complaint', 'complain',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'cancel|batal|dibatalkan|pending cancel|cancel order',
+        content: `Kami memahami Anda ingin membatalkan pesanan. Kami akan bantu semaksimal mungkin. 🙏
+
+📋 **Informasi Pembatalan:**
+
+⚠️ **Syarat Pembatalan:**
+• Pesanan belum diproses / belum handed over ke kurir
+• Jika sudah dikirim, tidak bisa dibatalkan langsung — perlu proses retur
+
+📱 **Langkah Pembatalan:**
+1️⃣ Kirimkan **Order ID** (format: NCO-XXXXXXXX) ke chat ini
+2️⃣ Jelaskan **alasan pembatalan**
+3️⃣ Tim kami akan cek status pesanan
+4️⃣ Jika belum dikirim → langsung dibatalkan, refund 1-3 hari kerja
+5️⃣ Jika sudah dikirim → diarahkan ke proses retur
+
+⚠️ **Catatan:**
+• Pesanan yang sudah dibayar tapi belum dikirim → refund penuh
+• Pesanan dengan status "sedang dikemas" → bergantung kebijakan
+• Pembatalan setelah 24 jam dari order → bergantung kondisi
+
+Mohon kirimkan **Order ID** dan **alasan pembatalan** ya 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 2,
+        trigger: 'kecewa|marah|kesal|emosi|protes|protest|tidak puas|gagal|many problems',
+        content: `Kami sangat menyesal mendengar pengalaman Anda yang kurang menyenangkan. Kami minta maaf yang sebesar-besarnya atas ketidaknyamanan ini. 🙏
+
+Setiap masukan dan keluhan Anda sangat berharga bagi kami untuk terus meningkatkan kualitas layanan.
+
+📋 **Langkah yang Akan Kami Ambil:**
+1️⃣ Tim kami akan mencatat dan menindaklanjuti keluhan Anda
+2️⃣ Kami akan koordinasi dengan tim terkait untuk menyelesaikan masalah
+3️⃣ Jika diperlukan, kami akan menghubungi Anda kembali via email / WhatsApp
+
+📱 **Agar Bisa Kami Bantu Lebih Cepat:**
+Mohon kirimkan informasi berikut:
+• **Order ID**: NCO-XXXXXXXX
+• **Detail Keluhan**: Apa yang terjadi?
+• **Bukti** (foto/ screenshot jika ada)
+• **Solusi yang Anda Harapkan**
+
+Kami sangat menghargai kesabaran Anda. Tim kami akan berusaha menyelesaikan masalah ini secepat mungkin. 🙏
+
+Mohon jangan hesitate untuk menghubungi kami lagi jika ada pertanyaan lebih lanjut.
+
+Hormat kami,
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 3,
+        trigger: 'hilang|rusak|hilang dalam perjalanan|paket hilang|lost|missing',
+        content: `Kami sangat prihatin mendengar paket Anda hilang dalam perjalanan. Kami minta maaf atas ketidaknyamanannya. 🙏
+
+📋 **Langkah Klaim Package Lost:**
+
+1️⃣ **Verifikasi:**
+   • Kirimkan **Order ID** dan **nomor resi (AWB)**
+   • Kami akan cek status di sistem ekspedisi
+
+2️⃣ **Proses Claim:**
+   • Tim kami akan submit claim ke pihak ekspedisi
+   • Proses verifikasi 1-7 hari kerja (tergantung kebijakan kurir)
+
+3️⃣ **Solusi:**
+   • Jika paket ditemukan → akan dikirim ulang ke alamat tujuan
+   • Jika paket dinyatakan hilang → refund penuh atau kirim ulang (tergantung kebijakan)
+
+📋 **Yang Perlu Disiapkan:**
+   • Bukti foto packaging saat dikirim (dari sisi kami)
+   • Foto label pengiriman
+   • Deskripsi kronologi
+
+⚠️ **Penting:**
+   • Jangan dispose packaging sampai masalah terselesaikan
+   • Segera laporkan jika paket tidak sampai dalam waktu estimasi + 3 hari
+
+Mohon kirimkan **Order ID** dan **nomor resi** ke chat ini ya 🙏 — tim kami akan segera menindak lanjuti.
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Halo! Kami sangat menyesal mendengar keluhan Anda. Setiap masukan sangat berharga bagi kami untuk terus meningkatkan layanan. 🙏
+
+Mohon ceritakan lebih detail agar kami bisa membantu dengan tepat:
+
+📋 **Info yang Kami Butuhkan:**
+• **Order ID**: NCO-XXXXXXXX (jika ada)
+• **Masalah yang Dialami**: Ceritakan kronologi lengkap
+• **Bukti**: Foto/ screenshot jika ada
+• **Harapan Solusi**: Apa yang Anda inginkan?
+
+📱 **Kami Akan:**
+1️⃣ Mencatat dan memprioritaskan keluhan Anda
+2️⃣ Koordinasi dengan tim terkait untuk solve
+3️⃣ Memberikan update dalam 1x24 jam kerja
+4️⃣ Follow-up sampai masalah terselesaikan
+
+Kami sangat menghargai kesabaran Anda. Mohon kirimkan detail keluhan Anda 🙏
+
+Tim NINOC Enterprise`,
+  },
+
+  // ───────────────────────────────────────────────────────────────
+  // GENERAL — Pertanyaan Umum / Lainnya
+  // ───────────────────────────────────────────────────────────────
+  general: {
     label: 'Lainnya',
-    sublabel: 'Pertanyaan umum',
     icon: 'MessageSquare',
     color: 'bg-ink/5 border-ink/10 text-ink/60',
     iconColor: 'text-ink/40',
     subject: 'Pertanyaan Lainnya',
-    category: 'other',
     placeholder: 'Ketik pertanyaan Anda...',
-  },
-];
+    keywords: [
+      'halo', 'hai', 'hallo', 'hi', 'hey', 'yo',
+      'pagi', 'siang', 'sore', 'malam',
+      'apa kabar', 'good morning', 'good evening', 'good night', 'selamat',
+      'gimana', 'gmn', 'gmn sih', 'bgaimana', 'caranya', 'caranya gimana',
+      'kenapa', 'mengapa', 'apa itu', 'apa sih', 'kok', 'bisa gak', 'bisa nggak',
+      'informasi', 'studio', 'ninoc', 'brand', 'tentang', 'siapa',
+      'alamat', 'jam', 'buka', 'tutup', 'kontak',
+      'whatsapp', 'WA', 'telepon', 'email', 'ig', 'instagram',
+      'toko', 'shop', 'store', 'location', 'lokasi', 'maps',
+      'how', 'what', 'when', 'where', 'who', 'why',
+      'ask', 'question', 'tanya', 'bertanya',
+    ],
+    responses: [
+      {
+        priority: 1,
+        trigger: 'kontak|whatsapp|wa|telepon|email|hubungi|ig|instagram|sosmed',
+        content: `Halo! Terima kasih sudah menghubungi NINOC. 😊
 
-// ─── Icon helper ────────────────────────────────────────────────────────────
+📱 **Kontak NINOC:**
+
+💬 **Chat Support (Paling Cepat):**
+• Hubungi via chat ini — kami biasanya respon dalam 1-2 jam
+
+📱 **WhatsApp:**
+• [Nomor WA Studio] — untuk pertanyaan yang lebih urgent
+
+📧 **Email:**
+• [Email Studio] — untuk pertanyaan formal / komplain resmi
+
+📸 **Instagram:**
+• @ninoc.official — info promo, produk terbaru, dan gallery
+
+🌐 **Website:**
+• www.ninoc.co.id — katalog produk lengkap dan info terbaru
+
+📍 **Alamat Toko (Walk-in):**
+• [Alamat lengkap jika ada]
+
+⏰ **Jam Operasional:**
+• Senin - Jumat: 09.00 - 17.00 WIB
+• Sabtu: 09.00 - 14.00 WIB
+• Minggu & Hari Libur: Tutup
+
+Kami siap membantu Anda! 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 2,
+        trigger: 'jam|buka|tutup|operasional|jam operasional|lokasi|alamat|store|shop',
+        content: `Halo! Terima kasih sudah bertanya. Berikut info jam operasional NINOC: 🕐
+
+⏰ **Jam Operasional:**
+
+🏪 **Toko / Showroom:**
+• Senin - Jumat: 09.00 - 17.00 WIB
+• Sabtu: 09.00 - 14.00 WIB
+• Minggu & Hari Libur: Tutup
+
+💻 **Online Shop:**
+• Website: 24 jam (pesanan diproses jam kerja)
+• Chat Support: 09.00 - 21.00 WIB (Senin - Sabtu)
+• Email/WhatsApp: diproses jam kerja
+
+📍 **Lokasi:**
+• Website: www.ninoc.co.id
+• Instagram: @ninoc.official
+• WhatsApp: [Nomor WA]
+
+⚠️ **Catatan:**
+• Pesanan yang masuk setelah jam 15.00 WIB akan diproses hari berikutnya
+• Pesanan hari Sabtu & Minggu akan diproses Senin
+• Hari libur nasional = off (konfirmasi via Instagram/WhatsApp)
+
+Ada yang bisa kami bantu? 🙏
+
+Tim NINOC Enterprise`,
+      },
+      {
+        priority: 3,
+        trigger: 'tentang|ninoc|studio|brand|profil|company|about|siapa',
+        content: `Halo! Senang bisa bertemu dengan Anda. 😊
+
+🏪 **Tentang NINOC:**
+
+NINOC Enterprise adalah brand fashion lokal Indonesia yang menghadirkan produk berkualitas dengan desain modern dan nyaman. Kami berkomitmen memberikan pengalaman belanja terbaik bagi setiap pelanggan.
+
+💎 **Nilai Kami:**
+• ✅ Kualitas terjamin — bahan premium dan quality control ketat
+• ✅ Desain modern — mengikuti tren fashion terkini
+• ✅ Harga terjangkau — quality bukan berarti mahal
+• ✅ Customer service responsif — siap bantu 24/7
+• ✅ Garansi & retur mudah — kebijakan customer-friendly
+
+🎯 **Yang Kami Tawarkan:**
+• Koleksi fashion lengkap (kaos, kemeja, celana, jaket, dll)
+• Custom / made to order untuk group order / seragam
+• Promo rutin setiap minggu
+• Membership & reward point
+
+🌐 **Temui Kami:**
+• Website: www.ninoc.co.id
+• Instagram: @ninoc.official
+• WhatsApp: [Nomor WA]
+
+Terima kasih sudah mengenal NINOC! 🙏
+
+Tim NINOC Enterprise`,
+      },
+    ],
+    defaultResponse: `Halo! Terima kasih telah menghubungi NINOC. Kami senang bisa membantu Anda. 😊
+
+Silakan ceritakan pertanyaan atau kebutuhan Anda — tim kami akan memberikan respons terbaik. 🙏
+
+📋 **Hal yang Bisa Kami Bantu:**
+• ✅ Info produk & stok
+• ✅ Lacak pesanan
+• ✅ Ajukan retur / refund
+• ✅ Masalah pembayaran
+• ✅ Keluhan & komplain
+• ✅ Pertanyaan umum lainnya
+
+📱 **Atau pilih topik di bawah ini:**
+• Lacak Pesanan
+• Ajukan Retur
+• Tanya Produk
+• Masalah Bayar
+• Lainnya
+
+Kami siap membantu Anda! 🙏
+
+Tim NINOC Enterprise`,
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTO REPLY ENGINE — Classification & Response Logic
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Word-boundary match untuk keyword matching yang akurat
+function keywordMatch(text: string, keyword: string): boolean {
+  const lower = text.toLowerCase();
+  if (!lower.includes(keyword.toLowerCase())) return false;
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(?:^|\\s|\\b|[,!?.:;'"-])(${escaped})(?:$|\\s|\\b|[,!?.:;'"-])`, 'i');
+  return regex.test(lower);
+}
+
+// Substring match untuk category keywords
+function hasKeyword(text: string, keyword: string): boolean {
+  return text.toLowerCase().includes(keyword.toLowerCase());
+}
+
+// Score semua kategori berdasarkan keyword match
+function classifyMessage(message: string): {
+  category: string;
+  matchedKeywords: string[];
+  score: number;
+} {
+  const lower = message.toLowerCase().trim();
+  const scores: Record<string, { score: number; matched: string[] }> = {};
+
+  for (const [catKey, config] of Object.entries(AUTO_REPLY_CONFIG)) {
+    let score = 0;
+    const matched: string[] = [];
+
+    // Check category keywords
+    for (const kw of config.keywords) {
+      if (hasKeyword(lower, kw)) {
+        score++;
+        matched.push(kw);
+      }
+      // Fuzzy match untuk typo (hanya untuk keyword >= 5 karakter)
+      if (kw.length >= 5) {
+        const typoBase = kw.slice(0, -1); // hapus 1 karakter belakang
+        if (hasKeyword(lower, typoBase) && !hasKeyword(lower, kw)) {
+          score += 0.5;
+        }
+      }
+    }
+
+    if (score > 0) {
+      scores[catKey] = { score, matched };
+    }
+  }
+
+  // Ambil kategori dengan score tertinggi
+  const sorted = Object.entries(scores).sort((a, b) => b[1].score - a[1].score);
+  if (sorted.length === 0) {
+    return { category: 'general', matchedKeywords: [], score: 0 };
+  }
+
+  return {
+    category: sorted[0][0],
+    matchedKeywords: sorted[0][1].matched,
+    score: sorted[0][1].score,
+  };
+}
+
+// Get response untuk kategori yang sudah diklasifikasi
+function getResponse(category: string, message: string): string {
+  const config = AUTO_REPLY_CONFIG[category];
+  if (!config) return AUTO_REPLY_CONFIG.general.defaultResponse;
+
+  // Sort responses by priority (lower number = higher priority)
+  const sortedResponses = [...config.responses].sort((a, b) => a.priority - b.priority);
+
+  for (const resp of sortedResponses) {
+    const triggers = resp.trigger.split('|');
+    for (const trigger of triggers) {
+      if (hasKeyword(message, trigger.trim())) {
+        return resp.content;
+      }
+    }
+  }
+
+  // Fallback ke default response
+  return config.defaultResponse;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ICON COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function QuickIcon({ name, className }: { name: string; className?: string }) {
   switch (name) {
-    case 'Truck': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 8 23 16 16 16 16 13 1 13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>;
-    case 'RefreshCw': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
-    case 'Package': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 9.4 7.5 3.5"/><path d="m21 21-5.97-5.97a8.04 8.04 0 0 0-.91-11.6 8.1 8.1 0 0 0-12.22 0 8.06 8.06 0 0 0 .91 11.6l5.97 5.97"/><path d="M3.27 6.96 8 12l4.73-5.04"/><path d="M20.73 17 16 12l4.73-5.04"/></svg>;
-    case 'CreditCard': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>;
-    case 'MessageSquare': return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
-    default: return null;
+    case 'Truck':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 8 23 16 16 16 16 13 1 13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>;
+    case 'RefreshCw':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
+    case 'Package':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 9.4 7.5 3.5"/><path d="m21 21-5.97-5.97a8.04 8.04 0 0 0-.91-11.6 8.1 8.1 0 0 0-12.22 0 8.06 8.06 0 0 0 .91 11.6l5.97 5.97"/><path d="M3.27 6.96 8 12l4.73-5.04"/><path d="M20.73 17 16 12l4.73-5.04"/></svg>;
+    case 'CreditCard':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>;
+    case 'MessageSquare':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+    case 'AlertCircle':
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
+    default:
+      return null;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
 
 interface SupportTicket {
   id: string;
@@ -103,558 +1048,20 @@ interface SupportMessage {
   is_auto_reply?: boolean;
 }
 
-interface PlaceholderConfig {
-  id: string;
-  label: string;
-  content: string;
-  category: string;
-}
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUPABASE HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Auto-Reply Keyword Map ───────────────────────────────────────────────────
-const AUTO_REPLY_RULES: Record<string, string[]> = {
-  // Greeting — friendly first contact
-  greeting: [
-    'halo', 'hai', 'hallo', 'hi', 'hey', 'yo', 'pagi', 'siang', 'sore', 'malam',
-    'apa kabar', 'good morning', 'good evening', 'good night', 'selamat',
-    'assalamualaikum', 'waalaikumussalam', 'permisi', 'tanya', 'bertanya',
-    'bales', 'balesan', 'chat', 'kirim pesan', 'hubungi', 'kontak',
-    // Generic questions
-    'gimana', 'gmn', 'gmn sih', 'bgaimana', 'caranya', 'caranya gimana',
-    'kenapa', 'mengapa', 'apa itu', 'apa sih', 'kok', 'bisa gak', 'bisa nggak'
-  ],
-  // Return & Refund — product issue requests
-  return: [
-    'retur', 'return', 'balikin', 'balikan', 'balikin barang', 'refund', 'refun',
-    'refon', 'refundkan', 'tukar', 'tuker', 'tukar barang', 'tukeran', 'exchange',
-    'swap', 'ganti', 'ganti barang', 'ganti size', 'ganti ukuran', 'ganti warna',
-    'salah size', 'salah ukuran', 'salah barang', 'barang salah', 'rusak',
-    'cacat', 'defect', 'barang rusak', 'barang cacat', 'kirim ulang', 'repeat',
-    'uang kembali', 'dana kembali', 'uang balik', 'refund dana', 'garansi',
-    'claim garansi', 'warranty', 'komplain', 'keluhan barang', 'barang bermasalah',
-    'tidak sesuai', 'tidak sama', 'beda dari foto', 'beda sama foto'
-  ],
-  // Shipping & Logistics
-  shipping: [
-    'kirim', 'dikirim', 'pengiriman', 'pesanan', 'order', 'tracking', 'lacak',
-    'lacak pesanan', 'lacak order', 'resi', 'no resi', 'nomor resi', 'tracking number',
-    'AWB', 'waybill', 'delivery', 'delivered', 'sampai', 'sampe', 'belum sampai',
-    'blm sampe', 'blm nyampe', 'kapan sampai', 'kapan nyampe',
-    'estimasi', 'eta', 'ekspedisi', 'kurir', 'antar', 'diantar', 'jne', 'jnt',
-    'sicepat', 'ninja', 'anteraja', 'pos', 'wahana', 'tiki', 'idl', 'cargo',
-    'selesai dikirim', 'sedang dikirim', 'dalam perjalanan', 'proses kirim',
-    'tracking', 'track', 'trace', 'status kirim', 'posisi barang', 'lokasi paket'
-  ],
-  // Payment & Transaction
-  payment: [
-    'bayar', 'bayarin', 'pembayaran', 'bayar transfer', 'lunas', 'pending',
-    'gagal', 'failed', 'error payment', 'transaction error', 'bukti transfer',
-    'transfer berhasil', 'sudah transfer', 'belum transfer', 'virtual account',
-    'va', 'vA', 'bank transfer', 'btpn', 'bca', 'mandiri', 'bni', 'bri', 'sinarmas',
-    'e-wallet', 'ewallet', 'ovo', 'gopay', 'dana', 'shopee pay', 'spay',
-    'cod', 'cash on delivery', 'cicilan', 'installment', 'gagal bayar',
-    'payment method', 'metode bayar', 'midtrans', 'duitku', 'bill', 'tagihan'
-  ],
-  // English — detected language triggers friendly bilingual response
-  english: [
-    'how are', 'how do', 'how can', 'what is', 'what are', 'where is', 'where are',
-    'when will', 'when is', 'can i', 'can you', 'could you', 'would you', 'please',
-    'help', 'order', 'track', 'shipping', 'return', 'refund', 'exchange',
-    'payment', 'price', 'cost', 'buy', 'purchase', 'item', 'product', 'stock',
-    'size', 'available', 'hello', 'hi there', 'good day', 'thank you', 'thanks',
-    'want to', 'need to', 'looking for', 'is there', 'are there'
-  ],
-  // Product Inquiry
-  product: [
-    'stock', 'tersedia', 'available', 'ada', 'ready', 'ready stock', 'sold out',
-    'out of stock', 'preorder', 'size chart', 'chart', 'size guide', 'ukur',
-    'warna', 'color', 'colour', 'motif', 'model', 'bahan', 'material', 'kualitas',
-    'quality', 'katalog', 'catalog', 'product', 'item', 'barang', 'produk',
-    'berat', 'weight', 'dimensi', 'measurement', 'panjang', 'lebar', 'tinggi',
-    'diskon', 'sale', 'promo', 'harga', 'price', 'cost', 'berapa', 'range harga'
-  ],
-  // Complaint & General Dissatisfaction
-  complaint: [
-    'kecewa', 'buruk', 'jelek', 'difitnah', 'tidak puas', 'protes', 'keluhan',
-    'salah', 'kacau', 'belum', 'belum ada', 'lama', 'lambat', 'nunggu', 'ditipu',
-    'palsu', 'tidak sesuai', 'beda', 'salah kirim', 'salah warna', 'salah ukuran',
-    'tidak dapat', 'tidak sampai', 'tidak ada', 'belum terima', 'belum dapet',
-    'masalah', 'problem', 'issue', 'belum sampai', 'overdue', 'hilang', 'rusak parah',
-    'komplain', 'complain', 'compalin', 'komplain', 'komplen', 'komplai', 'complaint',
-    'kesal', 'marah', 'emosi', 'prot', 'protest', 'kesal', 'ngadu', 'aduan',
-    'barang belum', 'barang tidak', 'barang belum sampai', 'belum barang',
-    'ditunda', 'delay', 'mundur', 'cancel', 'dibatalkan'
-  ],
-  // General Inquiry
-  general: [
-    'informasi', 'studio', 'ninoc', 'brand', 'tentang', 'siapa', 'alamat',
-    'jam', 'buka', 'tutup', 'kontak', 'whatsapp', 'WA', 'telepon', 'email',
-    'ig', 'instagram', 'toko', 'shop', 'store', 'location', 'lokasi', 'maps'
-  ],
-  // SARA / PROfanity / PErkataan Buruk — WARNING + FLAG
-  sara: [
-    // Indonesian slurs & profanity
-    'bangsat', 'kafir', 'babi', 'anjing', 'goblok', 'idiot', 'bodoh', 'tolol',
-    'ngaca', 'kaum', 'suku', 'etnis', 'ras', 'sara', 'diskriminasi', 'hitam', 'putih',
-    'cina', 'arab', 'jawa', 'sunda', 'papua', 'amber', 'minang', 'bugis', 'batak',
-    // Indonesian profanity & curse words
-    'anjir', 'ajg', 'anjg', 'bangsat', 'brengsek', 'bego', 'bem', 'bemgok', 'bengak',
-    'buta', 'cilaka', 'cuk', 'dancuk', 'dasar', 'deek', 'dongok', 'dos', 'gblk', 'gblok',
-    'geblek', 'gelo', 'gila', 'gilo', 'gki', 'goblog', 'goblok', 'goblo', 'gokil',
-    'golok', 'guoblo', 'hayang', 'hedoh', 'heng', 'het', 'hoe', 'hof',
-    'itil', 'jablay', 'jali', 'jancok', 'jeng', 'jle', 'ka', 'kafir', 'kampret',
-    'kampret', 'kancut', 'kari', 'katok', 'keparat', 'kescuk', 'kimak', 'kisluk',
-    'korosi', 'kudy', 'lalau', 'lancang', 'lebay', 'lehu', 'lok', 'lucu',
-    'mampus', 'mampus lu', 'mampus kau', 'mampus kamu', 'matamu', 'mblook', 'meki',
-    'mEnchu', 'mencuk', 'mgg', 'minggat', 'mli', 'mls', 'mn', 'monyek', 'monyet',
-    'ngacak', 'ngacung', 'ngalah', 'ngambe', 'ngamo', 'nganya', 'ngantri', 'ngapa',
-    'ngapa2', 'ngapain', 'ngapakes', 'ngarep', 'ngatip', 'ngawur', 'ngebacot',
-    'ngebug', 'ngebut', 'ngeceng', 'ngedance', 'ngedi', 'ngedum', 'ngegan', 'ngegar',
-    'ngeheng', 'ngekek', 'ngela', 'ngelap', 'ngelantur', 'ngelapuk', 'ngelawak',
-    'ngeleb', 'ngelepar', 'ngeli', 'ngelind', 'ngelindur', 'ngelit', 'ngelu',
-    'ngeluar', 'ngeluk', 'ngelum', 'ngelundung', 'ngelunjur', 'ngelup', 'ngelus',
-    'ngemban', 'ngembang', 'ngempos', 'ngena', 'ngenak', 'ngendali', 'ngendap',
-    'ngendar', 'ngendok', 'ngenduk', 'ngeneng', 'ngenital', 'ngentak', 'ngenten',
-    'ngento', 'ngentot', 'ngenthong', 'ngenu', 'ngenuh', 'ngepit', 'ngepol', 'ngeprek',
-    'ngepuk', 'ngere', 'ngereget', 'ngerek', 'ngeres', 'ngesek', 'ngesi', 'ngeskek',
-    'ngetak', 'ngental', 'ngenten', 'ngenthong', 'ngentuk', 'ngenum', 'ngepe', 'ngepet',
-    'ngepok', 'ngera', 'ngered', 'ngereget', 'ngerek', 'ngerem', 'ngeremp', 'ngeri',
-    'ngeriap', 'ngesel', 'ngeseng', 'ngesi', 'ngeskek', 'ngeson', 'ngespok', 'ngewer',
-    'ngilu', 'ngincut', 'nginthil', 'ngitung', 'ngiwes', 'ngli', 'ngliar', 'nglib',
-    'nglind', 'nglindur', 'nglithik', 'nglotong', 'nglotrok', 'nglubuk', 'ngluyar',
-    'ngmak', 'ngmal', 'ngmalak', 'ngmaleng', 'ngmanip', 'ngap', 'ngeb', 'ngebacot',
-    'ngebet', 'nebak', 'ngel', 'ngele', 'ngeli', 'ngemp', 'ngempuk', 'ngenduk',
-    'ngenthong', 'ngenum', 'ngers', 'ngesek', 'ngesel', 'ngesit', 'ngeskot', 'ngeso',
-    'ngilu', 'nginem', 'ngiper', 'ngipur', 'ngirus', 'ngitik', 'ngitip', 'ngiu',
-    'ngka', 'ngkek', 'ngki', 'ngkp', 'ngojek', 'ngok', 'ngoke', 'ngolok', 'ngong',
-    'ngontek', 'ngotak', 'ngowoh', 'ngowok', 'ngradat', 'ngrampa', 'ngrancuk', 'ngrang',
-    'ngre', 'ngrebes', 'ngrecel', 'ngredeg', 'ngrek', 'ngrekan', 'ngrentek', 'ngresik',
-    'ngri', 'ngriwik', 'ngrok', 'ngrudug', 'ngrungu', 'ngs', 'ngsok', 'nguak', 'nguale',
-    'ngubek', 'ngubur', 'ngucap', 'ngucek', 'ngucil', 'ngudag', 'ngudap', 'nguent',
-    'nguentel', 'nguet', 'nguk', 'ngul', 'ngula', 'ngulama', 'ngular', 'ngule',
-    'ngulek', 'nguliat', 'ngulun', 'ngulum', 'ngumpak', 'ngumpluk', 'nguna', 'ngunem',
-    'ngungut', 'nguntat', 'ngupil', 'ngupuk', 'ngur', 'ngurem', 'ngusuk', 'ngutok',
-    'njir', 'njrit', 'njur', 'nkr', 'nnt', 'nov', 'npr', 'nt', 'ntar', 'ntkt', 'ntr',
-    'ntut', 'nyet', 'nyole', 'ony', 'oy', 'pak', 'palkon', 'pante', 'pantek', 'pantat',
-    'pari', 'park', 'pcak', 'pe', 'pecac', 'pecat', 'peju', 'pelak', 'peli',
-    'pen', 'peng', 'pentung', 'perkosa', 'pesing', 'pest', 'pi', 'pik', 'pimpong',
-    'pising', 'pit', 'pitut', 'pok', 'porn', 'pos', 'prec', 'prest', 'prim', 'prof',
-    'puki', 'puk', 'pukima', 'pulus', 'pung', 'pura', 'puruk', 'racun', 'radak',
-    'rame', 'randa', 'rangkek', 'rap', 'rapa', 'ratek', 'rim', 'risih',
-    'rit', 'rom', 'rotic', 'rotok', 'ruk', 'rungi', 'rusuh',
-    'salak', 'sam', 'sambar', 'same', 'sampah', 'samping', 'sampun', 'samsak', 'sanda',
-    'sandung', 'sang', 'sanga', 'sanggam', 'sangkak', 'sangkar', 'sangkem',
-    'satre', 'sawawa', 'se', 'sed', 'segan', 'segers', 'sekeng', 'sekop', 'seks', 'sel',
-    'seng', 'sengkul', 'sep', 'ser', 'serak', 'set', 'si', 'silang', 'sing', 'siu',
-    'sle', 'smp', 'sok', 'sot', 'sting', 'su', 'suci', 'suka', 'sukma', 'sulteng',
-    'sum', 'sun', 'sung', 'sup', 'suster', 'tabok', 'taek', 'tai', 'tak',
-    'tampol', 'tan', 'tanding', 'tangkok', 'tarek', 'tek', 'tem', 'teng', 'tepol',
-    'ti', 'tilang', 'tj', 'to', 'toak', 'toba', 'tobak', 'tobo', 'tok', 'tokcer',
-    'tolan', 'tolol', 'tolot', 'tom', 'tong', 'tonjok', 'tontong', 'top', 'tran', 'trash',
-    'tri', 'tsm', 'tu', 'tubik', 'tukang', 'tukul', 'tuli', 'tum', 'tung', 'turu',
-    'tus', 'tusuk', 'twat', 'tya', 'ub', 'ud', 'udung', 'ug', 'uh', 'ujik', 'uk',
-    'ula', 'uli', 'ulk', 'ull', 'uluk', 'ulul', 'um', 'umm', 'umuk', 'un', 'uncang',
-    'uncet', 'undan', 'undi', 'undur', 'ung', 'unggas', 'ungkit', 'ungok', 'unik',
-    'unit', 'unpol', 'untu', 'untut', 'up', 'ur', 'urat', 'uri', 'us', 'usil', 'ut',
-    'utut',
-    // English profanity
-    'fuck', 'fck', 'fuk', 'fuq', 'phuck', 'fukn', 'fukin',
-    'shit', 'sht', 'shyt', 'sh1t',
-    'bitch', 'btch', 'b1tch', 'bitc',
-    'whore', 'ho', 'hoes',
-    'nigger', 'nigga', 'nigg', 'nig', 'niger', 'nigerian',
-    'retard', 'tard', 'retert',
-    'slut', 'slu', 'slag',
-    'faggot', 'fagot', 'fggt', 'fagot',
-    'asshole', 'ashole', 'azz', 'azzhole',
-    'bastard', 'bast', 'basterd',
-    'cunt', 'c0unt', 'cnt',
-    'dick', 'dck', 'dik', 'dickhead',
-    'pussy', 'puss', 'pusy', 'pussee',
-    'cock', 'cok', 'c0ck',
-    'damn', 'dmn', 'dam',
-    'hell', 'h3ll', 'hll',
-    'stupid', 'stpd', 'stupidass',
-    'dumb', 'dum', 'dmb',
-    'moron', 'mrn', 'moro',
-    'loser', 'luser', 'lusr',
-    'ugly', 'ug1y', 'ugli',
-    'jerk', 'jrk', 'jerkk',
-    'douche', 'douch', 'duche',
-    'crap', 'crp', 'krapp',
-    'suck', 'suk', 'sck',
-    'scum', 'scumbag',
-    // Combined
-    'bodoh sekali', 'goblok sekali', 'gila lu', 'gila kau', 'goblok lu', 'bangsat lu',
-    'anjing lu', 'babi lu', 'kafir lu', 'muka kau', 'bakal kau', 'binatang kau',
-    'dewa kecewa', 'nista', 'ASUSUL', 'dajal', 'iblis'
-  ],
-  // NSFW — PORNOGRAPHIC / SEXUAL content → REJECT + FLAG
-  nsfw: [
-    'kontol', 'memek', 'ngentot', 'pepek', 'toket', 'bubungan', 'situ',
-    'ngulum', 'ngewe', 'ngenital', 'coli', 'masturbat', 'porno', 'pornografi',
-    'telanjang', 'seks', 'sex', 'anal', 'vagina', 'penis', 'erotis', 'mesum',
-    'porn', 'xxx', 'nude', 'naked', 'sexy', 'erotic', 'nsfw', 'adult content',
-    'strip', 'escort', 'prostitute', 'fucking', 'horny',
-    'pornografi', 'konten dewasa', 'adult content', 'sex tape', 'video mesum'
-  ],
-  // Closing
-  closing: [
-    'terima kasih', 'makasih', 'terima kasih banyak', 'bye', 'sampai jumpa',
-    'goodbye', 'terimakasi', 'mantap', 'oke', 'siap', 'all good', 'solved',
-    'beres', 'selesai', 'udh selesai', 'udah beres', 'makasih banyak', 'trims'
-  ],
-};
-
-// ─── Word-boundary keyword match ──────────────────────────────────────────────
-// Matches keyword as a whole word (with word boundaries), not as substring.
-// This prevents 're' from matching 'return', 'ka' from matching 'kapok', etc.
-function keywordMatch(message: string, keyword: string): boolean {
-  if (message.includes(keyword)) {
-    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(?:^|\\s|\\b|[,!?.:;'"-])(${escaped})(?:$|\\s|\\b|[,!?.:;'"-])`, 'i');
-    return regex.test(message);
-  }
-  return false;
-}
-
-// ─── Substring keyword match (for category keywords — no boundary needed) ─────
-function hasKeyword(message: string, keyword: string): boolean {
-  return message.includes(keyword);
-}
-
-// ─── Classification Result ──────────────────────────────────────────────────
-type ClassificationResult =
-  | { type: 'auto_reply'; template: PlaceholderConfig; category: string }
-  | { type: 'sara_warn'; template: PlaceholderConfig; message: string }
-  | { type: 'nsfw_reject'; message: string }
-  | { type: 'english_bilingual'; template: PlaceholderConfig }
-  | { type: 'clarify'; category: string; suggestions: string[] }
-  | { type: 'tracking_lookup'; trackingId: string; source: 'order' | 'resi' }
-  | { type: 'excess_payment' };
-
-// ─── Clarify suggestions per category ──────────────────────────────────────
-const CLARIFY_SUGGESTIONS: Record<string, string[]> = {
-  return: ['Retur / Refund barang', 'Tukar ukuran / warna', 'Barang rusak / cacat', 'Salah barang dikirim', 'Lihat status retur'],
-  shipping: ['Lacak dengan Order ID', 'Lacak dengan Resi/AWB', 'Pesanan belum nyampe', 'Cek estimasi pengiriman', 'Info ongkir'],
-  payment: ['Konfirmasi pembayaran', 'Gagal bayar', 'Refund transfer', 'Metode pembayaran', 'Cek status payment'],
-  product: ['Cek stok produk', 'Tanya ukuran / warna', 'Info harga terbaru', 'Size chart', 'Rekomendasi produk'],
-  complaint: ['Keluhan pesanan', 'Barang rusak', 'Lama pengiriman', 'Salah barang', 'Pengiriman belum sampai'],
-  general: ['Jam operasional', 'Alamat toko', 'Kontak WhatsApp', 'Info promo', 'Lihat katalog produk'],
-};
-
-// ─── Fallback content per category (works even if DB placeholders are empty) ─
-const FALLBACK_CONTENT: Record<string, { label: string; content: string }> = {
-  greeting: {
-    label: 'Salam Pembuka',
-    content: 'Halo! Terima kasih telah menghubungi NINOC. Kami siap membantu Anda. Silakan ceritakan keluhan Anda, ya 🙂'
-  },
-  return: {
-    label: 'Panduan Retur',
-    content: 'Maaf mendengar Anda ingin mengajukan retur. Berikut langkah yang perlu Anda lakukan:\n\n1️⃣ Siapkan nomor pesanan (Order ID)\n2️⃣ Foto barang yang akan diretur\n3️⃣ Ceritakan alasan retur (rusak, salah ukuran, tidak sesuai deskripsi)\n4️⃣ Tim kami akan memproses dalam 1x24 jam\n\nMohon sertakan Order ID agar kami bisa membantu lebih cepat ya 🙏'
-  },
-  shipping: {
-    label: 'Info Pengiriman',
-    content: 'Biar bisa kami lacak, tolong berikan nomor berikut ya:\n\n🔢 **Order ID** — ada di email atau halaman Pesanan Saya\n🔢 **Nomor Resi (AWB)** — jika sudah ada dari ekspedisi\n\nKetik salah satunya di kolom chat, dan kami akan langsung cek statusnya 🙏'
-  },
-  payment: {
-    label: 'Info Pembayaran',
-    content: 'Kami menerima pembayaran melalui:\n\n💳 Midtrans (Virtual Account, GoPay, OVO, Dana)\n🏦 Transfer bank lokal\n💵 COD (Cash on Delivery)\n\nJika ada masalah pembayaran, silakan kirimkan bukti transfer dan Order ID Anda. Tim kami akan segera mengecek 🙏'
-  },
-  product: {
-    label: 'Info Produk',
-    content: 'Terima kasih sudah bertanya! Biar kami bisa bantu dengan tepat, tolong berikan info berikut ya:\n\n📦 Nama atau model produknya\n📏 Ukuran, warna, atau varian yang Anda cari\n❓ Pertanyaan spesifiknya apa\n\nTim kami akan segera merespons dengan info yang paling akurat 🙏'
-  },
-  complaint: {
-    label: 'Keluhan Pelanggan',
-    content: 'Kami sangat menyesal mendengar pengalaman Anda. Setiap masukan sangat berharga bagi kami.\n\nMohon ceritakan:\n1️⃣ Nomor pesanan (Order ID)\n2️⃣ Detail keluhan Anda\n3️⃣ Foto pendukung (jika ada)\n\nTim kami akan segera menindaklanjuti dan memberikan solusi terbaik 🙏'
-  },
-  general: {
-    label: 'Respons Umum',
-    content: 'Terima kasih telah menghubungi NINOC. Kami akan membantu sebaik mungkin.\n\nSilakan ceritakan pertanyaan Anda dan tim kami akan merespons secepat mungkin 🙏'
-  },
-  closing: {
-    label: 'Penutup',
-    content: 'Terima kasih telah menghubungi NINOC! Jika ada pertanyaan lain, jangan ragu untuk bertanya lagi. Semoga hari Anda menyenangkan 🙏'
-  },
-  english: {
-    label: 'English Bilingual',
-    content: 'Hello! Thank you for reaching out to NINOC. We\'re happy to help! Please tell us your question and our team will respond shortly. 🙏'
-  },
-  excess_payment: {
-    label: 'Kelebihan Bayar',
-    content: 'Kami memahami ada kelebihan pembayaran. Tenang, dana akan kami proses refund ya 🙏\n\n🔢 Sertakan **Order ID** agar kami bisa cek nominalnya\n💰 Refund akan dikembalikan ke metode pembayaran Anda\n⏱️ Proses refund 1-3 hari kerja\n\nTim kami akan segera menindak lanjuti 🙏'
-  }
-};
-
-// ─── Extract Order ID / Resi from message ───────────────────────────────────
-function extractTrackingId(message: string): { id: string; source: 'order' | 'resi' } | null {
-  // Order ID format: NCO-XXXXXXXX (e.g. NCO-A1B2C3D4)
-  const orderMatch = message.match(/\b(NCO-[A-Z0-9]{6,20})\b/i);
-  if (orderMatch) return { id: orderMatch[1].toUpperCase(), source: 'order' };
-
-  // Resi: pure numeric, 8-30 digits (common courier AWB patterns)
-  const resiMatch = message.match(/\b(\d{8,30})\b/);
-  if (resiMatch) return { id: resiMatch[1], source: 'resi' };
-
-  return null;
-}
-
-// ─── Fetch real tracking data and format response ──────────────────────────
-async function handleTrackingLookup(ticketId: string, trackingId: string, source: 'order' | 'resi') {
-  try {
-    let orderData: Record<string, unknown> | null = null;
-
-    // Source 'order': lookup via Order ID + phone (guest access needs phone)
-    if (source === 'order') {
-      const res = await fetch(`/api/track?order_number=${encodeURIComponent(trackingId)}&phone=`);
-      // If no phone provided, order lookup fails — fall through to resi lookup
-      if (res.ok) {
-        const json = await res.json();
-        orderData = json;
-      }
-    }
-
-    // Source 'resi': lookup via Biteship tracking API
-    if (source === 'resi' || !orderData) {
-      const res = await fetch(`/api/biteship/track/${encodeURIComponent(trackingId)}`);
-      if (res.ok) {
-        const json = await res.json();
-        orderData = { tracking: json };
-      }
-    }
-
-    if (!orderData) {
-      return 'Maaf, kami tidak bisa menemukan data untuk nomor tersebut. Coba pastikan Order ID / Resi-nya benar, ya 🙏';
-    }
-
-    // Format response from real data
-    let response = '';
-
-    if (source === 'order' && orderData.order) {
-      const o = orderData.order as Record<string, unknown>;
-      const statusMap: Record<string, string> = {
-        pending: 'Menunggu Pembayaran',
-        paid: 'Sudah Dibayar, Diproses',
-        shipped: 'Sedang Dikirim',
-        delivered: 'Sudah Sampai',
-        cancelled: 'Dibatalkan',
-      };
-      const status = statusMap[(o.status as string) || ''] || (o.status as string) || 'Unknown';
-      response = `✅ **Ditemukan!**\n\n📦 **Order:** ${o.order_number}\n📊 **Status:** ${status}\n💰 **Total:** IDR ${Number(o.total_price).toLocaleString('id-ID')}\n🚚 **Kurir:** ${o.courier || '-'}\n\n`;
-      if (o.tracking_id) {
-        response += `🔢 **Resi:** ${o.tracking_id}`;
-      }
-      response += '\n\nLacak lengkap di halaman Pesanan Saya ya 🙏';
-    } else if (orderData.tracking) {
-      const t = orderData.tracking as Record<string, unknown>;
-      const status = (t.status as string) || 'Unknown';
-      const courier = (t.courier_name as string) || (t.courier_company as string) || 'Kurir';
-      response = `✅ **Ditemukan!**\n\n🔢 **Resi:** ${trackingId}\n🚚 **Kurir:** ${courier}\n📊 **Status:** ${status}\n\n`;
-      const history = (t.history as Array<{ status: string; message: string; occurred_at: string }>) || [];
-      if (history.length > 0) {
-        const last = history[history.length - 1];
-        response += `📍 **Update Terakhir:**\n${last.message}\n\n`;
-      }
-      response += 'Lacak lengkap di menu Lacak Pesanan ya 🙏';
-    } else {
-      response = `✅ **Ditemukan!** Data order dalam proses. Cek halaman Pesanan Saya untuk info lengkap 🙏`;
-    }
-
-    return response;
-  } catch {
-    return 'Maaf, gagal mengambil data tracking. Coba beberapa saat lagi ya 🙏';
-  }
-}
-
-// ─── Classify incoming message ────────────────────────────────────────────────
-function classifyMessage(
-  message: string,
-  placeholders: PlaceholderConfig[]
-): ClassificationResult {
-  const lower = message.toLowerCase().trim();
-
-  // 0. Quick check — empty or too short
-  if (!lower || lower.length < 2) {
-    const fb = FALLBACK_CONTENT['greeting'];
-    return {
-      type: 'auto_reply',
-      template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
-      category: 'greeting'
-    };
-  }
-
-  // 1. Check NSFW first — HIGHEST PRIORITY, REJECT silently + flag
-  for (const keyword of AUTO_REPLY_RULES.nsfw) {
-    if (keywordMatch(lower, keyword)) {
-      return {
-        type: 'nsfw_reject',
-        message: '⚠️ Kami tidak dapat memproses pesan ini karena mengandung konten yang tidak pantas. Silakan kirim ulang dengan bahasa yang sopan.'
-      };
-    }
-  }
-
-  // 2. Check SARA — WARNING + flag to admin (word-boundary to avoid false positives)
-  for (const keyword of AUTO_REPLY_RULES.sara) {
-    if (keywordMatch(lower, keyword)) {
-      return {
-        type: 'sara_warn',
-        template: {
-          id: 'sara-default', label: 'SARA Warning', content:
-            '⚠️ Kami memperhatikan pesan Anda mengandung konten yang kurang pantas. Silakan kirim ulang dengan bahasa yang sopan. Tim kami akan meninjau pesan ini.',
-          category: 'sara_warn'
-        },
-        message: `[FLAGGED - SARA] Kata trigger: "${keyword}" — customer: ${message.slice(0, 100)}`
-      };
-    }
-  }
-
-  // 2b. Check for Order ID or Resi — PRIORITY: if user sends a number, track it
-  const tracking = extractTrackingId(message);
-  if (tracking) {
-    return { type: 'tracking_lookup', trackingId: tracking.id, source: tracking.source };
-  }
-
-  // 2c. Check for excess payment / overpay — refund request
-  const excessPatterns = [
-    'kelebihan bayar', 'lebih bayar', 'lebih bayar', 'kelebihan transfer',
-    'lebih transfer', 'nominal lebih', 'uang lebih', 'refund lebih',
-    'pembayaran lebih', 'transfer lebih', 'dana lebih', 'saldo lebih',
-    'uang lebih', 'overpay', 'excess payment', 'excess', 'salah nominal'
-  ];
-  if (excessPatterns.some(p => lower.includes(p))) {
-    return { type: 'excess_payment' };
-  }
-
-  // 3. Check English — bilingual friendly response
-  for (const keyword of AUTO_REPLY_RULES.english) {
-    if (hasKeyword(lower, keyword)) {
-      const fb = FALLBACK_CONTENT['english'];
-      return {
-        type: 'english_bilingual',
-        template: { id: 'fb-english', label: fb.label, content: fb.content, category: 'english' }
-      };
-    }
-  }
-
-  // 4. Score ALL categories — find all matching keywords
-  const categoryPriority = ['return', 'complaint', 'shipping', 'payment', 'product', 'general', 'closing'];
-  const categoryScores: Record<string, number> = {};
-
-  for (const cat of categoryPriority) {
-    const keywords = AUTO_REPLY_RULES[cat] || [];
-    let score = 0;
-    for (const keyword of keywords) {
-      if (hasKeyword(lower, keyword)) score++;
-      // Partial match for typos (e.g. "refun" → "refund")
-      if (keyword.length >= 5 && hasKeyword(lower, keyword.slice(0, -1))) score++;
-    }
-    if (score > 0) categoryScores[cat] = score;
-  }
-
-  // 5. If any category matched — build comprehensive reply
-  const matchedCategories = Object.entries(categoryScores)
-    .sort((a, b) => b[1] - a[1]) // sort by score descending
-    .map(([cat]) => cat);
-
-  if (matchedCategories.length > 0) {
-    // SMART COMBINED RESPONSE — intelligent routing based on category combination
-    const hasShipping = matchedCategories.includes('shipping');
-    const hasReturn = matchedCategories.includes('return');
-    const hasComplaint = matchedCategories.includes('complaint');
-
-    let smartContent = '';
-
-    // Case: shipping + return (barang belum sampai tapi mau retur)
-    if (hasShipping && hasReturn) {
-      smartContent = `Kami memahami pesanan Anda belum juga sampai dan Anda ingin mengajukan retur. Sebelum memastikan retur, Yuk kita tracking dulu ya! 🗺️\n\n📦 **Langkah Tracking:**\n1️⃣ Buka menu "Lacak Pesanan" di website kami\n2️⃣ Masukkan nomor resi (AWB) yang telah dikirim via email/SMS\n3️⃣ Atau cek langsung di website ekspedisi terkait (JNE/J&T/SiCepat/AnterAja dll)\n\n⚠️ **Jika Paket Stuck / Terlambat:**\n- Trouble di pihak ekspedisi (cuaca, gudang overload, alamat kurang jelas) bisa terjadi\n- Tim kami akan bantu follow-up ke pihak kurir\n- Mohon bersabar 1-2 hari kerja ya 🙏\n\n📋 **Syarat & Ketentuan Pengajuan Retur:**\n\n⚠️ **PENTING — Anti-Fraud Policy:**\nSesuai standar e-commerce (Shopee, TikTok Shop), pengajuan retur WAJIB memenuhi ketentuan berikut:\n\n1️⃣ **Bukti Unboxing Video 1-Shot**\n- Video harus diambil dalam SATU kali rekam tanpa edit/henti\n- Tampilkan jelas: paket saat dibuka, kondisi barang di dalam, label pengiriman\n- Minimal durasi 30 detik dengan waktu yang terlihat\n\n2️⃣ **Kondisi Barang**\n- Barang belum digunakan / dicuci / dirangkai\n- Label & tag masih menempel\n- Dikemas kembali dengan benar\n\n3️⃣ **Alasan Retur yang Bisa Diajukan:**\n- Barang rusak / cacat produksi (bukan rusak karena pengiriman)\n- Salah barang dikirim (ukuran, warna, model tidak sesuai)\n- Tidak sesuai deskripsi produk\n\n4️⃣ **Yang TIDAK Bisa Diretur:**\n- Barang belum diterima / paket masih dalam perjalanan\n- Barang sudah digunakan / dicuci / dimodifikasi\n- Kerusakan karena kesalahan pengguna\n- Request retur tanpa bukti unboxing video\n\n✅ **Jika Sudah Memenuhi Syarat:**\n- Siapkan Order ID + Bukti Unboxing Video 1-Shot\n- Kirim via chat ini dengan label "PENGAJUAN RETUR"\n- Tim kami akan proses dalam 1x24 jam kerja\n\nKami sangat menghargai kepercayaan Anda. Terima kasih sudah sabar menunggu 🙏`;
-    }
-    // Case: shipping + complaint (belum sampai + komplain)
-    else if (hasShipping && hasComplaint) {
-      smartContent = `Kami memahami kekhawatiran Anda atas pesanan yang belum sampai. Yuk kita cek statusnya dulu ya! 📦\n\n🗺️ **Langkah Tracking:**\n1️⃣ Buka menu "Lacak Pesanan"\n2️⃣ Masukkan nomor resi (AWB) yang telah dikirim via email/SMS\n3️⃣ Cek di website ekspedisi terkait\n\n⚠️ **Jika Paket Stuck / Terlambat:**\n- Kami akan bantu follow-up ke pihak kurir\n- Mohon tunggu 1-2 hari kerja untuk update dari tim\n- Jika lebih dari estimasi, tim akan bantu claim\n\nTerima kasih sudah sabar menunggu 🙏 Tim kami terus memantau pesanan Anda.`;
-    }
-    // Case: return + complaint (retur + komplain)
-    else if (hasReturn && hasComplaint) {
-      smartContent = `Kami mendengar keluhan Anda dan memahami keinginan untuk retur. Mohon ceritakan lebih detail ya 🙏\n\n📋 **Info Retur:**\n1️⃣ Siapkan nomor Order ID\n2️⃣ Ceritakan alasan retur: rusak, salah ukuran, tidak sesuai deskripsi?\n3️⃣ Siapkan foto barang jika ada masalah kualitas\n4️⃣ Tim kami akan proses dalam 1x24 jam\n\nKami sangat menghargai masukan Anda dan akan segera menindak lanjuti ✅`;
-    }
-    // Case: multiple categories (general fallback)
-    else if (matchedCategories.length > 1) {
-      smartContent = `Kami memahami beberapa hal dari pesan Anda. Berikut informasi yang bisa membantu:\n\n${matchedCategories.map((cat) => {
-        const tpl = placeholders.find(p => p.category === cat);
-        const fb = FALLBACK_CONTENT[cat];
-        return `📌 **${cat.toUpperCase()}**\n${tpl?.content || fb?.content || ''}`;
-      }).join('\n\n')}`;
-    }
-    // Case: single category
-    else {
-      const topCat = matchedCategories[0];
-      const tpl = placeholders.find(p => p.category === topCat);
-      const fb = FALLBACK_CONTENT[topCat];
-      smartContent = tpl?.content || fb?.content || '';
-    }
-
-    const topCat = matchedCategories[0];
-    return {
-      type: 'auto_reply',
-      template: { id: `smart-${matchedCategories.join('-')}`, label: matchedCategories.join(' + '), content: smartContent, category: topCat },
-      category: topCat
-    };
-  }
-
-  // 6. No category matched — check for greeting keywords
-  const greetingKeywords = AUTO_REPLY_RULES['greeting'] || [];
-  const hasGreeting = greetingKeywords.some(k => hasKeyword(lower, k));
-
-  if (hasGreeting) {
-    const fb = FALLBACK_CONTENT['greeting'];
-    return {
-      type: 'auto_reply',
-      template: { id: 'fb-greeting', label: fb.label, content: fb.content, category: 'greeting' },
-      category: 'greeting'
-    };
-  }
-
-  // 7. Truly unclear — clarify with suggestions
-  const suggestions = CLARIFY_SUGGESTIONS['general'] || [
-    'Retur / Refund', 'Lacak Pesanan', 'Info Pembayaran', 'Tanya Produk', 'Keluhan'
-  ];
-  return {
-    type: 'clarify',
-    category: 'general',
-    suggestions
-  };
-}
-
-// ─── Send auto-reply to a ticket ────────────────────────────────────────────
-async function sendAutoReply(ticketId: string, content: string, isFlag = false): Promise<void> {
+async function sendAutoReply(ticketId: string, content: string): Promise<void> {
   await supabase.from('support_messages').insert({
     ticket_id: ticketId,
     sender_id: null,
     sender_role: 'admin',
     message: content,
     is_auto_reply: true,
-    is_flagged: isFlag,
   });
 }
 
-// ─── Flag ticket for admin review ──────────────────────────────────────────
-async function flagTicket(ticketId: string, reason: string, severity: 'sara' | 'nsfw'): Promise<void> {
-  await supabase.from('support_tickets').update({
-    status: 'flagged',
-    flagged_reason: reason,
-    flagged_at: new Date().toISOString(),
-    flagged_severity: severity,
-  }).eq('id', ticketId);
-
-  // Also send flag notification to admin via channel
-  const channel = supabase.channel('flagged-ticket-alert');
-  await channel.send({
-    type: 'broadcast',
-    event: 'ticket-flagged',
-    payload: { ticketId, reason, severity }
-  });
-}
-
-// ─── Send notification to customer ──────────────────────────────────────────
 async function sendCustomerNotification(ticketId: string, message: string): Promise<void> {
   await supabase.from('support_messages').insert({
     ticket_id: ticketId,
@@ -664,6 +1071,10 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
     is_auto_reply: true,
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
 
 export default function SupportChat() {
   const pathname = usePathname();
@@ -675,27 +1086,26 @@ export default function SupportChat() {
   const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(null);
   const [message, setMessage] = useState('');
   const [chatMessages, setChatMessages] = useState<SupportMessage[]>([]);
-
   const [subject, setSubject] = useState('');
   const [orderId, setOrderId] = useState('');
   const [category, setCategory] = useState('');
-
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [notifCount, setNotifCount] = useState(0);
   const [showNotifCard, setShowNotifCard] = useState(false);
-  const [lastNotif, setLastNotif] = useState<{ subject: string; message: string; from: string } | null>(null);
-  const [placeholders, setPlaceholders] = useState<PlaceholderConfig[]>([]);
-  // Track auto-reply sent per message hash to prevent duplicate replies
+  const [lastNotif, setLastNotif] = useState<{ subject: string; message: string } | null>(null);
   const [autoReplySentSet, setAutoReplySentSet] = useState<Set<string>>(new Set());
-  
-  // Dispatch unread count to other components (like MobileLayout)
+  const [isTyping, setIsTyping] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const hasUnreadRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Dispatch unread count to other components
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('support-unread-count', { detail: notifCount }));
   }, [notifCount]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const hasUnreadRef = useRef(false);
-
+  // ─── Fetch tickets
   const fetchTickets = useCallback(async (userId: string) => {
     const { data } = await supabase
       .from('support_tickets')
@@ -705,10 +1115,10 @@ export default function SupportChat() {
     if (data) setTickets(data);
   }, []);
 
+  // ─── Open ticket
   const openTicket = useCallback(async (ticket: SupportTicket) => {
     setActiveTicket(ticket);
     setActiveTab('chat');
-    // Reset auto-reply tracking for this ticket session
     setAutoReplySentSet(new Set());
     const { data } = await supabase
       .from('support_messages')
@@ -720,42 +1130,23 @@ export default function SupportChat() {
     setNotifCount(0);
   }, []);
 
-  // Fetch logged-in user OR allow guest mode
+  // ─── Fetch user
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) throw error;
+        const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
           fetchTickets(user.id);
-        } else {
-          // Guest mode: no user, but still show UI and allow chat
-          console.log('[Support] Guest mode active.');
         }
-      } catch (err) {
-        // Guest mode on error — still allow chat
-        console.log('[Support] Guest mode active (auth error):', err);
+      } catch {
+        console.log('[Support] Guest mode active.');
       }
     };
     fetchUser();
   }, [fetchTickets]);
 
-  // Fetch placeholders for auto-reply
-  useEffect(() => {
-    const fetchPlaceholders = async () => {
-      try {
-        const res = await fetch('/api/placeholders');
-        const data = await res.json();
-        if (data.placeholders) setPlaceholders(data.placeholders);
-      } catch (err) {
-        console.error('[SupportChat] fetch placeholders error:', err);
-      }
-    };
-    fetchPlaceholders();
-  }, []);
-
-  // Real-time subscription for new admin messages
+  // ─── Real-time subscription
   useEffect(() => {
     const channel = supabase
       .channel('support-realtime')
@@ -765,12 +1156,10 @@ export default function SupportChat() {
           event: 'INSERT',
           schema: 'public',
           table: 'support_messages',
-          filter: `sender_role=eq.admin`
+          filter: 'sender_role=eq.admin',
         },
         async (payload) => {
           const newMsg = payload.new as SupportMessage;
-          
-          // Only notify if this message belongs to our tickets or active session
           const isRelevant = activeTicket?.id === newMsg.ticket_id || tickets.some(t => t.id === newMsg.ticket_id);
           if (!isRelevant) return;
 
@@ -782,37 +1171,46 @@ export default function SupportChat() {
             return;
           }
 
-          // Show notification card + badge
           hasUnreadRef.current = true;
           setNotifCount(prev => prev + 1);
-          
           const relevantTicket = activeTicket?.id === newMsg.ticket_id ? activeTicket : tickets.find(t => t.id === newMsg.ticket_id);
-          
           setLastNotif({
             subject: relevantTicket?.subject || 'Status Update',
             message: newMsg.message,
-            from: 'Studio'
           });
           setShowNotifCard(true);
-
-          setTimeout(() => {
-            setShowNotifCard(false);
-          }, 6000);
+          setTimeout(() => setShowNotifCard(false), 6000);
         }
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [activeTicket, tickets, activeTab]);
 
+  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
+  // Auto-resize textarea
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  };
+  useEffect(() => { adjustHeight(); }, [message, activeTab]);
+
+  // Listen for external open events
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-support-chat', handleOpen);
+    return () => window.removeEventListener('open-support-chat', handleOpen);
+  }, []);
+
+  // ─── Start new ticket
   const startNewTicket = async () => {
     if (!subject || !category) return;
     const { data, error } = await supabase
@@ -822,14 +1220,13 @@ export default function SupportChat() {
         subject,
         order_id: orderId || null,
         category,
-        status: 'open'
+        status: 'open',
       })
       .select()
       .single();
 
     if (error) {
-      alert(`Error creating ticket: ${error.message}`);
-      console.error("Ticket Insert Error:", error);
+      alert(`Error: ${error.message}`);
       return;
     }
 
@@ -846,22 +1243,56 @@ export default function SupportChat() {
     }
   };
 
+  // ─── Send message + auto-reply
+  const processAutoReply = async (ticketId: string, msgText: string) => {
+    const replyKey = `${ticketId}|${msgText}`;
+    if (autoReplySentSet.has(replyKey)) return;
+
+    setAutoReplySentSet(prev => {
+      const next = new Set(prev);
+      next.add(replyKey);
+      return next;
+    });
+
+    // Classify message
+    const { category: matchedCategory } = classifyMessage(msgText);
+    const responseText = getResponse(matchedCategory, msgText);
+
+    // Show typing indicator
+    setIsTyping(true);
+    await new Promise(resolve => setTimeout(resolve, 800)); // simulate typing
+    setIsTyping(false);
+
+    // Optimistic UI update
+    const autoReplyMsg: SupportMessage = {
+      id: `ar-${Date.now()}`,
+      ticket_id: ticketId,
+      sender_id: null,
+      sender_role: 'admin',
+      message: responseText,
+      created_at: new Date().toISOString(),
+      is_auto_reply: true,
+    };
+    setChatMessages(prev => [...prev, autoReplyMsg]);
+
+    // Persist to database
+    await sendAutoReply(ticketId, responseText);
+  };
+
   const sendMessage = async (overrideMessage?: string, overrideTicket?: SupportTicket) => {
     const msgToSend = overrideMessage || message;
     const targetTicket = overrideTicket || activeTicket;
 
     if (!msgToSend.trim() || !targetTicket) return;
 
-    const newMessage = {
-      ticket_id: targetTicket.id,
-      sender_id: null,
-      sender_role: 'customer' as const,
-      message: msgToSend.trim()
-    };
-
     const { data, error } = await supabase
       .from('support_messages')
-      .insert(newMessage)
+      .insert({
+        ticket_id: targetTicket.id,
+        sender_id: null,
+        sender_role: 'customer',
+        message: msgToSend.trim(),
+      })
       .select()
       .single();
 
@@ -877,114 +1308,32 @@ export default function SupportChat() {
       });
       setMessage('');
 
-      // Auto-reply: classify and respond to EVERY message (not gated per-ticket)
-      // Prevent duplicate reply for same message using hash
-      const replyKey = `${targetTicket.id}|${msgToSend.trim()}`;
-      if (targetTicket && !autoReplySentSet.has(replyKey)) {
-        setAutoReplySentSet(prev => {
-          const next = new Set(prev);
-          next.add(replyKey);
-          return next;
-        });
-
-        const classification = classifyMessage(msgToSend.trim(), placeholders);
-
-        if (classification.type === 'nsfw_reject') {
-          // Silent reject — send warning to customer, flag ticket
-          await sendCustomerNotification(targetTicket.id, classification.message);
-          await flagTicket(targetTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
-
-        } else if (classification.type === 'sara_warn') {
-          // Send warning + flag to admin
-          await sendCustomerNotification(targetTicket.id, classification.template.content);
-          await flagTicket(targetTicket.id, classification.message, 'sara');
-          window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: targetTicket.id } }));
-
-        } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
-          // Normal auto-reply — optimistic update + persist
-          const autoReplyMsg: SupportMessage = {
-            id: `ar-${Date.now()}`,
-            ticket_id: targetTicket.id,
-            sender_id: null,
-            sender_role: 'admin',
-            message: classification.template.content,
-            created_at: new Date().toISOString(),
-            is_auto_reply: true,
-          };
-          setChatMessages(prev => [...prev, autoReplyMsg]);
-          await sendAutoReply(targetTicket.id, classification.template.content);
-
-        } else if (classification.type === 'tracking_lookup') {
-          // Real tracking lookup — fetch from database
-          const reply = await handleTrackingLookup(targetTicket.id, classification.trackingId, classification.source);
-          const trackingMsg: SupportMessage = {
-            id: `ar-${Date.now()}`,
-            ticket_id: targetTicket.id,
-            sender_id: null,
-            sender_role: 'admin',
-            message: reply,
-            created_at: new Date().toISOString(),
-            is_auto_reply: true,
-          };
-          setChatMessages(prev => [...prev, trackingMsg]);
-          await sendAutoReply(targetTicket.id, reply);
-
-        } else if (classification.type === 'excess_payment') {
-          const fb = FALLBACK_CONTENT['excess_payment'];
-          const excessMsg: SupportMessage = {
-            id: `ar-${Date.now()}`,
-            ticket_id: targetTicket.id,
-            sender_id: null,
-            sender_role: 'admin',
-            message: fb.content,
-            created_at: new Date().toISOString(),
-            is_auto_reply: true,
-          };
-          setChatMessages(prev => [...prev, excessMsg]);
-          await sendAutoReply(targetTicket.id, fb.content);
-
-        } else if (classification.type === 'clarify') {
-          // Clarify — suggest topic options to user
-          const suggestions = classification.suggestions || [];
-          const clarifyContent = `Hmm, kami kurang yakin dengan yang Anda maksud. Bisa diperjelas? Atau pilih topik di bawah ini:\n\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nAtau ceritakan lebih detail ya 🙏`;
-          const clarifyMsg: SupportMessage = {
-            id: `ar-${Date.now()}`,
-            ticket_id: targetTicket.id,
-            sender_id: null,
-            sender_role: 'admin',
-            message: clarifyContent,
-            created_at: new Date().toISOString(),
-            is_auto_reply: true,
-          };
-          setChatMessages(prev => [...prev, clarifyMsg]);
-          await sendAutoReply(targetTicket.id, clarifyContent);
-        }
-      }
+      // Trigger auto-reply
+      await processAutoReply(targetTicket.id, msgToSend.trim());
     }
   };
 
+  // ─── General chat (no ticket, auto-creates one)
   const startGeneralChat = async () => {
     if (!message.trim()) return;
-    if (message.length > 500) return;
 
     const msgToSend = message;
     const tempId = `guest-${Date.now()}`;
 
-    // Optimistic UI: langsung tampilkan di chat
+    // Optimistic UI
     const optimisticMsg: SupportMessage = {
       id: tempId,
       ticket_id: tempId,
       sender_id: null,
       sender_role: 'customer',
       message: msgToSend,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
     setChatMessages(prev => [...prev, optimisticMsg]);
     setMessage('');
 
     try {
-      // Create or find General Inquiry ticket
+      // Check if General Inquiry ticket exists
       let genTicket = tickets.find(t => t.subject === 'General Inquiry');
 
       if (!genTicket) {
@@ -993,17 +1342,14 @@ export default function SupportChat() {
           .insert({
             user_id: user?.id || null,
             subject: 'General Inquiry',
-            category: 'other',
-            status: 'open'
+            category: 'general',
+            status: 'open',
           })
           .select()
           .single();
 
         if (ticketError) {
-          console.error('[startGeneralChat] Ticket insert error:', ticketError);
-          // Remove optimistic message on error
           setChatMessages(prev => prev.filter(m => m.id !== tempId));
-          // Show user-friendly error
           const errorMsg: SupportMessage = {
             id: `err-${Date.now()}`,
             ticket_id: tempId,
@@ -1011,7 +1357,7 @@ export default function SupportChat() {
             sender_role: 'admin',
             message: 'Maaf, gagal membuat tiket. Silakan coba lagi atau login terlebih dahulu.',
             created_at: new Date().toISOString(),
-            is_auto_reply: true
+            is_auto_reply: true,
           };
           setChatMessages(prev => [...prev, errorMsg]);
           return;
@@ -1024,181 +1370,54 @@ export default function SupportChat() {
       }
 
       if (genTicket) {
-        // Insert message
         const { data: savedMsg, error: msgError } = await supabase
           .from('support_messages')
           .insert({
             ticket_id: genTicket.id,
             sender_id: null,
             sender_role: 'customer',
-            message: msgToSend
+            message: msgToSend,
           })
           .select()
           .single();
 
         if (msgError) {
-          console.error('[startGeneralChat] Message insert error:', msgError);
-          // Remove optimistic message on error
           setChatMessages(prev => prev.filter(m => m.id !== tempId));
-          const errorMsg: SupportMessage = {
-            id: `err-${Date.now()}`,
-            ticket_id: tempId,
-            sender_id: null,
-            sender_role: 'admin',
-            message: 'Maaf, gagal mengirim pesan. Silakan coba lagi.',
-            created_at: new Date().toISOString(),
-            is_auto_reply: true
-          };
-          setChatMessages(prev => [...prev, errorMsg]);
           return;
         }
 
         if (savedMsg) {
-          // Replace optimistic message with real one
-          setChatMessages(prev =>
-            prev.map(m => m.id === tempId ? savedMsg : m)
-          );
+          setChatMessages(prev => prev.map(m => m.id === tempId ? savedMsg : m));
           setActiveTicket(genTicket);
           setActiveTab('chat');
-
-          // Auto-reply: classify and respond to EVERY message (not gated per-ticket)
-          const replyKey = `${genTicket.id}|${msgToSend}`;
-          if (!autoReplySentSet.has(replyKey)) {
-            setAutoReplySentSet(prev => {
-              const next = new Set(prev);
-              next.add(replyKey);
-              return next;
-            });
-
-            const classification = classifyMessage(msgToSend, placeholders);
-
-            if (classification.type === 'nsfw_reject') {
-              await sendCustomerNotification(genTicket.id, classification.message);
-              await flagTicket(genTicket.id, `NSFW: ${msgToSend.slice(0, 100)}`, 'nsfw');
-              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
-
-            } else if (classification.type === 'sara_warn') {
-              await sendCustomerNotification(genTicket.id, classification.template.content);
-              await flagTicket(genTicket.id, `SARA: ${msgToSend.slice(0, 100)}`, 'sara');
-              window.dispatchEvent(new CustomEvent('support-auto-reply', { detail: { ticketId: genTicket.id } }));
-
-            } else if (classification.type === 'english_bilingual' || classification.type === 'auto_reply') {
-              // Optimistic update + persist
-              const autoReplyMsg: SupportMessage = {
-                id: `ar-${Date.now()}`,
-                ticket_id: genTicket.id,
-                sender_id: null,
-                sender_role: 'admin',
-                message: classification.template.content,
-                created_at: new Date().toISOString(),
-                is_auto_reply: true,
-              };
-              setChatMessages(prev => [...prev, autoReplyMsg]);
-              await sendAutoReply(genTicket.id, classification.template.content);
-
-            } else if (classification.type === 'tracking_lookup') {
-              const reply = await handleTrackingLookup(genTicket.id, classification.trackingId, classification.source);
-              const trackingMsg: SupportMessage = {
-                id: `ar-${Date.now()}`,
-                ticket_id: genTicket.id,
-                sender_id: null,
-                sender_role: 'admin',
-                message: reply,
-                created_at: new Date().toISOString(),
-                is_auto_reply: true,
-              };
-              setChatMessages(prev => [...prev, trackingMsg]);
-              await sendAutoReply(genTicket.id, reply);
-
-            } else if (classification.type === 'excess_payment') {
-              const fb = FALLBACK_CONTENT['excess_payment'];
-              const excessMsg: SupportMessage = {
-                id: `ar-${Date.now()}`,
-                ticket_id: genTicket.id,
-                sender_id: null,
-                sender_role: 'admin',
-                message: fb.content,
-                created_at: new Date().toISOString(),
-                is_auto_reply: true,
-              };
-              setChatMessages(prev => [...prev, excessMsg]);
-              await sendAutoReply(genTicket.id, fb.content);
-
-            } else if (classification.type === 'clarify') {
-              const suggestions = classification.suggestions || [];
-              const clarifyContent = `Hmm, kami kurang yakin dengan yang Anda maksud. Bisa diperjelas? Atau pilih topik di bawah ini:\n\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nAtau ceritakan lebih detail ya 🙏`;
-              const clarifyMsg: SupportMessage = {
-                id: `ar-${Date.now()}`,
-                ticket_id: genTicket.id,
-                sender_id: null,
-                sender_role: 'admin',
-                message: clarifyContent,
-                created_at: new Date().toISOString(),
-                is_auto_reply: true,
-              };
-              setChatMessages(prev => [...prev, clarifyMsg]);
-              await sendAutoReply(genTicket.id, clarifyContent);
-            }
-          }
+          await processAutoReply(genTicket.id, msgToSend);
         }
-      } else {
-        // No genTicket found/created — show error message
-        setChatMessages(prev => prev.filter(m => m.id !== tempId));
-        const errorMsg: SupportMessage = {
-          id: `err-${Date.now()}`,
-          ticket_id: '',
-          sender_id: null,
-          sender_role: 'admin',
-          message: 'Maaf, gagal memulai chat. Silakan coba lagi.',
-          created_at: new Date().toISOString(),
-          is_auto_reply: true
-        };
-        setChatMessages(prev => [...prev, errorMsg]);
       }
     } catch (err) {
       console.error('[startGeneralChat] Error:', err);
       setChatMessages(prev => prev.filter(m => m.id !== tempId));
-      const errorMsg: SupportMessage = {
-        id: `err-${Date.now()}`,
-        ticket_id: '',
-        sender_id: null,
-        sender_role: 'admin',
-        message: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
-        created_at: new Date().toISOString(),
-        is_auto_reply: true
-      };
-      setChatMessages(prev => [...prev, errorMsg]);
     }
   };
 
-  // Listen for external open events (from Burger Menu)
-  useEffect(() => {
-    const handleOpen = () => setIsOpen(true);
-    window.addEventListener('open-support-chat', handleOpen);
-    return () => window.removeEventListener('open-support-chat', handleOpen);
-  }, []);
+  // ─── Build QUICK_ACTIONS dari config
+  const QUICK_ACTIONS = Object.entries(AUTO_REPLY_CONFIG).map(([key, config]) => ({
+    id: key,
+    label: config.label,
+    sublabel: config.placeholder.split('...')[0].replace('Ketik ', ''),
+    icon: config.icon,
+    color: config.color,
+    iconColor: config.iconColor,
+    subject: config.subject,
+    category: key,
+    placeholder: config.placeholder,
+  }));
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
-    }
-  };
-
-  useEffect(() => {
-    adjustHeight();
-  }, [message, activeTab]);
-
-  // Hide floating chat on admin dashboard (admin has its own Support Chat tab)
+  // Hide on admin page
   if (isAdminPage) return null;
 
   return (
     <>
-      {/* ================================================ */}
-      {/* CENTER-SCREEN NOTIFICATION CARD (Top Right) */}
-      {/* ================================================ */}
+      {/* ─── Notification Card ─── */}
       <AnimatePresence>
         {showNotifCard && lastNotif && activeTab !== 'chat' && (
           <motion.div
@@ -1208,20 +1427,15 @@ export default function SupportChat() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed top-20 right-6 z-[600] w-[300px] bg-white rounded-2xl shadow-2xl border border-ink/5 overflow-hidden"
           >
-            {/* Header */}
             <div className="bg-ink px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-rose rounded-full animate-pulse" />
                 <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/40">Studio Reply</p>
               </div>
-              <button
-                onClick={() => setShowNotifCard(false)}
-                className="text-white/30 hover:text-white transition-colors"
-              >
+              <button onClick={() => setShowNotifCard(false)} className="text-white/30 hover:text-white transition-colors">
                 <X size={12} strokeWidth={1.5} />
               </button>
             </div>
-            {/* Body */}
             <div className="p-4 space-y-3">
               <p className="text-[8px] font-medium text-rose uppercase tracking-widest">New Message</p>
               <p className="text-[9px] font-medium text-ink uppercase italic">{lastNotif.subject}</p>
@@ -1231,7 +1445,6 @@ export default function SupportChat() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setShowNotifCard(false);
-                  // Find the ticket and open it
                   const t = tickets.find(t => t.subject === lastNotif.subject);
                   if (t) {
                     setIsOpen(true);
@@ -1243,24 +1456,15 @@ export default function SupportChat() {
                 <MessageSquare size={10} /> Open Support
               </motion.button>
             </div>
-            {/* Progress bar */}
             <div className="h-[2px] bg-ink/5">
-              <motion.div
-                className="h-full bg-rose"
-                initial={{ width: '100%' }}
-                animate={{ width: '0%' }}
-                transition={{ duration: 6, ease: 'linear' }}
-              />
+              <motion.div className="h-full bg-rose" initial={{ width: '100%' }} animate={{ width: '0%' }} transition={{ duration: 6, ease: 'linear' }} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ================================================ */}
-      {/* MICRO TRIGGER - Desktop Only */}
-      {/* ================================================ */}
+      {/* ─── Floating Button ─── */}
       <div className="fixed bottom-5 right-5 z-[500] hidden md:block">
-        {/* Badge counter */}
         <AnimatePresence>
           {notifCount > 0 && (
             <motion.div
@@ -1277,13 +1481,9 @@ export default function SupportChat() {
         <motion.button
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
-          onClick={() => {
-            setIsOpen(!isOpen);
-            if (!isOpen) setShowNotifCard(false);
-          }}
+          onClick={() => { setIsOpen(!isOpen); if (!isOpen) setShowNotifCard(false); }}
           className="relative w-9 h-9 bg-ink rounded-full shadow-lg flex items-center justify-center hover:bg-rose transition-colors duration-300"
         >
-          {/* Subtle breathe pulse */}
           <motion.div
             className="absolute inset-0 bg-rose rounded-full opacity-0"
             animate={notifCount > 0 ? { scale: [1, 1.4, 1], opacity: [0, 0.3, 0] } : { scale: [1, 1.3, 1], opacity: [0, 0, 0] }}
@@ -1291,23 +1491,11 @@ export default function SupportChat() {
           />
           <AnimatePresence mode="wait">
             {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-              >
+              <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
                 <X size={14} strokeWidth={1.5} className="text-white" />
               </motion.div>
             ) : (
-              <motion.div
-                key="open"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-              >
+              <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
                 <MessageSquare size={14} strokeWidth={1.5} className="text-white" />
               </motion.div>
             )}
@@ -1315,292 +1503,247 @@ export default function SupportChat() {
         </motion.button>
       </div>
 
-      {/* COMPACT PANEL - Responsive */}
+      {/* ─── Chat Panel ─── */}
       <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={typeof window !== 'undefined' && window.innerWidth < 768 
-                ? { opacity: 0, y: '100%' } 
-                : { opacity: 0, y: 8, scale: 0.96 }
-              }
-              animate={typeof window !== 'undefined' && window.innerWidth < 768 
-                ? { opacity: 1, y: 0 } 
-                : { opacity: 1, y: 0, scale: 1 }
-              }
-              exit={typeof window !== 'undefined' && window.innerWidth < 768 
-                ? { opacity: 0, y: '100%' } 
-                : { opacity: 0, y: 8, scale: 0.96 }
-              }
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className={cn(
-                "fixed z-[600] bg-white shadow-2xl overflow-hidden border border-ink/5 flex flex-col transition-all",
-                "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[300px] md:h-[480px] md:rounded-2xl"
-              )}
-            >
-              {/* Backdrop for mobile */}
-              <div className="md:hidden absolute inset-0 bg-ink/20 backdrop-blur-sm -z-10" onClick={() => setIsOpen(false)} />
-              {/* HEADER */}
-              <motion.div
-                className="bg-ink p-4 text-white relative"
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsOpen(false)}
-                  className="absolute top-3 right-3 text-white/30 hover:text-white transition-colors"
-                >
-                  <X size={14} strokeWidth={1.5} />
-                </motion.button>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/30 flex items-center gap-1.5">
-                      <span className={cn("w-1 h-1 rounded-full", user ? "bg-emerald-500" : "bg-rose animate-pulse")} />
-                      NINOC Support
-                    </p>
-                    <h3 className="text-xs font-display font-medium italic uppercase tracking-widest">Support <span className="text-rose">Center</span></h3>
-                  </div>
-                  {user && (
-                    <p className="text-[5px] font-medium text-white/10 uppercase tracking-widest">SPEC: {user.email?.split('@')[0]}</p>
-                  )}
+        {isOpen && (
+          <motion.div
+            initial={typeof window !== 'undefined' && window.innerWidth < 768 ? { opacity: 0, y: '100%' } : { opacity: 0, y: 8, scale: 0.96 }}
+            animate={typeof window !== 'undefined' && window.innerWidth < 768 ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={typeof window !== 'undefined' && window.innerWidth < 768 ? { opacity: 0, y: '100%' } : { opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={cn(
+              "fixed z-[600] bg-white shadow-2xl overflow-hidden border border-ink/5 flex flex-col transition-all",
+              "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[300px] md:h-[480px] md:rounded-2xl"
+            )}
+          >
+            {/* Backdrop for mobile */}
+            <div className="md:hidden absolute inset-0 bg-ink/20 backdrop-blur-sm -z-10" onClick={() => setIsOpen(false)} />
+
+            {/* Header */}
+            <motion.div className="bg-ink p-4 text-white relative" initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setIsOpen(false)} className="absolute top-3 right-3 text-white/30 hover:text-white transition-colors">
+                <X size={14} strokeWidth={1.5} />
+              </motion.button>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-[6px] font-medium uppercase tracking-[0.2em] text-white/30 flex items-center gap-1.5">
+                    <span className={cn("w-1 h-1 rounded-full", user ? "bg-emerald-500" : "bg-rose animate-pulse")} />
+                    NINOC Support
+                  </p>
+                  <h3 className="text-xs font-medium uppercase tracking-widest">Support <span className="text-rose">Center</span></h3>
                 </div>
-              </motion.div>
+                {user && (
+                  <p className="text-[5px] font-medium text-white/10 uppercase tracking-widest">{user.email?.split('@')[0]}</p>
+                )}
+              </div>
+            </motion.div>
 
-              <div className="flex-1 overflow-hidden flex flex-col">
-                {activeTab === 'home' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="flex flex-col h-full overflow-hidden bg-white"
-                  >
-                    <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
-                      {/* QUICK ACTION GRID */}
-                      <div>
-                        <p className="text-[6px] font-medium uppercase tracking-[0.15em] text-ink/30 mb-3">Pilih Topik</p>
-                        <div className="grid grid-cols-2 gap-2">
-                          {QUICK_ACTIONS.map((action) => (
-                            <motion.button
-                              key={action.id}
-                              whileTap={{ scale: 0.97 }}
-                              onClick={() => {
-                                setSubject(action.subject);
-                                setCategory(action.category);
-                                setActiveTab('new_ticket');
-                              }}
-                              className={cn(
-                                "flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all duration-200 text-left",
-                                action.color,
-                                "hover:shadow-sm hover:-translate-y-0.5"
-                              )}
-                            >
-                              <QuickIcon name={action.icon} className={action.iconColor} />
-                              <div>
-                                <p className="text-[9px] font-semibold uppercase tracking-wide leading-tight">{action.label}</p>
-                                <p className="text-[7px] opacity-60 leading-snug">{action.sublabel}</p>
-                              </div>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* ACTIVE CONVERSATIONS */}
-                      <div>
-                        <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15 mb-2">Percakapan Aktif</p>
-                        {tickets.length > 0 ? (
-                          <div className="space-y-1">
-                            {tickets.slice(0, 5).map((t, i) => (
-                              <motion.button
-                                key={t.id}
-                                initial={{ opacity: 0, x: -5 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.04 }}
-                                whileTap={{ scale: 0.99 }}
-                                onClick={() => openTicket(t)}
-                                className="w-full flex items-center justify-between p-2.5 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-200 text-left group"
-                              >
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
-                                  <p className="text-[6px] font-medium text-ink/30 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
-                                </div>
-                                <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
-                              </motion.button>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="py-8 flex flex-col items-center justify-center text-center space-y-2 opacity-25">
-                            <MessageSquare size={18} strokeWidth={1} />
-                            <p className="text-[7px] italic text-ink/40 uppercase tracking-widest">Belum ada percakapan</p>
-                          </div>
-                        )}
+            <div className="flex-1 overflow-hidden flex flex-col">
+              {/* ─── HOME TAB ─── */}
+              {activeTab === 'home' && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col h-full overflow-hidden bg-white">
+                  <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+                    {/* Quick Action Grid */}
+                    <div>
+                      <p className="text-[6px] font-medium uppercase tracking-[0.15em] text-ink/30 mb-3">Pilih Topik</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {QUICK_ACTIONS.map((action) => (
+                          <motion.button
+                            key={action.id}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => {
+                              setSubject(action.subject);
+                              setCategory(action.category);
+                              setActiveTab('new_ticket');
+                            }}
+                            className={cn("flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all duration-200 text-left", action.color, "hover:shadow-sm hover:-translate-y-0.5")}
+                          >
+                            <QuickIcon name={action.icon} className={action.iconColor} />
+                            <div>
+                              <p className="text-[9px] font-semibold uppercase tracking-wide leading-tight">{action.label}</p>
+                              <p className="text-[7px] opacity-60 leading-snug">{action.sublabel}</p>
+                            </div>
+                          </motion.button>
+                        ))}
                       </div>
                     </div>
 
-                    {/* BOTTOM INPUT — always visible for quick type-in */}
-                    <div className="relative z-10 p-3 bg-white border-t border-ink/5 shrink-0">
+                    {/* Active Conversations */}
+                    <div>
+                      <p className="text-[6px] font-medium uppercase tracking-[0.1em] text-ink/15 mb-2">Percakapan Aktif</p>
+                      {tickets.length > 0 ? (
+                        <div className="space-y-1">
+                          {tickets.slice(0, 5).map((t, i) => (
+                            <motion.button
+                              key={t.id}
+                              initial={{ opacity: 0, x: -5 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.04 }}
+                              whileTap={{ scale: 0.99 }}
+                              onClick={() => openTicket(t)}
+                              className="w-full flex items-center justify-between p-2.5 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-200 text-left group"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
+                                <p className="text-[6px] font-medium text-ink/30 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
+                              </div>
+                              <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
+                            </motion.button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="py-8 flex flex-col items-center justify-center text-center space-y-2 opacity-25">
+                          <MessageSquare size={18} strokeWidth={1} />
+                          <p className="text-[7px] italic text-ink/40 uppercase tracking-widest">Belum ada percakapan</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bottom Input */}
+                  <div className="relative z-10 p-3 bg-white border-t border-ink/5 shrink-0">
+                    <textarea
+                      ref={textareaRef}
+                      rows={1}
+                      value={message}
+                      onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
+                      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
+                      placeholder="Ketik pertanyaan Anda..."
+                      className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
+                    />
+                    <div className="flex items-end gap-1 mt-1.5">
+                      <p className="flex-1 text-[5px] text-ink/15 uppercase tracking-widest font-medium">
+                        {user ? 'Studio Direct' : 'Guest Mode — chat aktif'}
+                      </p>
+                      <button onClick={startGeneralChat} className="flex items-center gap-1 text-[6px] uppercase tracking-widest text-ink/20 hover:text-rose transition-colors font-semibold">
+                        Kirim <Send size={10} />
+                      </button>
+                      <span className={cn('text-[5px]', message.length > 450 ? 'text-rose font-semibold' : 'text-ink/15')}>
+                        {message.length}/500
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ─── NEW TICKET TAB ─── */}
+              {activeTab === 'new_ticket' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="p-4 space-y-3 flex-1 flex flex-col justify-center relative bg-white"
+                >
+                  <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} onClick={() => setActiveTab('home')} className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1 absolute top-4 left-4">
+                    <ArrowLeft size={8} /> Back
+                  </motion.button>
+                  <div className="text-center space-y-1 mb-4 pt-6">
+                    <p className="text-[6px] font-medium uppercase tracking-widest text-ink/40">Topik Terpilih</p>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink">{subject}</h4>
+                  </div>
+                  <div className="space-y-3 bg-ink/[0.02] p-4 rounded-xl border border-ink/5">
+                    <div className="space-y-1.5 text-center">
+                      <label className="text-[7px] font-medium uppercase tracking-widest text-ink/50">Punya ID Pesanan? (Opsional)</label>
+                      <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="Contoh: NCO-12345" className="w-full bg-white border border-ink/10 rounded-lg py-2.5 px-3 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:border-rose/30 focus:shadow-sm transition-all text-center" />
+                    </div>
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={startNewTicket} className="w-full bg-ink text-white py-2.5 rounded-lg text-[9px] font-medium uppercase tracking-[0.2em] mt-3 hover:bg-rose transition-colors duration-200">
+                      Mulai Chat
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ─── CHAT TAB ─── */}
+              {activeTab === 'chat' && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full overflow-hidden">
+                  {/* Chat Header */}
+                  <div className="p-2.5 border-b border-ink/5 flex items-center justify-between bg-white">
+                    <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.9 }} onClick={() => setActiveTab('home')} className="text-rose">
+                      <ArrowLeft size={12} strokeWidth={1.5} />
+                    </motion.button>
+                    <div className="text-center">
+                      <p className="text-[8px] font-medium text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject}</p>
+                      <p className="text-[6px] font-medium text-ink/20 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
+                    </div>
+                    <div className="w-4" />
+                  </div>
+
+                  {/* Messages */}
+                  <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar bg-ink/[0.01]">
+                    {chatMessages.map((m, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className="max-w-[80%]">
+                          <div className={`px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
+                            {m.message}
+                          </div>
+                          {(m.sender_role === 'admin' || m.is_auto_reply) && (
+                            <div className={`flex items-center gap-1 mt-0.5 ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
+                              {m.is_auto_reply ? (
+                                <span className="text-[5px] text-rose/60 uppercase tracking-widest font-medium flex items-center gap-0.5">
+                                  <Zap size={6} strokeWidth={2} /> Auto-reply
+                                </span>
+                              ) : (
+                                <span className="text-[5px] text-ink/20 uppercase tracking-widest">Studio</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex justify-start"
+                      >
+                        <div className="px-2.5 py-1.5 rounded-xl text-[9px] bg-ink/5 text-ink/40 rounded-bl-none flex items-center gap-1">
+                          <span className="flex gap-0.5">
+                            <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </span>
+                          <span className="ml-1">NINOC sedang mengetik...</span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* Input Area */}
+                  <div className="p-3 bg-white border-t border-ink/5 space-y-1.5">
+                    <div className="flex items-end gap-1.5">
                       <textarea
                         ref={textareaRef}
                         rows={1}
                         value={message}
                         onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
-                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
-                        placeholder="Ketik pertanyaan Anda..."
-                        className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
+                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                        placeholder="Type message..."
+                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
                       />
-                      <div className="flex items-end gap-1 mt-1.5">
-                        <p className="flex-1 text-[5px] text-ink/15 uppercase tracking-widest font-medium">
-                          {user ? 'Studio Direct' : 'Guest Mode — chat aktif'}
-                        </p>
-                        <button
-                          onClick={startGeneralChat}
-                          className="flex items-center gap-1 text-[6px] uppercase tracking-widest text-ink/20 hover:text-rose transition-colors font-semibold"
-                        >
-                          Kirim <Send size={10} />
-                        </button>
-                        <span className={cn('text-[5px]', message.length > 450 ? 'text-rose font-semibold' : 'text-ink/15')}>
-                          {message.length}/500
-                        </span>
-                      </div>
+                      <button onClick={() => sendMessage()} className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90" aria-label="Send message">
+                        <Send size={13} strokeWidth={2} />
+                      </button>
                     </div>
-                  </motion.div>
-                )}
-
-                {activeTab === 'new_ticket' && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="p-4 space-y-3 flex-1 flex flex-col justify-center relative bg-white"
-                  >
-                    <motion.button
-                      whileHover={{ x: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setActiveTab('home')}
-                      className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1 absolute top-4 left-4"
-                    >
-                      <ArrowLeft size={8} /> Back
-                    </motion.button>
-                    
-                    <div className="text-center space-y-1 mb-4 pt-6">
-                      <p className="text-[6px] font-medium uppercase tracking-widest text-ink/40">Topik Terpilih</p>
-                      <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink">{subject}</h4>
+                    <div className="flex justify-end px-0.5">
+                      <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
+                        {message.length}/500
+                      </p>
                     </div>
-
-                    <div className="space-y-3 bg-ink/[0.02] p-4 rounded-xl border border-ink/5">
-                      <div className="space-y-1.5 text-center">
-                        <label className="text-[7px] font-medium uppercase tracking-widest text-ink/50">Punya ID Pesanan? (Opsional)</label>
-                        <input 
-                          type="text" 
-                          value={orderId} 
-                          onChange={(e) => setOrderId(e.target.value)} 
-                          placeholder="Contoh: NINOC-12345" 
-                          className="w-full bg-white border border-ink/10 rounded-lg py-2.5 px-3 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:border-rose/30 focus:shadow-sm transition-all text-center" 
-                        />
-                      </div>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={startNewTicket}
-                        className="w-full bg-ink text-white py-2.5 rounded-lg text-[9px] font-medium uppercase tracking-[0.2em] mt-3 hover:bg-rose transition-colors duration-200"
-                      >
-                        Mulai Chat
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                )}
-
-                {activeTab === 'chat' && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col h-full overflow-hidden"
-                  >
-                    <div className="p-2.5 border-b border-ink/5 flex items-center justify-between bg-white">
-                      <motion.button
-                        whileHover={{ x: -2 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setActiveTab('home')}
-                        className="text-rose"
-                      >
-                        <ArrowLeft size={12} strokeWidth={1.5} />
-                      </motion.button>
-                      <div className="text-center">
-                        <p className="text-[8px] font-medium text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject}</p>
-                        <p className="text-[6px] font-medium text-ink/20 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
-                      </div>
-                      <div className="w-4" />
-                    </div>
-                    <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar bg-ink/[0.01]">
-                      {chatMessages.map((m, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ duration: 0.2 }}
-                          className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div className="max-w-[80%]">
-                            <div className={`px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
-                              {m.message}
-                            </div>
-                            {(m.sender_role === 'admin' || m.is_auto_reply) && (
-                              <div className={`flex items-center gap-1 mt-0.5 ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
-                                {m.is_auto_reply ? (
-                                  <span className="text-[5px] text-rose/60 uppercase tracking-widest font-medium flex items-center gap-0.5">
-                                    <Zap size={6} strokeWidth={2} /> Auto-reply
-                                  </span>
-                                ) : (
-                                  <span className="text-[5px] text-ink/20 uppercase tracking-widest">Studio</span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <div className="p-3 bg-white border-t border-ink/5 space-y-1.5">
-                      <div className="flex items-end gap-1.5">
-                        <textarea
-                          ref={textareaRef}
-                          rows={1}
-                          value={message}
-                          onChange={(e) => {
-                            if (e.target.value.length <= 500) {
-                              setMessage(e.target.value);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              sendMessage();
-                            }
-                          }}
-                          placeholder="Type message..."
-                          className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
-                        />
-                        <button
-                          onClick={() => sendMessage()}
-                          className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90"
-                          aria-label="Send message"
-                        >
-                          <Send size={13} strokeWidth={2} />
-                        </button>
-                      </div>
-                      <div className="flex justify-end px-0.5">
-                        <p className={cn('text-[5.5px] font-medium tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/15')}>
-                          {message.length}/500
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
