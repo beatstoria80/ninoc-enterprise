@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X, ImageOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -14,8 +14,37 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80';
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+function SafeImage({ src, alt, className, sizes, priority = false, onErrorSrc }: {
+  src: string; alt: string; className?: string; sizes?: string; priority?: boolean; onErrorSrc?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <>
+      {!failed && (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className={cn("object-contain", className)}
+          sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
+          priority={priority}
+          unoptimized
+          onError={() => setFailed(true)}
+        />
+      )}
+      {failed && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-ink/20 bg-ink/[0.02]">
+          <ImageOff size={20} />
+        </div>
+      )}
+    </>
+  );
 }
 
 interface Product {
@@ -195,7 +224,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                     activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
                   )}
                 >
-                  <Image src={img} className="object-contain p-1.5" alt={product.name} fill sizes="100px" />
+                  <SafeImage src={img} alt={product.name} className="object-contain p-1.5" sizes="100px" />
                 </button>
               ))}
             </div>
@@ -233,19 +262,17 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                       positionClass
                     )}
                   >
-                    <Image src={img} alt={`${product.name} ${idx}`} fill className="object-contain p-4 select-none pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
+                    <SafeImage src={img} alt={`${product.name} ${idx}`} className="object-contain p-4" sizes="(max-width: 768px) 65vw, 30vw" />
                   </div>
                 );
               })}
             </div>
 
             <div className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
-              <Image
+              <SafeImage
                 src={images[activeImageIndex]}
                 alt={product.name}
-                fill
-                className="object-contain p-2"
-                sizes="(max-width: 768px) 50vw, 30vw"
+                priority
               />
             </div>
 
@@ -492,7 +519,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                               }
                             }}
                           >
-                            {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain p-1" sizes="56px" />}
+                            {item.image_url && <SafeImage src={item.image_url} alt={item.name} sizes="56px" />}
                           </div>
 
                           <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
@@ -587,7 +614,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                   <Link prefetch={false} href={`/shop/${p.slug}`} className="group block space-y-1">
                     <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                       <div className="absolute inset-3">
-                        <Image src={p.image_url} alt={p.name} fill className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
+                        <SafeImage src={p.image_url} alt={p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
                       </div>
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     </div>
