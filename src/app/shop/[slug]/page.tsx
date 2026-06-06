@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${BASE_URL}/shop/${slug}`,
     },
     other: {
-      'ld+json': JSON.stringify({ '@context': 'https://schema.org', '@graph': [productSchema, breadcrumbSchema] }),
+      'application/ld+json': JSON.stringify({ '@context': 'https://schema.org', '@graph': [productSchema, breadcrumbSchema] }),
     },
   };
 }
