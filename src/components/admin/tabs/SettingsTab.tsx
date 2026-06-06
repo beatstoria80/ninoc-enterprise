@@ -5,7 +5,7 @@ import { useSettings } from '@/store/useSettings';
 import { supabase } from '@/lib/supabase';
 import {
   Store, CreditCard, Clock, Palette, Truck, HelpCircle,
-  MessageSquare, Lock, Search, Plus, X, Save, Upload,
+  MessageSquare, Lock, Plus, X, Save, Upload,
   ChevronRight, Eye, EyeOff, Globe, Bell,
   FileText, Shield, Database, Star, MapPin, Phone, Mail, Link, Package
 } from 'lucide-react';
@@ -23,7 +23,6 @@ const SETTINGS_ITEMS = [
   { id: 'help-center', label: 'FAQ', icon: HelpCircle },
   { id: 'reply-template', label: 'Reply Template', icon: MessageSquare },
   { id: 'change-password', label: 'Change Password', icon: Lock },
-  { id: 'seo', label: 'SEO Optimization', icon: Search },
 ];
 
 // ── Section wrapper ──────────────────────────────────────────────────────
@@ -1918,126 +1917,6 @@ function ChangePasswordSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// SECTION: SEO Optimization
-// ─────────────────────────────────────────────────────────────────────
-function SEOSection() {
-  const [metaTitle, setMetaTitle] = useState('');
-  const [metaDesc, setMetaDesc] = useState('');
-  const [ogImage, setOgImage] = useState('');
-  const [canonical, setCanonical] = useState('');
-  const [sitemapActive, setSitemapActive] = useState(true);
-  const [robotsTxt, setRobotsTxt] = useState(true);
-  const [schema, setSchema] = useState(true);
-  const [keywords, setKeywords] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'seo_settings').single();
-        if (data?.value) {
-          if (data.value.metaTitle) setMetaTitle(data.value.metaTitle);
-          if (data.value.metaDesc) setMetaDesc(data.value.metaDesc);
-          if (data.value.ogImage) setOgImage(data.value.ogImage);
-          if (data.value.canonical) setCanonical(data.value.canonical);
-          if (data.value.sitemapActive !== undefined) setSitemapActive(data.value.sitemapActive);
-          if (data.value.robotsTxt !== undefined) setRobotsTxt(data.value.robotsTxt);
-          if (data.value.schema !== undefined) setSchema(data.value.schema);
-          if (data.value.keywords) setKeywords(data.value.keywords);
-        }
-      } catch (err) { console.error(err); }
-    }
-    load();
-  }, []);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const payload = {
-        key: 'seo_settings',
-        value: { metaTitle, metaDesc, ogImage, canonical, sitemapActive, robotsTxt, schema, keywords }
-      };
-      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
-    } catch (e) { console.error(e); } finally { setSaving(false); }
-  };
-
-  return (
-    <SettingsSection
-      title="SEO Optimization"
-      subtitle="Konfigurasi search engine optimization untuk visibility Google"
-    >
-      <div className="space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Field label="Meta Title" hint="Maksimal 60 karakter. Akan tampil di Google search result.">
-            <Input value={metaTitle} onChange={e => setMetaTitle(e.target.value)} placeholder="Judul toko" />
-            <div className="flex justify-end mt-1">
-              <span className={cn(
-                "text-[7px] font-mono",
-                metaTitle.length > 60 ? "text-red-500" : "text-ink/30"
-              )}>{metaTitle.length}/60</span>
-            </div>
-          </Field>
-          <Field label="Meta Description" hint="Maksimal 155 karakter.">
-            <Textarea rows={3} value={metaDesc} onChange={e => setMetaDesc(e.target.value)} placeholder="Deskripsi singkat toko" />
-            <div className="flex justify-end mt-1">
-              <span className={cn(
-                "text-[7px] font-mono",
-                metaDesc.length > 155 ? "text-red-500" : "text-ink/30"
-              )}>{metaDesc.length}/155</span>
-            </div>
-          </Field>
-        </div>
-        <Field label="Keywords" hint="Pisahkan dengan koma">
-          <Input value={keywords} onChange={e => setKeywords(e.target.value)} placeholder="keyword1, keyword2, keyword3" />
-        </Field>
-        <div>
-          <p className="text-[9px] uppercase tracking-widest text-ink/50 font-medium mb-3">OG Image (Social Share)</p>
-          <div className="border border-dashed border-ink/20 rounded-sm p-6 text-center bg-ink/[0.015] hover:border-rose/30 transition-colors cursor-pointer">
-            <Upload size={20} className="text-ink/20 mx-auto mb-2" />
-            <p className="text-[9px] text-ink/50">Upload OG Image</p>
-            <p className="text-[7px] text-ink/25 mt-1">JPG/PNG, 1200x630px, max 2MB</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Canonical URL">
-            <Input value={canonical} onChange={e => setCanonical(e.target.value)} placeholder="https://domain.com" />
-          </Field>
-          <div className="space-y-3">
-            <p className="text-[9px] uppercase tracking-widest text-ink/50 font-medium">SEO Tools</p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-ink/5">
-                <div className="flex items-center gap-2">
-                  <Globe size={12} className="text-ink/40" />
-                  <span className="text-[9px] text-ink/70">Auto-generate sitemap.xml</span>
-                </div>
-                <Toggle checked={sitemapActive} onChange={setSitemapActive} />
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-ink/5">
-                <div className="flex items-center gap-2">
-                  <FileText size={12} className="text-ink/40" />
-                  <span className="text-[9px] text-ink/70">Enable robots.txt</span>
-                </div>
-                <Toggle checked={robotsTxt} onChange={setRobotsTxt} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <Database size={12} className="text-ink/40" />
-                  <span className="text-[9px] text-ink/70">Structured Data (Schema.org)</span>
-                </div>
-                <Toggle checked={schema} onChange={setSchema} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
-        <SaveButton loading={saving} onClick={handleSave} />
-      </div>
-    </SettingsSection>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────────────
 export function SettingsTab() {
@@ -2055,7 +1934,6 @@ export function SettingsTab() {
       case 'help-center': return <HelpCenterSection />;
       case 'reply-template': return <ReplyTemplateSection />;
       case 'change-password': return <ChangePasswordSection />;
-      case 'seo': return <SEOSection />;
       default: return <MyStoreSection />;
     }
   };
