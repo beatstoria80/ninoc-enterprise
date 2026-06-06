@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingBag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -293,9 +293,7 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
   );
 }
 
-export default function ShopClient() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+function ShopContent() {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
 
@@ -303,6 +301,13 @@ export default function ShopClient() {
   const initialCategory = filterParam && allowedCategories.includes(filterParam) ? filterParam : 'All';
 
   const { isMobile } = useDevice();
+
+  return <ShopClientInner initialCategory={initialCategory} isMobile={isMobile} />;
+}
+
+function ShopClientInner({ initialCategory, isMobile }: { initialCategory: string; isMobile: boolean | null }) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -338,4 +343,19 @@ export default function ShopClient() {
   }
 
   return <DesktopShopView products={products} initialCategory={initialCategory} />;
+}
+
+export default function ShopClient() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-cr flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ShopContent />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer } from 'lucide-react';
 import Link from 'next/link';
@@ -15,6 +15,21 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-cr flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+        </div>
+      </main>
+    }>
+      <SuccessContent />
+    </Suspense>
+  );
+}
+
+function SuccessContent() {
   const { isMobile, isIPhone } = useDevice();
   const searchParams = useSearchParams();
   const courierName = searchParams.get('courier') || 'Standard Shipping';
