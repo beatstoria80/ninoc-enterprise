@@ -146,6 +146,7 @@ export default function OnboardingPage() {
 
   const [f, setF] = useState({
     fn: '', ln: '', phone: '',
+    birth_date: '', gender: '',
     street: '', house_number: '',
     prov: '', provName: '', city: '', cityName: '', dist: '', distName: '',
     villId: '', vill: '', rt: '', rw: '', postal: ''
@@ -213,6 +214,8 @@ export default function OnboardingPage() {
     if (!f.fn.trim()) errs.push('Nama depan');
     if (!f.ln.trim()) errs.push('Nama belakang');
     if (!f.phone.trim()) errs.push('Telepon');
+    if (!f.birth_date.trim()) errs.push('Tanggal Lahir');
+    if (!f.gender.trim()) errs.push('Jenis Kelamin');
     return errs;
   };
 
@@ -252,6 +255,7 @@ export default function OnboardingPage() {
       city: f.cityName, province: f.provName, postal_code: f.postal,
       rt: f.rt, rw: f.rw,
       kecamatan: f.distName, kelurahan: f.vill,
+      birth_date: f.birth_date, gender: f.gender,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' }).then(({ error }) => {
       if (error) { alert(error.message); setIsSaving(false); return; }
@@ -357,7 +361,7 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* 3-column grid */}
-                <div className="grid grid-cols-3 gap-2.5 mb-3">
+                <div className="grid grid-cols-3 gap-2.5 mb-2.5">
                   <div>
                     <FL>Nama Depan</FL>
                     <input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="John" />
@@ -369,6 +373,22 @@ export default function OnboardingPage() {
                   <div>
                     <FL>Nomor Telepon</FL>
                     <input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={ip} placeholder="0812..." />
+                  </div>
+                </div>
+
+                {/* 2-column grid: Tanggal Lahir + Jenis Kelamin */}
+                <div className="grid grid-cols-2 gap-2.5 mb-3">
+                  <div>
+                    <FL>Tanggal Lahir</FL>
+                    <input type="date" value={f.birth_date} onChange={e => set('birth_date', e.target.value)} className={ip} />
+                  </div>
+                  <div>
+                    <FL>Jenis Kelamin</FL>
+                    <select value={f.gender} onChange={e => set('gender', e.target.value)} className={ip}>
+                      <option value="">Pilih</option>
+                      <option value="Laki-laki">Laki-laki</option>
+                      <option value="Perempuan">Perempuan</option>
+                    </select>
                   </div>
                 </div>
 
