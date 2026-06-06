@@ -167,6 +167,14 @@ export default function OnboardingPage() {
     }
   }, [f.city]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (f.dist) {
+      setVillages([]);
+      fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${f.dist}.json`).then(r => r.json()).then(setVillages).catch(() => {});
+    }
+  }, [f.dist]);
+
   useEffect(() => {
     const check = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -427,20 +435,14 @@ export default function OnboardingPage() {
                       value={f.villId}
                       options={villages}
                       onChange={(id, name) => { set('villId', id); }}
-                      placeholder="Pilih Kel/Desa"
+                      placeholder={f.dist ? "Pilih Kel/Desa" : "Pilih Kecamatan dulu"}
                       disabled={!f.dist}
                       searchable
                     />
                   </div>
                   <div>
                     <FL>Kode Pos</FL>
-                    <CustomDropdown
-                      value={f.postal}
-                      options={villages.map(v => ({ id: v.id, name: '' }))}
-                      onChange={(id) => { setF(p => ({ ...p, postal: '' })); }}
-                      placeholder={f.vill ? "Otomatis" : "Pilih Kel/Desa dulu"}
-                      disabled
-                    />
+                    <input value={f.postal} onChange={e => setF(p => ({ ...p, postal: e.target.value }))} className={ip} placeholder="40111" />
                   </div>
                 </div>
 
