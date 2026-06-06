@@ -68,6 +68,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: BASE_URL,
+    languages: {
+      'id-ID': BASE_URL,
+      'en-US': `${BASE_URL}/en`,
+    },
   },
   verification: {
     google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
@@ -131,6 +135,50 @@ export default function RootLayout({
               priceRange: '$$',
               servesCuisine: 'Fashion',
               acceptReservation: false,
+            }),
+          }}
+        />
+        {/* Structured Data — FAQ */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: [
+                {
+                  '@type': 'Question',
+                  name: 'Bagaimana cara memesan di NINOC STORE?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Pilih produk yang diinginkan, pilih ukuran dan warna, tambahkan ke keranjang, lalu proceed ke checkout. Pembayaran dapat dilakukan melalui Midtrans (transfer bank, e-wallet, atau kartu kredit).',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Metode pembayaran apa saja yang tersedia?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'NINOC STORE menggunakan Midtrans untuk pembayaran. Metode yang tersedia meliputi transfer bank (BCA, Mandiri, BNI, BRI), e-wallet (GoPay, OVO, DANA), dan kartu kredit/debit (Visa, Mastercard).',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Berapa lama proses pengiriman?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Pengiriman dilakukan dalam 1-3 hari kerja setelah pembayaran terkonfirmasi. Kami menggunakan jasa pengiriman terpercaya untuk memastikan barang arrives dengan aman.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Bagaimana kebijakan retur di NINOC STORE?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Retur dapat dilakukan dalam 7 hari setelah barang diterima dengan kondisi belum digunakan dan label masih melekat. Hubungi tim kami melalui chat untuk proses retur.',
+                  },
+                },
+              ],
             }),
           }}
         />
