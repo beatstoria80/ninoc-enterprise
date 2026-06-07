@@ -60,7 +60,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
               <div className="flex items-center justify-between p-3 bg-ink/[0.02] border-b border-ink/10">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0">
-                    {p.image_url ? <Image src={p.image_url} alt="" width={40} height={40} className="object-cover" /> : <Box size={16} className="text-ink/20" />}
+                    {p.image_url ? <Image src={p.image_url} alt={p.name || 'Product image'} width={40} height={40} className="object-cover" /> : <Box size={16} className="text-ink/20" />}
                   </div>
                   <div>
                     <p className="text-[11px] font-medium text-ink uppercase tracking-wider">{p.name}</p>

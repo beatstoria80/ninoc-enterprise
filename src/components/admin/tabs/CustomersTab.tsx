@@ -157,7 +157,7 @@ export function CustomersTab({
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                         {customer.avatar_url ? (
-                          <Image src={customer.avatar_url} alt="" fill className="object-cover" />
+                          <Image src={customer.avatar_url} alt={customer.full_name || customer.email || 'Customer avatar'} fill className="object-cover" />
                         ) : (
                           <User size={14} className="text-gray-400" />
                         )}

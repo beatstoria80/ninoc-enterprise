@@ -183,7 +183,7 @@ export function UploadTab({
                       ) : (
                         <div className="flex items-center gap-2">
                           <div className="relative w-6 h-6 rounded overflow-hidden bg-gray-100 shrink-0">
-                            <Image src={item.url} alt="" fill className="object-cover" />
+                            <Image src={item.url} alt="Upload preview" fill className="object-cover" />
                           </div>
                           <span className="text-emerald-600 truncate block max-w-[150px]" title={item.url}>{item.url}</span>
                           <button 

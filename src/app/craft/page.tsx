@@ -1,3 +1,20 @@
+import { Metadata } from 'next';
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+
+export const metadata: Metadata = {
+  title: 'Craft — Premium Archival Garment Studio',
+  description: 'The art of making, the love of detail. NINOC craft process — premium materials, handmade precision, zero waste packaging.',
+  openGraph: {
+    title: 'Craft | NINOC STORE',
+    description: 'The art of making, the love of detail. Discover NINOC craft process.',
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${BASE_URL}/craft`,
+  },
+};
+
 export default function Craft() {
   return (
     <main className="min-h-screen bg-cr noise pt-8 md:pt-24 px-4 md:px-12">

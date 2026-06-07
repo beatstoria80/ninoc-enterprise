@@ -37,6 +37,10 @@ export async function POST(req: Request) {
       clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
     });
 
+    const now = new Date();
+    const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+    const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const orderNumber = `NC-${datePart}-${randPart}`;
     const orderId = `NINOC-${Date.now()}`;
 
     const parameter = {
@@ -94,6 +98,7 @@ export async function POST(req: Request) {
       .from('orders')
       .insert({
         id: orderId,
+        order_number: orderNumber,
         user_id: customerDetails.user_id || null,
         customer_name: customerDetails.name || null,
         total_price: totalPrice,
@@ -134,7 +139,7 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ token: transaction.token, orderId });
+    return NextResponse.json({ token: transaction.token, orderId, orderNumber });
   } catch (err) {
     const error = err as Error;
     console.error('Midtrans API Error:', error);

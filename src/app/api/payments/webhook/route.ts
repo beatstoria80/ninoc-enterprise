@@ -11,10 +11,29 @@ export async function POST(req: Request) {
     const statusResponse = await coreApi.transaction.notification(notificationJson);
 
     const orderId = statusResponse.order_id;
+    const transactionId = statusResponse.transaction_id;
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
 
-    console.log(`[Payment Webhook] Order: ${orderId} | Status: ${transactionStatus} | Fraud: ${fraudStatus}`);
+    console.log(`[Payment Webhook] Order: ${orderId} | TX: ${transactionId} | Status: ${transactionStatus} | Fraud: ${fraudStatus}`);
+
+    // 2. Validate order exists in database
+    const { data: existingOrder, error: fetchError } = await supabase
+      .from('orders')
+      .select('id, status, midtrans_id')
+      .eq('id', orderId)
+      .single();
+
+    if (fetchError || !existingOrder) {
+      console.error(`[Payment Webhook] Order not found: ${orderId}`);
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // 3. Idempotency check — skip if already processed with same transaction_id
+    if (existingOrder.midtrans_id === transactionId) {
+      console.log(`[Payment Webhook] Duplicate webhook for order ${orderId}, transaction ${transactionId} — skipping`);
+      return NextResponse.json({ status: 'OK', note: 'Already processed' });
+    }
 
     let orderUpdateStatus = '';
 
@@ -36,10 +55,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ status: 'OK', note: 'No status change' });
     }
 
-    // 2. Update order status in Supabase
+    // 4. Update order status + store midtrans_id and payment_type
     const { error: updateError } = await supabase
       .from('orders')
-      .update({ status: orderUpdateStatus })
+      .update({
+        status: orderUpdateStatus,
+        midtrans_id: transactionId,
+      })
       .eq('id', orderId);
 
     if (updateError) {
@@ -47,9 +69,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
 
-    // 3. Send WhatsApp Invoice Notification (only on successful payment)
+    // 5. Send WhatsApp Invoice Notification (only on successful payment)
     if (orderUpdateStatus === 'paid') {
-      // Fetch order details for WhatsApp message
       const { data: order } = await supabase
         .from('orders')
         .select('id, shipping_address, total_price, wa_invoice_sent')
@@ -68,7 +89,7 @@ export async function POST(req: Request) {
             maximumFractionDigits: 0,
           })}`;
 
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.co.id';
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
           const paymentUrl = `${appUrl}/profile/orders/${order.id}`;
 
           console.log(`[Payment Webhook] Sending invoice WA to ${formattedPhone} for order ${order.id}`);
@@ -81,17 +102,16 @@ export async function POST(req: Request) {
             payment_url: paymentUrl,
           });
 
-          // Mark as sent regardless of result (don't retry automatically)
-          await supabase
-            .from('orders')
-            .update({
-              wa_invoice_sent: true,
-              wa_invoice_sent_at: new Date().toISOString(),
-            })
-            .eq('id', orderId);
-
           if (waResult.success) {
             console.log(`[Payment Webhook] Invoice WA sent. Message ID: ${waResult.message_id}`);
+            // Only mark as sent if WhatsApp actually succeeded
+            await supabase
+              .from('orders')
+              .update({
+                wa_invoice_sent: true,
+                wa_invoice_sent_at: new Date().toISOString(),
+              })
+              .eq('id', orderId);
           } else {
             console.warn(`[Payment Webhook] Invoice WA failed: ${waResult.error}`);
           }

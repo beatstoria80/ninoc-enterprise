@@ -68,10 +68,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: BASE_URL,
-    languages: {
-      'id-ID': BASE_URL,
-      'en-US': `${BASE_URL}/en`,
-    },
   },
   verification: {
     google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
@@ -135,6 +131,27 @@ export default function RootLayout({
               priceRange: '$$',
               servesCuisine: 'Fashion',
               acceptReservation: false,
+            }),
+          }}
+        />
+        {/* Structured Data — WebSite with SearchAction */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'NINOC STORE',
+              url: BASE_URL,
+              description: 'Premium Archival Garment Studio dari Indonesia',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: `${BASE_URL}/shop?q={search_term_string}`,
+                },
+                'query-input': 'required name=search_term_string',
+              },
             }),
           }}
         />

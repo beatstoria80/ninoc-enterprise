@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import ShopClient from './ShopClient';
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+
 export const metadata: Metadata = {
   title: 'Shop — Premium Archival Garment Studio',
   description: 'Jelajahi koleksi apparel premium NINOC — archival garment studio dari Indonesia. Desain industrial minimalist, bahan berkualitas tinggi.',
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: {
-    canonical: 'https://ninoc.store/shop',
+    canonical: `${BASE_URL}/shop`,
   },
 };
 
