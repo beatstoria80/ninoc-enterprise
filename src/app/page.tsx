@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Zap, Package, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -103,22 +103,6 @@ const cardImageVariants: Variants = {
 const cardContentVariants: Variants = {
   hidden: { y: 10, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { delay: 0.15, duration: DURATION.medium, ease: EASING.out } },
-};
-
-const trustIconVariants: Variants = {
-  hidden: { scale: 0.6, opacity: 0 },
-  visible: (i: number) => ({
-    scale: 1, opacity: 1,
-    transition: { delay: i * 0.12, duration: DURATION.medium, ease: [0.34, 1.56, 0.64, 1], type: 'spring' as const },
-  }),
-};
-
-const metadataVariants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  visible: (i: number) => ({
-    y: 0, opacity: 1,
-    transition: { delay: 0.25 + i * 0.1, duration: DURATION.medium, ease: EASING.out },
-  }),
 };
 
 const categoryPillVariants: Variants = {
@@ -391,53 +375,6 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.div>
         </motion.div>
       </PressButton>
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// TRUST ITEM
-// ═══════════════════════════════════════════════════════════════
-
-function TrustItem({ icon, title, desc, index }: { icon: React.ReactNode; title: string; desc: string; index: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-20px' });
-  const [isHovered, setIsHovered] = useState(false);
-  const brandColor = useBrandColor();
-  const darkColor = { color: '#141414' };
-
-  return (
-    <motion.div
-      ref={ref}
-      className="flex flex-col items-center text-center space-y-2 md:space-y-6 cursor-default"
-      variants={metadataVariants}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      custom={index}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <motion.div
-        className="w-10 h-10 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center text-rose"
-        variants={trustIconVariants}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        custom={index}
-        whileHover={{ scale: 1.1, backgroundColor: 'rgba(232, 82, 122, 0.1)' }}
-        transition={{ duration: DURATION.fast, ease: EASING.out }}
-      >
-        {icon}
-      </motion.div>
-      <div className="space-y-0 md:space-y-2">
-        <motion.h3
-          className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest leading-none"
-          animate={isHovered ? brandColor : darkColor}
-          transition={{ duration: DURATION.fast }}
-        >
-          {title}
-        </motion.h3>
-        <p className="text-[6px] md:text-[8px] font-medium uppercase tracking-tighter md:tracking-widest text-ink/60 md:text-ink/30 leading-relaxed">{desc}</p>
-      </div>
     </motion.div>
   );
 }
@@ -770,17 +707,6 @@ export default function Home() {
           <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block" />
         </div>
       </section>
-
-      {/* TRUST SYMBOLS */}
-      <FadeUpSection delay={0.2}>
-        <section className="md:mt-40 mt-6 md:mb-40 mb-6 border-y border-ink/5 py-4 md:py-24 bg-white/30 backdrop-blur-sm">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-20">
-            <TrustItem icon={<ShieldCheck className="w-5 h-5 md:w-7 md:h-7" />} title="Quality Assured" desc="Rigorous inspection." index={0} />
-            <TrustItem icon={<Zap className="w-5 h-5 md:w-7 md:h-7" />} title="Instant Logistics" desc="Rapid fulfillment." index={1} />
-            <TrustItem icon={<Package className="w-5 h-5 md:w-7 md:h-7" />} title="Secure Storage" desc="Protected storage." index={2} />
-          </div>
-        </section>
-      </FadeUpSection>
 
       {/* CONNECT SECTION */}
       <FadeUpSection delay={0.1}>
