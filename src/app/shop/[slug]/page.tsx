@@ -113,7 +113,7 @@ export default async function ShopProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <ShopProductClient initialProduct={product} />
+      <ShopProductClient initialProduct={product} slug={slug} />
     </>
   );
 }

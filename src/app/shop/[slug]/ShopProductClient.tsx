@@ -78,9 +78,10 @@ interface Product {
 
 interface ShopProductClientProps {
   initialProduct?: Product | null;
+  slug: string;
 }
 
-export default function ShopProductClient({ initialProduct }: ShopProductClientProps) {
+export default function ShopProductClient({ initialProduct, slug }: ShopProductClientProps) {
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
