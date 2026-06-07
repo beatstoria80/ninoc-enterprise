@@ -105,6 +105,14 @@ const cardContentVariants: Variants = {
   visible: { y: 0, opacity: 1, transition: { delay: 0.15, duration: DURATION.medium, ease: EASING.out } },
 };
 
+const metadataVariants: Variants = {
+  hidden: { y: 10, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0, opacity: 1,
+    transition: { delay: 0.25 + i * 0.1, duration: DURATION.medium, ease: EASING.out },
+  }),
+};
+
 const categoryPillVariants: Variants = {
   hidden: { opacity: 0, x: -20, scale: 0.95 },
   visible: (i: number) => ({
