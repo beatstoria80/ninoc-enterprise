@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: product } = await supabase
     .from('products')
-    .select('name, description, price, image_url, category, price_tag')
+    .select('*, variants(*), specifications(*)')
     .eq('slug', slug)
     .single();
 
@@ -58,12 +58,16 @@ export default async function ShopProductPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from('products')
-    .select('name, description, price, image_url, category, price_tag')
+    .select('*, variants(*), specifications(*)')
     .eq('slug', slug)
     .single();
 
   if (!product) {
-    return <ShopProductClient slug={slug} />;
+    return (
+      <div className="min-h-screen bg-cr flex items-center justify-center">
+        <p className="text-ink/30 text-xs uppercase tracking-widest animate-pulse">Loading...</p>
+      </div>
+    );
   }
 
   const description = product.description
@@ -109,7 +113,7 @@ export default async function ShopProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <ShopProductClient slug={slug} />
+      <ShopProductClient initialProduct={product} />
     </>
   );
 }

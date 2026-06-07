@@ -77,15 +77,15 @@ interface Product {
 }
 
 interface ShopProductClientProps {
-  slug: string;
-  productSchema?: string | null;
+  initialProduct?: Product | null;
 }
 
-export default function ShopProductClient({ slug, productSchema }: ShopProductClientProps) {
+export default function ShopProductClient({ initialProduct }: ShopProductClientProps) {
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState<Product | null>(initialProduct || null);
+  const [isLoading] = useState(!initialProduct);
+  const [selectedSize, setSelectedSize] = useState('M');
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
@@ -101,6 +101,11 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    // Skip fetch if initialProduct was already provided by server
+    if (initialProduct) {
+      return;
+    }
 
     const fetchProduct = async (isRefetch = false) => {
       try {
