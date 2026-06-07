@@ -13,15 +13,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: product } = await supabase
     .from('products')
-    .select('*, variants(*), specifications(*)')
+    .select('name, description, price, image_url, category, price_tag')
     .eq('slug', slug)
     .single();
 
   if (!product) {
-    return {
-      title: 'Product Not Found',
-      description: 'The product you are looking for does not exist.',
-    };
+    return { title: 'Product Not Found', description: 'The product you are looking for does not exist.' };
   }
 
   const description = product.description
@@ -37,20 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: product.image_url ? [{ url: product.image_url, alt: product.name }] : [],
       type: 'website',
     },
-    alternates: {
-      canonical: `${BASE_URL}/shop/${slug}`,
-    },
+    alternates: { canonical: `${BASE_URL}/shop/${slug}` },
   };
 }
 
 export async function generateStaticParams() {
-  const { data: products } = await supabase
-    .from('products')
-    .select('slug');
-
-  return (products || []).map((product) => ({
-    slug: product.slug,
-  }));
+  const { data: products } = await supabase.from('products').select('slug');
+  return (products || []).map((p) => ({ slug: p.slug }));
 }
 
 export default async function ShopProductPage({ params }: Props) {
@@ -58,7 +48,7 @@ export default async function ShopProductPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from('products')
-    .select('*, variants(*), specifications(*)')
+    .select('*')
     .eq('slug', slug)
     .single();
 
@@ -105,15 +95,9 @@ export default async function ShopProductPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <ShopProductClient initialProduct={product} slug={slug} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <ShopProductClient slug={slug} />
     </>
   );
 }
