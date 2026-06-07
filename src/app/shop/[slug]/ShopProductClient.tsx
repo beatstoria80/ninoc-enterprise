@@ -20,13 +20,14 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function SafeImage({ src, alt, className, sizes, priority = false, onErrorSrc }: {
-  src: string; alt: string; className?: string; sizes?: string; priority?: boolean; onErrorSrc?: string;
+function SafeImage({ src, alt, className, sizes, priority = false }: {
+  src: string; alt: string; className?: string; sizes?: string; priority?: boolean;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [primaryFailed, setPrimaryFailed] = useState(false);
+  const [fallbackFailed, setFallbackFailed] = useState(false);
   return (
     <>
-      {!failed && (
+      {!primaryFailed && (
         <Image
           src={src}
           alt={alt}
@@ -35,10 +36,21 @@ function SafeImage({ src, alt, className, sizes, priority = false, onErrorSrc }:
           sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
           priority={priority}
           unoptimized
-          onError={() => setFailed(true)}
+          onError={() => setPrimaryFailed(true)}
         />
       )}
-      {failed && (
+      {primaryFailed && !fallbackFailed && (
+        <Image
+          src={FALLBACK_IMAGE}
+          alt={alt}
+          fill
+          className={cn("object-contain", className)}
+          sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
+          unoptimized
+          onError={() => setFallbackFailed(true)}
+        />
+      )}
+      {primaryFailed && fallbackFailed && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-ink/20 bg-ink/[0.02]">
           <ImageOff size={20} />
         </div>
