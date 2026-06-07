@@ -85,7 +85,7 @@ export default function ShopProductClient({ initialProduct, slug }: ShopProductC
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
-  const [isLoading] = useState(!initialProduct);
+  const [isLoading, setIsLoading] = useState(!initialProduct);
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
