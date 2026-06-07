@@ -86,7 +86,6 @@ export default function ShopProductClient({ initialProduct }: ShopProductClientP
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
   const [isLoading] = useState(!initialProduct);
   const [selectedSize, setSelectedSize] = useState('M');
-  const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
