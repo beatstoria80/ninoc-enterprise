@@ -667,7 +667,7 @@ export default function CheckoutPage() {
                         ? "flex items-center justify-between py-3 px-3 min-h-[48px] active:bg-ink/[0.03]"
                         : "group flex flex-col items-center py-2.5 px-1 border-l-0 border-t-2",
                       shippingMethod === option.company
-                        ? isMobile ? "bg-rose/[0.03] border-rose" : "bg-rose/[0.02] border-rose"
+                        ? "bg-ink text-white border-ink"
                         : "border-transparent hover:bg-ink/[0.01]"
                     )}
                   >
@@ -675,16 +675,16 @@ export default function CheckoutPage() {
                     {isMobile ? (
                       <>
                         <div className="flex flex-col items-start gap-0.5">
-                          <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/70")}>{option.courier_name}</span>
-                          <span className="text-[8px] font-medium uppercase tracking-widest text-ink/30">{option.courier_service_name} • {option.duration}</span>
+                          <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                          <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {option.duration}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-rose" : "text-ink")}>
+                          <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-white" : "text-ink")}>
                             IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
                           {shippingMethod === option.company && (
-                            <div className="w-4 h-4 bg-rose rounded-none flex items-center justify-center">
-                              <CheckCircle size={10} className="text-white" />
+                            <div className="w-4 h-4 bg-white rounded-none flex items-center justify-center">
+                              <CheckCircle size={10} className="text-ink" />
                             </div>
                           )}
                         </div>
@@ -693,12 +693,12 @@ export default function CheckoutPage() {
                       /* Desktop: vertical layout with hover tooltip */
                       <>
                         <div className="flex items-center gap-1.5 mb-1">
-                          <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-rose" : "text-ink/60")}>{option.courier_name}</span>
-                          <div className="text-ink/30 hover:text-ink transition-colors relative z-20">
+                          <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
+                          <div className={cn("transition-colors relative z-20", shippingMethod === option.company ? "text-white/60 hover:text-white" : "text-ink/30 hover:text-ink")}>
                             <Info size={10} />
                           </div>
                         </div>
-                        <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-ink" : "text-ink")}>
+                        <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-white" : "text-ink")}>
                           IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </span>
 
@@ -770,7 +770,14 @@ export default function CheckoutPage() {
                     <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
-                    <span>Logistics</span>
+                    <span className="flex items-center gap-1.5">
+                      Logistics
+                      {shippingMethod && (
+                        <span className="text-[7px] text-rose font-bold px-1.5 py-0.5 bg-rose/5 border border-rose/10 rounded-sm">
+                          {shippingMethod.toUpperCase()}
+                        </span>
+                      )}
+                    </span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
                        {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
                     </span>
