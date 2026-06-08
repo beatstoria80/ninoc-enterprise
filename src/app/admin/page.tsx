@@ -2028,6 +2028,7 @@ export default function AdminDashboard() {
                     })()}
                   </div>
                 </div>
+              </div>
 
               <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-100 flex items-center justify-end gap-3">
                 <button
