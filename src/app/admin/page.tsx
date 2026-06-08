@@ -506,14 +506,8 @@ export default function AdminDashboard() {
         }
       }
 
-      const variantsToUpdate = allVariants.filter(v => v.id).map(v => {
-        const { sku, ...rest } = v;
-        return rest;
-      });
-      const variantsToInsert = allVariants.filter(v => !v.id).map(v => {
-        const { sku, ...rest } = v;
-        return { ...rest, created_at: new Date().toISOString() };
-      });
+      const variantsToUpdate = allVariants.filter(v => v.id);
+      const variantsToInsert = allVariants.filter(v => !v.id).map(v => ({ ...v, created_at: new Date().toISOString() }));
 
       if (variantsToUpdate.length > 0) {
         const { error: updateErr } = await supabase.from('variants').upsert(variantsToUpdate);
