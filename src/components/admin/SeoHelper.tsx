@@ -159,6 +159,8 @@ export function SeoHelper({ name, slug, description, category, price, onApplyTit
   const [isExpanded, setIsExpanded] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showKeywords, setShowKeywords] = useState(false);
+  const [originalTitle, setOriginalTitle] = useState<string | null>(null);
+  const [originalDesc, setOriginalDesc] = useState<string | null>(null);
 
   const seo = useMemo(() => calculateSeoScore(name, slug, description, category), [name, slug, description, category]);
 
@@ -189,15 +191,31 @@ export function SeoHelper({ name, slug, description, category, price, onApplyTit
   const scoreBarColor = seo.percentage >= 80 ? 'bg-emerald-500' : seo.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
   const handleCopyTemplate = (text: string, idx: number) => {
+    if (originalTitle === null) setOriginalTitle(name);
     onApplyTitle(text);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
+  const handleUndoTitle = () => {
+    if (originalTitle !== null) {
+      onApplyTitle(originalTitle);
+      setOriginalTitle(null);
+    }
+  };
+
   const generateMetaDescription = () => {
+    if (originalDesc === null) setOriginalDesc(description);
     const cat = category === 'pakaian' ? 'Kaos' : category === 'utilities' ? 'Aksesori' : 'Produk';
     const desc = `Beli ${coreName} dari NINOC — Premium Archival Garment Studio. ${cat} premium berkualitas tinggi dengan desain original. ${formattedPrice}. Pengiriman cepat ke seluruh Indonesia. ✓ Original ✓ Premium Quality ✓ COD Available`;
     onApplyDescription(desc);
+  };
+
+  const handleUndoDesc = () => {
+    if (originalDesc !== null) {
+      onApplyDescription(originalDesc);
+      setOriginalDesc(null);
+    }
   };
 
   return (
@@ -288,9 +306,19 @@ export function SeoHelper({ name, slug, description, category, price, onApplyTit
 
           {/* ===== TITLE GENERATOR ===== */}
           <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Tag size={12} className="text-indigo-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Title Generator</span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <Tag size={12} className="text-indigo-500" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Title Generator</span>
+              </div>
+              {originalTitle !== null && (
+                <button 
+                  onClick={handleUndoTitle}
+                  className="text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                >
+                  Undo (Kembalikan Manual)
+                </button>
+              )}
             </div>
             <p className="text-[10px] text-gray-400 mb-2 italic">Klik untuk langsung menerapkan template ke Product Name</p>
             <div className="space-y-1.5">
@@ -327,6 +355,17 @@ export function SeoHelper({ name, slug, description, category, price, onApplyTit
 
           {/* ===== AUTO META DESCRIPTION ===== */}
           <div>
+            <div className="flex justify-between items-end mb-2">
+              <p className="text-[10px] text-gray-400 italic">Generate berdasarkan produk</p>
+              {originalDesc !== null && (
+                <button 
+                  onClick={handleUndoDesc}
+                  className="text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                >
+                  Undo (Kembalikan Manual)
+                </button>
+              )}
+            </div>
             <button
               type="button"
               onClick={generateMetaDescription}
