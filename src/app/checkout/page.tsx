@@ -656,17 +656,19 @@ export default function CheckoutPage() {
                     <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
                   </div>
                 )}
-                {displayOptions.map((option) => (
+                {displayOptions.map((option) => {
+                  const methodId = `${option.courier_name} ${option.courier_service_name}`;
+                  return (
                   <button
-                    key={option.company}
+                    key={`${option.company}-${option.courier_service_name}`}
                     type="button"
-                    onClick={() => handleShippingChange(option.company, option.price)}
+                    onClick={() => handleShippingChange(methodId, option.price)}
                     className={cn(
                       "relative transition-all bg-white border-l-2 cursor-pointer",
                       isMobile
                         ? "flex items-center justify-between py-3 px-3 min-h-[48px] active:bg-ink/[0.03]"
                         : "group flex flex-col items-center py-2.5 px-1 border-l-0 border-t-2",
-                      shippingMethod === option.company
+                      shippingMethod === methodId
                         ? "bg-ink text-white border-ink"
                         : "border-transparent hover:bg-ink/[0.01]"
                     )}
@@ -675,14 +677,14 @@ export default function CheckoutPage() {
                     {isMobile ? (
                       <>
                         <div className="flex flex-col items-start gap-0.5">
-                          <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
-                          <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {option.duration}</span>
+                          <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                          <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {option.duration}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-white" : "text-ink")}>
+                          <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
                             IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
-                          {shippingMethod === option.company && (
+                          {shippingMethod === methodId && (
                             <div className="w-4 h-4 bg-white rounded-none flex items-center justify-center">
                               <CheckCircle size={10} className="text-ink" />
                             </div>
@@ -693,12 +695,12 @@ export default function CheckoutPage() {
                       /* Desktop: vertical layout with hover tooltip */
                       <>
                         <div className="flex items-center gap-1.5 mb-1">
-                          <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === option.company ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
-                          <div className={cn("transition-colors relative z-20", shippingMethod === option.company ? "text-white/60 hover:text-white" : "text-ink/30 hover:text-ink")}>
+                          <span className={cn("text-[9px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
+                          <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/30 hover:text-ink")}>
                             <Info size={10} />
                           </div>
                         </div>
-                        <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === option.company ? "text-white" : "text-ink")}>
+                        <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
                           IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </span>
 
@@ -717,7 +719,7 @@ export default function CheckoutPage() {
                       </>
                     )}
                   </button>
-                ))}
+                )})}
               </div>
             </section>
           </form>
