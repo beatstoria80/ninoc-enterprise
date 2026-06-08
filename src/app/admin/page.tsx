@@ -480,6 +480,7 @@ export default function AdminDashboard() {
             product_id: productId,
             size: v.size || null,
             color: color,
+            sku: v.sku || null,
             stock_quantity: parseInt(String(v.stock_quantity)) || 0
           };
           
