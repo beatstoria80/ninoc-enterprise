@@ -18,6 +18,7 @@ interface SeoHelperProps {
   description: string;
   category: string;
   price: string | number;
+  imageUrl?: string;
   onApplyTitle: (title: string) => void;
   onApplySlug: (slug: string) => void;
   onApplyDescription: (desc: string) => void;
@@ -155,10 +156,11 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
 }
 
 // ===== MAIN COMPONENT =====
-export function SeoHelper({ name, slug, description, category, price, onApplyTitle, onApplySlug, onApplyDescription }: SeoHelperProps) {
+export function SeoHelper({ name, slug, description, category, price, imageUrl, onApplyTitle, onApplySlug, onApplyDescription }: SeoHelperProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showKeywords, setShowKeywords] = useState(false);
+  const [previewTab, setPreviewTab] = useState<'google' | 'social'>('google');
   const [originalTitle, setOriginalTitle] = useState<string | null>(null);
   const [originalDesc, setOriginalDesc] = useState<string | null>(null);
 
@@ -241,26 +243,65 @@ export function SeoHelper({ name, slug, description, category, price, onApplyTit
       {isExpanded && (
         <div className="p-4 space-y-4">
 
-          {/* ===== GOOGLE SEARCH PREVIEW ===== */}
+          {/* ===== LIVE PREVIEW TABS ===== */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
               <Globe size={12} className="text-indigo-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Google Search Preview</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Live Preview</span>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-bold text-indigo-600">N</div>
-                <div>
-                  <p className="text-[10px] text-gray-500">{googleUrl}</p>
+            
+            <div className="flex bg-gray-100 p-1 rounded-lg mb-3">
+              <button 
+                onClick={() => setPreviewTab('google')}
+                className={cn("flex-1 text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'google' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+              >
+                Google
+              </button>
+              <button 
+                onClick={() => setPreviewTab('social')}
+                className={cn("flex-1 text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'social' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+              >
+                WhatsApp / Social
+              </button>
+            </div>
+
+            {previewTab === 'google' ? (
+              <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-bold text-indigo-600">N</div>
+                  <div>
+                    <p className="text-[10px] text-gray-500">{googleUrl}</p>
+                  </div>
+                </div>
+                <h3 className="text-base text-blue-700 hover:underline cursor-default leading-snug font-normal" style={{ fontFamily: 'Arial, sans-serif' }}>
+                  {googleTitle || 'Product Name — Premium Archival Garment'}
+                </h3>
+                <p className="text-[13px] text-gray-600 leading-relaxed mt-0.5" style={{ fontFamily: 'Arial, sans-serif' }}>
+                  {googleDesc}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-[#EFEFEF] rounded-lg border border-gray-200 p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200 flex justify-center">
+                <div className="w-full max-w-[280px] bg-white rounded-xl rounded-tl-sm overflow-hidden shadow-sm border border-gray-100">
+                  <div className="h-[140px] bg-gray-100 relative">
+                    {imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl} alt="OG Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                        <Tag size={24} className="mb-2 opacity-20" />
+                        <span className="text-[10px]">No image</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3 bg-[#F0F2F5]">
+                    <h3 className="font-semibold text-[13px] text-gray-900 line-clamp-1 leading-snug">{googleTitle || 'Product Name'}</h3>
+                    <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5 leading-snug">{googleDesc}</p>
+                    <p className="text-[9px] text-gray-400 mt-1.5 uppercase font-medium">NINOC.STORE</p>
+                  </div>
                 </div>
               </div>
-              <h3 className="text-base text-blue-700 hover:underline cursor-default leading-snug font-normal" style={{ fontFamily: 'Arial, sans-serif' }}>
-                {googleTitle || 'Product Name — Premium Archival Garment'}
-              </h3>
-              <p className="text-[13px] text-gray-600 leading-relaxed mt-0.5" style={{ fontFamily: 'Arial, sans-serif' }}>
-                {googleDesc}
-              </p>
-            </div>
+            )}
           </div>
 
           {/* ===== SEO SCORE ===== */}
