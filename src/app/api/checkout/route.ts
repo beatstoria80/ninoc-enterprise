@@ -21,9 +21,36 @@ export async function POST(req: Request) {
   try {
     const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
 
-    // Ensure gross_amount is integer (Midtrans requires integer rupiah)
-    const grossAmount = Math.round(Number(totalPrice));
-    if (!Number.isInteger(grossAmount) || grossAmount <= 0) {
+    // Calculate grossAmount exactly from item_details to satisfy Midtrans validation
+    let calculatedGrossAmount = 0;
+
+    const finalItemDetails = [
+      ...items.map((item: CheckoutItem) => {
+        const itemPrice = item.price + (item.size_surcharge || 0);
+        calculatedGrossAmount += itemPrice * item.quantity;
+        return {
+          id: item.id,
+          price: itemPrice,
+          quantity: item.quantity,
+          name: (item.name + ((item.size_surcharge || 0) > 0 ? ' (XXL+)' : '')).substring(0, 50)
+        };
+      }),
+      {
+        id: 'SHIPPING',
+        price: shippingDetails.cost,
+        quantity: 1,
+        name: `Courier: ${shippingDetails.method.toUpperCase()}`.substring(0, 50)
+      }
+    ];
+    calculatedGrossAmount += shippingDetails.cost;
+
+    if (fees.platformFee > 0) {
+      finalItemDetails.push({ id: 'FEE', price: fees.platformFee, quantity: 1, name: 'Platform Fee' });
+      calculatedGrossAmount += fees.platformFee;
+    }
+
+    const grossAmount = calculatedGrossAmount;
+    if (grossAmount <= 0) {
       return NextResponse.json({ error: 'Invalid total price' }, { status: 400 });
     }
 
@@ -71,21 +98,7 @@ export async function POST(req: Request) {
           postal_code: customerDetails.postal_code || ''
         }
       },
-      item_details: [
-        ...items.map((item: CheckoutItem) => ({
-          id: item.id,
-          price: item.price + (item.size_surcharge || 0),
-          quantity: item.quantity,
-          name: item.name + ((item.size_surcharge || 0) > 0 ? ' (XXL+ Surcharge incl.)' : '')
-        })),
-        {
-          id: 'SHIPPING',
-          price: shippingDetails.cost,
-          quantity: 1,
-          name: `Courier: ${shippingDetails.method.toUpperCase()}`
-        },
-        ...(fees.platformFee > 0 ? [{ id: 'FEE', price: fees.platformFee, quantity: 1, name: 'Platform Fee' }] : [])
-      ],
+      item_details: finalItemDetails,
       credit_card: {
         secure: true
       }
