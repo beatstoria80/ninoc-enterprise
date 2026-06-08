@@ -34,6 +34,7 @@ import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { SidebarItem } from '@/components/admin/SidebarItem';
+import { SeoHelper } from '@/components/admin/SeoHelper';
 import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
 
 import {
@@ -1388,6 +1389,18 @@ export default function AdminDashboard() {
                       className="w-full min-h-[60px] px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 resize-y"
                     />
                   </div>
+
+                  {/* ===== SEO HELPER ===== */}
+                  <SeoHelper
+                    name={productForm.name}
+                    slug={productForm.slug}
+                    description={productForm.description}
+                    category={productForm.category}
+                    price={productForm.price}
+                    onApplyTitle={(title) => handleProductNameChange(title)}
+                    onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
+                    onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
+                  />
 
                   <div>
                     <div className="flex justify-between items-end mb-2">
