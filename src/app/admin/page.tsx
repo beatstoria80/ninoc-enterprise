@@ -1532,7 +1532,7 @@ export default function AdminDashboard() {
                             specifications: [
                               { label: 'Bahan', value: '100% Cotton Combed 24s' },
                               { label: 'Fit', value: 'Regular Fit' },
-                              { label: 'Sablon', value: 'Plastisol' },
+                              { label: 'Sablon', value: 'DTF' },
                               { label: 'Perawatan', value: 'Cuci mesin air dingin, Setrika suhu sedang' }
                             ]
                           })}
