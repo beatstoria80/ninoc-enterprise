@@ -214,8 +214,8 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
         <div className="flex flex-col lg:grid lg:grid-cols-[85px_1.25fr_1fr_1fr_0.9fr] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
 
-          <div className="hidden lg:block relative h-[85px] w-full shrink-0">
-            <div className="absolute inset-0 flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1">
+          <div className="hidden lg:block w-full shrink-0">
+            <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px]">
               {images.map((img, i) => (
                 <button
                   key={i}
