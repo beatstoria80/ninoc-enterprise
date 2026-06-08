@@ -45,6 +45,53 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Helper to compress images before upload (Bypass Vercel 4.5MB limit)
+const compressImage = async (file: File): Promise<File> => {
+  if (!file.type.startsWith('image/')) return file;
+  if (file.type === 'image/svg+xml' || file.size < 500 * 1024) return file; // Skip SVG & < 500KB
+  
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new globalThis.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const MAX_SIZE = 1920;
+        
+        if (width > height && width > MAX_SIZE) {
+          height = Math.round((height * MAX_SIZE) / width);
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width = Math.round((width * MAX_SIZE) / height);
+          height = MAX_SIZE;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(file);
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          0.85
+        );
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -464,9 +511,11 @@ export default function AdminDashboard() {
       const file = event.target.files?.[0];
       if (!file) return;
 
+      const compressedFile = await compressImage(file);
+
       // Use API route (server-side with service role key)
       const formData = new FormData();
-      formData.append('files', file);
+      formData.append('files', compressedFile);
       formData.append('bucket', 'products');
 
       const res = await fetch('/api/admin/upload-images', {
@@ -510,7 +559,8 @@ export default function AdminDashboard() {
     try {
       const formData = new FormData();
       for (const file of bulkFiles) {
-        formData.append('files', file);
+        const compressedFile = await compressImage(file);
+        formData.append('files', compressedFile);
       }
       formData.append('bucket', 'products');
 
@@ -1441,9 +1491,10 @@ export default function AdminDashboard() {
                               if (!file) return;
                               setIsUploadingProductImage(true);
                               try {
+                                const compressedFile = await compressImage(file);
                                 // Use API route (server-side with service role key)
                                 const formData = new FormData();
-                                formData.append('files', file);
+                                formData.append('files', compressedFile);
                                 formData.append('bucket', 'products');
                                 const res = await fetch('/api/admin/upload-images', {
                                   method: 'POST',
