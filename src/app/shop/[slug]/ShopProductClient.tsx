@@ -99,12 +99,9 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
   const { isMobile, isIPhone } = useDevice();
 
-  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING');
-  console.log('slug:', slug);
-
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    const timeout = setTimeout(() => setIsLoading(false), 10000); // 10s fallback
 
     const fetchProduct = async (isRefetch = false) => {
       try {
@@ -146,14 +143,15 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
         }
       } catch (error: unknown) {
         console.error('Failed to fetch product:', error);
-        alert('Supabase error: ' + JSON.stringify(error));
       } finally {
+        clearTimeout(timeout);
         if (!isRefetch) setIsLoading(false);
       }
     };
     fetchProduct();
 
     return () => {
+      clearTimeout(timeout);
       if (channel) {
         try { supabase.removeChannel(channel); } catch { /* ignore */ }
       }
