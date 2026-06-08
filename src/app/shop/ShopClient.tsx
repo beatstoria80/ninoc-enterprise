@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, ImageOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -11,6 +11,32 @@ import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
+
+function SafeImage({ src, alt, className, sizes, priority = false }: {
+  src: string; alt: string; className?: string; sizes?: string; priority?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (failed || !src) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/[0.03] text-ink/20">
+        <ImageOff size={24} />
+        <span className="text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
+      </div>
+    );
+  }
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={cn("object-cover", className)}
+      sizes={sizes || "(max-width: 768px) 50vw, 25vw"}
+      priority={priority}
+      unoptimized
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -95,13 +121,10 @@ function MobileShopView({ products, initialCategory }: { products: Product[], in
                     <div
                       className="aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative"
                     >
-                      <Image
+                      <SafeImage
                         src={product.image_url}
                         alt={product.name}
-                        fill
-                        className="object-cover"
                         sizes="(max-width: 768px) 50vw, 25vw"
-                        unoptimized
                       />
                       {product.price_tag && (
                         <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
@@ -218,11 +241,10 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
                   <div className="bg-white border border-ink/5 shadow-sm hover:shadow-xl hover:border-ink/15 transition-all duration-300 h-full flex flex-col group/card relative overflow-hidden">
 
                     <div className="relative aspect-square w-full overflow-hidden bg-ink/[0.02]">
-                      <Image
+                      <SafeImage
                         src={product.image_url}
                         alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                        className="transition-transform duration-700 group-hover/card:scale-105"
                         sizes="(max-width: 1280px) 25vw, 20vw"
                       />
 
