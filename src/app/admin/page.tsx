@@ -176,6 +176,8 @@ export default function AdminDashboard() {
     slug: '',
     description: '',
     specifications: [] as { label: string; value: string }[],
+    measurements: [] as { size: string; chest: string; length: string }[],
+    model_info: '',
     price: '',
     category: 'pakaian',
     image_url: '',
@@ -322,6 +324,8 @@ export default function AdminDashboard() {
         slug: product.slug,
         description: product.description || '',
         specifications: product.specifications || [],
+        measurements: product.measurements || [],
+        model_info: product.model_info || '',
         price: product.price.toString(),
         category: product.category,
         image_url: product.image_url || '',
@@ -347,6 +351,8 @@ export default function AdminDashboard() {
         slug: '',
         description: '',
         specifications: [],
+        measurements: [],
+        model_info: '',
         price: '',
         category: 'pakaian',
         image_url: '',
@@ -414,6 +420,8 @@ export default function AdminDashboard() {
         slug: productForm.slug,
         description: productForm.description,
         specifications: productForm.specifications,
+        measurements: productForm.measurements.length > 0 ? productForm.measurements : null,
+        model_info: productForm.model_info || null,
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
         image_url: productForm.image_url || null,
@@ -1451,6 +1459,110 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* ===== MEASUREMENT / SIZE CHART ===== */}
+                  <div>
+                    <div className="flex justify-between items-end mb-2">
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Measurement / Size Chart (CM)</label>
+                      <button
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: '', chest: '', length: '' }] })}
+                        className="text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
+                      >
+                        + Add Size
+                      </button>
+                    </div>
+                    {(productForm.measurements?.length || 0) > 0 && (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                          <span>Size</span>
+                          <span>Chest (cm)</span>
+                          <span>Length (cm)</span>
+                          <span></span>
+                        </div>
+                        {productForm.measurements?.map((m, idx) => (
+                          <div key={idx} className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 items-center">
+                            <input
+                              type="text"
+                              placeholder="e.g. S"
+                              value={m.size}
+                              onChange={(e) => {
+                                const newM = [...productForm.measurements];
+                                newM[idx] = { ...newM[idx], size: e.target.value };
+                                setProductForm({ ...productForm, measurements: newM });
+                              }}
+                              className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium"
+                            />
+                            <input
+                              type="text"
+                              placeholder="e.g. 94"
+                              value={m.chest}
+                              onChange={(e) => {
+                                const newM = [...productForm.measurements];
+                                newM[idx] = { ...newM[idx], chest: e.target.value };
+                                setProductForm({ ...productForm, measurements: newM });
+                              }}
+                              className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                            />
+                            <input
+                              type="text"
+                              placeholder="e.g. 68"
+                              value={m.length}
+                              onChange={(e) => {
+                                const newM = [...productForm.measurements];
+                                newM[idx] = { ...newM[idx], length: e.target.value };
+                                setProductForm({ ...productForm, measurements: newM });
+                              }}
+                              className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newM = productForm.measurements.filter((_, i) => i !== idx);
+                                setProductForm({ ...productForm, measurements: newM });
+                              }}
+                              className="p-2 text-gray-400 hover:text-rose hover:bg-rose/5 rounded transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {[['S','94','68'],['M','100','70'],['L','106','72'],['XL','112','74'],['XXL','118','76']].map(([sz, ch, ln]) => {
+                        const exists = productForm.measurements?.some(m => m.size === sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            disabled={!!exists}
+                            onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln }] })}
+                            className={cn(
+                              "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                              exists
+                                ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
+                                : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
+                            )}
+                          >
+                            + {sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* ===== MODEL INFO ===== */}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Model Info (Optional)</label>
+                    <input
+                      type="text"
+                      value={productForm.model_info || ''}
+                      onChange={(e) => setProductForm({ ...productForm, model_info: e.target.value })}
+                      placeholder="e.g. Model wearing Size M (175cm / 65kg)"
+                      className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                    />
                   </div>
 
                   <div>

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '@/store/useCart';
+import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
@@ -60,6 +60,8 @@ interface Product {
   badge_text?: string | null;
   variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
   specifications?: { label: string; value: string }[] | null;
+  measurements?: { size: string; chest: string; length: string }[] | null;
+  model_info?: string | null;
 }
 
 interface ShopProductClientProps {
@@ -82,6 +84,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
+  const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
 
   const { isMobile, isIPhone } = useDevice();
 
@@ -185,11 +188,15 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
   const availableStock = selectedVariant ? selectedVariant.stock_quantity : 0;
   const displayQuantity = availableStock === 0 ? 0 : Math.min(quantity, availableStock);
 
+  const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s.toUpperCase() === size.toUpperCase());
+  const currentSurcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
+
   const handleAddToCart = () => {
     if (product) {
       if (availableStock === 0) return;
+      const surcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
       for (let i = 0; i < displayQuantity; i++) {
-        addItem(product, effectiveSize, effectiveColor);
+        addItem(product, effectiveSize, effectiveColor, surcharge);
       }
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
@@ -362,24 +369,36 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
                     <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px]">
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Jenis Atasan</span><span className="font-semibold">Kaos</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Bahan</span><span className="font-semibold">Katun</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Gaya</span><span className="font-semibold">Basic</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Motif</span><span className="font-semibold">Lainnya</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Panjang Lengan</span><span className="font-semibold">Lengan Pendek</span></div>
-                      <div className="flex flex-col border-b border-ink/5 pb-0.5"><span className="text-ink/40 uppercase tracking-widest text-[8px]">Garis Leher</span><span className="font-semibold">Kerah Bulat</span></div>
+                      {product.specifications && product.specifications.length > 0 ? (
+                        product.specifications.map((spec, idx) => (
+                          <div key={idx} className="flex flex-col border-b border-ink/5 pb-0.5">
+                            <span className="text-ink/40 uppercase tracking-widest text-[8px]">{spec.label}</span>
+                            <span className="font-semibold">{spec.value}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-span-2 text-ink/30 text-[9px] italic py-2">No specifications available</div>
+                      )}
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1">
-                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                      {['S: 94 / 68', 'M: 100 / 70', 'L: 106 / 72', 'XL: 112 / 74', 'XXL: 118 / 76'].map(s => (
-                        <div key={s} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
-                          <span className="text-rose">{s.split(':')[0]}</span>
-                          <span>{s.split(':')[1]}</span>
-                        </div>
-                      ))}
-                      <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* Model wearing Size M (175cm / 65kg)</p>
+                      {product.measurements && product.measurements.length > 0 ? (
+                        <>
+                          <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                          {product.measurements.map((m, idx) => (
+                            <div key={idx} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
+                              <span className="text-rose">{m.size}</span>
+                              <span>{m.chest} / {m.length}</span>
+                            </div>
+                          ))}
+                          {product.model_info && (
+                            <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {product.model_info}</p>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-ink/30 text-[9px] italic py-2">No measurement data available</div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -397,14 +416,29 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "w-9 h-9 lg:w-10 lg:h-10 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border",
+                        "rounded-none flex flex-col items-center justify-center font-medium transition-all border relative",
+                        isSurchargeSize(size) ? "w-11 h-11 lg:w-12 lg:h-12" : "w-9 h-9 lg:w-10 lg:h-10",
                         effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
-                      {size}
+                      <span className="text-[10px] lg:text-xs">{size}</span>
+                      {isSurchargeSize(size) && (
+                        <span className={cn(
+                          "text-[6px] lg:text-[7px] font-medium leading-none",
+                          effectiveSize === size ? "text-rose-200" : "text-rose"
+                        )}>+15K</span>
+                      )}
                     </button>
                   ))}
                 </div>
+                {currentSurcharge > 0 && (
+                  <div className="flex items-center gap-1.5 mt-1 px-1">
+                    <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
+                    <span className="text-[8px] font-medium text-rose uppercase tracking-wider">
+                      +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} surcharge untuk ukuran {effectiveSize}
+                    </span>
+                  </div>
+                )}
 
                 {availableColors.length > 0 && (
                   <div className="space-y-2">
@@ -536,9 +570,54 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                 <Trash2 size={12} strokeWidth={2} />
                               </button>
                             </div>
-                            <span className="text-[8px] font-medium text-ink/60 uppercase tracking-wider mb-auto mt-0.5">
-                                    {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
-                                  </span>
+                            <div className="flex items-center gap-1 mb-auto mt-0.5 relative">
+                              <span className="text-[8px] font-medium text-ink/60 uppercase tracking-wider">
+                                {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
+                              </span>
+                              {product?.measurements && product.measurements.length > 0 && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const key = `${item.id}-${item.size}-${item.color}`;
+                                    setMeasurementPopupItemKey(prev => prev === key ? null : key);
+                                  }}
+                                  className="text-rose/50 hover:text-rose transition-colors"
+                                  title="View size chart"
+                                >
+                                  <Ruler size={10} />
+                                </button>
+                              )}
+                              {(item.size_surcharge || 0) > 0 && (
+                                <span className="text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
+                              )}
+                              {/* Measurement Popover */}
+                              {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && product?.measurements && (
+                                <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[160px] animate-in fade-in zoom-in-95 duration-200">
+                                  <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
+                                    <span className="text-[8px] font-medium uppercase tracking-widest text-rose">Size Chart</span>
+                                    <button onClick={() => setMeasurementPopupItemKey(null)} className="text-white/40 hover:text-white">
+                                      <X size={10} />
+                                    </button>
+                                  </div>
+                                  <div className="flex justify-between text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1">
+                                    <span>Size</span><span>Chest / Length</span>
+                                  </div>
+                                  {product.measurements.map((m, idx) => (
+                                    <div key={idx} className={cn(
+                                      "flex justify-between text-[9px] font-medium py-0.5 border-b border-white/5",
+                                      m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
+                                    )}>
+                                      <span>{m.size}</span>
+                                      <span>{m.chest} / {m.length}</span>
+                                    </div>
+                                  ))}
+                                  {product.model_info && (
+                                    <p className="text-[7px] text-white/30 mt-1.5 italic">* {product.model_info}</p>
+                                  )}
+                                  <div className="absolute -top-1.5 left-4 w-3 h-3 bg-ink rotate-45 border-l border-t border-ink" />
+                                </div>
+                              )}
+                            </div>
 
                             <div className="flex items-center justify-between mt-2 pt-2 border-t border-ink/5">
                               <div className="flex items-center gap-1">
@@ -562,9 +641,16 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                   <Plus size={12} />
                                 </button>
                               </div>
-                              <span className="text-[9px] font-medium text-rose">
-                                IDR {(item.price * item.quantity).toLocaleString('id-ID')}
-                              </span>
+                              <div className="flex flex-col items-end">
+                                <span className="text-[9px] font-medium text-rose">
+                                  IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID')}
+                                </span>
+                                {(item.size_surcharge || 0) > 0 && (
+                                  <span className="text-[7px] text-ink/30 font-medium">
+                                    incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle } from 'lucide-react';
-import { useCart } from '@/store/useCart';
+import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -538,7 +538,12 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-medium uppercase truncate text-ink">{item.name}</p>
-                      <p className="text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                        {(item.size_surcharge || 0) > 0 && (
+                          <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -746,9 +751,19 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
-                        <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                          {(item.size_surcharge || 0) > 0 && (
+                            <span className="text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm font-display font-medium italic text-ink/80">IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      <div className="flex flex-col items-end">
+                        <p className="text-sm font-display font-medium italic text-ink/80">IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        {(item.size_surcharge || 0) > 0 && (
+                          <span className="text-[7px] text-ink/30 font-medium">incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge</span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

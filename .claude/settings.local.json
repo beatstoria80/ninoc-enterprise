@@ -10,7 +10,8 @@
       "PowerShell(npm run lint 2>&1)",
       "PowerShell(npx tsc --noEmit 2>&1)",
       "Skill(run)",
-      "Skill(run:*)"
+      "Skill(run:*)",
+      "WebFetch(domain:ninoc.store)"
     ]
   },
   "effortLevel": "high",

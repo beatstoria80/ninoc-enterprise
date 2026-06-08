@@ -14,6 +14,7 @@ interface CheckoutItem {
   price: number;
   quantity: number;
   size?: string;
+  size_surcharge?: number;
 }
 
 export async function POST(req: Request) {
@@ -73,9 +74,9 @@ export async function POST(req: Request) {
       item_details: [
         ...items.map((item: CheckoutItem) => ({
           id: item.id,
-          price: item.price,
+          price: item.price + (item.size_surcharge || 0),
           quantity: item.quantity,
-          name: item.name
+          name: item.name + ((item.size_surcharge || 0) > 0 ? ' (XXL+ Surcharge incl.)' : '')
         })),
         {
           id: 'SHIPPING',
@@ -125,7 +126,7 @@ export async function POST(req: Request) {
         product_name: item.name,
         size: item.size || null,
         quantity: item.quantity,
-        price_at_purchase: item.price
+        price_at_purchase: item.price + (item.size_surcharge || 0)
       }));
 
       const { error: itemsError } = await supabaseAdmin
