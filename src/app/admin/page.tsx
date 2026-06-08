@@ -2074,7 +2074,7 @@ export default function AdminDashboard() {
                           description={productForm.description}
                           category={productForm.category}
                           price={productForm.price}
-                          imageUrl={productForm.images?.[0] || ''}
+                          imageUrl={productForm.image_url || ''}
                           onApplyTitle={(title) => handleProductNameChange(title)}
                           onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
                           onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
