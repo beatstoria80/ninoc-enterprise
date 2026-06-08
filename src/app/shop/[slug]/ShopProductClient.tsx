@@ -170,10 +170,10 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
   }, [slug]);
 
   const availableSizes = (() => {
-    if (!product?.variants?.length) return ['S', 'M', 'L', 'XL', 'XXL'];
+    if (!product?.variants?.length) return ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
     const sizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
     // Fallback to default if somehow variants exist but have no sizes
-    return sizes.length > 0 ? sizes : ['S', 'M', 'L', 'XL', 'XXL'];
+    return sizes.length > 0 ? sizes : ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
   })();
 
   const effectiveSize = (() => {
@@ -433,17 +433,18 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "rounded-none flex flex-col items-center justify-center font-medium transition-all border relative",
-                        isSurchargeSize(size) ? "w-11 h-11 lg:w-12 lg:h-12" : "w-9 h-9 lg:w-10 lg:h-10",
+                        "w-10 h-10 lg:w-11 lg:h-11 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border relative",
                         effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
-                      <span className="text-[10px] lg:text-xs">{size}</span>
+                      {size}
                       {isSurchargeSize(size) && (
                         <span className={cn(
-                          "text-[6px] lg:text-[7px] font-medium leading-none",
-                          effectiveSize === size ? "text-rose-200" : "text-rose"
-                        )}>+15K</span>
+                          "absolute -top-1.5 -right-2 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
+                          effectiveSize === size ? "bg-white text-rose" : "bg-rose text-white"
+                        )}>
+                          +15K
+                        </span>
                       )}
                     </button>
                   ))}
