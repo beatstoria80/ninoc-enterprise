@@ -1291,14 +1291,41 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Custom Badge Text (Override Price Tag)</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Custom Badge Text</label>
+                      <span className="text-[9px] text-gray-400 italic">Overrides default &quot;Studio Edition&quot;</span>
+                    </div>
                     <input
                       type="text"
-                      value={productForm.badge_text}
+                      value={productForm.badge_text || ''}
                       onChange={(e) => setProductForm({ ...productForm, badge_text: e.target.value })}
-                      placeholder="e.g. NEW ARRIVAL, BEST SELLER"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                      placeholder="Type custom text or pick below..."
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50 mb-2"
                     />
+                    <div className="flex flex-wrap gap-1.5">
+                      {['BEST SELLER', 'NEW ARRIVAL', 'LIMITED EDITION', 'EXCLUSIVE', 'PREMIUM QUALITY', 'ORIGINAL DESIGN', 'STUDIO EDITION'].map(preset => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setProductForm({ ...productForm, badge_text: preset })}
+                          className={cn(
+                            "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                            productForm.badge_text === preset 
+                              ? "bg-rose text-white border-rose" 
+                              : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
+                          )}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, badge_text: '' })}
+                        className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all ml-auto"
+                      >
+                        Clear
+                      </button>
+                    </div>
                   </div>
 
                   <div>
