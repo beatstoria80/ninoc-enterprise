@@ -305,7 +305,9 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <div className="flex items-center gap-2 mb-0.5 lg:mb-1">
                   <div className="flex items-center gap-1.5 px-2 py-0.5 bg-ink text-white rounded-none w-fit shadow-md">
-                    <span className="text-[6px] lg:text-[7px] font-medium uppercase tracking-[0.3em]">Studio Edition</span>
+                    <span className="text-[6px] lg:text-[7px] font-medium uppercase tracking-[0.3em]">
+                      {product.badge_text || 'STUDIO EDITION'}
+                    </span>
                   </div>
                 </div>
                 <h1 className="text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">{product.name}</h1>

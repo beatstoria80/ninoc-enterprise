@@ -249,7 +249,7 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
                       />
 
                       <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm">
-                        Origin Studio
+                        {product.badge_text || 'STUDIO EDITION'}
                       </div>
 
                       {product.price_tag && (
