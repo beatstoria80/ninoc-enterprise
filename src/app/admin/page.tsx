@@ -188,7 +188,7 @@ export default function AdminDashboard() {
     is_featured: false,
     price_tag: '',
     badge_text: '',
-    variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+    variants: [] as { id: string; size: string; color: string; stock_quantity: number; sku?: string }[]
   });
 
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
@@ -340,8 +340,9 @@ export default function AdminDashboard() {
           id: v.id,
           size: v.size || '',
           color: v.color || '',
-          stock_quantity: v.stock_quantity
-        })) : [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+          stock_quantity: v.stock_quantity,
+          sku: v.sku || ''
+        })) : []
       });
     } else {
       setIsEditMode(false);
@@ -363,7 +364,7 @@ export default function AdminDashboard() {
         is_featured: false,
         price_tag: '',
         badge_text: '',
-        variants: [{ id: '', size: 'S', color: 'Black', stock_quantity: 0 }]
+        variants: []
       });
     }
     setIsProductModalOpen(true);
