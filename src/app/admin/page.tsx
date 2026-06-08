@@ -1209,10 +1209,10 @@ export default function AdminDashboard() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white rounded-xl"
+              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-xl"
               onClick={e => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10">
                 <h2 className="text-xl font-medium text-gray-900">
                   {isEditMode ? 'Edit Product' : 'Add New Product'}
                 </h2>
@@ -1223,30 +1223,29 @@ export default function AdminDashboard() {
 
               <div className="p-6 space-y-4">
                 {/* Basic Info */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Basic Information</h3>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">Basic Information</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Product Name</label>
-                      <input
-                        type="text"
-                        value={productForm.name}
-                        onChange={(e) => handleProductNameChange(e.target.value)}
-                        placeholder="Enter product name"
-                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Slug</label>
-                      <input
-                        type="text"
-                        value={productForm.slug}
-                        onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
-                        placeholder="product-slug"
-                        className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Product Name (SEO Optimized)</label>
+                    <textarea
+                      value={productForm.name}
+                      onChange={(e) => handleProductNameChange(e.target.value)}
+                      placeholder="Enter product name..."
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 resize-y leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Slug URL</label>
+                    <input
+                      type="text"
+                      value={productForm.slug}
+                      onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
+                      placeholder="product-slug"
+                      className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
