@@ -506,8 +506,14 @@ export default function AdminDashboard() {
         }
       }
 
-      const variantsToUpdate = allVariants.filter(v => v.id);
-      const variantsToInsert = allVariants.filter(v => !v.id);
+      const variantsToUpdate = allVariants.filter(v => v.id).map(v => {
+        const { sku, ...rest } = v;
+        return rest;
+      });
+      const variantsToInsert = allVariants.filter(v => !v.id).map(v => {
+        const { sku, ...rest } = v;
+        return { ...rest, created_at: new Date().toISOString() };
+      });
 
       if (variantsToUpdate.length > 0) {
         const { error: updateErr } = await supabase.from('variants').upsert(variantsToUpdate);
@@ -515,8 +521,7 @@ export default function AdminDashboard() {
       }
       
       if (variantsToInsert.length > 0) {
-        const inserts = variantsToInsert.map(v => ({ ...v, created_at: new Date().toISOString() }));
-        const { error: insertErr } = await supabase.from('variants').insert(inserts);
+        const { error: insertErr } = await supabase.from('variants').insert(variantsToInsert);
         if (insertErr) throw insertErr;
       }
 
