@@ -88,6 +88,28 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
   const { isMobile, isIPhone } = useDevice();
 
+  // Default fallbacks if admin does not provide data
+  const DEFAULT_SPECS = [
+    { label: 'Jenis Atasan', value: 'Kaos' },
+    { label: 'Bahan', value: 'Katun' },
+    { label: 'Gaya', value: 'Basic' },
+    { label: 'Motif', value: 'Lainnya' },
+    { label: 'Panjang Lengan', value: 'Lengan Pendek' },
+    { label: 'Garis Leher', value: 'Kerah Bulat' },
+  ];
+  const DEFAULT_MEASUREMENTS = [
+    { size: 'S', chest: '94', length: '68' },
+    { size: 'M', chest: '100', length: '70' },
+    { size: 'L', chest: '106', length: '72' },
+    { size: 'XL', chest: '112', length: '74' },
+    { size: 'XXL', chest: '118', length: '76' },
+  ];
+  const DEFAULT_MODEL_INFO = "Model wearing Size M (175cm / 65kg)";
+
+  const displaySpecs = product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS;
+  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : DEFAULT_MEASUREMENTS;
+  const displayModelInfo = product?.model_info || DEFAULT_MODEL_INFO;
+
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     const timeout = setTimeout(() => setIsLoading(false), 10000); // 10s fallback
@@ -374,35 +396,25 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
                     <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px]">
-                      {product.specifications && product.specifications.length > 0 ? (
-                        product.specifications.map((spec, idx) => (
-                          <div key={idx} className="flex flex-col border-b border-ink/5 pb-0.5">
-                            <span className="text-ink/40 uppercase tracking-widest text-[8px]">{spec.label}</span>
-                            <span className="font-semibold">{spec.value}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-span-2 text-ink/30 text-[9px] italic py-2">No specifications available</div>
-                      )}
+                      {displaySpecs.map((spec, idx) => (
+                        <div key={idx} className="flex flex-col border-b border-ink/5 pb-0.5">
+                          <span className="text-ink/40 uppercase tracking-widest text-[8px]">{spec.label}</span>
+                          <span className="font-semibold">{spec.value}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1">
-                      {product.measurements && product.measurements.length > 0 ? (
-                        <>
-                          <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
-                          {product.measurements.map((m, idx) => (
-                            <div key={idx} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
-                              <span className="text-rose">{m.size}</span>
-                              <span>{m.chest} / {m.length}</span>
-                            </div>
-                          ))}
-                          {product.model_info && (
-                            <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {product.model_info}</p>
-                          )}
-                        </>
-                      ) : (
-                        <div className="text-ink/30 text-[9px] italic py-2">No measurement data available</div>
+                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                      {displayMeasurements.map((m, idx) => (
+                        <div key={idx} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
+                          <span className="text-rose">{m.size}</span>
+                          <span>{m.chest} / {m.length}</span>
+                        </div>
+                      ))}
+                      {displayModelInfo && (
+                        <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
                       )}
                     </div>
                   )}
@@ -579,7 +591,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                               <span className="text-[8px] font-medium text-ink/60 uppercase tracking-wider">
                                 {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
                               </span>
-                              {product?.measurements && product.measurements.length > 0 && (
+                              {displayMeasurements.length > 0 && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -596,7 +608,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                 <span className="text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
                               )}
                               {/* Measurement Popover */}
-                              {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && product?.measurements && (
+                              {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
                                 <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[160px] animate-in fade-in zoom-in-95 duration-200">
                                   <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
                                     <span className="text-[8px] font-medium uppercase tracking-widest text-rose">Size Chart</span>
@@ -607,7 +619,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                   <div className="flex justify-between text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1">
                                     <span>Size</span><span>Chest / Length</span>
                                   </div>
-                                  {product.measurements.map((m, idx) => (
+                                  {displayMeasurements.map((m, idx) => (
                                     <div key={idx} className={cn(
                                       "flex justify-between text-[9px] font-medium py-0.5 border-b border-white/5",
                                       m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
@@ -616,8 +628,8 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                       <span>{m.chest} / {m.length}</span>
                                     </div>
                                   ))}
-                                  {product.model_info && (
-                                    <p className="text-[7px] text-white/30 mt-1.5 italic">* {product.model_info}</p>
+                                  {displayModelInfo && (
+                                    <p className="text-[7px] text-white/30 mt-1.5 italic">* {displayModelInfo}</p>
                                   )}
                                   <div className="absolute -top-1.5 left-4 w-3 h-3 bg-ink rotate-45 border-l border-t border-ink" />
                                 </div>
