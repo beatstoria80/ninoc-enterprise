@@ -1523,6 +1523,40 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
+                    {(!productForm.specifications || productForm.specifications.length === 0) && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setProductForm({
+                            ...productForm,
+                            specifications: [
+                              { label: 'Bahan', value: '100% Cotton Combed 24s' },
+                              { label: 'Fit', value: 'Regular Fit' },
+                              { label: 'Sablon', value: 'Plastisol' },
+                              { label: 'Perawatan', value: 'Cuci mesin air dingin, Setrika suhu sedang' }
+                            ]
+                          })}
+                          className="text-[10px] px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded transition-colors border border-gray-200"
+                        >
+                          Auto-Fill: Atasan / Kaos
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setProductForm({
+                            ...productForm,
+                            specifications: [
+                              { label: 'Bahan', value: 'Cotton Twill' },
+                              { label: 'Fit', value: 'Straight Fit' },
+                              { label: 'Kancing/Resleting', value: 'YKK Zipper' },
+                              { label: 'Perawatan', value: 'Cuci mesin air dingin, Jangan gunakan pemutih' }
+                            ]
+                          })}
+                          className="text-[10px] px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded transition-colors border border-gray-200"
+                        >
+                          Auto-Fill: Bawahan / Celana
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* ===== MEASUREMENT / SIZE CHART ===== */}
