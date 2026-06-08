@@ -29,12 +29,7 @@ export async function POST(req: Request) {
     // Try real Biteship API if key is configured
     if (apiKey && apiKey !== 'your_biteship_api_key_here') {
       try {
-        const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
-          method: 'POST',
-          headers: {
-            'Authorization': apiKey,
-            'Content-Type': 'application/json',
-          },
+
         const bodyPayload: any = {
           items: items || [],
           couriers: couriers || 'jne,jnt,sicepat,anteraja,ninja,pos',
