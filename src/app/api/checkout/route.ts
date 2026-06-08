@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
-    const orderId = randomUUID();
+    const orderId = `NINOC-${Date.now()}`;
 
     const parameter = {
       transaction_details: {
@@ -112,7 +112,6 @@ export async function POST(req: Request) {
       .from('orders')
       .insert({
         id: orderId,
-        order_number: orderNumber,
         user_id: customerDetails.user_id ? customerDetails.user_id : null,
         customer_name: customerDetails.name || null,
         total_price: totalPrice,
