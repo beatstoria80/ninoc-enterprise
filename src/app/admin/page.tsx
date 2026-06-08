@@ -1303,27 +1303,40 @@ export default function AdminDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6"
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
+            onClick={() => setIsProductModalOpen(false)}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-xl relative"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10">
-                <h2 className="text-xl font-medium text-gray-900">
-                  {isEditMode ? 'Edit Product' : 'Add New Product'}
-                </h2>
-                <button onClick={() => setIsProductModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <X size={20} />
-                </button>
-              </div>
+            <div className="flex items-stretch justify-center gap-4 w-full max-w-[1200px] h-full max-h-[90vh]" onClick={e => e.stopPropagation()}>
+              
+              {/* MAIN PRODUCT MODAL */}
+              <motion.div
+                layout
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-3xl flex flex-col bg-white rounded-xl shadow-2xl relative overflow-hidden flex-shrink-0"
+              >
+                <div className="bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10 flex-shrink-0">
+                  <h2 className="text-xl font-medium text-gray-900">
+                    {isEditMode ? 'Edit Product' : 'Add New Product'}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    {!isSeoPanelOpen && (
+                      <button 
+                        onClick={() => setIsSeoPanelOpen(true)}
+                        className="px-3 py-1.5 text-rose bg-rose/5 hover:bg-rose/10 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
+                      >
+                        <Search size={14} />
+                        SEO Helper
+                      </button>
+                    )}
+                    <button onClick={() => setIsProductModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                      <X size={20} />
+                    </button>
+                  </div>
+                </div>
 
-              <div className="flex flex-col lg:flex-row">
-                {/* Left Column: Form */}
-                <div className="flex-1 p-6 space-y-4 lg:border-r border-gray-100">
+                <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Basic Info */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">Basic Information</h3>
@@ -2015,46 +2028,6 @@ export default function AdminDashboard() {
                     })()}
                   </div>
                 </div>
-                </div>
-                {/* Right Column: SEO Helper */}
-                <motion.div
-                  initial={false}
-                  animate={{ width: isSeoPanelOpen ? 360 : 48 }}
-                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-                  className="bg-gray-50/50 flex-shrink-0 border-l border-gray-100 overflow-hidden relative"
-                >
-                  <div className="sticky top-[73px] w-[360px] h-full">
-                    <button
-                      onClick={() => setIsSeoPanelOpen(!isSeoPanelOpen)}
-                      className="absolute top-4 left-[14px] z-20 p-1 bg-white border border-gray-200 text-gray-500 shadow-sm rounded hover:bg-gray-50 transition-colors"
-                      title={isSeoPanelOpen ? "Collapse SEO Panel" : "Expand SEO Panel"}
-                    >
-                      {isSeoPanelOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />}
-                    </button>
-                    
-                    <motion.div
-                      initial={false}
-                      animate={{ 
-                        opacity: isSeoPanelOpen ? 1 : 0,
-                        x: isSeoPanelOpen ? 0 : 20
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className="p-6 pt-12"
-                    >
-                      <SeoHelper
-                        name={productForm.name}
-                        slug={productForm.slug}
-                        description={productForm.description}
-                        category={productForm.category}
-                        price={productForm.price}
-                        onApplyTitle={(title) => handleProductNameChange(title)}
-                        onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
-                        onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
-                      />
-                    </motion.div>
-                  </div>
-                </motion.div>
-              </div>
 
               <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-100 flex items-center justify-end gap-3">
                 <button
@@ -2072,6 +2045,44 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </motion.div>
+
+              {/* OUTSIDE SEO PANEL */}
+              <AnimatePresence>
+                {isSeoPanelOpen && (
+                  <motion.div
+                    layout
+                    initial={{ width: 0, opacity: 0, x: -20 }}
+                    animate={{ width: 360, opacity: 1, x: 0 }}
+                    exit={{ width: 0, opacity: 0, x: -20 }}
+                    transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                    className="flex flex-col bg-gray-50 border border-gray-200 rounded-xl shadow-2xl overflow-hidden flex-shrink-0 relative"
+                  >
+                     <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between flex-shrink-0">
+                       <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                         <Search size={16} className="text-rose" />
+                         SEO & Discovery
+                       </h3>
+                       <button onClick={() => setIsSeoPanelOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors">
+                         <PanelRightClose size={16} />
+                       </button>
+                     </div>
+                     <div className="flex-1 overflow-y-auto p-6 w-[360px]">
+                        <SeoHelper
+                          name={productForm.name}
+                          slug={productForm.slug}
+                          description={productForm.description}
+                          category={productForm.category}
+                          price={productForm.price}
+                          onApplyTitle={(title) => handleProductNameChange(title)}
+                          onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
+                          onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
+                        />
+                     </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
