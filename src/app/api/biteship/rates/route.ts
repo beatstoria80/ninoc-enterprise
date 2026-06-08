@@ -23,7 +23,7 @@ const MOCK_RATES = {
 
 export async function POST(req: Request) {
   try {
-    const { destination_area_id, destination_postal_code, origin_area_id, origin_postal_code, items, couriers } = await req.json();
+    const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, items, couriers } = await req.json();
     const apiKey = process.env.BITESHIP_API_KEY;
 
     // Try real Biteship API if key is configured
@@ -35,8 +35,25 @@ export async function POST(req: Request) {
           couriers: couriers || 'jne,jnt,sicepat,anteraja,ninja,pos',
         };
 
+        let final_dest_id = destination_area_id;
+
+        // If area name is provided, look it up in Biteship Maps API to get the area_id
+        if (destination_area_name) {
+          try {
+            const mapRes = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(destination_area_name)}`, {
+              headers: { 'Authorization': apiKey }
+            });
+            const mapData = await mapRes.json();
+            if (mapData.success && mapData.areas && mapData.areas.length > 0) {
+              final_dest_id = mapData.areas[0].id;
+            }
+          } catch (e) {
+            console.error('[Biteship Maps] Failed to lookup area:', e);
+          }
+        }
+
         if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
-        else if (destination_area_id) bodyPayload.destination_area_id = destination_area_id;
+        else if (final_dest_id) bodyPayload.destination_area_id = final_dest_id;
 
         // Default Origin: Subang (NINOC Studio)
         bodyPayload.origin_postal_code = origin_postal_code || 41254;

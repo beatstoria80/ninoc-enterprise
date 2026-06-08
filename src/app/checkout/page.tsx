@@ -120,8 +120,7 @@ export default function CheckoutPage() {
     kelurahan: '',
     kecamatan: '',
     city: '',
-    province: '',
-    postal_code: ''
+    province: ''
   });
 
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
@@ -256,8 +255,7 @@ export default function CheckoutPage() {
             kelurahan: profile.kelurahan || '',
             kecamatan: profile.kecamatan || '',
             city: profile.city || '',
-            province: profile.province || '',
-            postal_code: profile.postal_code || ''
+            province: profile.province || ''
           };
           setFormData(newData);
           
@@ -299,7 +297,7 @@ export default function CheckoutPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              destination_postal_code: Number(formData.postal_code),
+              destination_area_name: `${formData.city} ${formData.kecamatan}`,
               destination_area_id: formData.kecamatan,
               items: biteshipItems,
               couriers: 'jne,jnt,sicepat,anteraja,ninja',
@@ -319,7 +317,7 @@ export default function CheckoutPage() {
       };
       fetchRates();
     }
-  }, [formData.kecamatan, formData.postal_code, items]);
+  }, [formData.kecamatan, formData.city, items]);
 
   const displayOptions = dynamicShippingOptions;
 
@@ -345,7 +343,7 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
 
-    const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province} ${formData.postal_code}`;
+    const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}`;
     const fullName = `${formData.first_name} ${formData.last_name}`.trim();
 
     try {
@@ -631,10 +629,6 @@ export default function CheckoutPage() {
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t relative z-20", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3 border-l border-ink/5")}>
-                  <label htmlFor="postal_code" className={labelClass}>Kode Pos / ZIP</label>
-                  <input type="text" id="postal_code" required value={formData.postal_code} onChange={(e) => setFormData({...formData, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5)})} className={inputClass} placeholder="e.g. 12345" />
-                </div>
               </div>
             </section>
 
@@ -654,12 +648,12 @@ export default function CheckoutPage() {
                     <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
                   </div>
                 )}
-                {displayOptions.length === 0 && !loadingShipping && (
+                {displayOptions.length === 0 && !loadingShipping && formData.kecamatan && (
                   <div className="col-span-3 py-10 flex flex-col items-center justify-center gap-2">
                     <div className="w-6 h-6 border border-ink/20 rounded-full flex items-center justify-center mb-1">
                       <span className="text-ink/30 text-[10px]">!</span>
                     </div>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">INPUT POSTAL CODE TO UNLOCK LOGISTICS</span>
+                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">COMPLETE LOCATION TO UNLOCK LOGISTICS</span>
                   </div>
                 )}
                 {displayOptions.map((option) => {
