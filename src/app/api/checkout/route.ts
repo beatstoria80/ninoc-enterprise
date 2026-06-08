@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import midtransClient from 'midtrans-client';
 import { createClient } from '@supabase/supabase-js';
+import { randomUUID } from 'crypto';
 
 // Use Service Role Key to bypass RLS since this is a secure server route
 const supabaseAdmin = createClient(
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
     const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
-    const orderId = `NINOC-${Date.now()}`;
+    const orderId = randomUUID();
 
     const parameter = {
       transaction_details: {
@@ -112,7 +113,7 @@ export async function POST(req: Request) {
       .insert({
         id: orderId,
         order_number: orderNumber,
-        user_id: customerDetails.user_id || null,
+        user_id: customerDetails.user_id ? customerDetails.user_id : null,
         customer_name: customerDetails.name || null,
         total_price: totalPrice,
         status: 'pending',
