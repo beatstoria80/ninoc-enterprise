@@ -97,7 +97,9 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     { label: 'Panjang Lengan', value: 'Lengan Pendek' },
     { label: 'Garis Leher', value: 'Kerah Bulat' },
   ];
-  const DEFAULT_MEASUREMENTS_STANDARD = [
+  type MeasurementItem = { size: string; chest?: string; waist?: string; length: string; leg_opening?: string };
+
+  const DEFAULT_MEASUREMENTS_STANDARD: MeasurementItem[] = [
     { size: 'S', chest: '96', length: '68' },
     { size: 'M', chest: '100', length: '70' },
     { size: 'L', chest: '104', length: '72' },
@@ -107,7 +109,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     { size: '4XL', chest: '120', length: '80' },
   ];
 
-  const DEFAULT_MEASUREMENTS_OVERSIZE = [
+  const DEFAULT_MEASUREMENTS_OVERSIZE: MeasurementItem[] = [
     { size: 'S', chest: '106', length: '70' },
     { size: 'M', chest: '112', length: '72' },
     { size: 'L', chest: '118', length: '74' },
@@ -117,7 +119,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     { size: '4XL', chest: '142', length: '82' },
   ];
 
-  const DEFAULT_MEASUREMENTS_CELANA = [
+  const DEFAULT_MEASUREMENTS_CELANA: MeasurementItem[] = [
     { size: '28', waist: '76', length: '100', leg_opening: '38' },
     { size: '30', waist: '81', length: '100', leg_opening: '40' },
     { size: '32', waist: '86', length: '102', leg_opening: '42' },
