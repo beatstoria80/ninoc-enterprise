@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Box, Printer, Download, FileText } from 'lucide-react';
+import { Box, Printer, Download, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Product } from '../types';
@@ -232,6 +232,8 @@ export function InventoryTab({ products }: { products: Product[] }) {
       <div className="flex-1 min-h-0 overflow-y-auto minimal-scroll space-y-4 pr-1">
         {products.map(p => {
           const pTotalStock = p.variants?.reduce((sum, v) => sum + (v.stock_quantity || 0), 0) || 0;
+          const allSkusVerified = p.variants && p.variants.length > 0 && p.variants.every(v => v.sku && v.sku.trim() !== '');
+
           return (
             <div key={p.id} className="border border-ink/10 bg-white flex flex-col">
               {/* Parent Product Info */}
@@ -242,7 +244,19 @@ export function InventoryTab({ products }: { products: Product[] }) {
                   </div>
                   <div>
                     <p className="text-[11px] font-medium text-ink uppercase tracking-wider">{p.name}</p>
-                    <p className="text-[9px] text-ink/40 uppercase tracking-widest mt-0.5">{p.category} • {p.variants?.length || 0} SKUs</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-[9px] text-ink/40 uppercase tracking-widest">{p.category} • {p.variants?.length || 0} SKUs</p>
+                      {allSkusVerified && (
+                        <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-1 py-0.5 border border-emerald-100/50 rounded-sm">
+                          <CheckCircle2 size={8} /> Verified
+                        </div>
+                      )}
+                      {!allSkusVerified && p.variants && p.variants.length > 0 && (
+                        <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 px-1 py-0.5 border border-rose/10 rounded-sm">
+                          <AlertCircle size={8} /> Missing SKU
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
