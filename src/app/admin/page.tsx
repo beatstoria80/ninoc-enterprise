@@ -176,7 +176,7 @@ export default function AdminDashboard() {
     slug: '',
     description: '',
     specifications: [] as { label: string; value: string }[],
-    measurements: [] as { size: string; chest: string; length: string }[],
+    measurements: [] as { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[],
     model_info: '',
     price: '',
     category: 'pakaian',
