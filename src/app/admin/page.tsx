@@ -1324,18 +1324,18 @@ export default function AdminDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center p-0 lg:p-6"
             onClick={() => setIsProductModalOpen(false)}
           >
-            <div className="flex items-stretch justify-center gap-6 w-full max-w-[1400px] h-full max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="flex lg:items-stretch justify-center gap-0 lg:gap-6 w-full max-w-[1400px] h-[95dvh] lg:h-full max-h-none lg:max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
               
               {/* MAIN PRODUCT MODAL */}
               <motion.div
                 layout
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="w-full max-w-3xl flex flex-col bg-white rounded-xl shadow-2xl relative overflow-hidden flex-shrink-0"
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="w-full lg:max-w-3xl flex flex-col bg-white rounded-t-2xl lg:rounded-xl shadow-2xl relative overflow-hidden flex-shrink-0"
               >
                 <div className="bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10 flex-shrink-0">
                   <h2 className="text-xl font-medium text-gray-900">
@@ -1564,6 +1564,8 @@ export default function AdminDashboard() {
                               ] : [
                                 { label: 'Bahan', value: '100% Cotton Combed 24s' },
                                 { label: 'Fit', value: 'Regular Fit' },
+                                { label: 'Kerah', value: 'O-Neck' },
+                                { label: 'Motif', value: 'Design Sablon Premium' },
                                 { label: 'Sablon', value: 'DTF' },
                                 { label: 'Perawatan', value: 'Cuci mesin air dingin, Setrika suhu sedang' }
                               ]
@@ -2073,11 +2075,12 @@ export default function AdminDashboard() {
                 {isSeoPanelOpen && (
                   <motion.div
                     layout
-                    initial={{ width: 0, opacity: 0, x: -20 }}
+                    initial={{ width: 0, opacity: 0, x: 20 }}
                     animate={{ width: 480, opacity: 1, x: 0 }}
-                    exit={{ width: 0, opacity: 0, x: -20 }}
+                    exit={{ width: 0, opacity: 0, x: 20 }}
                     transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-                    className="flex flex-col bg-gray-50 border border-gray-200 rounded-xl shadow-2xl overflow-hidden flex-shrink-0 relative"
+                    style={{ maxWidth: '100%' }}
+                    className="absolute lg:static inset-0 z-[60] lg:z-auto flex flex-col bg-gray-50 lg:border border-gray-200 rounded-t-2xl lg:rounded-xl shadow-2xl lg:shadow-none overflow-hidden flex-shrink-0"
                   >
                      <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between flex-shrink-0">
                        <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
@@ -2088,7 +2091,7 @@ export default function AdminDashboard() {
                          <PanelRightClose size={16} />
                        </button>
                      </div>
-                     <div className="flex-1 overflow-y-auto p-6 w-[480px]">
+                     <div className="flex-1 overflow-y-auto p-4 lg:p-6 w-full lg:w-[480px]">
                         <SeoHelper
                           name={productForm.name}
                           slug={productForm.slug}
