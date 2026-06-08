@@ -1306,7 +1306,7 @@ export default function AdminDashboard() {
             className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
             onClick={() => setIsProductModalOpen(false)}
           >
-            <div className="flex items-stretch justify-center gap-4 w-full max-w-[1200px] h-full max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="flex items-stretch justify-center gap-6 w-full max-w-[1400px] h-full max-h-[90vh]" onClick={e => e.stopPropagation()}>
               
               {/* MAIN PRODUCT MODAL */}
               <motion.div
@@ -2053,7 +2053,7 @@ export default function AdminDashboard() {
                   <motion.div
                     layout
                     initial={{ width: 0, opacity: 0, x: -20 }}
-                    animate={{ width: 360, opacity: 1, x: 0 }}
+                    animate={{ width: 480, opacity: 1, x: 0 }}
                     exit={{ width: 0, opacity: 0, x: -20 }}
                     transition={{ type: "spring", bounce: 0, duration: 0.4 }}
                     className="flex flex-col bg-gray-50 border border-gray-200 rounded-xl shadow-2xl overflow-hidden flex-shrink-0 relative"
@@ -2067,7 +2067,7 @@ export default function AdminDashboard() {
                          <PanelRightClose size={16} />
                        </button>
                      </div>
-                     <div className="flex-1 overflow-y-auto p-6 w-[360px]">
+                     <div className="flex-1 overflow-y-auto p-6 w-[480px]">
                         <SeoHelper
                           name={productForm.name}
                           slug={productForm.slug}
