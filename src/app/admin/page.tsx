@@ -1523,7 +1523,6 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
-                    {(!productForm.specifications || productForm.specifications.length === 0) && (
                       <div className="mt-2 flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -1556,7 +1555,6 @@ export default function AdminDashboard() {
                           Auto-Fill: Bawahan / Celana
                         </button>
                       </div>
-                    )}
                   </div>
 
                   {/* ===== MEASUREMENT / SIZE CHART ===== */}
