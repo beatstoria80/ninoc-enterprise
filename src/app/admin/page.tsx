@@ -2245,15 +2245,22 @@ export default function AdminDashboard() {
                     <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
                   </div>
                   <div className="divide-y divide-gray-100">
-                    {selectedOrder.order_items?.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 text-xs">
-                        <div>
-                          <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
-                          <span className="text-gray-500 ml-2">SZ: {item.size || 'OS'} | QTY: {item.quantity}</span>
+                    {selectedOrder.order_items?.map((item, idx) => {
+                      const variantSku = products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.sku || 'N/A';
+                      return (
+                        <div key={idx} className="flex justify-between items-center p-3 text-xs hover:bg-gray-50/50 transition-colors">
+                          <div>
+                            <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {item.size || 'OS'}</span>
+                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
+                              <span className="text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
+                            </div>
+                          </div>
+                          <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
                         </div>
-                        <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -2332,6 +2339,10 @@ export default function AdminDashboard() {
                           if (!printWindow) return;
                           const order = selectedOrder;
                           const items = order?.order_items || [];
+                          const enrichedItems = items.map((item: any) => {
+                            const variantSku = products.find((p: any) => p.id === item.product_id)?.variants?.find((v: any) => v.id === item.variant_id)?.sku;
+                            return { ...item, sku: variantSku || 'N/A' };
+                          });
                           const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
                           const htmlContent = `<!DOCTYPE html>
 <html>
@@ -2410,10 +2421,13 @@ export default function AdminDashboard() {
     <div class="flex-row">
       <div class="col-left">
         <div class="content-title">CONTENTS / ISI PAKET</div>
-        ${items.map((i: { product_name?: string; size?: string; quantity: number }) => `
-          <div class="item-line">
-            <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
-            <span style="font-weight:800;">×${i.quantity}</span>
+        ${enrichedItems.map((i: any) => `
+          <div class="item-line" style="flex-direction: column; padding-bottom: 6px;">
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+              <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
+              <span style="font-weight:800;">×${i.quantity}</span>
+            </div>
+            <div style="font-family: monospace; font-size: 8px; color: #666; margin-top: 2px;">SKU: ${i.sku}</div>
           </div>
         `).join('')}
       </div>

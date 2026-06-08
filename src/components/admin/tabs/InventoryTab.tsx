@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Box } from 'lucide-react';
+import { Box, Printer } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Product } from '../types';
@@ -20,6 +20,52 @@ export function InventoryTab({ products }: { products: Product[] }) {
       });
     }
   });
+  const printBarcode = (sku: string, productName: string, size: string, color: string) => {
+    if (!sku || sku === 'N/A') {
+      alert('Please generate an SKU for this variant first.');
+      return;
+    }
+    const printWindow = window.open('', '_blank', 'width=400,height=300');
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Print SKU Barcode</title>
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+        <style>
+          @page { size: 50mm 30mm; margin: 0; }
+          body { margin: 0; padding: 5px; background: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 50mm; height: 30mm; box-sizing: border-box; }
+          .title { font-size: 8px; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+          .subtitle { font-size: 6px; font-weight: 500; text-transform: uppercase; margin-bottom: 2px; color: #444; }
+          svg { width: 100%; max-height: 18mm; }
+        </style>
+      </head>
+      <body>
+        <div class="title">${productName}</div>
+        <div class="subtitle">${size} | ${color}</div>
+        <svg id="barcode"></svg>
+        <script>
+          window.onload = () => {
+            JsBarcode("#barcode", "${sku}", {
+              format: "CODE128",
+              width: 1.5,
+              height: 40,
+              displayValue: true,
+              fontSize: 10,
+              margin: 0
+            });
+            setTimeout(() => {
+              window.print();
+              window.close();
+            }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   return (
     <motion.div
@@ -86,7 +132,18 @@ export function InventoryTab({ products }: { products: Product[] }) {
                       )}>
                         <div>
                           <p className="text-[10px] font-medium text-ink uppercase">Size: {v.size || 'OS'} / Color: {v.color || '-'}</p>
-                          <p className="text-[8px] font-mono text-ink/40 mt-1">ID: {v.id?.slice(0, 8) || 'N/A'}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-[8px] font-mono font-bold text-ink/60 bg-ink/5 px-1 py-0.5 rounded-sm border border-ink/10">{v.sku || v.id?.slice(0, 8) || 'N/A'}</p>
+                            {v.sku && (
+                              <button
+                                onClick={() => printBarcode(v.sku!, p.name, v.size || 'OS', v.color || '-')}
+                                className="text-[8px] flex items-center gap-1 text-ink/40 hover:text-rose transition-colors uppercase tracking-widest font-medium border border-transparent hover:border-rose/20 px-1 py-0.5 rounded-sm"
+                                title="Print Barcode Label"
+                              >
+                                <Printer size={10} /> Print
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <div className="text-right">
                           <p className={cn(
