@@ -299,6 +299,7 @@ export default function CheckoutPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              destination_postal_code: Number(formData.postal_code),
               destination_area_id: formData.kecamatan,
               items: biteshipItems,
               couriers: 'jne,jnt,sicepat,anteraja,ninja',
@@ -318,7 +319,7 @@ export default function CheckoutPage() {
       };
       fetchRates();
     }
-  }, [formData.kecamatan, items]);
+  }, [formData.kecamatan, formData.postal_code, items]);
 
   // Fallback options in case API fails or hasn't loaded
   const fallbackShippingOptions = [
@@ -636,6 +637,10 @@ export default function CheckoutPage() {
                     <option value="">SELECT KELURAHAN</option>
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
+                </div>
+                <div className={cn("bg-white border-t relative z-20", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3 border-l border-ink/5")}>
+                  <label htmlFor="postal_code" className={labelClass}>Kode Pos / ZIP</label>
+                  <input type="text" id="postal_code" required value={formData.postal_code} onChange={(e) => setFormData({...formData, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5)})} className={inputClass} placeholder="e.g. 12345" />
                 </div>
               </div>
             </section>

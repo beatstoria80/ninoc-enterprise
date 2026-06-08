@@ -23,7 +23,7 @@ const MOCK_RATES = {
 
 export async function POST(req: Request) {
   try {
-    const { destination_area_id, origin_area_id, items, couriers } = await req.json();
+    const { destination_area_id, destination_postal_code, origin_area_id, origin_postal_code, items, couriers } = await req.json();
     const apiKey = process.env.BITESHIP_API_KEY;
 
     // Try real Biteship API if key is configured
@@ -35,12 +35,24 @@ export async function POST(req: Request) {
             'Authorization': apiKey,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            destination_area_id,
-            origin_area_id: origin_area_id || undefined,
-            items: items || [],
-            couriers: couriers || 'jne,jnt,sicepat,anteraja,ninja,pos',
-          }),
+        const bodyPayload: any = {
+          items: items || [],
+          couriers: couriers || 'jne,jnt,sicepat,anteraja,ninja,pos',
+        };
+
+        if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
+        else if (destination_area_id) bodyPayload.destination_area_id = destination_area_id;
+
+        // Default Origin: Subang (NINOC Studio)
+        bodyPayload.origin_postal_code = origin_postal_code || 41254;
+
+        const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
+          method: 'POST',
+          headers: {
+            'Authorization': apiKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bodyPayload),
         });
 
         const data = await response.json();
