@@ -116,14 +116,16 @@ body {
 }
 
 /* TYPOGRAPHY HIERARCHY - STRICT NORMALIZATION */
-h1 {
-  @apply font-display italic tracking-tighter leading-[0.95];
-}
-h2 {
-  @apply font-display font-medium italic uppercase tracking-tight text-ink leading-tight;
-}
-p {
-  @apply font-sans font-medium text-muted-text leading-relaxed;
+@layer base {
+  h1 {
+    @apply font-display italic tracking-tighter leading-[0.95];
+  }
+  h2 {
+    @apply font-display font-medium italic uppercase tracking-tight text-ink leading-tight;
+  }
+  p {
+    @apply font-sans font-medium text-muted-text leading-relaxed;
+  }
 }
 .label-caps {
   @apply text-[9px] font-medium uppercase tracking-[0.4em] text-ink/70;
