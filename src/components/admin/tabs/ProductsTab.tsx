@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Package, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Package, Eye, Edit2, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Product } from '../types';
@@ -115,10 +115,21 @@ export function ProductsTab({
                 )}
               </div>
 
-              {/* Category + Variants */}
+              {/* Category + Variants + SKU Status */}
               <div className="flex items-center justify-between">
                 <span className="text-[9px] uppercase tracking-widest text-gray-400">{product.category}</span>
-                <span className="text-[9px] text-rose">{product.variants?.length || 0} variants</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] text-rose">{product.variants?.length || 0} variants</span>
+                  {product.variants && product.variants.length > 0 && product.variants.every(v => v.sku && v.sku.trim() !== '') ? (
+                    <div className="flex items-center gap-0.5 text-[7px] font-medium uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-1 py-0.5 border border-emerald-100/50 rounded-sm" title="All variants have SKU">
+                      <CheckCircle2 size={8} /> <span className="hidden 2xl:inline-block">Verified</span>
+                    </div>
+                  ) : product.variants && product.variants.length > 0 ? (
+                    <div className="flex items-center gap-0.5 text-[7px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 px-1 py-0.5 border border-rose/10 rounded-sm" title="Missing SKU">
+                      <AlertCircle size={8} />
+                    </div>
+                  ) : null}
+                </div>
               </div>
 
               {/* Price */}
