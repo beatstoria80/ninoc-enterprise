@@ -486,23 +486,23 @@ export default function CheckoutPage() {
         {isMobile && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
-              <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
+              <span className="text-[9px] font-display font-medium italic text-ink/50">00</span>
               <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
             </div>
             
-            <div className="bg-white border border-ink/10 rounded-none p-4 space-y-4 shadow-sm">
-              <div className="space-y-2 border-b border-ink/5 pb-3">
-                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+            <div className="bg-white border border-ink/20 rounded-none p-4 space-y-4 shadow-sm">
+              <div className="space-y-2 border-b border-ink/10 pb-3">
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
                   <span>Subtotal</span>
                   <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
                   <span>Logistics Fee</span>
-                  <span className={shippingCost > 0 ? "text-ink" : "text-rose italic"}>
+                  <span className={shippingCost > 0 ? "text-ink font-semibold" : "text-rose italic"}>
                     {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Selection Required'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
+                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
                   <span>Platform Fee</span>
                   <span>+ IDR {platformFee.toLocaleString('id-ID')}</span>
                 </div>
@@ -556,7 +556,7 @@ export default function CheckoutPage() {
             <section className="space-y-1.5 lg:space-y-3">
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-display font-medium italic text-ink/30">01</span>
+                  <span className="text-[9px] font-display font-medium italic text-ink/50">01</span>
                   <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
                 </div>
               </div>
@@ -585,7 +585,7 @@ export default function CheckoutPage() {
             <section className="space-y-1.5 lg:space-y-3">
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-display font-medium italic text-ink/30">02</span>
+                  <span className="text-[9px] font-display font-medium italic text-ink/50">02</span>
                   <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Destination Specification</h2>
                 </div>
               </div>
@@ -643,7 +643,7 @@ export default function CheckoutPage() {
             {/* 03: SHIPPING */}
             <section className="space-y-1.5 lg:space-y-3">
               <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
-                <span className="text-[9px] font-display font-medium italic text-ink/30">03</span>
+                <span className="text-[9px] font-display font-medium italic text-ink/50">03</span>
                 <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
               </div>
 
@@ -725,18 +725,18 @@ export default function CheckoutPage() {
         {!isMobile && (
           <div className="lg:col-span-4 lg:pl-12">
             <div className="sticky top-20 space-y-4">
-              <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
-                <span className="text-[9px] font-display font-medium italic text-ink/30">00</span>
+              <div className="flex items-center gap-2 border-b border-ink/20 pb-0.5">
+                <span className="text-[9px] font-display font-medium italic text-ink/60">00</span>
                 <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
               </div>
               
-              <div className="bg-white border border-ink/5 rounded-none p-6 space-y-6">
-                <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+              <div className="bg-white border border-ink/20 rounded-none p-6 space-y-6 shadow-sm">
+                <div className="flex justify-between items-center border-b border-ink/20 pb-2">
                   <div className="flex items-center gap-3">
-                     <ShoppingBag size={12} className="text-ink/20" />
+                     <ShoppingBag size={12} className="text-ink/40" />
                      <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Final Selection</h3>
                   </div>
-                  <span className="text-[8px] font-medium text-ink/40 italic">{items.length} Pieces</span>
+                  <span className="text-[8px] font-medium text-ink/50 italic">{items.length} Pieces</span>
                 </div>
 
                 <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
@@ -775,10 +775,7 @@ export default function CheckoutPage() {
                        {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
                     </span>
                   </div>
-                  <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
-                    <span>VAT (11%)</span>
-                    <span className="italic text-ink">+ IDR {tax.toLocaleString('id-ID')}</span>
-                  </div>
+
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>Platform Fee</span>
                     <span className="italic text-ink">+ IDR {platformFee.toLocaleString('id-ID')}</span>
