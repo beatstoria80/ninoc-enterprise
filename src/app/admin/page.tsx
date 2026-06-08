@@ -1732,7 +1732,7 @@ export default function AdminDashboard() {
 
                               <div className="pt-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  {Array.from(new Set(['S', 'M', 'L', 'XL', 'One Size', ...group.originalIndices.map(i => productForm.variants[i].size).filter(Boolean)])).map(size => {
+                                  {Array.from(new Set(['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'ONE SIZE', ...group.originalIndices.map(i => productForm.variants[i].size).filter(Boolean)])).map(size => {
                                     const idx = group.originalIndices.find(i => productForm.variants[i].size === size);
                                     const isSelected = idx !== undefined;
                                     return (
@@ -1784,7 +1784,17 @@ export default function AdminDashboard() {
                                 {group.originalIndices.length > 0 && (
                                   <div className="flex flex-col gap-2 border-t border-gray-200 pt-3 mt-3">
                                     <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities:</span>
-                                    {group.originalIndices.map(idx => {
+                                    {group.originalIndices.slice().sort((a, b) => {
+                                      const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'ONE SIZE'];
+                                      const sizeA = productForm.variants[a].size || '';
+                                      const sizeB = productForm.variants[b].size || '';
+                                      const idxA = SIZE_ORDER.indexOf(sizeA.toUpperCase());
+                                      const idxB = SIZE_ORDER.indexOf(sizeB.toUpperCase());
+                                      if (idxA === -1 && idxB === -1) return sizeA.localeCompare(sizeB);
+                                      if (idxA === -1) return 1;
+                                      if (idxB === -1) return -1;
+                                      return idxA - idxB;
+                                    }).map(idx => {
                                       const variant = productForm.variants[idx];
                                       return (
                                         <div key={idx} className="flex items-center justify-between bg-white px-3 py-2 border border-gray-200 rounded-lg">
