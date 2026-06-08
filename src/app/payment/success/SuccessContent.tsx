@@ -147,10 +147,6 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <span className="text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">VAT (11%)</span>
-                  <span className="text-[11px] font-mono font-medium text-ink">{tax > 0 ? `+ IDR ${tax.toLocaleString('id-ID')}` : '—'}</span>
-                </div>
-                <div className="flex justify-between items-center">
                   <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Platform Fee</span>
                   <span className="text-[11px] font-mono font-medium text-ink">+ IDR 2.500</span>
                 </div>
@@ -281,9 +277,8 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
   const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const displayId = order.order_number ? order.order_number.toUpperCase() : order.id.toUpperCase();
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-  const tax = Math.round(sub * 0.11);
   const platform = 2500;
-  const shipping = Math.max(0, order.total_price - sub - tax - platform);
+  const shipping = Math.max(0, order.total_price - sub - platform);
 
   return (
     <div className="border border-black p-8 bg-white">
@@ -344,10 +339,6 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
           <div className="flex justify-between border-b border-black/10 pb-1">
             <span className="text-[10px] uppercase tracking-widest font-medium">Logistics</span>
             <span className="font-mono">IDR {shipping > 0 ? shipping.toLocaleString('id-ID') : '0'}</span>
-          </div>
-          <div className="flex justify-between border-b border-black/10 pb-1">
-            <span className="text-[10px] uppercase tracking-widest font-medium">VAT (11%)</span>
-            <span className="font-mono">IDR {tax.toLocaleString('id-ID')}</span>
           </div>
           <div className="flex justify-between border-b border-black/10 pb-1">
             <span className="text-[10px] uppercase tracking-widest font-medium">Platform Fee</span>

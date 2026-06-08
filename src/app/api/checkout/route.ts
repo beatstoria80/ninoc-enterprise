@@ -84,7 +84,6 @@ export async function POST(req: Request) {
           quantity: 1,
           name: `Courier: ${shippingDetails.method.toUpperCase()}`
         },
-        ...(fees.tax > 0 ? [{ id: 'TAX', price: fees.tax, quantity: 1, name: 'VAT (11%)' }] : []),
         ...(fees.platformFee > 0 ? [{ id: 'FEE', price: fees.platformFee, quantity: 1, name: 'Platform Fee' }] : [])
       ],
       credit_card: {

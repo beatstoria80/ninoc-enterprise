@@ -335,9 +335,9 @@ export default function CheckoutPage() {
   };
 
   const subtotal = totalPrice();
-  const tax = Math.round(subtotal * 0.11); // 11% VAT
+  const tax = 0; // VAT removed as prices are nett
   const platformFee = 2500; // Standard platform/gateway fee
-  const finalTotal = subtotal + shippingCost + tax + platformFee;
+  const finalTotal = subtotal + shippingCost + platformFee;
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -501,10 +501,6 @@ export default function CheckoutPage() {
                   <span className={shippingCost > 0 ? "text-ink" : "text-rose italic"}>
                     {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Selection Required'}
                   </span>
-                </div>
-                <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
-                  <span>VAT (11%)</span>
-                  <span>+ IDR {tax.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/40">
                   <span>Platform Fee</span>
