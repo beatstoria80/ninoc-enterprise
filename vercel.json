@@ -1,13 +1,13 @@
 {
-  "functions": {
-    "src/app/api/**/*.ts": {
-      "maxDuration": 120
-    }
-  },
-  "crons": [
-    {
-      "path": "/api/whatsapp/queue",
-      "schedule": "* * * * *"
-    }
-  ]
+    "functions": {
+          "src/app/api/**/*.ts": {
+                  "maxDuration": 120
+          }
+    },
+    "crons": [
+          {
+                  "path": "/api/whatsapp/queue",
+                  "schedule": "0 0 * * *"
+          }
+    ]
 }
