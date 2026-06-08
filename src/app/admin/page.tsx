@@ -10,7 +10,7 @@ import {
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
-  Tag, ShieldAlert, CheckCircle, AlertCircle, Info
+  Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -121,6 +121,7 @@ export default function AdminDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isSeoPanelOpen, setIsSeoPanelOpen] = useState(true);
 
   // Toast Notification State
   type ToastMessage = { id: number; text: string; type: 'success' | 'error' | 'info' } | null;
@@ -2016,20 +2017,43 @@ export default function AdminDashboard() {
                 </div>
                 </div>
                 {/* Right Column: SEO Helper */}
-                <div className="w-full lg:w-[360px] bg-gray-50/50 flex-shrink-0">
-                  <div className="sticky top-[73px] p-6">
-                    <SeoHelper
-                      name={productForm.name}
-                      slug={productForm.slug}
-                      description={productForm.description}
-                      category={productForm.category}
-                      price={productForm.price}
-                      onApplyTitle={(title) => handleProductNameChange(title)}
-                      onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
-                      onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
-                    />
+                <motion.div
+                  initial={false}
+                  animate={{ width: isSeoPanelOpen ? 360 : 48 }}
+                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                  className="bg-gray-50/50 flex-shrink-0 border-l border-gray-100 overflow-hidden relative"
+                >
+                  <div className="sticky top-[73px] w-[360px] h-full">
+                    <button
+                      onClick={() => setIsSeoPanelOpen(!isSeoPanelOpen)}
+                      className="absolute top-4 left-[14px] z-20 p-1 bg-white border border-gray-200 text-gray-500 shadow-sm rounded hover:bg-gray-50 transition-colors"
+                      title={isSeoPanelOpen ? "Collapse SEO Panel" : "Expand SEO Panel"}
+                    >
+                      {isSeoPanelOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />}
+                    </button>
+                    
+                    <motion.div
+                      initial={false}
+                      animate={{ 
+                        opacity: isSeoPanelOpen ? 1 : 0,
+                        x: isSeoPanelOpen ? 0 : 20
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className="p-6 pt-12"
+                    >
+                      <SeoHelper
+                        name={productForm.name}
+                        slug={productForm.slug}
+                        description={productForm.description}
+                        category={productForm.category}
+                        price={productForm.price}
+                        onApplyTitle={(title) => handleProductNameChange(title)}
+                        onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
+                        onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
+                      />
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               </div>
 
               <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-100 flex items-center justify-end gap-3">
