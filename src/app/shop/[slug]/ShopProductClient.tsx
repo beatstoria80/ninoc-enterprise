@@ -97,18 +97,37 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     { label: 'Panjang Lengan', value: 'Lengan Pendek' },
     { label: 'Garis Leher', value: 'Kerah Bulat' },
   ];
-  const DEFAULT_MEASUREMENTS = [
-    { size: 'S', chest: '94', length: '68' },
+  const DEFAULT_MEASUREMENTS_STANDARD = [
+    { size: 'S', chest: '96', length: '68' },
     { size: 'M', chest: '100', length: '70' },
-    { size: 'L', chest: '106', length: '72' },
-    { size: 'XL', chest: '112', length: '74' },
-    { size: 'XXL', chest: '118', length: '76' },
+    { size: 'L', chest: '104', length: '72' },
+    { size: 'XL', chest: '108', length: '74' },
+    { size: 'XXL', chest: '112', length: '76' },
+    { size: '3XL', chest: '116', length: '78' },
+    { size: '4XL', chest: '120', length: '80' },
   ];
-  const DEFAULT_MODEL_INFO = "Model wearing Size M (175cm / 65kg)";
+
+  const DEFAULT_MEASUREMENTS_OVERSIZE = [
+    { size: 'S', chest: '106', length: '70' },
+    { size: 'M', chest: '112', length: '72' },
+    { size: 'L', chest: '118', length: '74' },
+    { size: 'XL', chest: '124', length: '76' },
+    { size: 'XXL', chest: '130', length: '78' },
+    { size: '3XL', chest: '136', length: '80' },
+    { size: '4XL', chest: '142', length: '82' },
+  ];
+
+  const fitTypeSpec = product?.specifications?.find(s => s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan'));
+  const isOversize = fitTypeSpec?.value.toLowerCase().includes('oversize');
+
+  const DEFAULT_MODEL_INFO_STANDARD = "Model wearing Size M (175cm / 65kg)";
+  const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
 
   const displaySpecs = product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS;
-  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : DEFAULT_MEASUREMENTS;
-  const displayModelInfo = product?.model_info || DEFAULT_MODEL_INFO;
+  const fallbackMeasurements = isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD;
+  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
+  const fallbackModelInfo = isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD;
+  const displayModelInfo = product?.model_info || fallbackModelInfo;
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;

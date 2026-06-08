@@ -1332,21 +1332,44 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price Tag (Optional Badge above Price)</label>
-                    <select
-                      value={productForm.price_tag}
-                      onChange={(e) => setProductForm({ ...productForm, price_tag: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
-                    >
-                      <option value="">None (No Tag)</option>
-                      <option value="Harga Special">Harga Special</option>
-                      <option value="Diskon">Diskon</option>
-                      <option value="Price Deal">Price Deal</option>
-                      <option value="Limited Edition">Limited Edition</option>
-                      <option value="Special Edition">Special Edition</option>
-                      <option value="REDEEM">REDEEM</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price Tag (Optional Badge above Price)</label>
+                      <select
+                        value={productForm.price_tag}
+                        onChange={(e) => setProductForm({ ...productForm, price_tag: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                      >
+                        <option value="">None (No Tag)</option>
+                        <option value="Harga Special">Harga Special</option>
+                        <option value="Diskon">Diskon</option>
+                        <option value="Price Deal">Price Deal</option>
+                        <option value="Limited Edition">Limited Edition</option>
+                        <option value="Special Edition">Special Edition</option>
+                        <option value="REDEEM">REDEEM</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tipe Potongan (Fit Type)</label>
+                      <select
+                        value={productForm.specifications?.find(s => s.label === 'Fit' || s.label === 'Jenis Pakaian')?.value.includes('Oversize') ? 'Oversize' : 'Standar'}
+                        onChange={(e) => {
+                          const newSpecs = [...(productForm.specifications || [])];
+                          const fitIndex = newSpecs.findIndex(s => s.label === 'Fit' || s.label === 'Jenis Pakaian');
+                          if (fitIndex >= 0) {
+                            newSpecs[fitIndex].value = e.target.value;
+                            newSpecs[fitIndex].label = 'Fit'; // Normalize the key
+                          } else {
+                            newSpecs.push({ label: 'Fit', value: e.target.value });
+                          }
+                          setProductForm({ ...productForm, specifications: newSpecs });
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+                      >
+                        <option value="Standar">Standar / Regular Fit</option>
+                        <option value="Oversize">Oversize</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div>
