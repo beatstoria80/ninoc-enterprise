@@ -10,7 +10,7 @@ import {
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
-  Tag, ShieldAlert
+  Tag, ShieldAlert, CheckCircle, AlertCircle, Info
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -121,6 +121,18 @@ export default function AdminDashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
+  // Toast Notification State
+  type ToastMessage = { id: number; text: string; type: 'success' | 'error' | 'info' } | null;
+  const [toast, setToast] = useState<ToastMessage>(null);
+  
+  const showToast = useCallback((text: string, type: 'success' | 'error' | 'info' = 'success') => {
+    const id = Date.now();
+    setToast({ id, text, type });
+    setTimeout(() => {
+      setToast(prev => prev?.id === id ? null : prev);
+    }, 3000);
+  }, []);
 
   // Financial system states
   const [financeTab, setFinanceTab] = useState<'overview' | 'ledger' | 'pl' | 'balance' | 'tax'>('overview');
@@ -507,10 +519,11 @@ export default function AdminDashboard() {
       }
 
       setIsProductModalOpen(false);
+      showToast('Success: Product saved successfully!', 'success');
       fetchData();
     } catch (error: any) {
       console.error('Failed to save product:', error);
-      alert('Failed to save product: ' + (error.message || JSON.stringify(error)));
+      showToast('Failed to save product: ' + (error.message || JSON.stringify(error)), 'error');
     }
   };
 
@@ -1256,6 +1269,31 @@ export default function AdminDashboard() {
         </section>
         </div>
 
+      {/* ===== TOAST NOTIFICATION ===== */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className={cn(
+              "fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl shadow-black/5 border",
+              toast.type === 'success' ? 'bg-[#f0fdf4] border-[#bbf7d0] text-[#166534]' :
+              toast.type === 'error' ? 'bg-[#fef2f2] border-[#fecaca] text-[#991b1b]' :
+              'bg-[#eff6ff] border-[#bfdbfe] text-[#1e40af]'
+            )}
+          >
+            {toast.type === 'success' ? <CheckCircle size={20} className="text-[#16a34a]" /> :
+             toast.type === 'error' ? <AlertCircle size={20} className="text-[#dc2626]" /> :
+             <Info size={20} className="text-[#2563eb]" />}
+            <span className="text-sm font-medium pr-4">{toast.text}</span>
+            <button onClick={() => setToast(null)} className="absolute right-2 top-2 opacity-50 hover:opacity-100">
+              <X size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ===== PRODUCT MODAL ===== */}
       <AnimatePresence>
         {isProductModalOpen && (
@@ -1763,7 +1801,7 @@ export default function AdminDashboard() {
                       type="button"
                       onClick={() => {
                         if (!productForm.name) {
-                          alert('Please enter a product name first.');
+                          showToast('Please enter a product name first before generating SKUs.', 'error');
                           return;
                         }
                         // e.g. Category: celana -> CLN, pakaian -> PKA
@@ -1784,6 +1822,7 @@ export default function AdminDashboard() {
                           return { ...v, sku: `${catCode}-${nameCode}-${colorCode}-${sizeCode}` };
                         });
                         setProductForm({ ...productForm, variants: newVariants });
+                        showToast(`Success: ${newVariants.length} SKUs generated automatically!`, 'success');
                       }}
                       className="px-3 py-1.5 bg-ink text-white text-[9px] uppercase tracking-wider font-medium rounded hover:bg-ink/80 transition-colors"
                     >
