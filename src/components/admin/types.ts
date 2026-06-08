@@ -9,7 +9,7 @@ export interface Product {
   slug: string;
   description: string | null;
   specifications?: { label: string; value: string }[] | null;
-  measurements?: { size: string; chest: string; length: string }[] | null;
+  measurements?: { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[] | null;
   model_info?: string | null;
   price: number;
   category: string;
@@ -31,6 +31,7 @@ export interface Variant {
   size: string | null;
   color: string | null;
   stock_quantity: number;
+  sku?: string | null;
 }
 
 export interface Order {

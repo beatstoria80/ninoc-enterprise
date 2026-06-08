@@ -1325,7 +1325,8 @@ export default function AdminDashboard() {
                         onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
                       >
-                        <option value="pakaian">Pakaian</option>
+                        <option value="pakaian">Kaos / Atasan</option>
+                        <option value="celana">Celana / Bawahan</option>
                         <option value="utilities">Utilities</option>
                         <option value="aksesoris">Aksesoris</option>
                       </select>
@@ -1498,17 +1499,28 @@ export default function AdminDashboard() {
                     </div>
                     {(productForm.measurements?.length || 0) > 0 && (
                       <div className="space-y-2">
-                        <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
-                          <span>Size</span>
-                          <span>Chest (cm)</span>
-                          <span>Length (cm)</span>
-                          <span></span>
-                        </div>
+                        {productForm.category === 'celana' ? (
+                          <div className="grid grid-cols-[1fr_1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                            <span>Size</span>
+                            <span>Waist (cm)</span>
+                            <span>Length (cm)</span>
+                            <span>Leg (cm)</span>
+                            <span></span>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                            <span>Size</span>
+                            <span>Chest (cm)</span>
+                            <span>Length (cm)</span>
+                            <span></span>
+                          </div>
+                        )}
+                        
                         {productForm.measurements?.map((m, idx) => (
-                          <div key={idx} className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 items-center">
+                          <div key={idx} className={cn("grid gap-2 items-center", productForm.category === 'celana' ? "grid-cols-[1fr_1fr_1fr_1fr_40px]" : "grid-cols-[1fr_1fr_1fr_40px]")}>
                             <input
                               type="text"
-                              placeholder="e.g. S"
+                              placeholder="e.g. S / 32"
                               value={m.size}
                               onChange={(e) => {
                                 const newM = [...productForm.measurements];
@@ -1517,28 +1529,68 @@ export default function AdminDashboard() {
                               }}
                               className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 font-medium"
                             />
-                            <input
-                              type="text"
-                              placeholder="e.g. 94"
-                              value={m.chest}
-                              onChange={(e) => {
-                                const newM = [...productForm.measurements];
-                                newM[idx] = { ...newM[idx], chest: e.target.value };
-                                setProductForm({ ...productForm, measurements: newM });
-                              }}
-                              className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                            />
-                            <input
-                              type="text"
-                              placeholder="e.g. 68"
-                              value={m.length}
-                              onChange={(e) => {
-                                const newM = [...productForm.measurements];
-                                newM[idx] = { ...newM[idx], length: e.target.value };
-                                setProductForm({ ...productForm, measurements: newM });
-                              }}
-                              className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
-                            />
+                            {productForm.category === 'celana' ? (
+                              <>
+                                <input
+                                  type="text"
+                                  placeholder="Waist"
+                                  value={m.waist || ''}
+                                  onChange={(e) => {
+                                    const newM = [...productForm.measurements];
+                                    newM[idx] = { ...newM[idx], waist: e.target.value };
+                                    setProductForm({ ...productForm, measurements: newM });
+                                  }}
+                                  className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Length"
+                                  value={m.length || ''}
+                                  onChange={(e) => {
+                                    const newM = [...productForm.measurements];
+                                    newM[idx] = { ...newM[idx], length: e.target.value };
+                                    setProductForm({ ...productForm, measurements: newM });
+                                  }}
+                                  className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Leg"
+                                  value={m.leg_opening || ''}
+                                  onChange={(e) => {
+                                    const newM = [...productForm.measurements];
+                                    newM[idx] = { ...newM[idx], leg_opening: e.target.value };
+                                    setProductForm({ ...productForm, measurements: newM });
+                                  }}
+                                  className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <input
+                                  type="text"
+                                  placeholder="Chest"
+                                  value={m.chest || ''}
+                                  onChange={(e) => {
+                                    const newM = [...productForm.measurements];
+                                    newM[idx] = { ...newM[idx], chest: e.target.value };
+                                    setProductForm({ ...productForm, measurements: newM });
+                                  }}
+                                  className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Length"
+                                  value={m.length || ''}
+                                  onChange={(e) => {
+                                    const newM = [...productForm.measurements];
+                                    newM[idx] = { ...newM[idx], length: e.target.value };
+                                    setProductForm({ ...productForm, measurements: newM });
+                                  }}
+                                  className="px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+                                />
+                              </>
+                            )}
                             <button
                               type="button"
                               onClick={() => {
@@ -1554,25 +1606,46 @@ export default function AdminDashboard() {
                       </div>
                     )}
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {[['S','94','68'],['M','100','70'],['L','106','72'],['XL','112','74'],['XXL','118','76']].map(([sz, ch, ln]) => {
-                        const exists = productForm.measurements?.some(m => m.size === sz);
-                        return (
-                          <button
-                            key={sz}
-                            type="button"
-                            disabled={!!exists}
-                            onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln }] })}
-                            className={cn(
-                              "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
-                              exists
-                                ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
-                                : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
-                            )}
-                          >
-                            + {sz}
-                          </button>
-                        );
-                      })}
+                      {productForm.category === 'celana' 
+                        ? [['28','76','100','38'],['30','81','100','40'],['32','86','102','42'],['34','91','102','44'],['36','96','104','46'],['38','101','104','48']].map(([sz, w, l, leg]) => {
+                            const exists = productForm.measurements?.some(m => m.size === sz);
+                            return (
+                              <button
+                                key={sz}
+                                type="button"
+                                disabled={!!exists}
+                                onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, waist: w, length: l, leg_opening: leg }] })}
+                                className={cn(
+                                  "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                                  exists
+                                    ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
+                                )}
+                              >
+                                + {sz}
+                              </button>
+                            );
+                          })
+                        : [['S','94','68'],['M','100','70'],['L','106','72'],['XL','112','74'],['XXL','118','76']].map(([sz, ch, ln]) => {
+                            const exists = productForm.measurements?.some(m => m.size === sz);
+                            return (
+                              <button
+                                key={sz}
+                                type="button"
+                                disabled={!!exists}
+                                onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln }] })}
+                                className={cn(
+                                  "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                                  exists
+                                    ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
+                                )}
+                              >
+                                + {sz}
+                              </button>
+                            );
+                          })
+                      }
                     </div>
                   </div>
 
@@ -1685,6 +1758,29 @@ export default function AdminDashboard() {
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Variants & Stock</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!productForm.name) {
+                          alert('Please enter a product name first.');
+                          return;
+                        }
+                        // e.g. Category: celana -> CLN, pakaian -> PKA
+                        const catCode = productForm.category === 'celana' ? 'CLN' : productForm.category === 'pakaian' ? 'KAS' : productForm.category.substring(0,3).toUpperCase();
+                        // Product Name: Be Down In Spirit -> BDIS
+                        const nameCode = productForm.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 4);
+                        
+                        const newVariants = productForm.variants.map(v => {
+                          const colorCode = (v.color || 'NON').substring(0, 3).toUpperCase();
+                          const sizeCode = (v.size || 'OS').toUpperCase();
+                          return { ...v, sku: `${catCode}-${nameCode}-${colorCode}-${sizeCode}` };
+                        });
+                        setProductForm({ ...productForm, variants: newVariants });
+                      }}
+                      className="px-3 py-1.5 bg-ink text-white text-[9px] uppercase tracking-wider font-medium rounded hover:bg-ink/80 transition-colors"
+                    >
+                      Auto-Generate SKUs
+                    </button>
                   </div>
 
                   <div className="space-y-4">
@@ -1783,9 +1879,9 @@ export default function AdminDashboard() {
                                 
                                 {group.originalIndices.length > 0 && (
                                   <div className="flex flex-col gap-2 border-t border-gray-200 pt-3 mt-3">
-                                    <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities:</span>
-                                    {group.originalIndices.slice().sort((a, b) => {
-                                      const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'ONE SIZE'];
+                                      <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities & SKU:</span>
+                                      {group.originalIndices.slice().sort((a, b) => {
+                                        const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'ONE SIZE', '28', '30', '32', '34', '36', '38', '40', '42'];
                                       const sizeA = productForm.variants[a].size || '';
                                       const sizeB = productForm.variants[b].size || '';
                                       const idxA = SIZE_ORDER.indexOf(sizeA.toUpperCase());
@@ -1798,23 +1894,39 @@ export default function AdminDashboard() {
                                       const variant = productForm.variants[idx];
                                       return (
                                         <div key={idx} className="flex items-center justify-between bg-white px-3 py-2 border border-gray-200 rounded-lg">
-                                          <span className="text-xs font-medium text-gray-700">Size {variant.size}</span>
-                                          <div className="flex items-center gap-2">
-                                             <span className="text-[10px] text-gray-400 font-medium">QTY</span>
-                                             <input
-                                               type="number"
-                                               min="0"
-                                               value={variant.stock_quantity}
-                                               onChange={(e) => {
-                                                 const newVariants = [...productForm.variants];
-                                                 newVariants[idx] = { ...newVariants[idx], stock_quantity: parseInt(e.target.value) || 0 };
-                                                 setProductForm({ ...productForm, variants: newVariants });
-                                               }}
-                                               className="w-20 px-2 py-1.5 text-xs border border-gray-300 rounded text-center focus:border-rose/50 outline-none font-medium"
-                                             />
-                                          </div>
-                                        </div>
-                                      );
+                                            <span className="text-xs font-medium text-gray-700 w-16">Size {variant.size}</span>
+                                            <div className="flex-1 flex items-center gap-3 justify-end">
+                                               <div className="flex items-center gap-1.5 flex-1 max-w-[200px]">
+                                                 <span className="text-[9px] text-gray-400 font-medium uppercase tracking-widest">SKU</span>
+                                                 <input
+                                                   type="text"
+                                                   placeholder="Auto/Manual"
+                                                   value={variant.sku || ''}
+                                                   onChange={(e) => {
+                                                     const newVariants = [...productForm.variants];
+                                                     newVariants[idx] = { ...newVariants[idx], sku: e.target.value.toUpperCase() };
+                                                     setProductForm({ ...productForm, variants: newVariants });
+                                                   }}
+                                                   className="w-full px-2 py-1.5 text-[10px] border border-gray-200 rounded font-mono focus:border-rose/50 outline-none placeholder:text-gray-300"
+                                                 />
+                                               </div>
+                                               <div className="w-px h-6 bg-gray-200" />
+                                               <div className="flex items-center gap-1.5">
+                                                 <span className="text-[10px] text-gray-400 font-medium">QTY</span>
+                                                 <input
+                                                   type="number"
+                                                   min="0"
+                                                   value={variant.stock_quantity}
+                                                   onChange={(e) => {
+                                                     const newVariants = [...productForm.variants];
+                                                     newVariants[idx] = { ...newVariants[idx], stock_quantity: parseInt(e.target.value) || 0 };
+                                                     setProductForm({ ...productForm, variants: newVariants });
+                                                   }}
+                                                   className="w-16 px-2 py-1.5 text-xs border border-gray-300 rounded text-center focus:border-rose/50 outline-none font-medium"
+                                                 />
+                                               </div>
+                                            </div>
+                                          </div>  );
                                     })}
                                   </div>
                                 )}

@@ -60,7 +60,7 @@ interface Product {
   badge_text?: string | null;
   variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
   specifications?: { label: string; value: string }[] | null;
-  measurements?: { size: string; chest: string; length: string }[] | null;
+  measurements?: { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[] | null;
   model_info?: string | null;
 }
 
@@ -117,16 +117,27 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     { size: '4XL', chest: '142', length: '82' },
   ];
 
+  const DEFAULT_MEASUREMENTS_CELANA = [
+    { size: '28', waist: '76', length: '100', leg_opening: '38' },
+    { size: '30', waist: '81', length: '100', leg_opening: '40' },
+    { size: '32', waist: '86', length: '102', leg_opening: '42' },
+    { size: '34', waist: '91', length: '102', leg_opening: '44' },
+    { size: '36', waist: '96', length: '104', leg_opening: '46' },
+    { size: '38', waist: '101', length: '104', leg_opening: '48' },
+  ];
+
   const fitTypeSpec = product?.specifications?.find(s => s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan'));
   const isOversize = fitTypeSpec?.value.toLowerCase().includes('oversize');
+  const isPants = product?.category?.toLowerCase() === 'celana';
 
   const DEFAULT_MODEL_INFO_STANDARD = "Model wearing Size M (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
+  const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
   const displaySpecs = product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS;
-  const fallbackMeasurements = isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD;
+  const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
   const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
-  const fallbackModelInfo = isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD;
+  const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
   const displayModelInfo = product?.model_info || fallbackModelInfo;
 
   useEffect(() => {
@@ -436,11 +447,11 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1">
-                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">CHEST / LENGTH</span></div>
+                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">{isPants ? 'WAIST / LENGTH' : 'CHEST / LENGTH'}</span></div>
                       {displayMeasurements.map((m, idx) => (
-                        <div key={idx} className="flex justify-between text-[10px] font-medium border-b border-ink/5 pb-0.5">
-                          <span className="text-rose">{m.size}</span>
-                          <span>{m.chest} / {m.length}</span>
+                        <div key={idx} className="flex justify-between items-center py-2 border-b border-ink/5 last:border-0 group-hover:border-ink/10 transition-colors">
+                          <span className="text-[11px] font-medium text-ink/80">{m.size}</span>
+                          <span className="text-[10px] text-ink/60 font-mono tracking-widest">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
                         </div>
                       ))}
                       {displayModelInfo && (
@@ -640,7 +651,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                               )}
                               {/* Measurement Popover */}
                               {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
-                                <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[160px] animate-in fade-in zoom-in-95 duration-200">
+                                <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[200px] animate-in fade-in zoom-in-95 duration-200">
                                   <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
                                     <span className="text-[8px] font-medium uppercase tracking-widest text-rose">Size Chart</span>
                                     <button onClick={() => setMeasurementPopupItemKey(null)} className="text-white/40 hover:text-white">
@@ -648,7 +659,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                     </button>
                                   </div>
                                   <div className="flex justify-between text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1">
-                                    <span>Size</span><span>Chest / Length</span>
+                                    <span>Size</span><span>{isPants ? 'Waist/Length/Leg' : 'Chest/Length'}</span>
                                   </div>
                                   {displayMeasurements.map((m, idx) => (
                                     <div key={idx} className={cn(
@@ -656,7 +667,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                                       m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
                                     )}>
                                       <span>{m.size}</span>
-                                      <span>{m.chest} / {m.length}</span>
+                                      <span>{isPants ? `${m.waist || '-'} / ${m.length} / ${m.leg_opening || '-'}` : `${m.chest || '-'} / ${m.length}`}</span>
                                     </div>
                                   ))}
                                   {displayModelInfo && (
