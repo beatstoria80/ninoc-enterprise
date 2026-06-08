@@ -57,6 +57,7 @@ interface Product {
   perspective3?: string;
   perspective4?: string;
   price_tag?: string | null;
+  badge_text?: string | null;
   variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
   specifications?: { label: string; value: string }[] | null;
 }

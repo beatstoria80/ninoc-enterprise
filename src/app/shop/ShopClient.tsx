@@ -51,6 +51,7 @@ interface Product {
   image_url: string;
   category: string;
   price_tag?: string | null;
+  badge_text?: string | null;
 }
 
 function MobileShopView({ products, initialCategory }: { products: Product[], initialCategory: string }) {
