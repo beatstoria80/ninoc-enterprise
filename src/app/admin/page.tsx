@@ -1768,8 +1768,15 @@ export default function AdminDashboard() {
                         }
                         // e.g. Category: celana -> CLN, pakaian -> PKA
                         const catCode = productForm.category === 'celana' ? 'CLN' : productForm.category === 'pakaian' ? 'KAS' : productForm.category.substring(0,3).toUpperCase();
-                        // Product Name: Be Down In Spirit -> BDIS
-                        const nameCode = productForm.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 4);
+                        // Product Name: "Cargo Pants" -> "CARG", plus 3 random digits -> "CARG842"
+                        const baseName = productForm.name.replace(/[^A-Za-z0-9]/g, '').substring(0, 4).toUpperCase();
+                        // Generate a pseudo-random 3-digit sequence based on the product name so it's consistent for variants of the same product
+                        let hash = 0;
+                        for (let i = 0; i < productForm.name.length; i++) {
+                          hash = productForm.name.charCodeAt(i) + ((hash << 5) - hash);
+                        }
+                        const uniqueNum = Math.abs(hash % 900) + 100; // 100 to 999
+                        const nameCode = `${baseName}${uniqueNum}`;
                         
                         const newVariants = productForm.variants.map(v => {
                           const colorCode = (v.color || 'NON').substring(0, 3).toUpperCase();
