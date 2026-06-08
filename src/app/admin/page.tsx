@@ -948,7 +948,7 @@ export default function AdminDashboard() {
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
     { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
-    { id: 'inventory', icon: Box, label: 'Info Stock', activeKeys: ['inventory'] },
+    { id: 'inventory', icon: Box, label: 'Inventory', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
     { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'] },
@@ -1078,7 +1078,7 @@ export default function AdminDashboard() {
             <span className="text-[10px] font-medium uppercase tracking-wider text-ink/40">
               {['products', 'upload'].includes(activeTab) ? 'Product / ' :
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
-               ['inventory'].includes(activeTab) ? 'Info Stock / ' :
+               ['inventory'].includes(activeTab) ? 'Inventory / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
                ['messages', 'placeholders', 'wabroadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
@@ -1090,7 +1090,7 @@ export default function AdminDashboard() {
                activeTab === 'orders' ? 'Online Order' :
                activeTab === 'logistics' ? 'Logistics' :
                activeTab === 'customers' ? 'Membership' :
-               activeTab === 'inventory' ? 'Stock History' :
+               activeTab === 'inventory' ? 'Stock Management' :
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' || activeTab === 'wabroadcast' ? 'Placeholder / WA Broadcast' :

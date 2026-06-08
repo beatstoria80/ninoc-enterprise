@@ -76,8 +76,8 @@ export function InventoryTab({ products }: { products: Product[] }) {
     >
       <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Archival Catalog</h2>
-          <span className="text-[9px] text-ink/40">— stock & origin specification</span>
+          <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Inventory Control</h2>
+          <span className="text-[9px] text-ink/40">— stock & SKU directory</span>
         </div>
       </div>
 
