@@ -289,7 +289,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
         isMobile && "pb-24"
       )}>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-[85px_1.25fr_1fr_1fr_0.9fr] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
 
           <div className="hidden lg:block w-full shrink-0">
             <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px]">
@@ -470,20 +470,20 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
-                <div className="flex gap-1.5 lg:gap-2 flex-wrap">
+                <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                   {availableSizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "w-10 h-10 lg:w-11 lg:h-11 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border relative",
+                        "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border relative",
                         effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
                       {size}
                       {isSurchargeSize(size) && (
                         <span className={cn(
-                          "absolute -top-1.5 -right-2 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
+                          "absolute -top-1.5 -right-1 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
                           effectiveSize === size ? "bg-white text-rose" : "bg-rose text-white"
                         )}>
                           +15K
