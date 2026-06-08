@@ -2,6 +2,9 @@ import { supabase } from '@/lib/supabase';
 import ShopProductClient from './ShopProductClient';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
 interface Props {
