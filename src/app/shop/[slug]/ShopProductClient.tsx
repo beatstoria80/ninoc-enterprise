@@ -14,8 +14,6 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 
-const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80';
-
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -23,39 +21,26 @@ function cn(...inputs: ClassValue[]) {
 function SafeImage({ src, alt, className, sizes, priority = false }: {
   src: string; alt: string; className?: string; sizes?: string; priority?: boolean;
 }) {
-  const [primaryFailed, setPrimaryFailed] = useState(false);
-  const [fallbackFailed, setFallbackFailed] = useState(false);
+  const [failed, setFailed] = useState(false);
+  if (failed || !src) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/[0.03] text-ink/20">
+        <ImageOff size={24} />
+        <span className="text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
+      </div>
+    );
+  }
   return (
-    <>
-      {!primaryFailed && (
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          className={cn("object-contain", className)}
-          sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
-          priority={priority}
-          unoptimized
-          onError={() => setPrimaryFailed(true)}
-        />
-      )}
-      {primaryFailed && !fallbackFailed && (
-        <Image
-          src={FALLBACK_IMAGE}
-          alt={alt}
-          fill
-          className={cn("object-contain", className)}
-          sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
-          unoptimized
-          onError={() => setFallbackFailed(true)}
-        />
-      )}
-      {primaryFailed && fallbackFailed && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-ink/20 bg-ink/[0.02]">
-          <ImageOff size={20} />
-        </div>
-      )}
-    </>
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={cn("object-contain", className)}
+      sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
+      priority={priority}
+      unoptimized
+      onError={() => setFailed(true)}
+    />
   );
 }
 
