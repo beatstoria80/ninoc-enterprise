@@ -321,14 +321,7 @@ export default function CheckoutPage() {
     }
   }, [formData.kecamatan, formData.postal_code, items]);
 
-  // Fallback options in case API fails or hasn't loaded
-  const fallbackShippingOptions = [
-    { company: 'jne', courier_name: 'JNE', courier_service_name: 'REGULER', price: 15000, duration: '2-3 Days', description: 'Standard Network Distribution' },
-    { company: 'jnt', courier_name: 'J&T', courier_service_name: 'EZ', price: 12000, duration: '1-2 Days', description: 'Express Transit Distribution' },
-    { company: 'sicepat', courier_name: 'SiCepat', courier_service_name: 'BEST', price: 18000, duration: '1 Day', description: 'Priority Network Distribution' },
-  ];
-
-  const displayOptions = dynamicShippingOptions.length > 0 ? dynamicShippingOptions : fallbackShippingOptions;
+  const displayOptions = dynamicShippingOptions;
 
   const handleShippingChange = (id: string, price: number) => {
     setShippingMethod(id);
@@ -659,6 +652,14 @@ export default function CheckoutPage() {
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
+                  </div>
+                )}
+                {displayOptions.length === 0 && !loadingShipping && (
+                  <div className="col-span-3 py-10 flex flex-col items-center justify-center gap-2">
+                    <div className="w-6 h-6 border border-ink/20 rounded-full flex items-center justify-center mb-1">
+                      <span className="text-ink/30 text-[10px]">!</span>
+                    </div>
+                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">INPUT POSTAL CODE TO UNLOCK LOGISTICS</span>
                   </div>
                 )}
                 {displayOptions.map((option) => {
