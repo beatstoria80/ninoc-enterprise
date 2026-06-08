@@ -172,6 +172,17 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
   const availableSizes = (() => {
     if (!product?.variants?.length) return ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
     const sizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
+    
+    const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+    sizes.sort((a, b) => {
+      const idxA = SIZE_ORDER.indexOf(a.toUpperCase());
+      const idxB = SIZE_ORDER.indexOf(b.toUpperCase());
+      if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
+    });
+
     // Fallback to default if somehow variants exist but have no sizes
     return sizes.length > 0 ? sizes : ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
   })();
@@ -345,7 +356,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                     </span>
                   </div>
                 </div>
-                <h1 className="text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-tight uppercase">{product.name}</h1>
+                <h1 className="text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-[1.4] uppercase">{product.name}</h1>
                 {product.price_tag && (
                   <div className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
