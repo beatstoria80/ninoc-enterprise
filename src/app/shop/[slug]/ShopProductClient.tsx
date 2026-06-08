@@ -147,11 +147,16 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
     };
   }, [slug]);
 
+  const availableSizes = (() => {
+    if (!product?.variants?.length) return ['S', 'M', 'L', 'XL', 'XXL'];
+    const sizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
+    // Fallback to default if somehow variants exist but have no sizes
+    return sizes.length > 0 ? sizes : ['S', 'M', 'L', 'XL', 'XXL'];
+  })();
+
   const effectiveSize = (() => {
-    if (!product?.variants?.length) return selectedSize;
-    const allSizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
-    if (allSizes.length > 0 && !allSizes.includes(selectedSize)) return allSizes[0];
-    return selectedSize;
+    if (availableSizes.includes(selectedSize)) return selectedSize;
+    return availableSizes[0] || selectedSize;
   })();
 
   const effectiveColor = (() => {
@@ -411,7 +416,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
               <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
                 <div className="flex gap-1.5 lg:gap-2 flex-wrap">
-                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                  {availableSizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
