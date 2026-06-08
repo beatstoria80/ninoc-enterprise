@@ -523,6 +523,22 @@ export default function AdminDashboard() {
       setIsProductModalOpen(false);
       showToast('Success: Product saved successfully!', 'success');
       fetchData();
+
+      // Background Ping to Google Indexing API
+      if (productForm.slug) {
+        fetch('/api/admin/seo/index', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: `https://ninoc.store/shop/${productForm.slug}`,
+            action: 'URL_UPDATED'
+          })
+        }).then(res => res.json()).then(data => {
+           if (data.success) {
+             setTimeout(() => showToast('Google Indexing Requested!', 'success'), 1500);
+           }
+        }).catch(err => console.error('Google Indexing API error:', err));
+      }
     } catch (error: any) {
       console.error('Failed to save product:', error);
       showToast('Failed to save product: ' + (error.message || JSON.stringify(error)), 'error');
