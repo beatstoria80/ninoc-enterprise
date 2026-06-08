@@ -130,16 +130,7 @@ export function ProductsTab({
                   {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
                 </p>
-                <div className="pt-2 mt-2 border-t border-ink/5">
-                  <p className="text-[8px] text-gray-400 uppercase flex justify-between">
-                    <span>VAT (11%)</span>
-                    <span>+ {Math.round(Number(product.price) * 0.11).toLocaleString('id-ID')} IDR</span>
-                  </p>
-                  <p className="text-[10px] font-medium text-ink flex justify-between mt-1">
-                    <span>TOTAL</span>
-                    <span className="text-rose italic font-display">{Math.round(Number(product.price) * 1.11).toLocaleString('id-ID')} IDR</span>
-                  </p>
-                </div>
+
               </div>
 
               {/* Color/Sizes breakdown */}
