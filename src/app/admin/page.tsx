@@ -1308,7 +1308,7 @@ export default function AdminDashboard() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-xl"
+              className="w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-xl relative"
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10">
@@ -1320,7 +1320,9 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="flex flex-col lg:flex-row">
+                {/* Left Column: Form */}
+                <div className="flex-1 p-6 space-y-4 lg:border-r border-gray-100">
                 {/* Basic Info */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">Basic Information</h3>
@@ -1462,17 +1464,6 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  {/* ===== SEO HELPER ===== */}
-                  <SeoHelper
-                    name={productForm.name}
-                    slug={productForm.slug}
-                    description={productForm.description}
-                    category={productForm.category}
-                    price={productForm.price}
-                    onApplyTitle={(title) => handleProductNameChange(title)}
-                    onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
-                    onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
-                  />
 
                   <div>
                     <div className="flex justify-between items-end mb-2">
@@ -2021,6 +2012,22 @@ export default function AdminDashboard() {
                         </>
                       );
                     })()}
+                  </div>
+                </div>
+                </div>
+                {/* Right Column: SEO Helper */}
+                <div className="w-full lg:w-[360px] bg-gray-50/50 flex-shrink-0">
+                  <div className="sticky top-[73px] p-6">
+                    <SeoHelper
+                      name={productForm.name}
+                      slug={productForm.slug}
+                      description={productForm.description}
+                      category={productForm.category}
+                      price={productForm.price}
+                      onApplyTitle={(title) => handleProductNameChange(title)}
+                      onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
+                      onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
+                    />
                   </div>
                 </div>
               </div>
