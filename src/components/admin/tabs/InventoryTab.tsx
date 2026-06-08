@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Box, Printer } from 'lucide-react';
+import { Box, Printer, Download, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Product } from '../types';
@@ -67,6 +67,122 @@ export function InventoryTab({ products }: { products: Product[] }) {
     printWindow.document.close();
   };
 
+  const exportCSV = () => {
+    const headers = ['SKU', 'Product Name', 'Category', 'Size', 'Color', 'Stock Quantity'];
+    const rows: string[][] = [];
+    products.forEach(p => {
+      p.variants?.forEach(v => {
+        rows.push([
+          v.sku || '-', 
+          `"${p.name.replace(/"/g, '""')}"`, 
+          p.category, 
+          v.size || '-', 
+          v.color || '-', 
+          (v.stock_quantity || 0).toString()
+        ]);
+      });
+    });
+    
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `NINOC_Inventory_Report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportPDF = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const currentDate = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    let tableRows = '';
+    products.forEach(p => {
+      p.variants?.forEach(v => {
+        const qty = v.stock_quantity || 0;
+        const isLow = qty > 0 && qty < 5;
+        const isOOS = qty === 0;
+        const rowStyle = isOOS ? 'color: #ef4444; font-weight: 600;' : isLow ? 'color: #d97706; font-weight: 500;' : '';
+        tableRows += `
+          <tr style="${rowStyle}">
+            <td style="font-family: monospace;">${v.sku || '-'}</td>
+            <td>${p.name}</td>
+            <td style="text-transform: uppercase;">${p.category}</td>
+            <td>${v.size || '-'}</td>
+            <td>${v.color || '-'}</td>
+            <td style="text-align: right; font-weight: bold;">${qty}</td>
+          </tr>
+        `;
+      });
+    });
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Inventory Report - NINOC</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 40px; color: #111; }
+          .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 24px; }
+          h1 { margin: 0; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+          .sub { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #666; margin-top: 4px; }
+          .meta { font-size: 11px; text-align: right; }
+          .meta-title { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 2px; }
+          table { width: 100%; border-collapse: collapse; font-size: 11px; }
+          th, td { border-bottom: 1px solid #eaeaea; padding: 10px 12px; text-align: left; }
+          th { background-color: #fafafa; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 9px; color: #666; border-bottom: 2px solid #111; }
+          tr:nth-child(even) { background-color: #fdfdfd; }
+          @media print {
+            @page { margin: 1.5cm; size: A4 portrait; }
+            body { margin: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>Inventory Status Report</h1>
+            <div class="sub">NINOC STUDIO WAREHOUSE</div>
+          </div>
+          <div class="meta">
+            <div class="meta-title">Generated On</div>
+            <div>${currentDate}</div>
+            <div style="margin-top: 8px;" class="meta-title">Total Articles</div>
+            <div>${products.length} Items</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU / ID</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Size</th>
+              <th>Color</th>
+              <th style="text-align: right;">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+        <script>
+          window.onload = () => {
+            setTimeout(() => {
+              window.print();
+            }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   return (
     <motion.div
       key="inventory"
@@ -77,7 +193,23 @@ export function InventoryTab({ products }: { products: Product[] }) {
       <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Inventory Control</h2>
-          <span className="text-[9px] text-ink/40">— stock & SKU directory</span>
+          <span className="text-[9px] text-ink/40 hidden sm:inline-block">— stock & SKU directory</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={exportCSV}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-ink bg-white border border-ink/20 hover:border-ink hover:bg-ink/5 rounded transition-colors"
+          >
+            <Download size={12} />
+            CSV
+          </button>
+          <button 
+            onClick={exportPDF}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-white bg-ink hover:bg-ink/90 rounded transition-colors"
+          >
+            <FileText size={12} />
+            Print Report
+          </button>
         </div>
       </div>
 
