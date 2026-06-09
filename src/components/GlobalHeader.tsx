@@ -97,7 +97,7 @@ function PressButton({ children, className = '', onClick, disabled }: {
 // NAV LINK WITH SPRING HOVER
 // ═══════════════════════════════════════════════════════════════
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({ href, children, isDark }: { href: string; children: React.ReactNode; isDark?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const scaleX = useSpring(0, { stiffness: 400, damping: 30 });
 
@@ -109,13 +109,16 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       prefetch={false}
       href={href}
-      className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md"
+      className={cn(
+        "text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors",
+        isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <span>{children}</span>
       <motion.span
-        className="absolute -bottom-2 left-0 right-0 h-[1px] bg-rose origin-left"
+        className={cn("absolute -bottom-2 left-0 right-0 h-[1px] origin-left", isDark ? "bg-white" : "bg-rose")}
         style={{ scaleX }}
         transition={{ duration: DURATION.normal, ease: EASING.out }}
       />
@@ -402,6 +405,8 @@ export default function GlobalHeader() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const isDarkBg = pathname?.startsWith('/collections/') && pathname !== '/collections' && !isScrolled;
+
   return (
     <>
       {/* NAVIGATION BAR */}
@@ -419,7 +424,7 @@ export default function GlobalHeader() {
           <PressScale className="cursor-pointer group flex flex-col">
             <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col">
               <motion.div
-                className="font-display font-medium text-3xl md:text-4xl italic tracking-tighter text-rose leading-none"
+                className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast, ease: EASING.out }}
               >
@@ -437,7 +442,7 @@ export default function GlobalHeader() {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: DURATION.medium, ease: EASING.out }}
               >
-                <Link prefetch={false} href="/shop" className="absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose whitespace-nowrap group">
+                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white/60 hover:text-white" : "text-ink/40 hover:text-rose")}>
                   <motion.span animate={{ x: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: EASING.inOut }}>
                     <ArrowLeft size={10} />
                   </motion.span>
@@ -455,11 +460,11 @@ export default function GlobalHeader() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <NavLink href="/shop">{dict.header.shop}</NavLink>
-          <NavLink href="/collections">{dict.header.collections}</NavLink>
-          <NavLink href="/category">{dict.header.category}</NavLink>
-          <NavLink href="/logbook">{dict.header.logbook}</NavLink>
-          <NavLink href="/about">{dict.header.about}</NavLink>
+          <NavLink isDark={isDarkBg} href="/shop">{dict.header.shop}</NavLink>
+          <NavLink isDark={isDarkBg} href="/collections">{dict.header.collections}</NavLink>
+          <NavLink isDark={isDarkBg} href="/category">{dict.header.category}</NavLink>
+          <NavLink isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
+          <NavLink isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
         </motion.div>
 
         {/* Action Icons */}
@@ -471,24 +476,24 @@ export default function GlobalHeader() {
         >
           {/* Language Toggle */}
           <div className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]">
-            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
               ID
             </a>
-            <span className="text-ink/10">|</span>
-            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+            <span className={isDarkBg ? "text-white/30" : "text-ink/10"}>|</span>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
               EN
             </a>
           </div>
 
           {/* Search Button */}
-          <PressScale onClick={() => setIsSearchOpen(true)} className="text-ink/40 hover:text-rose">
+          <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Search size={20} strokeWidth={1.5} />
             </motion.div>
           </PressScale>
 
           {/* Tracking Button */}
-          <PressScale className="text-ink/40 hover:text-rose">
+          <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
             <Link prefetch={false} href="/track" className="flex items-center">
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Truck size={20} strokeWidth={1.5} />
@@ -497,7 +502,7 @@ export default function GlobalHeader() {
           </PressScale>
 
           {/* User Profile */}
-          <PressScale className="text-ink/40 hover:text-rose">
+          <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
             <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
               {profileAvatar ? (
                 <motion.div
@@ -520,7 +525,7 @@ export default function GlobalHeader() {
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-ink/40 group-hover:text-rose"
+              className={cn("transition-colors", isDarkBg ? "text-white/80 group-hover:text-white" : "text-ink/40 group-hover:text-rose")}
             >
               <ShoppingCart size={20} strokeWidth={1.5} />
             </motion.div>
