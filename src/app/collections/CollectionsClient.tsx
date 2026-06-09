@@ -112,11 +112,9 @@ function PressButton({ children, className = '', onClick, href }: {
 // COLLECTION CARD
 // ═══════════════════════════════════════════════════════════════
 
-function CollectionCard({ col, index, isSelected, onClick }: {
+function CollectionCard({ col, index }: {
   col: Collection;
   index: number;
-  isSelected: boolean;
-  onClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
@@ -127,66 +125,59 @@ function CollectionCard({ col, index, isSelected, onClick }: {
   const Icon = icons[index % icons.length] || DefaultIcon;
 
   return (
-    <motion.button
-      variants={collectionIndexVariants}
-      initial="hidden"
-      animate="visible"
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative bg-white py-1.5 px-2.5 md:py-2 md:px-3 text-left group overflow-hidden flex items-center gap-2.5 md:gap-3 ${isSelected ? 'bg-ink text-white' : ''}`}
-    >
+    <Link href={`/collections/${col.slug}`} className="block">
       <motion.div
-        className="absolute inset-0 bg-rose origin-left"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: isHovered ? 1 : 0 }}
-        transition={{ duration: DURATION.medium, ease: EASING.out }}
-        style={{ zIndex: 0 }}
-      />
-
-      <div className="relative z-10 flex items-center gap-2 md:gap-3 w-full">
+        variants={collectionIndexVariants}
+        initial="hidden"
+        animate="visible"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="relative bg-white py-4 px-4 md:py-6 md:px-6 text-left group overflow-hidden flex flex-col items-center justify-center gap-3 border border-transparent hover:border-ink/10 cursor-pointer h-full"
+      >
         <motion.div
-          className="flex-shrink-0"
-          animate={{ color: isSelected ? white : isHovered ? white : brandColor.color }}
-          transition={{ duration: DURATION.fast }}
-        >
-          <Icon />
-        </motion.div>
+          className="absolute inset-0 bg-rose origin-bottom"
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: isHovered ? 1 : 0 }}
+          transition={{ duration: DURATION.medium, ease: EASING.out }}
+          style={{ zIndex: 0 }}
+        />
 
-        <div className="flex items-center gap-1.5 min-w-0">
-          <motion.h3
-            className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight whitespace-nowrap ${isSelected ? 'text-white' : 'text-ink'}`}
-            animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
+        <div className="relative z-10 flex flex-col items-center gap-3 w-full text-center">
+          <motion.div
+            className="flex-shrink-0"
+            animate={{ color: isHovered ? white : brandColor.color }}
             transition={{ duration: DURATION.fast }}
           >
-            {col.name}
-          </motion.h3>
-          <motion.span
-            className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${isSelected ? 'text-white/50' : 'text-ink/25'}`}
-            animate={{ color: isSelected ? 'rgba(255,255,255,0.5)' : isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.25)' }}
+            <Icon />
+          </motion.div>
+
+          <div className="flex flex-col items-center gap-1.5 min-w-0">
+            <motion.h3
+              className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tight"
+              animate={{ color: isHovered ? '#ffffff' : '#141414' }}
+              transition={{ duration: DURATION.fast }}
+            >
+              {col.name}
+            </motion.h3>
+            <motion.span
+              className="text-[8px] md:text-[9px] font-medium uppercase tracking-widest"
+              animate={{ color: isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.4)' }}
+              transition={{ duration: DURATION.fast }}
+            >
+              {col.status === 'active' ? 'Live Now' : 'Coming Soon'}
+            </motion.span>
+          </div>
+
+          <motion.div
+            className="mt-2"
+            animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
             transition={{ duration: DURATION.fast }}
           >
-            — {col.status}
-          </motion.span>
+            <ChevronRight size={16} strokeWidth={1.5} />
+          </motion.div>
         </div>
-
-        <motion.span
-          className={`ml-auto text-[6px] font-mono tracking-tighter px-1 py-0.5 flex-shrink-0 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/30'}`}
-          animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }}
-          transition={{ duration: DURATION.fast }}
-        >
-          COL-{index.toString().padStart(3, '0')}
-        </motion.span>
-
-        <motion.div
-          className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-ink/20'}`}
-          animate={{ x: isSelected || isHovered ? 2 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
-          transition={{ duration: DURATION.fast }}
-        >
-          <ChevronRight size={12} strokeWidth={1.5} />
-        </motion.div>
-      </div>
-    </motion.button>
+      </motion.div>
+    </Link>
   );
 }
 
@@ -282,23 +273,18 @@ function ProductCard({ product }: { product: Product }) {
 export default function CollectionsClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [collectionProducts, setCollectionProducts] = useState<CollectionProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, colRes, relRes] = await Promise.all([
+        const [prodRes, colRes] = await Promise.all([
           supabase.from('products').select('*'),
-          supabase.from('collections').select('*').eq('status', 'active'),
-          supabase.from('collection_products').select('*')
+          supabase.from('collections').select('*').eq('status', 'active')
         ]);
         
         setProducts(prodRes.data || []);
         setCollections(colRes.data || []);
-        setCollectionProducts(relRes.data || []);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -308,25 +294,12 @@ export default function CollectionsClient() {
     fetchData();
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    if (!selectedCollection) return products;
-    
-    // Find product IDs mapped to this collection
-    const mappedProductIds = new Set(
-      collectionProducts
-        .filter(cp => cp.collection_id === selectedCollection)
-        .map(cp => cp.product_id)
-    );
-    
-    return products.filter(p => mappedProductIds.has(p.id));
-  }, [selectedCollection, products, collectionProducts]);
-
   return (
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-2 md:mb-3">
+        <div className="flex items-center justify-between mb-8 md:mb-12">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -334,7 +307,7 @@ export default function CollectionsClient() {
             className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
           >
             <Layers size={10} className="text-rose" />
-            Collection Index
+            Curated Campaigns
           </motion.h1>
 
           <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
@@ -344,60 +317,32 @@ export default function CollectionsClient() {
         </div>
 
         {/* COLLECTION INDEX */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
           {collections.map((col, index) => (
             <CollectionCard
               key={col.id}
               col={col}
               index={index}
-              isSelected={selectedCollection === col.id}
-              onClick={() => {
-                setSelectedCollection(selectedCollection === col.id ? null : col.id);
-                gridRef.current?.scrollIntoView({ behavior: 'smooth' });
-              }}
             />
           ))}
           {collections.length === 0 && !isLoading && (
-            <div className="col-span-full py-4 text-center bg-white text-[10px] text-gray-400 uppercase tracking-widest">
-              No active collections available
+            <div className="col-span-full py-24 text-center border border-dashed border-ink/10 rounded-xl">
+              <p className="text-[10px] text-ink/40 uppercase tracking-widest">No active campaigns</p>
             </div>
           )}
         </div>
 
-        {/* ACTIVE FILTER DISPLAY */}
-        <AnimatePresence>
-          {selectedCollection && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: DURATION.fast, ease: EASING.out }}
-              className="flex items-center justify-between py-1.5 overflow-hidden mb-3"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
-                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">
-                  {collections.find((c) => c.id === selectedCollection)?.name}
-                </span>
-              </div>
-              <PressButton onClick={() => setSelectedCollection(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
-                Clear
-              </PressButton>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* PRODUCT GRID */}
-        <div ref={gridRef} className="border-t border-ink/5 pt-2 md:pt-4">
+        {/* ALL PRODUCTS GRID */}
+        <div className="pt-2 md:pt-4">
+          <h2 className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 mb-4">All Products Archive</h2>
           <AnimatePresence mode="wait">
             <motion.div
-              key={selectedCollection || 'all'}
               variants={productGridVariants}
               initial="hidden"
               animate="visible"
               exit={{ opacity: 0 }}
               transition={{ duration: DURATION.normal }}
-              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-px bg-ink/5"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-px bg-ink/5 border border-ink/5"
             >
               {isLoading ? (
                 Array(10).fill(0).map((_, i) => (
@@ -409,18 +354,18 @@ export default function CollectionsClient() {
                     className="bg-white aspect-[3/4] animate-pulse"
                   />
                 ))
-              ) : filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
+              ) : products.length > 0 ? (
+                products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
               ) : (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="col-span-full py-16 text-center"
+                  className="col-span-full py-16 text-center bg-white"
                 >
                   <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">
-                    No products in this collection
+                    No products found
                   </p>
                 </motion.div>
               )}
