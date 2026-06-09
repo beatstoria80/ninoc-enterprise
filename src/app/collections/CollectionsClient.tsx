@@ -124,28 +124,54 @@ function CollectionCard({ col, index }: {
   const icons = [HangerIcon, FlameIcon, ClockRewindIcon];
   const Icon = icons[index % icons.length] || DefaultIcon;
 
+  const isVideoUrl = (url: string | null | undefined) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
+
+  const hasBanner = !!col.banner_url;
+
   return (
-    <Link href={`/collections/${col.slug}`} className="block">
+    <Link href={`/collections/${col.slug}`} className="block h-full">
       <motion.div
         variants={collectionIndexVariants}
         initial="hidden"
         animate="visible"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative bg-white py-4 px-4 md:py-6 md:px-6 text-left group overflow-hidden flex flex-col items-center justify-center gap-3 border border-transparent hover:border-ink/10 cursor-pointer h-full"
+        className="relative bg-white py-8 px-4 md:py-10 md:px-6 text-left group overflow-hidden flex flex-col items-center justify-center gap-3 border border-transparent hover:border-ink/10 cursor-pointer h-full min-h-[180px]"
       >
-        <motion.div
-          className="absolute inset-0 bg-rose origin-bottom"
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: isHovered ? 1 : 0 }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-          style={{ zIndex: 0 }}
-        />
+        {/* Banner Media Background */}
+        {hasBanner ? (
+          <>
+            <div className="absolute inset-0 z-0">
+              {isVideoUrl(col.banner_url) ? (
+                <video src={col.banner_url!} className="w-full h-full object-cover transition-transform duration-700" style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} autoPlay muted loop playsInline />
+              ) : (
+                <Image src={col.banner_url!} alt={col.name} fill className="object-cover transition-transform duration-700" style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+              )}
+            </div>
+            {/* Overlay */}
+            <motion.div
+              className="absolute inset-0 bg-black/40 z-0"
+              initial={{ opacity: 0.4 }}
+              animate={{ opacity: isHovered ? 0.6 : 0.4 }}
+              transition={{ duration: DURATION.medium }}
+            />
+          </>
+        ) : (
+          <motion.div
+            className="absolute inset-0 bg-rose origin-bottom z-0"
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: isHovered ? 1 : 0 }}
+            transition={{ duration: DURATION.medium, ease: EASING.out }}
+          />
+        )}
 
         <div className="relative z-10 flex flex-col items-center gap-3 w-full text-center">
           <motion.div
             className="flex-shrink-0"
-            animate={{ color: isHovered ? white : brandColor.color }}
+            animate={{ color: hasBanner ? white : (isHovered ? white : brandColor.color) }}
             transition={{ duration: DURATION.fast }}
           >
             <Icon />
@@ -153,15 +179,15 @@ function CollectionCard({ col, index }: {
 
           <div className="flex flex-col items-center gap-1.5 min-w-0">
             <motion.h3
-              className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tight"
-              animate={{ color: isHovered ? '#ffffff' : '#141414' }}
+              className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tight drop-shadow-sm"
+              animate={{ color: hasBanner ? white : (isHovered ? white : '#141414') }}
               transition={{ duration: DURATION.fast }}
             >
               {col.name}
             </motion.h3>
             <motion.span
-              className="text-[8px] md:text-[9px] font-medium uppercase tracking-widest"
-              animate={{ color: isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.4)' }}
+              className="text-[8px] md:text-[9px] font-medium uppercase tracking-widest drop-shadow-sm"
+              animate={{ color: hasBanner ? 'rgba(255,255,255,0.8)' : (isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.4)') }}
               transition={{ duration: DURATION.fast }}
             >
               {col.status === 'active' ? 'Live Now' : 'Coming Soon'}
@@ -169,8 +195,11 @@ function CollectionCard({ col, index }: {
           </div>
 
           <motion.div
-            className="mt-2"
-            animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
+            className="mt-2 drop-shadow-sm"
+            animate={{ 
+              x: isHovered ? 4 : 0, 
+              color: hasBanner ? white : (isHovered ? white : 'rgba(20,20,20,0.2)') 
+            }}
             transition={{ duration: DURATION.fast }}
           >
             <ChevronRight size={16} strokeWidth={1.5} />
