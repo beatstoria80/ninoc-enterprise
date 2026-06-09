@@ -14,7 +14,8 @@ import { Collection, Product, CollectionProduct } from '@/components/admin/types
 // ═══════════════════════════════════════════════════════════════
 
 const EASING = {
-  out: [0.23, 1, 0.32, 1] as const,
+  out: [0.23, 1, 0.32, 1] as const,       /* Strong ease-out */
+  inOut: [0.77, 0, 0.175, 1] as const,    /* Smooth morphing */
 };
 
 const DURATION = {
@@ -25,16 +26,17 @@ const DURATION = {
 };
 
 const productCardVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.97 },
-  visible: { opacity: 1, scale: 1 },
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: DURATION.normal, ease: EASING.out } },
   hover: { y: -2, transition: { duration: DURATION.fast, ease: EASING.out } },
+  tap: { scale: 0.97, transition: { duration: 0.1, ease: EASING.out } }
 };
 
 const productGridVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.04, delayChildren: 0.1 },
   },
 };
 
@@ -51,6 +53,7 @@ function ProductCard({ product }: { product: Product }) {
     <motion.div
       variants={productCardVariants}
       whileHover="hover"
+      whileTap="tap"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -68,10 +71,10 @@ function ProductCard({ product }: { product: Product }) {
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-contain p-2 md:p-4 transition-all duration-700"
+              className="object-contain p-2 md:p-4 transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
               sizes="(max-width: 768px) 50vw, 25vw"
               style={{
-                filter: isHovered ? 'grayscale(0%)' : 'grayscale(0%)',
+                filter: isHovered ? 'blur(0px)' : 'blur(0px)',
                 transform: isHovered ? 'scale(1.05)' : 'scale(1)',
               }}
             />
@@ -222,7 +225,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
         {/* Top Nav inside Hero */}
         <div className="absolute top-0 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-10">
           <Link href="/collections" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform ease-[cubic-bezier(0.23,1,0.32,1)] duration-200" />
             <span className="text-[10px] uppercase tracking-[0.2em]">All Collections</span>
           </Link>
         </div>
@@ -231,8 +234,8 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-10">
           <div className="max-w-[1200px] mx-auto space-y-4">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: DURATION.slow, ease: EASING.out }}
             >
               <div className="flex items-center gap-3 mb-3">
