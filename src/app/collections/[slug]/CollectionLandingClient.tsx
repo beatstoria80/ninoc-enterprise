@@ -72,7 +72,7 @@ function ProductCard({ product }: { product: Product }) {
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-contain"
+                className="object-contain mix-blend-multiply"
                 sizes="(max-width: 768px) 50vw, 25vw"
               />
             </motion.div>

@@ -87,14 +87,14 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <motion.div variants={productCardVariants} whileHover="hover" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <Link href={`/shop/${product.slug}`} className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5">
-        <motion.div className="aspect-[3/4] bg-ink/5 relative mb-2 md:mb-3 overflow-hidden" animate={{ borderColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }} transition={{ duration: DURATION.fast }}>
+        <div className="relative mb-2 md:mb-3 overflow-hidden">
           {product.image_url ? (
-            <Image src={product.image_url} alt={product.name} fill className="object-contain p-2 md:p-4 grayscale transition-all duration-700" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(0%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+            <Image src={product.image_url} alt={product.name} width={400} height={533} className="w-full h-auto grayscale transition-all duration-700" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(0%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-ink/10"><Package size={24} /></div>
+            <div className="w-full aspect-[3/4] flex items-center justify-center text-ink/10"><Package size={24} /></div>
           )}
           <motion.div className="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-ink text-white px-1 py-0.5 text-[5px] md:text-[6px] uppercase tracking-tighter font-mono" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{product.category.toUpperCase().slice(0, 4)}</motion.div>
-        </motion.div>
+        </div>
         <div className="space-y-1">
           <motion.p className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.15em] text-ink/30 hidden md:block" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{CATEGORIES.find((c) => c.id === product.category)?.label}</motion.p>
           <motion.h3 className="text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink truncate" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>

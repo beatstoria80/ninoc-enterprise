@@ -230,11 +230,7 @@ function ProductCard({ product }: { product: Product }) {
         href={`/shop/${product.slug}`}
         className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
-        <motion.div
-          className="aspect-[3/4] bg-ink/5 relative mb-2 md:mb-3 overflow-hidden"
-          animate={{ borderColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
-          transition={{ duration: DURATION.fast }}
-        >
+        <div className="relative mb-2 md:mb-3 overflow-hidden">
           {product.image_url ? (
             <Image
               src={product.image_url}
