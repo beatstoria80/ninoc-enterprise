@@ -162,10 +162,12 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
 
       if (savedCollectionId) {
         // Update existing
-        await supabase.from('collections').update(payload).eq('id', savedCollectionId);
+        const { error: updateError } = await supabase.from('collections').update(payload).eq('id', savedCollectionId);
+        if (updateError) throw updateError;
         
         // Delete old relations
-        await supabase.from('collection_products').delete().eq('collection_id', savedCollectionId);
+        const { error: deleteRelError } = await supabase.from('collection_products').delete().eq('collection_id', savedCollectionId);
+        if (deleteRelError) throw deleteRelError;
       } else {
         // Create new
         const { data, error } = await supabase.from('collections').insert([payload]).select().single();
@@ -179,14 +181,15 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
           collection_id: savedCollectionId,
           product_id: pid
         }));
-        await supabase.from('collection_products').insert(relations);
+        const { error: insertRelError } = await supabase.from('collection_products').insert(relations);
+        if (insertRelError) throw insertRelError;
       }
 
       onSaved();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving collection:', error);
-      alert('Failed to save collection');
+      alert(`Gagal menyimpan: ${error?.message || error?.details || 'Terjadi kesalahan sistem'}`);
     } finally {
       setIsSaving(false);
     }
