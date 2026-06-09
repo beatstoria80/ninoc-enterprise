@@ -21,67 +21,88 @@ const poppins = Poppins({
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    default: 'NINOC — Premium Archival Garment Studio',
-    template: '%s | NINOC STORE',
-  },
-  description: 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist. Shop now!',
-  keywords: ['garment archival', 'apparel premium', 'industrial minimalist', 'fashion bandung', 'distro bandung', 'brand lokal Indonesia', 'premium clothing'],
-  authors: [{ name: 'NINOC STORE' }],
-  creator: 'NINOC STORE',
-  publisher: 'NINOC STORE',
-  openGraph: {
-    type: 'website',
-    locale: 'id_ID',
-    url: BASE_URL,
-    siteName: 'NINOC STORE',
-    title: 'NINOC — Premium Archival Garment Studio',
-    description: 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist.',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'NINOC STORE — Premium Archival Garment Studio',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'NINOC — Premium Archival Garment Studio',
-    description: 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium.',
-    images: ['/og-image.png'],
-    creator: '@ninocstore',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const { headers } = await import('next/headers');
+  const headersList = await headers();
+  const locale = headersList.get('x-next-locale') || 'id';
+  const isEn = locale === 'EN';
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      default: isEn ? 'NINOC — Premium Archival Garment Studio' : 'NINOC — Premium Archival Garment Studio',
+      template: '%s | NINOC STORE',
+    },
+    description: isEn 
+      ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections with minimalist industrial design. Shop now!'
+      : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist. Shop now!',
+    keywords: ['garment archival', 'apparel premium', 'industrial minimalist', 'fashion bandung', 'distro bandung', 'brand lokal Indonesia', 'premium clothing'],
+    authors: [{ name: 'NINOC STORE' }],
+    creator: 'NINOC STORE',
+    publisher: 'NINOC STORE',
+    openGraph: {
+      type: 'website',
+      locale: isEn ? 'en_US' : 'id_ID',
+      url: BASE_URL,
+      siteName: 'NINOC STORE',
+      title: 'NINOC — Premium Archival Garment Studio',
+      description: isEn
+        ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections with minimalist industrial design.'
+        : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist.',
+      images: [
+        {
+          url: '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: 'NINOC STORE — Premium Archival Garment Studio',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'NINOC — Premium Archival Garment Studio',
+      description: isEn
+        ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections.'
+        : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium.',
+      images: ['/og-image.png'],
+      creator: '@ninocstore',
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-  verification: {
-    google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
-  },
-};
+    alternates: {
+      canonical: BASE_URL,
+      languages: {
+        'id': BASE_URL,
+        'en': `${BASE_URL}/en`,
+      },
+    },
+    verification: {
+      google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { headers } = await import('next/headers');
+  const headersList = await headers();
+  const locale = headersList.get('x-next-locale') === 'EN' ? 'en' : 'id';
+
   return (
     <html
-      lang="id"
+      lang={locale}
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       suppressHydrationWarning
     >
