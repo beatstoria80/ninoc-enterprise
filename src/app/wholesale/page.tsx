@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Store, User, FileText, Upload, CheckCircle, ArrowRight, Building, Mail, Phone, MapPin, Instagram, Globe } from 'lucide-react';
+import { Store, User, FileText, Upload, CheckCircle, ArrowRight, Building, Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 export default function WholesaleApplicationPage() {
@@ -271,10 +271,9 @@ export default function WholesaleApplicationPage() {
               <button 
                 type="submit"
                 disabled={isSubmitting}
-                className={cn(
-                  "w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-ink text-white rounded-full font-medium transition-all",
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-ink text-white rounded-full font-medium transition-all ${
                   isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-ink/90 active:scale-95 hover:shadow-lg hover:shadow-ink/20"
-                )}
+                }`}
               >
                 {isSubmitting ? (
                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
