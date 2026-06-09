@@ -234,7 +234,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-ink">Description</label>
                       <textarea
-                        value={formData.description}
+                        value={formData.description || ''}
                         onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         rows={3}
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all resize-none"
@@ -251,7 +251,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                     </label>
                     <input
                       type="url"
-                      value={formData.banner_url}
+                      value={formData.banner_url || ''}
                       onChange={e => setFormData(prev => ({ ...prev, banner_url: e.target.value }))}
                       placeholder="https://images.unsplash.com/..."
                       className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
@@ -297,7 +297,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       <label className="text-xs font-medium text-ink flex items-center gap-1.5"><Calendar size={12}/> Start Date</label>
                       <input
                         type="date"
-                        value={formData.start_date}
+                        value={formData.start_date || ''}
                         onChange={e => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
@@ -307,7 +307,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       <label className="text-xs font-medium text-ink flex items-center gap-1.5"><Calendar size={12}/> End Date</label>
                       <input
                         type="date"
-                        value={formData.end_date}
+                        value={formData.end_date || ''}
                         onChange={e => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
