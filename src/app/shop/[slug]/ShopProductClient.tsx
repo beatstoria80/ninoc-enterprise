@@ -50,6 +50,7 @@ interface Product {
   name: string;
   slug: string;
   description: string;
+  description_en?: string;
   price: number;
   image_url: string;
   category: string;

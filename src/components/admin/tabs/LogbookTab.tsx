@@ -11,8 +11,11 @@ interface LogbookEntry {
   slug: string;
   category: string;
   excerpt: string;
+  excerpt_en?: string;
   content: string;
+  content_en?: string;
   published_date: string;
+  title_en?: string;
 }
 
 export function LogbookTab() {
@@ -30,7 +33,10 @@ export function LogbookTab() {
     slug: '',
     category: '',
     excerpt: '',
+    excerpt_en: '',
     content: '',
+    content_en: '',
+    title_en: '',
     published_date: format(new Date(), 'yyyy-MM-dd')
   });
 
@@ -77,7 +83,10 @@ export function LogbookTab() {
       slug: '',
       category: 'GARMENT STUDY',
       excerpt: '',
+      excerpt_en: '',
       content: '',
+      content_en: '',
+      title_en: '',
       published_date: format(new Date(), 'yyyy-MM-dd')
     });
     // Generate next sequential entry_id
@@ -108,7 +117,10 @@ export function LogbookTab() {
       slug: entry.slug,
       category: entry.category,
       excerpt: entry.excerpt || '',
+      excerpt_en: entry.excerpt_en || '',
       content: entry.content || '',
+      content_en: entry.content_en || '',
+      title_en: entry.title_en || '',
       published_date: entry.published_date
     });
     setIsModalOpen(true);
@@ -291,13 +303,24 @@ export function LogbookTab() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Title</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Title (ID)</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   className="w-full bg-white border border-ink/10 px-3 py-2 text-[12px] font-medium outline-none focus:border-rose/50"
                   placeholder="The Anatomy of the Perfect Drape"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Title (EN)</label>
+                <input
+                  type="text"
+                  value={formData.title_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title_en: e.target.value }))}
+                  className="w-full bg-white border border-ink/10 px-3 py-2 text-[12px] font-medium outline-none focus:border-rose/50"
+                  placeholder="The Anatomy of the Perfect Drape (English)"
                 />
               </div>
 
@@ -313,7 +336,7 @@ export function LogbookTab() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Excerpt (Short Description)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Excerpt (ID)</label>
                 <textarea
                   value={formData.excerpt}
                   onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
@@ -323,10 +346,30 @@ export function LogbookTab() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Full Content (Markdown/Text)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Excerpt (EN)</label>
+                <textarea
+                  value={formData.excerpt_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_en: e.target.value }))}
+                  rows={2}
+                  className="w-full bg-white border border-ink/10 px-3 py-2 text-[11px] leading-relaxed outline-none focus:border-rose/50 resize-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Full Content (ID)</label>
                 <textarea
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  rows={6}
+                  className="w-full bg-white border border-ink/10 px-3 py-2 text-[11px] leading-relaxed outline-none focus:border-rose/50"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Full Content (EN)</label>
+                <textarea
+                  value={formData.content_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
                   rows={6}
                   className="w-full bg-white border border-ink/10 px-3 py-2 text-[11px] leading-relaxed outline-none focus:border-rose/50"
                 />

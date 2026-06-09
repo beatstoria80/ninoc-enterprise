@@ -1,4 +1,7 @@
-export const id = {
+import type { Dictionary } from '../index';
+
+export const id: Dictionary = {
+  locale: "ID",
   header: {
     shop: "Katalog",
     collections: "Koleksi",

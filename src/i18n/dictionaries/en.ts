@@ -1,4 +1,5 @@
 export const en = {
+  locale: "EN",
   header: {
     shop: "Catalog",
     collections: "Collections",

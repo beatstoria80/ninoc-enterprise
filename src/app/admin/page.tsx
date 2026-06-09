@@ -336,6 +336,7 @@ export default function AdminDashboard() {
         name: product.name,
         slug: product.slug,
         description: product.description || '',
+        description_en: product.description_en || '',
         specifications: product.specifications?.length ? product.specifications : [{ label: 'Jenis Pakaian', value: 'Kaos' }],
         measurements: product.measurements || [],
         model_info: product.model_info || '',
@@ -364,6 +365,7 @@ export default function AdminDashboard() {
         name: '',
         slug: '',
         description: '',
+        description_en: '',
         specifications: [{ label: 'Jenis Pakaian', value: 'Kaos' }],
         measurements: [],
         model_info: '',
@@ -433,6 +435,7 @@ export default function AdminDashboard() {
         name: productForm.name,
         slug: productForm.slug,
         description: productForm.description,
+        description_en: productForm.description_en || null,
         specifications: productForm.specifications,
         measurements: productForm.measurements.length > 0 ? productForm.measurements : null,
         model_info: productForm.model_info || null,
@@ -1483,13 +1486,21 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (ID)</label>
                     <textarea
                       value={productForm.description}
                       onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                      placeholder="Product description..."
-                      rows={3}
-                      className="w-full min-h-[60px] px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 resize-y"
+                      className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 min-h-[100px]"
+                      placeholder="Product description (Indonesian)..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (EN)</label>
+                    <textarea
+                      value={productForm.description_en || ''}
+                      onChange={(e) => setProductForm({ ...productForm, description_en: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50 min-h-[100px]"
+                      placeholder="Product description (English)..."
                     />
                   </div>
 

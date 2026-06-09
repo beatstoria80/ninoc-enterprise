@@ -14,11 +14,15 @@ const DURATION = { micro: 0.1, fast: 0.15, normal: 0.2, medium: 0.3, slow: 0.5 }
 const pageVariants: Variants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: DURATION.normal, ease: EASING.out, staggerChildren: 0.05 } } };
 const itemVariants: Variants = { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: DURATION.normal, ease: EASING.out } } };
 
-interface LogEntry { id: string; date: string; category: string; title: string; excerpt: string; slug: string; }
+interface LogEntry { id: string; date: string; category: string; title: string; title_en?: string; excerpt: string; excerpt_en?: string; slug: string; }
 
 function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
+  const dict = useDictionary();
+
+  const title = dict.locale === 'EN' && entry.title_en ? entry.title_en : entry.title;
+  const excerpt = dict.locale === 'EN' && entry.excerpt_en ? entry.excerpt_en : entry.excerpt;
 
   return (
     <motion.div variants={itemVariants}>
@@ -31,8 +35,8 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
           </div>
           <div className="flex-1 space-y-2">
             <motion.span className="text-[7px] font-medium uppercase tracking-[0.4em]" animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }} transition={{ duration: DURATION.fast }}>{entry.category}</motion.span>
-            <motion.h3 className="text-lg md:text-xl font-display font-medium italic uppercase tracking-tight" animate={{ color: isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{entry.title}</motion.h3>
-            <motion.p className="text-[9px] md:text-[10px] font-medium leading-relaxed max-w-2xl" animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,20,0.6)' }} transition={{ duration: DURATION.fast }}>{entry.excerpt}</motion.p>
+            <motion.h3 className="text-lg md:text-xl font-display font-medium italic uppercase tracking-tight" animate={{ color: isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{title}</motion.h3>
+            <motion.p className="text-[9px] md:text-[10px] font-medium leading-relaxed max-w-2xl" animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,20,0.6)' }} transition={{ duration: DURATION.fast }}>{excerpt}</motion.p>
           </div>
           <motion.div className="flex-shrink-0 self-end md:self-center" animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.2)', x: isHovered ? 4 : 0 }} transition={{ duration: DURATION.fast }}><ArrowRight size={16} strokeWidth={1.5} /></motion.div>
         </div>
@@ -53,7 +57,7 @@ export default function LogbookClient() {
         if (error) throw error;
         if (data) {
           const formattedEntries: LogEntry[] = data.map((item: any) => ({
-            id: item.entry_id, date: item.published_date ? item.published_date.replace(/-/g, '.') : '', category: item.category || '', title: item.title || '', excerpt: item.excerpt || '', slug: item.slug || ''
+            id: item.entry_id, date: item.published_date ? item.published_date.replace(/-/g, '.') : '', category: item.category || '', title: item.title || '', title_en: item.title_en || '', excerpt: item.excerpt || '', excerpt_en: item.excerpt_en || '', slug: item.slug || ''
           }));
           setEntries(formattedEntries);
         }
