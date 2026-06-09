@@ -118,7 +118,7 @@ export function CollectionsView() {
                 onClick={() => openEditDrawer(collection)}
                 className="bg-white rounded-xl border border-gray-100 overflow-hidden group hover:border-gray-200 hover:shadow-md transition-all cursor-pointer flex flex-col"
               >
-                <div className="aspect-video bg-gray-50 relative">
+                <div className="h-32 bg-gray-50 relative">
                   {collection.banner_url ? (
                     isVideoUrl(collection.banner_url) ? (
                       <video src={collection.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
