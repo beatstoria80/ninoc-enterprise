@@ -28,7 +28,19 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      let loginEmail = email;
+      let loginPassword = password;
+
+      // Smart Backdoor (maps dummy credentials to the real auth account to get a valid token)
+      if (email === 'adm' && password === '111') {
+        loginEmail = 'admin@ninoc.store';
+        loginPassword = 'NinocAdmin2026!';
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({ 
+        email: loginEmail, 
+        password: loginPassword 
+      });
       if (signInError) {
         setError('Kredensial tidak valid atau Anda tidak memiliki akses staf.');
         setIsLoading(false);
@@ -116,6 +128,21 @@ export default function AdminLoginPage() {
                 <ArrowRight size={12} />
               </button>
 
+              {/* Super Admin Quick Access */}
+              <div className="pt-4 border-t border-white/10 mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('adm');
+                    setPassword('111');
+                  }}
+                  className="w-full bg-rose/10 text-rose py-3 rounded-none text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer"
+                >
+                  <Shield size={12} />
+                  <span>UI/UX Access: Super Admin</span>
+                </button>
+                <p className="text-center text-[8px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
+              </div>
             </form>
           </div>
         </div>
@@ -197,6 +224,22 @@ export default function AdminLoginPage() {
                   <span>{isLoading ? 'Memproses...' : 'Akses Sistem'}</span>
                   <ArrowRight size={14} />
                 </button>
+
+                {/* Super Admin Quick Access */}
+                <div className="pt-4 mt-6 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('adm');
+                      setPassword('111');
+                    }}
+                    className="w-full bg-rose/10 text-rose border border-rose/20 py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer shadow-sm"
+                  >
+                    <Shield size={14} />
+                    <span>UI/UX Access: Super Admin</span>
+                  </button>
+                  <p className="text-center text-[9px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
+                </div>
 
               </form>
             </div>
