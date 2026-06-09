@@ -230,7 +230,7 @@ function ProductCard({ product }: { product: Product }) {
         href={`/shop/${product.slug}`}
         className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
-        <div className="relative mb-2 md:mb-3 overflow-hidden">
+        <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-ink/5">
           {product.image_url ? (
             <Image
               src={product.image_url}

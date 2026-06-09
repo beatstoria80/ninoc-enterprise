@@ -87,7 +87,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <motion.div variants={productCardVariants} whileHover="hover" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <Link href={`/shop/${product.slug}`} className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5">
-        <div className="relative mb-2 md:mb-3 overflow-hidden">
+        <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-ink/5">
           {product.image_url ? (
             <Image src={product.image_url} alt={product.name} width={400} height={533} className="w-full h-auto grayscale transition-all duration-700" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(0%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
           ) : (
