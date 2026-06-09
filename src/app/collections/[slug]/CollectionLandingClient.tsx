@@ -62,29 +62,27 @@ function ProductCard({ product }: { product: Product }) {
         className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
         <motion.div
-          className="aspect-[3/4] bg-ink/5 relative mb-2 md:mb-3 overflow-hidden"
-          animate={{ borderColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+          className="aspect-[3/4] bg-transparent relative mb-2 md:mb-3 overflow-hidden"
+          animate={{ borderColor: 'transparent' }}
           transition={{ duration: DURATION.fast }}
         >
-          <div className="absolute inset-4 md:inset-8">
-            {product.image_url ? (
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                className="object-contain transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
-                sizes="(max-width: 768px) 50vw, 25vw"
-                style={{
-                  filter: isHovered ? 'blur(0px)' : 'blur(0px)',
-                  transform: isHovered ? 'scale(0.85)' : 'scale(0.8)',
-                }}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-ink/10">
-                <Package size={24} />
-              </div>
-            )}
-          </div>
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-contain transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
+              sizes="(max-width: 768px) 50vw, 25vw"
+              style={{
+                filter: isHovered ? 'blur(0px)' : 'blur(0px)',
+                transform: isHovered ? 'scale(1.02)' : 'scale(0.95)',
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-ink/10">
+              <Package size={24} />
+            </div>
+          )}
 
           {product.is_featured && (
             <motion.div
