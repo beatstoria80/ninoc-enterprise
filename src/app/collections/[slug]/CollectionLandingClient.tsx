@@ -286,10 +286,18 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
       {/* 2. METADATA BAR */}
       <div className="bg-white border-b border-ink/5">
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
-            <span className="text-ink/20 hidden md:inline">/</span>
-            <span className="text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items Indexed</span>
+          <div className="flex items-center gap-4 md:gap-6">
+            <Link href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors">
+              <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[8px] font-medium uppercase tracking-[0.2em] hidden md:inline">Back to Catalog</span>
+              <span className="text-[8px] font-medium uppercase tracking-[0.2em] md:hidden">Catalog</span>
+            </Link>
+            <span className="text-ink/20">|</span>
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
+              <span className="text-ink/20 hidden md:inline">/</span>
+              <span className="text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items Indexed</span>
+            </div>
           </div>
           <div className="text-[8px] font-mono tracking-tighter text-ink/30 uppercase">
             NINOC-COL-{collection.id.substring(0, 6)}
