@@ -200,19 +200,35 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
 
   const isOngoing = !collection.end_date || new Date(collection.end_date) > new Date();
 
+  const isVideoUrl = (url: string | null | undefined) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
+
   return (
     <main className="min-h-screen bg-cr noise pb-[120px]">
       
       {/* 1. HERO SECTION */}
       <section className="relative w-full h-[50vh] md:h-[70vh] bg-ink">
         {collection.banner_url ? (
-          <Image 
-            src={collection.banner_url} 
-            alt={collection.name} 
-            fill 
-            className="object-cover opacity-70"
-            priority
-          />
+          isVideoUrl(collection.banner_url) ? (
+            <video 
+              src={collection.banner_url} 
+              className="absolute inset-0 w-full h-full object-cover opacity-70"
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+            />
+          ) : (
+            <Image 
+              src={collection.banner_url} 
+              alt={collection.name} 
+              fill 
+              className="object-cover opacity-70"
+              priority
+            />
+          )
         ) : (
           <div className="absolute inset-0 flex items-center justify-center opacity-10">
             <span className="font-display italic text-6xl md:text-9xl tracking-tighter text-white">NINOC</span>
@@ -223,7 +239,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
         
         {/* Top Nav inside Hero */}
-        <div className="absolute top-0 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-10">
+        <div className="absolute top-16 md:top-24 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-10">
           <Link href="/collections" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform ease-[cubic-bezier(0.23,1,0.32,1)] duration-200" />
             <span className="text-[10px] uppercase tracking-[0.2em]">All Collections</span>
