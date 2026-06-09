@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -9,18 +9,10 @@ import GlobalFooter from '@/components/Footer';
 export default function LegalClient() {
   const pathname = usePathname();
   const router = useRouter();
-  const [lang, setLang] = useState<'ID' | 'EN'>('ID');
-
-  useEffect(() => {
-    if (pathname?.startsWith('/en')) {
-      setLang('EN');
-    } else {
-      setLang('ID');
-    }
-  }, [pathname]);
+  const lang: 'ID' | 'EN' = pathname?.startsWith('/en') ? 'EN' : 'ID';
 
   const handleLangChange = (newLang: 'ID' | 'EN') => {
-    setLang(newLang);
+    if (newLang === lang) return;
     // Optional: push to the correct URL for SEO
     if (newLang === 'EN' && !pathname?.startsWith('/en')) {
       router.push(`/en${pathname === '/' ? '' : pathname}`);
