@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Plus, MoreHorizontal, Calendar, Tag, Search, Edit2 } from 'lucide-react';
+import { Plus, MoreHorizontal, Calendar, Tag, Search, Edit2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -58,6 +58,23 @@ export function CollectionsView() {
     setIsDrawerOpen(true);
   };
 
+  const handleDelete = async (e: React.MouseEvent, collection: Collection) => {
+    e.stopPropagation();
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus campaign "${collection.name}"?`)) return;
+    
+    setIsLoading(true);
+    try {
+      await supabase.from('collection_products').delete().eq('collection_id', collection.id);
+      const { error } = await supabase.from('collections').delete().eq('id', collection.id);
+      if (error) throw error;
+      fetchCollections();
+    } catch (error) {
+      console.error('Failed to delete', error);
+      alert('Gagal menghapus campaign');
+      setIsLoading(false);
+    }
+  };
+
   const filtered = collections.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
@@ -101,7 +118,7 @@ export function CollectionsView() {
                 onClick={() => openEditDrawer(collection)}
                 className="bg-white rounded-xl border border-gray-100 overflow-hidden group hover:border-gray-200 hover:shadow-md transition-all cursor-pointer flex flex-col"
               >
-                <div className="h-32 bg-gray-50 relative">
+                <div className="aspect-video bg-gray-50 relative">
                   {collection.banner_url ? (
                     isVideoUrl(collection.banner_url) ? (
                       <video src={collection.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
@@ -129,8 +146,17 @@ export function CollectionsView() {
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-ink truncate pr-2">{collection.name}</h3>
-                    <div className="p-1 text-gray-400 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Edit2 size={12} />
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="p-1 text-gray-400 hover:text-ink hover:bg-gray-100 rounded transition-colors" title="Edit">
+                        <Edit2 size={12} />
+                      </div>
+                      <div 
+                        className="p-1 text-gray-400 hover:text-rose hover:bg-rose/10 rounded transition-colors" 
+                        title="Delete"
+                        onClick={(e) => handleDelete(e, collection)}
+                      >
+                        <Trash2 size={12} />
+                      </div>
                     </div>
                   </div>
                   

@@ -18,6 +18,7 @@ interface CollectionSettingsDrawerProps {
 export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved }: CollectionSettingsDrawerProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'products'>('general');
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,7 +72,6 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
         fetchCollectionProducts();
       } else {
         // Reset for new
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData({
           name: '',
           slug: '',
@@ -82,7 +82,6 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
           start_date: '',
           end_date: '',
         });
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedProductIds(new Set());
       }
 
@@ -132,7 +131,6 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
         .from('collections')
         .getPublicUrl(fileName);
 
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(prev => ({ ...prev, banner_url: publicUrl }));
     } catch (error) {
       console.error('Error uploading banner:', error);
@@ -192,6 +190,28 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
       alert(`Gagal menyimpan: ${error?.message || error?.details || 'Terjadi kesalahan sistem'}`);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!collection) return;
+    if (!window.confirm('Apakah Anda yakin ingin menghapus campaign ini? Tindakan ini tidak dapat dibatalkan.')) return;
+    
+    setIsDeleting(true);
+    try {
+      // Delete relations first just in case cascade is not set up
+      await supabase.from('collection_products').delete().eq('collection_id', collection.id);
+      
+      const { error } = await supabase.from('collections').delete().eq('id', collection.id);
+      if (error) throw error;
+      
+      onSaved();
+      onClose();
+    } catch (error: any) {
+      console.error('Error deleting collection:', error);
+      alert(`Gagal menghapus: ${error?.message || error?.details || 'Terjadi kesalahan sistem'}`);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -445,21 +465,34 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
             </div>
 
             {/* FOOTER */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-              <button 
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-ink transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleSave}
-                disabled={isSaving || !formData.name}
-                className="flex items-center gap-2 px-6 py-2 bg-ink text-white rounded-lg text-sm font-medium hover:bg-ink/90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
-              >
-                {isSaving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : <Save size={16} />}
-                Save Collection
-              </button>
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+              {collection ? (
+                <button
+                  onClick={handleDelete}
+                  disabled={isSaving || isDeleting}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-rose hover:bg-rose/5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isDeleting ? <span className="w-4 h-4 border-2 border-rose/30 border-t-rose rounded-full animate-spin"/> : <Trash2 size={16} />}
+                  Delete
+                </button>
+              ) : <div />}
+              
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-ink transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSave}
+                  disabled={isSaving || !formData.name || isDeleting}
+                  className="flex items-center gap-2 px-6 py-2 bg-ink text-white rounded-lg text-sm font-medium hover:bg-ink/90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+                >
+                  {isSaving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : <Save size={16} />}
+                  Save Collection
+                </button>
+              </div>
             </div>
           </motion.div>
         </>
