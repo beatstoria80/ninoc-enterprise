@@ -27,13 +27,6 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
-    // Admin Backdoor
-    if (email === 'adm' && password === '111') {
-      setIsLoading(false);
-      router.push('/admin');
-      return;
-    }
-
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) {
