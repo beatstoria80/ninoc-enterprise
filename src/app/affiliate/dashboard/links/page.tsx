@@ -61,7 +61,7 @@ export default function LinksPage() {
                     type="url" 
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="https://ninoc.com/shop/..." 
+                    placeholder="https://ninoc.storem/shop/..." 
                     required
                     className="w-full bg-ink/[0.03] border border-ink/5 rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:border-rose focus:ring-2 focus:ring-rose/20" 
                   />
@@ -121,7 +121,7 @@ export default function LinksPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-ink font-medium truncate max-w-[200px]">{item.target}</span>
-                          <span className="text-[10px] text-ink/40 mt-1">ninoc.com{item.target}?ref=johndoe</span>
+                          <span className="text-[10px] text-ink/40 mt-1">ninoc.storem{item.target}?ref=johndoe</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right font-medium text-ink">{item.clicks}</td>

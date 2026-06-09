@@ -137,7 +137,7 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
             <LightText text="Bandung, Jawa Barat" />
             <LightText text="Indonesia" />
             <LightText text="0812-XXXX-XXXX" />
-            <LightText text="hello@ninoc.co.id" />
+            <LightText text="hello@ninoc.store" />
           </div>
         </div>
 
@@ -297,7 +297,7 @@ export function Invoice({ order, printMode = false }: InvoiceProps) {
       }}>
         <div>
           <span style={{ fontSize: '9px', color: '#888', letterSpacing: '1px', display: 'block' }}>NINOC STUDIO — BANDUNG, JAWA BARAT</span>
-          <span style={{ fontSize: '9px', color: '#aaa' }}>hello@ninoc.co.id  •  www.ninoc.co.id</span>
+          <span style={{ fontSize: '9px', color: '#aaa' }}>hello@ninoc.store  •  www.ninoc.store</span>
         </div>
         <span style={{ fontSize: '9px', fontWeight: '700', color: '#888', letterSpacing: '2px' }}>
           INVOICE — {orderNumber}

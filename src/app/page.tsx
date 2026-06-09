@@ -730,7 +730,7 @@ export default function Home() {
 
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/ninoc.co/"
+                href="https://www.instagram.com/ninoc.store/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all"
@@ -747,7 +747,7 @@ export default function Home() {
                   </svg>
                 </motion.div>
                 <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Follow Us</p>
-                <p className="text-[11px] md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.co</p>
+                <p className="text-[11px] md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
                 <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Instagram</p>
               </a>
 

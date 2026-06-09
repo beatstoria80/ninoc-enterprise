@@ -117,7 +117,7 @@ export default function AffiliateDashboardOverview() {
           
           <div className="p-4 bg-ink/[0.03] rounded-xl border border-ink/5 relative group">
             <p className="text-xs text-ink/60 mb-2">Koleksi Summer Sale</p>
-            <p className="text-sm font-medium text-rose truncate pr-8">ninoc.com/col/summer?ref=johndoe</p>
+            <p className="text-sm font-medium text-rose truncate pr-8">ninoc.storem/col/summer?ref=johndoe</p>
             <button className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink transition-colors">
               <Copy size={16} />
             </button>
