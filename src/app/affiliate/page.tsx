@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Instagram, Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
@@ -175,7 +175,7 @@ export default function AffiliateApplicationPage() {
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">Channel / Profile Name</label>
                   <div className="relative">
-                    <Instagram size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
                       required
                       type="text" 
