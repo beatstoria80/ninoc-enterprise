@@ -63,7 +63,7 @@ export default function WholesaleApplicationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50/50 pt-32 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         
         {/* Header */}
@@ -89,15 +89,15 @@ export default function WholesaleApplicationPage() {
           <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
             
             {/* 1. Personal Info */}
-            <div className="p-6 md:p-8 space-y-6">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="p-5 md:p-6 space-y-4">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-rose/10 text-rose flex items-center justify-center">
                   <User size={16} />
                 </div>
                 <h2 className="text-lg font-medium text-ink">Personal Information</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Full Name</label>
                   <input 
@@ -144,15 +144,15 @@ export default function WholesaleApplicationPage() {
             </div>
 
             {/* 2. Business Info */}
-            <div className="p-6 md:p-8 space-y-6 bg-gray-50/30">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="p-5 md:p-6 space-y-4 bg-gray-50/30">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                   <Store size={16} />
                 </div>
                 <h2 className="text-lg font-medium text-ink">Business Information</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">Store / Business Name</label>
                   <div className="relative">
@@ -217,15 +217,15 @@ export default function WholesaleApplicationPage() {
             </div>
 
             {/* 3. Verification Documents */}
-            <div className="p-6 md:p-8 space-y-6">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="p-5 md:p-6 space-y-4">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
                   <FileText size={16} />
                 </div>
                 <h2 className="text-lg font-medium text-ink">Verification Documents</h2>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">NPWP (Optional)</label>
                   <input 
@@ -264,7 +264,7 @@ export default function WholesaleApplicationPage() {
             </div>
 
             {/* Footer / Submit */}
-            <div className="p-6 md:p-8 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-5 md:p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500 max-w-sm">
                 By submitting this application, you agree to our Wholesale Terms of Service and Privacy Policy.
               </p>
