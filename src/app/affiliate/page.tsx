@@ -16,9 +16,10 @@ export default function AffiliateApplicationPage() {
     email: '',
     phone: '',
     channelName: '',
-    platformType: 'instagram', // instagram, tiktok, youtube, blog
+    instagramLink: '',
+    tiktokLink: '',
+    youtubeLink: '',
     address: '',
-    socialLink: '',
     npwp: ''
   });
 
@@ -38,8 +39,9 @@ export default function AffiliateApplicationPage() {
           email: formData.email,
           phone: formData.phone,
           channel_name: formData.channelName,
-          platform_type: formData.platformType,
-          social_link: formData.socialLink || null,
+          instagram_link: formData.instagramLink,
+          tiktok_link: formData.tiktokLink,
+          youtube_link: formData.youtubeLink,
           address: formData.address,
           npwp: formData.npwp || null,
           status: 'pending'
@@ -188,33 +190,50 @@ export default function AffiliateApplicationPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Main Platform</label>
-                  <select 
-                    name="platformType"
-                    value={formData.platformType}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none cursor-pointer"
-                  >
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="blog">Blog / Website</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Profile URL</label>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">Instagram Profile URL</label>
                   <div className="relative">
                     <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
                       type="url" 
                       required
-                      name="socialLink"
-                      value={formData.socialLink}
+                      name="instagramLink"
+                      value={formData.instagramLink}
                       onChange={handleChange}
                       className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
                       placeholder="https://instagram.com/..."
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">TikTok Profile URL</label>
+                  <div className="relative">
+                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                      type="url" 
+                      required
+                      name="tiktokLink"
+                      value={formData.tiktokLink}
+                      onChange={handleChange}
+                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
+                      placeholder="https://tiktok.com/@..."
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">YouTube Channel URL</label>
+                  <div className="relative">
+                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                      type="url" 
+                      required
+                      name="youtubeLink"
+                      value={formData.youtubeLink}
+                      onChange={handleChange}
+                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
+                      placeholder="https://youtube.com/c/..."
                     />
                   </div>
                 </div>
