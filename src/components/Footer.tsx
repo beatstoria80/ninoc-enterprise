@@ -30,6 +30,7 @@ export default function GlobalFooter() {
               { label: 'Collections', href: '/collections' },
               { label: 'Category', href: '/category' },
               { label: 'Wholesale', href: '/wholesale' },
+              { label: 'Affiliate', href: '/affiliate' },
               { label: 'Logbook', href: '/logbook' },
               { label: 'About', href: '/about' }
             ].map((item) => (
