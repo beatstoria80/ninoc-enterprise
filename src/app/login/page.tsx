@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Shield, Lock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Shield, Lock, Mail } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
@@ -14,9 +15,39 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const { isMobile, isIPhone } = useDevice();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    // Admin Backdoor
+    if (email === 'adm' && password === '111') {
+      setIsLoading(false);
+      router.push('/admin');
+      return;
+    }
+
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setError('Kredensial tidak valid.');
+        setIsLoading(false);
+        return;
+      }
+      
+      router.push('/'); 
+    } catch (err) {
+      setError((err as Error)?.message || 'Autentikasi gagal.');
+      setIsLoading(false);
+    }
+  };
 
   const handleGoogleAuth = async () => {
     try {
@@ -84,6 +115,46 @@ export default function LoginPage() {
               )}
             </button>
 
+            <div className="flex items-center gap-4 py-2">
+              <hr className="flex-1 border-ink/5" />
+              <span className="text-[8px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+              <hr className="flex-1 border-ink/5" />
+            </div>
+
+            {/* Email Form */}
+            <form onSubmit={handleEmailAuth} className="space-y-3">
+              <div className="relative">
+                <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                <input
+                  type="text"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  placeholder="EMAIL / USERNAME"
+                  required
+                />
+              </div>
+              <div className="relative">
+                <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  placeholder="KATA SANDI"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-ink text-white py-3 rounded-none text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+              >
+                <span>Masuk</span>
+                <ArrowRight size={12} />
+              </button>
+            </form>
+
             {/* Error */}
             {error && (
               <p className="text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
@@ -138,6 +209,46 @@ export default function LoginPage() {
                   </>
                 )}
               </button>
+
+              <div className="flex items-center gap-4 py-2">
+                <hr className="flex-1 border-ink/5" />
+                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+                <hr className="flex-1 border-ink/5" />
+              </div>
+
+              {/* Email Form */}
+              <form onSubmit={handleEmailAuth} className="space-y-4">
+                <div className="relative">
+                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                    placeholder="Email atau Username"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                    placeholder="Kata Sandi"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-ink text-white py-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
+                >
+                  <span>Masuk</span>
+                  <ArrowRight size={14} />
+                </button>
+              </form>
 
               {/* Error */}
               {error && (
