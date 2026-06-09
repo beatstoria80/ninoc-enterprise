@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Settings2, Users, FileText, Search } from 'lucide-react';
+import { CatalogSettingsDrawer } from './CatalogSettingsDrawer';
 
 const MOCK_CATALOGS = [
   {
@@ -35,8 +36,10 @@ const MOCK_CATALOGS = [
 ];
 
 export function CatalogsView() {
+  const [selectedCatalog, setSelectedCatalog] = useState<any>(null);
+
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col h-full space-y-4 relative">
       <div className="flex items-center justify-between">
         <div className="relative w-64">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -94,7 +97,11 @@ export function CatalogsView() {
                   {catalog.productCount}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-all">
+                  <button 
+                    onClick={() => setSelectedCatalog(catalog)}
+                    className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-all"
+                    title="Settings"
+                  >
                     <Settings2 size={14} />
                   </button>
                 </td>
@@ -103,6 +110,12 @@ export function CatalogsView() {
           </tbody>
         </table>
       </div>
+
+      <CatalogSettingsDrawer 
+        isOpen={!!selectedCatalog} 
+        onClose={() => setSelectedCatalog(null)} 
+        catalog={selectedCatalog} 
+      />
     </div>
   );
 }
