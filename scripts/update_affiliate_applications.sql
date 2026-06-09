@@ -10,3 +10,4 @@ ALTER TABLE public.affiliate_applications DROP COLUMN IF EXISTS social_link;
 ALTER TABLE public.affiliate_applications ADD COLUMN IF NOT EXISTS instagram_link TEXT NOT NULL DEFAULT '';
 ALTER TABLE public.affiliate_applications ADD COLUMN IF NOT EXISTS tiktok_link TEXT NOT NULL DEFAULT '';
 ALTER TABLE public.affiliate_applications ADD COLUMN IF NOT EXISTS youtube_link TEXT NOT NULL DEFAULT '';
+ALTER TABLE public.affiliate_applications ADD COLUMN IF NOT EXISTS facebook_link TEXT NOT NULL DEFAULT '';

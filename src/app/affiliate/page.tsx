@@ -19,6 +19,7 @@ export default function AffiliateApplicationPage() {
     instagramLink: '',
     tiktokLink: '',
     youtubeLink: '',
+    facebookLink: '',
     address: '',
     npwp: ''
   });
@@ -42,6 +43,7 @@ export default function AffiliateApplicationPage() {
           instagram_link: formData.instagramLink,
           tiktok_link: formData.tiktokLink,
           youtube_link: formData.youtubeLink,
+          facebook_link: formData.facebookLink,
           address: formData.address,
           npwp: formData.npwp || null,
           status: 'pending'
@@ -234,6 +236,22 @@ export default function AffiliateApplicationPage() {
                       onChange={handleChange}
                       className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
                       placeholder="https://youtube.com/c/..."
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">Facebook Page/Profile URL</label>
+                  <div className="relative">
+                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                      type="url" 
+                      required
+                      name="facebookLink"
+                      value={formData.facebookLink}
+                      onChange={handleChange}
+                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
+                      placeholder="https://facebook.com/..."
                     />
                   </div>
                 </div>
