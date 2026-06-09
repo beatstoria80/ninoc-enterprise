@@ -61,23 +61,24 @@ function ProductCard({ product }: { product: Product }) {
         href={`/shop/${product.slug}`}
         className="block group relative overflow-hidden"
       >
-        <div className="relative mb-2 md:mb-3 w-full aspect-square flex items-center justify-center bg-transparent">
+        <div className="relative mb-3 md:mb-4 w-full flex items-center justify-center bg-transparent py-4 md:py-6">
           {product.image_url ? (
             <motion.div 
-              className="relative w-[45%] md:w-[40%] aspect-[3/4]"
+              className="relative w-[50%] md:w-[45%]"
               animate={{ scale: isHovered ? 1.05 : 1 }}
               transition={{ duration: DURATION.fast, ease: EASING.out }}
             >
               <Image
                 src={product.image_url}
                 alt={product.name}
-                fill
-                className="object-contain mix-blend-multiply"
-                sizes="(max-width: 768px) 30vw, 15vw"
+                width={600}
+                height={800}
+                className="w-full h-auto object-contain mix-blend-multiply"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
             </motion.div>
           ) : (
-            <div className="w-[35%] aspect-[3/4] flex items-center justify-center text-ink/10">
+            <div className="w-[45%] py-12 flex items-center justify-center text-ink/10">
               <Package size={24} />
             </div>
           )}
