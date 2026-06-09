@@ -303,7 +303,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
             variants={productGridVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-px bg-ink/5 border border-ink/5"
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8"
           >
             {products.length > 0 ? (
               products.map((product) => (
