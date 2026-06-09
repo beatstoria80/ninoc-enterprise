@@ -46,8 +46,8 @@ export default function AffiliateTermsPage() {
                 Ketentuan Umum & Definisi
               </h2>
               <div className="pl-11 space-y-3">
-                <p>1.1. <strong>"Program Afiliasi"</strong> adalah program kemitraan di mana Mitra Afiliasi mempromosikan produk NINOC untuk mendapatkan komisi dari setiap penjualan yang valid.</p>
-                <p>1.2. <strong>"Mitra Afiliasi"</strong> adalah individu (Warga Negara Indonesia) yang telah disetujui secara resmi oleh pihak NINOC.</p>
+                <p>1.1. <strong>&quot;Program Afiliasi&quot;</strong> adalah program kemitraan di mana Mitra Afiliasi mempromosikan produk NINOC untuk mendapatkan komisi dari setiap penjualan yang valid.</p>
+                <p>1.2. <strong>&quot;Mitra Afiliasi&quot;</strong> adalah individu (Warga Negara Indonesia) yang telah disetujui secara resmi oleh pihak NINOC.</p>
                 <p>1.3. Dengan mendaftar, Mitra Afiliasi menyatakan bahwa seluruh data yang diberikan (KTP, NPWP, Rekening, URL Media Sosial) adalah asli, akurat, dan dapat dipertanggungjawabkan di mata hukum.</p>
               </div>
             </section>
@@ -76,7 +76,7 @@ export default function AffiliateTermsPage() {
                   <strong className="block mb-1">Kepatuhan Hukum Pajak RI</strong>
                   Sesuai dengan Undang-Undang Harmonisasi Peraturan Perpajakan (UU HPP) No. 7 Tahun 2021, penghasilan komisi afiliasi merupakan objek Pajak Penghasilan (PPh).
                 </div>
-                <p>3.1. Komisi hanya diberikan untuk pesanan yang telah berstatus <strong>"Selesai" (Delivered)</strong> dan telah melewati masa garansi pengembalian (Retur).</p>
+                <p>3.1. Komisi hanya diberikan untuk pesanan yang telah berstatus <strong>&quot;Selesai&quot; (Delivered)</strong> dan telah melewati masa garansi pengembalian (Retur).</p>
                 <p>3.2. Penarikan dana (<em>Payout</em>) mewajibkan verifikasi KTP dan Rekening Koran / Buku Tabungan guna mematuhi UU No. 8 Tahun 2010 tentang Pencegahan dan Pemberantasan Tindak Pidana Pencucian Uang (TPPU).</p>
                 <p>3.3. <strong>Pemotongan Pajak:</strong> Komisi yang dicairkan akan dipotong PPh Pasal 21. Bagi Mitra yang mencantumkan NPWP valid, akan dikenakan tarif normal sesuai lapisan PTKP. Bagi Mitra tanpa NPWP, akan dikenakan tarif pajak lebih tinggi (berlaku tarif 20% lebih tinggi dari tarif normal sesuai peraturan Direktorat Jenderal Pajak).</p>
               </div>
