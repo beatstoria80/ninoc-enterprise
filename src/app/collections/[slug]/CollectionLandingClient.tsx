@@ -70,8 +70,7 @@ function ProductCard({ product }: { product: Product }) {
             <Image
               src={product.image_url}
               alt={product.name}
-              fill
-              className="object-contain p-6 md:p-10 transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
+              className="absolute inset-6 md:inset-12 object-contain transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
               sizes="(max-width: 768px) 50vw, 25vw"
               style={{
                 filter: isHovered ? 'blur(0px)' : 'blur(0px)',
