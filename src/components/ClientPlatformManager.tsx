@@ -58,7 +58,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   }
 
   const isCategoryPage = pathname === '/category';
-  const isCollectionsPage = pathname === '/collections';
+  const isCollectionsPage = pathname?.startsWith('/collections');
   const showGlobalFooter = showGlobalHeader && !isCategoryPage && !isCollectionsPage;
 
   return (
