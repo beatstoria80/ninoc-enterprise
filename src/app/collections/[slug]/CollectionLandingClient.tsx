@@ -59,12 +59,12 @@ function ProductCard({ product }: { product: Product }) {
     >
       <Link
         href={`/shop/${product.slug}`}
-        className="block bg-white p-4 md:p-8 group relative overflow-hidden border border-transparent hover:border-ink/5"
+        className="block group relative overflow-hidden"
       >
-        <div className="relative mb-4 md:mb-6">
+        <div className="relative mb-2 md:mb-3 w-full aspect-square flex items-center justify-center bg-transparent">
           {product.image_url ? (
             <motion.div 
-              className="relative w-full aspect-square"
+              className="relative w-[45%] md:w-[40%] aspect-[3/4]"
               animate={{ scale: isHovered ? 1.05 : 1 }}
               transition={{ duration: DURATION.fast, ease: EASING.out }}
             >
@@ -73,11 +73,11 @@ function ProductCard({ product }: { product: Product }) {
                 alt={product.name}
                 fill
                 className="object-contain mix-blend-multiply"
-                sizes="(max-width: 768px) 50vw, 25vw"
+                sizes="(max-width: 768px) 30vw, 15vw"
               />
             </motion.div>
           ) : (
-            <div className="w-full aspect-square flex items-center justify-center text-ink/10">
+            <div className="w-[35%] aspect-[3/4] flex items-center justify-center text-ink/10">
               <Package size={24} />
             </div>
           )}
