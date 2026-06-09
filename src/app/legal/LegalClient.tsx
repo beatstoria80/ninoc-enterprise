@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ArrowLeft, Shield } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { usePathname, useRouter } from 'next/navigation';
 import GlobalFooter from '@/components/Footer';
 

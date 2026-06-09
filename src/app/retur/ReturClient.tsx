@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { RefreshCw, Shield, Clock, Video, Check } from 'lucide-react';
 import { ReturForm } from '@/components/ReturForm';
 import { ReturStatus } from '@/components/ReturStatus';

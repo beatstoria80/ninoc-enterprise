@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Mail, Phone, MapPin, Globe } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
 
 export default function AffiliateApplicationPage() {

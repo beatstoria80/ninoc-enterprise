@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';

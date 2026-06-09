@@ -7,7 +7,7 @@ import {
   RefreshCw, Check, X, AlertCircle, Clock, Video,
   Eye, Search, CheckCircle, XCircle, Package
 } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 
 interface ReturRequest {
   id: string;

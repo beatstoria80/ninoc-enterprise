@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { motion } from 'framer-motion';
 import { RefreshCw, Clock, Video, Shield, ChevronRight, Check } from 'lucide-react';
 

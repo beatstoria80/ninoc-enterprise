@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import GlobalFooter from '@/components/Footer';
 
 interface HelpSection {

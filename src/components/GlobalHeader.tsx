@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/store/useCart';
@@ -471,13 +471,13 @@ export default function GlobalHeader() {
         >
           {/* Language Toggle */}
           <div className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]">
-            <Link prefetch={false} href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors", lang !== 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
               ID
-            </Link>
+            </a>
             <span className="text-ink/10">|</span>
-            <Link prefetch={false} href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors", lang === 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
               EN
-            </Link>
+            </a>
           </div>
 
           {/* Search Button */}

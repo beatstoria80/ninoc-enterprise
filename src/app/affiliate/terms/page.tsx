@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle } from 'lucide-react';
 
 export const metadata = {

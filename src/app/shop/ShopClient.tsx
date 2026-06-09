@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingBag, ArrowRight, ImageOff } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';

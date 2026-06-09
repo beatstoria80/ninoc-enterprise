@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Mail, MapPin, Shield, Lock, Phone } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import { useStoreName } from '@/components/BrandProvider';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';

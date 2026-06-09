@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
 import { Grid3X3, ChevronRight, ArrowLeft, Package } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';

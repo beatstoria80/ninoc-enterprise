@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
+import Link from '@/components/LocalizedLink';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw, Clock, CheckCircle, XCircle, Package, ChevronRight, AlertCircle, Eye, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
