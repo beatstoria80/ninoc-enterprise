@@ -258,7 +258,7 @@ function ProductCard({ product }: { product: Product }) {
               New
             </motion.div>
           )}
-        </motion.div>
+        </div>
 
         <div className="space-y-0.5">
           <motion.span
