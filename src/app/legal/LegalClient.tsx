@@ -1,12 +1,33 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import GlobalFooter from '@/components/Footer';
 
 export default function LegalClient() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [lang, setLang] = useState<'ID' | 'EN'>('ID');
+
+  useEffect(() => {
+    if (pathname?.startsWith('/en')) {
+      setLang('EN');
+    } else {
+      setLang('ID');
+    }
+  }, [pathname]);
+
+  const handleLangChange = (newLang: 'ID' | 'EN') => {
+    setLang(newLang);
+    // Optional: push to the correct URL for SEO
+    if (newLang === 'EN' && !pathname?.startsWith('/en')) {
+      router.push(`/en${pathname === '/' ? '' : pathname}`);
+    } else if (newLang === 'ID' && pathname?.startsWith('/en')) {
+      router.push(pathname.replace('/en', '') || '/');
+    }
+  };
 
   const content = {
     EN: {
@@ -79,9 +100,9 @@ export default function LegalClient() {
         </div>
 
         <div className="flex items-center gap-4 text-[9px] font-medium tracking-widest border border-ink/5 rounded-full px-3 py-1.5 bg-white/50 shadow-sm">
-          <button onClick={() => setLang('ID')} className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>ID</button>
+          <button onClick={() => handleLangChange('ID')} className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>ID</button>
           <span className="text-ink/5">|</span>
-          <button onClick={() => setLang('EN')} className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>EN</button>
+          <button onClick={() => handleLangChange('EN')} className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>EN</button>
         </div>
       </nav>
 
