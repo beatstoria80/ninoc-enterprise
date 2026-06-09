@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Download, Copy, Instagram, PlaySquare, CheckCircle, ExternalLink } from 'lucide-react';
+import { Image as ImageIcon, Download, Copy, MessageCircle, PlaySquare, CheckCircle, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
 export default function AssetsPage() {
@@ -84,7 +84,7 @@ export default function AssetsPage() {
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Suggested Copywriting</label>
                   <div className="flex gap-2">
-                    <Instagram size={12} className="text-ink/40" />
+                    <MessageCircle size={12} className="text-ink/40" />
                     <PlaySquare size={12} className="text-ink/40" />
                   </div>
                 </div>
