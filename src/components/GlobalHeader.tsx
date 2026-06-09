@@ -405,7 +405,8 @@ export default function GlobalHeader() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const isDarkBg = pathname?.startsWith('/collections/') && pathname !== '/collections' && !isScrolled;
+  const isCollectionsPath = pathname?.match(/^\/(?:en\/)?collections\/.+/);
+  const isDarkBg = Boolean(isCollectionsPath && !isScrolled);
 
   return (
     <>
