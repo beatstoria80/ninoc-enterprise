@@ -76,7 +76,7 @@ function ProductCard({ product }: { product: Product }) {
                 sizes="(max-width: 768px) 50vw, 25vw"
                 style={{
                   filter: isHovered ? 'blur(0px)' : 'blur(0px)',
-                  transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                  transform: isHovered ? 'scale(0.85)' : 'scale(0.8)',
                 }}
               />
             ) : (
