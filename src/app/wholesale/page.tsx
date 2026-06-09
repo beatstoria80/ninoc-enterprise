@@ -246,7 +246,7 @@ export default function WholesaleApplicationPage() {
                       <div className="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-rose/10 group-hover:text-rose transition-colors">
                         <Upload size={18} />
                       </div>
-                      <p className="text-sm font-medium text-ink mb-1">Owner's ID (KTP)</p>
+                      <p className="text-sm font-medium text-ink mb-1">Owner&apos;s ID (KTP)</p>
                       <p className="text-xs text-gray-400">JPG, PNG or PDF (Max 5MB)</p>
                     </div>
 
