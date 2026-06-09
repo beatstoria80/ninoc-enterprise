@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Instagram, Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function AffiliateApplicationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,15 +26,33 @@ export default function AffiliateApplicationPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('affiliate_applications')
+        .insert([{
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          channel_name: formData.channelName,
+          platform_type: formData.platformType,
+          social_link: formData.socialLink || null,
+          address: formData.address,
+          npwp: formData.npwp || null,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
       setIsSuccess(true);
-    }, 1500);
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert("Terjadi kesalahan saat mengirim aplikasi. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
