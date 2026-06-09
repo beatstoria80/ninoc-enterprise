@@ -145,6 +145,19 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
   const displayModelInfo = product?.model_info || fallbackModelInfo;
 
+  const getWeightAndHeight = (size: string) => {
+    const s = size.toUpperCase();
+    if (s === 'S' || s === '28') return { w: '45-55kg', h: '150-160cm' };
+    if (s === 'M' || s === '30') return { w: '55-65kg', h: '160-170cm' };
+    if (s === 'L' || s === '32') return { w: '65-75kg', h: '170-175cm' };
+    if (s === 'XL' || s === '34') return { w: '75-85kg', h: '175-180cm' };
+    if (s === 'XXL' || s === '36') return { w: '85-95kg', h: '180-185cm' };
+    if (s === '3XL' || s === '38') return { w: '95-105kg', h: '185-190cm' };
+    if (s === '4XL' || s === '40') return { w: '105-115kg', h: '190-195cm' };
+    if (s === '5XL' || s === '42') return { w: '115-125kg', h: '195-200cm' };
+    return { w: '-', h: '-' };
+  };
+
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     const timeout = setTimeout(() => setIsLoading(false), 10000); // 10s fallback
@@ -451,14 +464,22 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[8px] font-medium"><span className="text-ink/40">SIZE</span><span className="text-ink/40">{isPants ? 'WAIST / LENGTH' : 'CHEST / LENGTH'}</span></div>
-                      {displayMeasurements.map((m, idx) => (
-                        <div key={idx} className="flex justify-between items-center py-2 border-b border-ink/5 last:border-0 group-hover:border-ink/10 transition-colors">
-                          <span className="text-[11px] font-medium text-ink/80">{m.size}</span>
-                          <span className="text-[10px] text-ink/60 font-mono tracking-widest">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
-                        </div>
-                      ))}
+                    <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
+                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[8px] font-medium border-b border-ink/10 pb-1 mb-1 min-w-[200px]">
+                        <span className="text-ink/40">SIZE</span>
+                        <span className="text-ink/40 text-center">{isPants ? 'WAIST/LENGTH' : 'CHEST/LENGTH'}</span>
+                        <span className="text-ink/40 text-right">WEIGHT/HEIGHT</span>
+                      </div>
+                      {displayMeasurements.map((m, idx) => {
+                        const wh = getWeightAndHeight(m.size);
+                        return (
+                          <div key={idx} className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-1.5 border-b border-ink/5 last:border-0 group-hover:border-ink/10 transition-colors min-w-[200px]">
+                            <span className="text-[11px] font-bold text-ink">{m.size}</span>
+                            <span className="text-[9px] text-ink/70 font-mono tracking-widest text-center">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
+                            <span className="text-[8px] text-ink/50 text-right font-medium">{wh.w} / {wh.h}</span>
+                          </div>
+                        );
+                      })}
                       {displayModelInfo && (
                         <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
                       )}
@@ -663,18 +684,24 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                       <X size={10} />
                                     </button>
                                   </div>
-                                  <div className="flex justify-between text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1">
-                                    <span>Size</span><span>{isPants ? 'Waist/Length/Leg' : 'Chest/Length'}</span>
+                                  <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1 border-b border-white/10 pb-1">
+                                    <span>Size</span>
+                                    <span className="text-center">{isPants ? 'W/L/Leg' : 'Chest/L'}</span>
+                                    <span className="text-right">Wght/Hght</span>
                                   </div>
-                                  {displayMeasurements.map((m, idx) => (
-                                    <div key={idx} className={cn(
-                                      "flex justify-between text-[9px] font-medium py-0.5 border-b border-white/5",
-                                      m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
-                                    )}>
-                                      <span>{m.size}</span>
-                                      <span>{isPants ? `${m.waist || '-'} / ${m.length} / ${m.leg_opening || '-'}` : `${m.chest || '-'} / ${m.length}`}</span>
-                                    </div>
-                                  ))}
+                                  {displayMeasurements.map((m, idx) => {
+                                    const wh = getWeightAndHeight(m.size);
+                                    return (
+                                      <div key={idx} className={cn(
+                                        "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[8px] font-medium py-1 border-b border-white/5",
+                                        m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
+                                      )}>
+                                        <span className="font-bold">{m.size}</span>
+                                        <span className="text-center">{isPants ? `${m.waist || '-'} / ${m.length} / ${m.leg_opening || '-'}` : `${m.chest || '-'} / ${m.length}`}</span>
+                                        <span className="text-right text-white/50">{wh.w} / {wh.h}</span>
+                                      </div>
+                                    );
+                                  })}
                                   {displayModelInfo && (
                                     <p className="text-[7px] text-white/30 mt-1.5 italic">* {displayModelInfo}</p>
                                   )}
