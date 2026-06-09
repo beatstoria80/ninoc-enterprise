@@ -456,8 +456,8 @@ export default function GlobalHeader() {
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
           <NavLink href="/shop">{dict.header.shop}</NavLink>
-          <NavLink href="/collections">Collections</NavLink>
-          <NavLink href="/category">Category</NavLink>
+          <NavLink href="/collections">{dict.header.collections}</NavLink>
+          <NavLink href="/category">{dict.header.category}</NavLink>
           <NavLink href="/logbook">{dict.header.logbook}</NavLink>
           <NavLink href="/about">{dict.header.about}</NavLink>
         </motion.div>

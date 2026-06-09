@@ -33,8 +33,8 @@ export default function GlobalFooter() {
           <div className="flex flex-col gap-1">
             {[
               { label: dict.header.shop, href: '/shop' },
-              { label: 'Collections', href: '/collections' },
-              { label: 'Category', href: '/category' },
+              { label: dict.header.collections, href: '/collections' },
+              { label: dict.header.category, href: '/category' },
               { label: dict.header.wholesale, href: '/wholesale' },
               { label: dict.header.affiliate, href: '/affiliate' },
               { label: dict.header.logbook, href: '/logbook' },

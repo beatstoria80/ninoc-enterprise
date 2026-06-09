@@ -1,6 +1,8 @@
 export const id = {
   header: {
     shop: "Katalog",
+    collections: "Koleksi",
+    category: "Kategori",
     about: "Tentang Kami",
     wholesale: "Grosir B2B",
     affiliate: "Afiliasi",
