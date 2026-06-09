@@ -62,22 +62,24 @@ function ProductCard({ product }: { product: Product }) {
         className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
         <motion.div
-          className="aspect-[3/4] bg-transparent relative mb-2 md:mb-3 overflow-hidden"
+          className="aspect-[3/4] bg-transparent relative mb-2 md:mb-3 overflow-hidden flex items-center justify-center"
           animate={{ borderColor: 'transparent' }}
           transition={{ duration: DURATION.fast }}
         >
           {product.image_url ? (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-contain transition-all duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
-              sizes="(max-width: 768px) 50vw, 25vw"
-              style={{
-                filter: isHovered ? 'blur(0px)' : 'blur(0px)',
-                transform: isHovered ? 'scale(0.75)' : 'scale(0.7)',
-              }}
-            />
+            <motion.div 
+              className="relative w-[30%] h-[30%] md:w-[40%] md:h-[40%]"
+              animate={{ scale: isHovered ? 1.05 : 1 }}
+              transition={{ duration: DURATION.fast, ease: EASING.out }}
+            >
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 30vw, 15vw"
+              />
+            </motion.div>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-ink/10">
               <Package size={24} />
