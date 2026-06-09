@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Settings2, Users, FileText, Search } from 'lucide-react';
+import { Plus, Settings, Users, FileText, Search } from 'lucide-react';
 import { CatalogSettingsDrawer } from './CatalogSettingsDrawer';
 
 const MOCK_CATALOGS = [
@@ -99,10 +99,10 @@ export function CatalogsView() {
                 <td className="px-4 py-3 text-right">
                   <button 
                     onClick={() => setSelectedCatalog(catalog)}
-                    className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-all"
+                    className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded transition-all"
                     title="Settings"
                   >
-                    <Settings2 size={14} />
+                    <Settings size={14} />
                   </button>
                 </td>
               </tr>
