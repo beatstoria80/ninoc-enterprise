@@ -18,6 +18,7 @@ interface CollectionSettingsDrawerProps {
 export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved }: CollectionSettingsDrawerProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'products'>('general');
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -105,6 +106,37 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
     if (next.has(productId)) next.delete(productId);
     else next.add(productId);
     setSelectedProductIds(next);
+  };
+
+  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingBanner(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('collections')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('collections')
+        .getPublicUrl(fileName);
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData(prev => ({ ...prev, banner_url: publicUrl }));
+    } catch (error) {
+      console.error('Error uploading banner:', error);
+      alert('Gagal mengunggah foto banner. Pastikan ukuran file tidak terlalu besar.');
+    } finally {
+      setIsUploadingBanner(false);
+      // Reset input value
+      event.target.value = '';
+    }
   };
 
   const handleSave = async () => {
@@ -247,20 +279,58 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                   {/* Banner */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-ink flex items-center gap-2">
-                      <ImageIcon size={14} /> Banner Image URL
+                      <ImageIcon size={14} /> Banner Photo (Optional)
                     </label>
-                    <input
-                      type="url"
-                      value={formData.banner_url || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, banner_url: e.target.value }))}
-                      placeholder="https://images.unsplash.com/..."
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
-                    />
-                    {formData.banner_url && (
-                      <div className="mt-2 relative h-32 rounded-lg overflow-hidden border border-gray-100">
-                        <Image src={formData.banner_url} alt="Banner Preview" fill className="object-cover" />
+                    <div className="flex items-center gap-4">
+                      {formData.banner_url ? (
+                        <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 group">
+                          <Image src={formData.banner_url} alt="Banner Preview" fill className="object-cover" />
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <label className="cursor-pointer text-white p-2">
+                              <ImageIcon size={16} />
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={handleBannerUpload} 
+                                className="hidden" 
+                                disabled={isUploadingBanner}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="relative w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col items-center justify-center gap-1">
+                          <ImageIcon size={16} className="text-gray-400" />
+                          <span className="text-[9px] text-gray-400 font-medium">No Image</span>
+                        </div>
+                      )}
+
+                      <div className="flex-1">
+                        <label className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg text-xs font-medium text-ink cursor-pointer transition-colors disabled:opacity-50 w-full sm:w-auto">
+                          {isUploadingBanner ? (
+                            <>
+                              <span className="w-3 h-3 border-2 border-ink/20 border-t-ink rounded-full animate-spin" />
+                              Uploading...
+                            </>
+                          ) : (
+                            <>
+                              <ImageIcon size={14} />
+                              {formData.banner_url ? 'Change Photo' : 'Upload Photo'}
+                            </>
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleBannerUpload} 
+                            className="hidden" 
+                            disabled={isUploadingBanner}
+                          />
+                        </label>
+                        <p className="text-[10px] text-gray-400 mt-2">
+                          Recommended format: JPG, PNG. Ratio 16:9 or 3:1.
+                        </p>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   <hr className="border-gray-100" />
