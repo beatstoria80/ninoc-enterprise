@@ -59,16 +59,12 @@ function ProductCard({ product }: { product: Product }) {
     >
       <Link
         href={`/shop/${product.slug}`}
-        className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
+        className="block bg-white p-4 md:p-8 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
-        <motion.div
-          className="aspect-[3/4] bg-transparent relative mb-2 md:mb-3 overflow-hidden flex items-center justify-center"
-          animate={{ borderColor: 'transparent' }}
-          transition={{ duration: DURATION.fast }}
-        >
+        <div className="relative mb-4 md:mb-6">
           {product.image_url ? (
             <motion.div 
-              className="relative w-[30%] h-[30%] md:w-[40%] md:h-[40%]"
+              className="relative w-full aspect-square"
               animate={{ scale: isHovered ? 1.05 : 1 }}
               transition={{ duration: DURATION.fast, ease: EASING.out }}
             >
@@ -77,25 +73,25 @@ function ProductCard({ product }: { product: Product }) {
                 alt={product.name}
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 30vw, 15vw"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
             </motion.div>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-ink/10">
+            <div className="w-full aspect-square flex items-center justify-center text-ink/10">
               <Package size={24} />
             </div>
           )}
 
           {product.is_featured && (
             <motion.div
-              className="absolute top-1 left-1 md:top-2 md:left-2 text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em] bg-ink text-white px-1 py-0.5"
+              className="absolute top-0 left-0 text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em] bg-ink text-white px-1 py-0.5 z-10"
               animate={{ backgroundColor: isHovered ? brandColor.color : '#141414' }}
               transition={{ duration: DURATION.fast }}
             >
               New
             </motion.div>
           )}
-        </motion.div>
+        </div>
 
         <div className="space-y-0.5">
           <motion.span
