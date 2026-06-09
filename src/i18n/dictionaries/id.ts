@@ -94,5 +94,60 @@ export const id = {
     placeOrder: "Buat Pesanan",
     secure: "Aman",
     encrypted: "Enkripsi"
+  },
+  about: {
+    label: "NINOC ENTERPRISE",
+    title: "Tentang Kami",
+    tagline: "Berawal dari Bandung. Dibuat untuk dunia.",
+    story: {
+      heading: "Cerita Kami",
+      body: "NINOC didirikan dengan visi sederhana: menciptakan pakaian yang berbicara kepada jiwa. Bermarkas di Bandung, Indonesia, kami memadukan keahlian lokal dengan estetika global."
+    },
+    philosophy: {
+      heading: "Filosofi",
+      body: "\"Kenakan seni, kuasai hari.\" Setiap pieces adalah kanvas. Setiap pemakai adalah seniman."
+    },
+    mission: {
+      heading: "Misi",
+      body: "Menghadirkan garment archival premium yang memadukan presisi industrial dengan keaslian budaya — menciptakan pieces yang bertahan melampaui tren."
+    },
+    image: "STUDIO NINOC — BANDUNG, INDONESIA",
+    stats: {
+      est: { label: "Didirikan", value: "2024" },
+      location: { label: "Lokasi", value: "Bandung" },
+      contact: { label: "Kontak", value: "hello@ninoc.art" }
+    },
+    verified: {
+      label: "Terverifikasi Origin",
+      body: "Bukan sekadar pakaian. Ini adalah artefak yang lahir dari jalanan, panggung, dan budaya yang membentuk siapa kami."
+    }
+  },
+  affiliate: {
+    title: "Aplikasi Mitra Afiliasi",
+    subtitle: "Bergabunglah dengan jaringan konten kreator dan influencer kami untuk mendapatkan komisi pada setiap referensi yang berhasil.",
+    received: "Aplikasi Diterima!",
+    receivedDesc: "Terima kasih atas minat Anda menjadi mitra afiliasi. Tim kami sedang meninjau profil Anda dan akan menghubungi Anda melalui email atau WhatsApp dalam waktu 1x24 jam.",
+    returnHome: "Kembali ke Beranda",
+    personalInfo: "Informasi Pribadi",
+    fullName: "Nama Lengkap",
+    email: "Alamat Email",
+    whatsapp: "Nomor WhatsApp",
+    channelInfo: "Informasi Kanal",
+    channelName: "Nama Kanal / Profil",
+    igUrl: "URL Profil Instagram",
+    addressInfo: "Informasi Tambahan",
+    address: "Alamat Lengkap",
+    npwp: "Nomor NPWP (Opsional)",
+    submit: "Kirim Aplikasi",
+    submitting: "Mengirim...",
+    error: "Terjadi kesalahan saat mengirim aplikasi. Silakan coba lagi."
+  },
+  logbook: {
+    title: "Logbook Studio",
+    subtitle: "Catatan Arsip & Proses",
+    home: "Beranda",
+    empty: "Belum ada catatan",
+    emptyDesc: "Nantikan catatan arsip terbaru dari kami",
+    end: "Akhir Catatan"
   }
 };

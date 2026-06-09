@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
+import { useDictionary } from '@/hooks/useDictionary';
 
 export default function AffiliateApplicationPage() {
+  const dict = useDictionary();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -53,7 +55,7 @@ export default function AffiliateApplicationPage() {
       setIsSuccess(true);
     } catch (error) {
       console.error("Error submitting application:", error);
-      alert("Terjadi kesalahan saat mengirim aplikasi. Silakan coba lagi.");
+      alert(dict.affiliate.error);
     } finally {
       setIsSubmitting(false);
     }
@@ -70,15 +72,15 @@ export default function AffiliateApplicationPage() {
           <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={32} />
           </div>
-          <h2 className="text-2xl font-display font-medium text-ink mb-3">Application Received!</h2>
+          <h2 className="text-2xl font-display font-medium text-ink mb-3">{dict.affiliate.received}</h2>
           <p className="text-gray-500 mb-8 leading-relaxed">
-            Thank you for your interest in becoming an affiliate partner. Our team is reviewing your profile and will contact you via email or WhatsApp within 1x24 hours.
+            {dict.affiliate.receivedDesc}
           </p>
           <Link 
             href="/"
             className="inline-flex items-center justify-center px-6 py-3 bg-ink text-white rounded-full font-medium hover:bg-ink/90 transition-transform active:scale-95"
           >
-            Return to Homepage
+            {dict.affiliate.returnHome}
           </Link>
         </motion.div>
       </div>
@@ -95,9 +97,9 @@ export default function AffiliateApplicationPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-3xl md:text-4xl font-display font-medium text-ink mb-3">Affiliate Partner Application</h1>
+            <h1 className="text-3xl md:text-4xl font-display font-medium text-ink mb-3">{dict.affiliate.title}</h1>
             <p className="text-gray-500 max-w-xl mx-auto">
-              Join our network of content creators and influencers to earn commissions on every successful referral.
+              {dict.affiliate.subtitle}
             </p>
           </motion.div>
         </div>
@@ -117,12 +119,12 @@ export default function AffiliateApplicationPage() {
                 <div className="w-8 h-8 rounded-full bg-rose/10 text-rose flex items-center justify-center">
                   <User size={16} />
                 </div>
-                <h2 className="text-lg font-medium text-ink">Personal Information</h2>
+                <h2 className="text-lg font-medium text-ink">{dict.affiliate.personalInfo}</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Full Name</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.fullName}</label>
                   <input 
                     required
                     type="text" 
@@ -134,7 +136,7 @@ export default function AffiliateApplicationPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Email Address</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.email}</label>
                   <div className="relative">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
@@ -149,7 +151,7 @@ export default function AffiliateApplicationPage() {
                   </div>
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">WhatsApp Number</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.whatsapp}</label>
                   <div className="relative">
                     <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
@@ -172,12 +174,12 @@ export default function AffiliateApplicationPage() {
                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                   <Share2 size={16} />
                 </div>
-                <h2 className="text-lg font-medium text-ink">Channel Information</h2>
+                <h2 className="text-lg font-medium text-ink">{dict.affiliate.channelInfo}</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">Channel / Profile Name</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.channelName}</label>
                   <div className="relative">
                     <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
@@ -193,7 +195,7 @@ export default function AffiliateApplicationPage() {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">Instagram Profile URL</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.igUrl}</label>
                   <div className="relative">
                     <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input 
@@ -257,7 +259,7 @@ export default function AffiliateApplicationPage() {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">Full Home Address (for sample delivery)</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.address}</label>
                   <div className="relative">
                     <MapPin size={16} className="absolute left-4 top-4 text-gray-400" />
                     <textarea 
@@ -280,12 +282,12 @@ export default function AffiliateApplicationPage() {
                 <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
                   <FileText size={16} />
                 </div>
-                <h2 className="text-lg font-medium text-ink">Verification Documents</h2>
+                <h2 className="text-lg font-medium text-ink">{dict.affiliate.addressInfo}</h2>
               </div>
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">NPWP (Optional)</label>
+                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.npwp}</label>
                   <input 
                     type="text" 
                     name="npwp"
@@ -337,7 +339,7 @@ export default function AffiliateApplicationPage() {
                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    Submit Application
+                    {dict.affiliate.submit}
                     <ArrowRight size={18} />
                   </>
                 )}

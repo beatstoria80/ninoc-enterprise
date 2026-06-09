@@ -94,5 +94,60 @@ export const en = {
     placeOrder: "Place Order",
     secure: "Secure",
     encrypted: "Encrypted"
+  },
+  about: {
+    label: "NINOC ENTERPRISE",
+    title: "About Us",
+    tagline: "Born in Bandung. Made for the world.",
+    story: {
+      heading: "Our Story",
+      body: "NINOC was founded with a simple vision: create clothing that speaks to the soul. Based in Bandung, Indonesia, we blend local craftsmanship with global aesthetics."
+    },
+    philosophy: {
+      heading: "Philosophy",
+      body: "\"Wear the art, own the day.\" Every piece is a canvas. Every wearer is an artist."
+    },
+    mission: {
+      heading: "Mission",
+      body: "To deliver premium archival garments that merge industrial precision with cultural authenticity — creating pieces that endure beyond trends."
+    },
+    image: "NINOC STUDIO — BANDUNG, INDONESIA",
+    stats: {
+      est: { label: "Est.", value: "2024" },
+      location: { label: "Location", value: "Bandung" },
+      contact: { label: "Contact", value: "hello@ninoc.art" }
+    },
+    verified: {
+      label: "Origin Verified",
+      body: "Not just clothing. These are artifacts born from the streets, the stage, and the culture."
+    }
+  },
+  affiliate: {
+    title: "Affiliate Partner Application",
+    subtitle: "Join our network of content creators and influencers to earn commissions on every successful referral.",
+    received: "Application Received!",
+    receivedDesc: "Thank you for your interest in becoming an affiliate partner. Our team is reviewing your profile and will contact you via email or WhatsApp within 1x24 hours.",
+    returnHome: "Return to Homepage",
+    personalInfo: "Personal Information",
+    fullName: "Full Name",
+    email: "Email Address",
+    whatsapp: "WhatsApp Number",
+    channelInfo: "Channel Information",
+    channelName: "Channel / Profile Name",
+    igUrl: "Instagram Profile URL",
+    addressInfo: "Additional Information",
+    address: "Full Address",
+    npwp: "NPWP Number (Optional)",
+    submit: "Submit Application",
+    submitting: "Submitting...",
+    error: "An error occurred while submitting the application. Please try again."
+  },
+  logbook: {
+    title: "Studio Logbook",
+    subtitle: "Archival Records & Process",
+    home: "Home",
+    empty: "No entries recorded",
+    emptyDesc: "Check back soon for new archival records",
+    end: "End of Records"
   }
 };

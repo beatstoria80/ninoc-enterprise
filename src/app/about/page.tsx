@@ -1,20 +1,24 @@
 import { Metadata } from 'next';
 import AboutClient from './AboutClient';
+import { getDictionary } from '@/lib/i18n-server';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
-export const metadata: Metadata = {
-  title: 'Tentang Kami — Premium Archival Garment Studio',
-  description: 'NINOC didirikan dengan visi sederhana: menciptakan pakaian yang berbicara kepada jiwa. Bermarkas di Bandung, Indonesia, kami memadukan keahlian lokal dengan estetika global.',
-  openGraph: {
-    title: 'Tentang Kami | NINOC STORE',
-    description: 'NINOC — Premium Archival Garment Studio dari Indonesia. Born in Bandung. Made for the world.',
-    type: 'website',
-  },
-  alternates: {
-    canonical: `${BASE_URL}/about`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = await getDictionary();
+  return {
+    title: `${dict.about.title} — Premium Archival Garment Studio`,
+    description: dict.about.story.body,
+    openGraph: {
+      title: `${dict.about.title} | NINOC STORE`,
+      description: dict.about.story.body,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `${BASE_URL}/about`,
+    },
+  };
+}
 
 export default function AboutPage() {
   return <AboutClient />;

@@ -6,6 +6,7 @@ import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
+import { useDictionary } from '@/hooks/useDictionary';
 
 const EASING = { out: [0.23, 1, 0.32, 1] as const };
 const DURATION = { micro: 0.1, fast: 0.15, normal: 0.2, medium: 0.3, slow: 0.5 };
@@ -41,6 +42,7 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
 }
 
 export default function LogbookClient() {
+  const dict = useDictionary();
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,24 +73,24 @@ export default function LogbookClient() {
           <div className="flex items-center gap-3">
             <BookOpen size={12} className="text-rose" />
             <div className="flex flex-col">
-              <h1 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-ink">Studio Logbook</h1>
-              <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">Archival Records& Process</span>
+              <h1 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-ink">{dict.logbook.title}</h1>
+              <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.logbook.subtitle}</span>
             </div>
           </div>
-          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Home</span></Link>
+          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">{dict.logbook.home}</span></Link>
         </div>
 
         <motion.div variants={pageVariants} initial="hidden" animate="visible" className="flex flex-col">
           {isLoading ? (
             <div className="py-12 flex justify-center"><div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin" /></div>
           ) : entries.length === 0 ? (
-            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">No entries recorded</p><p className="text-[7px] text-ink/25 mt-2 tracking-wider">Check back soon for new archival records</p></div>
+            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">{dict.logbook.empty}</p><p className="text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
           ) : (
             entries.map((entry, index) => <LogbookCard key={entry.id} entry={entry} index={index} />)
           )}
           {entries.length > 0 && (
             <motion.div variants={itemVariants} className="mt-12 text-center">
-              <div className="inline-flex flex-col items-center gap-2 opacity-30"><div className="w-px h-8 bg-ink" /><span className="text-[6px] font-mono tracking-widest uppercase">End of Records</span></div>
+              <div className="inline-flex flex-col items-center gap-2 opacity-30"><div className="w-px h-8 bg-ink" /><span className="text-[6px] font-mono tracking-widest uppercase">{dict.logbook.end}</span></div>
             </motion.div>
           )}
         </motion.div>
