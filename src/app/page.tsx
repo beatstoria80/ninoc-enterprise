@@ -11,6 +11,8 @@ import DragSlider from '@/components/DragSlider';
 import { useBrandColor } from '@/components/BrandProvider';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getDictionaryByLocale, Locale } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -490,6 +492,10 @@ interface Product {
 }
 
 export default function Home() {
+  const pathname = usePathname();
+  const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = getDictionaryByLocale(lang);
+
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -527,8 +533,8 @@ export default function Home() {
             </motion.div>
 
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
-              {["Archival", "Apparel"].map((word, wi) => (
-                <span key={word} className="block overflow-hidden">
+              {dict.home.heroTitle.split(" ").map((word, wi) => (
+                <span key={word + wi} className="block overflow-hidden">
                   <motion.span variants={wordVariants} initial="hidden" animate="visible" custom={wi} className="block">{word}</motion.span>
                 </span>
               ))}
@@ -540,7 +546,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
               className="text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
-              Established for the preservation of garment integrity. <span className="hidden md:inline">Our collection represents a curated selection of technical excellence and timeless design.</span>
+              {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
             </motion.p>
 
             <motion.div
@@ -686,9 +692,9 @@ export default function Home() {
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: DURATION.medium, ease: EASING.out }}
         >
-          <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">New Releases</h2>
+          <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
           <PressButton href="/shop" className="text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
-            View All
+            {dict.home.viewAll}
           </PressButton>
         </motion.div>
 

@@ -3,10 +3,16 @@
 import React from 'react';
 import { Mail, MapPin, Shield, Lock, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useStoreName } from '@/components/BrandProvider';
+import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 
 export default function GlobalFooter() {
   const storeName = useStoreName();
+  const pathname = usePathname();
+  const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = getDictionaryByLocale(lang);
+
   return (
     <footer className="bg-white border-t border-ink/5 pt-3 pb-2 px-4 md:px-8 w-full mt-auto">
       <div className="w-full flex flex-col md:flex-row justify-between items-start gap-4 md:gap-8">
@@ -17,22 +23,22 @@ export default function GlobalFooter() {
             <span className="text-base font-display font-medium italic tracking-tighter text-ink leading-none">{storeName}</span>
           </Link>
           <p className="text-[8px] font-medium leading-relaxed text-ink/40 mt-1 uppercase tracking-widest">
-            Wear the art, own the day. Premium artistic collections for the conscious mobility.
+            {dict.footer.aboutText}
           </p>
         </div>
 
         {/* Navigation */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Navigation</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.shop}</h4>
           <div className="flex flex-col gap-1">
             {[
-              { label: 'Catalog', href: '/shop' },
+              { label: dict.header.shop, href: '/shop' },
               { label: 'Collections', href: '/collections' },
               { label: 'Category', href: '/category' },
-              { label: 'Wholesale', href: '/wholesale' },
-              { label: 'Affiliate', href: '/affiliate' },
-              { label: 'Logbook', href: '/logbook' },
-              { label: 'About', href: '/about' }
+              { label: dict.header.wholesale, href: '/wholesale' },
+              { label: dict.header.affiliate, href: '/affiliate' },
+              { label: dict.header.logbook, href: '/logbook' },
+              { label: dict.header.about, href: '/about' }
             ].map((item) => (
               <Link
                 key={item.label}
@@ -47,18 +53,18 @@ export default function GlobalFooter() {
 
         {/* Legal */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">Legal Info</h4>
+          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.legal}</h4>
           <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
-            Terms & Conditions
+            {dict.footer.terms}
           </Link>
           <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
-            Help Guide
+            {dict.footer.support}
           </Link>
           <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
-            Track Order
+            {dict.header.track}
           </Link>
           <Link href="/retur" className="text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
-            Retur & Refund
+            {dict.footer.returns}
           </Link>
         </div>
 

@@ -11,6 +11,7 @@ import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
+import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 
 function SafeImage({ src, alt, className, sizes, priority = false }: {
   src: string; alt: string; className?: string; sizes?: string; priority?: boolean;
@@ -54,7 +55,7 @@ interface Product {
   badge_text?: string | null;
 }
 
-function MobileShopView({ products, initialCategory }: { products: Product[], initialCategory: string }) {
+function MobileShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
   const categoryMap: Record<string, string> = {
     'All': 'All',
     'Fashion': 'pakaian',
@@ -106,7 +107,7 @@ function MobileShopView({ products, initialCategory }: { products: Product[], in
                 {category}
               </h2>
               <span className="text-[9px] text-ink/30 uppercase tracking-wider">
-                {categoryProducts.length} pieces
+                {categoryProducts.length} {dict.shop.pieces}
               </span>
             </div>
 
@@ -153,10 +154,10 @@ function MobileShopView({ products, initialCategory }: { products: Product[], in
                         <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                           <div className="flex items-center gap-1 opacity-40">
                             <ArrowRight size={8} />
-                            <span className="text-[6px] font-medium uppercase tracking-[0.2em]">View</span>
+                            <span className="text-[6px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
                           </div>
                           <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
-                            Available
+                            {dict.shop.available}
                           </span>
                         </div>
                       </div>
@@ -170,7 +171,7 @@ function MobileShopView({ products, initialCategory }: { products: Product[], in
 
         {filteredProducts.length === 0 && (
           <div className="py-10 text-center">
-            <p className="text-[11px] text-ink/30 uppercase tracking-wider">No products found</p>
+            <p className="text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
           </div>
         )}
       </div>
@@ -184,7 +185,7 @@ function MobileShopView({ products, initialCategory }: { products: Product[], in
   );
 }
 
-function DesktopShopView({ products, initialCategory }: { products: Product[], initialCategory: string }) {
+function DesktopShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
   const categoryMap: Record<string, string> = {
     'All': 'All',
     'Fashion': 'pakaian',
@@ -290,10 +291,10 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
                         <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                           <div className="flex items-center gap-1.5 opacity-40">
                             <ArrowRight size={10} className="group-hover/card:translate-x-1 group-hover/card:text-rose transition-all" />
-                            <span className="text-[8px] font-medium uppercase tracking-[0.2em]">View Spec</span>
+                            <span className="text-[8px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
                           </div>
                           <span className="text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
-                            Available
+                            {dict.shop.available}
                           </span>
                         </div>
                       </div>
@@ -308,7 +309,7 @@ function DesktopShopView({ products, initialCategory }: { products: Product[], i
         {filteredProducts.length === 0 && (
           <div className="py-40 text-center space-y-6 opacity-20">
             <Search size={64} className="mx-auto" />
-            <p className="text-xl font-medium uppercase tracking-[0.4em]">No Pieces Found</p>
+            <p className="text-xl font-medium uppercase tracking-[0.4em]">{dict.shop.notFound}</p>
           </div>
         )}
       </section>
@@ -329,6 +330,10 @@ function ShopContent() {
 }
 
 function ShopClientInner({ initialCategory, isMobile }: { initialCategory: string; isMobile: boolean | null }) {
+  const pathname = usePathname();
+  const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = getDictionaryByLocale(lang);
+
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -362,10 +367,10 @@ function ShopClientInner({ initialCategory, isMobile }: { initialCategory: strin
   }
 
   if (isMobile) {
-    return <MobileShopView products={products} initialCategory={initialCategory} />;
+    return <MobileShopView products={products} initialCategory={initialCategory} dict={dict} />;
   }
 
-  return <DesktopShopView products={products} initialCategory={initialCategory} />;
+  return <DesktopShopView products={products} initialCategory={initialCategory} dict={dict} />;
 }
 
 export default function ShopClient() {

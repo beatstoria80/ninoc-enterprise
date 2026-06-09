@@ -12,6 +12,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import ImageLightbox from '@/components/ImageLightbox';
+import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -323,6 +324,9 @@ function SearchResultItem({ product, index, onClick }: {
 
 export default function GlobalHeader() {
   const pathname = usePathname();
+  const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = getDictionaryByLocale(lang);
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -451,11 +455,11 @@ export default function GlobalHeader() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <NavLink href="/shop">Catalog</NavLink>
+          <NavLink href="/shop">{dict.header.shop}</NavLink>
           <NavLink href="/collections">Collections</NavLink>
           <NavLink href="/category">Category</NavLink>
-          <NavLink href="/logbook">Logbook</NavLink>
-          <NavLink href="/about">About</NavLink>
+          <NavLink href="/logbook">{dict.header.logbook}</NavLink>
+          <NavLink href="/about">{dict.header.about}</NavLink>
         </motion.div>
 
         {/* Action Icons */}
