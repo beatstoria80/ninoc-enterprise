@@ -9,6 +9,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
+import { Collection, Product, CollectionProduct } from '@/components/admin/types';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,6 +41,8 @@ const ClockRewindIcon = () => (
   </svg>
 );
 
+const DefaultIcon = () => <Layers size={16} strokeWidth={1.5} />;
+
 // ═══════════════════════════════════════════════════════════════
 // ANIMATION ENGINE
 // ═══════════════════════════════════════════════════════════════
@@ -56,52 +59,6 @@ const DURATION = {
   medium: 0.3,
   slow: 0.5,
 };
-
-// ═══════════════════════════════════════════════════════════════
-// COLLECTION DEFINITIONS
-// ═══════════════════════════════════════════════════════════════
-
-type CollectionType = 'staples' | 'limited' | 'throwback';
-
-interface CollectionDef {
-  id: CollectionType;
-  label: string;
-  sublabel: string;
-  description: string;
-  icon: React.FC;
-  spec: string;
-}
-
-const COLLECTIONS: CollectionDef[] = [
-  {
-    id: 'staples',
-    label: 'Staples',
-    sublabel: 'Core',
-    description: 'Everyday essential fits',
-    icon: HangerIcon,
-    spec: 'CORE-001',
-  },
-  {
-    id: 'limited',
-    label: 'Limited',
-    sublabel: 'Drop',
-    description: 'Gone when gone',
-    icon: FlameIcon,
-    spec: 'DROP-002',
-  },
-  {
-    id: 'throwback',
-    label: 'Throwback',
-    sublabel: 'Archive',
-    description: 'Previous season pieces',
-    icon: ClockRewindIcon,
-    spec: 'ARCH-003',
-  },
-];
-
-// ═══════════════════════════════════════════════════════════════
-// VARIANT DEFINITIONS
-// ═══════════════════════════════════════════════════════════════
 
 const collectionIndexVariants: Variants = {
   hidden: { opacity: 0, y: 5 },
@@ -152,18 +109,22 @@ function PressButton({ children, className = '', onClick, href }: {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// COLLECTION CARD — Compact inline (matches CategoryCard)
+// COLLECTION CARD
 // ═══════════════════════════════════════════════════════════════
 
-function CollectionCard({ col, isSelected, onClick }: {
-  col: CollectionDef;
+function CollectionCard({ col, index, isSelected, onClick }: {
+  col: Collection;
+  index: number;
   isSelected: boolean;
   onClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
   const white = '#ffffff';
-  const Icon = col.icon;
+  
+  // Cycle icons based on index
+  const icons = [HangerIcon, FlameIcon, ClockRewindIcon];
+  const Icon = icons[index % icons.length] || DefaultIcon;
 
   return (
     <motion.button
@@ -175,7 +136,6 @@ function CollectionCard({ col, isSelected, onClick }: {
       onMouseLeave={() => setIsHovered(false)}
       className={`relative bg-white py-1.5 px-2.5 md:py-2 md:px-3 text-left group overflow-hidden flex items-center gap-2.5 md:gap-3 ${isSelected ? 'bg-ink text-white' : ''}`}
     >
-      {/* Background animation on hover */}
       <motion.div
         className="absolute inset-0 bg-rose origin-left"
         initial={{ scaleX: 0 }}
@@ -184,9 +144,7 @@ function CollectionCard({ col, isSelected, onClick }: {
         style={{ zIndex: 0 }}
       />
 
-      {/* Content — single-row inline */}
       <div className="relative z-10 flex items-center gap-2 md:gap-3 w-full">
-        {/* Icon */}
         <motion.div
           className="flex-shrink-0"
           animate={{ color: isSelected ? white : isHovered ? white : brandColor.color }}
@@ -195,34 +153,31 @@ function CollectionCard({ col, isSelected, onClick }: {
           <Icon />
         </motion.div>
 
-        {/* Label + Sublabel */}
         <div className="flex items-center gap-1.5 min-w-0">
           <motion.h3
             className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight whitespace-nowrap ${isSelected ? 'text-white' : 'text-ink'}`}
             animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }}
             transition={{ duration: DURATION.fast }}
           >
-            {col.label}
+            {col.name}
           </motion.h3>
           <motion.span
             className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${isSelected ? 'text-white/50' : 'text-ink/25'}`}
             animate={{ color: isSelected ? 'rgba(255,255,255,0.5)' : isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.25)' }}
             transition={{ duration: DURATION.fast }}
           >
-            — {col.sublabel}
+            — {col.status}
           </motion.span>
         </div>
 
-        {/* Spec Badge */}
         <motion.span
           className={`ml-auto text-[6px] font-mono tracking-tighter px-1 py-0.5 flex-shrink-0 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/30'}`}
           animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }}
           transition={{ duration: DURATION.fast }}
         >
-          {col.spec}
+          COL-{index.toString().padStart(3, '0')}
         </motion.span>
 
-        {/* Arrow */}
         <motion.div
           className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-ink/20'}`}
           animate={{ x: isSelected || isHovered ? 2 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }}
@@ -236,19 +191,8 @@ function CollectionCard({ col, isSelected, onClick }: {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PRODUCT CARD — With hover interactions
+// PRODUCT CARD
 // ═══════════════════════════════════════════════════════════════
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  image_url: string | null;
-  category: string;
-  is_featured: boolean;
-  price_tag?: string;
-}
 
 function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -266,7 +210,6 @@ function ProductCard({ product }: { product: Product }) {
         href={`/shop/${product.slug}`}
         className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
       >
-        {/* Image Container */}
         <motion.div
           className="aspect-[3/4] bg-ink/5 relative mb-2 md:mb-3 overflow-hidden"
           animate={{ borderColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
@@ -290,7 +233,6 @@ function ProductCard({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* Featured badge */}
           {product.is_featured && (
             <motion.div
               className="absolute top-1 left-1 md:top-2 md:left-2 text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em] bg-ink text-white px-1 py-0.5"
@@ -302,7 +244,6 @@ function ProductCard({ product }: { product: Product }) {
           )}
         </motion.div>
 
-        {/* Info */}
         <div className="space-y-0.5">
           <motion.span
             className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/25 block"
@@ -319,7 +260,6 @@ function ProductCard({ product }: { product: Product }) {
             {product.name}
           </motion.h3>
 
-          {/* Price */}
           <motion.div
             className="flex items-center gap-1"
             animate={{ opacity: isHovered ? 1 : 0.6 }}
@@ -341,39 +281,45 @@ function ProductCard({ product }: { product: Product }) {
 
 export default function CollectionsClient() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collectionProducts, setCollectionProducts] = useState<CollectionProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCollection, setSelectedCollection] = useState<CollectionType | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // For now, collections map to product features:
-  // staples = not featured (everyday), limited = featured (exclusive), throwback = all
-  const filteredProducts = useMemo(() => {
-    if (!selectedCollection) return products;
-    switch (selectedCollection) {
-      case 'staples':
-        return products.filter((p) => !p.is_featured);
-      case 'limited':
-        return products.filter((p) => p.is_featured);
-      case 'throwback':
-        return products; // All products
-      default:
-        return products;
-    }
-  }, [selectedCollection, products]);
-
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await supabase.from('products').select('*');
-        setProducts(data || []);
+        const [prodRes, colRes, relRes] = await Promise.all([
+          supabase.from('products').select('*'),
+          supabase.from('collections').select('*').eq('status', 'active'),
+          supabase.from('collection_products').select('*')
+        ]);
+        
+        setProducts(prodRes.data || []);
+        setCollections(colRes.data || []);
+        setCollectionProducts(relRes.data || []);
       } catch (error) {
-        console.error('Failed to fetch products:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
+
+  const filteredProducts = useMemo(() => {
+    if (!selectedCollection) return products;
+    
+    // Find product IDs mapped to this collection
+    const mappedProductIds = new Set(
+      collectionProducts
+        .filter(cp => cp.collection_id === selectedCollection)
+        .map(cp => cp.product_id)
+    );
+    
+    return products.filter(p => mappedProductIds.has(p.id));
+  }, [selectedCollection, products, collectionProducts]);
 
   return (
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
@@ -397,12 +343,13 @@ export default function CollectionsClient() {
           </PressButton>
         </div>
 
-        {/* COLLECTION INDEX — COMPACT INLINE GRID */}
+        {/* COLLECTION INDEX */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
-          {COLLECTIONS.map((col) => (
+          {collections.map((col, index) => (
             <CollectionCard
               key={col.id}
               col={col}
+              index={index}
               isSelected={selectedCollection === col.id}
               onClick={() => {
                 setSelectedCollection(selectedCollection === col.id ? null : col.id);
@@ -410,6 +357,11 @@ export default function CollectionsClient() {
               }}
             />
           ))}
+          {collections.length === 0 && !isLoading && (
+            <div className="col-span-full py-4 text-center bg-white text-[10px] text-gray-400 uppercase tracking-widest">
+              No active collections available
+            </div>
+          )}
         </div>
 
         {/* ACTIVE FILTER DISPLAY */}
@@ -424,7 +376,9 @@ export default function CollectionsClient() {
             >
               <div className="flex items-center gap-2">
                 <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span>
-                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{COLLECTIONS.find((c) => c.id === selectedCollection)?.label}</span>
+                <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">
+                  {collections.find((c) => c.id === selectedCollection)?.name}
+                </span>
               </div>
               <PressButton onClick={() => setSelectedCollection(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">
                 Clear
@@ -498,7 +452,7 @@ export default function CollectionsClient() {
                 transition={{ duration: DURATION.fast }}
               >
                 <p className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Collections</p>
-                <p className="text-lg font-display font-medium italic text-ink">{COLLECTIONS.length}</p>
+                <p className="text-lg font-display font-medium italic text-ink">{collections.length}</p>
               </motion.div>
             </div>
             <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">

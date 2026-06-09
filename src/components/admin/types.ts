@@ -206,3 +206,29 @@ export interface ReturnRequest {
   order?: Order;
   items?: ReturnItem[];
 }
+
+export type CollectionStatus = 'active' | 'scheduled' | 'draft';
+export type CollectionType = 'manual' | 'smart';
+
+export interface Collection {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  banner_url: string | null;
+  status: CollectionStatus;
+  start_date: string | null;
+  end_date: string | null;
+  collection_type: CollectionType;
+  created_at: string;
+  updated_at: string;
+  products?: Product[];
+}
+
+export interface CollectionProduct {
+  id: string;
+  collection_id: string;
+  product_id: string;
+  created_at: string;
+}
+
