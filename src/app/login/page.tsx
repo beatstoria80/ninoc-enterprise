@@ -92,7 +92,7 @@ export default function LoginPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-6 pt-6 md:pt-32",
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex items-center justify-center p-4",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* MOBILE NAV BAR */}
@@ -239,7 +239,7 @@ export default function LoginPage() {
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
 
-            <div className="p-6 lg:p-8 lg:px-12 space-y-4 lg:space-y-5">
+            <div className="p-5 lg:p-8 lg:px-10 space-y-3 lg:space-y-4">
               {/* Title */}
               <div>
                 <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
@@ -268,7 +268,7 @@ export default function LoginPage() {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleEmailAuth} className="space-y-4">
+              <form onSubmit={handleEmailAuth} className="space-y-3">
                 {/* Email */}
                 <div>
                   <label className="text-xs font-medium uppercase tracking-wider text-ink/50 mb-2 block">Email</label>
@@ -278,7 +278,7 @@ export default function LoginPage() {
                       type="text"
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); setShowEmailHint(false); setError(''); }}
-                      className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20"
+                      className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-2.5 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20"
                       placeholder="email@contoh.com"
                       required
                       aria-label="Email address"
@@ -312,7 +312,7 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-3 px-10 pr-12 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20"
+                        className="w-full bg-ink/[0.03] border border-ink/5 focus:border-rose rounded-lg py-2.5 px-10 pr-12 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20"
                         placeholder="Password"
                         required
                         aria-label="Password"
@@ -343,7 +343,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-ink text-white py-3 rounded-lg text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+                  className="w-full bg-ink text-white py-2.5 mt-1 rounded-lg text-sm font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
                 >
                   <span>{isLoading ? 'Memproses...' : (isSignUp ? 'Daftar' : 'Masuk')}</span>
                   <ArrowRight size={14} />

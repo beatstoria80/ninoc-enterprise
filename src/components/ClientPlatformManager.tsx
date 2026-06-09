@@ -23,7 +23,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isProfilePage = pathname?.startsWith('/profile');
   const isReturPage = pathname === '/retur';
   const isOnboardingPage = pathname === '/onboarding';
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage;
+  const isLoginPage = pathname === '/login';
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage && !isLoginPage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -47,8 +48,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return (
       <MobileLayout
         cartCount={items.length}
-        hideTabBar={pathname === '/checkout'}
-        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile') || pathname === '/retur' || pathname === '/onboarding'}
+        hideTabBar={pathname === '/checkout' || pathname === '/login'}
+        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile') || pathname === '/retur' || pathname === '/onboarding' || pathname === '/login'}
       >
         {children}
       </MobileLayout>
