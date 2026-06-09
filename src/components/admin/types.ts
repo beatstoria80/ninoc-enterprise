@@ -8,6 +8,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string | null;
+  description_en?: string | null;
   specifications?: { label: string; value: string }[] | null;
   measurements?: { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[] | null;
   model_info?: string | null;

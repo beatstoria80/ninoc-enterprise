@@ -533,7 +533,7 @@ export default function Home() {
             </motion.div>
 
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
-              {dict.home.heroTitle.split(" ").map((word, wi) => (
+              {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                 <span key={word + wi} className="block overflow-hidden">
                   <motion.span variants={wordVariants} initial="hidden" animate="visible" custom={wi} className="block">{word}</motion.span>
                 </span>
