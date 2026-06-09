@@ -283,8 +283,8 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 2. STICKY METADATA BAR */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-ink/5">
+      {/* 2. METADATA BAR */}
+      <div className="bg-white border-b border-ink/5">
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
@@ -298,7 +298,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
       </div>
 
       {/* 3. PRODUCT GRID */}
-      <section className="max-w-[1800px] mx-auto px-4 md:px-12 py-8 md:py-12">
+      <section className="max-w-[1800px] mx-auto px-4 md:px-12 pt-4 pb-12 md:pt-6 md:pb-24">
         <AnimatePresence mode="wait">
           <motion.div
             variants={productGridVariants}
