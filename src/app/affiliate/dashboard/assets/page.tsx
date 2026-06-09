@@ -90,7 +90,7 @@ export default function AssetsPage() {
                 </div>
                 <div className="relative">
                   <p className="text-xs text-ink/70 bg-ink/[0.02] border border-ink/5 p-3 rounded-xl leading-relaxed italic">
-                    "{asset.copywrite}"
+                    &quot;{asset.copywrite}&quot;
                   </p>
                   <button 
                     onClick={() => handleCopy(asset.id, asset.copywrite)}
