@@ -87,11 +87,13 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <motion.div variants={productCardVariants} whileHover="hover" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <Link href={`/shop/${product.slug}`} className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5">
-        <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-ink/5">
+        <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-white flex items-center justify-center border border-ink/5">
           {product.image_url ? (
-            <Image src={product.image_url} alt={product.name} width={400} height={533} className="w-full h-auto grayscale transition-all duration-700" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(0%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+            <div className="w-[60%] aspect-square relative z-10 mix-blend-multiply">
+              <Image src={product.image_url} alt={product.name} fill className="object-contain transition-transform duration-700" sizes="(max-width: 768px) 30vw, 15vw" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(100%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+            </div>
           ) : (
-            <div className="w-full aspect-[3/4] flex items-center justify-center text-ink/10"><Package size={24} /></div>
+            <div className="w-[45%] py-12 flex items-center justify-center text-ink/10"><Package size={24} /></div>
           )}
           <motion.div className="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-ink text-white px-1 py-0.5 text-[5px] md:text-[6px] uppercase tracking-tighter font-mono" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{product.category.toUpperCase().slice(0, 4)}</motion.div>
         </div>
