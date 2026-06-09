@@ -17,6 +17,11 @@ export function CollectionsView() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
 
+  const isVideoUrl = (url: string | null | undefined) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
+
   const fetchCollections = async () => {
     setIsLoading(true);
     try {
@@ -98,7 +103,11 @@ export function CollectionsView() {
               >
                 <div className="h-32 bg-gray-50 relative">
                   {collection.banner_url ? (
-                    <Image src={collection.banner_url} alt={collection.name} fill className="object-cover" />
+                    isVideoUrl(collection.banner_url) ? (
+                      <video src={collection.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                    ) : (
+                      <Image src={collection.banner_url} alt={collection.name} fill className="object-cover" />
+                    )
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-xs">
                       No Banner

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Image as ImageIcon, Calendar, Tag, Search, Plus, Trash2, CheckSquare, Square } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Calendar, Tag, Search, Plus, Trash2, CheckSquare, Square, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { Product, Collection } from '../../types';
@@ -21,6 +21,11 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isVideoUrl = (url: string | null | undefined) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
 
   // Form State
   const [formData, setFormData] = useState<Partial<Collection>>({
@@ -279,18 +284,22 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                   {/* Banner */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-ink flex items-center gap-2">
-                      <ImageIcon size={14} /> Banner Photo (Optional)
+                      <ImageIcon size={14} /> Banner Media (Optional)
                     </label>
                     <div className="flex items-center gap-4">
                       {formData.banner_url ? (
                         <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 group">
-                          <Image src={formData.banner_url} alt="Banner Preview" fill className="object-cover" />
+                          {isVideoUrl(formData.banner_url) ? (
+                            <video src={formData.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                          ) : (
+                            <Image src={formData.banner_url} alt="Banner Preview" fill className="object-cover" />
+                          )}
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <label className="cursor-pointer text-white p-2">
-                              <ImageIcon size={16} />
+                              {isVideoUrl(formData.banner_url) ? <Video size={16} /> : <ImageIcon size={16} />}
                               <input 
                                 type="file" 
-                                accept="image/*" 
+                                accept="image/*,video/mp4,video/webm,video/quicktime" 
                                 onChange={handleBannerUpload} 
                                 className="hidden" 
                                 disabled={isUploadingBanner}
@@ -301,7 +310,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       ) : (
                         <div className="relative w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col items-center justify-center gap-1">
                           <ImageIcon size={16} className="text-gray-400" />
-                          <span className="text-[9px] text-gray-400 font-medium">No Image</span>
+                          <span className="text-[9px] text-gray-400 font-medium">No Media</span>
                         </div>
                       )}
 
@@ -314,20 +323,20 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                             </>
                           ) : (
                             <>
-                              <ImageIcon size={14} />
-                              {formData.banner_url ? 'Change Photo' : 'Upload Photo'}
+                              {isVideoUrl(formData.banner_url) ? <Video size={14} /> : <ImageIcon size={14} />}
+                              {formData.banner_url ? 'Change Media' : 'Upload Media'}
                             </>
                           )}
                           <input 
                             type="file" 
-                            accept="image/*" 
+                            accept="image/*,video/mp4,video/webm,video/quicktime" 
                             onChange={handleBannerUpload} 
                             className="hidden" 
                             disabled={isUploadingBanner}
                           />
                         </label>
                         <p className="text-[10px] text-gray-400 mt-2">
-                          Recommended format: JPG, PNG. Ratio 16:9 or 3:1.
+                          Recommended format: JPG, PNG, MP4, WEBM. Ratio 16:9 or 3:1.
                         </p>
                       </div>
                     </div>
