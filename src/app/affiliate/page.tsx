@@ -324,7 +324,7 @@ export default function AffiliateApplicationPage() {
             {/* Footer / Submit */}
             <div className="p-5 md:p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500 max-w-sm">
-                By submitting this application, you agree to our Affiliate Terms of Service and Privacy Policy.
+                By submitting this application, you agree to our <Link href="/affiliate/terms" className="text-ink underline hover:text-rose transition-colors">Affiliate Terms of Service</Link> and Privacy Policy.
               </p>
               <button 
                 type="submit"
