@@ -136,7 +136,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
       setFormData(prev => ({ ...prev, banner_url: publicUrl }));
     } catch (error) {
       console.error('Error uploading banner:', error);
-      alert('Gagal mengunggah foto banner. Pastikan ukuran file tidak terlalu besar.');
+      alert(`Gagal mengunggah media: ${(error as Error).message || 'Pastikan ukuran file tidak terlalu besar.'}`);
     } finally {
       setIsUploadingBanner(false);
       // Reset input value
