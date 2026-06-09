@@ -4,6 +4,7 @@ import React from 'react';
 import { Lock, Shield } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useDictionary } from '@/hooks/useDictionary';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -48,6 +49,8 @@ export default function BottomCTA({
   onClick,
   formId
 }: BottomCTAProps) {
+  const dict = useDictionary();
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] ios-bottom-cta">
       {/* Safe area spacer for iOS */}
@@ -64,11 +67,11 @@ export default function BottomCTA({
           <div className="flex justify-center gap-6 mb-3">
             <div className="flex items-center gap-1.5">
               <Shield size={10} className="text-rose/50" />
-              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">Aman</span>
+              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Lock size={10} className="text-rose/50" />
-              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">Enkripsi</span>
+              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import ShopProductClient from './ShopProductClient';
 import { Metadata } from 'next';
+import { getDictionary } from '@/lib/i18n-server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -66,7 +67,8 @@ export default async function ShopProductPage({ params }: Props) {
     .single();
 
   if (!product) {
-    return <ShopProductClient slug={slug} />;
+    const dict = await getDictionary();
+    return <ShopProductClient slug={slug} dict={dict} />;
   }
 
   const description = product.description
@@ -112,7 +114,7 @@ export default async function ShopProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <ShopProductClient slug={slug} />
+      <ShopProductClient slug={slug} dict={await getDictionary()} />
     </>
   );
 }

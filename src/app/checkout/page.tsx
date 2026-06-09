@@ -11,6 +11,7 @@ import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useDevice } from './_components/useDevice';
 import BottomCTA from './_components/BottomCTA';
+import { useDictionary } from '@/hooks/useDictionary';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,6 +59,7 @@ const FALLBACK_PROVINCES: LocationItem[] = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice } = useCart();
+  const dict = useDictionary();
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
@@ -421,8 +423,8 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h2 className="text-2xl font-display font-medium italic uppercase">Empty</h2>
-        <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>Back to Shop</Link>
+        <h2 className="text-2xl font-display font-medium italic uppercase">{dict.checkout.empty}</h2>
+        <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>{dict.checkout.backToShop}</Link>
       </div>
     );
   }
@@ -455,15 +457,15 @@ export default function CheckoutPage() {
             <ArrowLeft size={14} />
           </div>
           <div className="flex flex-col items-start leading-none">
-            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">Product</span>
+            <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.checkout.returnTo}</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">{dict.checkout.product}</span>
           </div>
         </button>
         <div className="font-display font-medium text-2xl italic tracking-tighter text-rose absolute left-1/2 -translate-x-1/2 uppercase select-none hidden md:block">NINOC</div>
         <div className="flex items-center gap-4">
            <div className="hidden md:flex flex-col items-end leading-none mr-2">
-              <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600">Secure Protocol</span>
-              <span className="text-[9px] font-medium uppercase tracking-tighter text-ink/60">Transaction Specification</span>
+              <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600">{dict.checkout.secureProtocol}</span>
+              <span className="text-[9px] font-medium uppercase tracking-tighter text-ink/60">{dict.checkout.transactionSpec}</span>
            </div>
            <ShieldCheck size={18} className="text-emerald-500" />
         </div>
@@ -479,30 +481,30 @@ export default function CheckoutPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
               <span className="text-[9px] font-display font-medium italic text-ink/50">00</span>
-              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
+              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.summary}</h2>
             </div>
             
             <div className="bg-white border border-ink/20 rounded-none p-4 space-y-4 shadow-sm">
               <div className="space-y-2 border-b border-ink/10 pb-3">
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
-                  <span>Subtotal</span>
+                  <span>{dict.checkout.subtotal}</span>
                   <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
-                  <span>Logistics Fee</span>
+                  <span>{dict.checkout.logisticsFee}</span>
                   <span className={shippingCost > 0 ? "text-ink font-semibold" : "text-rose italic"}>
-                    {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Selection Required'}
+                    {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : dict.checkout.selectionRequired}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[9px] font-medium uppercase tracking-widest text-ink/60">
-                  <span>Platform Fee</span>
+                  <span>{dict.checkout.platformFee}</span>
                   <span>+ IDR {platformFee.toLocaleString('id-ID')}</span>
                 </div>
               </div>
               
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
-                  <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">Total Investment</span>
+                  <span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">{dict.checkout.totalInvestment}</span>
                   <span className="text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
                 <button 
@@ -513,7 +515,7 @@ export default function CheckoutPage() {
                   }}
                   className="px-3 py-1.5 border border-ink/10 rounded-none text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
                 >
-                  View Details
+                  {dict.checkout.viewDetails}
                 </button>
               </div>
 
@@ -549,17 +551,17 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-display font-medium italic text-ink/50">01</span>
-                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Summary</h2>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.identity}</h2>
                 </div>
               </div>
               
               <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
                 <div className={cn("bg-white", isMobile ? "p-2.5" : "p-4")}>
-                  <label htmlFor="first_name" className={labelClass}>First Name</label>
+                  <label htmlFor="first_name" className={labelClass}>{dict.checkout.firstName}</label>
                   <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="John" />
                 </div>
                 <div className={cn("bg-white border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
-                  <label htmlFor="last_name" className={labelClass}>Last Name</label>
+                  <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
                   <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40", isMobile ? "p-2.5" : "p-4")}>
@@ -567,7 +569,7 @@ export default function CheckoutPage() {
                   <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
-                  <label htmlFor="phone" className={labelClass}>Phone Reference</label>
+                  <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
                   <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
                 </div>
               </div>
@@ -578,13 +580,13 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-display font-medium italic text-ink/50">02</span>
-                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Destination Specification</h2>
+                  <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.destination}</h2>
                 </div>
               </div>
 
               <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>
                 <div className={cn("bg-white", isMobile ? "col-span-1 p-2.5" : "col-span-6 p-3")}>
-                  <label htmlFor="street" className={labelClass}>Street / Building / Precise Loc.</label>
+                  <label htmlFor="street" className={labelClass}>{dict.checkout.street}</label>
                   <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
 
@@ -602,14 +604,14 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3")}>
-                  <label htmlFor="province" className={labelClass}>Province {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
+                  <label htmlFor="province" className={labelClass}>{dict.checkout.province} {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="province" required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass} disabled={loadingLoc.p}>
                     <option value="">SELECT PROVINCE</option>
                     {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3 border-l border-ink/5")}>
-                  <label htmlFor="city" className={labelClass}>City {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
+                  <label htmlFor="city" className={labelClass}>{dict.checkout.city} {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="city" required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province || loadingLoc.c}>
                     <option value="">SELECT CITY</option>
                     {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -636,7 +638,7 @@ export default function CheckoutPage() {
             <section className="space-y-1.5 lg:space-y-3">
               <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
                 <span className="text-[9px] font-display font-medium italic text-ink/50">03</span>
-                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">Logistics Selection</h2>
+                <h2 className="text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.logisticsSelection}</h2>
               </div>
 
               <div className={cn(
@@ -645,7 +647,7 @@ export default function CheckoutPage() {
               )}>
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                    <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">Calculating Rates...</span>
+                    <span className="text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">{dict.checkout.calculating}</span>
                   </div>
                 )}
                 {displayOptions.length === 0 && !loadingShipping && formData.kecamatan && (
@@ -653,7 +655,7 @@ export default function CheckoutPage() {
                     <div className="w-6 h-6 border border-ink/20 rounded-full flex items-center justify-center mb-1">
                       <span className="text-ink/30 text-[10px]">!</span>
                     </div>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">COMPLETE LOCATION TO UNLOCK LOGISTICS</span>
+                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">{dict.checkout.completeLocation}</span>
                   </div>
                 )}
                 {displayOptions.map((option) => {
@@ -736,9 +738,9 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-center border-b border-ink/20 pb-2">
                   <div className="flex items-center gap-3">
                      <ShoppingBag size={12} className="text-ink/40" />
-                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">Final Selection</h3>
+                     <h3 className="text-[9px] font-medium uppercase tracking-widest text-ink">{dict.checkout.finalSelection}</h3>
                   </div>
-                  <span className="text-[8px] font-medium text-ink/50 italic">{items.length} Pieces</span>
+                  <span className="text-[8px] font-medium text-ink/50 italic">{items.length} {dict.checkout.pieces}</span>
                 </div>
 
                 <div className="space-y-3 max-h-[30vh] overflow-y-auto no-scrollbar pr-2">
@@ -768,7 +770,7 @@ export default function CheckoutPage() {
 
                 <div className="space-y-2 pt-4 border-t border-ink/20">
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
-                    <span>Value Subtotal</span>
+                    <span>{dict.checkout.subtotal}</span>
                     <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
@@ -781,18 +783,18 @@ export default function CheckoutPage() {
                       )}
                     </span>
                     <span className={cn("italic", shippingCost > 0 ? "text-ink" : "text-rose")}>
-                       {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : 'Action Required'}
+                       {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : dict.checkout.actionRequired}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
-                    <span>Platform Fee</span>
+                    <span>{dict.checkout.platformFee}</span>
                     <span className="italic text-ink">+ IDR {platformFee.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
 
                 <div className="pt-6 flex flex-col items-center border-t border-ink/20">
-                  <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">Total Investment</span>
+                  <span className="text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">{dict.checkout.totalInvestment}</span>
                   <span className="text-3xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
 

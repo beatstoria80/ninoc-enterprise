@@ -13,6 +13,7 @@ import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
+import type { Dictionary } from '@/lib/i18n';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -67,9 +68,10 @@ interface Product {
 interface ShopProductClientProps {
   slug: string;
   productSchema?: string | null;
+  dict: Dictionary;
 }
 
-export default function ShopProductClient({ slug, productSchema }: ShopProductClientProps) {
+export default function ShopProductClient({ slug, productSchema, dict }: ShopProductClientProps) {
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
@@ -398,7 +400,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
-                <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Description</h4>
+                <h4 className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</h4>
                 <p className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
                   {isExpanded || (product.description || '').length <= 200
                     ? product.description || 'Premium quality apparel from NINOC.'
@@ -422,7 +424,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
-                    Spesifikasi
+                    {dict.product.specs}
                   </button>
                   <span className="text-ink/10">|</span>
                   <button
@@ -432,7 +434,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                     }`}
                   >
                     <Ruler size={9} className="text-rose" />
-                    Measurement (CM)
+                    {dict.product.measurement}
                   </button>
                 </div>
 
@@ -469,7 +471,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
           <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Size</h4>
+                <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</h4>
                 <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                   {availableSizes.map((size) => (
                     <button
@@ -503,7 +505,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
                 {availableColors.length > 0 && (
                   <div className="space-y-2">
-                    <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">Select Color</h4>
+                    <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</h4>
                     <div className="flex gap-2 flex-wrap">
                       {availableColors.map((color) => (
                         <button
@@ -526,14 +528,14 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <div className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
-                  <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">Quantity</h4>
+                  <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
                     <span className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
-                      {availableStock} in stock
+                      {availableStock} {dict.product.inStock}
                     </span>
                   ) : (
                     <span className="text-[8px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
-                      Out of stock
+                      {dict.product.outOfStock}
                     </span>
                   )}
                 </div>
@@ -556,12 +558,12 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                   >
                       {addedToCart ? (
                         <span className="flex items-center gap-2">
-                          <ShieldCheck size={16} /> ADDED
+                          <ShieldCheck size={16} /> {dict.product.added}
                         </span>
                       ) : (
                         <div className="flex items-center gap-3">
                           <ShoppingCart size={16} />
-                          <span>ADD TO CART</span>
+                          <span>{dict.product.addToCart}</span>
                         </div>
                       )}
                   </button>
@@ -571,9 +573,9 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
               {!isMobile && (
                 <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">
                   {[
-                    { icon: ShieldCheck, label: 'Secure Payment' },
-                    { icon: Truck, label: 'Express Shipping' },
-                    { icon: RefreshCw, label: 'Easy Returns' }
+                    { icon: ShieldCheck, label: dict.product.securePayment },
+                    { icon: Truck, label: dict.product.expressShipping },
+                    { icon: RefreshCw, label: dict.product.easyReturns }
                   ].map((badge, i) => (
                     <div key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
                       <badge.icon size={14} className="text-rose" />
@@ -591,15 +593,15 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
           )}>
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               <div className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">Your Cart</span>
-                <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? 'Item' : 'Items'}</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">{dict.product.yourCart}</span>
+                <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
               </div>
 
               {items.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
                   <ShoppingCart size={28} className="mb-3 text-ink" />
-                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">Cart is empty</span>
-                  <span className="text-[8px] text-ink/40 font-medium mt-1">Select a size and add items</span>
+                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
+                  <span className="text-[8px] text-ink/40 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
                 </div>
               ) : (
                 <>
@@ -655,7 +657,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                               {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
                                 <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[200px] animate-in fade-in zoom-in-95 duration-200">
                                   <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
-                                    <span className="text-[8px] font-medium uppercase tracking-widest text-rose">Size Chart</span>
+                                    <span className="text-[8px] font-medium uppercase tracking-widest text-rose">{dict.product.sizeChart}</span>
                                     <button onClick={() => setMeasurementPopupItemKey(null)} className="text-white/40 hover:text-white">
                                       <X size={10} />
                                     </button>
@@ -720,7 +722,7 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
 
                   <div className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
                     <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">Total</span>
+                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">{dict.product.total}</span>
                       <span className="text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
                     </div>
 
@@ -729,14 +731,14 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
                         onClick={() => router.push('/checkout')}
                         className="w-full py-3 bg-rose text-white text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
                       >
-                        Checkout
+                        {dict.product.checkout}
                       </button>
                       <button
                         onClick={() => clearCart()}
                         className="w-full py-2.5 bg-transparent text-ink/40 text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
                         <Trash2 size={12} />
-                        Clear Cart
+                        {dict.product.clearCart}
                       </button>
                     </div>
                   </div>
@@ -749,9 +751,9 @@ export default function ShopProductClient({ slug, productSchema }: ShopProductCl
         {relatedProducts.length > 0 && (
           <div className="mt-4 lg:mt-6 space-y-1">
             <div className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
-              <h2 className="text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Related <span className="text-rose">Products</span></h2>
+              <h2 className="text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
               <Link prefetch={false} href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
-                View Full Collection <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
+                {dict.product.viewFullCollection} <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
