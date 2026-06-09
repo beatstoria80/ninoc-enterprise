@@ -1,6 +1,6 @@
 export const id = {
   header: {
-    shop: "Koleksi",
+    shop: "Katalog",
     about: "Tentang Kami",
     wholesale: "Grosir B2B",
     affiliate: "Afiliasi",

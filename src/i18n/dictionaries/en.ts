@@ -1,6 +1,6 @@
 export const en = {
   header: {
-    shop: "Collection",
+    shop: "Catalog",
     about: "About Us",
     wholesale: "B2B Wholesale",
     affiliate: "Affiliate",

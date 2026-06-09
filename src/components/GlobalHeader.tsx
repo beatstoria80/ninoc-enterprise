@@ -464,11 +464,22 @@ export default function GlobalHeader() {
 
         {/* Action Icons */}
         <motion.div
-          className="flex items-center gap-6 md:gap-10"
+          className="flex items-center gap-6 md:gap-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: DURATION.medium, ease: EASING.out }}
         >
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]">
+            <Link prefetch={false} href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors", lang !== 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+              ID
+            </Link>
+            <span className="text-ink/10">|</span>
+            <Link prefetch={false} href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors", lang === 'EN' ? "text-ink" : "text-ink/20 hover:text-ink/60")}>
+              EN
+            </Link>
+          </div>
+
           {/* Search Button */}
           <PressScale onClick={() => setIsSearchOpen(true)} className="text-ink/40 hover:text-rose">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
