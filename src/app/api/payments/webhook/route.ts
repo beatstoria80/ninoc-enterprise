@@ -69,19 +69,50 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
 
-    // 5. Send WhatsApp Invoice Notification (only on successful payment)
+    // 5. Send WhatsApp Invoice Notification & Generate Affiliate Commission (only on successful payment)
     if (orderUpdateStatus === 'paid') {
       const { data: order } = await supabase
         .from('orders')
-        .select('id, shipping_address, total_price, wa_invoice_sent')
+        .select('id, shipping_address, total_price, wa_invoice_sent, affiliate_id')
         .eq('id', orderId)
         .single();
 
-      if (order && !order.wa_invoice_sent) {
-        const shippingAddress = order.shipping_address as Record<string, string> | null;
-        const phone = shippingAddress?.phone || '';
-        const customerName = shippingAddress?.name || 'Pelanggan';
-        const formattedPhone = formatPhoneNumber(phone);
+      if (order) {
+        // --- AFFILIATE COMMISSION LOGIC ---
+        if (order.affiliate_id) {
+          const { data: existingCommission } = await supabase
+            .from('affiliate_commissions')
+            .select('id')
+            .eq('order_id', order.id)
+            .maybeSingle();
+
+          if (!existingCommission) {
+            const { data: affiliate } = await supabase
+              .from('affiliates')
+              .select('commission_rate')
+              .eq('id', order.affiliate_id)
+              .single();
+
+            if (affiliate) {
+              const commissionAmount = (Number(order.total_price) * Number(affiliate.commission_rate)) / 100;
+              await supabase
+                .from('affiliate_commissions')
+                .insert({
+                  affiliate_id: order.affiliate_id,
+                  order_id: order.id,
+                  amount: commissionAmount,
+                  status: 'pending'
+                });
+              console.log(`[Payment Webhook] Created affiliate commission for order ${order.id}: Rp ${commissionAmount}`);
+            }
+          }
+        }
+
+        if (!order.wa_invoice_sent) {
+          const shippingAddress = order.shipping_address as Record<string, string> | null;
+          const phone = shippingAddress?.phone || '';
+          const customerName = shippingAddress?.name || 'Pelanggan';
+          const formattedPhone = formatPhoneNumber(phone);
 
         if (formattedPhone) {
           const formattedPrice = `Rp ${Number(order.total_price).toLocaleString('id-ID', {
@@ -118,8 +149,9 @@ export async function POST(req: Request) {
         } else {
           console.warn(`[Payment Webhook] No valid phone number for order ${order.id}`);
         }
-      } else if (order?.wa_invoice_sent) {
-        console.log(`[Payment Webhook] Invoice WA already sent for order ${order.id}, skipping`);
+        } else {
+          console.log(`[Payment Webhook] Invoice WA already sent for order ${order.id}, skipping`);
+        }
       }
     }
 

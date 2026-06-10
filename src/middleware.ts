@@ -15,24 +15,39 @@ export function middleware(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers)
+  let response;
 
   // If path starts with /en/ or is exactly /en, rewrite it to root
   // The browser URL remains /en/... for SEO
   if (pathname.startsWith('/en/') || pathname === '/en') {
     requestHeaders.set('x-next-locale', 'EN')
     const newPath = pathname === '/en' ? '/' : pathname.replace('/en', '')
-    return NextResponse.rewrite(new URL(`${newPath}${search}`, request.url), {
+    response = NextResponse.rewrite(new URL(`${newPath}${search}`, request.url), {
+      request: {
+        headers: requestHeaders,
+      },
+    })
+  } else {
+    // Default (Indonesian) passes through normally
+    requestHeaders.set('x-next-locale', 'ID')
+    response = NextResponse.next({
       request: {
         headers: requestHeaders,
       },
     })
   }
 
-  // Default (Indonesian) passes through normally
-  requestHeaders.set('x-next-locale', 'ID')
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
+  // Check for affiliate ref
+  const ref = request.nextUrl.searchParams.get('ref')
+  if (ref) {
+    response.cookies.set('ninoc_affiliate_ref', ref, {
+      path: '/',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      httpOnly: true, // We will read this in the server-side API
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    })
+  }
+
+  return response
 }

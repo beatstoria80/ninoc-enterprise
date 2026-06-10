@@ -233,3 +233,39 @@ export interface CollectionProduct {
   created_at: string;
 }
 
+export type AffiliateTier = 'bronze' | 'silver' | 'gold';
+export type AffiliateStatus = 'active' | 'suspended';
+
+export interface Affiliate {
+  id: string;
+  user_id: string;
+  application_id: string | null;
+  code: string;
+  tier: AffiliateTier;
+  commission_rate: number;
+  balance: number;
+  status: AffiliateStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AffiliateLink {
+  id: string;
+  affiliate_id: string;
+  code: string;
+  destination_url: string;
+  clicks: number;
+  created_at: string;
+}
+
+export type AffiliateCommissionStatus = 'pending' | 'available' | 'paid' | 'rejected';
+
+export interface AffiliateCommission {
+  id: string;
+  affiliate_id: string;
+  order_id: string;
+  amount: number;
+  status: AffiliateCommissionStatus;
+  created_at: string;
+  updated_at: string;
+}

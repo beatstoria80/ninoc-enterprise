@@ -30,6 +30,7 @@ import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
 import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
+import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -982,6 +983,7 @@ export default function AdminDashboard() {
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
     { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
+    { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'] },
     { id: 'inventory', icon: Box, label: 'Inventory', activeKeys: ['inventory'] },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
@@ -1284,6 +1286,8 @@ export default function AdminDashboard() {
               setIsCustomerModalOpen={setIsCustomerModalOpen}
             />
           )}
+
+          {activeTab === 'affiliates' && <AffiliatesTab />}
 
           {activeTab === 'settings' && <SettingsTab />}
 

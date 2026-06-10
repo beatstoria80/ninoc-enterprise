@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import midtransClient from 'midtrans-client';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
@@ -20,6 +21,29 @@ interface CheckoutItem {
 
 export async function POST(req: Request) {
   try {
+    // Affiliate Tracking
+    let affiliate_id = null;
+    try {
+      const cookieStore = cookies();
+      // next@15+ requires await cookies(), but handling dynamically:
+      const resolvedCookies = await Promise.resolve(cookieStore);
+      const affiliateRef = resolvedCookies.get('ninoc_affiliate_ref')?.value;
+      
+      if (affiliateRef) {
+        const { data: affData } = await supabaseAdmin
+          .from('affiliates')
+          .select('id')
+          .eq('code', affiliateRef)
+          .single();
+        
+        if (affData) {
+          affiliate_id = affData.id;
+        }
+      }
+    } catch (e) {
+      console.error("Error reading affiliate cookie:", e);
+    }
+
     const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
 
     // Calculate grossAmount exactly from item_details to satisfy Midtrans validation
@@ -113,6 +137,7 @@ export async function POST(req: Request) {
       .insert({
         id: orderId,
         user_id: customerDetails.user_id ? customerDetails.user_id : null,
+        affiliate_id: affiliate_id,
         customer_name: customerDetails.name || null,
         total_price: totalPrice,
         status: 'pending',
