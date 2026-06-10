@@ -290,7 +290,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
             <div className="flex items-center gap-4">
               <span className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
               <span className="text-ink/20 hidden md:inline">/</span>
-              <span className="text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items Indexed</span>
+              <span className="text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items</span>
             </div>
           </div>
           <div className="text-[8px] font-mono tracking-tighter text-ink/30 uppercase">
