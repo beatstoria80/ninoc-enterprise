@@ -61,6 +61,10 @@ export default async function SupplierLayout({
             <LayoutDashboard size={18} />
             <span>Dashboard</span>
           </Link>
+          <Link href="/supplier/submissions" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
+            <Package size={18} />
+            <span>Submit Products</span>
+          </Link>
           <Link href="/supplier/inventory" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <Package size={18} />
             <span>Allocations</span>

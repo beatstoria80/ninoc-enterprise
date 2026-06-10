@@ -37,6 +37,7 @@ import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
 import { POTab } from '@/components/admin/tabs/POTab';
 import { DOTab } from '@/components/admin/tabs/DOTab';
 import { StockLedgerTab } from '@/components/admin/tabs/StockLedgerTab';
+import { SubmissionsTab } from '@/components/admin/tabs/SubmissionsTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -993,8 +994,9 @@ export default function AdminDashboard() {
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
     { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
     { 
-      id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['suppliers', 'warehouse'],
+      id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['submissions', 'suppliers', 'warehouse'],
       subItems: [
+        { id: 'submissions', label: 'Product Submissions' },
         { id: 'suppliers', label: 'Partner Review' },
         { id: 'warehouse', label: 'Ninoc Warehouse Hub' }
       ]
@@ -1151,6 +1153,7 @@ export default function AdminDashboard() {
                activeTab === 'upload' ? 'Upload Images' :
                activeTab === 'orders' ? 'Online Order' :
                activeTab === 'logistics' ? 'Logistics' :
+               activeTab === 'submissions' ? 'Product Submissions' :
                activeTab === 'suppliers' ? 'Supplier Review' :
                activeTab === 'warehouse' ? 'Warehouse Hub' :
                activeTab === 'customers' ? 'Membership' :
@@ -1279,6 +1282,10 @@ export default function AdminDashboard() {
 
           {activeTab === 'returns' && (
             <ReturnsTab />
+          )}
+
+          {activeTab === 'submissions' && (
+            <SubmissionsTab />
           )}
 
           {activeTab === 'suppliers' && (
