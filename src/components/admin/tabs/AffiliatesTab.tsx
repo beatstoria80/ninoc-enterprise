@@ -24,18 +24,55 @@ interface AffiliateData {
   balance: number;
   status: string;
   user_id: string;
+  customer_discount_type?: 'percentage' | 'fixed_amount';
+  customer_discount_value?: number;
+  auto_approve_withdrawals?: boolean;
 }
 
 export default function AffiliatesTab() {
-  const [activeTab, setActiveTab] = useState<'applications' | 'active'>('applications');
+  const [activeTab, setActiveTab] = useState<'applications' | 'active' | 'withdrawals'>('applications');
   const [applications, setApplications] = useState<AffiliateApp[]>([]);
   const [affiliates, setAffiliates] = useState<AffiliateData[]>([]);
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [clicksData, setClicksData] = useState<any[]>([]);
   const [commissionsData, setCommissionsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Detail Modal State
   const [selectedAffiliate, setSelectedAffiliate] = useState<AffiliateData | null>(null);
+  const [savingConfig, setSavingConfig] = useState(false);
+
+  const updateConfig = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedAffiliate) return;
+    const form = e.currentTarget;
+    const type = (form.elements.namedItem('discount_type') as HTMLSelectElement).value;
+    const value = (form.elements.namedItem('discount_value') as HTMLInputElement).value;
+    const autoApprove = (form.elements.namedItem('auto_approve') as HTMLInputElement).checked;
+
+    setSavingConfig(true);
+    try {
+      const res = await fetch('/api/admin/affiliates/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedAffiliate.id,
+          customer_discount_type: type,
+          customer_discount_value: value,
+          auto_approve_withdrawals: autoApprove
+        })
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      const json = await res.json();
+      setSelectedAffiliate(json.data);
+      setAffiliates(prev => prev.map(a => a.id === json.data.id ? json.data : a));
+      alert('Configuration saved!');
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setSavingConfig(false);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,18 +81,21 @@ export default function AffiliatesTab() {
         { data: apps },
         { data: affs },
         { data: clicks },
-        { data: commissions }
+        { data: commissions },
+        { data: wds }
       ] = await Promise.all([
         supabase.from('affiliate_applications').select('*').order('created_at', { ascending: false }),
         supabase.from('affiliates').select('*').order('created_at', { ascending: false }),
         supabase.from('affiliate_clicks').select('affiliate_id'),
-        supabase.from('affiliate_commissions').select('affiliate_id, sales_amount, commission_amount, status, created_at, order_id').order('created_at', { ascending: false })
+        supabase.from('affiliate_commissions').select('affiliate_id, sales_amount, commission_amount, status, created_at, order_id').order('created_at', { ascending: false }),
+        supabase.from('affiliate_withdrawals').select('*, affiliates(code)').order('created_at', { ascending: false })
       ]);
       
       if (apps) setApplications(apps);
       if (affs) setAffiliates(affs);
       if (clicks) setClicksData(clicks);
       if (commissions) setCommissionsData(commissions);
+      if (wds) setWithdrawals(wds);
     } catch (e) {
       console.error(e);
     } finally {
@@ -132,6 +172,14 @@ export default function AffiliatesTab() {
             }`}
           >
             Active Partners ({affiliates.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('withdrawals')}
+            className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+              activeTab === 'withdrawals' ? 'bg-white text-ink shadow-sm' : 'text-ink/40 hover:text-ink'
+            }`}
+          >
+            Withdrawals ({withdrawals.filter(w => w.status === 'pending').length})
           </button>
         </div>
       </div>
@@ -244,6 +292,77 @@ export default function AffiliatesTab() {
         </div>
       )}
 
+      {activeTab === 'withdrawals' && (
+        <div className="bg-white border border-ink/5 shadow-dashboard overflow-hidden">
+           <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-ink/5 bg-ink/5">
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Bank Account</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Amount</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/5">
+                {withdrawals.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No withdrawal requests found.</td>
+                  </tr>
+                ) : withdrawals.map((w) => (
+                  <tr key={w.id} className="hover:bg-ink/[0.02] transition-colors">
+                    <td className="p-4">
+                      <p className="text-xs font-bold text-ink tracking-widest">{w.affiliates?.code}</p>
+                      <p className="text-[10px] text-ink/50 mt-0.5">{new Date(w.created_at).toLocaleDateString('id-ID')}</p>
+                    </td>
+                    <td className="p-4">
+                      <p className="text-xs font-medium text-ink uppercase">{w.bank_name}</p>
+                      <p className="text-[10px] text-ink/50 mt-0.5">{w.account_number} a/n {w.account_name}</p>
+                    </td>
+                    <td className="p-4 text-right">
+                      <p className="text-xs font-bold text-ink">Rp {w.amount.toLocaleString('id-ID')}</p>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                        w.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                        w.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                        w.status === 'processing' ? 'bg-blue-100 text-blue-700' :
+                        'bg-rose/10 text-rose'
+                      }`}>
+                        {w.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      {w.status === 'pending' && (
+                        <div className="flex items-center justify-end gap-2">
+                           <button onClick={async () => {
+                             if(confirm('Process this withdrawal?')) {
+                               await supabase.from('affiliate_withdrawals').update({ status: 'completed' }).eq('id', w.id);
+                               fetchData();
+                             }
+                           }} className="w-7 h-7 bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors" title="Mark Completed">
+                            <Check size={14} />
+                          </button>
+                          <button onClick={async () => {
+                             if(confirm('Reject this withdrawal? (Balance will be returned to affiliate manually)')) {
+                               await supabase.from('affiliate_withdrawals').update({ status: 'rejected' }).eq('id', w.id);
+                               fetchData();
+                             }
+                           }} className="w-7 h-7 bg-rose/5 text-rose flex items-center justify-center hover:bg-rose/10 transition-colors" title="Reject">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* PERFORMANCE MODAL */}
       <AnimatePresence>
         {selectedAffiliate && (
@@ -297,6 +416,35 @@ export default function AffiliatesTab() {
                           <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Sales Generated</p>
                           <p className="text-2xl font-bold text-ink">Rp {metrics.salesGenerated.toLocaleString('id-ID')}</p>
                         </div>
+                      </div>
+
+                      {/* Affiliate Configuration */}
+                      <div>
+                        <h4 className="text-sm font-bold text-ink uppercase tracking-widest mb-4">Configuration</h4>
+                        <form onSubmit={updateConfig} className="bg-white border border-ink/10 p-5 rounded-lg shadow-sm space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-[10px] uppercase tracking-widest text-ink/60 mb-1">Customer Discount Type</label>
+                              <select name="discount_type" defaultValue={selectedAffiliate.customer_discount_type || 'percentage'} className="w-full bg-ink/5 border-none text-xs p-2.5 outline-none rounded-sm">
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="fixed_amount">Fixed Amount (Rp)</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-[10px] uppercase tracking-widest text-ink/60 mb-1">Discount Value</label>
+                              <input type="number" name="discount_value" defaultValue={selectedAffiliate.customer_discount_value || 0} className="w-full bg-ink/5 border-none text-xs p-2.5 outline-none rounded-sm" />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <input type="checkbox" id="auto_approve" name="auto_approve" defaultChecked={selectedAffiliate.auto_approve_withdrawals} className="accent-ink" />
+                            <label htmlFor="auto_approve" className="text-xs font-medium text-ink">Auto-Approve Withdrawals</label>
+                          </div>
+                          <div className="flex justify-end pt-2 border-t border-ink/10">
+                            <button type="submit" disabled={savingConfig} className="px-6 py-2 bg-ink text-white text-[10px] uppercase tracking-widest disabled:opacity-50 hover:bg-ink/80 transition-colors">
+                              {savingConfig ? 'Saving...' : 'Save Configuration'}
+                            </button>
+                          </div>
+                        </form>
                       </div>
 
                       {/* Transaction History */}
