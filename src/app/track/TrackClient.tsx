@@ -127,9 +127,9 @@ export default function TrackClient() {
           <div>
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
-              <span className="text-[8px] uppercase tracking-widest text-ink/30 font-semibold">GUEST ACCESS</span>
+              <span className="text-[10px] uppercase tracking-widest text-ink font-semibold">GUEST ACCESS</span>
             </div>
-            <p className="text-[9px] text-ink/30 mt-2 uppercase tracking-widest">Lacak status pesanan tanpa perlu login</p>
+            <p className="text-[11px] text-ink mt-2 uppercase tracking-widest">Lacak status pesanan tanpa perlu login</p>
           </div>
           <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0" title="Kembali ke Beranda">
             <X size={14} strokeWidth={1.5} />
@@ -139,12 +139,12 @@ export default function TrackClient() {
         <form onSubmit={handleTrack} className="mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-ink/10 bg-ink/[0.01]">
             <div className="space-y-1">
-              <label className="text-[8px] uppercase tracking-widest font-semibold text-ink/40">Order Number</label>
-              <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/20 uppercase tracking-wider" aria-label="Order number" />
+              <label className="text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
+              <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] uppercase tracking-widest font-semibold text-ink/40">Nomor WhatsApp</label>
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[11px] font-medium border border-ink/10 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/20" aria-label="Phone number" />
+              <label className="text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
+              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
             </div>
           </div>
           {error && <div className="mt-2 px-3 py-2 bg-red-50 border border-red-200 text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
@@ -157,8 +157,8 @@ export default function TrackClient() {
           <div className="space-y-6">
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-ink/5">
               <div>
-                <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Order Number</p>
-                <p className="text-[11px] font-semibold uppercase tracking-wider">{order.order_number}</p>
+                <p className="text-[10px] uppercase tracking-widest text-ink mb-1 font-semibold">Order Number</p>
+                <p className="text-[13px] font-semibold uppercase tracking-wider text-ink">{order.order_number}</p>
               </div>
               <StatusBadge status={order.status} />
             </div>
