@@ -37,12 +37,17 @@ export async function POST(req: Request) {
       if (targetRefCode) {
         const { data: affData } = await supabaseAdmin
           .from('affiliates')
-          .select('id')
+          .select('id, user_id')
           .eq('code', targetRefCode.toUpperCase())
           .single();
         
         if (affData) {
-          affiliate_id = affData.id;
+          // Fraud Prevention: Prevent self-referral
+          if (customerDetails.user_id && affData.user_id === customerDetails.user_id) {
+            console.log(`[Checkout API] Prevented self-referral fraud for user: ${customerDetails.user_id}`);
+          } else {
+            affiliate_id = affData.id;
+          }
         }
       }
     } catch (e) {

@@ -94,16 +94,42 @@ export async function POST(req: Request) {
               .single();
 
             if (affiliate) {
-              const commissionAmount = (Number(order.total_price) * Number(affiliate.commission_rate)) / 100;
-              await supabase
-                .from('affiliate_commissions')
-                .insert({
-                  affiliate_id: order.affiliate_id,
-                  order_id: order.id,
-                  amount: commissionAmount,
-                  status: 'pending'
+              // Fraud Prevention: Only calculate commission on eligible products
+              const { data: orderItems } = await supabase
+                .from('order_items')
+                .select(`
+                  price_at_purchase,
+                  quantity,
+                  products (
+                    affiliate_eligible
+                  )
+                `)
+                .eq('order_id', order.id);
+
+              let eligibleTotal = 0;
+              if (orderItems && orderItems.length > 0) {
+                orderItems.forEach((item: any) => {
+                  // Check if the joined product explicitly allows affiliate commissions
+                  if (item.products && item.products.affiliate_eligible === true) {
+                    eligibleTotal += (Number(item.price_at_purchase) * Number(item.quantity));
+                  }
                 });
-              console.log(`[Payment Webhook] Created affiliate commission for order ${order.id}: Rp ${commissionAmount}`);
+              }
+
+              if (eligibleTotal > 0) {
+                const commissionAmount = (eligibleTotal * Number(affiliate.commission_rate)) / 100;
+                await supabase
+                  .from('affiliate_commissions')
+                  .insert({
+                    affiliate_id: order.affiliate_id,
+                    order_id: order.id,
+                    amount: commissionAmount,
+                    status: 'pending'
+                  });
+                console.log(`[Payment Webhook] Created affiliate commission for order ${order.id}: Rp ${commissionAmount} (Eligible Base: Rp ${eligibleTotal})`);
+              } else {
+                console.log(`[Payment Webhook] No eligible products for affiliate commission on order ${order.id}`);
+              }
             }
           }
         }
