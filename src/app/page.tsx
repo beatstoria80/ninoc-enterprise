@@ -574,7 +574,7 @@ export default function Home() {
               className="absolute inset-0 w-full h-full object-cover opacity-80"
               style={{ scale: videoScale }}
             >
-              <source src="/videos/ninoc_banner_video_hero_page.mp4" type="video/mp4" />
+              <source src="/videos/opening_video_ninoc.mp4" type="video/mp4" />
             </motion.video>
             
             {/* Minimal UI Overlay */}
