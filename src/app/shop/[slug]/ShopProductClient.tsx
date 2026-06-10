@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X, ImageOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
@@ -45,7 +45,7 @@ function SafeImage({ src, alt, className, sizes, priority = false }: {
   );
 }
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -53,12 +53,12 @@ const staggerContainer = {
   }
 };
 
-const columnVariants = {
+const columnVariants: Variants = {
   hidden: { y: 40, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.23, 1, 0.32, 1] } }
 };
 
-const imageVariants = {
+const imageVariants: Variants = {
   hidden: { clipPath: 'inset(0 0 100% 0)' },
   visible: { clipPath: 'inset(0 0 0 0)', transition: { duration: 1.5, ease: [0.77, 0, 0.175, 1] } }
 };
@@ -345,7 +345,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 </button>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           <motion.div variants={columnVariants} className="col-span-1 relative flex items-center lg:px-6 xl:px-8 w-full lg:self-start">
 
