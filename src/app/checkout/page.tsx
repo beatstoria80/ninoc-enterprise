@@ -122,7 +122,8 @@ export default function CheckoutPage() {
     kelurahan: '',
     kecamatan: '',
     city: '',
-    province: ''
+    province: '',
+    referral_code: ''
   });
 
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
@@ -571,6 +572,10 @@ export default function CheckoutPage() {
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
                   <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
+                </div>
+                <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "p-2.5" : "p-4")}>
+                  <label htmlFor="referral_code" className={labelClass}>Kode Referral / Kreator (Opsional)</label>
+                  <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => setFormData({...formData, referral_code: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Misal: JOHNDOE" />
                 </div>
               </div>
             </section>

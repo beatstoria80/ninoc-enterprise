@@ -21,19 +21,24 @@ interface CheckoutItem {
 
 export async function POST(req: Request) {
   try {
+    const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
+
     // Affiliate Tracking
     let affiliate_id = null;
     try {
-      const cookieStore = cookies();
-      // next@15+ requires await cookies(), but handling dynamically:
-      const resolvedCookies = await Promise.resolve(cookieStore);
-      const affiliateRef = resolvedCookies.get('ninoc_affiliate_ref')?.value;
+      let targetRefCode = customerDetails.referral_code;
+      if (!targetRefCode) {
+        const cookieStore = cookies();
+        // next@15+ requires await cookies(), but handling dynamically:
+        const resolvedCookies = await Promise.resolve(cookieStore);
+        targetRefCode = resolvedCookies.get('ninoc_affiliate_ref')?.value;
+      }
       
-      if (affiliateRef) {
+      if (targetRefCode) {
         const { data: affData } = await supabaseAdmin
           .from('affiliates')
           .select('id')
-          .eq('code', affiliateRef)
+          .eq('code', targetRefCode.toUpperCase())
           .single();
         
         if (affData) {
@@ -41,10 +46,8 @@ export async function POST(req: Request) {
         }
       }
     } catch (e) {
-      console.error("Error reading affiliate cookie:", e);
+      console.error("Error reading affiliate code:", e);
     }
-
-    const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
 
     // Calculate grossAmount exactly from item_details to satisfy Midtrans validation
     let calculatedGrossAmount = 0;
