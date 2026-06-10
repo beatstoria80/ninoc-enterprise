@@ -9,9 +9,9 @@ import { usePathname } from 'next/navigation';
 
 export default function ClientPlatformManager({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Start as mobile to prevent SSR flash
+  // Default to desktop to allow SSR of children and avoid blank screens.
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const { items } = useCart();
 
   // Hide GlobalHeader/Footer on admin pages, checkout, legal, help, track, profile, retur, onboarding
@@ -38,14 +38,9 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Show simple loader until mounted
-  if (!mounted) {
-    return (
-      <div className={`min-h-screen ${pathname === '/' ? 'bg-ink' : 'bg-cr'}`} />
-    );
-  }
+  // Removed !mounted return to ensure `children` (e.g. video) renders instantly on SSR!
 
-  if (isMobile) {
+  if (mounted && isMobile) {
     return (
       <MobileLayout
         cartCount={items.length}
@@ -62,12 +57,13 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const showGlobalFooter = showGlobalHeader && !isCategoryPage && !isCollectionsPage;
 
   return (
-    <div className="min-h-screen flex flex-col bg-cr">
-      {showGlobalHeader && <div className="print:hidden"><GlobalHeader /></div>}
+    <div className={`min-h-screen flex flex-col ${pathname === '/' ? 'bg-ink' : 'bg-cr'}`}>
+      {/* hidden md:block prevents SSR flash of huge desktop header on mobile screens */}
+      {showGlobalHeader && <div className="print:hidden hidden md:block"><GlobalHeader /></div>}
       <div className="flex-1">
         {children}
       </div>
-      {showGlobalFooter && <div className="print:hidden"><GlobalFooter /></div>}
+      {showGlobalFooter && <div className="print:hidden hidden md:block"><GlobalFooter /></div>}
     </div>
   );
 }
