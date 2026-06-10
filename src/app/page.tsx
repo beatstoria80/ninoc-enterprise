@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView, Variants, AnimatePresence } from 'framer-motion';
+import { motion, useInView, Variants, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
@@ -499,6 +499,13 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // SCENE ORCHESTRATION
+  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
+  
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
+  const videoScale = useTransform(smoothProgress, [0, 1], [1, 1.05]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -513,8 +520,119 @@ export default function Home() {
     fetchProducts();
   }, []);
 
+  // Prevent scrolling during hero scene
+  useEffect(() => {
+    if (scene === 'hero') {
+      document.body.style.overflow = 'hidden';
+      window.scrollTo(0, 0);
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => { document.body.style.overflow = 'auto'; };
+  }, [scene]);
+
+  const handleShopClick = () => {
+    setScene('transitioning');
+    setTimeout(() => {
+      setScene('archive');
+    }, 1200);
+  };
+
   return (
-    <div className="mobile-momentum select-none">
+    <div className="bg-ink relative min-h-screen overflow-hidden">
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* SCENE 01: HERO VIDEO BANNER                                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {(scene === 'hero' || scene === 'transitioning') && (
+          <motion.div 
+            className="fixed inset-0 z-50 bg-ink overflow-hidden"
+            initial={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0 }}
+            animate={
+              scene === 'transitioning' 
+                ? { y: '-100vh', opacity: 0.8 } // Cinematic slide up
+                : { y: 0, scale: 1, opacity: 1 }
+            }
+            transition={{ duration: 1.2, ease: EASING.inOut }} // Smooth transition
+          >
+            {/* Cinematic Video Background */}
+            <motion.video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="absolute inset-0 w-full h-full object-cover opacity-80"
+              style={{ scale: videoScale }}
+              src="https://videos.pexels.com/video-files/5849887/5849887-uhd_2560_1440_24fps.mp4" 
+            />
+            
+            {/* Minimal UI Overlay */}
+            <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-12 z-10 text-white">
+              {/* Header area */}
+              <div className="flex justify-between items-center w-full">
+                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
+                  <p className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase">NINOC</p>
+                </motion.div>
+                
+                <motion.div className="hidden md:flex gap-8 text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
+                  <span>Catalog</span>
+                  <span>Collections</span>
+                  <span>Category</span>
+                  <span>Logbook</span>
+                  <span>About Us</span>
+                </motion.div>
+                
+                <motion.div className="flex gap-4 text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}>
+                  <span>Search</span>
+                  <span className="hidden md:inline">Account</span>
+                  <span>Cart(0)</span>
+                </motion.div>
+              </div>
+
+              {/* Center Content */}
+              <div className="flex flex-col items-center justify-center flex-grow text-center">
+                <motion.h1 
+                  className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter uppercase mb-8 max-w-4xl drop-shadow-2xl"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: DURATION.hero, ease: EASING.out, delay: 0.6 }}
+                >
+                  {dict.home.heroTitle || 'Wear the art, own the day.'}
+                </motion.h1>
+                
+                {/* Scene 02: SHOP Button Interaction */}
+                <motion.button
+                  onClick={handleShopClick}
+                  className="bg-white text-ink px-10 py-4 text-xs font-medium uppercase tracking-[0.3em] transition-all"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.05, backgroundColor: "#f8f8f8" }}
+                  whileTap={{ scale: 0.97 }} // Emil's principle
+                  transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  style={{ transitionProperty: "transform, background-color, box-shadow" }}
+                >
+                  SHOP NOW
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* SCENE 04 & 05: PRODUCT ARCHIVE & SCROLL EXPERIENCE            */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {(scene === 'archive' || scene === 'transitioning') && (
+          <motion.div
+            className="w-full min-h-screen bg-white relative z-40"
+            initial={{ y: '100vh' }}
+            animate={{ y: scene === 'archive' || scene === 'transitioning' ? 0 : '100vh' }}
+            transition={{ duration: 1.2, ease: EASING.inOut }} // Matches the video slide up
+          >
+             {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
+             <div className="mobile-momentum select-none">
 
       {/* HERO SECTION */}
       <section className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
@@ -812,6 +930,10 @@ export default function Home() {
           </div>
         </section>
       </FadeUpSection>
+    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
