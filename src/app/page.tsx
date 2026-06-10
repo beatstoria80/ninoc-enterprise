@@ -570,8 +570,9 @@ export default function Home() {
               autoPlay 
               loop 
               muted 
-              playsInline 
-              className="absolute inset-0 w-full h-full object-cover opacity-80"
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover opacity-80 bg-ink"
               style={{ scale: videoScale }}
             >
               <source src="/videos/opening_video_ninoc.mp4" type="video/mp4" />

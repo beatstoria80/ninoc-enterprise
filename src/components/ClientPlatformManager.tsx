@@ -41,7 +41,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   // Show simple loader until mounted
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-cr" />
+      <div className={`min-h-screen ${pathname === '/' ? 'bg-ink' : 'bg-cr'}`} />
     );
   }
 
