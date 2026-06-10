@@ -1,6 +1,19 @@
 -- Create enum for affiliate tiers
 CREATE TYPE affiliate_tier AS ENUM ('bronze', 'silver', 'gold');
 
+-- Affiliate Applications table
+CREATE TABLE IF NOT EXISTS public.affiliate_applications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    channel_name VARCHAR(255),
+    instagram_link TEXT,
+    tiktok_link TEXT,
+    status VARCHAR(20) DEFAULT 'pending', -- pending, approved, rejected
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Affiliates table
 CREATE TABLE IF NOT EXISTS public.affiliates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
