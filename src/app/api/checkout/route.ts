@@ -29,14 +29,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
     }
 
-    // --- SECURITY FIX: Fetch real prices from DB ---
+    // --- SECURITY FIX: Fetch real prices and supplier costings from DB ---
     const productIds = items.map((i: CheckoutItem) => i.id);
     const { data: dbProducts, error: dbError } = await supabaseAdmin
       .from('products')
-      .select('id, price, name')
+      .select(`
+        id, price, name, supplier_id,
+        product_costings ( supplier_base_price, ninoc_markup )
+      `)
       .in('id', productIds);
 
     if (dbError || !dbProducts) {
+      console.error('[Checkout API] Failed to verify products:', dbError);
       return NextResponse.json({ error: 'Failed to verify products' }, { status: 500 });
     }
 
@@ -86,11 +90,19 @@ export async function POST(req: Request) {
       const itemPrice = Number(dbProduct.price) + surcharge;
       calculatedGrossAmount += itemPrice * item.quantity;
       
+      // Supplier & Ledger Costings
+      const costing = dbProduct.product_costings?.[0] || dbProduct.product_costings;
+      const supplierBasePrice = costing?.supplier_base_price || 0;
+      const ninocMarkup = costing?.ninoc_markup || (itemPrice - supplierBasePrice);
+
       finalItemDetails.push({
         id: item.id,
         price: itemPrice,
         quantity: item.quantity,
-        name: (dbProduct.name + (surcharge > 0 ? ' (XXL+)' : '')).substring(0, 50)
+        name: (dbProduct.name + (surcharge > 0 ? ' (XXL+)' : '')).substring(0, 50),
+        supplier_id: dbProduct.supplier_id,
+        supplier_hpp: supplierBasePrice,
+        ninoc_markup: ninocMarkup
       });
     }
 
@@ -201,8 +213,10 @@ export async function POST(req: Request) {
         size: items.find((i: any) => i.id === item.id)?.size || null,
         // Assuming we pass variant_id from frontend. For now, rely on product_id + size.
         // We'll map it to the database's reserve_inventory logic.
-        quantity: item.quantity,
-        price_at_purchase: item.price
+        // Ledger splits
+        supplier_id: item.supplier_id || null,
+        supplier_hpp: item.supplier_hpp || 0,
+        ninoc_markup: item.ninoc_markup || 0
       }));
 
       const { error: itemsError } = await supabaseAdmin

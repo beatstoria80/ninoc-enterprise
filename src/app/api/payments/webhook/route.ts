@@ -79,15 +79,47 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Send WhatsApp Invoice Notification & Generate Affiliate Commission (only on successful payment)
+    // 5. Send WhatsApp Invoice Notification, Generate Affiliate Commission, and Distribute Supplier Ledger
     if (orderUpdateStatus === 'paid') {
       const { data: order } = await supabase
         .from('orders')
-        .select('id, shipping_address, total_price, wa_invoice_sent, affiliate_id')
+        .select(`
+          id, shipping_address, total_price, wa_invoice_sent, affiliate_id,
+          order_items ( id, supplier_id, supplier_hpp )
+        `)
         .eq('id', orderId)
         .single();
 
       if (order) {
+        // --- SUPPLIER LEDGER DISTRIBUTION ---
+        if (order.order_items && order.order_items.length > 0) {
+          const ledgerEntries = order.order_items
+            .filter((item: any) => item.supplier_id && item.supplier_hpp > 0)
+            .map((item: any) => ({
+              supplier_id: item.supplier_id,
+              order_id: order.id,
+              order_item_id: item.id,
+              hpp_amount: item.supplier_hpp,
+              status: 'pending' // clears after 14 days or whatever policy says
+            }));
+          
+          if (ledgerEntries.length > 0) {
+            // Check if already created
+            const { data: existingLedger } = await supabase
+              .from('supplier_ledgers')
+              .select('id')
+              .eq('order_id', order.id)
+              .limit(1);
+            
+            if (!existingLedger || existingLedger.length === 0) {
+              const { error: ledgerError } = await supabase
+                .from('supplier_ledgers')
+                .insert(ledgerEntries);
+              if (ledgerError) console.error('[Payment Webhook] Failed to create supplier ledger entries:', ledgerError);
+              else console.log(`[Payment Webhook] Distributed ${ledgerEntries.length} supplier ledger entries for order ${order.id}`);
+            }
+          }
+        }
         // --- AFFILIATE COMMISSION LOGIC ---
         if (order.affiliate_id) {
           const { data: existingCommission } = await supabase

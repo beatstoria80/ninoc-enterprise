@@ -3,6 +3,12 @@
  * Proxy to Biteship API — tries real Biteship first, falls back to mock on failure
  */
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 const MOCK_RATES = {
   success: true,
@@ -55,8 +61,23 @@ export async function POST(req: Request) {
         if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
         else if (final_dest_id) bodyPayload.destination_area_id = final_dest_id;
 
-        // Default Origin: Subang (NINOC Studio)
-        bodyPayload.origin_postal_code = origin_postal_code || 41254;
+        // Dynamically fetch Origin Hub (NINOC Central Warehouse)
+        let defaultOrigin = 41254; // Fallback
+        try {
+          const { data: hubData } = await supabaseAdmin
+            .from('warehouses')
+            .select('postal_code')
+            .eq('is_crossdock_hub', true)
+            .limit(1)
+            .single();
+          if (hubData?.postal_code) {
+            defaultOrigin = parseInt(hubData.postal_code, 10);
+          }
+        } catch (e) {
+          console.warn('[Biteship Rates] Failed to fetch Ninoc Hub from DB, using fallback.', e);
+        }
+
+        bodyPayload.origin_postal_code = origin_postal_code || defaultOrigin;
 
         const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
           method: 'POST',
