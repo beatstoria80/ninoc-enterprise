@@ -201,6 +201,7 @@ export default function AdminDashboard() {
     perspective3: '',
     perspective4: '',
     is_featured: false,
+    affiliate_eligible: false,
     price_tag: '',
     badge_text: '',
     variants: [] as { id: string; size: string; color: string; stock_quantity: number; sku?: string }[]
@@ -350,6 +351,7 @@ export default function AdminDashboard() {
         perspective3: product.perspective3 || '',
         perspective4: product.perspective4 || '',
         is_featured: product.is_featured,
+        affiliate_eligible: product.affiliate_eligible || false,
         price_tag: product.price_tag || '',
         badge_text: product.badge_text || '',
         variants: product.variants?.length ? product.variants.map(v => ({
@@ -379,6 +381,7 @@ export default function AdminDashboard() {
         perspective3: '',
         perspective4: '',
         is_featured: false,
+        affiliate_eligible: false,
         price_tag: '',
         badge_text: '',
         variants: []
@@ -449,6 +452,7 @@ export default function AdminDashboard() {
         perspective3: productForm.perspective3 || null,
         perspective4: productForm.perspective4 || null,
         is_featured: productForm.is_featured,
+        affiliate_eligible: productForm.affiliate_eligible,
         price_tag: productForm.price_tag || null,
         badge_text: productForm.badge_text || null,
         updated_at: new Date().toISOString()
@@ -1842,18 +1846,42 @@ export default function AdminDashboard() {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setProductForm({ ...productForm, is_featured: !productForm.is_featured })}
-                      className="flex items-center gap-2"
-                    >
-                      {productForm.is_featured ? (
-                        <ToggleRight size={24} className="text-rose" />
-                      ) : (
-                        <ToggleLeft size={24} className="text-gray-300" />
-                      )}
-                      <span className="text-sm text-gray-700">Featured Product</span>
-                    </button>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900">Featured Product</h4>
+                        <p className="text-xs text-gray-500">Show this product on the home page</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, is_featured: !productForm.is_featured })}
+                        className={cn("text-2xl transition-colors", productForm.is_featured ? "text-rose" : "text-gray-300")}
+                      >
+                        {productForm.is_featured ? (
+                          <ToggleRight className="fill-current" />
+                        ) : (
+                          <ToggleLeft />
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900">Affiliate Eligible</h4>
+                        <p className="text-xs text-gray-500">Allow affiliates to earn commission on this product</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setProductForm({ ...productForm, affiliate_eligible: !productForm.affiliate_eligible })}
+                        className={cn("text-2xl transition-colors", productForm.affiliate_eligible ? "text-green-500" : "text-gray-300")}
+                      >
+                        {productForm.affiliate_eligible ? (
+                          <ToggleRight className="fill-current" />
+                        ) : (
+                          <ToggleLeft />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
 

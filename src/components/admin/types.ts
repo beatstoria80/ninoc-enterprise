@@ -22,6 +22,7 @@ export interface Product {
   is_featured: boolean;
   price_tag?: string | null;
   badge_text?: string | null;
+  affiliate_eligible?: boolean;
   created_at: string;
   variants?: Variant[];
 }
