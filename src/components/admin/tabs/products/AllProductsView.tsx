@@ -79,19 +79,31 @@ export function AllProductsView({
                     <Trash2 size={14} />
                   </button>
                 </div>
-                {product.is_featured && (
-                  <div className="absolute top-3 left-3 px-2 py-1 bg-rose text-white text-[8px] uppercase tracking-wider rounded">
-                    Featured
-                  </div>
-                )}
+                <div className="absolute top-3 left-3 flex flex-col gap-1">
+                  {product.is_featured && (
+                    <div className="w-fit px-2 py-1 bg-rose text-white text-[8px] uppercase tracking-wider rounded shadow-sm">
+                      Featured
+                    </div>
+                  )}
+                  {product.affiliate_eligible && (
+                    <div className="w-fit px-2 py-1 bg-emerald-500 text-white text-[8px] uppercase tracking-wider rounded shadow-sm">
+                      Affiliate
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="p-3 space-y-2">
                 {/* Product Name */}
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-display font-medium italic text-xs text-ink leading-tight truncate">{product.name}</h3>
-                  {product.is_featured && (
-                    <span className="shrink-0 px-1.5 py-0.5 bg-rose text-white text-[8px] uppercase tracking-wider rounded">Featured</span>
-                  )}
+                  <div className="shrink-0 flex flex-wrap justify-end gap-1">
+                    {product.is_featured && (
+                      <span className="px-1.5 py-0.5 bg-rose text-white text-[8px] uppercase tracking-wider rounded">Featured</span>
+                    )}
+                    {product.affiliate_eligible && (
+                      <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] uppercase tracking-wider rounded">Affiliate</span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Category + Variants + SKU Status */}
