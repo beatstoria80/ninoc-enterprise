@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import midtransClient from 'midtrans-client';
 import { createClient } from '@supabase/supabase-js';
-import { randomUUID } from 'crypto';
 
 // Use Service Role Key to bypass RLS since this is a secure server route
 const supabaseAdmin = createClient(
@@ -10,18 +9,36 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
+const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
+const SIZE_SURCHARGE_AMOUNT = 15000;
+
 interface CheckoutItem {
   id: string;
   name: string;
-  price: number;
+  price: number; // Ignored for security
   quantity: number;
   size?: string;
-  size_surcharge?: number;
+  size_surcharge?: number; // Ignored for security
 }
 
 export async function POST(req: Request) {
   try {
-    const { items, customerDetails, shippingDetails, fees = { tax: 0, platformFee: 0 }, totalPrice } = await req.json();
+    const { items, customerDetails, shippingDetails } = await req.json();
+
+    if (!items || !items.length) {
+      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
+    }
+
+    // --- SECURITY FIX: Fetch real prices from DB ---
+    const productIds = items.map((i: CheckoutItem) => i.id);
+    const { data: dbProducts, error: dbError } = await supabaseAdmin
+      .from('products')
+      .select('id, price, name')
+      .in('id', productIds);
+
+    if (dbError || !dbProducts) {
+      return NextResponse.json({ error: 'Failed to verify products' }, { status: 500 });
+    }
 
     // Affiliate Tracking
     let affiliate_id = null;
@@ -29,7 +46,6 @@ export async function POST(req: Request) {
       let targetRefCode = customerDetails.referral_code;
       if (!targetRefCode) {
         const cookieStore = cookies();
-        // next@15+ requires await cookies(), but handling dynamically:
         const resolvedCookies = await Promise.resolve(cookieStore);
         targetRefCode = resolvedCookies.get('ninoc_affiliate_ref')?.value;
       }
@@ -42,7 +58,6 @@ export async function POST(req: Request) {
           .single();
         
         if (affData) {
-          // Fraud Prevention: Prevent self-referral
           if (customerDetails.user_id && affData.user_id === customerDetails.user_id) {
             console.log(`[Checkout API] Prevented self-referral fraud for user: ${customerDetails.user_id}`);
           } else {
@@ -54,40 +69,45 @@ export async function POST(req: Request) {
       console.error("Error reading affiliate code:", e);
     }
 
-    // Calculate grossAmount exactly from item_details to satisfy Midtrans validation
+    // Calculate grossAmount securely
     let calculatedGrossAmount = 0;
+    const finalItemDetails = [];
 
-    const finalItemDetails = [
-      ...items.map((item: CheckoutItem) => {
-        const itemPrice = item.price + (item.size_surcharge || 0);
-        calculatedGrossAmount += itemPrice * item.quantity;
-        return {
-          id: item.id,
-          price: itemPrice,
-          quantity: item.quantity,
-          name: (item.name + ((item.size_surcharge || 0) > 0 ? ' (XXL+)' : '')).substring(0, 50)
-        };
-      }),
-      {
-        id: 'SHIPPING',
-        price: shippingDetails.cost,
-        quantity: 1,
-        name: `Courier: ${shippingDetails.method.toUpperCase()}`.substring(0, 50)
+    for (const item of items) {
+      const dbProduct = dbProducts.find(p => p.id === item.id);
+      if (!dbProduct) {
+        return NextResponse.json({ error: `Product not found: ${item.id}` }, { status: 400 });
       }
-    ];
-    calculatedGrossAmount += shippingDetails.cost;
 
-    if (fees.platformFee > 0) {
-      finalItemDetails.push({ id: 'FEE', price: fees.platformFee, quantity: 1, name: 'Platform Fee' });
-      calculatedGrossAmount += fees.platformFee;
+      // Determine size surcharge
+      const isSurchargeSize = item.size && SURCHARGE_SIZES.includes(item.size.toUpperCase());
+      const surcharge = isSurchargeSize ? SIZE_SURCHARGE_AMOUNT : 0;
+      
+      const itemPrice = Number(dbProduct.price) + surcharge;
+      calculatedGrossAmount += itemPrice * item.quantity;
+      
+      finalItemDetails.push({
+        id: item.id,
+        price: itemPrice,
+        quantity: item.quantity,
+        name: (dbProduct.name + (surcharge > 0 ? ' (XXL+)' : '')).substring(0, 50)
+      });
     }
+
+    // Add shipping cost
+    finalItemDetails.push({
+      id: 'SHIPPING',
+      price: shippingDetails.cost,
+      quantity: 1,
+      name: `Courier: ${shippingDetails.method.toUpperCase()}`.substring(0, 50)
+    });
+    calculatedGrossAmount += shippingDetails.cost;
 
     const grossAmount = calculatedGrossAmount;
     if (grossAmount <= 0) {
       return NextResponse.json({ error: 'Invalid total price' }, { status: 400 });
     }
 
-    // Extract first_name / last_name from customerDetails
     const firstName = customerDetails.first_name || '';
     const lastName = customerDetails.last_name || '';
 
@@ -139,7 +159,7 @@ export async function POST(req: Request) {
 
     const transaction = await snap.createTransaction(parameter);
 
-    // 1. Save order header to Supabase
+    // Save order header
     const { error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
@@ -147,7 +167,7 @@ export async function POST(req: Request) {
         user_id: customerDetails.user_id ? customerDetails.user_id : null,
         affiliate_id: affiliate_id,
         customer_name: customerDetails.name || null,
-        total_price: totalPrice,
+        total_price: grossAmount,
         status: 'pending',
         snap_token: transaction.token,
         courier: shippingDetails.method,
@@ -160,18 +180,17 @@ export async function POST(req: Request) {
 
     if (orderError) {
       console.error('Supabase Order Error:', orderError);
-      // Don't block transaction if DB save fails, but log it
     }
 
-    // 2. Save individual order items
-    if (items.length > 0) {
-      const orderItems = items.map((item: CheckoutItem) => ({
+    // Save individual order items
+    if (finalItemDetails.length > 0) {
+      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING').map((item: any) => ({
         order_id: orderId,
         product_id: item.id,
         product_name: item.name,
-        size: item.size || null,
+        size: items.find((i: any) => i.id === item.id)?.size || null,
         quantity: item.quantity,
-        price_at_purchase: item.price + (item.size_surcharge || 0)
+        price_at_purchase: item.price
       }));
 
       const { error: itemsError } = await supabaseAdmin
@@ -180,7 +199,6 @@ export async function POST(req: Request) {
 
       if (itemsError) {
         console.error('Supabase Order Items Error:', itemsError);
-        // Throw to prevent returning a token for an order with no line items
         throw new Error('Failed to save order items. Please try again.');
       }
     }
