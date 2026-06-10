@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import crypto from 'crypto';
+import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsapp';
 
 // ============================================================
 // BITESHIP WEBHOOK HANDLER (PRODUCTION VERSION)
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
         const internalStatus = mapBiteshipStatus(payload.status);
 
         // Update main order table
-        await supabase
+        const { data: updatedOrder } = await supabase
           .from('orders')
           .update({
             status: internalStatus,
@@ -111,7 +112,48 @@ export async function POST(req: Request) {
             tracking_id: payload.courier_tracking_id || payload.courier_waybill_id || undefined,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', payload.order_id);
+          .eq('id', payload.order_id)
+          .select('id, shipping_address, customer_name, wa_shipping_sent, wa_delivered_sent')
+          .single();
+
+        if (updatedOrder) {
+          const phoneRaw = (updatedOrder.shipping_address as any)?.phone || '';
+          const phone = formatPhoneNumber(phoneRaw);
+          const customerName = updatedOrder.customer_name || (updatedOrder.shipping_address as any)?.name || 'Pelanggan';
+          
+          if (phone) {
+            // Send Shipping Notification (only if not sent before)
+            if (internalStatus === 'shipped' && !updatedOrder.wa_shipping_sent) {
+              const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || 'Otomatis';
+              const courier = payload.courier_company || 'Kurir Ekspedisi';
+              
+              const waRes = await sendShippingWA({
+                phone,
+                customer_name: customerName,
+                order_id: updatedOrder.id,
+                tracking_id: trackingId,
+                courier_name: courier,
+              });
+
+              if (waRes.success) {
+                await supabase.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+              }
+            }
+            
+            // Send Delivered Notification (only if not sent before)
+            if (internalStatus === 'delivered' && !updatedOrder.wa_delivered_sent) {
+              const waRes = await sendDeliveredWA({
+                phone,
+                customer_name: customerName,
+                order_id: updatedOrder.id,
+              });
+
+              if (waRes.success) {
+                await supabase.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+              }
+            }
+          }
+        }
 
         // Log to tracking_logs for history
         await supabase.from('tracking_logs').insert({
