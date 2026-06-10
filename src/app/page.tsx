@@ -546,7 +546,7 @@ export default function Home() {
       <AnimatePresence>
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
-            className="fixed inset-0 z-50 bg-ink overflow-hidden"
+            className="fixed inset-0 z-[200] bg-ink overflow-hidden"
             initial={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0 }}
             animate={
@@ -564,8 +564,9 @@ export default function Home() {
               playsInline 
               className="absolute inset-0 w-full h-full object-cover opacity-80"
               style={{ scale: videoScale }}
-              src="/videos/ninoc_banner_video_hero_page.mp4" 
-            />
+            >
+              <source src="/videos/ninoc_banner_video_hero_page.mp4" type="video/mp4" />
+            </motion.video>
             
             {/* Minimal UI Overlay */}
             <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-12 z-10 text-white">
