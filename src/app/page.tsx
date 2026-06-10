@@ -547,12 +547,12 @@ export default function Home() {
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
             className="fixed inset-0 z-50 bg-ink overflow-hidden"
-            initial={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0 }}
             animate={
               scene === 'transitioning' 
-                ? { y: '-100vh', opacity: 0.8 } // Cinematic slide up
-                : { y: 0, scale: 1, opacity: 1 }
+                ? { scale: 0.92, opacity: 0, filter: 'blur(10px)', y: -40 } // Cinematic zoom out, blur & fade
+                : { scale: 1, opacity: 1, filter: 'blur(0px)', y: 0 }
             }
             transition={{ duration: 1.2, ease: EASING.inOut }} // Smooth transition
           >
@@ -564,7 +564,7 @@ export default function Home() {
               playsInline 
               className="absolute inset-0 w-full h-full object-cover opacity-80"
               style={{ scale: videoScale }}
-              src="https://videos.pexels.com/video-files/5849887/5849887-uhd_2560_1440_24fps.mp4" 
+              src="/videos/ninoc_banner_video_hero_page.mp4" 
             />
             
             {/* Minimal UI Overlay */}
@@ -627,9 +627,13 @@ export default function Home() {
         {(scene === 'archive' || scene === 'transitioning') && (
           <motion.div
             className="w-full min-h-screen bg-white relative z-40"
-            initial={{ y: '100vh' }}
-            animate={{ y: scene === 'archive' || scene === 'transitioning' ? 0 : '100vh' }}
-            transition={{ duration: 1.2, ease: EASING.inOut }} // Matches the video slide up
+            initial={{ opacity: 0, scale: 0.95, y: 60 }}
+            animate={{ 
+              opacity: scene === 'archive' || scene === 'transitioning' ? 1 : 0,
+              scale: scene === 'archive' || scene === 'transitioning' ? 1 : 0.95,
+              y: scene === 'archive' || scene === 'transitioning' ? 0 : 60 
+            }}
+            transition={{ duration: 1.2, ease: EASING.inOut, delay: 0.1 }} // Cinematic scale up and reveal
           >
              {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
              <div className="mobile-momentum select-none">
