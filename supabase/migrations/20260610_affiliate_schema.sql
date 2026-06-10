@@ -1,5 +1,9 @@
--- Create enum for affiliate tiers
-CREATE TYPE affiliate_tier AS ENUM ('bronze', 'silver', 'gold');
+-- Create enum for affiliate tiers (safe approach)
+DO $$ BEGIN
+    CREATE TYPE affiliate_tier AS ENUM ('bronze', 'silver', 'gold');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Affiliate Applications table
 CREATE TABLE IF NOT EXISTS public.affiliate_applications (
