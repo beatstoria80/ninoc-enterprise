@@ -422,17 +422,16 @@ export default function GlobalHeader() {
       >
         {/* Logo */}
         <motion.div className="relative flex flex-col">
-          <PressScale className="cursor-pointer group flex flex-col">
-            <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col">
-              <motion.div
-                className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: DURATION.fast, ease: EASING.out }}
-              >
-                ninoc
-              </motion.div>
-            </Link>
-          </PressScale>
+          <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
+            <motion.div
+              className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
+              transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            >
+              ninoc
+            </motion.div>
+          </Link>
 
           {/* Back navigation on inner pages */}
           <AnimatePresence>
