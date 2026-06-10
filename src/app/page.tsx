@@ -316,7 +316,7 @@ function ProductCard({ product, index }: ProductCardProps) {
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-contain transition-all duration-700 grayscale group-hover:grayscale-0"
+              className="object-contain transition-all duration-700"
               style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
           ) : (
