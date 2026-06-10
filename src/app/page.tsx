@@ -80,12 +80,14 @@ const CATEGORIES = [
 // VARIANT DEFINITIONS
 // ═══════════════════════════════════════════════════════════════
 
-const wordVariants: Variants = {
-  hidden: { y: 60, opacity: 0 },
+const charVariants: Variants = {
+  hidden: { y: 40, opacity: 0, filter: 'blur(10px)', scale: 1.05 },
   visible: (i: number) => ({
     y: 0,
     opacity: 1,
-    transition: { delay: i * 0.12, duration: DURATION.hero, ease: EASING.out },
+    filter: 'blur(0px)',
+    scale: 1,
+    transition: { delay: i * 0.03, duration: 1.2, ease: [0.23, 1, 0.32, 1] },
   }),
 };
 
@@ -108,10 +110,10 @@ const cardContentVariants: Variants = {
 };
 
 const metadataVariants: Variants = {
-  hidden: { y: 10, opacity: 0 },
+  hidden: { y: 20, opacity: 0, scale: 0.95 },
   visible: (i: number) => ({
-    y: 0, opacity: 1,
-    transition: { delay: 0.25 + i * 0.1, duration: DURATION.medium, ease: EASING.out },
+    y: 0, opacity: 1, scale: 1,
+    transition: { delay: 0.6 + i * 0.08, duration: 0.8, ease: EASING.out },
   }),
 };
 
@@ -201,14 +203,20 @@ function PortraitImageCarousel() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: DURATION.slow, ease: EASING.out }}
+      initial={{ clipPath: 'inset(0 0 100% 0)' }}
+      animate={{ clipPath: 'inset(0 0 0 0)' }}
+      transition={{ delay: 0.4, duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
       onMouseEnter={startCycle}
       onMouseLeave={stopCycle}
       className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
       style={{ cursor: 'pointer' }}
     >
+      <motion.div 
+        initial={{ scale: 1.1 }} 
+        animate={{ scale: 1 }} 
+        transition={{ delay: 0.4, duration: 2, ease: [0.23, 1, 0.32, 1] }} 
+        className="absolute inset-0 w-full h-full"
+      >
       {PORTRAIT_IMAGES.map((src, i) => (
         <motion.div
           key={src}
@@ -229,6 +237,7 @@ function PortraitImageCarousel() {
           />
         </motion.div>
       ))}
+      </motion.div>
 
       <AnimatePresence>
         {isHovered && (

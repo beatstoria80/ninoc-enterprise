@@ -97,32 +97,37 @@ function PressButton({ children, className = '', onClick, disabled }: {
 // NAV LINK WITH SPRING HOVER
 // ═══════════════════════════════════════════════════════════════
 
-function NavLink({ href, children, isDark }: { href: string; children: React.ReactNode; isDark?: boolean }) {
+function NavLink({ href, children, isDark, index = 0 }: { href: string; children: React.ReactNode; isDark?: boolean; index?: number }) {
   const [isHovered, setIsHovered] = useState(false);
-  const scaleX = useSpring(0, { stiffness: 400, damping: 30 });
+  const scaleX = useSpring(0, EASING.springSnappy);
 
   useEffect(() => {
     scaleX.set(isHovered ? 1 : 0);
   }, [isHovered, scaleX]);
 
   return (
-    <Link
-      prefetch={false}
-      href={href}
-      className={cn(
-        "text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors",
-        isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
-      )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 + (index * 0.05), duration: DURATION.medium, ease: EASING.out }}
     >
-      <span>{children}</span>
-      <motion.span
-        className={cn("absolute -bottom-2 left-0 right-0 h-[1px] origin-left", isDark ? "bg-white" : "bg-rose")}
-        style={{ scaleX }}
-        transition={{ duration: DURATION.normal, ease: EASING.out }}
-      />
-    </Link>
+      <Link
+        prefetch={false}
+        href={href}
+        className={cn(
+          "text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
+          isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
+        )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <motion.span whileTap={{ scale: 0.97 }} className="inline-block transition-transform duration-100 ease-out">{children}</motion.span>
+        <motion.span
+          className={cn("absolute -bottom-2 left-0 right-0 h-[1px] origin-left", isDark ? "bg-white" : "bg-rose")}
+          style={{ scaleX }}
+        />
+      </Link>
+    </motion.div>
   );
 }
 
@@ -456,26 +461,23 @@ export default function GlobalHeader() {
         {/* Navigation Links */}
         <motion.div
           className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <NavLink isDark={isDarkBg} href="/shop">{dict.header.shop}</NavLink>
-          <NavLink isDark={isDarkBg} href="/collections">{dict.header.collections}</NavLink>
-          <NavLink isDark={isDarkBg} href="/category">{dict.header.category}</NavLink>
-          <NavLink isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
-          <NavLink isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
+          <NavLink index={0} isDark={isDarkBg} href="/shop">{dict.header.shop}</NavLink>
+          <NavLink index={1} isDark={isDarkBg} href="/collections">{dict.header.collections}</NavLink>
+          <NavLink index={2} isDark={isDarkBg} href="/category">{dict.header.category}</NavLink>
+          <NavLink index={3} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
+          <NavLink index={4} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
         </motion.div>
 
         {/* Action Icons */}
         <motion.div
           className="flex items-center gap-6 md:gap-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: DURATION.medium, ease: EASING.out }}
         >
           {/* Language Toggle */}
-          <div className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
+            className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]"
+          >
             <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
               ID
             </a>
@@ -483,61 +485,55 @@ export default function GlobalHeader() {
             <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
               EN
             </a>
-          </div>
+          </motion.div>
 
           {/* Search Button */}
-          <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }}>
+            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
               <Search size={20} strokeWidth={1.5} />
-            </motion.div>
-          </PressScale>
+            </PressScale>
+          </motion.div>
 
           {/* Tracking Button */}
-          <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
-            <Link prefetch={false} href="/track" className="flex items-center">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }}>
+            <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
+              <Link prefetch={false} href="/track" className="flex items-center">
                 <Truck size={20} strokeWidth={1.5} />
-              </motion.div>
-            </Link>
-          </PressScale>
+              </Link>
+            </PressScale>
+          </motion.div>
 
           {/* User Profile */}
-          <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
-            <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
-              {profileAvatar ? (
-                <motion.div
-                  className="relative w-5 h-5"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-none border border-ink/5" />
-                </motion.div>
-              ) : (
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }}>
+            <PressScale className={cn("transition-colors", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
+              <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
+                {profileAvatar ? (
+                  <div className="relative w-5 h-5">
+                    <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-none border border-ink/5" />
+                  </div>
+                ) : (
                   <User size={20} strokeWidth={1.5} />
-                </motion.div>
-              )}
-            </Link>
-          </PressScale>
+                )}
+              </Link>
+            </PressScale>
+          </motion.div>
 
           {/* Cart Button */}
-          <PressScale onClick={() => setIsCartOpen(true)} className="relative group flex items-center">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn("transition-colors", isDarkBg ? "text-white/80 group-hover:text-white" : "text-ink/40 group-hover:text-rose")}
-            >
-              <ShoppingCart size={20} strokeWidth={1.5} />
-            </motion.div>
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              key={items.length}
-              className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
-            >
-              {items.length}
-            </motion.div>
-          </PressScale>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }}>
+            <PressScale onClick={() => setIsCartOpen(true)} className="relative group flex items-center">
+              <div className={cn("transition-colors", isDarkBg ? "text-white/80 group-hover:text-white" : "text-ink/40 group-hover:text-rose")}>
+                <ShoppingCart size={20} strokeWidth={1.5} />
+              </div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                key={items.length}
+                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
+              >
+                {items.length}
+              </motion.div>
+            </PressScale>
+          </motion.div>
         </motion.div>
       </motion.nav>
 
