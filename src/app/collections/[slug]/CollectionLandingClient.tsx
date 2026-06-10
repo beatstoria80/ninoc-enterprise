@@ -56,29 +56,23 @@ function ProductCard({ product }: { product: Product }) {
       whileTap="tap"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className="h-full flex flex-col w-[140px] md:w-[180px] flex-shrink-0"
     >
       <Link
         href={`/shop/${product.slug}`}
-        className="block group relative overflow-hidden"
+        className="block group relative h-full flex flex-col"
       >
-        <div className="relative mb-3 md:mb-4 w-full flex items-center justify-center bg-transparent py-4 md:py-6">
+        <div className="relative w-full aspect-[4/5] bg-ink/5 mb-2 md:mb-3 overflow-hidden">
           {product.image_url ? (
-            <motion.div 
-              className="relative w-[50%] md:w-[45%]"
-              animate={{ scale: isHovered ? 1.05 : 1 }}
-              transition={{ duration: DURATION.fast, ease: EASING.out }}
-            >
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                width={600}
-                height={800}
-                className="w-full h-auto object-contain mix-blend-multiply"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </motion.div>
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 140px, 180px"
+            />
           ) : (
-            <div className="w-[45%] py-12 flex items-center justify-center text-ink/10">
+            <div className="absolute inset-0 flex items-center justify-center text-ink/10">
               <Package size={24} />
             </div>
           )}
@@ -96,14 +90,14 @@ function ProductCard({ product }: { product: Product }) {
 
         <div className="space-y-0.5">
           <motion.span
-            className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/25 block"
-            animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.25)' }}
+            className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 block"
+            animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }}
             transition={{ duration: DURATION.fast }}
           >
             {product.category}
           </motion.span>
           <motion.h3
-            className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
+            className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight truncate"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -205,10 +199,10 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
   };
 
   return (
-    <main className="min-h-screen bg-cr noise pb-[120px]">
+    <main className="h-[100dvh] w-full bg-cr noise flex flex-col overflow-hidden">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full h-[50vh] md:h-[70vh] bg-ink">
+      <section className="relative w-full flex-1 min-h-0 bg-ink">
         {collection.banner_url ? (
           isVideoUrl(collection.banner_url) ? (
             <video 
@@ -284,7 +278,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
       </section>
 
       {/* 2. METADATA BAR */}
-      <div className="bg-white border-b border-ink/5">
+      <div className="bg-white border-b border-ink/5 shrink-0 z-20 shadow-sm relative">
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-6">
             <Link href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors">
@@ -306,31 +300,30 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
       </div>
 
       {/* 3. PRODUCT GRID */}
-      <section className="max-w-[1800px] mx-auto px-4 md:px-12 pt-4 pb-12 md:pt-6 md:pb-24">
-        <AnimatePresence mode="wait">
-          <motion.div
-            variants={productGridVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8"
-          >
-            {products.length > 0 ? (
-              products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
-            ) : (
-              <div className="col-span-full py-24 text-center bg-white">
-                <Package size={32} className="mx-auto mb-4 text-ink/20" />
-                <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">
-                  No items curated yet
-                </p>
-                <p className="text-[9px] text-ink/30 mt-2">
-                  Products for this collection are still being prepared.
-                </p>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+      <section className="shrink-0 bg-white z-10 relative">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-4 md:py-6 h-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              variants={productGridVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-start gap-4 md:gap-8 overflow-x-auto no-scrollbar pb-2"
+            >
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <div className="w-full py-8 md:py-12 flex flex-col items-center text-center">
+                  <Package size={24} className="mx-auto mb-3 text-ink/20" />
+                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40">
+                    No items curated yet
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </section>
 
     </main>
