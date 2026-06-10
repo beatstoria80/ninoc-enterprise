@@ -64,9 +64,18 @@ ALTER TABLE public.delivery_orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.delivery_order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_movements ENABLE ROW LEVEL SECURITY;
 
--- Basic Admin Policies (In real app, restrict by role, here we allow authenticated to read/write for now)
-CREATE POLICY "Admins full access PO" ON public.purchase_orders FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admins full access PO items" ON public.purchase_order_items FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admins full access DO" ON public.delivery_orders FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admins full access DO items" ON public.delivery_order_items FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admins full access Inv movements" ON public.inventory_movements FOR ALL USING (auth.role() = 'authenticated');
+-- Secure Admin Policies (Preventing Unauthorized Access)
+CREATE POLICY "Admins full access PO" ON public.purchase_orders FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Admins full access PO items" ON public.purchase_order_items FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Admins full access DO" ON public.delivery_orders FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Admins full access DO items" ON public.delivery_order_items FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Admins full access Inv movements" ON public.inventory_movements FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));

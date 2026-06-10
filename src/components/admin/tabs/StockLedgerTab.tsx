@@ -57,8 +57,12 @@ export function StockLedgerTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/5 text-sm">
-            {movements.map(mov => (
-              <tr key={mov.id} className="hover:bg-ink/5 transition-colors cursor-pointer">
+            {movements.map((mov, idx) => (
+              <tr 
+                key={mov.id} 
+                className="stagger-fade-in hover:bg-ink/5 active:scale-[0.99] transition-all duration-150 ease-out cursor-pointer origin-left"
+                style={{ animationDelay: `${idx * 30}ms`, animationFillMode: 'both' }}
+              >
                 <td className="p-4 text-ink/70">
                   {new Date(mov.created_at).toLocaleString('id-ID')}
                 </td>

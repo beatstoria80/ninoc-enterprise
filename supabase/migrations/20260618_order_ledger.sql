@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS public.supplier_ledgers (
 
 CREATE INDEX IF NOT EXISTS idx_supplier_ledgers_supplier_id ON public.supplier_ledgers(supplier_id);
 
+-- Secure Ledger Policies (Preventing Unauthorized Access)
+ALTER TABLE public.supplier_ledgers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins full access supplier ledgers" ON public.supplier_ledgers FOR ALL 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Suppliers can view their own ledgers" ON public.supplier_ledgers FOR SELECT 
+USING (supplier_id IN (SELECT supplier_id FROM public.supplier_users WHERE user_id = auth.uid()));
+

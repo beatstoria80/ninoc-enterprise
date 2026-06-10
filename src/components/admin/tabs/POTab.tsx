@@ -27,7 +27,7 @@ export function POTab() {
           <h2 className="text-lg font-display font-medium text-ink">Purchase Orders (PO)</h2>
           <p className="text-xs text-ink/60">Manage supply requests to your partner factories.</p>
         </div>
-        <button className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose transition-colors">
+        <button className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out">
           <Plus size={14} /> Create PO
         </button>
       </div>
@@ -44,8 +44,12 @@ export function POTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/5 text-sm">
-            {pos.map(po => (
-              <tr key={po.id} className="hover:bg-ink/5 transition-colors cursor-pointer">
+            {pos.map((po, idx) => (
+              <tr 
+                key={po.id} 
+                className="stagger-fade-in hover:bg-ink/5 active:scale-[0.99] transition-all duration-150 ease-out cursor-pointer origin-left"
+                style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both' }}
+              >
                 <td className="p-4 font-medium text-ink">{po.po_number}</td>
                 <td className="p-4 text-ink/70 flex items-center gap-2">
                   <Building size={14} className="text-ink/40" />
