@@ -129,6 +129,7 @@ function MyStoreSection() {
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -151,12 +152,15 @@ function MyStoreSection() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaved(false);
     try {
       const payload = {
         key: 'my_store_info',
         value: { storeName, tagline, description, contactWA, contactEmail, address, logoUrl, faviconUrl }
       };
       await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e) { console.error(e); } finally { setSaving(false); }
   };
 
@@ -205,7 +209,8 @@ function MyStoreSection() {
           </div>
         </div>
       </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -225,6 +230,7 @@ function BankAccountSection() {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -240,9 +246,12 @@ function BankAccountSection() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaved(false);
     try {
       const payload = { key: 'bank_accounts', value: { accounts } };
       await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e) { console.error(e); } finally { setSaving(false); }
   };
 
@@ -324,7 +333,8 @@ function BankAccountSection() {
           </button>
         )}
       </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -347,6 +357,7 @@ function ScheduleSection() {
   const [autoReplyOff, setAutoReplyOff] = useState(false);
   const [offMessage, setOffMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -364,9 +375,12 @@ function ScheduleSection() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaved(false);
     try {
       const payload = { key: 'operational_schedule', value: { schedule, autoReplyOff, offMessage } };
       await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e) { console.error(e); } finally { setSaving(false); }
   };
 
@@ -422,7 +436,8 @@ function ScheduleSection() {
           <span className="text-[9px] text-ink/50 font-medium">Aktifkan auto-reply saat off hours</span>
         </div>
       </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -439,6 +454,7 @@ function DecorationSection() {
   const [accentColor, setAccentColor] = useState(settings.accentColor);
   const [heroBanner, setHeroBanner] = useState(settings.heroBannerUrl || '');
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Sync local state when settings load from DB
   useState(() => {
@@ -637,14 +653,18 @@ function DecorationSection() {
         </div>
 
       </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton
           loading={saving}
           onClick={async () => {
             setSaving(true);
+            setSaved(false);
             try {
               await updateSettings({ storeName, tagline, accentColor, heroBannerUrl: heroBanner });
               await fetchSettings();
+              setSaved(true);
+              setTimeout(() => setSaved(false), 3000);
             } finally {
               setSaving(false);
             }
@@ -674,6 +694,7 @@ function DeliverySection() {
   const [instantActive, setInstantActive] = useState(false);
   const [instantFee, setInstantFee] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -708,6 +729,7 @@ function DeliverySection() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaved(false);
     try {
       const payload = {
         key: 'delivery_settings',
@@ -727,6 +749,8 @@ function DeliverySection() {
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Save failed');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e) {
       console.error(e);
     } finally {
@@ -819,7 +843,8 @@ function DeliverySection() {
           </div>
         </div>
       </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
+      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
