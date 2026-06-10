@@ -8,7 +8,7 @@ import {
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
-  MapPin, CreditCard, Shield, Star, Factory,
+  MapPin, CreditCard, Shield, Star, Factory, FileText, ClipboardCheck, ArrowRightLeft,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
   Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen
 } from 'lucide-react';
@@ -34,6 +34,9 @@ import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
 import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
 import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
+import { POTab } from '@/components/admin/tabs/POTab';
+import { DOTab } from '@/components/admin/tabs/DOTab';
+import { StockLedgerTab } from '@/components/admin/tabs/StockLedgerTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -999,7 +1002,15 @@ export default function AdminDashboard() {
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
     { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'] },
     { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'] },
-    { id: 'inventory', icon: Box, label: 'Inventory', activeKeys: ['inventory'] },
+    { 
+      id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger'],
+      subItems: [
+        { id: 'inventory', label: 'Stock Management' },
+        { id: 'po', label: 'Purchase Orders (PO)' },
+        { id: 'do', label: 'Receiving (DO)' },
+        { id: 'stock_ledger', label: 'Kartu Stok (Ledger)' }
+      ]
+    },
     { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
     { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'] },
@@ -1144,6 +1155,9 @@ export default function AdminDashboard() {
                activeTab === 'warehouse' ? 'Warehouse Hub' :
                activeTab === 'customers' ? 'Membership' :
                activeTab === 'inventory' ? 'Stock Management' :
+               activeTab === 'po' ? 'Purchase Orders' :
+               activeTab === 'do' ? 'Inbound Receiving' :
+               activeTab === 'stock_ledger' ? 'Kartu Stok' :
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' || activeTab === 'wabroadcast' ? 'Placeholder / WA Broadcast' :
@@ -1231,6 +1245,10 @@ export default function AdminDashboard() {
               products={products}
             />
           )}
+
+          {activeTab === 'po' && <POTab />}
+          {activeTab === 'do' && <DOTab />}
+          {activeTab === 'stock_ledger' && <StockLedgerTab />}
 
           {activeTab === 'orders' && (
             <OrdersTab 
