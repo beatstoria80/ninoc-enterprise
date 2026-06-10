@@ -87,7 +87,7 @@ const charVariants: Variants = {
     opacity: 1,
     filter: 'blur(0px)',
     scale: 1,
-    transition: { delay: i * 0.03, duration: 1.2, ease: [0.23, 1, 0.32, 1] },
+    transition: { delay: 0.8 + (i * 0.03), duration: 1.2, ease: [0.23, 1, 0.32, 1] },
   }),
 };
 
@@ -113,7 +113,7 @@ const metadataVariants: Variants = {
   hidden: { y: 20, opacity: 0, scale: 0.95 },
   visible: (i: number) => ({
     y: 0, opacity: 1, scale: 1,
-    transition: { delay: 0.6 + i * 0.08, duration: 0.8, ease: EASING.out },
+    transition: { delay: 1.2 + i * 0.08, duration: 0.8, ease: EASING.out },
   }),
 };
 
@@ -205,7 +205,7 @@ function PortraitImageCarousel() {
     <motion.div
       initial={{ clipPath: 'inset(0 0 100% 0)' }}
       animate={{ clipPath: 'inset(0 0 0 0)' }}
-      transition={{ delay: 0.4, duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
+      transition={{ delay: 0.8, duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
       onMouseEnter={startCycle}
       onMouseLeave={stopCycle}
       className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
@@ -214,7 +214,7 @@ function PortraitImageCarousel() {
       <motion.div 
         initial={{ scale: 1.1 }} 
         animate={{ scale: 1 }} 
-        transition={{ delay: 0.4, duration: 2, ease: [0.23, 1, 0.32, 1] }} 
+        transition={{ delay: 0.8, duration: 2, ease: [0.23, 1, 0.32, 1] }} 
         className="absolute inset-0 w-full h-full"
       >
       {PORTRAIT_IMAGES.map((src, i) => (
@@ -649,7 +649,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
+              transition={{ delay: 0.7, duration: 1, ease: EASING.out }}
               className="flex items-center gap-2 text-rose"
             >
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
@@ -678,7 +678,7 @@ export default function Home() {
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
+              transition={{ delay: 1.2, duration: 1, ease: EASING.out }}
               className="text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
               {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
@@ -687,7 +687,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: DURATION.medium, ease: EASING.out }}
+              transition={{ delay: 1.4, duration: 1, ease: EASING.out }}
             >
               <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
                 {/* Mobile: Simple capsule with icon + text */}
@@ -734,7 +734,7 @@ export default function Home() {
                   className="flex flex-col items-start text-left border-x border-ink/5 first:border-l-0 last:border-r-0"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
+                  transition={{ delay: 1.4 + i * 0.1, duration: DURATION.medium, ease: EASING.out }}
                 >
                   <p className="text-[5px] font-medium uppercase tracking-[0.3em] text-ink/25 leading-none mt-2 mb-0.5">{item.label}</p>
                   <p className="text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
@@ -750,7 +750,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.4, duration: DURATION.medium, ease: EASING.out }}
+              transition={{ delay: 1.6, duration: DURATION.medium, ease: EASING.out }}
               className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
             >
               <p className="text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
