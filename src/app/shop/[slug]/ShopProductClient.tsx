@@ -45,6 +45,24 @@ function SafeImage({ src, alt, className, sizes, priority = false }: {
   );
 }
 
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { delayChildren: 0.2, staggerChildren: 0.15 }
+  }
+};
+
+const columnVariants = {
+  hidden: { y: 40, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.23, 1, 0.32, 1] } }
+};
+
+const imageVariants = {
+  hidden: { clipPath: 'inset(0 0 100% 0)' },
+  visible: { clipPath: 'inset(0 0 0 0)', transition: { duration: 1.5, ease: [0.77, 0, 0.175, 1] } }
+};
+
 interface Product {
   id: string;
   name: string;
@@ -305,9 +323,14 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
         isMobile && "pb-24"
       )}>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2">
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
+        >
 
-          <div className="hidden lg:block w-full shrink-0">
+          <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
             <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px]">
               {images.map((img, i) => (
                 <button
@@ -324,7 +347,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
             </div>
           </div>
 
-          <div className="col-span-1 relative flex items-center lg:px-6 xl:px-8 w-full lg:self-start">
+          <motion.div variants={columnVariants} className="col-span-1 relative flex items-center lg:px-6 xl:px-8 w-full lg:self-start">
 
             <div
               className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
@@ -362,13 +385,20 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
               })}
             </div>
 
-            <div className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
-              <SafeImage
-                src={images[activeImageIndex]}
-                alt={product.name}
-                priority
-              />
-            </div>
+            <motion.div variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
+              <motion.div 
+                initial={{ scale: 1.1, filter: 'blur(10px)' }}
+                animate={{ scale: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 3, ease: [0.23, 1, 0.32, 1], delay: 0.5 }}
+                className="w-full h-full relative"
+              >
+                <SafeImage
+                  src={images[activeImageIndex]}
+                  alt={product.name}
+                  priority
+                />
+              </motion.div>
+            </motion.div>
 
             {images.length > 1 && (
               <>
@@ -392,9 +422,9 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 </button>
               </>
             )}
-          </div>
+          </motion.div>
 
-          <div className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:h-full">
+          <motion.div variants={columnVariants} className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:h-full">
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <Link href="/shop" className="flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors group mb-3 lg:mb-5 w-fit">
@@ -492,16 +522,18 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
+          <motion.div variants={columnVariants} className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
                 <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</h4>
                 <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                   {availableSizes.map((size) => (
-                    <button
+                    <motion.button
                       key={size}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
                         "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border relative",
@@ -517,7 +549,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                           +15K
                         </span>
                       )}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
                 {currentSurcharge > 0 && (
@@ -534,8 +566,10 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                     <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</h4>
                     <div className="flex gap-2 flex-wrap">
                       {availableColors.map((color) => (
-                        <button
+                        <motion.button
                           key={color}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
                           onClick={() => setSelectedColor(color)}
                           className={cn(
                             "px-3 py-1.5 rounded-none text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
@@ -545,7 +579,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                           )}
                         >
                           {color}
-                        </button>
+                        </motion.button>
                       ))}
                     </div>
                   </div>
@@ -574,7 +608,9 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
               {availableStock > 0 && (
                 <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
@@ -592,7 +628,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                           <span>{dict.product.addToCart}</span>
                         </div>
                       )}
-                  </button>
+                  </motion.button>
                 </div>
               )}
 
@@ -611,9 +647,11 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
-          <div className={cn(
+          <motion.div 
+            variants={columnVariants}
+            className={cn(
             "col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
             isMobile && items.length === 0 ? "hidden lg:flex" : "flex"
           )}>
@@ -777,8 +815,8 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 </>
               )}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {relatedProducts.length > 0 && (
           <div className="mt-4 lg:mt-6 space-y-1">
