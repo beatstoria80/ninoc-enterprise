@@ -258,7 +258,8 @@ export default function CheckoutPage() {
             kelurahan: profile.kelurahan || '',
             kecamatan: profile.kecamatan || '',
             city: profile.city || '',
-            province: profile.province || ''
+            province: profile.province || '',
+            referral_code: ''
           };
           setFormData(newData);
           
