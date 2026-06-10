@@ -70,6 +70,11 @@ export default function CheckoutPage() {
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
 
+  // Promo Code State
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoApplied, setPromoApplied] = useState<{ type: string; code: string; discountAmount: number; message: string; affiliateId?: string; } | null>(null);
+  const [promoError, setPromoError] = useState('');
+
   // Dynamic Shipping State
   const [dynamicShippingOptions, setDynamicShippingOptions] = useState<any[]>([]);
   const [loadingShipping, setLoadingShipping] = useState<boolean>(false);
@@ -333,7 +338,29 @@ export default function CheckoutPage() {
   const subtotal = totalPrice();
   const tax = 0; // VAT removed as prices are nett
   const platformFee = 2500; // Standard platform/gateway fee
-  const finalTotal = subtotal + shippingCost + platformFee;
+  const finalTotal = Math.max(0, subtotal + shippingCost + platformFee - (promoApplied?.discountAmount || 0));
+
+  const applyPromo = async () => {
+    if (!formData.referral_code) return;
+    setPromoLoading(true);
+    setPromoError('');
+    try {
+      const res = await fetch('/api/validate-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: formData.referral_code, subtotal: subtotal })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Invalid code');
+      
+      setPromoApplied(data);
+    } catch (err: any) {
+      setPromoError(err.message);
+      setPromoApplied(null);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -359,6 +386,7 @@ export default function CheckoutPage() {
           customerDetails: { ...formData, user_id: userId, name: fullName, address: fullAddress },
           shippingDetails: { method: shippingMethod, cost: shippingCost },
           fees: { tax, platformFee },
+          promo: promoApplied,
           totalPrice: finalTotal
         })
       });
@@ -531,7 +559,7 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-medium uppercase truncate text-ink">{item.name}</p>
                       <div className="flex items-center gap-1">
-                        <p className="text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                        <p className="text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
                         {(item.size_surcharge || 0) > 0 && (
                           <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                         )}
@@ -575,8 +603,15 @@ export default function CheckoutPage() {
                   <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "p-2.5" : "p-4")}>
-                  <label htmlFor="referral_code" className={labelClass}>Kode Referral / Kreator (Opsional)</label>
-                  <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => setFormData({...formData, referral_code: e.target.value})} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Misal: JOHNDOE" />
+                  <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
+                  <div className="flex gap-2 items-center mt-1">
+                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
+                    <button type="button" onClick={applyPromo} disabled={promoLoading || !formData.referral_code} className="px-3 py-1.5 bg-ink text-white text-[9px] uppercase tracking-wider disabled:opacity-50 rounded-sm">
+                      {promoLoading ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                  {promoError && <p className="text-[9px] text-red-500 mt-1.5 font-medium">{promoError}</p>}
+                  {promoApplied && <p className="text-[9px] text-emerald-600 mt-1.5 font-medium">{promoApplied.message}</p>}
                 </div>
               </div>
             </section>
@@ -686,7 +721,7 @@ export default function CheckoutPage() {
                       <>
                         <div className="flex flex-col items-start gap-0.5">
                           <span className={cn("text-[10px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
-                          <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {option.duration}</span>
+                          <span className={cn("text-[8px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} â€¢ {option.duration}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={cn("text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
@@ -758,7 +793,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
                         <div className="flex items-center gap-1">
-                          <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} • Qty {item.quantity}</p>
+                          <p className="text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
                           {(item.size_surcharge || 0) > 0 && (
                             <span className="text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                           )}
@@ -779,6 +814,12 @@ export default function CheckoutPage() {
                     <span>{dict.checkout.subtotal}</span>
                     <span>IDR {subtotal.toLocaleString('id-ID')}</span>
                   </div>
+                  {promoApplied && promoApplied.discountAmount > 0 && (
+                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-emerald-600 mt-1">
+                    <span>Promo ({promoApplied.code})</span>
+                    <span className="font-medium">-IDR {promoApplied.discountAmount.toLocaleString('id-ID')}</span>
+                  </div>
+                  )}
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span className="flex items-center gap-1.5">
                       Logistics
@@ -792,6 +833,8 @@ export default function CheckoutPage() {
                        {shippingCost > 0 ? `+ IDR ${shippingCost.toLocaleString('id-ID')}` : dict.checkout.actionRequired}
                     </span>
                   </div>
+
+
 
                   <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>{dict.checkout.platformFee}</span>

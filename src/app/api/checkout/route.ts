@@ -23,7 +23,7 @@ interface CheckoutItem {
 
 export async function POST(req: Request) {
   try {
-    const { items, customerDetails, shippingDetails } = await req.json();
+    const { items, customerDetails, shippingDetails, promo } = await req.json();
 
     if (!items || !items.length) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -102,6 +102,17 @@ export async function POST(req: Request) {
       name: `Courier: ${shippingDetails.method.toUpperCase()}`.substring(0, 50)
     });
     calculatedGrossAmount += shippingDetails.cost;
+
+    // Apply Promo Code discount
+    if (promo && promo.discountAmount > 0) {
+      finalItemDetails.push({
+        id: 'PROMO',
+        price: -promo.discountAmount,
+        quantity: 1,
+        name: `Promo: ${promo.code}`.substring(0, 50)
+      });
+      calculatedGrossAmount -= promo.discountAmount;
+    }
 
     const grossAmount = calculatedGrossAmount;
     if (grossAmount <= 0) {
