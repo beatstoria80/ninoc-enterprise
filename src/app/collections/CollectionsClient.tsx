@@ -232,7 +232,7 @@ function ProductCard({ product }: { product: Product }) {
       >
         <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-white flex items-center justify-center border border-ink/5">
           {product.image_url ? (
-            <div className="w-[60%] aspect-square relative z-10 mix-blend-multiply">
+            <div className="absolute inset-3 z-10 mix-blend-multiply">
               <Image
                 src={product.image_url}
                 alt={product.name}
