@@ -438,7 +438,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <motion.div variants={textVariants}>
-                  <Link href="/shop" className="flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors group mb-3 lg:mb-5 w-fit">
+                  <Link href="/shop" className="flex md:hidden items-center gap-1.5 text-ink/40 hover:text-ink transition-colors group mb-3 lg:mb-5 w-fit">
                     <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
                     <span className="text-[8px] lg:text-[9px] font-medium uppercase tracking-widest">Back to Catalog</span>
                   </Link>
