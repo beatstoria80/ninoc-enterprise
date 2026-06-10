@@ -115,7 +115,7 @@ function PressScale({ children, className = '', onClick, disabled = false }: {
 }) {
   return (
     <motion.button
-      whileTap={{ scale: disabled ? 1 : 0.95 }}
+      whileTap={{ scale: disabled ? 1 : 0.97 }}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
       transition={{ duration: DURATION.micro, ease: EASING.out }}
       onClick={onClick}
@@ -145,7 +145,7 @@ function MenuItem({ href, label, index, onClick, isActive = false, highlight = f
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, scale: 0.95, x: 10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05, duration: DURATION.fast, ease: EASING.out }}
     >
@@ -481,7 +481,7 @@ export default function MobileLayout({
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 200 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 250 }}
               className="fixed inset-y-0 right-0 w-[280px] bg-white z-[510] shadow-2xl flex flex-col"
             >
               {/* Header */}
@@ -530,8 +530,8 @@ export default function MobileLayout({
                     {cartCount > 0 && (
                       <motion.span
                         key={cartCount}
-                        initial={{ scale: 1.3 }}
-                        animate={{ scale: 1 }}
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
                         className="w-5 h-5 bg-rose rounded-full flex items-center justify-center text-white text-[8px] font-medium"
                       >
                         {cartCount}
@@ -637,8 +637,8 @@ export default function MobileLayout({
               {cartCount > 0 && (
                 <motion.span
                   key={cartCount}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
                   className="absolute top-0 right-2 w-4 h-4 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center"
                 >
                   {cartCount}
@@ -658,8 +658,8 @@ export default function MobileLayout({
                 <HeadphonesIcon />
                 {supportUnreadCount > 0 && (
                   <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
                     className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center"
                   >
                     {supportUnreadCount}

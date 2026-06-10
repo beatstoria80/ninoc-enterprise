@@ -546,7 +546,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                     <motion.button
                       variants={textVariants}
                       key={size}
-                      whileTap={{ scale: 0.95 }}
+                      whileTap={{ scale: 0.97 }}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
@@ -583,7 +583,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         <motion.button
                           variants={textVariants}
                           key={color}
-                          whileTap={{ scale: 0.95 }}
+                          whileTap={{ scale: 0.97 }}
                           transition={{ type: "spring", stiffness: 400, damping: 25 }}
                           onClick={() => setSelectedColor(color)}
                           className={cn(
