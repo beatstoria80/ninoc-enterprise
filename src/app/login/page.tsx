@@ -37,7 +37,7 @@ export default function LoginPage() {
         loginPassword = 'NinocAdmin2026!';
       }
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({ 
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ 
         email: loginEmail, 
         password: loginPassword 
       });
@@ -47,7 +47,11 @@ export default function LoginPage() {
         return;
       }
       
-      router.push('/'); 
+      if (data?.user?.user_metadata?.role === 'admin' || loginEmail === 'admin@ninoc.store') {
+        router.push('/admin');
+      } else {
+        router.push('/'); 
+      }
     } catch (err) {
       setError((err as Error)?.message || 'Autentikasi gagal.');
       setIsLoading(false);
