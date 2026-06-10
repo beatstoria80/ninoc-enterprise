@@ -69,6 +69,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
 
+    // --- INVENTORY RESTOCK (IF CANCELLED/EXPIRED) ---
+    if (orderUpdateStatus === 'cancelled') {
+      const { error: restockError } = await supabase.rpc('restock_inventory', { p_order_id: orderId });
+      if (restockError) {
+        console.error(`[Payment Webhook] Failed to restock inventory for order ${orderId}:`, restockError);
+      } else {
+        console.log(`[Payment Webhook] Successfully restocked inventory for cancelled order ${orderId}`);
+      }
+    }
+
     // 5. Send WhatsApp Invoice Notification & Generate Affiliate Commission (only on successful payment)
     if (orderUpdateStatus === 'paid') {
       const { data: order } = await supabase

@@ -168,9 +168,8 @@ export async function POST(req: Request) {
       }
     };
 
-    const transaction = await snap.createTransaction(parameter);
-
-    // Save order header
+    // --- INVENTORY RACE CONDITION LOCK ---
+    // 1. Save order header as draft (without snap token initially)
     const { error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
@@ -180,7 +179,6 @@ export async function POST(req: Request) {
         customer_name: customerDetails.name || null,
         total_price: grossAmount,
         status: 'pending',
-        snap_token: transaction.token,
         courier: shippingDetails.method,
         shipping_address: {
           ...customerDetails,
@@ -191,15 +189,18 @@ export async function POST(req: Request) {
 
     if (orderError) {
       console.error('Supabase Order Error:', orderError);
+      return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
     }
 
-    // Save individual order items
+    // 2. Save individual order items
     if (finalItemDetails.length > 0) {
-      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING').map((item: any) => ({
+      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO').map((item: any) => ({
         order_id: orderId,
         product_id: item.id,
         product_name: item.name,
         size: items.find((i: any) => i.id === item.id)?.size || null,
+        // Assuming we pass variant_id from frontend. For now, rely on product_id + size.
+        // We'll map it to the database's reserve_inventory logic.
         quantity: item.quantity,
         price_at_purchase: item.price
       }));
@@ -209,10 +210,30 @@ export async function POST(req: Request) {
         .insert(orderItems);
 
       if (itemsError) {
+        await supabaseAdmin.from('orders').delete().eq('id', orderId); // Rollback
         console.error('Supabase Order Items Error:', itemsError);
-        throw new Error('Failed to save order items. Please try again.');
+        return NextResponse.json({ error: 'Failed to save order items.' }, { status: 500 });
       }
     }
+
+    // 3. Attempt to Reserve Inventory (Row-Level Locking)
+    const { error: inventoryError } = await supabaseAdmin.rpc('reserve_inventory', { p_order_id: orderId });
+    
+    if (inventoryError) {
+      // Out of stock or race condition lost
+      console.error('[Checkout API] Inventory reservation failed:', inventoryError);
+      await supabaseAdmin.from('orders').delete().eq('id', orderId); // Rollback everything
+      return NextResponse.json({ error: 'Beberapa barang di keranjang Anda baru saja habis stoknya. Mohon cek kembali keranjang Anda.' }, { status: 409 });
+    }
+
+    // 4. Create Midtrans Transaction
+    const transaction = await snap.createTransaction(parameter);
+
+    // 5. Update Order with Snap Token
+    await supabaseAdmin
+      .from('orders')
+      .update({ snap_token: transaction.token })
+      .eq('id', orderId);
 
     return NextResponse.json({ token: transaction.token, orderId, orderNumber });
   } catch (err) {
