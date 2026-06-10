@@ -8,7 +8,7 @@ import {
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, DollarSign, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
-  MapPin, CreditCard, Shield, Star,
+  MapPin, CreditCard, Shield, Star, Factory,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
   Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen
 } from 'lucide-react';
@@ -32,6 +32,8 @@ import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
 import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
 import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
+import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
+import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -987,6 +989,13 @@ export default function AdminDashboard() {
     },
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
     { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
+    { 
+      id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['suppliers', 'warehouse'],
+      subItems: [
+        { id: 'suppliers', label: 'Partner Review' },
+        { id: 'warehouse', label: 'Ninoc Warehouse Hub' }
+      ]
+    },
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
     { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'] },
     { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'] },
@@ -1131,6 +1140,8 @@ export default function AdminDashboard() {
                activeTab === 'upload' ? 'Upload Images' :
                activeTab === 'orders' ? 'Online Order' :
                activeTab === 'logistics' ? 'Logistics' :
+               activeTab === 'suppliers' ? 'Supplier Review' :
+               activeTab === 'warehouse' ? 'Warehouse Hub' :
                activeTab === 'customers' ? 'Membership' :
                activeTab === 'inventory' ? 'Stock Management' :
                activeTab === 'finance' ? 'Finance' :
@@ -1250,6 +1261,14 @@ export default function AdminDashboard() {
 
           {activeTab === 'returns' && (
             <ReturnsTab />
+          )}
+
+          {activeTab === 'suppliers' && (
+            <SuppliersTab />
+          )}
+
+          {activeTab === 'warehouse' && (
+            <WarehouseTab />
           )}
 
           {activeTab === 'finance' && (
