@@ -659,7 +659,18 @@ export default function Home() {
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
               {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                 <span key={word + wi} className="block overflow-hidden">
-                  <motion.span variants={wordVariants} initial="hidden" animate="visible" custom={wi} className="block">{word}</motion.span>
+                  {word.split("").map((char: string, ci: number) => (
+                    <motion.span 
+                      key={ci} 
+                      variants={charVariants} 
+                      initial="hidden" 
+                      animate="visible" 
+                      custom={wi * 8 + ci} 
+                      className="inline-block"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
                 </span>
               ))}
             </h1>
