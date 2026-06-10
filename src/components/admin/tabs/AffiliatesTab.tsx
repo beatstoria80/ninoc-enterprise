@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Check, X, Shield, Users, DollarSign, Activity } from 'lucide-react';
+import { Check, X, Shield, Users, DollarSign, Activity, ChevronRight, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AffiliateApp {
   id: string;
@@ -29,23 +30,32 @@ export default function AffiliatesTab() {
   const [activeTab, setActiveTab] = useState<'applications' | 'active'>('applications');
   const [applications, setApplications] = useState<AffiliateApp[]>([]);
   const [affiliates, setAffiliates] = useState<AffiliateData[]>([]);
+  const [clicksData, setClicksData] = useState<any[]>([]);
+  const [commissionsData, setCommissionsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Detail Modal State
+  const [selectedAffiliate, setSelectedAffiliate] = useState<AffiliateData | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: apps } = await supabase
-        .from('affiliate_applications')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const [
+        { data: apps },
+        { data: affs },
+        { data: clicks },
+        { data: commissions }
+      ] = await Promise.all([
+        supabase.from('affiliate_applications').select('*').order('created_at', { ascending: false }),
+        supabase.from('affiliates').select('*').order('created_at', { ascending: false }),
+        supabase.from('affiliate_clicks').select('affiliate_id'),
+        supabase.from('affiliate_commissions').select('affiliate_id, sales_amount, commission_amount, status, created_at, order_id').order('created_at', { ascending: false })
+      ]);
       
-      const { data: affs } = await supabase
-        .from('affiliates')
-        .select('*')
-        .order('created_at', { ascending: false });
-
       if (apps) setApplications(apps);
       if (affs) setAffiliates(affs);
+      if (clicks) setClicksData(clicks);
+      if (commissions) setCommissionsData(commissions);
     } catch (e) {
       console.error(e);
     } finally {
@@ -64,14 +74,9 @@ export default function AffiliatesTab() {
   const handleApprove = async (app: AffiliateApp) => {
     if (!confirm(`Approve ${app.full_name} as affiliate?`)) return;
     
-    // Generate a unique code (e.g., firstname+random)
     // eslint-disable-next-line react-hooks/purity
     const code = (app.full_name.split(' ')[0] + Date.now().toString().slice(-4)).toUpperCase();
 
-    // In a real app we need their user_id, but applications might not have user_id if they apply without logging in.
-    // For now, we will assume user_id is the same as application id to satisfy the schema or just use a dummy UUID if they aren't registered,
-    // Actually, user_id references auth.users. It must be valid. 
-    // If not valid, it might fail. Since this is an admin dashboard preview:
     alert("Approval logic requires user registration first (linking app to auth.users). Marking as approved in DB only.");
     
     await supabase.from('affiliate_applications').update({ status: 'approved' }).eq('id', app.id);
@@ -84,10 +89,25 @@ export default function AffiliatesTab() {
     fetchData();
   };
 
+  // Aggregation Helpers
+  const getMetrics = (affId: string) => {
+    const affiliateClicks = clicksData.filter(c => c.affiliate_id === affId).length;
+    const affiliateComms = commissionsData.filter(c => c.affiliate_id === affId);
+    
+    const validOrders = affiliateComms.filter(c => c.status !== 'cancelled' && c.status !== 'rejected');
+    const totalOrders = validOrders.length;
+    const salesGenerated = validOrders.reduce((sum, c) => sum + (c.sales_amount || 0), 0);
+    const totalCommission = validOrders.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+    
+    const conversionRate = affiliateClicks > 0 ? ((totalOrders / affiliateClicks) * 100).toFixed(1) : '0.0';
+    
+    return { clicks: affiliateClicks, totalOrders, salesGenerated, totalCommission, conversionRate, history: affiliateComms };
+  };
+
   if (loading) return <div className="p-8 text-ink/50 text-sm font-medium uppercase tracking-widest">Loading...</div>;
 
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pb-20 relative">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 className="text-2xl font-display font-medium italic text-ink uppercase">Affiliates</h2>
@@ -179,42 +199,154 @@ export default function AffiliatesTab() {
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/5">
                   <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Tier / Rate</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Balance</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Status</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Clicks</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Orders</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales Generated</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Balance</th>
+                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {affiliates.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No active affiliates yet.</td>
+                    <td colSpan={6} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No active affiliates yet.</td>
                   </tr>
-                ) : affiliates.map((aff) => (
-                  <tr key={aff.id} className="hover:bg-ink/[0.02] transition-colors">
+                ) : affiliates.map((aff) => {
+                  const metrics = getMetrics(aff.id);
+                  return (
+                  <tr key={aff.id} className="hover:bg-ink/[0.02] transition-colors cursor-pointer group" onClick={() => setSelectedAffiliate(aff)}>
                     <td className="p-4">
                       <p className="text-xs font-bold text-ink tracking-widest">{aff.code}</p>
+                      <p className="text-[10px] text-ink/50 mt-0.5">{aff.tier} • {aff.commission_rate}%</p>
                     </td>
-                    <td className="p-4">
-                      <p className="text-[10px] font-bold text-ink uppercase tracking-widest">{aff.tier}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{aff.commission_rate}%</p>
+                    <td className="p-4 text-center">
+                      <p className="text-xs font-medium text-ink">{metrics.clicks}</p>
                     </td>
-                    <td className="p-4 text-xs font-medium text-ink">
-                      Rp {aff.balance.toLocaleString('id-ID')}
+                    <td className="p-4 text-center">
+                      <p className="text-xs font-medium text-ink">{metrics.totalOrders}</p>
                     </td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
-                        aff.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose/10 text-rose'
-                      }`}>
-                        {aff.status}
-                      </span>
+                    <td className="p-4 text-right">
+                      <p className="text-xs font-medium text-emerald-600">Rp {metrics.salesGenerated.toLocaleString('id-ID')}</p>
+                    </td>
+                    <td className="p-4 text-right">
+                      <p className="text-xs font-bold text-ink">Rp {aff.balance.toLocaleString('id-ID')}</p>
+                    </td>
+                    <td className="p-4 text-right">
+                      <button className="text-[10px] uppercase tracking-widest font-bold text-rose opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end w-full gap-1">
+                        View <ChevronRight size={14} />
+                      </button>
                     </td>
                   </tr>
-                ))}
+                )})}
               </tbody>
             </table>
           </div>
         </div>
       )}
+
+      {/* PERFORMANCE MODAL */}
+      <AnimatePresence>
+        {selectedAffiliate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
+            onClick={() => setSelectedAffiliate(null)}
+          >
+            <motion.div
+              layout
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white w-full max-w-4xl rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+            >
+              {(() => {
+                const metrics = getMetrics(selectedAffiliate.id);
+                return (
+                  <>
+                    <div className="p-6 border-b border-ink/10 flex items-center justify-between bg-ink/5 shrink-0">
+                      <div>
+                        <h3 className="text-xl font-display font-medium text-ink uppercase">Performance: {selectedAffiliate.code}</h3>
+                        <p className="text-xs text-ink/50 uppercase tracking-widest mt-1">
+                          {selectedAffiliate.tier} Affiliate • {selectedAffiliate.commission_rate}% Rate
+                        </p>
+                      </div>
+                      <button onClick={() => setSelectedAffiliate(null)} className="p-2 text-ink/40 hover:text-ink hover:bg-white rounded-full transition-all">
+                        <XCircle size={24} />
+                      </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                      {/* Metric Cards */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
+                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Clicks</p>
+                          <p className="text-2xl font-bold text-ink">{metrics.clicks}</p>
+                        </div>
+                        <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
+                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Orders</p>
+                          <p className="text-2xl font-bold text-ink">{metrics.totalOrders}</p>
+                        </div>
+                        <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
+                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Conversion</p>
+                          <p className="text-2xl font-bold text-emerald-600">{metrics.conversionRate}%</p>
+                        </div>
+                        <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
+                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Sales Generated</p>
+                          <p className="text-2xl font-bold text-ink">Rp {metrics.salesGenerated.toLocaleString('id-ID')}</p>
+                        </div>
+                      </div>
+
+                      {/* Transaction History */}
+                      <div>
+                        <h4 className="text-sm font-bold text-ink uppercase tracking-widest mb-4">Transaction History</h4>
+                        <div className="border border-ink/10 rounded-lg overflow-hidden">
+                          <table className="w-full text-left text-sm">
+                            <thead className="bg-ink/5 border-b border-ink/10">
+                              <tr>
+                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60">Date</th>
+                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60">Order ID</th>
+                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales</th>
+                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Commission</th>
+                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-ink/5">
+                              {metrics.history.length === 0 ? (
+                                <tr>
+                                  <td colSpan={5} className="p-6 text-center text-xs text-ink/40 uppercase tracking-widest">No transactions yet</td>
+                                </tr>
+                              ) : metrics.history.map((h: any, i: number) => (
+                                <tr key={i} className="hover:bg-ink/[0.02]">
+                                  <td className="p-3 text-xs text-ink/70">{new Date(h.created_at).toLocaleDateString('id-ID')}</td>
+                                  <td className="p-3 text-xs font-medium text-ink">{h.order_id?.slice(0, 8)}...</td>
+                                  <td className="p-3 text-xs text-right text-ink/70">Rp {h.sales_amount?.toLocaleString('id-ID') || 0}</td>
+                                  <td className="p-3 text-xs text-right font-medium text-emerald-600">Rp {h.commission_amount?.toLocaleString('id-ID') || 0}</td>
+                                  <td className="p-3 text-center">
+                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${
+                                      h.status === 'paid' ? 'bg-emerald-100 text-emerald-700' :
+                                      h.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                      'bg-rose/10 text-rose'
+                                    }`}>
+                                      {h.status}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

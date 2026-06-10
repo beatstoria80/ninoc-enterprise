@@ -1,45 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-export async function GET(req: NextRequest) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const ref = searchParams.get('ref');
+
+  if (!ref) {
+    return NextResponse.json({ error: 'Missing ref parameter' }, { status: 400 });
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const orderNumber = searchParams.get('order_number');
-    const phone = searchParams.get('phone');
-
-    if (!orderNumber || !phone) {
-      return NextResponse.json({ error: 'order_number and phone are required' }, { status: 400 });
-    }
-
-    // Lookup order by order_number + phone (guest access — no auth required)
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select('id, order_number, status, payment_status, total_price, courier, tracking_id, created_at, shipping_address, customer_name, customer_phone')
-      .eq('order_number', orderNumber)
-      .eq('customer_phone', phone)
+    // Lookup affiliate ID based on ref code
+    const { data: affiliate } = await supabase
+      .from('affiliates')
+      .select('id')
+      .eq('code', ref.toUpperCase())
       .single();
 
-    if (orderError || !order) {
-      return NextResponse.json({ error: 'Order not found. Check your order number and phone number.' }, { status: 404 });
+    if (affiliate) {
+      // Get client IP address
+      const forwardedFor = request.headers.get('x-forwarded-for');
+      const ip = forwardedFor ? forwardedFor.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+
+      // Insert click
+      await supabase.from('affiliate_clicks').insert({
+        affiliate_id: affiliate.id,
+        ip_address: ip
+      });
     }
 
-    // Fetch order items
-    const { data: items } = await supabase
-      .from('order_items')
-      .select('id, product_name, size, quantity, price_at_purchase')
-      .eq('order_id', order.id);
-
-    // Fetch tracking logs
-    const { data: logs } = await supabase
-      .from('tracking_logs')
-      .select('*')
-      .eq('order_id', order.id)
-      .order('created_at', { ascending: true });
-
-    return NextResponse.json({ order, items: items || [], logs: logs || [] });
-
-  } catch (err) {
-    console.error('[api/track] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    // Silently fail to not block client
+    console.error('Track error:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

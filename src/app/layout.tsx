@@ -7,6 +7,8 @@ import BrandProvider from "@/components/BrandProvider";
 import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SecurityEnforcer from "@/components/SecurityEnforcer";
+import { AffiliateTracker } from "@/components/AffiliateTracker";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -236,6 +238,9 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
           <SecurityEnforcer />
+          <Suspense fallback={null}>
+            <AffiliateTracker />
+          </Suspense>
           <ClientPlatformManager>
             <BrandProvider>
               <main id="main-content">
