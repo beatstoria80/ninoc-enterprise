@@ -25,7 +25,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isOnboardingPage = pathname === '/onboarding';
   const isLoginPage = pathname === '/login';
   const isAffiliateDashboard = pathname?.startsWith('/affiliate/dashboard');
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage && !isLoginPage && !isAffiliateDashboard;
+  const isHomePage = pathname === '/' || pathname === '/id' || pathname === '/en';
+  const showGlobalHeader = !isHomePage && !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage && !isLoginPage && !isAffiliateDashboard;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

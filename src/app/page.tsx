@@ -590,16 +590,8 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* Center Content */}
-              <div className="flex flex-col items-center justify-center flex-grow text-center">
-                <motion.h1 
-                  className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter uppercase mb-8 max-w-4xl drop-shadow-2xl"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: DURATION.hero, ease: EASING.out, delay: 0.6 }}
-                >
-                  {dict.home.heroTitle || 'Wear the art, own the day.'}
-                </motion.h1>
+              {/* Center Content - Moved to bottom */}
+              <div className="flex flex-col items-center justify-end flex-grow text-center pb-12 md:pb-24">
                 
                 {/* Scene 02: SHOP Button Interaction */}
                 <motion.button
