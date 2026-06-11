@@ -876,8 +876,8 @@ export default function GlobalHeader() {
                   { label: dict.header.category, href: '/category' },
                   { label: dict.header.affiliate, href: '/affiliate' },
                   { label: dict.header.logbook, href: '/logbook' },
-                  { label: dict.header.about, href: '/about' },
-                  { label: 'Supplier', href: '/supplier/apply' }
+                  { label: 'Supplier', href: '/supplier/apply' },
+                  { label: dict.header.about, href: '/about' }
                 ].map((item, idx) => (
                   <motion.div
                     key={item.label}
