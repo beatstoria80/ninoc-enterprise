@@ -258,7 +258,7 @@ export default function SupplierApplicationPage() {
 
           <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan */}
-            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-24 px-1 -mx-1">
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="lg:col-span-2">
@@ -302,6 +302,10 @@ export default function SupplierApplicationPage() {
                   <input required type="tel" name="phone" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62..." />
                 </div>
               </div>
+              
+              {/* Extra spacing to prevent clipping */}
+              <div className="h-32 w-full block shrink-0"></div>
+              
             </div>
 
             {/* Grid 3: Legal & Terms */}

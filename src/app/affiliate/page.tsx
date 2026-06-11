@@ -318,7 +318,7 @@ export default function AffiliateApplicationPage() {
 
           <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan -> Personal & Platform Info */}
-            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-16 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-24 px-1 -mx-1">
               
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               
@@ -378,7 +378,7 @@ export default function AffiliateApplicationPage() {
               </div>
               
               {/* Extra spacing to prevent clipping */}
-              <div className="h-4 w-full shrink-0"></div>
+              <div className="h-32 w-full block shrink-0"></div>
 
             </div>
 
