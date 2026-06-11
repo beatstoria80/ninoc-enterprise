@@ -42,6 +42,7 @@ export default function SupplierSubmissionsPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchInitialData();
   }, []);
 
@@ -85,7 +86,7 @@ export default function SupplierSubmissionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-display font-medium text-ink">Product Submissions</h2>
-          <p className="text-xs text-ink/60">Submit your factory's products for NINOC curation and B2B deployment.</p>
+          <p className="text-xs text-ink/60">Submit your factory&apos;s products for NINOC curation and B2B deployment.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
@@ -139,7 +140,7 @@ export default function SupplierSubmissionsPage() {
               <tr>
                 <td colSpan={5} className="p-12 text-center text-ink/40">
                   <PackageOpen className="mx-auto mb-3 opacity-50" size={32} />
-                  <p>You haven't submitted any products yet.</p>
+                  <p>You haven&apos;t submitted any products yet.</p>
                 </td>
               </tr>
             )}

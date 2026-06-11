@@ -5,6 +5,42 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Factory, ArrowRight, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { submitSupplierApplication } from './actions';
 
+const FileUploader = ({ 
+  label, 
+  type, 
+  path,
+  uploading,
+  onUpload
+}: { 
+  label: string; 
+  type: 'ktp' | 'npwp' | 'nib'; 
+  path: string | null;
+  uploading: string | null;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>, type: 'ktp' | 'npwp' | 'nib') => void;
+}) => (
+  <div className="border border-dashed border-ink/20 p-4 rounded bg-white/50 group hover:border-rose/50 transition-colors">
+    <label className="flex items-center justify-between cursor-pointer">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/40'}`}>
+          {path ? <CheckCircle size={18} /> : <FileText size={18} />}
+        </div>
+        <div>
+          <p className="text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
+          <p className="text-[10px] text-ink/50 mt-0.5">
+            {uploading === type ? 'Mengunggah...' : path ? 'File tersimpan aman.' : 'PDF, JPG, PNG (Max 10MB)'}
+          </p>
+        </div>
+      </div>
+      {!path && uploading !== type && (
+        <div className="text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
+          Upload
+        </div>
+      )}
+      <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => onUpload(e, type)} disabled={uploading === type} />
+    </label>
+  </div>
+);
+
 export default function SupplierApplicationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,29 +109,6 @@ export default function SupplierApplicationPage() {
     }
   };
 
-  const FileUploader = ({ label, type, path }: { label: string, type: 'ktp' | 'npwp' | 'nib', path: string | null }) => (
-    <div className="border border-dashed border-ink/20 p-4 rounded bg-white/50 group hover:border-rose/50 transition-colors">
-      <label className="flex items-center justify-between cursor-pointer">
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/40'}`}>
-            {path ? <CheckCircle size={18} /> : <FileText size={18} />}
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
-            <p className="text-[10px] text-ink/50 mt-0.5">
-              {uploading === type ? 'Mengunggah...' : path ? 'File tersimpan aman.' : 'PDF, JPG, PNG (Max 10MB)'}
-            </p>
-          </div>
-        </div>
-        {!path && uploading !== type && (
-          <div className="text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
-            Upload
-          </div>
-        )}
-        <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => handleFileUpload(e, type)} disabled={uploading === type} />
-      </label>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-cr noise py-12 px-4 flex justify-center">
@@ -205,9 +218,9 @@ export default function SupplierApplicationPage() {
               <p className="text-[10px] text-ink/50">Diperlukan sebagai alat integritas hukum. Disimpan di private vault.</p>
               
               <div className="space-y-3">
-                <FileUploader label="Scan KTP Direktur" type="ktp" path={ktpPath} />
-                <FileUploader label="Scan NPWP Perusahaan" type="npwp" path={npwpPath} />
-                <FileUploader label="Sertifikat NIB" type="nib" path={nibPath} />
+                <FileUploader label="Scan KTP Direktur" type="ktp" path={ktpPath} uploading={uploading} onUpload={handleFileUpload} />
+                <FileUploader label="Scan NPWP Perusahaan" type="npwp" path={npwpPath} uploading={uploading} onUpload={handleFileUpload} />
+                <FileUploader label="Sertifikat NIB" type="nib" path={nibPath} uploading={uploading} onUpload={handleFileUpload} />
               </div>
             </div>
 
@@ -215,7 +228,7 @@ export default function SupplierApplicationPage() {
               <h3 className="text-xs font-bold text-ink mb-4">Terms & Conditions (OEM SLA)</h3>
               <div className="bg-cr noise p-4 border border-ink/10 h-40 overflow-y-auto mb-4 text-[10px] text-ink/70 space-y-3 font-mono leading-relaxed">
                 <p><strong>1. RIGHT TO REBRAND:</strong> Supplier grants NINOC exclusive rights to repackage, re-label, and rebrand submitted items under the NINOC trademark.</p>
-                <p><strong>2. LEGAL INTEGRITY:</strong> Supplier warrants that all goods supplied do not infringe on third-party intellectual property. NINOC is absolved from any legal dispute arising from the supplier's production methods.</p>
+                <p><strong>2. LEGAL INTEGRITY:</strong> Supplier warrants that all goods supplied do not infringe on third-party intellectual property. NINOC is absolved from any legal dispute arising from the supplier&apos;s production methods.</p>
                 <p><strong>3. HUB CONSIGNMENT:</strong> Goods must be physically deposited to the NINOC Central Warehouse for Quality Control. Dropshipping direct from factory is strictly prohibited to preserve brand anonymity.</p>
                 <p><strong>4. PAYOUT CLEARANCE:</strong> HPP funds are credited to the supplier ledger only after the end-consumer receives the goods and the 7-day return window expires without dispute.</p>
               </div>

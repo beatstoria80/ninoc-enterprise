@@ -17,6 +17,7 @@ export function POTab() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPOs();
   }, []);
 

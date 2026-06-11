@@ -17,6 +17,7 @@ export function DOTab() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDOs();
   }, []);
 

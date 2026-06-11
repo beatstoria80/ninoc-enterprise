@@ -1,11 +1,37 @@
 'use server';
 
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function submitSupplierApplication(formData: FormData) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
+  const cookieStore = await cookies();
+  
+  // 1. Get the current user session using SSR client
+  const supabaseSsr = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Ignored in server action
+          }
+        },
+      },
+    }
+  );
+
+  const { data: { session }, error: authError } = await supabaseSsr.auth.getSession();
+  if (!session || authError) {
     throw new Error('You must be logged in to apply.');
   }
 
@@ -35,8 +61,15 @@ export async function submitSupplierApplication(formData: FormData) {
     throw new Error('All KYC legal documents are required for integrity validation.');
   }
 
+  // 2. Use Admin Client to bypass RLS for inserting new supplier
+  // (Because RLS does not allow inserting into suppliers if they aren't one yet)
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   // Insert into suppliers
-  const { data: supplier, error: supplierError } = await supabase
+  const { data: supplier, error: supplierError } = await supabaseAdmin
     .from('suppliers')
     .insert({
       name,
@@ -61,7 +94,7 @@ export async function submitSupplierApplication(formData: FormData) {
   }
 
   // Link user to supplier
-  const { error: userError } = await supabase
+  const { error: userError } = await supabaseAdmin
     .from('supplier_users')
     .insert({
       supplier_id: supplier.id,
