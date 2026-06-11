@@ -210,6 +210,8 @@ export async function POST(req: Request) {
         order_id: orderId,
         product_id: item.id,
         product_name: item.name,
+        quantity: item.quantity,
+        price_at_purchase: item.price,
         size: items.find((i: any) => i.id === item.id)?.size || null,
         // Assuming we pass variant_id from frontend. For now, rely on product_id + size.
         // We'll map it to the database's reserve_inventory logic.
