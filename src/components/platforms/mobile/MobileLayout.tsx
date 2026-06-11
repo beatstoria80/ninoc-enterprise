@@ -352,9 +352,8 @@ export default function MobileLayout({
                     >
                       <BackIcon />
                     </motion.div>
-                    <div className="flex flex-col items-start leading-none">
-                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-                      <span className="text-xs font-medium uppercase tracking-[0.1em] text-ink">Catalog</span>
+                    <div className="flex items-center leading-none">
+                      <span className="text-[11px] font-medium uppercase tracking-widest text-ink">Return to Catalog</span>
                     </div>
                   </PressScale>
                 </Link>

@@ -659,10 +659,10 @@ export default function Home() {
               className="flex items-center gap-2 text-rose"
             >
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
+              <span className="text-[10px] md:text-[10px] font-medium uppercase tracking-widest whitespace-nowrap">Origin Specification</span>
             </motion.div>
 
-            <h1 className="text-5xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
+            <h1 className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
               {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                 <span key={word + wi} className="block overflow-hidden">
                   {word.split("").map((char: string, ci: number) => (
@@ -685,7 +685,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="text-sm md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[200px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+              className="text-xs md:text-sm font-medium leading-snug md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[280px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
               {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
             </motion.p>
@@ -737,13 +737,13 @@ export default function Home() {
               ].map((item, i) => (
                 <motion.div
                   key={item.label}
-                  className="flex flex-col items-start text-left border-x border-ink/5 first:border-l-0 last:border-r-0"
+                  className="flex flex-col items-start text-left border-x border-ink/5 first:border-l-0 last:border-r-0 px-3 first:pl-0 last:pr-0"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + i * 0.1, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mt-2 mb-1">{item.label}</p>
-                  <p className="text-xs md:text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
+                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 leading-none mt-2 mb-1.5">{item.label}</p>
+                  <p className="text-xs md:text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2 whitespace-nowrap">{item.value}</p>
                 </motion.div>
               ))}
             </div>
