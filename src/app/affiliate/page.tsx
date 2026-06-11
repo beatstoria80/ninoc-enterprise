@@ -43,10 +43,9 @@ const DICT = {
     upload_hint: "PDF/JPG (Max 5MB)",
     btn_upload: "Upload",
     terms_title: "Syarat & Ketentuan Afiliasi",
-    t1: "1. KOMISI: Afiliator akan menerima komisi yang disepakati untuk setiap penjualan yang selesai menggunakan tautan/kode rujukan.",
-    t2: "2. KONTEN: Afiliator dilarang menggunakan materi promosi yang menyesatkan atau merusak reputasi NINOC.",
-    t3: "3. PENCAIRAN: Komisi dapat dicairkan setelah mencapai batas minimum dan melewati masa garansi pengembalian produk (7 hari).",
-    agree: "Saya setuju dengan Syarat Layanan Afiliasi dan Kebijakan Privasi NINOC.",
+    t_summary: "Dengan mendaftar sebagai Afiliator NINOC, Anda terikat pada perjanjian kemitraan yang mencakup Hak & Kewajiban eksklusif. Komisi akan dibayarkan secara transparan untuk setiap transaksi terverifikasi. Pelanggaran terhadap integritas merek dapat mengakibatkan pemutusan sepihak.",
+    t_link: "Baca Dokumen Lengkap (Hak & Kewajiban)",
+    agree: "Saya telah membaca dan menyetujui seluruh Syarat & Ketentuan Afiliasi.",
     submit: "Kirim Aplikasi",
     submitting: "Mengirim...",
     success: "Aplikasi Diterima!",
@@ -88,10 +87,9 @@ const DICT = {
     upload_hint: "PDF/JPG (Max 5MB)",
     btn_upload: "Upload",
     terms_title: "Affiliate Terms & Conditions",
-    t1: "1. COMMISSION: Affiliates earn an agreed percentage for every completed sale using their referral link/code.",
-    t2: "2. CONTENT: Affiliates must not use misleading promotional materials or damage NINOC's reputation.",
-    t3: "3. PAYOUTS: Commissions can be withdrawn after reaching the minimum threshold and clearing the product return window (7 days).",
-    agree: "I agree to the NINOC Affiliate Terms of Service and Privacy Policy.",
+    t_summary: "By registering as a NINOC Affiliate, you are bound by a partnership agreement detailing exclusive Rights & Obligations. Commissions are paid transparently for verified transactions. Brand integrity violations may result in unilateral termination.",
+    t_link: "Read Full Document (Rights & Obligations)",
+    agree: "I have read and agree to the full Affiliate Terms & Conditions.",
     submit: "Submit Application",
     submitting: "Submitting...",
     success: "Application Received!",
@@ -320,7 +318,7 @@ export default function AffiliateApplicationPage() {
 
           <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan -> Personal & Platform Info */}
-            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-16 px-1 -mx-1">
               
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               
@@ -378,11 +376,14 @@ export default function AffiliateApplicationPage() {
                 <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.npwp}</label>
                 <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
               </div>
+              
+              {/* Extra spacing to prevent clipping */}
+              <div className="h-4 w-full shrink-0"></div>
 
             </div>
 
             {/* Grid 3: Legal & Terms */}
-            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8 px-1 -mx-1">
+            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-16 px-1 -mx-1">
               <div className="space-y-4 shrink-0">
                 <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step3}</h3>
                 <p className="text-[10px] text-ink/50">{dict.kyc_desc}</p>
@@ -411,11 +412,18 @@ export default function AffiliateApplicationPage() {
 
               <div className="pt-2 border-t border-ink/10 flex-1 flex flex-col">
                 <h3 className="text-xs font-bold text-ink mb-2 shrink-0">{dict.terms_title}</h3>
-                <div className="bg-cr noise p-3 border border-ink/10 overflow-y-auto flex-1 mb-4 text-[10px] text-ink/70 space-y-2 font-mono leading-relaxed no-scrollbar min-h-[80px]">
-                  <p><strong>{dict.t1}</strong></p>
-                  <p><strong>{dict.t2}</strong></p>
-                  <p><strong>{dict.t3}</strong></p>
+                
+                <div className="bg-cr noise p-4 border border-ink/10 mb-4 flex flex-col gap-3 shrink-0">
+                  <p className="text-[10px] text-ink/70 leading-relaxed text-justify">
+                    {dict.t_summary}
+                  </p>
+                  <Link href="/affiliate/terms" className="inline-flex items-center gap-1.5 text-[10px] font-medium text-rose hover:text-ink transition-colors group">
+                    <FileText size={12} className="group-hover:scale-110 transition-transform" />
+                    <span className="uppercase tracking-wider underline underline-offset-4 decoration-rose/30 group-hover:decoration-ink/50">{dict.t_link}</span>
+                  </Link>
                 </div>
+
+                <div className="flex-1 min-h-0"></div>
 
                 <label className="flex items-start gap-3 cursor-pointer group mb-4 shrink-0">
                   <div className="pt-0.5">
