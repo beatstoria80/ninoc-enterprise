@@ -881,9 +881,9 @@ export default function GlobalHeader() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 w-[85vw] max-w-[400px] bg-cr noise z-[410] border-r border-ink/5 shadow-2xl flex flex-col"
+              className="fixed top-0 left-0 w-[85vw] max-w-[400px] h-auto max-h-[85vh] bg-cr noise z-[410] border-r border-b border-ink/5 shadow-2xl flex flex-col rounded-br-3xl overflow-hidden"
             >
-              <div className="px-6 md:px-10 py-6 border-b border-ink/5 flex items-center justify-between">
+              <div className="px-6 md:px-10 py-6 border-b border-ink/5 flex items-center justify-between shrink-0">
                 <div className="font-display font-medium text-3xl italic tracking-tighter text-rose">
                   ninoc
                 </div>
@@ -892,7 +892,7 @@ export default function GlobalHeader() {
                 </PressScale>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 md:px-10 py-8 flex flex-col gap-6">
+              <div className="overflow-y-auto px-6 md:px-10 py-8 flex flex-col gap-6">
                 {[
                   { label: dict.header.shop, href: '/shop' },
                   { label: dict.header.collections, href: '/collections' },
@@ -911,7 +911,7 @@ export default function GlobalHeader() {
                     <Link
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-lg md:text-xl font-display font-medium uppercase tracking-widest text-ink/70 hover:text-rose transition-colors"
+                      className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors"
                     >
                       {item.label}
                     </Link>
