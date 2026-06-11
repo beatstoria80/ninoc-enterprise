@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from '@/components/LocalizedLink';
+import NextLink from 'next/link';
 import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -101,8 +102,8 @@ export default function SupplierTermsPage() {
                 
                 {/* Language Switcher */}
                 <div className="flex items-center text-xs md:text-[10px] font-medium uppercase tracking-widest bg-white/5 border border-white/10 rounded-full p-1">
-                  <Link prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>ID</Link>
-                  <Link prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>EN</Link>
+                  <NextLink prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>ID</NextLink>
+                  <NextLink prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>EN</NextLink>
                 </div>
               </div>
               <h1 className="text-4xl md:text-5xl font-display italic font-medium mb-6 leading-tight">{dict.title}</h1>
