@@ -398,7 +398,76 @@ function ProductCard({ product, index }: ProductCardProps) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// CATEGORY QUICK ACCESS — Desktop Only
+// ═══════════════════════════════════════════════════════════════
 
+function CategoryQuickAccess() {
+  const brandColor = useBrandColor();
+
+  return (
+    <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2">
+      {CATEGORIES.map((cat, i) => {
+        const Icon = cat.icon;
+        return (
+          <motion.div
+            key={cat.id}
+            variants={categoryPillVariants}
+            initial="hidden"
+            animate="visible"
+            custom={i}
+          >
+            <PressButton
+              href={cat.href}
+              className="flex items-center gap-4 bg-white border border-ink/10 px-6 py-4 group whitespace-nowrap rounded-none"
+              whileHover={{ borderColor: brandColor.color, backgroundColor: brandColor.color }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <motion.div
+                className="w-10 h-10 flex items-center justify-center bg-ink/5 rounded-none"
+                animate={{ backgroundColor: brandColor.color }}
+                transition={{ duration: DURATION.fast }}
+              >
+                <motion.div
+                  animate={{ color: '#ffffff' }}
+                  transition={{ duration: DURATION.fast }}
+                  className="text-rose"
+                >
+                  <Icon />
+                </motion.div>
+              </motion.div>
+
+              <div className="flex flex-col leading-none gap-0.5">
+                <motion.span
+                  className="text-base font-display font-medium italic uppercase tracking-tight"
+                  animate={{ color: '#141414' }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  {cat.label}
+                </motion.span>
+                <motion.span
+                  className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
+                  animate={{ color: 'rgba(20,20,20,0.5)' }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  {cat.sublabel}
+                </motion.span>
+              </div>
+
+              <motion.div
+                className="ml-2"
+                animate={{ x: 0, opacity: 0.4 }}
+                transition={{ duration: DURATION.fast }}
+              >
+                <ArrowRight size={14} />
+              </motion.div>
+            </PressButton>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════
 // FADE-UP SECTION WRAPPER
@@ -729,7 +798,27 @@ export default function Home() {
         </div>
       </section>
 
-
+      {/* CATEGORY INDEX — QUICK ACCESS - Desktop Only */}
+      <section className="hidden md:block px-12 max-w-[1800px] mx-auto mt-16 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: DURATION.medium, ease: EASING.out }}
+          className="flex items-end justify-between mb-6"
+        >
+          <div className="flex items-center gap-2">
+            <div className="text-rose">
+              <Grid3X3 size={12} />
+            </div>
+            <span className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
+          </div>
+          <PressButton href="/category" className="text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
+            View All
+          </PressButton>
+        </motion.div>
+        <CategoryQuickAccess />
+      </section>
 
       {/* CATALOG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
