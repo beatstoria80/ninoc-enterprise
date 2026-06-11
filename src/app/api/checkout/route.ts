@@ -239,7 +239,7 @@ export async function POST(req: Request) {
       if (itemsError) {
         await supabaseAdmin.from('orders').delete().eq('id', orderId); // Rollback
         console.error('Supabase Order Items Error:', itemsError);
-        return NextResponse.json({ error: 'Failed to save order items.' }, { status: 500 });
+        return NextResponse.json({ error: 'DB Error: ' + itemsError.message }, { status: 500 });
       }
     }
 
