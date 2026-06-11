@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Factory, ArrowRight, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import Link from '@/components/LocalizedLink';
 import { submitSupplierApplication } from './actions';
 
 import { usePathname } from 'next/navigation';
@@ -37,11 +38,9 @@ const DICT = {
     upload_hint: "PDF, JPG, PNG (Max 10MB)",
     btn_upload: "Upload",
     terms_title: "Syarat & Ketentuan (OEM SLA)",
-    t1: "1. HAK REBRAND: Supplier memberikan hak eksklusif kepada NINOC untuk mengemas dan memberi merek ulang barang di bawah merek dagang NINOC.",
-    t2: "2. INTEGRITAS HUKUM: Supplier menjamin bahwa barang yang dipasok tidak melanggar kekayaan intelektual pihak ketiga.",
-    t3: "3. KONSINYASI HUB: Barang harus diserahkan secara fisik ke Gudang Pusat NINOC untuk Quality Control. Dropshipping dari pabrik dilarang keras.",
-    t4: "4. PENCAIRAN DANA: Dana HPP dikreditkan ke buku besar supplier hanya setelah konsumen akhir menerima barang tanpa sengketa retur dalam 7 hari.",
-    agree: "Saya adalah perwakilan sah dari pabrik ini dan secara hukum menyetujui SLA OEM NINOC.",
+    t_summary: "Sebagai Mitra Produsen B2B NINOC, Anda terikat oleh Perjanjian Tingkat Layanan (SLA) OEM. Kami memegang hak eksklusif untuk melabeli ulang produk (rebrand). Pencairan dana HPP dilakukan secara transparan setelah produk lolos QC Gudang Pusat dan diterima konsumen akhir tanpa sengketa.",
+    t_link: "Baca Dokumen Lengkap (SLA OEM)",
+    agree: "Saya secara sah menyetujui seluruh isi Perjanjian Tingkat Layanan (SLA) OEM NINOC.",
     submit: "Kirim Aplikasi",
     submitting: "Mengirim...",
     error_docs: "Harap unggah seluruh dokumen legalitas (KTP, NPWP, NIB) untuk keperluan KYC dan integritas hukum.",
@@ -78,11 +77,9 @@ const DICT = {
     upload_hint: "PDF, JPG, PNG (Max 10MB)",
     btn_upload: "Upload",
     terms_title: "Terms & Conditions (OEM SLA)",
-    t1: "1. RIGHT TO REBRAND: Supplier grants NINOC exclusive rights to repackage, re-label, and rebrand submitted items under the NINOC trademark.",
-    t2: "2. LEGAL INTEGRITY: Supplier warrants that all goods supplied do not infringe on third-party intellectual property.",
-    t3: "3. HUB CONSIGNMENT: Goods must be physically deposited to the NINOC Central Warehouse for Quality Control. Dropshipping direct from factory is strictly prohibited.",
-    t4: "4. PAYOUT CLEARANCE: HPP funds are credited to the supplier ledger only after the end-consumer receives the goods and the 7-day return window expires without dispute.",
-    agree: "I am an authorized representative of this factory and legally agree to the NINOC OEM Service Level Agreement.",
+    t_summary: "As a NINOC B2B Manufacturing Partner, you are bound by the OEM Service Level Agreement (SLA). We hold exclusive rights to rebrand products. HPP payouts are processed transparently after passing Central Hub QC and clearing end-consumer receipt without dispute.",
+    t_link: "Read Full Document (OEM SLA)",
+    agree: "I legally agree to the entirety of the NINOC OEM Service Level Agreement.",
     submit: "Submit Application",
     submitting: "Submitting...",
     error_docs: "Please upload all legal documents (ID, Tax ID, NIB) for KYC and legal integrity purposes.",
@@ -322,12 +319,18 @@ export default function SupplierApplicationPage() {
 
               <div className="pt-2 border-t border-ink/10 flex-1 flex flex-col">
                 <h3 className="text-xs font-bold text-ink mb-2 shrink-0">{dict.terms_title}</h3>
-                <div className="bg-cr noise p-3 border border-ink/10 overflow-y-auto flex-1 mb-4 text-[10px] text-ink/70 space-y-2 font-mono leading-relaxed no-scrollbar min-h-[80px]">
-                  <p><strong>{dict.t1}</strong></p>
-                  <p><strong>{dict.t2}</strong></p>
-                  <p><strong>{dict.t3}</strong></p>
-                  <p><strong>{dict.t4}</strong></p>
+                
+                <div className="bg-cr noise p-4 border border-ink/10 mb-4 flex flex-col gap-3 shrink-0">
+                  <p className="text-[10px] text-ink/70 leading-relaxed text-justify">
+                    {dict.t_summary}
+                  </p>
+                  <Link href="/supplier/terms" className="inline-flex items-center gap-1.5 text-[10px] font-medium text-rose hover:text-ink transition-colors group">
+                    <FileText size={12} className="group-hover:scale-110 transition-transform" />
+                    <span className="uppercase tracking-wider underline underline-offset-4 decoration-rose/30 group-hover:decoration-ink/50">{dict.t_link}</span>
+                  </Link>
                 </div>
+
+                <div className="flex-1 min-h-0"></div>
 
                 <label className="flex items-start gap-3 cursor-pointer group mb-4 shrink-0">
                   <div className="pt-0.5">
