@@ -506,7 +506,12 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   // SCENE ORCHESTRATION
-  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
+  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('ninoc_intro_played') ? 'archive' : 'hero';
+    }
+    return 'hero';
+  });
   
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
@@ -545,14 +550,16 @@ export default function Home() {
   // Listen for replay-opening event (when Home tab is tapped again)
   useEffect(() => {
     const handleReplay = () => {
-      window.scrollTo(0, 0);
-      setScene('hero');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     window.addEventListener('replay-opening', handleReplay);
     return () => window.removeEventListener('replay-opening', handleReplay);
   }, []);
 
   const handleShopClick = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('ninoc_intro_played', 'true');
+    }
     setScene('transitioning');
     setTimeout(() => {
       setScene('archive');
