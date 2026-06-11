@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Factory, ArrowRight, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
+import NextLink from 'next/link';
 import { submitSupplierApplication } from './actions';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -208,9 +209,9 @@ export default function SupplierApplicationPage() {
         <div className="lg:col-span-3 flex flex-col justify-center space-y-2 md:space-y-6 bg-cr noise p-4 md:p-12 border-b lg:border-b-0 lg:border-r border-ink/5 h-auto lg:h-full relative">
           
           {/* Language Switcher */}
-          <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center text-[10px] font-medium uppercase tracking-widest bg-ink/5 border border-ink/10 rounded-full p-1 z-20">
-            <Link prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>ID</Link>
-            <Link prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>EN</Link>
+          <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center text-[10px] font-medium uppercase tracking-widest bg-ink/5 border border-ink/10 rounded-full p-1 z-20 hover:bg-ink/10 transition-colors">
+            <NextLink prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'ID' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>ID</NextLink>
+            <NextLink prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'EN' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>EN</NextLink>
           </div>
 
           <div className="flex items-center gap-3 md:block pt-6 md:pt-0">
