@@ -35,7 +35,8 @@ export async function POST(req: Request) {
       .from('products')
       .select(`
         id, price, name, supplier_id,
-        product_costings ( supplier_base_price, ninoc_markup )
+        product_costings ( supplier_base_price, ninoc_markup ),
+        variants ( id, size, color )
       `)
       .in('id', productIds);
 
@@ -206,20 +207,30 @@ export async function POST(req: Request) {
 
     // 2. Save individual order items
     if (finalItemDetails.length > 0) {
-      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO').map((item: any) => ({
-        order_id: orderId,
-        product_id: item.id,
-        product_name: item.name,
-        quantity: item.quantity,
-        price_at_purchase: item.price,
-        size: items.find((i: any) => i.id === item.id)?.size || null,
-        // Assuming we pass variant_id from frontend. For now, rely on product_id + size.
-        // We'll map it to the database's reserve_inventory logic.
-        // Ledger splits
-        supplier_id: item.supplier_id || null,
-        supplier_hpp: item.supplier_hpp || 0,
-        ninoc_markup: item.ninoc_markup || 0
-      }));
+      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO').map((item: any) => {
+        const matchingItem = items.find((i: any) => i.id === item.id);
+        const dbProduct = dbProducts.find((p: any) => p.id === item.id);
+        
+        let variant_id = null;
+        if (dbProduct && dbProduct.variants && dbProduct.variants.length > 0) {
+          const variant = dbProduct.variants.find((v: any) => v.size === matchingItem?.size);
+          variant_id = variant ? variant.id : dbProduct.variants[0].id;
+        }
+
+        return {
+          id: crypto.randomUUID(),
+          order_id: orderId,
+          product_id: item.id,
+          variant_id: variant_id,
+          product_name: item.name,
+          quantity: item.quantity,
+          price_at_purchase: item.price,
+          size: matchingItem?.size || null,
+          supplier_id: item.supplier_id || null,
+          supplier_hpp: item.supplier_hpp || 0,
+          ninoc_markup: item.ninoc_markup || 0
+        };
+      });
 
       const { error: itemsError } = await supabaseAdmin
         .from('order_items')
