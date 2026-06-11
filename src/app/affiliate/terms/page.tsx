@@ -9,8 +9,8 @@ export const metadata = {
 
 export default function AffiliateTermsPage() {
   return (
-    <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
-      <div className="w-[96vw] max-w-[1800px] h-[92vh] max-h-[1000px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10">
+    <div className="min-h-screen w-full bg-cr noise flex flex-col p-4 md:p-8 overflow-y-auto relative">
+      <div className="w-[96vw] max-w-[1800px] my-auto mx-auto min-h-[750px] lg:min-h-[800px] h-[92vh] max-h-[1000px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10 shrink-0">
         
         {/* Left Column - Header Info */}
         <div className="lg:col-span-3 flex flex-col bg-ink p-8 md:p-12 text-white relative overflow-hidden h-full">
