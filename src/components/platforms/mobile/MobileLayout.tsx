@@ -349,6 +349,10 @@ export default function MobileLayout({
                 <Link prefetch={false} href="/" className="flex items-center">
                   <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
                 </Link>
+              ) : pathname === '/shop' ? (
+                <div className="flex items-center leading-none px-1">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">Catalog</span>
+                </div>
               ) : (
                 <Link prefetch={false} href="/shop" className="group flex items-center gap-2 text-ink">
                   <PressScale className="flex items-center gap-2">
