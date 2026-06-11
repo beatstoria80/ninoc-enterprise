@@ -13,6 +13,8 @@ export default function GlobalFooter() {
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const dict = getDictionaryByLocale(lang);
 
+  if (pathname === '/supplier/apply') return null;
+
   return (
     <footer className="bg-white border-t border-ink/5 pt-3 pb-2 px-4 md:px-8 w-full mt-auto">
       <div className="w-full flex flex-col md:flex-row justify-between items-start gap-4 md:gap-8">

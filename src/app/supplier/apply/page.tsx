@@ -111,64 +111,65 @@ export default function SupplierApplicationPage() {
 
 
   return (
-    <div className="min-h-screen bg-cr noise py-12 px-4 flex justify-center">
-      <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+    <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden">
+      <div className="w-full max-w-[1400px] h-full max-h-[850px] flex flex-col md:grid md:grid-cols-3 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden">
         
-        {/* Left Side - Info */}
-        <div className="flex flex-col justify-center space-y-6 md:sticky md:top-12 md:h-fit">
-          <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4">
+        {/* Grid 1 - Info */}
+        <div className="flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
+          <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4 shadow-xl relative z-10">
             <Factory size={24} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-display italic font-medium tracking-tight text-ink">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none">
             Become a B2B Partner.
           </h1>
-          <p className="text-sm text-ink/70 leading-relaxed max-w-md">
+          <p className="text-sm text-ink/70 leading-relaxed max-w-sm relative z-10">
             Join the NINOC ecosystem as an exclusive manufacturer. Focus purely on scaling your production volume and cashflow, while our engine handles the marketing, branding, QC, and B2B distribution.
           </p>
           
-          <div className="pt-6 border-t border-ink/10 space-y-4">
+          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10">
             <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">Partnership Pillars</h3>
             
             <div className="flex items-start gap-3">
-              <ShieldCheck className="text-emerald-600 mt-0.5" size={16} />
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">Guaranteed HPP Payouts</p>
-                <p className="text-[10px] text-ink/60">You set your base cost. We pay it cleanly upon successful fulfillment.</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">You set your base cost. We pay it cleanly upon successful fulfillment.</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <ShieldCheck className="text-emerald-600 mt-0.5" size={16} />
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">Legal Integrity (KYC)</p>
-                <p className="text-[10px] text-ink/60">Data perusahaan Anda disimpan di private vault. NINOC terbebas dari sengketa pihak ketiga.</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">Data perusahaan Anda disimpan di private vault. NINOC terbebas dari sengketa pihak ketiga.</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <ShieldCheck className="text-emerald-600 mt-0.5" size={16} />
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">Data Anonymity</p>
-                <p className="text-[10px] text-ink/60">Your factory identity is shielded. B2B buyers only see NINOC as the fulfillment hub.</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">Your factory identity is shielded. B2B buyers only see NINOC as the fulfillment hub.</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Form */}
-        <div className="bg-white p-8 md:p-12 border border-ink/5 shadow-2xl relative overflow-hidden">
-          <h2 className="text-xl font-display font-medium text-ink mb-6">Application & KYC Form</h2>
+        {/* Grid 2 & 3 - Form */}
+        <div className="col-span-2 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+          <h2 className="text-xl font-display font-medium text-ink mb-6 shrink-0">Application & KYC Form</h2>
           
           {error && (
-            <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-medium border border-red-100 flex gap-2 items-start">
+            <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-medium border border-red-100 flex gap-2 items-start shrink-0">
               <AlertCircle size={14} className="mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2">1. Data Perusahaan</h3>
+          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 min-h-0">
+            {/* Grid 2: Data Perusahaan */}
+            <div className="space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8">
+              <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">1. Data Perusahaan</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">Entitas Hukum</label>
@@ -213,50 +214,49 @@ export default function SupplierApplicationPage() {
               </div>
             </div>
 
-            <div className="space-y-4 pt-4">
-              <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2">2. Dokumen Legalitas (KYC)</h3>
-              <p className="text-[10px] text-ink/50">Diperlukan sebagai alat integritas hukum. Disimpan di private vault.</p>
-              
-              <div className="space-y-3">
-                <FileUploader label="Scan KTP Direktur" type="ktp" path={ktpPath} uploading={uploading} onUpload={handleFileUpload} />
-                <FileUploader label="Scan NPWP Perusahaan" type="npwp" path={npwpPath} uploading={uploading} onUpload={handleFileUpload} />
-                <FileUploader label="Sertifikat NIB" type="nib" path={nibPath} uploading={uploading} onUpload={handleFileUpload} />
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-ink/10">
-              <h3 className="text-xs font-bold text-ink mb-4">Terms & Conditions (OEM SLA)</h3>
-              <div className="bg-cr noise p-4 border border-ink/10 h-40 overflow-y-auto mb-4 text-[10px] text-ink/70 space-y-3 font-mono leading-relaxed">
-                <p><strong>1. RIGHT TO REBRAND:</strong> Supplier grants NINOC exclusive rights to repackage, re-label, and rebrand submitted items under the NINOC trademark.</p>
-                <p><strong>2. LEGAL INTEGRITY:</strong> Supplier warrants that all goods supplied do not infringe on third-party intellectual property. NINOC is absolved from any legal dispute arising from the supplier&apos;s production methods.</p>
-                <p><strong>3. HUB CONSIGNMENT:</strong> Goods must be physically deposited to the NINOC Central Warehouse for Quality Control. Dropshipping direct from factory is strictly prohibited to preserve brand anonymity.</p>
-                <p><strong>4. PAYOUT CLEARANCE:</strong> HPP funds are credited to the supplier ledger only after the end-consumer receives the goods and the 7-day return window expires without dispute.</p>
-              </div>
-
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <div className="pt-0.5">
-                  <input required type="checkbox" name="agree_sla" className="w-4 h-4 accent-rose cursor-pointer" />
+            {/* Grid 3: Legal & Terms */}
+            <div className="flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8">
+              <div className="space-y-4 shrink-0">
+                <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">2. Dokumen Legalitas (KYC)</h3>
+                <p className="text-[10px] text-ink/50">Diperlukan sebagai alat integritas hukum. Disimpan di private vault.</p>
+                
+                <div className="space-y-2">
+                  <FileUploader label="Scan KTP Direktur" type="ktp" path={ktpPath} uploading={uploading} onUpload={handleFileUpload} />
+                  <FileUploader label="Scan NPWP Perusahaan" type="npwp" path={npwpPath} uploading={uploading} onUpload={handleFileUpload} />
+                  <FileUploader label="Sertifikat NIB" type="nib" path={nibPath} uploading={uploading} onUpload={handleFileUpload} />
                 </div>
-                <span className="text-xs text-ink/70 group-hover:text-ink transition-colors">
-                  I am an authorized representative of this factory and legally agree to the NINOC OEM Service Level Agreement stated above.
-                </span>
-              </label>
-            </div>
+              </div>
 
-            <button
-              disabled={isSubmitting || !ktpPath || !npwpPath || !nibPath}
-              type="submit"
-              className="w-full bg-ink text-white p-4 text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Application'}
-              {!isSubmitting && <ArrowRight size={14} />}
-            </button>
-            <p className="text-center text-[9px] text-ink/40 uppercase tracking-widest mt-4">
-              Ensure you are logged in to your account
-            </p>
+              <div className="pt-2 border-t border-ink/10 flex-1 flex flex-col">
+                <h3 className="text-xs font-bold text-ink mb-2 shrink-0">Terms & Conditions (OEM SLA)</h3>
+                <div className="bg-cr noise p-3 border border-ink/10 overflow-y-auto flex-1 mb-4 text-[10px] text-ink/70 space-y-2 font-mono leading-relaxed no-scrollbar min-h-[80px]">
+                  <p><strong>1. RIGHT TO REBRAND:</strong> Supplier grants NINOC exclusive rights to repackage, re-label, and rebrand submitted items under the NINOC trademark.</p>
+                  <p><strong>2. LEGAL INTEGRITY:</strong> Supplier warrants that all goods supplied do not infringe on third-party intellectual property. NINOC is absolved from any legal dispute arising from the supplier&apos;s production methods.</p>
+                  <p><strong>3. HUB CONSIGNMENT:</strong> Goods must be physically deposited to the NINOC Central Warehouse for Quality Control. Dropshipping direct from factory is strictly prohibited to preserve brand anonymity.</p>
+                  <p><strong>4. PAYOUT CLEARANCE:</strong> HPP funds are credited to the supplier ledger only after the end-consumer receives the goods and the 7-day return window expires without dispute.</p>
+                </div>
+
+                <label className="flex items-start gap-3 cursor-pointer group mb-4 shrink-0">
+                  <div className="pt-0.5">
+                    <input required type="checkbox" name="agree_sla" className="w-4 h-4 accent-rose cursor-pointer" />
+                  </div>
+                  <span className="text-[11px] text-ink/70 group-hover:text-ink transition-colors leading-tight">
+                    I am an authorized representative of this factory and legally agree to the NINOC OEM Service Level Agreement.
+                  </span>
+                </label>
+
+                <button
+                  disabled={isSubmitting || !ktpPath || !npwpPath || !nibPath}
+                  type="submit"
+                  className="w-full shrink-0 bg-ink text-white p-4 text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                  {!isSubmitting && <ArrowRight size={14} />}
+                </button>
+              </div>
+            </div>
           </form>
         </div>
-
       </div>
     </div>
   );

@@ -414,6 +414,8 @@ export default function GlobalHeader() {
   const isCollectionsPath = pathname?.match(/^\/(?:en\/)?collections\/.+/);
   const isDarkBg = Boolean(isCollectionsPath && !isScrolled);
 
+  if (pathname === '/supplier/apply') return null;
+
   return (
     <>
       {/* NAVIGATION BAR */}
