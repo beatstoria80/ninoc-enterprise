@@ -208,7 +208,7 @@ function PortraitImageCarousel() {
       transition={{ delay: 0.2, duration: 1.0, ease: [0.77, 0, 0.175, 1] }}
       onMouseEnter={startCycle}
       onMouseLeave={stopCycle}
-      className="aspect-[3/4] md:aspect-[4/5] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
+      className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
       style={{ cursor: 'pointer' }}
     >
       <motion.div 
@@ -659,10 +659,10 @@ export default function Home() {
               className="flex items-center gap-2 text-rose"
             >
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              <span className="text-[10px] md:text-[10px] font-medium uppercase tracking-widest whitespace-nowrap">Origin Specification</span>
+              <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.15em] md:tracking-widest whitespace-nowrap">Origin Specification</span>
             </motion.div>
 
-            <h1 className="text-4xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.85] uppercase">
+            <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
               {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                 <span key={word + wi} className="block overflow-hidden">
                   {word.split("").map((char: string, ci: number) => (
@@ -685,7 +685,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="text-xs md:text-sm font-medium leading-snug md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[280px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+              className="text-[11px] md:text-sm font-medium leading-snug md:leading-relaxed text-ink/60 md:text-ink/60 max-w-[260px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
               {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
             </motion.p>
@@ -728,29 +728,29 @@ export default function Home() {
               </PressButton>
             </motion.div>
 
-            {/* Mobile Metadata - Left aligned, flush with Browse Category */}
-            <div className="flex flex-wrap items-center gap-6 mt-6 md:hidden">
+            {/* Mobile Metadata - Left aligned, flush, lowercase labels */}
+            <div className="flex items-center gap-4 mt-4 md:hidden">
               {[
                 { label: 'year', value: '2024' },
-                { label: 'loc', value: 'BDG, ID' },
-                { label: 'phil', value: 'Simplicity' }
+                { label: 'loc', value: 'bdg, id' },
+                { label: 'phil', value: 'simplicity' }
               ].map((item, i) => (
                 <motion.div
                   key={item.label}
                   className="flex flex-col items-start text-left"
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + i * 0.1, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  transition={{ delay: 0.7 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <p className="text-[9px] font-medium tracking-[0.2em] text-ink/40 leading-none mb-1.5">{item.label}</p>
-                  <p className="text-xs font-medium text-ink uppercase italic leading-none tracking-tight pb-2 whitespace-nowrap">{item.value}</p>
+                  <p className="text-[8px] font-normal tracking-[0.15em] text-ink/25 leading-none mb-1 lowercase">{item.label}</p>
+                  <p className="text-[10px] font-medium text-ink/50 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
                 </motion.div>
               ))}
             </div>
           </div>
 
           {/* Middle: Portrait Carousel */}
-          <div className="lg:col-span-4 relative mt-4 lg:mt-0">
+          <div className="lg:col-span-4 relative mt-0">
             <PortraitImageCarousel />
 
             <motion.div
@@ -832,7 +832,7 @@ export default function Home() {
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: DURATION.medium, ease: EASING.out }}
         >
-          <h2 className="text-2xl md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
+          <h2 className="text-sm md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
           <PressButton href="/shop" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
             {dict.home.viewAll}
           </PressButton>

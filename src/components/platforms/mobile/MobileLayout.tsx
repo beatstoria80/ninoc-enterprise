@@ -316,6 +316,8 @@ export default function MobileLayout({
     { href: '/category', label: 'Category' },
     { href: '/logbook', label: 'Logbook' },
     { href: '/track', label: 'Lacak Pesanan' },
+    { href: '/supplier', label: 'Supplier' },
+    { href: '/affiliate', label: 'Afiliasi' },
     { href: '/about', label: 'About' },
     { href: '/retur', label: 'Retur & Refund', highlight: true },
   ];
