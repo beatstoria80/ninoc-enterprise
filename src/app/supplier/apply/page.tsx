@@ -205,18 +205,20 @@ export default function SupplierApplicationPage() {
       <div className="w-full lg:w-[96vw] max-w-[1800px] my-auto mx-auto lg:min-h-[800px] lg:h-[92vh] lg:max-h-[1000px] flex flex-col lg:grid lg:grid-cols-12 bg-white shadow-2xl border-0 md:border border-ink/5 rounded-none md:rounded-xl overflow-visible lg:overflow-hidden z-10">
         
         {/* Grid 1 - Info */}
-        <div className="lg:col-span-3 flex flex-col justify-center space-y-4 md:space-y-6 bg-cr noise p-5 md:p-12 border-b lg:border-b-0 lg:border-r border-ink/5 h-auto lg:h-full relative">
-          <div className="w-10 h-10 md:w-12 md:h-12 bg-ink text-white flex items-center justify-center rounded-none mb-2 md:mb-4 shadow-xl relative z-10 shrink-0">
-            <Factory size={20} className="md:w-6 md:h-6" />
+        <div className="lg:col-span-3 flex flex-col justify-center space-y-2 md:space-y-6 bg-cr noise p-4 md:p-12 border-b lg:border-b-0 lg:border-r border-ink/5 h-auto lg:h-full relative">
+          <div className="flex items-center gap-3 md:block">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-ink text-white flex items-center justify-center rounded-none shadow-xl relative z-10 shrink-0">
+              <Factory size={16} className="md:w-6 md:h-6" />
+            </div>
+            <h1 className="text-2xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none shrink-0">
+              {dict.title}
+            </h1>
           </div>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none shrink-0">
-            {dict.title}
-          </h1>
-          <p className="text-xs md:text-sm text-ink/70 leading-relaxed max-w-sm relative z-10 shrink-0">
+          <p className="text-[10px] md:text-sm text-ink/70 leading-relaxed max-w-sm relative z-10 shrink-0">
             {dict.desc}
           </p>
           
-          <div className="pt-4 md:pt-6 border-t border-ink/10 space-y-3 md:space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar pb-2 md:pb-8">
+          <div className="hidden lg:block pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar pb-8">
             <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
             
             <div className="flex items-start gap-2.5 md:gap-3">
@@ -246,8 +248,8 @@ export default function SupplierApplicationPage() {
         </div>
 
         {/* Grid 2 & 3 - Form */}
-        <div className="lg:col-span-9 p-5 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
-          <h2 className="text-lg md:text-xl font-display font-medium text-ink mb-4 md:mb-6 shrink-0">{dict.form_title}</h2>
+        <div className="lg:col-span-9 p-4 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+          <h2 className="hidden md:block text-xl font-display font-medium text-ink mb-6 shrink-0">{dict.form_title}</h2>
           
           {error && (
             <div className="mb-4 md:mb-6 p-3 md:p-4 bg-red-50 text-red-600 text-xs font-medium border border-red-100 flex gap-2 items-start shrink-0">
@@ -256,11 +258,11 @@ export default function SupplierApplicationPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 min-h-0">
+          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan */}
-            <div className="lg:col-span-3 space-y-3 h-full overflow-y-auto no-scrollbar pr-2 lg:pr-4 pb-6 md:pb-12 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-2 md:space-y-3 h-full overflow-y-auto no-scrollbar pr-2 lg:pr-4 pb-4 md:pb-12 px-1 -mx-1">
               <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 md:gap-3">
                 <div className="lg:col-span-2">
                   <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_entity}</label>
                   <select required name="legal_entity" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all">
@@ -278,10 +280,10 @@ export default function SupplierApplicationPage() {
               
               <div>
                 <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.director}</label>
-                <input required type="text" name="director_name" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="Budi Santoso" />
+                <input required type="text" name="director_name" className="w-full bg-cr noise border border-ink/10 p-2 md:p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="Budi Santoso" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                 <div>
                   <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.npwp}</label>
                   <input required type="text" name="tax_id" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
@@ -292,7 +294,7 @@ export default function SupplierApplicationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 pt-1">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.email}</label>
                   <input required type="email" name="email" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="director@jayagarment.com" />
@@ -306,12 +308,12 @@ export default function SupplierApplicationPage() {
             </div>
 
             {/* Grid 3: Legal & Terms */}
-            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-2 lg:pr-4 space-y-3 pb-6 md:pb-8 px-1 -mx-1">
-              <div className="space-y-2 shrink-0">
+            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-2 lg:pr-4 space-y-2 md:space-y-3 pb-4 md:pb-8 px-1 -mx-1">
+              <div className="space-y-1 md:space-y-2 shrink-0">
                 <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step2}</h3>
-                <p className="text-[10px] text-ink/50 leading-tight">{dict.kyc_desc}</p>
+                <p className="text-[9px] md:text-[10px] text-ink/50 leading-tight">{dict.kyc_desc}</p>
                 
-                <div className="space-y-2">
+                <div className="space-y-1 md:space-y-2">
                   <FileUploader label={dict.ktp_label} type="ktp" path={ktpPath} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
                   <FileUploader label={dict.npwp_label} type="npwp" path={npwpPath} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
                   <FileUploader label={dict.nib_label} type="nib" path={nibPath} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
