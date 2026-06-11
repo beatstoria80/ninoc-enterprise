@@ -111,14 +111,14 @@ const FileUploader = ({
           {path ? <CheckCircle size={18} /> : <FileText size={18} />}
         </div>
         <div>
-          <p className="text-sm md:text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
-          <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">
+          <p className="text-[9.5px] md:text-[10px] font-bold text-ink uppercase tracking-wider">{label}</p>
+          <p className="text-[9px] text-ink/50 mt-0.5 leading-tight">
             {uploading === type ? dict.uploading : path ? dict.uploaded : dict.upload_hint}
           </p>
         </div>
       </div>
       {!path && uploading !== type && (
-        <div className="text-xs md:text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
+        <div className="text-[9px] md:text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
           {dict.btn_upload}
         </div>
       )}
