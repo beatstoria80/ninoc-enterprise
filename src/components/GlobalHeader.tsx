@@ -550,16 +550,16 @@ export default function GlobalHeader() {
         </motion.div>
       </motion.nav>
       ) : (
-        <div className="fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-6 flex items-center justify-between pointer-events-none">
-          <div className="pointer-events-auto">
+        <div className="fixed top-0 inset-x-0 z-[150] px-3 md:px-6 pt-3 md:pt-4 pb-6 flex items-start justify-between pointer-events-none">
+          <div className="pointer-events-auto -ml-1">
             <PressScale 
               onClick={() => setIsMenuOpen(true)} 
-              className="text-ink/60 hover:text-rose transition-colors cursor-pointer"
+              className="text-ink/60 hover:text-rose transition-colors cursor-pointer block p-1"
             >
               <MoreVertical size={24} strokeWidth={1.5} />
             </PressScale>
           </div>
-          <div className="pointer-events-auto flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em] text-ink/60">
+          <div className="pointer-events-auto flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em] text-ink/60 mt-1">
             <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
               ID
             </a>
