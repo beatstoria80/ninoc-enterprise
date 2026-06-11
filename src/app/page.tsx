@@ -263,7 +263,7 @@ function PortraitImageCarousel() {
       </AnimatePresence>
 
       <motion.div
-        className="absolute top-2 left-1 bg-ink text-white px-1 py-0.5 text-[6px] uppercase font-mono tracking-tighter z-20"
+        className="absolute top-2 left-1 bg-ink text-white px-1.5 py-0.5 text-[10px] uppercase font-mono tracking-tighter z-20"
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5, duration: DURATION.normal }}
@@ -326,7 +326,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           )}
 
           <motion.div
-            className="absolute top-0 left-0 bg-ink text-white px-1.5 py-0.5 text-[6px] uppercase tracking-tighter z-10"
+            className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] uppercase tracking-tighter z-10"
             animate={{ opacity: isHovered ? 0.5 : 1 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -344,7 +344,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.p>
 
           <motion.h3
-            className="text-xs md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
+            className="text-sm md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -357,10 +357,10 @@ function ProductCard({ product, index }: ProductCardProps) {
             transition={{ duration: DURATION.fast }}
           >
             <div className="space-y-0.5 md:space-y-1">
-              <p className="text-[6px] md:text-[7px] uppercase tracking-widest text-ink/40 leading-none">Archival Issue</p>
+              <p className="text-[10px] md:text-[7px] uppercase tracking-widest text-ink/40 leading-none">Archival Issue</p>
               {product.price_tag && (
                 <motion.p
-                  className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none"
+                  className="text-xs md:text-[8px] font-medium uppercase tracking-[0.2em] text-rose leading-none"
                   animate={{ scale: isHovered ? 1.05 : 1 }}
                   transition={{ duration: DURATION.fast }}
                 >
@@ -371,7 +371,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
             <div className="flex items-center justify-between">
               <motion.p
-                className="text-xs md:text-sm font-display font-medium italic text-ink"
+                className="text-sm md:text-sm font-display font-medium italic text-ink"
                 animate={{ scale: isHovered ? 1.02 : 1 }}
                 transition={{ duration: DURATION.fast }}
               >
@@ -448,7 +448,7 @@ function CategoryQuickAccess() {
                   {cat.label}
                 </motion.span>
                 <motion.span
-                  className="text-[11px] md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
+                  className="text-xs md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
                   animate={{ color: 'rgba(20,20,20,0.5)' }}
                   transition={{ duration: DURATION.fast }}
                 >
@@ -588,7 +588,7 @@ export default function Home() {
               {/* Header area */}
               <div className="flex justify-between items-center w-full">
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
-                  <p className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase">NINOC</p>
+                  <p className="text-3xl md:text-2xl font-display font-medium italic tracking-tighter uppercase">NINOC</p>
                 </motion.div>
                 
                 <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
@@ -612,7 +612,7 @@ export default function Home() {
                 {/* Scene 02: SHOP Button Interaction */}
                 <motion.button
                   onClick={handleShopClick}
-                  className="bg-white text-ink px-10 py-4 text-xs font-medium uppercase tracking-[0.3em] transition-all"
+                  className="bg-white text-ink px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   whileHover={{ scale: 1.05, backgroundColor: "#f8f8f8" }}
@@ -659,10 +659,10 @@ export default function Home() {
               className="flex items-center gap-2 text-rose"
             >
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              <span className="text-[10px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
+              <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
             </motion.div>
 
-            <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
+            <h1 className="text-5xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
               {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                 <span key={word + wi} className="block overflow-hidden">
                   {word.split("").map((char: string, ci: number) => (
@@ -685,7 +685,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.8, duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-              className="text-[11px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+              className="text-sm md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[200px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
               {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
             </motion.p>
@@ -698,7 +698,7 @@ export default function Home() {
               <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
                 {/* Mobile: Simple capsule with icon + text */}
                 <span className="md:hidden inline-flex items-center gap-1.5 bg-ink/5 px-3 py-1.5 border border-ink/10">
-                  <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
+                  <span className="text-xs md:text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
                   <ArrowRight size={10} className="text-rose group-hover:translate-x-0.5 transition-transform" />
                 </span>
                 {/* Desktop: Full line + text */}
@@ -742,8 +742,8 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 2.2 + i * 0.15, duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <p className="text-[5px] font-medium uppercase tracking-[0.3em] text-ink/25 leading-none mt-2 mb-0.5">{item.label}</p>
-                  <p className="text-[10px] md:text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mt-2 mb-1">{item.label}</p>
+                  <p className="text-xs md:text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2">{item.value}</p>
                 </motion.div>
               ))}
             </div>
@@ -814,9 +814,9 @@ export default function Home() {
             <div className="text-rose">
               <Grid3X3 size={12} />
             </div>
-            <span className="text-[11px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
+            <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
           </div>
-          <PressButton href="/category" className="text-[11px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
+          <PressButton href="/category" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
             View All
           </PressButton>
         </motion.div>
@@ -832,8 +832,8 @@ export default function Home() {
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: DURATION.medium, ease: EASING.out }}
         >
-          <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
-          <PressButton href="/shop" className="text-[11px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
+          <h2 className="text-2xl md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
+          <PressButton href="/shop" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
             {dict.home.viewAll}
           </PressButton>
         </motion.div>
@@ -887,8 +887,8 @@ export default function Home() {
                   </svg>
                 </motion.div>
                 <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Follow Us</p>
-                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Instagram</p>
+                <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
+                <p className="text-xs md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Instagram</p>
               </a>
 
               {/* Email */}
@@ -907,8 +907,8 @@ export default function Home() {
                   </svg>
                 </motion.div>
                 <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Email Us</p>
-                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">beatstoria.ai@gmail.com</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Direct Message</p>
+                <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">beatstoria.ai@gmail.com</p>
+                <p className="text-xs md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Direct Message</p>
               </a>
 
               {/* Phone / WhatsApp */}
@@ -928,8 +928,8 @@ export default function Home() {
                   </svg>
                 </motion.div>
                 <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">WhatsApp</p>
-                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">+62 8211983774</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Chat Now</p>
+                <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">+62 8211983774</p>
+                <p className="text-xs md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Chat Now</p>
               </a>
 
             </div>
@@ -937,14 +937,14 @@ export default function Home() {
             {/* Bottom CTA */}
             <div className="mt-8 pt-6 border-t border-ink/5 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col">
-                <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-rose">NINOC ENTERPRISE</p>
-                <p className="text-xs md:text-xs font-display font-medium italic text-ink mt-0.5">Wear the art, own the day.</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em] text-rose">NINOC ENTERPRISE</p>
+                <p className="text-base md:text-xs font-display font-medium italic text-ink mt-0.5">Wear the art, own the day.</p>
               </div>
               <div className="flex items-center gap-3">
-                <Link href="/about" className="px-5 py-2.5 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
+                <Link href="/about" className="px-5 py-2.5 bg-rose text-white text-sm md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
                   About NINOC
                 </Link>
-                <Link href="/shop" className="px-5 py-2.5 border border-ink/10 text-ink/50 text-xs md:text-[9px] font-semibold uppercase tracking-widest hover:border-ink/20 hover:text-ink transition-colors">
+                <Link href="/shop" className="px-5 py-2.5 border border-ink/10 text-ink/50 text-sm md:text-[9px] font-semibold uppercase tracking-widest hover:border-ink/20 hover:text-ink transition-colors">
                   Browse Catalog
                 </Link>
               </div>

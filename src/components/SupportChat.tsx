@@ -1461,7 +1461,7 @@ export default function SupportChat() {
       </AnimatePresence>
 
       {/* ─── Floating Button ─── */}
-      <div className="fixed right-5 z-[500] bottom-24 md:bottom-5">
+      <div className="fixed right-5 z-[500] bottom-24 md:bottom-5 hidden md:block">
         <AnimatePresence>
           {notifCount > 0 && (
             <motion.div
