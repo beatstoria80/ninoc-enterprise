@@ -111,22 +111,22 @@ export default function SupplierApplicationPage() {
 
 
   return (
-    <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden">
-      <div className="w-full max-w-[1400px] h-full max-h-[850px] flex flex-col md:grid md:grid-cols-3 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden">
+    <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
+      <div className="w-full max-w-[1600px] h-full max-h-[900px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10">
         
         {/* Grid 1 - Info */}
-        <div className="flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
-          <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4 shadow-xl relative z-10">
+        <div className="lg:col-span-4 flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
+          <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4 shadow-xl relative z-10 shrink-0">
             <Factory size={24} />
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none shrink-0">
             Become a B2B Partner.
           </h1>
-          <p className="text-sm text-ink/70 leading-relaxed max-w-sm relative z-10">
+          <p className="text-sm text-ink/70 leading-relaxed max-w-sm relative z-10 shrink-0">
             Join the NINOC ecosystem as an exclusive manufacturer. Focus purely on scaling your production volume and cashflow, while our engine handles the marketing, branding, QC, and B2B distribution.
           </p>
           
-          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10">
+          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar">
             <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">Partnership Pillars</h3>
             
             <div className="flex items-start gap-3">
@@ -156,7 +156,7 @@ export default function SupplierApplicationPage() {
         </div>
 
         {/* Grid 2 & 3 - Form */}
-        <div className="col-span-2 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+        <div className="lg:col-span-8 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
           <h2 className="text-xl font-display font-medium text-ink mb-6 shrink-0">Application & KYC Form</h2>
           
           {error && (

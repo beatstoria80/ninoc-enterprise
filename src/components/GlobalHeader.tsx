@@ -413,23 +413,23 @@ export default function GlobalHeader() {
 
   const isCollectionsPath = pathname?.match(/^\/(?:en\/)?collections\/.+/);
   const isDarkBg = Boolean(isCollectionsPath && !isScrolled);
-
-  if (pathname === '/supplier/apply') return null;
+  const isSupplierApply = pathname === '/supplier/apply';
 
   return (
     <>
       {/* NAVIGATION BAR */}
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: DURATION.slow, ease: EASING.out }}
-        className={cn(
-          "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
-          isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
-        )}
-      >
-        <div className="flex items-center gap-4 md:gap-6">
-          {/* Drawer Menu Toggle (3 Dots) */}
+      {!isSupplierApply ? (
+        <motion.nav
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: DURATION.slow, ease: EASING.out }}
+          className={cn(
+            "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
+            isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
+          )}
+        >
+          <div className="flex items-center gap-4 md:gap-6">
+            {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
             className={cn("transition-colors cursor-pointer", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-rose")}
@@ -549,6 +549,27 @@ export default function GlobalHeader() {
           </motion.div>
         </motion.div>
       </motion.nav>
+      ) : (
+        <div className="fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-6 flex items-center justify-between pointer-events-none">
+          <div className="pointer-events-auto">
+            <PressScale 
+              onClick={() => setIsMenuOpen(true)} 
+              className="text-ink/60 hover:text-rose transition-colors cursor-pointer"
+            >
+              <MoreVertical size={24} strokeWidth={1.5} />
+            </PressScale>
+          </div>
+          <div className="pointer-events-auto flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em] text-ink/60">
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
+              ID
+            </a>
+            <span className="text-ink/20">|</span>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
+              EN
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* CART OVERLAY — ASYMMETRIC 3-SECTOR ARCHIVAL INVENTORY */}
