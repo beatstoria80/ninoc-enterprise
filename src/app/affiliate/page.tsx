@@ -6,6 +6,7 @@ import { ShieldCheck, Share2, ArrowRight, FileText, CheckCircle, AlertCircle, Us
 import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const DICT = {
   ID: {
@@ -266,7 +267,14 @@ export default function AffiliateApplicationPage() {
         
         {/* Grid 1 - Info */}
         <div className="lg:col-span-3 flex flex-col justify-center space-y-2 md:space-y-6 bg-cr noise p-4 md:p-12 border-b lg:border-b-0 lg:border-r border-ink/5 h-auto lg:h-full relative">
-          <div className="flex items-center gap-3 md:block">
+          
+          {/* Language Switcher */}
+          <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center text-[10px] font-medium uppercase tracking-widest bg-ink/5 border border-ink/10 rounded-full p-1 z-20">
+            <Link prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>ID</Link>
+            <Link prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>EN</Link>
+          </div>
+
+          <div className="flex items-center gap-3 md:block pt-6 md:pt-0">
             <div className="w-8 h-8 md:w-12 md:h-12 bg-ink text-white flex items-center justify-center rounded-none shadow-xl relative z-10 shrink-0">
               <UserCheck size={16} className="md:w-6 md:h-6" />
             </div>
