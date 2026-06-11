@@ -707,7 +707,7 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => handleShippingChange(methodId, option.price)}
                     className={cn(
-                      "relative transition-all bg-white border-l-2 cursor-pointer",
+                      "relative transition-all bg-white border-l-2 cursor-pointer w-full text-left",
                       isMobile
                         ? "flex items-center justify-between py-3 px-3 min-h-[48px] active:bg-ink/[0.03]"
                         : "group flex flex-col items-center py-2.5 px-1 border-l-0 border-t-2",
@@ -719,16 +719,16 @@ export default function CheckoutPage() {
                     {/* Mobile: horizontal layout */}
                     {isMobile ? (
                       <>
-                        <div className="flex flex-col items-start gap-0.5">
-                          <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
-                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} â€¢ {option.duration}</span>
+                        <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1 pr-2">
+                          <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} â€¢ {option.duration}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                           <span className={cn("text-sm md:text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
                             IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </span>
                           {shippingMethod === methodId && (
-                            <div className="w-4 h-4 bg-white rounded-none flex items-center justify-center">
+                            <div className="w-4 h-4 bg-white rounded-none flex items-center justify-center shrink-0">
                               <CheckCircle size={10} className="text-ink" />
                             </div>
                           )}
