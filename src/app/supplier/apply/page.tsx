@@ -332,8 +332,8 @@ export default function SupplierApplicationPage() {
 
                 <div className="flex-1 min-h-0"></div>
 
-                <label className="flex items-start gap-3 cursor-pointer group mb-4 shrink-0">
-                  <div className="pt-0.5">
+                <label className="flex items-center gap-3 cursor-pointer group mb-4 shrink-0">
+                  <div>
                     <input required type="checkbox" name="agree_sla" className="w-4 h-4 accent-rose cursor-pointer" />
                   </div>
                   <span className="text-[11px] text-ink/70 group-hover:text-ink transition-colors leading-tight">
