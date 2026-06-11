@@ -259,12 +259,12 @@ export default function SupplierApplicationPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 min-h-0">
+          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan */}
-            <div className="space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="lg:col-span-2">
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_entity}</label>
                   <select required name="legal_entity" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all">
                     <option value="PT">PT</option>
@@ -273,7 +273,7 @@ export default function SupplierApplicationPage() {
                     <option value="Firma">Firma</option>
                   </select>
                 </div>
-                <div>
+                <div className="lg:col-span-3">
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_name}</label>
                   <input required type="text" name="legal_name" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="PT Jaya Garment" />
                 </div>
@@ -308,7 +308,7 @@ export default function SupplierApplicationPage() {
             </div>
 
             {/* Grid 3: Legal & Terms */}
-            <div className="flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8 px-1 -mx-1">
+            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8 px-1 -mx-1">
               <div className="space-y-4 shrink-0">
                 <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step2}</h3>
                 <p className="text-[10px] text-ink/50">{dict.kyc_desc}</p>
