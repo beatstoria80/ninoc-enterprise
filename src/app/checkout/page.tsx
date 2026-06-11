@@ -684,7 +684,7 @@ export default function CheckoutPage() {
 
               <div className={cn(
                 "gap-[1px] bg-ink/5 border border-ink/5 rounded-none relative",
-                isMobile ? "flex flex-col" : "grid grid-cols-3"
+                isMobile ? "flex flex-col max-h-[40vh] overflow-y-auto no-scrollbar" : "grid grid-cols-3"
               )}>
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
