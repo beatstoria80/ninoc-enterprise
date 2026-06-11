@@ -37,7 +37,8 @@ export default function GlobalFooter() {
               { label: dict.header.category, href: '/category' },
               { label: dict.header.affiliate, href: '/affiliate' },
               { label: dict.header.logbook, href: '/logbook' },
-              { label: dict.header.about, href: '/about' }
+              { label: dict.header.about, href: '/about' },
+              { label: 'Become a Partner', href: '/supplier/apply' }
             ].map((item) => (
               <Link
                 key={item.label}
