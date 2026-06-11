@@ -250,7 +250,7 @@ export async function POST(req: Request) {
       // Out of stock or race condition lost
       console.error('[Checkout API] Inventory reservation failed:', inventoryError);
       await supabaseAdmin.from('orders').delete().eq('id', orderId); // Rollback everything
-      return NextResponse.json({ error: 'Beberapa barang di keranjang Anda baru saja habis stoknya. Mohon cek kembali keranjang Anda.' }, { status: 409 });
+      return NextResponse.json({ error: 'DB Error (Inventory): ' + inventoryError.message }, { status: 409 });
     }
 
     // 4. Create Midtrans Transaction
