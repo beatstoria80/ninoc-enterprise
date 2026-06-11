@@ -220,6 +220,7 @@ export default function MobileLayout({
 }: MobileLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const lang = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -516,13 +517,24 @@ export default function MobileLayout({
             >
               {/* Header */}
               <div className="px-5 py-6 flex items-center justify-between border-b border-ink/5">
-                <motion.span
-                  className="font-display font-medium text-sm italic tracking-wider text-rose uppercase"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  Menu
-                </motion.span>
+                <div className="flex items-center gap-4">
+                  <motion.span
+                    className="font-display font-medium text-sm italic tracking-wider text-rose uppercase"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                  >
+                    Menu
+                  </motion.span>
+                  <div className="flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em] text-ink/60">
+                    <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
+                      ID
+                    </a>
+                    <span className="text-ink/20">|</span>
+                    <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
+                      EN
+                    </a>
+                  </div>
+                </div>
                 <PressScale onClick={() => setIsMenuOpen(false)} className="p-1 text-ink/30">
                   <CloseIcon />
                 </PressScale>
