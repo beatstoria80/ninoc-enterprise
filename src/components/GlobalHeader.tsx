@@ -413,7 +413,7 @@ export default function GlobalHeader() {
 
   const isCollectionsPath = pathname?.match(/^\/(?:en\/)?collections\/.+/);
   const isDarkBg = Boolean(isCollectionsPath && !isScrolled);
-  const isSupplierApply = pathname === '/supplier/apply';
+  const isSupplierApply = pathname?.endsWith('/supplier/apply');
 
   return (
     <>
@@ -560,11 +560,11 @@ export default function GlobalHeader() {
             </PressScale>
           </div>
           <div className="pointer-events-auto flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em] text-ink/60">
-            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
+            <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
               ID
             </a>
             <span className="text-ink/20">|</span>
-            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
+            <a href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
               EN
             </a>
           </div>
