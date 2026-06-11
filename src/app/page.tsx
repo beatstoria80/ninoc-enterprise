@@ -336,7 +336,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
         <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
           <motion.p
-            className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30"
+            className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 md:text-ink/30"
             animate={{ opacity: isHovered ? 1 : 0.7 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -344,7 +344,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.p>
 
           <motion.h3
-            className="text-xs md:text-[9px] md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
+            className="text-xs md:text-base font-display font-medium italic uppercase tracking-tight line-clamp-1"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -371,7 +371,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
             <div className="flex items-center justify-between">
               <motion.p
-                className="text-xs md:text-[9px] md:text-sm font-display font-medium italic text-ink"
+                className="text-xs md:text-sm font-display font-medium italic text-ink"
                 animate={{ scale: isHovered ? 1.02 : 1 }}
                 transition={{ duration: DURATION.fast }}
               >
@@ -448,7 +448,7 @@ function CategoryQuickAccess() {
                   {cat.label}
                 </motion.span>
                 <motion.span
-                  className="text-[11px] md:text-[8px] md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
+                  className="text-[11px] md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
                   animate={{ color: 'rgba(20,20,20,0.5)' }}
                   transition={{ duration: DURATION.fast }}
                 >
@@ -659,7 +659,7 @@ export default function Home() {
               className="flex items-center gap-2 text-rose"
             >
               <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              <span className="text-[10px] md:text-[7px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
+              <span className="text-[10px] md:text-[10px] font-medium uppercase tracking-[0.3em]">Origin Specification</span>
             </motion.div>
 
             <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.75] uppercase">
@@ -685,7 +685,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.8, duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-              className="text-[11px] md:text-[8px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+              className="text-[11px] md:text-sm font-medium leading-tight md:leading-relaxed text-ink/80 md:text-ink/60 max-w-[120px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
             >
               {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
             </motion.p>
@@ -814,9 +814,9 @@ export default function Home() {
             <div className="text-rose">
               <Grid3X3 size={12} />
             </div>
-            <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
+            <span className="text-[11px] md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
           </div>
-          <PressButton href="/category" className="text-[11px] md:text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
+          <PressButton href="/category" className="text-[11px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
             View All
           </PressButton>
         </motion.div>
@@ -833,7 +833,7 @@ export default function Home() {
           transition={{ duration: DURATION.medium, ease: EASING.out }}
         >
           <h2 className="text-xs md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
-          <PressButton href="/shop" className="text-[11px] md:text-[8px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
+          <PressButton href="/shop" className="text-[11px] md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
             {dict.home.viewAll}
           </PressButton>
         </motion.div>
@@ -886,8 +886,8 @@ export default function Home() {
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                   </svg>
                 </motion.div>
-                <p className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Follow Us</p>
-                <p className="text-sm md:text-[11px] md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Follow Us</p>
+                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
                 <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Instagram</p>
               </a>
 
@@ -906,8 +906,8 @@ export default function Home() {
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
                 </motion.div>
-                <p className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Email Us</p>
-                <p className="text-sm md:text-[11px] md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">beatstoria.ai@gmail.com</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">Email Us</p>
+                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">beatstoria.ai@gmail.com</p>
                 <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Direct Message</p>
               </a>
 
@@ -927,8 +927,8 @@ export default function Home() {
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
                   </svg>
                 </motion.div>
-                <p className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">WhatsApp</p>
-                <p className="text-sm md:text-[11px] md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">+62 8211983774</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 mb-1">WhatsApp</p>
+                <p className="text-sm md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">+62 8211983774</p>
                 <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Chat Now</p>
               </a>
 
@@ -938,7 +938,7 @@ export default function Home() {
             <div className="mt-8 pt-6 border-t border-ink/5 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col">
                 <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-rose">NINOC ENTERPRISE</p>
-                <p className="text-xs md:text-[10px] md:text-xs font-display font-medium italic text-ink mt-0.5">Wear the art, own the day.</p>
+                <p className="text-xs md:text-xs font-display font-medium italic text-ink mt-0.5">Wear the art, own the day.</p>
               </div>
               <div className="flex items-center gap-3">
                 <Link href="/about" className="px-5 py-2.5 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
