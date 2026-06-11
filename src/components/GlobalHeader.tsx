@@ -920,11 +920,15 @@ export default function GlobalHeader() {
               </div>
 
               <div className="px-6 md:px-10 py-6 border-t border-ink/5 bg-white">
-                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Settings</p>
-                <div className="flex items-center gap-4">
-                  <button onClick={() => setIsMenuOpen(false)} className="text-[10px] uppercase font-medium tracking-widest text-ink hover:text-rose transition-colors">
-                    ID | EN
-                  </button>
+                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Language</p>
+                <div className="flex items-center gap-1.5 text-[10px] font-medium tracking-[0.2em] text-ink/60">
+                  <a onClick={() => setIsMenuOpen(false)} href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
+                    ID
+                  </a>
+                  <span className="text-ink/20">|</span>
+                  <a onClick={() => setIsMenuOpen(false)} href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
+                    EN
+                  </a>
                 </div>
               </div>
             </motion.div>
