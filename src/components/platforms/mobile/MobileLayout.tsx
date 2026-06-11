@@ -345,6 +345,10 @@ export default function MobileLayout({
                 <PressScale onClick={handleBack} className="p-2 -ml-2 text-ink/60">
                   <BackIcon />
                 </PressScale>
+              ) : pathname === '/' ? (
+                <Link prefetch={false} href="/" className="flex items-center">
+                  <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
+                </Link>
               ) : (
                 <Link prefetch={false} href="/shop" className="group flex items-center gap-2 text-ink">
                   <PressScale className="flex items-center gap-2">
