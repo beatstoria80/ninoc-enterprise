@@ -616,7 +616,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
               </div>
 
               {availableStock > 0 && (
-                <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-ink/10 z-[150] lg:static lg:bg-transparent lg:border-none lg:p-0 lg:z-10 lg:mt-auto">
+                <div className="mt-4 w-full">
                   <motion.button
                     variants={textVariants}
                     whileTap={{ scale: 0.97 }}
