@@ -225,9 +225,10 @@ export async function POST(req: Request) {
           product_name: item.name,
           quantity: item.quantity,
           price_at_purchase: item.price,
-          size: matchingItem?.size || null
-          // NOTE: supplier_id, supplier_hpp, ninoc_markup excluded until
-          // migration 20260618_order_ledger.sql is applied to production DB
+          size: matchingItem?.size || null,
+          supplier_id: item.supplier_id || null,
+          supplier_hpp: item.supplier_hpp || 0,
+          ninoc_markup: item.ninoc_markup || 0
         };
       });
 
