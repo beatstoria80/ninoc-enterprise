@@ -346,7 +346,7 @@ export default function AffiliateApplicationPage() {
 
               <div>
                 <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.address}</label>
-                <input required type="text" name="address" value={formData.address} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="Street, City, Province, Postal Code..." />
+                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-y min-h-[44px] max-h-[120px]" placeholder="Street, City, Province, Postal Code..." />
               </div>
 
               <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1 mb-1 sticky top-[-1px] bg-white z-10 pt-2 mt-2">{dict.step2}</h3>
