@@ -317,7 +317,7 @@ export default function MobileLayout({
     { href: '/category', label: 'Category' },
     { href: '/logbook', label: 'Logbook' },
     { href: '/track', label: 'Lacak Pesanan' },
-    { href: '/supplier', label: 'Supplier' },
+    { href: '/supplier/apply', label: 'Supplier' },
     { href: '/affiliate', label: 'Afiliasi' },
     { href: '/about', label: 'About' },
     { href: '/retur', label: 'Retur & Refund', highlight: true },
@@ -590,7 +590,7 @@ export default function MobileLayout({
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">Information</h4>
                     <Link prefetch={false} href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Terms & Privacy</Link>
-                    <Link prefetch={false} href="/supplier" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
+                    <Link prefetch={false} href="/supplier/apply" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
                     <Link prefetch={false} href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Affiliate</Link>
                   </div>
                   <div className="space-y-2">
