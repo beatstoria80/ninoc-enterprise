@@ -32,9 +32,12 @@ const DICT = {
     address: "Alamat Pengiriman (Untuk Sampel)",
     npwp: "NPWP Pribadi (Opsional)",
     step3: "3. Dokumen Verifikasi",
-    kyc_desc: "Diperlukan untuk validasi identitas dan audiens.",
+    kyc_desc: "Diperlukan untuk validasi identitas dan audiens. (Kurasi oleh tim NINOC)",
     ktp_label: "KTP Identitas Asli",
-    insight_label: "Screenshot Insight Audiens",
+    ig_insight_label: "Screenshot Insight Instagram",
+    tiktok_insight_label: "Screenshot Insight TikTok",
+    yt_insight_label: "Screenshot Insight YouTube",
+    fb_insight_label: "Screenshot Insight Facebook",
     uploading: "Mengunggah...",
     uploaded: "File tersimpan.",
     upload_hint: "PDF/JPG (Max 5MB)",
@@ -74,9 +77,12 @@ const DICT = {
     address: "Shipping Address (For Samples)",
     npwp: "Tax ID (Optional)",
     step3: "3. Verification Docs",
-    kyc_desc: "Required for identity and audience validation.",
+    kyc_desc: "Required for identity and audience validation. (Curated by NINOC team)",
     ktp_label: "Owner's ID (KTP)",
-    insight_label: "Audience Insights Screenshot",
+    ig_insight_label: "Instagram Insights Screenshot",
+    tiktok_insight_label: "TikTok Insights Screenshot",
+    yt_insight_label: "YouTube Insights Screenshot",
+    fb_insight_label: "Facebook Insights Screenshot",
     uploading: "Uploading...",
     uploaded: "File stored.",
     upload_hint: "PDF/JPG (Max 5MB)",
@@ -157,7 +163,10 @@ export default function AffiliateApplicationPage() {
 
   // Mock document states for visual completeness
   const [ktpUploaded, setKtpUploaded] = useState(false);
-  const [insightUploaded, setInsightUploaded] = useState(false);
+  const [igInsightUploaded, setIgInsightUploaded] = useState(false);
+  const [tiktokInsightUploaded, setTiktokInsightUploaded] = useState(false);
+  const [ytInsightUploaded, setYInsightUploaded] = useState(false);
+  const [fbInsightUploaded, setFbInsightUploaded] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -172,15 +181,29 @@ export default function AffiliateApplicationPage() {
     // Simulate upload delay
     setTimeout(() => {
       if (type === 'ktp') setKtpUploaded(true);
-      if (type === 'insight') setInsightUploaded(true);
+      if (type === 'ig_insight') setIgInsightUploaded(true);
+      if (type === 'tiktok_insight') setTiktokInsightUploaded(true);
+      if (type === 'yt_insight') setYInsightUploaded(true);
+      if (type === 'fb_insight') setFbInsightUploaded(true);
       setUploading(null);
     }, 1000);
   };
 
+  const isFormValid = () => {
+    if (!ktpUploaded) return false;
+    if (formData.instagramLink && !igInsightUploaded) return false;
+    if (formData.tiktokLink && !tiktokInsightUploaded) return false;
+    if (formData.youtubeLink && !ytInsightUploaded) return false;
+    if (formData.facebookLink && !fbInsightUploaded) return false;
+    // Require at least one platform link
+    if (!formData.instagramLink && !formData.tiktokLink && !formData.youtubeLink && !formData.facebookLink) return false;
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ktpUploaded || !insightUploaded) {
-      setError("Please upload both required documents.");
+    if (!isFormValid()) {
+      setError("Please provide URLs for your platforms and upload their respective insight screenshots. KTP is also required.");
       return;
     }
 
@@ -366,7 +389,23 @@ export default function AffiliateApplicationPage() {
                 
                 <div className="space-y-2">
                   <FileUploader label={dict.ktp_label} type="ktp" path={ktpUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
-                  <FileUploader label={dict.insight_label} type="insight" path={insightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  {formData.instagramLink && (
+                    <FileUploader label={dict.ig_insight_label} type="ig_insight" path={igInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  )}
+                  {formData.tiktokLink && (
+                    <FileUploader label={dict.tiktok_insight_label} type="tiktok_insight" path={tiktokInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  )}
+                  {formData.youtubeLink && (
+                    <FileUploader label={dict.yt_insight_label} type="yt_insight" path={ytInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  )}
+                  {formData.facebookLink && (
+                    <FileUploader label={dict.fb_insight_label} type="fb_insight" path={fbInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  )}
+                  {!formData.instagramLink && !formData.tiktokLink && !formData.youtubeLink && !formData.facebookLink && (
+                    <div className="p-4 border border-dashed border-ink/10 rounded bg-cr noise text-center text-[10px] text-ink/40 font-medium">
+                      Fill platform URLs to upload insights
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -388,7 +427,7 @@ export default function AffiliateApplicationPage() {
                 </label>
 
                 <button
-                  disabled={isSubmitting || !ktpUploaded || !insightUploaded}
+                  disabled={isSubmitting || !isFormValid()}
                   type="submit"
                   className="w-full shrink-0 bg-ink text-white p-4 text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
                 >
