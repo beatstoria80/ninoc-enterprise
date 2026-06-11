@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -338,6 +338,7 @@ export default function GlobalHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -425,18 +426,27 @@ export default function GlobalHeader() {
           isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
         )}
       >
-        {/* Logo */}
-        <motion.div className="relative flex flex-col">
-          <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
-            <motion.div
-              className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
-            >
-              ninoc
-            </motion.div>
-          </Link>
+        <div className="flex items-center gap-4 md:gap-6">
+          {/* Drawer Menu Toggle (3 Dots) */}
+          <PressScale 
+            onClick={() => setIsMenuOpen(true)} 
+            className={cn("transition-colors cursor-pointer", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-rose")}
+          >
+            <MoreVertical size={24} strokeWidth={1.5} />
+          </PressScale>
+
+          {/* Logo */}
+          <motion.div className="relative flex flex-col">
+            <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
+              <motion.div
+                className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
+                transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+              >
+                ninoc
+              </motion.div>
+            </Link>
 
           {/* Back navigation on inner pages */}
           <AnimatePresence>
@@ -457,8 +467,9 @@ export default function GlobalHeader() {
             )}
           </AnimatePresence>
         </motion.div>
+        </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Links - Hidden on mobile, shown on lg */}
         <motion.div
           className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2"
         >
@@ -819,6 +830,80 @@ export default function GlobalHeader() {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* MOBILE / OFFCANVAS MENU */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: DURATION.fast }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 bg-ink/20 backdrop-blur-[2px] z-[400]"
+            />
+
+            {/* Menu Drawer */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 bottom-0 w-[85vw] max-w-[400px] bg-cr noise z-[410] border-r border-ink/5 shadow-2xl flex flex-col"
+            >
+              <div className="px-6 md:px-10 py-6 border-b border-ink/5 flex items-center justify-between">
+                <div className="font-display font-medium text-3xl italic tracking-tighter text-rose">
+                  ninoc
+                </div>
+                <PressScale onClick={() => setIsMenuOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
+                  <X size={14} />
+                </PressScale>
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-6 md:px-10 py-8 flex flex-col gap-6">
+                {[
+                  { label: dict.header.shop, href: '/shop' },
+                  { label: dict.header.collections, href: '/collections' },
+                  { label: dict.header.category, href: '/category' },
+                  { label: dict.header.affiliate, href: '/affiliate' },
+                  { label: dict.header.logbook, href: '/logbook' },
+                  { label: dict.header.about, href: '/about' },
+                  { label: 'Supplier', href: '/supplier/apply' }
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-lg md:text-xl font-display font-medium uppercase tracking-widest text-ink/70 hover:text-rose transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="px-6 md:px-10 py-6 border-t border-ink/5 bg-white">
+                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Settings</p>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setIsMenuOpen(false)} className="text-[10px] uppercase font-medium tracking-widest text-ink hover:text-rose transition-colors">
+                    ID | EN
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </>
         )}
