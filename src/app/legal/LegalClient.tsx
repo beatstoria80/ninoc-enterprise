@@ -77,7 +77,7 @@ export default function LegalClient() {
   const t = content[lang];
 
   return (
-    <main className="h-screen bg-cr noise overflow-hidden flex flex-col">
+    <main className="min-h-screen bg-cr noise flex flex-col">
       <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-4 flex items-center justify-between glass border-b border-ink/5">
         <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
           <ArrowLeft size={12} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />

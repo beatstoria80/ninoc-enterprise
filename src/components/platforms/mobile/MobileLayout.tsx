@@ -226,13 +226,34 @@ export default function MobileLayout({
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [supportUnreadCount, setSupportUnreadCount] = useState(0);
-  const [isNavVisible, setIsNavVisible] = useState(true);
+  const [isOpeningSequence, setIsOpeningSequence] = useState(pathname === '/');
+  const [isNavVisible, setIsNavVisible] = useState(!isOpeningSequence);
   const brandColor = useBrandColor();
+
+  useEffect(() => {
+    const handleHide = () => {
+      setIsOpeningSequence(true);
+      setIsNavVisible(false);
+    };
+    const handleShow = () => {
+      setIsOpeningSequence(false);
+      setIsNavVisible(true);
+    };
+    
+    window.addEventListener('hide-mobile-nav', handleHide);
+    window.addEventListener('show-mobile-nav', handleShow);
+    
+    return () => {
+      window.removeEventListener('hide-mobile-nav', handleHide);
+      window.removeEventListener('show-mobile-nav', handleShow);
+    };
+  }, []);
 
   const { scrollY } = useScroll();
 
   // Handle "Hide and Rise" logic
   useMotionValueEvent(scrollY, "change", (latest) => {
+    if (isOpeningSequence) return;
     const previous = scrollY.getPrevious() || 0;
     if (latest > previous && latest > 150) {
       setIsNavVisible(false);
@@ -543,37 +564,34 @@ export default function MobileLayout({
               </motion.div>
 
               {/* Footer */}
-              <div className="px-5 py-6 bg-ink/[0.02] space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <h4 className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival</h4>
-                    <Link prefetch={false} href="/legal" className="block text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
+              <div className="px-5 py-4 bg-ink/[0.02] space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <h4 className="text-[9px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Information</h4>
+                    <Link prefetch={false} href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-[10px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Terms & Privacy</Link>
+                    <Link prefetch={false} href="/supplier" onClick={() => setIsMenuOpen(false)} className="block text-[10px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
+                    <Link prefetch={false} href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-[10px] md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Affiliate</Link>
                   </div>
-                  <div className="space-y-3">
-                    <h4 className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
-                    <button onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new CustomEvent('open-support-chat')); }} className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-rose/60">Help</button>
+                  <div className="space-y-2">
+                    <h4 className="text-[9px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
+                    <button onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new CustomEvent('open-support-chat')); }} className="block text-left text-[10px] md:text-[9px] font-medium uppercase tracking-widest text-rose/60">Help Center</button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-ink/[0.05]">
-                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">
-                    Bandung, West Java, ID
+                <div className="pt-3 border-t border-ink/[0.05] flex items-center justify-between">
+                  <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30">
+                    Bandung, ID
                   </p>
-                </div>
-
-                <div className="flex items-center gap-4 opacity-30">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                    <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Secure</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                    <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Verified</span>
+                  <div className="flex items-center gap-2 opacity-30">
+                    <div className="flex items-center gap-1">
+                      <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                      <span className="text-[8px] md:text-[6px] font-medium uppercase tracking-widest">Secure</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-center">
-                  <p className="text-[10px] md:text-[7px] uppercase tracking-[0.4em] text-ink/15">NINOC © 2026</p>
+                <div className="text-center pb-2">
+                  <p className="text-[8px] md:text-[6px] uppercase tracking-[0.4em] text-ink/15">NINOC © 2026</p>
                 </div>
               </div>
             </motion.div>

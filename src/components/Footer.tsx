@@ -45,7 +45,7 @@ export default function GlobalFooter() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm"
+                className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm inline-block py-2 -my-2"
               >
                 {item.label}
               </Link>
@@ -56,16 +56,16 @@ export default function GlobalFooter() {
         {/* Legal */}
         <div className="flex flex-col gap-1.5">
           <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.legal}</h4>
-          <Link href="/legal" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/legal" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.footer.terms}
           </Link>
-          <Link href="/help" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/help" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.footer.support}
           </Link>
-          <Link href="/track" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/track" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.header.track}
           </Link>
-          <Link href="/retur" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/retur" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.footer.returns}
           </Link>
         </div>

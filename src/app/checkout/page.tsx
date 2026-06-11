@@ -915,7 +915,7 @@ export default function CheckoutPage() {
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
       {paymentToken && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
-          <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 h-[90vh] md:h-auto md:min-h-[600px]">
+          <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto md:h-auto md:min-h-[600px]">
             <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5 bg-ink/[0.02]">
               <div className="flex items-center gap-3">
                 <ShieldCheck size={18} className="text-emerald-500" />

@@ -270,7 +270,7 @@ export default function HelpClient() {
   const activeMeta = HELP_SECTIONS.find((s) => s.key === activeSection);
 
   return (
-    <div className="h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
       {/* Exit Navigation */}
       <div className="shrink-0 bg-white border-b border-ink/5 z-50">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex items-center justify-between h-11">

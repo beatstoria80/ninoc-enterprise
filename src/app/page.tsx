@@ -529,15 +529,20 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  // Prevent scrolling during hero scene
+  // Prevent scrolling during hero scene and hide mobile nav
   useEffect(() => {
     if (scene === 'hero') {
       document.body.style.overflow = 'hidden';
       window.scrollTo(0, 0);
+      window.dispatchEvent(new CustomEvent('hide-mobile-nav'));
     } else {
       document.body.style.overflow = 'auto';
+      window.dispatchEvent(new CustomEvent('show-mobile-nav'));
     }
-    return () => { document.body.style.overflow = 'auto'; };
+    return () => { 
+      document.body.style.overflow = 'auto'; 
+      window.dispatchEvent(new CustomEvent('show-mobile-nav'));
+    };
   }, [scene]);
 
   const handleShopClick = () => {

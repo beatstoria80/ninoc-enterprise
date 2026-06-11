@@ -1408,8 +1408,9 @@ export default function SupportChat() {
     placeholder: config.placeholder,
   }));
 
-  // Hide on admin page
-  if (isAdminPage) return null;
+  // Hide on admin/checkout pages to prevent overlay interference
+  const isCheckoutPage = pathname?.startsWith('/checkout');
+  if (isAdminPage || isCheckoutPage) return null;
 
   return (
     <>
@@ -1460,7 +1461,7 @@ export default function SupportChat() {
       </AnimatePresence>
 
       {/* ─── Floating Button ─── */}
-      <div className="fixed bottom-5 right-5 z-[500] hidden md:block">
+      <div className="fixed right-5 z-[500] bottom-24 md:bottom-5">
         <AnimatePresence>
           {notifCount > 0 && (
             <motion.div

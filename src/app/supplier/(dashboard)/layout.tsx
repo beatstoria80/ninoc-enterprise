@@ -88,7 +88,7 @@ export default async function SupplierLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-hidden">
         <header className="bg-white border-b border-gray-200 h-16 flex items-center px-8 shrink-0">
           <h2 className="text-sm font-medium text-gray-800">Partner Hub</h2>
         </header>
