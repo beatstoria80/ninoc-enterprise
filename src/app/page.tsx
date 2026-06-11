@@ -729,21 +729,21 @@ export default function Home() {
             </motion.div>
 
             {/* Mobile Metadata - Left aligned, flush with Browse Category */}
-            <div className="grid grid-cols-3 gap-0 mt-6 md:hidden">
+            <div className="flex flex-wrap items-center gap-6 mt-6 md:hidden">
               {[
-                { label: 'YEAR', value: '2024' },
-                { label: 'LOC', value: 'BDG, ID' },
-                { label: 'PHIL', value: 'Simplicity' }
+                { label: 'year', value: '2024' },
+                { label: 'loc', value: 'BDG, ID' },
+                { label: 'phil', value: 'Simplicity' }
               ].map((item, i) => (
                 <motion.div
                   key={item.label}
-                  className="flex flex-col items-start text-left border-x border-ink/5 first:border-l-0 last:border-r-0 px-3 first:pl-0 last:pr-0"
+                  className="flex flex-col items-start text-left"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + i * 0.1, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 leading-none mt-2 mb-1.5">{item.label}</p>
-                  <p className="text-xs md:text-[7px] font-medium text-ink uppercase italic leading-none tracking-tight pb-2 whitespace-nowrap">{item.value}</p>
+                  <p className="text-[9px] font-medium tracking-[0.2em] text-ink/40 leading-none mb-1.5">{item.label}</p>
+                  <p className="text-xs font-medium text-ink uppercase italic leading-none tracking-tight pb-2 whitespace-nowrap">{item.value}</p>
                 </motion.div>
               ))}
             </div>
