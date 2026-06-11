@@ -631,17 +631,20 @@ export default function CheckoutPage() {
                   <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
 
-                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
-                  <label htmlFor="house_number" className={labelClass}>No</label>
-                  <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
-                </div>
-                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3 border-l border-ink/5")}>
-                  <label htmlFor="rt" className={labelClass}>RT</label>
-                  <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
-                </div>
-                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3 border-l border-ink/5")}>
-                  <label htmlFor="rw" className={labelClass}>RW</label>
-                  <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
+                {/* Combined No, RT, RW into 1 row */}
+                <div className={cn("grid bg-white border-t border-ink/5", isMobile ? "col-span-1 grid-cols-3" : "col-span-6 grid-cols-6")}>
+                  <div className={cn(isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                    <label htmlFor="house_number" className={labelClass}>No</label>
+                    <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
+                  </div>
+                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                    <label htmlFor="rt" className={labelClass}>RT</label>
+                    <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
+                  </div>
+                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                    <label htmlFor="rw" className={labelClass}>RW</label>
+                    <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
+                  </div>
                 </div>
 
                 <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3")}>
@@ -909,6 +912,7 @@ export default function CheckoutPage() {
           isLoading={isProcessing}
           disabled={!shippingMethod || !snapLoaded}
           formId="checkout-form"
+          totalPrice={finalTotal}
         />
       )}
 

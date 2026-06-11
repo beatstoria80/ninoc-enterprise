@@ -23,6 +23,8 @@ interface BottomCTAProps {
   onClick?: () => void;
   /** Form id for form submit */
   formId?: string;
+  /** Final total price to show floating summary */
+  totalPrice?: number;
 }
 
 /**
@@ -47,7 +49,8 @@ export default function BottomCTA({
   disabled = false,
   loadingLabel = "Processing...",
   onClick,
-  formId
+  formId,
+  totalPrice
 }: BottomCTAProps) {
   const dict = useDictionary();
 
@@ -63,17 +66,32 @@ export default function BottomCTA({
       <div className="bg-white/95 backdrop-blur-xl border-t border-ink/[0.06] shadow-[0_-4px_30px_rgba(0,0,0,0.08)]">
         {/* Content */}
         <div className="px-6 py-4">
-          {/* Trust indicators */}
-          <div className="flex justify-center gap-6 mb-3">
-            <div className="flex items-center gap-1.5">
-              <Shield size={10} className="text-rose/50" />
-              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
+          
+          {totalPrice !== undefined ? (
+            <div className="flex justify-between items-end mb-3 px-1">
+              <div className="flex flex-col">
+                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-0.5">Total</span>
+                <span className="text-xl font-display font-medium italic text-rose leading-none">
+                  IDR {totalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 pb-0.5">
+                <Shield size={10} className="text-rose/50" />
+                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">Secured</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Lock size={10} className="text-rose/50" />
-              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
+          ) : (
+            <div className="flex justify-center gap-6 mb-3">
+              <div className="flex items-center gap-1.5">
+                <Shield size={10} className="text-rose/50" />
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Lock size={10} className="text-rose/50" />
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Main CTA Button */}
           {formId ? (
