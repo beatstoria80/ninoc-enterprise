@@ -255,6 +255,14 @@ export default function MobileLayout({
   // Handle "Hide and Rise" logic
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (isOpeningSequence) return;
+    
+    // Disable hide-on-scroll for form pages so the global header remains visible
+    const isFormPage = pathname?.includes('/supplier/apply') || pathname?.includes('/affiliate');
+    if (isFormPage) {
+      setIsNavVisible(true);
+      return;
+    }
+
     const previous = scrollY.getPrevious() || 0;
     if (latest > previous && latest > 150) {
       setIsNavVisible(false);
