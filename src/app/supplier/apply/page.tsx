@@ -216,7 +216,7 @@ export default function SupplierApplicationPage() {
             {dict.desc}
           </p>
           
-          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar">
+          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-hidden">
             <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
             
             <div className="flex items-start gap-3">
