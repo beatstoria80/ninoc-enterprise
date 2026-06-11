@@ -48,7 +48,7 @@ function FilterDropdown({
       <button
         onClick={onToggle}
         className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs md:text-[10px] font-medium uppercase tracking-wider transition-colors",
           isFiltered
             ? "bg-rose/10 border border-rose/30 text-rose"
             : "bg-ink/5 text-ink/60 hover:bg-ink/10"
@@ -72,7 +72,7 @@ function FilterDropdown({
                 key={opt.id}
                 onClick={() => { onChange(opt.id); onClose(); }}
                 className={cn(
-                  "w-full text-left px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors",
+                  "w-full text-left px-3 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider transition-colors",
                   value === opt.id
                     ? "bg-rose/5 text-rose"
                     : "text-ink/60 hover:bg-ink/5 hover:text-ink"
@@ -132,7 +132,7 @@ function DateRangeDropdown({
       <button
         onClick={onToggle}
         className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs md:text-[10px] font-medium uppercase tracking-wider transition-colors",
           isFiltered
             ? "bg-rose/10 border border-rose/30 text-rose"
             : "bg-ink/5 text-ink/60 hover:bg-ink/10"
@@ -152,33 +152,33 @@ function DateRangeDropdown({
             className="absolute top-full left-0 mt-1 z-50 w-[260px] bg-white border border-ink/10 rounded-sm shadow-lg p-3 space-y-3"
           >
             <div>
-              <label className="text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">From</label>
+              <label className="text-xs md:text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">From</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={e => onChangeFrom(e.target.value)}
-                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
+                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-xs md:text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
               />
             </div>
             <div>
-              <label className="text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">To</label>
+              <label className="text-xs md:text-[9px] uppercase tracking-widest text-ink/40 mb-1 block">To</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={e => onChangeTo(e.target.value)}
-                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
+                className="w-full px-2 py-1.5 border border-ink/10 rounded-sm text-xs md:text-[10px] font-medium text-ink focus:outline-none focus:border-rose/50"
               />
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-ink/5">
               <button
                 onClick={() => { onClear(); onClose(); }}
-                className="text-[9px] uppercase tracking-wider font-medium text-ink/40 hover:text-ink transition-colors"
+                className="text-xs md:text-[9px] uppercase tracking-wider font-medium text-ink/40 hover:text-ink transition-colors"
               >
                 Clear
               </button>
               <button
                 onClick={onClose}
-                className="text-[9px] uppercase tracking-wider font-medium text-rose hover:text-rose/80 transition-colors"
+                className="text-xs md:text-[9px] uppercase tracking-wider font-medium text-rose hover:text-rose/80 transition-colors"
               >
                 Apply
               </button>
@@ -849,19 +849,19 @@ export function OrdersTab({
         <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-4">
           <div>
             <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
-            <p className="text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History &amp; Management</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History &amp; Management</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrintResi}
-              className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
             >
               <Printer size={12} />
               Print Bulk Labels
             </button>
             <button
               onClick={handleExportData}
-              className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
             >
               Export Data
             </button>
@@ -882,13 +882,13 @@ export function OrdersTab({
             key={tab.id}
             onClick={() => setStatusFilter(tab.id)}
             className={cn(
-              "relative px-4 py-3 text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
+              "relative px-4 py-3 text-xs md:text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
               statusFilter === tab.id ? "text-rose" : "text-ink/40 hover:text-ink/70"
             )}
           >
             {tab.label}
             <span className={cn(
-              "ml-2 px-1.5 py-0.5 text-[8px] rounded",
+              "ml-2 px-1.5 py-0.5 text-[11px] md:text-[8px] rounded",
               statusFilter === tab.id ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/40"
             )}>
               {tab.count}
@@ -907,7 +907,7 @@ export function OrdersTab({
           <button
             onClick={activeFilterCount > 0 ? clearAllFilters : undefined}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 border rounded-sm text-[10px] font-medium uppercase tracking-wider transition-colors",
+              "flex items-center gap-2 px-3 py-1.5 border rounded-sm text-xs md:text-[10px] font-medium uppercase tracking-wider transition-colors",
               activeFilterCount > 0
                 ? "border-rose/30 bg-rose/10 text-rose hover:bg-rose/20"
                 : "border-ink/10 text-ink/60"
@@ -991,7 +991,7 @@ export function OrdersTab({
             placeholder="Search orders..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 bg-white border border-ink/10 rounded-sm text-[10px] font-medium focus:outline-none focus:border-rose/50 transition-colors placeholder:text-ink/20"
+            className="w-full pl-9 pr-4 py-1.5 bg-white border border-ink/10 rounded-sm text-xs md:text-[10px] font-medium focus:outline-none focus:border-rose/50 transition-colors placeholder:text-ink/20"
           />
         </div>
       </div>
@@ -1001,22 +1001,22 @@ export function OrdersTab({
         {filteredOrders.length === 0 ? (
           <div className="flex-1 py-12 flex flex-col items-center justify-center">
             <Box size={24} className="text-ink/20 mb-2" />
-            <p className="text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
           </div>
         ) : (
           <div className="flex-1 overflow-auto minimal-scroll relative bg-white">
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-white">
                 <tr className="bg-ink/[0.03] border-b border-ink/10">
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
-                  <th className="px-3 py-2 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
+                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
                 </tr>
               </thead>
               <tbody>
@@ -1032,28 +1032,28 @@ export function OrdersTab({
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
                         <td className="px-3 py-2">
-                          <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
+                          <span className="text-xs md:text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
                         </td>
                         <td className="px-3 py-2">
-                          <span className="text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                          <span className="text-xs md:text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </td>
                         <td className="px-3 py-2">
                           <div className="max-w-[120px]">
-                            <p className="text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
-                            <p className="text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
+                            <p className="text-xs md:text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
+                            <p className="text-xs md:text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
                           </div>
                         </td>
                         <td className="px-3 py-2">
                           <div className="max-w-[160px]">
-                            <p className="text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
+                            <p className="text-xs md:text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
-                              <span className="text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
+                              <span className="text-xs md:text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
                             )}
                           </div>
                         </td>
                         <td className="px-3 py-2">
                           <span className={cn(
-                            "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                            "inline-block text-[11px] md:text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
                             order.status === 'pending' ? "bg-amber-50 text-amber-600" :
                             order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
                             order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
@@ -1065,7 +1065,7 @@ export function OrdersTab({
                         </td>
                         <td className="px-3 py-2">
                           <span className={cn(
-                            "text-[9px] uppercase tracking-wider font-medium",
+                            "text-xs md:text-[9px] uppercase tracking-wider font-medium",
                             order.payment_status === 'success' ? "text-emerald-600" :
                             order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
                           )}>
@@ -1073,10 +1073,10 @@ export function OrdersTab({
                           </span>
                         </td>
                         <td className="px-3 py-2">
-                          <span className="text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
+                          <span className="text-xs md:text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <span className="text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
+                          <span className="text-xs md:text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
                         </td>
                         <td className="px-3 py-2">
                           <div className="flex items-center gap-1">
@@ -1104,7 +1104,7 @@ export function OrdersTab({
                                     <div className="col-span-5">
                                       <div className="flex items-center gap-1.5 mb-3">
                                         <Package size={11} className="text-ink/40" />
-                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Ordered Items</span>
+                                        <span className="text-xs md:text-[9px] uppercase tracking-widest font-medium text-ink/40">Ordered Items</span>
                                       </div>
                                       <div className="space-y-2">
                                         {order.order_items?.map((item, idx) => {
@@ -1119,15 +1119,15 @@ export function OrdersTab({
                                                 )}
                                               </div>
                                               <div className="flex-1 min-w-0">
-                                                <p className="text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
+                                                <p className="text-sm md:text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                  {item.size && <span className="text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
-                                                  <span className="text-[9px] font-medium text-ink/50">×{item.quantity}</span>
+                                                  {item.size && <span className="text-xs md:text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
+                                                  <span className="text-xs md:text-[9px] font-medium text-ink/50">×{item.quantity}</span>
                                                 </div>
                                               </div>
                                               <div className="text-right shrink-0">
-                                                <p className="text-[10px] font-medium text-ink">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
-                                                <p className="text-[9px] text-ink/40">per item</p>
+                                                <p className="text-xs md:text-[10px] font-medium text-ink">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                                <p className="text-xs md:text-[9px] text-ink/40">per item</p>
                                               </div>
                                             </div>
                                           );
@@ -1135,7 +1135,7 @@ export function OrdersTab({
                                       </div>
                                       {/* Total */}
                                       <div className="flex justify-between items-center mt-3 pt-2 border-t border-ink/10">
-                                        <span className="text-[10px] font-medium text-ink/50 uppercase tracking-wider">Total ({order.order_items?.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                                        <span className="text-xs md:text-[10px] font-medium text-ink/50 uppercase tracking-wider">Total ({order.order_items?.reduce((s, i) => s + i.quantity, 0)} items)</span>
                                         <span className="text-[13px] font-medium text-ink">IDR {order.total_price.toLocaleString('id-ID')}</span>
                                       </div>
                                     </div>
@@ -1144,16 +1144,16 @@ export function OrdersTab({
                                     <div className="col-span-4">
                                       <div className="flex items-center gap-1.5 mb-3">
                                         <User size={11} className="text-ink/40" />
-                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Customer &amp; Shipping</span>
+                                        <span className="text-xs md:text-[9px] uppercase tracking-widest font-medium text-ink/40">Customer &amp; Shipping</span>
                                       </div>
                                       <div className="bg-white border border-ink/5 p-3 rounded-sm space-y-3">
                                         <div className="flex items-start gap-2">
                                           <User size={10} className="text-ink/30 mt-0.5 shrink-0" />
                                           <div>
-                                            <p className="text-[11px] font-medium text-ink">{order.shipping_address?.name || '—'}</p>
+                                            <p className="text-sm md:text-[11px] font-medium text-ink">{order.shipping_address?.name || '—'}</p>
                                             <div className="flex items-center gap-1 mt-0.5">
                                               <Phone size={8} className="text-ink/30" />
-                                              <span className="text-[9px] text-ink/50 font-mono">
+                                              <span className="text-xs md:text-[9px] text-ink/50 font-mono">
                                                 {order.shipping_address?.phone
                                                   ? (order.shipping_address.phone.length >= 8
                                                     ? order.shipping_address.phone.slice(0, 4) + '-****-' + order.shipping_address.phone.slice(-4)
@@ -1167,26 +1167,26 @@ export function OrdersTab({
                                         <div className="flex items-start gap-2">
                                           <MapPin size={10} className="text-ink/30 mt-0.5 shrink-0" />
                                           <div>
-                                            <p className="text-[10px] text-ink/70 leading-relaxed">{order.shipping_address?.address || '—'}</p>
-                                            <p className="text-[10px] font-medium text-ink mt-0.5">
+                                            <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{order.shipping_address?.address || '—'}</p>
+                                            <p className="text-xs md:text-[10px] font-medium text-ink mt-0.5">
                                               {order.shipping_address?.city}, {order.shipping_address?.province || ''}
                                             </p>
-                                            <p className="text-[10px] font-medium text-ink">{order.shipping_address?.postal_code}</p>
+                                            <p className="text-xs md:text-[10px] font-medium text-ink">{order.shipping_address?.postal_code}</p>
                                           </div>
                                         </div>
                                         <div className="h-px bg-ink/5" />
                                         <div className="flex items-start gap-2">
                                           <Truck size={10} className="text-ink/30 mt-0.5 shrink-0" />
                                           <div>
-                                            <p className="text-[10px] font-medium text-ink uppercase">{order.courier || 'Not Assigned'}</p>
+                                            <p className="text-xs md:text-[10px] font-medium text-ink uppercase">{order.courier || 'Not Assigned'}</p>
                                             {order.tracking_id && (
-                                              <p className="text-[9px] text-ink/50 font-mono mt-0.5">Resi: {order.tracking_id}</p>
+                                              <p className="text-xs md:text-[9px] text-ink/50 font-mono mt-0.5">Resi: {order.tracking_id}</p>
                                             )}
                                             {order.courier_driver_name && (
-                                              <p className="text-[9px] text-emerald-600 font-medium mt-1">Driver: {order.courier_driver_name}</p>
+                                              <p className="text-xs md:text-[9px] text-emerald-600 font-medium mt-1">Driver: {order.courier_driver_name}</p>
                                             )}
                                             {order.courier_link && (
-                                              <a href={order.courier_link} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-[8px] text-rose uppercase tracking-widest font-medium hover:underline">
+                                              <a href={order.courier_link} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-[11px] md:text-[8px] text-rose uppercase tracking-widest font-medium hover:underline">
                                                 Track on Courier ↗
                                               </a>
                                             )}
@@ -1199,17 +1199,17 @@ export function OrdersTab({
                                     <div className="col-span-3">
                                       <div className="flex items-center gap-1.5 mb-3">
                                         <Hash size={11} className="text-ink/40" />
-                                        <span className="text-[9px] uppercase tracking-widest font-medium text-ink/40">Order Meta</span>
+                                        <span className="text-xs md:text-[9px] uppercase tracking-widest font-medium text-ink/40">Order Meta</span>
                                       </div>
                                       <div className="bg-white border border-ink/5 p-3 rounded-sm space-y-3">
                                         <div>
-                                          <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Order ID</p>
-                                          <p className="text-[10px] font-medium text-ink font-mono">#{order.id.slice(0, 16).toUpperCase()}</p>
+                                          <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Order ID</p>
+                                          <p className="text-xs md:text-[10px] font-medium text-ink font-mono">#{order.id.slice(0, 16).toUpperCase()}</p>
                                         </div>
                                         <div className="h-px bg-ink/5" />
                                         <div>
-                                          <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Date &amp; Time</p>
-                                          <p className="text-[10px] font-medium text-ink">
+                                          <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Date &amp; Time</p>
+                                          <p className="text-xs md:text-[10px] font-medium text-ink">
                                             {new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                           </p>
                                         </div>
@@ -1217,9 +1217,9 @@ export function OrdersTab({
                                         <div className="flex items-center gap-2">
                                           <CreditCard size={10} className="text-ink/30" />
                                           <div>
-                                            <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Payment</p>
+                                            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Payment</p>
                                             <span className={cn(
-                                              "text-[9px] uppercase tracking-wider font-medium",
+                                              "text-xs md:text-[9px] uppercase tracking-wider font-medium",
                                               order.payment_status === 'success' ? "text-emerald-600" :
                                               order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
                                             )}>{order.payment_status}</span>
@@ -1229,9 +1229,9 @@ export function OrdersTab({
                                         <div className="flex items-center gap-2">
                                           <Clock size={10} className="text-ink/30" />
                                           <div>
-                                            <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Status</p>
+                                            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Status</p>
                                             <span className={cn(
-                                              "inline-block text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium",
+                                              "inline-block text-xs md:text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium",
                                               order.status === 'pending' ? "bg-amber-50 text-amber-600" :
                                               order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
                                               order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
@@ -1244,8 +1244,8 @@ export function OrdersTab({
                                           <>
                                             <div className="h-px bg-ink/5" />
                                             <div>
-                                              <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Transaction ID</p>
-                                              <p className="text-[9px] font-medium text-ink/50 font-mono break-all">{order.midtrans_id}</p>
+                                              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Transaction ID</p>
+                                              <p className="text-xs md:text-[9px] font-medium text-ink/50 font-mono break-all">{order.midtrans_id}</p>
                                             </div>
                                           </>
                                         )}
@@ -1254,7 +1254,7 @@ export function OrdersTab({
                                       <div className="mt-4">
                                         <button 
                                           onClick={(e) => { e.stopPropagation(); handlePrintSingleLabel(order); }}
-                                          className="w-full flex justify-center items-center gap-2 bg-ink text-white py-2.5 rounded-sm hover:bg-ink/90 transition-colors text-[10px] font-medium uppercase tracking-widest"
+                                          className="w-full flex justify-center items-center gap-2 bg-ink text-white py-2.5 rounded-sm hover:bg-ink/90 transition-colors text-xs md:text-[10px] font-medium uppercase tracking-widest"
                                         >
                                           <Printer size={12} />
                                           Print Shipping Label
@@ -1281,7 +1281,7 @@ export function OrdersTab({
       {/* Pagination */}
       {filteredOrders.length > 0 && (
         <div className="shrink-0 flex items-center justify-between py-4 border-t border-ink/5">
-          <div className="flex items-center gap-2 text-[10px] uppercase font-medium tracking-wider text-ink/40">
+          <div className="flex items-center gap-2 text-xs md:text-[10px] uppercase font-medium tracking-wider text-ink/40">
             Show
             <select className="bg-transparent border border-ink/10 rounded-sm px-2 py-1 outline-none text-ink">
               <option>10</option>
@@ -1294,10 +1294,10 @@ export function OrdersTab({
             <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
               <ChevronLeft size={12} />
             </button>
-            <button className="w-6 h-6 flex items-center justify-center border border-rose bg-rose text-white rounded-sm text-[10px] font-medium transition-colors">
+            <button className="w-6 h-6 flex items-center justify-center border border-rose bg-rose text-white rounded-sm text-xs md:text-[10px] font-medium transition-colors">
               1
             </button>
-            <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors text-[10px] font-medium">
+            <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors text-xs md:text-[10px] font-medium">
               2
             </button>
             <button className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/40 hover:text-ink hover:border-ink/20 transition-colors">
@@ -1329,7 +1329,7 @@ export function OrdersTab({
             <div className="px-6 py-4 border-b border-ink/10 flex items-center justify-between bg-ink/[0.02]">
               <div>
                 <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Select Orders to Print</h3>
-                <p className="text-[10px] text-ink/50 uppercase tracking-widest mt-1">Thermal Label (100x150mm)</p>
+                <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest mt-1">Thermal Label (100x150mm)</p>
               </div>
               <button 
                 onClick={() => setIsPrintModalOpen(false)}
@@ -1367,7 +1367,7 @@ export function OrdersTab({
                           )}>
                             {selectedPrintOrders.length === validCount && validCount > 0 && <Box size={10} className="text-white" />}
                           </div>
-                          <span className="text-[10px] uppercase font-medium tracking-wider text-ink">Select All ({validCount})</span>
+                          <span className="text-xs md:text-[10px] uppercase font-medium tracking-wider text-ink">Select All ({validCount})</span>
                         </label>
                       </div>
 
@@ -1393,23 +1393,23 @@ export function OrdersTab({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="text-xs font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
-                                <span className="text-[9px] text-ink/70 font-medium font-mono bg-ink/5 px-1.5 py-0.5 rounded-sm border border-ink/10">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                <span className="text-xs md:text-[9px] text-ink/70 font-medium font-mono bg-ink/5 px-1.5 py-0.5 rounded-sm border border-ink/10">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                               </div>
-                              <p className="text-[11px] font-medium text-ink mt-1 truncate">
+                              <p className="text-sm md:text-[11px] font-medium text-ink mt-1 truncate">
                                 {order.shipping_address?.name || 'Guest'} <span className="text-ink/30 mx-1">•</span> <span className="text-ink/70">{order.shipping_address?.city || 'Unknown City'}</span>
                               </p>
-                              <p className="text-[10px] text-ink/60 mt-0.5 truncate">
+                              <p className="text-xs md:text-[10px] text-ink/60 mt-0.5 truncate">
                                 <span className="font-medium text-ink/80">{order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items</span> — {order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${order.order_items.length - 1} more` : ''}
                               </p>
                             </div>
                             <div className="flex items-center gap-4">
                               <span className={cn(
-                                "inline-block text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                                "inline-block text-[11px] md:text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
                                 order.status === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
                               )}>
                                 {order.status}
                               </span>
-                              <span className="text-[10px] font-medium text-ink/50 uppercase w-16 text-right">{order.courier || 'STD'}</span>
+                              <span className="text-xs md:text-[10px] font-medium text-ink/50 uppercase w-16 text-right">{order.courier || 'STD'}</span>
                             </div>
                           </div>
                         </label>
@@ -1417,7 +1417,7 @@ export function OrdersTab({
                       
                       {validCount === 0 && (
                         <div className="py-8 text-center">
-                          <p className="text-[10px] font-medium uppercase tracking-wider text-ink/40">No valid orders found in current filter</p>
+                          <p className="text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/40">No valid orders found in current filter</p>
                         </div>
                       )}
                     </>
@@ -1428,14 +1428,14 @@ export function OrdersTab({
 
             {/* Footer */}
             <div className="px-6 py-4 border-t border-ink/10 bg-ink/[0.02] flex justify-between items-center shrink-0">
-              <span className="text-[10px] uppercase font-medium tracking-wider text-ink/50">
+              <span className="text-xs md:text-[10px] uppercase font-medium tracking-wider text-ink/50">
                 {selectedPrintOrders.length} Orders Selected
               </span>
               
               <button
                 onClick={executePrint}
                 disabled={selectedPrintOrders.length === 0 || isPrinting}
-                className="relative flex items-center justify-center gap-2 px-6 py-2.5 bg-ink text-white text-[10px] uppercase font-medium tracking-wider rounded-sm hover:bg-ink/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden min-w-[160px]"
+                className="relative flex items-center justify-center gap-2 px-6 py-2.5 bg-ink text-white text-xs md:text-[10px] uppercase font-medium tracking-wider rounded-sm hover:bg-ink/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden min-w-[160px]"
               >
                 {isPrinting ? (
                   <motion.div 
@@ -1479,17 +1479,17 @@ export function OrdersTab({
               <AlertTriangle size={20} className="text-white" />
               <div>
                 <h3 className="text-sm font-medium text-white uppercase tracking-widest">Fraud Alert</h3>
-                <p className="text-[10px] text-white/80 uppercase tracking-wider mt-0.5">Duplicate Print Blocked</p>
+                <p className="text-xs md:text-[10px] text-white/80 uppercase tracking-wider mt-0.5">Duplicate Print Blocked</p>
               </div>
             </div>
 
             {/* Body */}
             <div className="p-6 space-y-4">
-              <p className="text-[11px] text-ink/70 leading-relaxed">
+              <p className="text-sm md:text-[11px] text-ink/70 leading-relaxed">
                 <span className="font-medium text-rose">{fraudWarningOrders.length} order(s)</span> yang Anda coba cetak sudah memiliki status <span className="font-medium">SHIPPED / DELIVERED</span>. Ini mengindikasikan <span className="font-medium text-rose">DUPLICATE PRINT ATTEMPT</span>.
               </p>
               <div className="bg-rose/5 border border-rose/20 rounded-lg overflow-hidden">
-                <table className="w-full text-[10px]">
+                <table className="w-full text-xs md:text-[10px]">
                   <thead>
                     <tr className="bg-rose/10">
                       <th className="px-3 py-2 text-left font-medium text-ink/60 uppercase tracking-widest">Order ID</th>
@@ -1502,7 +1502,7 @@ export function OrdersTab({
                       <tr key={o.id}>
                         <td className="px-3 py-2 font-mono font-medium text-ink">{o.id.slice(0, 8).toUpperCase()}</td>
                         <td className="px-3 py-2">
-                          <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium uppercase text-[9px] rounded">{o.status}</span>
+                          <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium uppercase text-xs md:text-[9px] rounded">{o.status}</span>
                         </td>
                         <td className="px-3 py-2 text-ink/50 font-mono">
                           {o.printed_at ? new Date(o.printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Unknown'}
@@ -1512,7 +1512,7 @@ export function OrdersTab({
                   </tbody>
                 </table>
               </div>
-              <p className="text-[10px] text-ink/40 text-center">
+              <p className="text-xs md:text-[10px] text-ink/40 text-center">
                 Hubungi supervisor jika Anda yakin perlu mencetak ulang label ini.
               </p>
             </div>
@@ -1521,7 +1521,7 @@ export function OrdersTab({
             <div className="px-6 py-4 bg-ink/5 flex justify-end gap-3">
               <button
                 onClick={() => setIsFraudWarningOpen(false)}
-                className="px-5 py-2 text-[10px] uppercase font-medium tracking-widest bg-ink text-white rounded-sm hover:bg-ink/80 transition-colors"
+                className="px-5 py-2 text-xs md:text-[10px] uppercase font-medium tracking-widest bg-ink text-white rounded-sm hover:bg-ink/80 transition-colors"
               >
                 Acknowledge &amp; Close
               </button>

@@ -102,10 +102,10 @@ export default function ReturnsPage() {
         <div className="flex items-center justify-between mb-10">
           <Link href="/profile" className="flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group">
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-[10px] uppercase tracking-[0.2em]">Exit to Profile</span>
+            <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">Exit to Profile</span>
           </Link>
           <div className="text-right">
-            <p className="text-[8px] uppercase tracking-widest text-ink/30 mb-1">Return & Refund</p>
+            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Return & Refund</p>
             <h1 className="text-xl font-display italic font-medium uppercase tracking-tight">Return Tracker</h1>
           </div>
         </div>
@@ -127,13 +127,13 @@ export default function ReturnsPage() {
               key={tab.id}
               onClick={() => setFilter(tab.id)}
               className={cn(
-                "px-4 py-2 text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
+                "px-4 py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
                 filter === tab.id ? "bg-ink text-white" : "bg-ink/5 text-ink/50 hover:bg-ink/10"
               )}
             >
               {tab.label}
               {tab.id === 'pending' && returns.filter(r => ['pending', 'reviewed'].includes(r.status)).length > 0 && (
-                <span className="ml-2 px-1.5 py-0.5 text-[7px] rounded-sm bg-rose/10 text-rose">
+                <span className="ml-2 px-1.5 py-0.5 text-[10px] md:text-[7px] rounded-sm bg-rose/10 text-rose">
                   {returns.filter(r => ['pending', 'reviewed'].includes(r.status)).length}
                 </span>
               )}
@@ -156,10 +156,10 @@ export default function ReturnsPage() {
               <RefreshCw size={24} strokeWidth={1} className="text-ink/20" />
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-ink/40">No Returns Found</p>
-              <p className="text-[9px] text-ink/20 mt-1 italic">Return history will appear here</p>
+              <p className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink/40">No Returns Found</p>
+              <p className="text-xs md:text-[9px] text-ink/20 mt-1 italic">Return history will appear here</p>
             </div>
-            <Link href="/profile" className="text-[9px] text-rose hover:underline uppercase tracking-widest">
+            <Link href="/profile" className="text-xs md:text-[9px] text-rose hover:underline uppercase tracking-widest">
               Browse Orders
             </Link>
           </motion.div>
@@ -188,26 +188,26 @@ export default function ReturnsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-semibold text-ink uppercase tracking-wider font-mono">{ret.order_id}</span>
-                        <span className={cn('px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-widest rounded-sm border', statusCfg.color)}>
+                        <span className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider font-mono">{ret.order_id}</span>
+                        <span className={cn('px-1.5 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-widest rounded-sm border', statusCfg.color)}>
                           {statusCfg.label}
                         </span>
                         {ret.fraud_suspected && (
-                          <span className="px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
+                          <span className="px-1.5 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
                             <AlertCircle size={8} /> Fraud?
                           </span>
                         )}
                       </div>
-                      <p className="text-[7px] text-ink/30 mt-0.5">
+                      <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
                         {REASON_LABELS[ret.reason] || ret.reason_label || ret.reason} · {formatDate(ret.created_at)}
                       </p>
                     </div>
                     {ret.refund_amount && (
                       <div className="text-right shrink-0">
-                        <p className="text-[11px] font-display italic font-medium text-emerald-600">
+                        <p className="text-sm md:text-[11px] font-display italic font-medium text-emerald-600">
                           IDR {ret.refund_amount.toLocaleString('id-ID')}
                         </p>
-                        <p className="text-[7px] text-ink/30">Refund</p>
+                        <p className="text-[10px] md:text-[7px] text-ink/30">Refund</p>
                       </div>
                     )}
                     <motion.div
@@ -233,7 +233,7 @@ export default function ReturnsPage() {
 
                           {/* Timeline — accurate for all statuses */}
                           <div className="pt-4">
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-3">Status Timeline</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-3">Status Timeline</p>
                             <div className="flex items-center gap-0">
                               {STATUS_FLOW.map((step, i) => {
                                 const Icon = step.icon;
@@ -275,8 +275,8 @@ export default function ReturnsPage() {
                           {/* Description */}
                           {ret.description && (
                             <div className="bg-ink/[0.01] border border-ink/5 p-3 rounded-sm">
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">Deskripsi</p>
-                              <p className="text-[10px] text-ink/70 leading-relaxed">{ret.description}</p>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">Deskripsi</p>
+                              <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{ret.description}</p>
                             </div>
                           )}
 
@@ -285,13 +285,13 @@ export default function ReturnsPage() {
                             <div className="border border-ink/5 rounded-sm overflow-hidden">
                               <div className="px-3 pt-3 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30">Bukti Video Unboxing</p>
+                                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Bukti Video Unboxing</p>
                                   {ret.video_duration_seconds && (
-                                    <span className="text-[7px] text-ink/20">{ret.video_duration_seconds}s · 1-shot</span>
+                                    <span className="text-[10px] md:text-[7px] text-ink/20">{ret.video_duration_seconds}s · 1-shot</span>
                                   )}
                                 </div>
                                 {ret.fraud_suspected && (
-                                  <span className="px-2 py-1 bg-red-50 text-red-500 text-[7px] font-bold uppercase tracking-wider border border-red-100 rounded-sm">Fraud Flagged</span>
+                                  <span className="px-2 py-1 bg-red-50 text-red-500 text-[10px] md:text-[7px] font-bold uppercase tracking-wider border border-red-100 rounded-sm">Fraud Flagged</span>
                                 )}
                               </div>
                               <video
@@ -303,7 +303,7 @@ export default function ReturnsPage() {
                               {ret.fraud_reasons && ret.fraud_reasons.length > 0 && (
                                 <div className="px-3 pb-3 pt-2 space-y-1">
                                   {ret.fraud_reasons.map((r, i) => (
-                                    <p key={i} className="text-[8px] text-red-400 flex items-start gap-1">
+                                    <p key={i} className="text-[11px] md:text-[8px] text-red-400 flex items-start gap-1">
                                       <AlertCircle size={9} className="shrink-0 mt-0.5" />{r}
                                     </p>
                                   ))}
@@ -315,19 +315,19 @@ export default function ReturnsPage() {
                           {/* Admin Notes */}
                           {ret.admin_notes && (
                             <div className="bg-amber-50/50 border border-amber-100 p-3 rounded-sm">
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-amber-500 mb-1.5">Catatan Admin</p>
-                              <p className="text-[10px] text-ink/70 leading-relaxed">{ret.admin_notes}</p>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-amber-500 mb-1.5">Catatan Admin</p>
+                              <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{ret.admin_notes}</p>
                             </div>
                           )}
 
                           {/* Refund Approved Banner */}
                           {ret.status === 'approved' && ret.refund_amount && (
                             <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-sm space-y-1">
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1.5">Refund Disetujui</p>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1.5">Refund Disetujui</p>
                               <p className="text-[13px] font-display italic font-bold text-emerald-700">
                                 IDR {ret.refund_amount.toLocaleString('id-ID')}
                               </p>
-                              <p className="text-[8px] text-emerald-500/70 mt-1">
+                              <p className="text-[11px] md:text-[8px] text-emerald-500/70 mt-1">
                                 {ret.refund_method === 'transfer' ? 'Dana ditransfer ke rekening Anda' : 'Refund via metode pembayaran asli'}
                               </p>
                             </div>
@@ -336,16 +336,16 @@ export default function ReturnsPage() {
                           {/* Policy Info */}
                           {!['completed', 'rejected', 'cancelled'].includes(ret.status) && (
                             <div className="bg-rose/[0.02] border border-rose/10 p-3 rounded-sm space-y-1">
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses</p>
-                              <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses</p>
+                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Pengajuan maksimal 2x24 jam setelah barang diterima
                               </p>
-                              <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Bukti video 1-shot tanpa edit WAJIB
                               </p>
-                              <p className="text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Refund diproses 3–7 hari kerja setelah persetujuan
                               </p>

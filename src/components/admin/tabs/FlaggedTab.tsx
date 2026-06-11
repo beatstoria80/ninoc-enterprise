@@ -99,16 +99,16 @@ export function FlaggedTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-xl font-display italic font-medium uppercase tracking-tight text-ink">Flagged Tickets</h2>
-          <p className="text-[10px] text-ink/40 uppercase tracking-widest mt-1">
+          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">
             Konten yang perlu ditinjau oleh admin
           </p>
         </div>
         {tickets.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 text-[7px] font-bold uppercase tracking-widest rounded-sm bg-amber-50 text-amber-500 border border-amber-200">
+            <span className="px-2 py-1 text-[10px] md:text-[7px] font-bold uppercase tracking-widest rounded-sm bg-amber-50 text-amber-500 border border-amber-200">
               SARA {saraCount}
             </span>
-            <span className="px-2 py-1 text-[7px] font-bold uppercase tracking-widest rounded-sm bg-red-50 text-red-500 border border-red-200">
+            <span className="px-2 py-1 text-[10px] md:text-[7px] font-bold uppercase tracking-widest rounded-sm bg-red-50 text-red-500 border border-red-200">
               NSFW {nsfwCount}
             </span>
           </div>
@@ -123,7 +123,7 @@ export function FlaggedTab() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search flagged tickets..."
-          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
         />
       </div>
 
@@ -138,8 +138,8 @@ export function FlaggedTab() {
             <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center">
               <CheckCircle size={24} strokeWidth={1} className="text-emerald-400" />
             </div>
-            <p className="text-[10px] uppercase tracking-widest text-ink/40 font-medium">All Clear — No Flagged Tickets</p>
-            <p className="text-[8px] text-ink/20 italic">Semua pesan aman dan sesuai pedoman</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40 font-medium">All Clear — No Flagged Tickets</p>
+            <p className="text-[11px] md:text-[8px] text-ink/20 italic">Semua pesan aman dan sesuai pedoman</p>
           </div>
         ) : (
           filtered.map((ticket, idx) => {
@@ -173,10 +173,10 @@ export function FlaggedTab() {
                       )}>
                         {cfg?.label || 'FLAGGED'}
                       </span>
-                      <span className="text-[7px] text-ink/20 font-mono">#{ticket.id.split('-')[0]}</span>
+                      <span className="text-[10px] md:text-[7px] text-ink/20 font-mono">#{ticket.id.split('-')[0]}</span>
                     </div>
-                    <p className="text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
-                    <p className="text-[7px] text-ink/30 mt-0.5">
+                    <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
+                    <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
                       {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}
                     </p>
                   </div>
@@ -210,14 +210,14 @@ export function FlaggedTab() {
                               ? 'bg-amber-50/50 border-amber-100'
                               : 'bg-ink/[0.01] border-ink/5'
                         )}>
-                          <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">
+                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">
                             Alasan Flag
                           </p>
-                          <p className="text-[10px] text-ink/70 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
+                          <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
                         </div>
 
                         {/* Timestamp */}
-                        <div className="flex items-center gap-2 text-[8px] text-ink/30">
+                        <div className="flex items-center gap-2 text-[11px] md:text-[8px] text-ink/30">
                           <Clock size={10} />
                           <span>Di-flag: {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}</span>
                           <span>•</span>
@@ -228,7 +228,7 @@ export function FlaggedTab() {
                         <div className="flex items-center gap-2 pt-1">
                           <button
                             onClick={() => clearFlag(ticket.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[9px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs md:text-[9px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
                           >
                             <CheckCircle size={10} />
                             Clear Flag
@@ -238,7 +238,7 @@ export function FlaggedTab() {
                               // Trigger admin notification
                               window.dispatchEvent(new CustomEvent('open-support-chat'));
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white text-[9px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
                           >
                             <MessageSquare size={10} />
                             Open Chat

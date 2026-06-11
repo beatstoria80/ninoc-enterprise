@@ -247,19 +247,19 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
           <div>
             <div className="flex items-center gap-1.5 mb-2">
               <Globe size={12} className="text-indigo-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Live Preview</span>
+              <span className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600">Live Preview</span>
             </div>
             
             <div className="flex bg-gray-100 p-1 rounded-lg mb-3">
               <button 
                 onClick={() => setPreviewTab('google')}
-                className={cn("flex-1 text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'google' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'google' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
               >
                 Google
               </button>
               <button 
                 onClick={() => setPreviewTab('social')}
-                className={cn("flex-1 text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'social' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'social' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
               >
                 WhatsApp / Social
               </button>
@@ -268,9 +268,9 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             {previewTab === 'google' ? (
               <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[8px] font-bold text-indigo-600">N</div>
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] md:text-[8px] font-bold text-indigo-600">N</div>
                   <div>
-                    <p className="text-[10px] text-gray-500">{googleUrl}</p>
+                    <p className="text-xs md:text-[10px] text-gray-500">{googleUrl}</p>
                   </div>
                 </div>
                 <h3 className="text-base text-blue-700 hover:underline cursor-default leading-snug font-normal" style={{ fontFamily: 'Arial, sans-serif' }}>
@@ -290,14 +290,14 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                         <Tag size={24} className="mb-2 opacity-20" />
-                        <span className="text-[10px]">No image</span>
+                        <span className="text-xs md:text-[10px]">No image</span>
                       </div>
                     )}
                   </div>
                   <div className="p-3 bg-[#F0F2F5]">
                     <h3 className="font-semibold text-[13px] text-gray-900 line-clamp-1 leading-snug">{googleTitle || 'Product Name'}</h3>
-                    <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5 leading-snug">{googleDesc}</p>
-                    <p className="text-[9px] text-gray-400 mt-1.5 uppercase font-medium">NINOC.STORE</p>
+                    <p className="text-sm md:text-[11px] text-gray-500 line-clamp-2 mt-0.5 leading-snug">{googleDesc}</p>
+                    <p className="text-xs md:text-[9px] text-gray-400 mt-1.5 uppercase font-medium">NINOC.STORE</p>
                   </div>
                 </div>
               </div>
@@ -308,7 +308,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
           <div>
             <div className="flex items-center gap-1.5 mb-2">
               <Search size={12} className="text-indigo-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Score</span>
+              <span className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Score</span>
             </div>
 
             {/* Score Bar */}
@@ -326,7 +326,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <div className="space-y-1.5">
               {seo.checks.map((check, idx) => (
                 <div key={idx} className={cn(
-                  "flex items-start gap-2 px-3 py-2 rounded-md text-[11px] border",
+                  "flex items-start gap-2 px-3 py-2 rounded-md text-sm md:text-[11px] border",
                   check.passed ? "bg-emerald-50/50 border-emerald-100" : "bg-red-50/50 border-red-100"
                 )}>
                   {check.passed ? (
@@ -350,18 +350,18 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <Tag size={12} className="text-indigo-500" />
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Title Generator</span>
+                <span className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600">SEO Title Generator</span>
               </div>
               {originalTitle !== null && (
                 <button 
                   onClick={handleUndoTitle}
-                  className="text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
                 >
                   Undo (Kembalikan Manual)
                 </button>
               )}
             </div>
-            <p className="text-[10px] text-gray-400 mb-2 italic">Klik untuk langsung menerapkan template ke Product Name</p>
+            <p className="text-xs md:text-[10px] text-gray-400 mb-2 italic">Klik untuk langsung menerapkan template ke Product Name</p>
             <div className="space-y-1.5">
               {templates.map((t, idx) => {
                 const generated = t.template(coreName);
@@ -375,9 +375,9 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                     className="w-full text-left px-3 py-2.5 rounded-md border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] uppercase tracking-wider font-semibold text-indigo-500">{t.label}</span>
+                      <span className="text-xs md:text-[9px] uppercase tracking-wider font-semibold text-indigo-500">{t.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className={cn("text-[9px]", isGoodLength ? "text-emerald-500" : "text-amber-500")}>
+                        <span className={cn("text-xs md:text-[9px]", isGoodLength ? "text-emerald-500" : "text-amber-500")}>
                           {charCount} chars
                         </span>
                         {copiedIdx === idx ? (
@@ -387,7 +387,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                         )}
                       </div>
                     </div>
-                    <p className="text-[11px] text-gray-700 leading-relaxed">{generated}</p>
+                    <p className="text-sm md:text-[11px] text-gray-700 leading-relaxed">{generated}</p>
                   </button>
                 );
               })}
@@ -397,11 +397,11 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
           {/* ===== AUTO META DESCRIPTION ===== */}
           <div>
             <div className="flex justify-between items-end mb-2">
-              <p className="text-[10px] text-gray-400 italic">Generate berdasarkan produk</p>
+              <p className="text-xs md:text-[10px] text-gray-400 italic">Generate berdasarkan produk</p>
               {originalDesc !== null && (
                 <button 
                   onClick={handleUndoDesc}
-                  className="text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
                 >
                   Undo (Kembalikan Manual)
                 </button>
@@ -410,7 +410,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <button
               type="button"
               onClick={generateMetaDescription}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] uppercase tracking-wider font-semibold rounded-lg transition-colors shadow-sm"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs md:text-[10px] uppercase tracking-wider font-semibold rounded-lg transition-colors shadow-sm"
             >
               <Sparkles size={12} />
               Generate Meta Description Otomatis
@@ -422,7 +422,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <button
               type="button"
               onClick={() => setShowKeywords(!showKeywords)}
-              className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800 transition-colors"
+              className="flex items-center gap-1.5 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800 transition-colors"
             >
               <AlertCircle size={12} />
               {showKeywords ? 'Sembunyikan' : 'Tampilkan'} Kata Kunci Populer ({category})
@@ -433,7 +433,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                   <span
                     key={kw}
                     className={cn(
-                      "px-2 py-1 text-[9px] rounded-full border transition-all",
+                      "px-2 py-1 text-xs md:text-[9px] rounded-full border transition-all",
                       (name + description).toLowerCase().includes(kw.toLowerCase())
                         ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
                         : "bg-gray-50 border-gray-200 text-gray-500"

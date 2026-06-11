@@ -25,7 +25,7 @@ export default function AffiliateTermsPage() {
             </Link>
 
             <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-medium uppercase tracking-widest mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs md:text-[10px] font-medium uppercase tracking-widest mb-6">
                 <ShieldCheck size={14} />
                 Dokumen Legal
               </div>
@@ -38,9 +38,9 @@ export default function AffiliateTermsPage() {
             <div className="mt-auto pt-8 border-t border-white/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2 text-white/40">
                 <FileText size={16} />
-                <span className="text-[10px] font-medium uppercase tracking-widest">NINOC Legal Dept.</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest">NINOC Legal Dept.</span>
               </div>
-              <p className="text-[10px] text-white/40 uppercase tracking-widest font-medium">9 Juni 2026</p>
+              <p className="text-xs md:text-[10px] text-white/40 uppercase tracking-widest font-medium">9 Juni 2026</p>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function AffiliateTermsPage() {
                   Komisi & Pajak (PPh 21)
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <div className="bg-cr noise border border-ink/10 p-4 text-ink font-mono text-[10px] mb-4">
+                  <div className="bg-cr noise border border-ink/10 p-4 text-ink font-mono text-xs md:text-[10px] mb-4">
                     <strong className="block mb-1 uppercase tracking-wider text-rose">Kepatuhan Hukum Pajak RI</strong>
                     Sesuai dengan UU HPP No. 7 Tahun 2021, penghasilan komisi afiliasi merupakan objek Pajak Penghasilan (PPh).
                   </div>

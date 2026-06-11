@@ -31,12 +31,12 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
         <div className="relative z-10 p-3 md:p-5 flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex items-center md:items-start md:flex-col gap-3 md:gap-1 flex-shrink-0 md:w-48">
             <motion.div className="text-[6px] md:text-[7px] font-mono tracking-tighter px-1 py-0.5" animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.1)' : 'rgba(20,20,20,0.05)', color: isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{entry.id}</motion.div>
-            <motion.span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]" animate={{ color: isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.4)' }} transition={{ duration: DURATION.fast }}>{entry.date}</motion.span>
+            <motion.span className="text-[11px] md:text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]" animate={{ color: isHovered ? 'rgba(255,255,255,0.6)' : 'rgba(20,20,20,0.4)' }} transition={{ duration: DURATION.fast }}>{entry.date}</motion.span>
           </div>
           <div className="flex-1 space-y-2">
-            <motion.span className="text-[7px] font-medium uppercase tracking-[0.4em]" animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }} transition={{ duration: DURATION.fast }}>{entry.category}</motion.span>
+            <motion.span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em]" animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }} transition={{ duration: DURATION.fast }}>{entry.category}</motion.span>
             <motion.h3 className="text-lg md:text-xl font-display font-medium italic uppercase tracking-tight" animate={{ color: isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{title}</motion.h3>
-            <motion.p className="text-[9px] md:text-[10px] font-medium leading-relaxed max-w-2xl" animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,20,0.6)' }} transition={{ duration: DURATION.fast }}>{excerpt}</motion.p>
+            <motion.p className="text-xs md:text-[9px] md:text-[10px] font-medium leading-relaxed max-w-2xl" animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,20,0.6)' }} transition={{ duration: DURATION.fast }}>{excerpt}</motion.p>
           </div>
           <motion.div className="flex-shrink-0 self-end md:self-center" animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.2)', x: isHovered ? 4 : 0 }} transition={{ duration: DURATION.fast }}><ArrowRight size={16} strokeWidth={1.5} /></motion.div>
         </div>
@@ -77,18 +77,18 @@ export default function LogbookClient() {
           <div className="flex items-center gap-3">
             <BookOpen size={12} className="text-rose" />
             <div className="flex flex-col">
-              <h1 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-ink">{dict.logbook.title}</h1>
-              <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.logbook.subtitle}</span>
+              <h1 className="text-xs md:text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-ink">{dict.logbook.title}</h1>
+              <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.logbook.subtitle}</span>
             </div>
           </div>
-          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">{dict.logbook.home}</span></Link>
+          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">{dict.logbook.home}</span></Link>
         </div>
 
         <motion.div variants={pageVariants} initial="hidden" animate="visible" className="flex flex-col">
           {isLoading ? (
             <div className="py-12 flex justify-center"><div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin" /></div>
           ) : entries.length === 0 ? (
-            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">{dict.logbook.empty}</p><p className="text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
+            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">{dict.logbook.empty}</p><p className="text-[10px] md:text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
           ) : (
             entries.map((entry, index) => <LogbookCard key={entry.id} entry={entry} index={index} />)
           )}

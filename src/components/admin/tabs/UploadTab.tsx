@@ -35,7 +35,7 @@ export function UploadTab({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Upload Images</h2>
-          <span className="text-[9px] text-gray-400">— {bulkFiles.length > 0 ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected` : 'batch upload'}</span>
+          <span className="text-xs md:text-[9px] text-gray-400">— {bulkFiles.length > 0 ? `${bulkFiles.length} file${bulkFiles.length > 1 ? 's' : ''} selected` : 'batch upload'}</span>
         </div>
         <button
           onClick={() => setActiveTab('overview')}
@@ -47,7 +47,7 @@ export function UploadTab({
 
       {/* Product name link */}
       <div className="bg-white rounded-xl border border-gray-100 p-4">
-        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">
+        <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">
           Product Name (optional — auto-fills product form)
         </label>
         <input
@@ -70,13 +70,13 @@ export function UploadTab({
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto">
               {bulkFiles.slice(0, 50).map((f, i) => (
-                <div key={i} className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-gray-200 text-[10px] text-gray-600">
+                <div key={i} className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-gray-200 text-xs md:text-[10px] text-gray-600">
                   <span className="font-medium">{i + 1}.</span>
                   <span className="truncate max-w-[120px]">{f.name}</span>
                 </div>
               ))}
               {bulkFiles.length > 50 && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-[10px] text-gray-500 font-medium">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-xs md:text-[10px] text-gray-500 font-medium">
                   + {bulkFiles.length - 50} more
                 </div>
               )}
@@ -103,7 +103,7 @@ export function UploadTab({
           <label className="cursor-pointer block">
             <Upload size={32} className="mx-auto text-gray-400 mb-4" />
             <span className="block text-sm font-medium text-gray-900 mb-1">Select Images to Upload</span>
-            <span className="block text-[10px] uppercase tracking-wider text-gray-500">
+            <span className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500">
               Drag & drop or click to select
             </span>
             <input type="file" multiple accept="image/*" onChange={handleBulkFileSelect} className="hidden" />
@@ -132,7 +132,7 @@ export function UploadTab({
                         navigator.clipboard.writeText(result.url);
                         alert('URL Copied!');
                       }}
-                      className="px-2 py-1 bg-white border border-gray-200 rounded text-[9px] uppercase tracking-wider text-gray-600 hover:bg-gray-50"
+                      className="px-2 py-1 bg-white border border-gray-200 rounded text-xs md:text-[9px] uppercase tracking-wider text-gray-600 hover:bg-gray-50"
                     >
                       Copy
                     </button>
@@ -148,11 +148,11 @@ export function UploadTab({
       {allUploadHistory.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-            <h3 className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Upload History</h3>
-            <span className="text-[9px] text-gray-400">{allUploadHistory.length} files total</span>
+            <h3 className="text-xs md:text-[10px] font-medium text-gray-900 uppercase tracking-wide">Upload History</h3>
+            <span className="text-xs md:text-[9px] text-gray-400">{allUploadHistory.length} files total</span>
           </div>
           <div className="p-4 overflow-x-auto">
-            <table className="w-full text-left text-[10px]">
+            <table className="w-full text-left text-xs md:text-[10px]">
               <thead>
                 <tr className="text-gray-400 uppercase tracking-wider border-b border-gray-100">
                   <th className="pb-2 font-medium w-1/4">File Name</th>

@@ -60,11 +60,11 @@ const CategoryNode = ({ category, level = 0 }: { category: any, level?: number }
           )}
           <Folder size={14} className={cn("text-gray-400", isExpanded && "text-rose")} />
           <span className="text-sm font-medium text-ink">{category.name}</span>
-          <span className="text-[10px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">/{category.slug}</span>
+          <span className="text-xs md:text-[10px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">/{category.slug}</span>
         </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-gray-400 uppercase tracking-wider">{category.count} items</span>
+          <span className="text-xs md:text-[10px] text-gray-400 uppercase tracking-wider">{category.count} items</span>
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button className="p-1.5 text-gray-400 hover:text-rose hover:bg-rose/10 rounded transition-colors" title="Add Subcategory">
               <Plus size={12} />
@@ -106,11 +106,11 @@ export function CategoriesView() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-medium text-ink">Category Hierarchy</h3>
-          <p className="text-[10px] text-gray-500">Manage your product taxonomy. Drag and drop to reorder (coming soon).</p>
+          <p className="text-xs md:text-[10px] text-gray-500">Manage your product taxonomy. Drag and drop to reorder (coming soon).</p>
         </div>
         <button className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded hover:bg-ink/90 transition-colors">
           <Plus size={12} />
-          <span className="text-[9px] uppercase tracking-wider">New Category</span>
+          <span className="text-xs md:text-[9px] uppercase tracking-wider">New Category</span>
         </button>
       </div>
 

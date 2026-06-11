@@ -48,7 +48,7 @@ export function StockLedgerTab() {
       <div className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-ink/5 text-[10px] uppercase tracking-wider text-ink/60">
+            <tr className="bg-ink/5 text-xs md:text-[10px] uppercase tracking-wider text-ink/60">
               <th className="p-4 font-medium">Date</th>
               <th className="p-4 font-medium">Product & SKU</th>
               <th className="p-4 font-medium">Location</th>
@@ -69,7 +69,7 @@ export function StockLedgerTab() {
                 </td>
                 <td className="p-4">
                   <div className="font-medium text-ink">{mov.variants?.products?.name || 'Unknown'}</div>
-                  <div className="text-[10px] text-ink/50 mt-0.5">{mov.variants?.sku || 'NO-SKU'}</div>
+                  <div className="text-xs md:text-[10px] text-ink/50 mt-0.5">{mov.variants?.sku || 'NO-SKU'}</div>
                 </td>
                 <td className="p-4 text-ink/70">
                   {mov.warehouses?.name || 'Unknown'}
@@ -77,7 +77,7 @@ export function StockLedgerTab() {
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     {getMovementIcon(mov.movement_type)}
-                    <span className="text-ink uppercase text-[10px] tracking-wider font-medium">
+                    <span className="text-ink uppercase text-xs md:text-[10px] tracking-wider font-medium">
                       {mov.movement_type.replace('_', ' ')}
                     </span>
                   </div>

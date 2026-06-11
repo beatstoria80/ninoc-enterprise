@@ -35,7 +35,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
 function StatusBadge({ status }: { status: ReturnStatus }) {
   const cfg = STATUS_CONFIG[status];
   return (
-    <span className={cn("inline-block px-2 py-0.5 text-[8px] font-semibold uppercase tracking-widest rounded-sm", cfg.bg, cfg.text)}>
+    <span className={cn("inline-block px-2 py-0.5 text-[11px] md:text-[8px] font-semibold uppercase tracking-widest rounded-sm", cfg.bg, cfg.text)}>
       {cfg.label}
     </span>
   );
@@ -124,7 +124,7 @@ export function ReturnsTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-xl font-medium text-ink uppercase tracking-tight">Retur</h2>
-          <p className="text-[10px] text-ink/40 uppercase tracking-widest mt-1">
+          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">
             {pendingCount > 0 ? `${pendingCount} request pending` : 'Manage product returns and refunds'}
           </p>
         </div>
@@ -137,7 +137,7 @@ export function ReturnsTab() {
             key={tab.id}
             onClick={() => setFilter(tab.id)}
             className={cn(
-              "px-3 py-1.5 text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
+              "px-3 py-1.5 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
               filter === tab.id
                 ? "bg-ink text-white"
                 : "bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink"
@@ -146,7 +146,7 @@ export function ReturnsTab() {
             {tab.label}
             {counts[tab.id] > 0 && (
               <span className={cn(
-                "ml-1.5 px-1 py-0.5 text-[7px] rounded-sm",
+                "ml-1.5 px-1 py-0.5 text-[10px] md:text-[7px] rounded-sm",
                 filter === tab.id ? "bg-white/20 text-white" : "bg-rose/10 text-rose"
               )}>
                 {counts[tab.id]}
@@ -164,7 +164,7 @@ export function ReturnsTab() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by Order ID or Customer name..."
-          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
         />
       </div>
 
@@ -177,19 +177,19 @@ export function ReturnsTab() {
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <RefreshCw size={24} className="text-ink/20 mx-auto mb-3" />
-            <p className="text-[10px] uppercase tracking-widest text-ink/40">No return requests</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No return requests</p>
           </div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead className="bg-ink/[0.02] sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">ID</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Date</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Customer</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Type</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Status</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 text-right">Amount</th>
-                <th className="px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 w-8"></th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">ID</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Date</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Customer</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Type</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Status</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 text-right">Amount</th>
+                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 w-8"></th>
               </tr>
             </thead>
             <tbody>
@@ -208,21 +208,21 @@ export function ReturnsTab() {
                       className="border-b border-ink/5 hover:bg-ink/[0.02] transition-colors cursor-pointer group"
                     >
                       <td className="px-4 py-4">
-                        <span className="text-[9px] font-mono bg-ink/5 px-1.5 py-0.5">{ret.id.slice(0, 8)}…</span>
+                        <span className="text-xs md:text-[9px] font-mono bg-ink/5 px-1.5 py-0.5">{ret.id.slice(0, 8)}…</span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-[10px] text-ink/60">
+                        <span className="text-xs md:text-[10px] text-ink/60">
                           {new Date(ret.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
                         </span>
                       </td>
                       <td className="px-4 py-4">
                         <div>
-                          <p className="text-[10px] font-medium text-ink">{customerName}</p>
-                          <p className="text-[9px] text-ink/40">{order?.customer?.phone || ''}</p>
+                          <p className="text-xs md:text-[10px] font-medium text-ink">{customerName}</p>
+                          <p className="text-xs md:text-[9px] text-ink/40">{order?.customer?.phone || ''}</p>
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <span className={cn("text-[9px] font-semibold uppercase tracking-wider", TYPE_CONFIG[ret.type]?.color || 'text-ink/50')}>
+                        <span className={cn("text-xs md:text-[9px] font-semibold uppercase tracking-wider", TYPE_CONFIG[ret.type]?.color || 'text-ink/50')}>
                           {TYPE_CONFIG[ret.type]?.label || ret.type}
                         </span>
                       </td>
@@ -230,7 +230,7 @@ export function ReturnsTab() {
                         <StatusBadge status={ret.status} />
                       </td>
                       <td className="px-4 py-4 text-right">
-                        <span className="text-[10px] font-medium text-rose">
+                        <span className="text-xs md:text-[10px] font-medium text-rose">
                           {orderTotal > 0 ? `IDR ${orderTotal.toLocaleString('id-ID')}` : '-'}
                         </span>
                       </td>
@@ -260,53 +260,53 @@ export function ReturnsTab() {
 
                               {/* Order Items */}
                               <div className="space-y-2">
-                                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/40">Items Returned</p>
+                                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40">Items Returned</p>
                                 {orderItems.length > 0 ? orderItems.map((item: any) => (
                                   <div key={item.id} className="flex items-center gap-3 p-2 bg-white border border-ink/5">
                                     <div className="w-8 h-8 bg-ink/5 flex items-center justify-center shrink-0">
                                       <Package size={12} className="text-ink/40" />
                                     </div>
                                     <div>
-                                      <p className="text-[10px] font-medium text-ink">{item.product_name}</p>
-                                      <p className="text-[9px] text-ink/40">Qty: {item.quantity} · IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                      <p className="text-xs md:text-[10px] font-medium text-ink">{item.product_name}</p>
+                                      <p className="text-xs md:text-[9px] text-ink/40">Qty: {item.quantity} · IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
                                     </div>
                                   </div>
                                 )) : (
-                                  <p className="text-[9px] text-ink/40 italic">No items</p>
+                                  <p className="text-xs md:text-[9px] text-ink/40 italic">No items</p>
                                 )}
                               </div>
 
                               {/* Reason & Notes */}
                               <div className="space-y-3">
                                 <div>
-                                  <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Reason</p>
-                                  <p className="text-[10px] text-ink leading-relaxed bg-white border border-ink/5 p-2">{ret.reason}</p>
+                                  <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Reason</p>
+                                  <p className="text-xs md:text-[10px] text-ink leading-relaxed bg-white border border-ink/5 p-2">{ret.reason}</p>
                                 </div>
                                 {ret.admin_notes && (
                                   <div>
-                                    <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Admin Notes</p>
-                                    <p className="text-[10px] text-ink/70 bg-ink/5 p-2">{ret.admin_notes}</p>
+                                    <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Admin Notes</p>
+                                    <p className="text-xs md:text-[10px] text-ink/70 bg-ink/5 p-2">{ret.admin_notes}</p>
                                   </div>
                                 )}
                               </div>
 
                               {/* Actions */}
                               <div className="space-y-2">
-                                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/40">Actions</p>
+                                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40">Actions</p>
                                 <div className="flex flex-col gap-1.5">
                                   {ret.status === 'requested' && (
                                     <>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'approved'); }}
                                         disabled={isLoadingAction}
-                                        className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                                        className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors disabled:opacity-50"
                                       >
                                         {isLoadingAction ? 'Processing...' : '✓ Approve'}
                                       </button>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); setNotesModal({ id: ret.id, notes: '' }); }}
                                         disabled={isLoadingAction}
-                                        className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-red-50 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-50"
+                                        className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-red-50 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-50"
                                       >
                                         ✗ Reject
                                       </button>
@@ -316,7 +316,7 @@ export function ReturnsTab() {
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'received'); }}
                                       disabled={isLoadingAction}
-                                      className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors disabled:opacity-50"
+                                      className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors disabled:opacity-50"
                                     >
                                       {isLoadingAction ? 'Processing...' : 'Mark Received'}
                                     </button>
@@ -325,18 +325,18 @@ export function ReturnsTab() {
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'completed'); }}
                                       disabled={isLoadingAction}
-                                      className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50"
+                                      className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50"
                                     >
                                       {isLoadingAction ? 'Processing...' : '✓ Mark Completed'}
                                     </button>
                                   )}
                                   {(ret.status === 'rejected' || ret.status === 'completed') && (
-                                    <p className="text-[9px] text-ink/40 italic uppercase tracking-wider text-center py-2">
+                                    <p className="text-xs md:text-[9px] text-ink/40 italic uppercase tracking-wider text-center py-2">
                                       {ret.status === 'rejected' ? 'Retur ditolak' : 'Selesai'}
                                     </p>
                                   )}
                                 </div>
-                                <p className="text-[8px] text-ink/30 italic">
+                                <p className="text-[11px] md:text-[8px] text-ink/30 italic">
                                   Order: <span className="font-mono">{ret.order_id.slice(0, 12)}…</span>
                                 </p>
                               </div>
@@ -363,27 +363,27 @@ export function ReturnsTab() {
             className="relative bg-white w-full max-w-sm rounded-sm shadow-2xl overflow-hidden"
           >
             <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between">
-              <h3 className="text-[11px] font-semibold uppercase tracking-widest text-ink">Reject Return</h3>
+              <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Reject Return</h3>
               <button onClick={() => setNotesModal(null)} className="text-ink/30 hover:text-rose"><X size={14} /></button>
             </div>
             <div className="p-5 space-y-3">
               <div>
-                <label className="text-[9px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">Reason for rejection</label>
+                <label className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">Reason for rejection</label>
                 <textarea
                   autoFocus
                   value={notesModal.notes}
                   onChange={e => setNotesModal({ ...notesModal, notes: e.target.value })}
                   rows={3}
                   placeholder="Optional notes..."
-                  className="w-full px-3 py-2 border border-ink/10 text-[11px] focus:outline-none focus:border-rose/40 resize-none"
+                  className="w-full px-3 py-2 border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 resize-none"
                 />
               </div>
             </div>
             <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2">
-              <button onClick={() => setNotesModal(null)} className="px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink">Cancel</button>
+              <button onClick={() => setNotesModal(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink">Cancel</button>
               <button
                 onClick={() => handleStatusUpdate(notesModal.id, 'rejected', notesModal.notes)}
-                className="px-4 py-2 text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600"
+                className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600"
               >
                 Confirm Reject
               </button>

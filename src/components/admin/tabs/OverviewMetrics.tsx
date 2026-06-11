@@ -40,10 +40,10 @@ function MetricCard({
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[9px] uppercase tracking-[0.12em] text-ink/50 font-medium leading-none mb-1.5">{label}</p>
+        <p className="text-xs md:text-[9px] uppercase tracking-[0.12em] text-ink/50 font-medium leading-none mb-1.5">{label}</p>
         <p className="text-[15px] font-semibold text-ink leading-tight tracking-tight">{value}</p>
         {sub && (
-          <p className={`text-[8px] mt-1 leading-none ${subColor || 'text-ink/30'}`}>{sub}</p>
+          <p className={`text-[11px] md:text-[8px] mt-1 leading-none ${subColor || 'text-ink/30'}`}>{sub}</p>
         )}
       </div>
       {badge && <div className="shrink-0">{badge}</div>}
@@ -189,8 +189,8 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
         {/* 7-Day Order Trend */}
         <div className="bg-white rounded-sm border border-ink/10 px-3.5 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[9px] font-semibold uppercase tracking-[0.1em] text-ink">7-Day Order Trend</h3>
-            <span className="text-[8px] text-ink/30">Last 7 days</span>
+            <h3 className="text-xs md:text-[9px] font-semibold uppercase tracking-[0.1em] text-ink">7-Day Order Trend</h3>
+            <span className="text-[11px] md:text-[8px] text-ink/30">Last 7 days</span>
           </div>
           <div className="flex items-end gap-[5px] h-7">
             {ordersLast7Days.map((day, idx) => (
@@ -205,8 +205,8 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
         {/* Top 5 Products by Revenue */}
         <div className="bg-white rounded-sm border border-ink/10 px-3.5 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[9px] font-semibold uppercase tracking-[0.1em] text-ink">Top Products</h3>
-            <span className="text-[8px] text-ink/30">by revenue</span>
+            <h3 className="text-xs md:text-[9px] font-semibold uppercase tracking-[0.1em] text-ink">Top Products</h3>
+            <span className="text-[11px] md:text-[8px] text-ink/30">by revenue</span>
           </div>
           <div className="space-y-[5px]">
             {topProductsByRevenue.length > 0 ? topProductsByRevenue.slice(0, 4).map((product, idx) => {
@@ -214,11 +214,11 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
               const pct = Math.round((product.totalRevenue / maxRev) * 100);
               return (
                 <div key={product.id} className="flex items-center gap-2">
-                  <span className="text-[7px] font-medium text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
+                  <span className="text-[10px] md:text-[7px] font-medium text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-[9px] font-medium text-ink truncate leading-none">{product.name}</span>
-                      <span className="text-[8px] font-semibold text-rose shrink-0 leading-none">
+                      <span className="text-xs md:text-[9px] font-medium text-ink truncate leading-none">{product.name}</span>
+                      <span className="text-[11px] md:text-[8px] font-semibold text-rose shrink-0 leading-none">
                         {product.totalRevenue >= 1000
                           ? `IDR ${(product.totalRevenue / 1000).toFixed(0)}K`
                           : `IDR ${product.totalRevenue.toLocaleString('id-ID')}`}
@@ -232,7 +232,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
               );
             }) : (
               <div className="flex items-center justify-center h-8">
-                <p className="text-[9px] text-ink/25">Belum ada data penjualan</p>
+                <p className="text-xs md:text-[9px] text-ink/25">Belum ada data penjualan</p>
               </div>
             )}
           </div>

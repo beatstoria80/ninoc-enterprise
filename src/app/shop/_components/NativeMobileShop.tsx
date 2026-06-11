@@ -68,15 +68,15 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
 
       {/* Minimal Info */}
       <div className="mt-1.5 px-0.5 space-y-0.5">
-        <p className="text-[9px] font-medium text-ink uppercase tracking-[0.1em] line-clamp-1">
+        <p className="text-xs md:text-[9px] font-medium text-ink uppercase tracking-[0.1em] line-clamp-1">
           {product.name}
         </p>
         {product.price_tag && (
-          <p className="text-[7px] font-medium text-rose uppercase tracking-[0.15em] leading-none pt-0.5">
+          <p className="text-[10px] md:text-[7px] font-medium text-rose uppercase tracking-[0.15em] leading-none pt-0.5">
             {product.price_tag}
           </p>
         )}
-        <p className="text-[10px] font-display font-medium italic text-rose pt-0.5">
+        <p className="text-xs md:text-[10px] font-display font-medium italic text-rose pt-0.5">
           IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </p>
       </div>
@@ -172,7 +172,7 @@ export function HorizontalProductScroll({
     <div className="w-full">
       {title && (
         <div className="px-4 mb-3">
-          <h3 className="text-[10px] font-display font-medium italic text-ink uppercase tracking-widest">
+          <h3 className="text-xs md:text-[10px] font-display font-medium italic text-ink uppercase tracking-widest">
             {title}
           </h3>
         </div>
@@ -248,10 +248,10 @@ export default function CategoryGrid({
           <div key={category} className="border-b border-ink/5 pb-6">
             {/* Category Header */}
             <div className="px-4 mb-3 flex items-center justify-between">
-              <h2 className="text-[10px] font-display font-medium italic text-ink/40 uppercase tracking-[0.2em]">
+              <h2 className="text-xs md:text-[10px] font-display font-medium italic text-ink/40 uppercase tracking-[0.2em]">
                 {category}
               </h2>
-              <span className="text-[8px] font-medium text-rose/40 uppercase tracking-widest">
+              <span className="text-[11px] md:text-[8px] font-medium text-rose/40 uppercase tracking-widest">
                 {categoryProducts.length} pieces
               </span>
             </div>

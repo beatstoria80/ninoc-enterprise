@@ -185,7 +185,7 @@ export default function ProfilePage() {
         {!isMobile && (
         <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-6 group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
+          <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
         </Link>
         )}
 
@@ -222,28 +222,28 @@ export default function ProfilePage() {
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl font-display italic text-ink uppercase tracking-tight">{user?.full_name}</h1>
               {user?.customer_number && (
-                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-[10px] text-blue-600 font-mono tracking-widest">
+                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-xs md:text-[10px] text-blue-600 font-mono tracking-widest">
                   <CornerDownRight size={12} className="text-blue-500" />
                   ID: {user.customer_number.toString().padStart(4, '0')}
                 </div>
               )}
-              <p className="text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>
+              <p className="text-[11px] md:text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
                 <div className="space-y-1">
-                  <p className="text-[8px] uppercase tracking-widest text-ink/30">Email Reference</p>
-                  <p className="text-[10px] text-ink/70">{user?.email}</p>
+                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Email Reference</p>
+                  <p className="text-xs md:text-[10px] text-ink/70">{user?.email}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[8px] uppercase tracking-widest text-ink/30">Member Status</p>
-                  <p className="text-[10px] text-rose">Verified Individual</p>
+                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Member Status</p>
+                  <p className="text-xs md:text-[10px] text-rose">Verified Individual</p>
                 </div>
               </div>
             </div>
 
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-ink/60"
+              className="flex items-center gap-2 text-xs md:text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-ink/60"
             >
               <LogOut size={12} />
               Studio Exit
@@ -260,8 +260,8 @@ export default function ProfilePage() {
                 <RefreshCw size={13} className="text-rose" />
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-ink">Return Tracker</p>
-                <p className="text-[8px] text-ink/40">Lacak status pengajuan retur & refund</p>
+                <p className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-ink">Return Tracker</p>
+                <p className="text-[11px] md:text-[8px] text-ink/40">Lacak status pengajuan retur & refund</p>
               </div>
             </div>
             <ChevronRight size={12} className="text-rose/50 group-hover:text-rose group-hover:translate-x-1 transition-all" />
@@ -272,15 +272,15 @@ export default function ProfilePage() {
             <div className="flex items-end justify-between border-b border-ink/5 pb-4">
               <div className="space-y-1">
                 <h2 className="text-xs uppercase tracking-[0.4em] text-ink">Investment Logs</h2>
-                <p className="text-[9px] text-ink/40 tracking-wider">Historical record of all origin specifications acquired.</p>
+                <p className="text-xs md:text-[9px] text-ink/40 tracking-wider">Historical record of all origin specifications acquired.</p>
               </div>
-              <p className="text-[9px] font-medium text-ink/30">{orders.length} Entries Found</p>
+              <p className="text-xs md:text-[9px] font-medium text-ink/30">{orders.length} Entries Found</p>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
               {orders.length === 0 ? (
                 <div className="py-8 md:py-20 text-center border border-dashed border-ink/10 rounded-[10px]">
-                  <p className="text-[10px] uppercase tracking-widest text-ink/30 italic">No historical records available.</p>
+                  <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/30 italic">No historical records available.</p>
                 </div>
               ) : (
                 orders.map((order) => (
@@ -291,25 +291,25 @@ export default function ProfilePage() {
                   >
                     <div className="flex flex-col gap-1 flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-ink uppercase tracking-wider">{order.id}</span>
-                        <span className={`text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                        <span className="text-xs md:text-[10px] text-ink uppercase tracking-wider">{order.id}</span>
+                        <span className={`text-[11px] md:text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
                           order.status === 'paid' ? 'bg-green-50 text-green-600' : 
                           order.status === 'shipped' ? 'bg-blue-50 text-blue-600' : 'bg-ink/5 text-ink/40'
                         }`}>
                           {order.status}
                         </span>
                       </div>
-                      <p className="text-[9px] text-ink/40">Registered on {new Date(order.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs md:text-[9px] text-ink/40">Registered on {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
 
                     <div className="flex items-center gap-12 text-right">
                       <div className="space-y-1">
-                        <p className="text-[8px] uppercase tracking-widest text-ink/30">Total Investment</p>
+                        <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Total Investment</p>
                         <p className="text-xs text-ink">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[8px] uppercase tracking-widest text-ink/30">Logistics</p>
-                        <p className="text-[10px] text-ink/60 uppercase">{order.courier || 'Unassigned'}</p>
+                        <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Logistics</p>
+                        <p className="text-xs md:text-[10px] text-ink/60 uppercase">{order.courier || 'Unassigned'}</p>
                       </div>
                       <ChevronRight size={14} className="text-ink/20 group-hover:text-rose group-hover:translate-x-1 transition-all" />
                     </div>

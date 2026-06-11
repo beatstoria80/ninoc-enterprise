@@ -37,10 +37,10 @@ export function FloatingReturCTA({ excludePaths = [], className = '' }: Floating
               <RefreshCw size={18} className="text-rose" strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-semibold text-ink uppercase tracking-wider leading-tight">
+              <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider leading-tight">
                 Retur & Refund
               </p>
-              <p className="text-[9px] text-ink/40 mt-0.5 leading-relaxed">
+              <p className="text-xs md:text-[9px] text-ink/40 mt-0.5 leading-relaxed">
                 Klaim 2x24 jam · Guest bisa ajukan
               </p>
             </div>
@@ -55,7 +55,7 @@ export function FloatingReturCTA({ excludePaths = [], className = '' }: Floating
           {/* CTA */}
           <Link
             href="/retur"
-            className="flex items-center justify-center gap-2 mx-4 mb-4 py-2.5 bg-rose text-white text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
+            className="flex items-center justify-center gap-2 mx-4 mb-4 py-2.5 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
           >
             <RefreshCw size={11} strokeWidth={1.5} />
             Ajukan Sekarang

@@ -45,7 +45,7 @@ export function WarehouseTab() {
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose transition-colors"
+          className="px-4 py-2 bg-ink text-white text-xs md:text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose transition-colors"
         >
           {isAdding ? 'Cancel' : <><Plus size={14} /> Add Hub</>}
         </button>
@@ -55,24 +55,24 @@ export function WarehouseTab() {
         <div className="bg-ink/5 p-6 rounded-xl border border-ink/10">
           <form onSubmit={handleAdd} className="space-y-4 max-w-md">
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-ink/50 mb-1">Hub Name</label>
+              <label className="block text-xs md:text-[10px] uppercase tracking-wider text-ink/50 mb-1">Hub Name</label>
               <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border border-ink/10 rounded focus:border-rose focus:outline-none text-sm" placeholder="e.g. NINOC Main Hub" />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-ink/50 mb-1">Street Address</label>
+              <label className="block text-xs md:text-[10px] uppercase tracking-wider text-ink/50 mb-1">Street Address</label>
               <textarea required value={formData.address_line} onChange={e => setFormData({...formData, address_line: e.target.value})} className="w-full px-3 py-2 border border-ink/10 rounded focus:border-rose focus:outline-none text-sm" placeholder="Street Name, No..." />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-ink/50 mb-1">City</label>
+                <label className="block text-xs md:text-[10px] uppercase tracking-wider text-ink/50 mb-1">City</label>
                 <input required type="text" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="w-full px-3 py-2 border border-ink/10 rounded focus:border-rose focus:outline-none text-sm" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-ink/50 mb-1">Postal Code</label>
+                <label className="block text-xs md:text-[10px] uppercase tracking-wider text-ink/50 mb-1">Postal Code</label>
                 <input required type="text" value={formData.postal_code} onChange={e => setFormData({...formData, postal_code: e.target.value})} className="w-full px-3 py-2 border border-ink/10 rounded focus:border-rose focus:outline-none text-sm" />
               </div>
             </div>
-            <button type="submit" className="w-full py-3 bg-ink text-white text-[10px] uppercase tracking-widest font-medium rounded hover:bg-rose transition-colors flex items-center justify-center gap-2">
+            <button type="submit" className="w-full py-3 bg-ink text-white text-xs md:text-[10px] uppercase tracking-widest font-medium rounded hover:bg-rose transition-colors flex items-center justify-center gap-2">
               <Save size={14} /> Save Warehouse
             </button>
           </form>
@@ -91,7 +91,7 @@ export function WarehouseTab() {
               </div>
               <div>
                 <h3 className="font-bold text-ink">{wh.name}</h3>
-                <span className="inline-flex px-2 py-0.5 bg-rose/10 text-rose text-[9px] uppercase tracking-wider font-medium rounded-full">
+                <span className="inline-flex px-2 py-0.5 bg-rose/10 text-rose text-xs md:text-[9px] uppercase tracking-wider font-medium rounded-full">
                   Central Hub
                 </span>
               </div>

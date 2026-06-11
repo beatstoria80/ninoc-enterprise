@@ -69,8 +69,8 @@ function CategoryCard({ cat, index, isSelected, onClick }: { cat: typeof CATEGOR
       <div className="relative z-10 flex items-center gap-2 md:gap-3 w-full">
         <motion.div className="flex-shrink-0" animate={{ color: isSelected ? white : isHovered ? white : brandColor.color }} transition={{ duration: DURATION.fast }}><Icon /></motion.div>
         <div className="flex items-center gap-1.5 min-w-0">
-          <motion.h3 className={`text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight whitespace-nowrap ${isSelected ? 'text-white' : 'text-ink'}`} animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{cat.label}</motion.h3>
-          <motion.span className={`text-[7px] md:text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${isSelected ? 'text-white/50' : 'text-ink/25'}`} animate={{ color: isSelected ? 'rgba(255,255,255,0.5)' : isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.25)' }} transition={{ duration: DURATION.fast }}>— {cat.sublabel}</motion.span>
+          <motion.h3 className={`text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight whitespace-nowrap ${isSelected ? 'text-white' : 'text-ink'}`} animate={{ color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#141414' }} transition={{ duration: DURATION.fast }}>{cat.label}</motion.h3>
+          <motion.span className={`text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${isSelected ? 'text-white/50' : 'text-ink/25'}`} animate={{ color: isSelected ? 'rgba(255,255,255,0.5)' : isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.25)' }} transition={{ duration: DURATION.fast }}>— {cat.sublabel}</motion.span>
         </div>
         <motion.span className={`ml-auto text-[6px] font-mono tracking-tighter px-1 py-0.5 flex-shrink-0 ${isSelected ? 'bg-white/20 text-white' : 'bg-ink/5 text-ink/30'}`} animate={{ backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(20,20,20,0.05)' }} transition={{ duration: DURATION.fast }}>{cat.spec}</motion.span>
         <motion.div className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-ink/20'}`} animate={{ x: isSelected || isHovered ? 2 : 0, color: isSelected || isHovered ? '#ffffff' : 'rgba(20,20,20,0.2)' }} transition={{ duration: DURATION.fast }}><ChevronRight size={12} strokeWidth={1.5} /></motion.div>
@@ -99,9 +99,9 @@ function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="space-y-1">
           <motion.p className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.15em] text-ink/30 hidden md:block" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{CATEGORIES.find((c) => c.id === product.category)?.label}</motion.p>
-          <motion.h3 className="text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink truncate" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>
+          <motion.h3 className="text-xs md:text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink truncate" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>
           <motion.div className="flex items-center justify-between pt-1 md:pt-2 border-t border-ink/5 mt-1 md:mt-2" animate={{ opacity: isHovered ? 1 : 0.8 }} transition={{ duration: DURATION.fast }}>
-            <motion.span className="text-[8px] md:text-[10px] font-display font-medium italic text-rose" animate={{ scale: isHovered ? 1.02 : 1 }} transition={{ duration: DURATION.fast }}>IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</motion.span>
+            <motion.span className="text-[11px] md:text-[8px] md:text-[10px] font-display font-medium italic text-rose" animate={{ scale: isHovered ? 1.02 : 1 }} transition={{ duration: DURATION.fast }}>IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</motion.span>
             {product.price_tag && <motion.span className="text-[5px] md:text-[6px] font-medium uppercase tracking-[0.1em] text-emerald-600 hidden md:inline" animate={{ opacity: isHovered ? 1 : 0.7 }} transition={{ duration: DURATION.fast }}>{product.price_tag}</motion.span>}
           </motion.div>
         </div>
@@ -139,10 +139,10 @@ export default function CategoryClient() {
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1800px] mx-auto">
         <div className="flex items-center justify-between mb-2 md:mb-3">
-          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.normal, ease: EASING.out }} className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2">
+          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.normal, ease: EASING.out }} className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2">
             <Grid3X3 size={10} className="text-rose" />Category Index
           </motion.h1>
-          <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose"><ArrowLeft size={10} className="rotate-180" /><span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span></PressButton>
+          <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose"><ArrowLeft size={10} className="rotate-180" /><span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span></PressButton>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/5 border border-ink/5 mb-3 md:mb-4">
@@ -154,8 +154,8 @@ export default function CategoryClient() {
         <AnimatePresence>
           {selectedCategory && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: DURATION.fast, ease: EASING.out }} className="flex items-center justify-between py-1.5 overflow-hidden mb-3">
-              <div className="flex items-center gap-2"><span className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span><span className="text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span></div>
-              <PressButton onClick={() => setSelectedCategory(null)} className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">Clear</PressButton>
+              <div className="flex items-center gap-2"><span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30">Filtering:</span><span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-rose">{CATEGORIES.find((c) => c.id === selectedCategory)?.label}</span></div>
+              <PressButton onClick={() => setSelectedCategory(null)} className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 hover:text-rose">Clear</PressButton>
             </motion.div>
           )}
         </AnimatePresence>
@@ -168,7 +168,7 @@ export default function CategoryClient() {
               ) : filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
               ) : (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-16 text-center"><p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">No products in this category</p></motion.div>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-16 text-center"><p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">No products in this category</p></motion.div>
               )}
             </motion.div>
           </AnimatePresence>
@@ -177,11 +177,11 @@ export default function CategoryClient() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: DURATION.medium }} className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5">
           <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 md:py-4 flex items-center justify-between">
             <div className="flex items-center gap-8">
-              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Units</p><p className="text-lg font-display font-medium italic text-ink">{products.length}</p></motion.div>
+              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Units</p><p className="text-lg font-display font-medium italic text-ink">{products.length}</p></motion.div>
               <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
-              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Active Categories</p><p className="text-lg font-display font-medium italic text-ink">{CATEGORIES.length}</p></motion.div>
+              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Active Categories</p><p className="text-lg font-display font-medium italic text-ink">{CATEGORIES.length}</p></motion.div>
             </div>
-            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose"><span className="text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span><ChevronRight size={14} /></PressButton>
+            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose"><span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span><ChevronRight size={14} /></PressButton>
           </div>
         </motion.div>
       </div>

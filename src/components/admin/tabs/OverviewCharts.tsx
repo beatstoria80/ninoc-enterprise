@@ -59,9 +59,9 @@ export default function OverviewCharts({
         <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
             <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Sales Analytics</h3>
-            <p className="text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Order Volume by Month</p>
+            <p className="text-xs md:text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Order Volume by Month</p>
           </div>
-          <select className="text-[10px] uppercase font-medium bg-ink/5 text-ink border-none rounded-sm py-1.5 px-2.5 focus:ring-0 outline-none cursor-pointer hover:bg-ink/10 transition-colors">
+          <select className="text-xs md:text-[10px] uppercase font-medium bg-ink/5 text-ink border-none rounded-sm py-1.5 px-2.5 focus:ring-0 outline-none cursor-pointer hover:bg-ink/10 transition-colors">
             <option>2026</option>
             <option>2025</option>
           </select>
@@ -105,10 +105,10 @@ export default function OverviewCharts({
         <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
             <h3 className="text-sm font-medium text-ink uppercase tracking-wide">Profit Margin</h3>
-            <p className="text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Net Profit per Month</p>
+            <p className="text-xs md:text-[9px] text-ink/40 mt-1 uppercase tracking-widest">Net Profit per Month</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-[9px] text-ink/60 uppercase tracking-wider font-medium">
+            <span className="flex items-center gap-1.5 text-xs md:text-[9px] text-ink/60 uppercase tracking-wider font-medium">
               <div className="flex gap-0.5">
                 <span className="w-1.5 h-2 rounded-[1px] bg-[#141414]"></span>
                 <span className="w-1.5 h-2 rounded-[1px] bg-[#4F46E5]"></span>

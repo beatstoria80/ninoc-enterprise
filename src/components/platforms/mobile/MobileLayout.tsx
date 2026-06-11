@@ -162,7 +162,7 @@ function MenuItem({ href, label, index, onClick, isActive = false, highlight = f
       >
         <motion.span
           className={cn(
-            "text-[11px] font-medium uppercase tracking-[0.3em]",
+            "text-sm md:text-[11px] font-medium uppercase tracking-[0.3em]",
             isActive ? "text-rose" : "text-ink group-hover:text-rose",
             highlight && "text-rose font-semibold"
           )}
@@ -333,7 +333,7 @@ export default function MobileLayout({
                     </motion.div>
                     <div className="flex flex-col items-start leading-none">
                       <span className="text-[6px] font-medium uppercase tracking-[0.2em] text-ink/40">Return to</span>
-                      <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink">Catalog</span>
+                      <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.1em] text-ink">Catalog</span>
                     </div>
                   </PressScale>
                 </Link>
@@ -393,7 +393,7 @@ export default function MobileLayout({
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="SEARCH CATALOG..."
                       autoFocus
-                      className="w-full bg-transparent py-1 text-[10px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
+                      className="w-full bg-transparent py-1 text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
                     />
                     {searchQuery && (
                       <motion.button
@@ -406,7 +406,7 @@ export default function MobileLayout({
                       </motion.button>
                     )}
                   </motion.div>
-                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-[10px] font-medium uppercase tracking-widest text-ink/30">
+                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/30">
                     CLOSE
                   </PressScale>
                 </div>
@@ -425,7 +425,7 @@ export default function MobileLayout({
                 )}
                 {!isSearching && searchQuery && searchResults.length === 0 && (
                   <div className="p-12 text-center">
-                    <p className="text-[10px] font-medium uppercase tracking-widest text-ink/20">No items found</p>
+                    <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/20">No items found</p>
                   </div>
                 )}
                 {!isSearching && searchResults.map((product, i) => (
@@ -446,8 +446,8 @@ export default function MobileLayout({
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="text-[10px] font-medium text-ink uppercase tracking-tight">{product.name}</p>
-                        <p className="text-[9px] text-rose italic tracking-wider mt-0.5">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</p>
+                        <p className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-tight">{product.name}</p>
+                        <p className="text-xs md:text-[9px] text-rose italic tracking-wider mt-0.5">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</p>
                       </div>
                       <motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
                         <ArrowRightIcon />
@@ -525,14 +525,14 @@ export default function MobileLayout({
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center justify-between py-3 px-4 bg-ink text-white"
                 >
-                  <span className="text-[10px] font-medium uppercase tracking-[0.3em]">Cart</span>
+                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em]">Cart</span>
                   <div className="flex items-center gap-2">
                     {cartCount > 0 && (
                       <motion.span
                         key={cartCount}
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="w-5 h-5 bg-rose rounded-full flex items-center justify-center text-white text-[8px] font-medium"
+                        className="w-5 h-5 bg-rose rounded-full flex items-center justify-center text-white text-[11px] md:text-[8px] font-medium"
                       >
                         {cartCount}
                       </motion.span>
@@ -546,17 +546,17 @@ export default function MobileLayout({
               <div className="px-5 py-6 bg-ink/[0.02] space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival</h4>
-                    <Link prefetch={false} href="/legal" className="block text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
+                    <h4 className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Archival</h4>
+                    <Link prefetch={false} href="/legal" className="block text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Legal Specs</Link>
                   </div>
                   <div className="space-y-3">
-                    <h4 className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
-                    <button onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new CustomEvent('open-support-chat')); }} className="text-[9px] font-medium uppercase tracking-widest text-rose/60">Help</button>
+                    <h4 className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
+                    <button onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new CustomEvent('open-support-chat')); }} className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-rose/60">Help</button>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-ink/[0.05]">
-                  <p className="text-[9px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">
+                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/30 leading-relaxed">
                     Bandung, West Java, ID
                   </p>
                 </div>
@@ -564,16 +564,16 @@ export default function MobileLayout({
                 <div className="flex items-center gap-4 opacity-30">
                   <div className="flex items-center gap-1.5">
                     <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                    <span className="text-[7px] font-medium uppercase tracking-widest">Secure</span>
+                    <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Secure</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                    <span className="text-[7px] font-medium uppercase tracking-widest">Verified</span>
+                    <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Verified</span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-[7px] uppercase tracking-[0.4em] text-ink/15">NINOC © 2026</p>
+                  <p className="text-[10px] md:text-[7px] uppercase tracking-[0.4em] text-ink/15">NINOC © 2026</p>
                 </div>
               </div>
             </motion.div>
@@ -615,7 +615,7 @@ export default function MobileLayout({
               >
                 <HomeIcon active={isActive('/')} />
               </motion.div>
-              <span className={cn("text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-ink/40")}>
                 Home
               </span>
               {isActive('/') && (
@@ -639,12 +639,12 @@ export default function MobileLayout({
                   key={cartCount}
                   initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="absolute top-0 right-2 w-4 h-4 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center"
+                  className="absolute top-0 right-2 w-4 h-4 bg-rose text-white text-[10px] md:text-[7px] font-medium rounded-full flex items-center justify-center"
                 >
                   {cartCount}
                 </motion.span>
               )}
-              <span className={cn("text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-ink/40")}>
                 Cart
               </span>
             </Link>
@@ -660,13 +660,13 @@ export default function MobileLayout({
                   <motion.span
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[7px] font-medium rounded-full flex items-center justify-center"
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[10px] md:text-[7px] font-medium rounded-full flex items-center justify-center"
                   >
                     {supportUnreadCount}
                   </motion.span>
                 )}
               </div>
-              <span className="text-[7px] font-medium uppercase tracking-wider text-ink/40">Support</span>
+              <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-wider text-ink/40">Support</span>
             </PressScale>
 
             {/* Profile */}
@@ -677,7 +677,7 @@ export default function MobileLayout({
               >
                 <UserIcon active={isActive('/profile')} />
               </motion.div>
-              <span className={cn("text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-ink/40")}>
                 Profile
               </span>
             </Link>

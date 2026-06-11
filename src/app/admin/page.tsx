@@ -1027,7 +1027,7 @@ export default function AdminDashboard() {
       <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">
           <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
-          <span className="text-[8px] text-gray-300 uppercase tracking-wider">Admin</span>
+          <span className="text-[11px] md:text-[8px] text-gray-300 uppercase tracking-wider">Admin</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -1045,7 +1045,7 @@ export default function AdminDashboard() {
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <div>
                 <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
-                <p className="text-[8px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
+                <p className="text-[11px] md:text-[8px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
                 <X size={16} />
@@ -1080,7 +1080,7 @@ export default function AdminDashboard() {
             <div className="p-4 border-t border-gray-100">
               <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                 <LogOut size={16} />
-                <span className="text-[10px] uppercase tracking-wider">Logout</span>
+                <span className="text-xs md:text-[10px] uppercase tracking-wider">Logout</span>
               </button>
             </div>
           </aside>
@@ -1129,7 +1129,7 @@ export default function AdminDashboard() {
             className="w-full flex items-center gap-3 px-4 py-2.5 text-ink/40 hover:text-rose hover:bg-rose/5 rounded transition-all"
           >
             <LogOut size={14} />
-            <span className="text-[9px] uppercase tracking-wider font-medium">Logout</span>
+            <span className="text-xs md:text-[9px] uppercase tracking-wider font-medium">Logout</span>
           </button>
         </div>
       </aside>
@@ -1139,7 +1139,7 @@ export default function AdminDashboard() {
         {/* Desktop Header */}
         <header className="hidden md:flex h-14 bg-white border-b border-ink/5 px-8 items-center justify-between shrink-0">
           <div className="flex-1 flex items-center gap-2">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-ink/40">
+            <span className="text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/40">
               {['products', 'upload'].includes(activeTab) ? 'Product / ' :
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Inventory / ' :
@@ -1147,7 +1147,7 @@ export default function AdminDashboard() {
                ['messages', 'placeholders', 'wabroadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
-            <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
+            <h1 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-wider">
               {activeTab === 'overview' ? 'Overview' :
                activeTab === 'products' ? 'Product List' :
                activeTab === 'upload' ? 'Upload Images' :
@@ -1174,7 +1174,7 @@ export default function AdminDashboard() {
               <input
                 type="text"
                 placeholder="Title"
-                className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/20"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-sm md:text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/20"
               />
             </div>
           </div>
@@ -1190,12 +1190,12 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden border border-ink/5 group-hover:border-rose/20 transition-colors">
                 {adminUser?.email ? (
-                  <span className="text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
+                  <span className="text-xs md:text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
                 ) : (
                   <User size={12} className="text-ink/50" />
                 )}
               </div>
-              <span className="text-[10px] font-medium text-ink group-hover:text-rose transition-colors">
+              <span className="text-xs md:text-[10px] font-medium text-ink group-hover:text-rose transition-colors">
                 {adminUser?.email?.split('@')[0] || 'Admin User'}
               </span>
             </div>
@@ -1417,7 +1417,7 @@ export default function AdminDashboard() {
                   <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">Basic Information</h3>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Product Name (SEO Optimized)</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Product Name (SEO Optimized)</label>
                     <textarea
                       value={productForm.name}
                       onChange={(e) => handleProductNameChange(e.target.value)}
@@ -1428,7 +1428,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Slug URL</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Slug URL</label>
                     <input
                       type="text"
                       value={productForm.slug}
@@ -1440,7 +1440,7 @@ export default function AdminDashboard() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price (IDR)</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price (IDR)</label>
                       <input
                         type="text"
                         value={productForm.price}
@@ -1450,7 +1450,7 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Category</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Category</label>
                       <select
                         value={productForm.category}
                         onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
@@ -1466,7 +1466,7 @@ export default function AdminDashboard() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price Tag (Optional Badge above Price)</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Price Tag (Optional Badge above Price)</label>
                       <select
                         value={productForm.price_tag}
                         onChange={(e) => setProductForm({ ...productForm, price_tag: e.target.value })}
@@ -1482,7 +1482,7 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tipe Potongan (Fit Type)</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tipe Potongan (Fit Type)</label>
                       <select
                         value={productForm.specifications?.find(s => s.label === 'Fit' || s.label === 'Jenis Pakaian')?.value.includes('Oversize') ? 'Oversize' : 'Standar'}
                         onChange={(e) => {
@@ -1506,8 +1506,8 @@ export default function AdminDashboard() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Custom Badge Text</label>
-                      <span className="text-[9px] text-gray-400 italic">Overrides default &quot;Studio Edition&quot;</span>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Custom Badge Text</label>
+                      <span className="text-xs md:text-[9px] text-gray-400 italic">Overrides default &quot;Studio Edition&quot;</span>
                     </div>
                     <input
                       type="text"
@@ -1523,7 +1523,7 @@ export default function AdminDashboard() {
                           type="button"
                           onClick={() => setProductForm({ ...productForm, badge_text: preset })}
                           className={cn(
-                            "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                            "px-2 py-1 text-xs md:text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
                             productForm.badge_text === preset 
                               ? "bg-rose text-white border-rose" 
                               : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
@@ -1535,7 +1535,7 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => setProductForm({ ...productForm, badge_text: '' })}
-                        className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all ml-auto"
+                        className="px-2 py-1 text-xs md:text-[9px] uppercase tracking-wider font-medium rounded border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all ml-auto"
                       >
                         Clear
                       </button>
@@ -1543,7 +1543,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (ID)</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (ID)</label>
                     <textarea
                       value={productForm.description}
                       onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
@@ -1552,7 +1552,7 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (EN)</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Description (EN)</label>
                     <textarea
                       value={productForm.description_en || ''}
                       onChange={(e) => setProductForm({ ...productForm, description_en: e.target.value })}
@@ -1564,11 +1564,11 @@ export default function AdminDashboard() {
 
                   <div>
                     <div className="flex justify-between items-end mb-2">
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Specifications (Key-Value)</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Specifications (Key-Value)</label>
                       <button
                         type="button"
                         onClick={() => setProductForm({ ...productForm, specifications: [...(productForm.specifications || []), { label: '', value: '' }] })}
-                        className="text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
+                        className="text-xs md:text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
                       >
                         + Add Spec
                       </button>
@@ -1633,7 +1633,7 @@ export default function AdminDashboard() {
                               ]
                             });
                           }}
-                          className="text-[10px] px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded transition-colors border border-gray-200"
+                          className="text-xs md:text-[10px] px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded transition-colors border border-gray-200"
                         >
                           Auto-Fill (Berdasarkan Kategori: {productForm.category === 'celana' ? 'Celana' : 'Kaos/Atasan'})
                         </button>
@@ -1643,11 +1643,11 @@ export default function AdminDashboard() {
                   {/* ===== MEASUREMENT / SIZE CHART ===== */}
                   <div>
                     <div className="flex justify-between items-end mb-2">
-                      <label className="block text-[10px] uppercase tracking-wider text-gray-500">Measurement / Size Chart (CM)</label>
+                      <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Measurement / Size Chart (CM)</label>
                       <button
                         type="button"
                         onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: '', chest: '', length: '' }] })}
-                        className="text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
+                        className="text-xs md:text-[9px] uppercase tracking-wider text-rose hover:text-rose/80 font-medium"
                       >
                         + Add Size
                       </button>
@@ -1655,7 +1655,7 @@ export default function AdminDashboard() {
                     {(productForm.measurements?.length || 0) > 0 && (
                       <div className="space-y-2">
                         {productForm.category === 'celana' ? (
-                          <div className="grid grid-cols-[1fr_1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                          <div className="grid grid-cols-[1fr_1fr_1fr_1fr_40px] gap-2 text-xs md:text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
                             <span>Size</span>
                             <span>Waist (cm)</span>
                             <span>Length (cm)</span>
@@ -1663,7 +1663,7 @@ export default function AdminDashboard() {
                             <span></span>
                           </div>
                         ) : (
-                          <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                          <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-xs md:text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
                             <span>Size</span>
                             <span>Chest (cm)</span>
                             <span>Length (cm)</span>
@@ -1771,7 +1771,7 @@ export default function AdminDashboard() {
                                 disabled={!!exists}
                                 onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, waist: w, length: l, leg_opening: leg }] })}
                                 className={cn(
-                                  "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                                  "px-2 py-1 text-xs md:text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
                                   exists
                                     ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
                                     : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
@@ -1790,7 +1790,7 @@ export default function AdminDashboard() {
                                 disabled={!!exists}
                                 onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln }] })}
                                 className={cn(
-                                  "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                                  "px-2 py-1 text-xs md:text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
                                   exists
                                     ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
                                     : "bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose"
@@ -1806,7 +1806,7 @@ export default function AdminDashboard() {
 
                   {/* ===== MODEL INFO ===== */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Model Info (Optional)</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-1">Model Info (Optional)</label>
                     <input
                       type="text"
                       value={productForm.model_info || ''}
@@ -1817,7 +1817,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
                     <div className="flex items-center gap-3">
                       <input
                         type="url"
@@ -1826,7 +1826,7 @@ export default function AdminDashboard() {
                         placeholder="https://..."
                         className="flex-1 px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
                       />
-                      <label className="relative flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
+                      <label className="relative flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
                         {isUploadingProductImage ? (
                           <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
                         ) : (
@@ -1845,18 +1845,18 @@ export default function AdminDashboard() {
 
                   {/* Additional Images — for product gallery navigation */}
                   <div className="space-y-3">
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
                     {(['perspective1','perspective2','perspective3','perspective4'] as const).map((field, idx) => (
                       <div key={field} className="flex items-center gap-2">
-                        <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
+                        <span className="text-xs md:text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
                         <input
                           type="url"
                           value={productForm[field]}
                           onChange={(e) => setProductForm({ ...productForm, [field]: e.target.value })}
                           placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded text-xs md:text-[10px] focus:outline-none focus:border-rose/50"
                         />
-                        <label className="relative flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                        <label className="relative flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs md:text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
                           <span>Upload</span>
                           <input
                             type="file"
@@ -1964,7 +1964,7 @@ export default function AdminDashboard() {
                         setProductForm({ ...productForm, variants: newVariants });
                         showToast(`Success: ${newVariants.length} SKUs generated automatically!`, 'success');
                       }}
-                      className="px-3 py-1.5 bg-ink text-white text-[9px] uppercase tracking-wider font-medium rounded hover:bg-ink/80 transition-colors"
+                      className="px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] uppercase tracking-wider font-medium rounded hover:bg-ink/80 transition-colors"
                     >
                       Auto-Generate SKUs
                     </button>
@@ -1988,7 +1988,7 @@ export default function AdminDashboard() {
                           {colorGroups.map((group) => (
                             <div key={group.originalIndices[0]} className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
                               <div className="flex items-center justify-between pb-3 border-b border-gray-200 flex-wrap gap-3">
-                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
+                                  <span className="text-xs md:text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color:</span>
                                   <input
                                     type="text"
                                     value={group.color}
@@ -2008,7 +2008,7 @@ export default function AdminDashboard() {
                                     const newVariants = productForm.variants.filter((_, i) => !group.originalIndices.includes(i));
                                     setProductForm({ ...productForm, variants: newVariants });
                                   }}
-                                  className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
+                                  className="text-xs md:text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
                                 >
                                   Remove Color
                                 </button>
@@ -2066,7 +2066,7 @@ export default function AdminDashboard() {
                                 
                                 {group.originalIndices.length > 0 && (
                                   <div className="flex flex-col gap-2 border-t border-gray-200 pt-3 mt-3">
-                                      <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities & SKU:</span>
+                                      <span className="text-xs md:text-[10px] uppercase tracking-wider text-gray-500 font-medium mb-1">Set Stock Quantities & SKU:</span>
                                       {group.originalIndices.slice().sort((a, b) => {
                                         const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'ONE SIZE', '28', '30', '32', '34', '36', '38', '40', '42'];
                                       const sizeA = productForm.variants[a].size || '';
@@ -2084,7 +2084,7 @@ export default function AdminDashboard() {
                                             <span className="text-xs font-medium text-gray-700 w-16">Size {variant.size}</span>
                                             <div className="flex-1 flex items-center gap-3 justify-end">
                                                <div className="flex items-center gap-1.5 flex-1 max-w-[200px]">
-                                                 <span className="text-[9px] text-gray-400 font-medium uppercase tracking-widest">SKU</span>
+                                                 <span className="text-xs md:text-[9px] text-gray-400 font-medium uppercase tracking-widest">SKU</span>
                                                  <input
                                                    type="text"
                                                    placeholder="Auto/Manual"
@@ -2094,12 +2094,12 @@ export default function AdminDashboard() {
                                                      newVariants[idx] = { ...newVariants[idx], sku: e.target.value.toUpperCase() };
                                                      setProductForm({ ...productForm, variants: newVariants });
                                                    }}
-                                                   className="w-full px-2 py-1.5 text-[10px] border border-gray-200 rounded font-mono focus:border-rose/50 outline-none placeholder:text-gray-300"
+                                                   className="w-full px-2 py-1.5 text-xs md:text-[10px] border border-gray-200 rounded font-mono focus:border-rose/50 outline-none placeholder:text-gray-300"
                                                  />
                                                </div>
                                                <div className="w-px h-6 bg-gray-200" />
                                                <div className="flex items-center gap-1.5">
-                                                 <span className="text-[10px] text-gray-400 font-medium">QTY</span>
+                                                 <span className="text-xs md:text-[10px] text-gray-400 font-medium">QTY</span>
                                                  <input
                                                    type="number"
                                                    min="0"
@@ -2128,7 +2128,7 @@ export default function AdminDashboard() {
                                 variants: [...productForm.variants, { id: '', size: 'New Size', color: 'New Color', stock_quantity: 0 }]
                               });
                             }}
-                            className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-gray-500 hover:border-rose/50 hover:text-rose transition-colors bg-white font-medium"
+                            className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-xs md:text-[10px] uppercase tracking-wider text-gray-500 hover:border-rose/50 hover:text-rose transition-colors bg-white font-medium"
                           >
                             <Plus size={14} /> Add New Color Variant
                           </button>
@@ -2151,7 +2151,7 @@ export default function AdminDashboard() {
                   className="px-4 py-2 text-sm bg-rose text-white rounded hover:bg-rose/90 flex items-center gap-2"
                 >
                   <Save size={16} />
-                  <span className="text-[10px] uppercase tracking-wider">{isEditMode ? 'Update Product' : 'Save Product'}</span>
+                  <span className="text-xs md:text-[10px] uppercase tracking-wider">{isEditMode ? 'Update Product' : 'Save Product'}</span>
                 </button>
               </div>
             </motion.div>
@@ -2218,7 +2218,7 @@ export default function AdminDashboard() {
               <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-medium text-gray-900">Product Costing</h2>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{selectedProductForCosting.name}</p>
+                  <p className="text-xs md:text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{selectedProductForCosting.name}</p>
                 </div>
                 <button onClick={() => setIsCostingModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                   <X size={18} />
@@ -2228,22 +2228,22 @@ export default function AdminDashboard() {
               <div className="p-6 space-y-5">
                 {/* Cost Components */}
                 <div className="space-y-3">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
+                  <h3 className="text-xs md:text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Supplier Cost</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Supplier Cost</label>
                       <input type="number" value={costingForm.supplier_cost} onChange={e => setCostingForm({...costingForm, supplier_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Shipping Cost</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Shipping Cost</label>
                       <input type="number" value={costingForm.shipping_cost} onChange={e => setCostingForm({...costingForm, shipping_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Packaging Cost</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Packaging Cost</label>
                       <input type="number" value={costingForm.packaging_cost} onChange={e => setCostingForm({...costingForm, packaging_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Operasional %</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Operasional %</label>
                       <input type="number" value={costingForm.operasional_pct} onChange={e => setCostingForm({...costingForm, operasional_pct: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                   </div>
@@ -2251,28 +2251,28 @@ export default function AdminDashboard() {
 
                 {/* Tax */}
                 <div>
-                  <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tax Rate (%)</label>
+                  <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tax Rate (%)</label>
                   <input type="number" value={costingForm.tax_rate} onChange={e => setCostingForm({...costingForm, tax_rate: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                 </div>
 
                 {/* Courier Costs */}
                 <div className="space-y-3">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Kurir</h3>
+                  <h3 className="text-xs md:text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Kurir</h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Regency</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Regency</label>
                       <input type="number" value={costingForm.courier_regency_cost} onChange={e => setCostingForm({...costingForm, courier_regency_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Inter-Regency</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Inter-Regency</label>
                       <input type="number" value={costingForm.courier_inter_regency_cost} onChange={e => setCostingForm({...costingForm, courier_inter_regency_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Same Day</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Same Day</label>
                       <input type="number" value={costingForm.courier_same_day_cost} onChange={e => setCostingForm({...costingForm, courier_same_day_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Instant</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Instant</label>
                       <input type="number" value={costingForm.courier_instant_cost} onChange={e => setCostingForm({...costingForm, courier_instant_cost: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                   </div>
@@ -2280,14 +2280,14 @@ export default function AdminDashboard() {
 
                 {/* Target & Selling Price */}
                 <div className="space-y-3 pt-2 border-t border-gray-100">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Margin & Harga Jual</h3>
+                  <h3 className="text-xs md:text-[10px] uppercase tracking-widest text-gray-400 font-medium">Margin & Harga Jual</h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Target Margin %</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Target Margin %</label>
                       <input type="number" value={costingForm.target_margin_pct} onChange={e => setCostingForm({...costingForm, target_margin_pct: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Selling Price</label>
+                      <label className="block text-xs md:text-[9px] uppercase tracking-wider text-gray-500 mb-1">Selling Price</label>
                       <input type="number" value={costingForm.selling_price} onChange={e => setCostingForm({...costingForm, selling_price: Number(e.target.value)})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50" />
                     </div>
                   </div>
@@ -2295,22 +2295,22 @@ export default function AdminDashboard() {
 
                 {/* Preview */}
                 <div className="bg-ink/[0.02] rounded-xl p-4 space-y-2">
-                  <p className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">Cost Preview</p>
-                  <div className="flex justify-between text-[10px]">
+                  <p className="text-xs md:text-[9px] uppercase tracking-widest text-gray-400 font-medium">Cost Preview</p>
+                  <div className="flex justify-between text-xs md:text-[10px]">
                     <span className="text-gray-500">Base Cost</span>
                     <span className="font-medium">IDR {(costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost).toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="flex justify-between text-[10px]">
+                  <div className="flex justify-between text-xs md:text-[10px]">
                     <span className="text-gray-500">Operasional ({costingForm.operasional_pct}%)</span>
                     <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100).toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="flex justify-between text-[10px]">
+                  <div className="flex justify-between text-xs md:text-[10px]">
                     <span className="text-gray-500">Tax ({costingForm.tax_rate}%)</span>
                     <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100 * costingForm.tax_rate / 100).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
-                    <span className="text-[10px] font-medium text-gray-700">Total Cost</span>
-                    <span className="text-[10px] font-medium text-rose">
+                    <span className="text-xs md:text-[10px] font-medium text-gray-700">Total Cost</span>
+                    <span className="text-xs md:text-[10px] font-medium text-rose">
                       IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * (1 + costingForm.operasional_pct / 100) * (1 + costingForm.tax_rate / 100)).toLocaleString('id-ID')}
                     </span>
                   </div>
@@ -2348,7 +2348,7 @@ export default function AdminDashboard() {
                   className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-lg hover:bg-rose/90"
                 >
                   <Save size={14} />
-                  <span className="text-[10px] uppercase tracking-wider">Save Costing</span>
+                  <span className="text-xs md:text-[10px] uppercase tracking-wider">Save Costing</span>
                 </button>
               </div>
             </motion.div>
@@ -2389,7 +2389,7 @@ export default function AdminDashboard() {
               >
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
+                  <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
                   <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
                 </div>
                 <div className="flex items-center gap-2">
@@ -2397,7 +2397,7 @@ export default function AdminDashboard() {
                     setIsPrintPreviewOpen(true);
                   }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
                     <Printer size={14} />
-                    <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
+                    <span className="text-xs md:text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
                   </button>
                   <button onClick={() => {
                     setIsOrderModalOpen(false);
@@ -2413,14 +2413,14 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Status */}
                   <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
+                    <p className="text-xs md:text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
                     <div className="flex flex-wrap gap-1">
                       {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
                         <button
                           key={status}
                           onClick={() => updateOrderStatus(selectedOrder.id, status as OrderStatus)}
                           className={cn(
-                            "px-2 py-1 text-[9px] uppercase tracking-wider rounded border transition-colors",
+                            "px-2 py-1 text-xs md:text-[9px] uppercase tracking-wider rounded border transition-colors",
                             selectedOrder.status === status
                               ? "bg-rose text-white border-rose"
                               : "bg-white text-gray-600 border-gray-200 hover:border-rose"
@@ -2434,7 +2434,7 @@ export default function AdminDashboard() {
 
                   {/* Tracking */}
                   <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
+                    <p className="text-xs md:text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
                     <input
                       type="text"
                       defaultValue={selectedOrder.tracking_id || ''}
@@ -2447,7 +2447,7 @@ export default function AdminDashboard() {
 
                 {/* Row 2: Customer Destination */}
                 <div className="border border-gray-200 p-3 rounded-lg">
-                  <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
+                  <p className="text-xs md:text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
                   <div className="text-xs leading-relaxed text-gray-800">
                     <span className="font-medium uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
                     <span className="text-gray-500 font-mono">
@@ -2461,7 +2461,7 @@ export default function AdminDashboard() {
                 {/* Row 3: Items */}
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
-                    <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
+                    <p className="text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
                   </div>
                   <div className="divide-y divide-gray-100">
                     {selectedOrder.order_items?.map((item, idx) => {
@@ -2471,9 +2471,9 @@ export default function AdminDashboard() {
                           <div>
                             <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {item.size || 'OS'}</span>
-                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
-                              <span className="text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
+                              <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {item.size || 'OS'}</span>
+                              <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
+                              <span className="text-xs md:text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
                             </div>
                           </div>
                           <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
@@ -2484,7 +2484,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Row 4: Summary */}
-                <div className="border border-gray-200 rounded-lg p-3 text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
+                <div className="border border-gray-200 rounded-lg p-3 text-xs md:text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
                   <div className="flex justify-between">
                     <span>Value Subtotal</span>
                     <span className="text-gray-900 font-mono">IDR {(() => {

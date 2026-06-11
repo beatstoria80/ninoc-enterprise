@@ -37,7 +37,7 @@ export default async function SupplierLayout({
           <p className="text-sm text-ink/60 mb-6">
             Thank you for applying to be a NINOC B2B Manufacturer. Our curation team is currently reviewing your capacity and sample submission. We will notify you via email once your factory is approved.
           </p>
-          <Link href="/" className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors">
+          <Link href="/" className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors">
             Return to Homepage
           </Link>
         </div>
@@ -53,7 +53,7 @@ export default async function SupplierLayout({
       <aside className="w-64 bg-ink text-white/70 flex flex-col hidden md:flex shrink-0">
         <div className="p-6 border-b border-white/10">
           <h1 className="text-xl font-display italic text-white mb-1">NINOC B2B</h1>
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em]">{supplierName}</p>
+          <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]">{supplierName}</p>
         </div>
 
         <nav className="flex-1 py-6 px-4 space-y-2">

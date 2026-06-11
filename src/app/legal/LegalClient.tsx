@@ -82,16 +82,16 @@ export default function LegalClient() {
         <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
           <ArrowLeft size={12} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           <div className="flex flex-col leading-none">
-            <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
-            <span className="text-[9px] font-medium uppercase tracking-widest text-ink">Back to Atelier</span>
+            <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
+            <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">Back to Atelier</span>
           </div>
         </Link>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-          <span className="text-[9px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC</span>
+          <span className="text-xs md:text-[9px] font-display font-medium italic tracking-tighter text-rose uppercase">NINOC</span>
         </div>
 
-        <div className="flex items-center gap-4 text-[9px] font-medium tracking-widest border border-ink/5 rounded-full px-3 py-1.5 bg-white/50 shadow-sm">
+        <div className="flex items-center gap-4 text-xs md:text-[9px] font-medium tracking-widest border border-ink/5 rounded-full px-3 py-1.5 bg-white/50 shadow-sm">
           <button onClick={() => handleLangChange('ID')} className={`transition-all ${lang === 'ID' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>ID</button>
           <span className="text-ink/5">|</span>
           <button onClick={() => handleLangChange('EN')} className={`transition-all ${lang === 'EN' ? 'text-rose' : 'text-ink/20 hover:text-ink'}`}>EN</button>
@@ -103,11 +103,11 @@ export default function LegalClient() {
         <div className="flex items-baseline justify-between mb-4 border-b border-ink/5 pb-2">
           <div className="flex items-baseline gap-4">
             <h1 className="text-xl md:text-2xl font-display font-medium italic tracking-tighter text-ink uppercase leading-none">{t.title}</h1>
-            <span className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/60">{t.updated}</span>
+            <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/60">{t.updated}</span>
           </div>
           <div className="flex items-center gap-2">
              <div className="w-1 h-1 rounded-full bg-emerald-500" />
-             <span className="text-[7px] font-medium uppercase tracking-widest text-emerald-600/50">Studio Live</span>
+             <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-emerald-600/50">Studio Live</span>
           </div>
         </div>
 
@@ -118,17 +118,17 @@ export default function LegalClient() {
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.terms.title}</h2>
                 </div>
-                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 01</span>
+                <span className="text-[10px] md:text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 01</span>
              </div>
 
              <div className="space-y-5 pb-6">
                 {t.terms.sections.map((s) => (
                   <div key={s.id} className="space-y-1 group">
                      <div className="flex items-center gap-4">
-                        <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
-                        <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
+                        <span className="text-[11px] md:text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
+                        <h3 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8">
+                     <p className="text-xs md:text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8">
                         {s.text}
                      </p>
                   </div>
@@ -141,17 +141,17 @@ export default function LegalClient() {
                 <div className="flex items-center gap-3">
                    <h2 className="text-[12px] font-display font-medium italic text-ink uppercase tracking-[0.3em]">{t.privacy.title}</h2>
                 </div>
-                <span className="text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 02</span>
+                <span className="text-[10px] md:text-[7px] font-medium text-ink/20 uppercase tracking-[0.4em]">Section 02</span>
              </div>
 
              <div className="space-y-5 pb-6">
                 {t.privacy.sections.map((s) => (
                   <div key={s.id} className="space-y-1 group">
                      <div className="flex items-center gap-4">
-                        <span className="text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
-                        <h3 className="text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
+                        <span className="text-[11px] md:text-[8px] font-medium text-rose/40 tabular-nums">{s.id}</span>
+                        <h3 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-widest">{s.title}</h3>
                      </div>
-                     <p className="text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8">
+                     <p className="text-xs md:text-[10px] font-medium leading-relaxed text-ink/60 uppercase tracking-wide pl-8">
                         {s.text}
                      </p>
                   </div>
@@ -161,9 +161,9 @@ export default function LegalClient() {
              <div className="pt-6 border-t border-ink/5 space-y-2 pb-12">
                 <div className="flex items-center gap-3">
                    <Shield size={10} className="text-rose/40" />
-                   <span className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol / UU No. 8 Tahun 1999</span>
+                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol / UU No. 8 Tahun 1999</span>
                 </div>
-                <p className="text-[8px] text-ink/20 uppercase tracking-[0.1em] leading-tight max-w-sm">
+                <p className="text-[11px] md:text-[8px] text-ink/20 uppercase tracking-[0.1em] leading-tight max-w-sm">
                    THIS DOCUMENT IS LEGALLY BINDING. PROTECTING BRAND INTEGRITY AND CONSUMER RIGHTS IN ACCORDANCE WITH THE LAWS OF THE REPUBLIC OF INDONESIA.
                 </p>
              </div>

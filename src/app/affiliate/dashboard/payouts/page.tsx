@@ -54,7 +54,7 @@ export default function PayoutsPage() {
                     <p className="font-medium text-sm text-ink">{item.amount}</p>
                     <p className="text-xs text-ink/40 mt-1">{item.date}</p>
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm text-${item.color}-600 bg-${item.color}-50`}>
+                  <span className={`text-xs md:text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm text-${item.color}-600 bg-${item.color}-50`}>
                     {item.status}
                   </span>
                 </div>
@@ -128,7 +128,7 @@ export default function PayoutsPage() {
                 </div>
               </div>
               {!idUploaded && (
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose bg-rose/10 px-2 py-1 rounded-sm">
+                <span className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-rose bg-rose/10 px-2 py-1 rounded-sm">
                   Belum Lengkap
                 </span>
               )}
@@ -148,7 +148,7 @@ export default function PayoutsPage() {
                   <Upload size={18} className="text-ink/60" />
                 </div>
                 <h3 className="text-sm font-medium text-ink mb-1">Upload KTP Asli</h3>
-                <p className="text-[10px] text-ink/40 uppercase tracking-wider">Format: JPG/PNG/PDF (Maks 2MB)</p>
+                <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-wider">Format: JPG/PNG/PDF (Maks 2MB)</p>
               </div>
 
               {/* REKENING KORAN UPLOAD */}
@@ -157,7 +157,7 @@ export default function PayoutsPage() {
                   <Upload size={18} className="text-ink/60" />
                 </div>
                 <h3 className="text-sm font-medium text-ink mb-1">Upload Mutasi / Rek. Koran</h3>
-                <p className="text-[10px] text-ink/40 uppercase tracking-wider">Halaman depan buku tabungan</p>
+                <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-wider">Halaman depan buku tabungan</p>
               </div>
             </div>
 

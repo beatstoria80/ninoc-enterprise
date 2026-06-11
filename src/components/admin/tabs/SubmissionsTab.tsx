@@ -94,7 +94,7 @@ export function SubmissionsTab() {
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-3">
                 <h3 className="font-bold text-ink text-lg">{sub.product_name}</h3>
-                <span className="px-2 py-0.5 bg-ink/5 text-[10px] uppercase tracking-widest font-medium rounded text-ink/60">
+                <span className="px-2 py-0.5 bg-ink/5 text-xs md:text-[10px] uppercase tracking-widest font-medium rounded text-ink/60">
                   {sub.categories?.name || 'Uncategorized'}
                 </span>
               </div>

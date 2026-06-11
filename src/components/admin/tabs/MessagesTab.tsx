@@ -230,8 +230,8 @@ export function MessagesTab({
         <div className="p-5 border-b border-ink/5 bg-ink/[0.01]">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Support Center</h3>
-              <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1.5">{chatSessions.length} sessions</p>
+              <h3 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Support Center</h3>
+              <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1.5">{chatSessions.length} sessions</p>
             </div>
             <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
           </div>
@@ -249,7 +249,7 @@ export function MessagesTab({
                   key={tab.key}
                   onClick={() => setSubTab(tab.key)}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1 py-1.5 rounded-sm text-[8px] font-semibold uppercase tracking-wider transition-all duration-200",
+                    "flex-1 flex items-center justify-center gap-1 py-1.5 rounded-sm text-[11px] md:text-[8px] font-semibold uppercase tracking-wider transition-all duration-200",
                     subTab === tab.key
                       ? "bg-rose text-white shadow-sm"
                       : "text-ink/30 hover:text-ink/60"
@@ -287,11 +287,11 @@ export function MessagesTab({
                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-rose" />
                 )}
                 <div className="flex justify-between items-start mb-1.5">
-                  <span className="text-[9px] font-medium text-ink uppercase truncate pr-4">{session.customer_name}</span>
+                  <span className="text-xs md:text-[9px] font-medium text-ink uppercase truncate pr-4">{session.customer_name}</span>
                   <span className="text-[6px] text-ink/20 uppercase font-medium">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div className="flex justify-between items-end">
-                  <p className="text-[8px] text-ink/40 truncate flex-1 leading-snug lowercase tracking-tight">{session.last_message}</p>
+                  <p className="text-[11px] md:text-[8px] text-ink/40 truncate flex-1 leading-snug lowercase tracking-tight">{session.last_message}</p>
                   {session.unread_count > 0 && (
                     <span className="bg-rose text-white text-[6px] font-medium px-1.5 py-0.5 rounded-[2px] ml-2 shrink-0">{session.unread_count}</span>
                   )}
@@ -306,7 +306,7 @@ export function MessagesTab({
             {chatSessions.length === 0 && (
               <div className="p-12 text-center flex flex-col items-center justify-center space-y-4 opacity-20">
                 <MessageSquare size={24} strokeWidth={1} />
-                <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">No active inquiries</p>
+                <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] italic">No active inquiries</p>
               </div>
             )}
           </div>
@@ -324,7 +324,7 @@ export function MessagesTab({
                   value={flaggedSearch}
                   onChange={e => setFlaggedSearch(e.target.value)}
                   placeholder="Search flagged..."
-                  className="w-full pl-8 pr-3 py-1.5 bg-ink/[0.02] border border-ink/5 text-[10px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+                  className="w-full pl-8 pr-3 py-1.5 bg-ink/[0.02] border border-ink/5 text-xs md:text-[10px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
                 />
               </div>
               {(saraCount > 0 || nsfwCount > 0) && (
@@ -346,7 +346,7 @@ export function MessagesTab({
             {filteredFlagged.length === 0 ? (
               <div className="p-12 text-center flex flex-col items-center justify-center space-y-4 opacity-20">
                 <CheckCircle size={24} strokeWidth={1} className="text-emerald-400" />
-                <p className="text-[8px] font-medium uppercase tracking-[0.3em] italic">All Clear — No Flagged</p>
+                <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] italic">All Clear — No Flagged</p>
               </div>
             ) : (
               filteredFlagged.map((ticket) => {
@@ -369,8 +369,8 @@ export function MessagesTab({
                         </span>
                         <span className="text-[6px] text-ink/20 font-mono ml-auto">#{ticket.id.split('-')[0]}</span>
                       </div>
-                      <p className="text-[9px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
-                      <p className="text-[7px] text-ink/30 mt-0.5">
+                      <p className="text-xs md:text-[9px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
+                      <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
                         {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}
                       </p>
                       <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.15 }} className="text-ink/20 mt-1">
@@ -392,17 +392,17 @@ export function MessagesTab({
                               ticket.flagged_severity === 'nsfw' ? 'bg-red-50/50 border-red-100' :
                               ticket.flagged_severity === 'sara' ? 'bg-amber-50/50 border-amber-100' : 'bg-ink/[0.01]'
                             )}>
-                              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Alasan Flag</p>
-                              <p className="text-[9px] text-ink/70 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Alasan Flag</p>
+                              <p className="text-xs md:text-[9px] text-ink/70 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
                             </div>
-                            <div className="flex items-center gap-2 text-[7px] text-ink/30">
+                            <div className="flex items-center gap-2 text-[10px] md:text-[7px] text-ink/30">
                               <Clock size={8} />
                               <span>Di-flag: {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}</span>
                             </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => clearFlag(ticket.id)}
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 text-emerald-600 text-[8px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
+                                className="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 text-emerald-600 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
                               >
                                 <CheckCircle size={9} />
                                 Clear
@@ -415,7 +415,7 @@ export function MessagesTab({
                                     setSubTab('chat');
                                   }
                                 }}
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-ink text-white text-[8px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                                className="flex items-center gap-1 px-2.5 py-1.5 bg-ink text-white text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
                               >
 <MessageSquare size={9} />
                                 Open
@@ -458,8 +458,8 @@ export function MessagesTab({
             {/* Resolution Rate */}
             <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30">Resolution Rate</p>
-                <span className="text-[11px] font-display italic font-bold text-ink">{analytics?.resolutionRate ?? 0}%</span>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Resolution Rate</p>
+                <span className="text-sm md:text-[11px] font-display italic font-bold text-ink">{analytics?.resolutionRate ?? 0}%</span>
               </div>
               <div className="h-1.5 bg-ink/5 rounded-full overflow-hidden">
                 <div
@@ -471,7 +471,7 @@ export function MessagesTab({
 
             {/* Activity */}
             <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
-              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30">Aktivitas</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Aktivitas</p>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex items-center gap-2">
                   <Clock3 size={10} className="text-rose/50 shrink-0" />
@@ -492,12 +492,12 @@ export function MessagesTab({
 
             {/* Messages Breakdown */}
             <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
-              <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30">Messages</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Messages</p>
               <div className="space-y-2">
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-[8px] text-ink/50">Auto-reply rate</span>
-                    <span className="text-[8px] font-semibold text-rose">{analytics?.autoReplyRate ?? 0}%</span>
+                    <span className="text-[11px] md:text-[8px] text-ink/50">Auto-reply rate</span>
+                    <span className="text-[11px] md:text-[8px] font-semibold text-rose">{analytics?.autoReplyRate ?? 0}%</span>
                   </div>
                   <div className="h-1.5 bg-ink/5 rounded-full overflow-hidden">
                     <div className="h-full bg-rose rounded-full transition-all" style={{ width: `${analytics?.autoReplyRate ?? 0}%` }} />
@@ -519,7 +519,7 @@ export function MessagesTab({
             {/* Avg Response */}
             {analytics?.avgResponseMinutes && analytics.avgResponseMinutes > 0 && (
               <div className="bg-white border border-ink/5 rounded-sm p-3">
-                <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Avg Response</p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Avg Response</p>
                 <p className="text-[18px] font-display italic font-bold text-ink">{analytics.avgResponseMinutes}m</p>
                 <p className="text-[6px] text-ink/30">first response time</p>
               </div>
@@ -528,7 +528,7 @@ export function MessagesTab({
             {/* Refresh */}
             <button
               onClick={fetchAnalytics}
-              className="w-full flex items-center justify-center gap-1.5 py-2 bg-ink/5 text-ink/40 text-[8px] font-semibold uppercase tracking-wider hover:bg-rose/10 hover:text-rose transition-colors rounded-sm"
+              className="w-full flex items-center justify-center gap-1.5 py-2 bg-ink/5 text-ink/40 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hover:bg-rose/10 hover:text-rose transition-colors rounded-sm"
             >
               <RefreshCw size={9} className={cn('shrink-0', loadingAnalytics && 'animate-spin')} />
               Refresh Stats
@@ -544,17 +544,17 @@ export function MessagesTab({
             {/* Chat Header */}
             <div className="p-5 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-ink rounded-[5px] flex items-center justify-center text-white text-[10px] font-medium">
+                <div className="w-10 h-10 bg-ink rounded-[5px] flex items-center justify-center text-white text-xs md:text-[10px] font-medium">
                   {activeChatSession.customer_name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{activeChatSession.customer_name}</h3>
-                  <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Email: {activeChatSession.customer_email}</p>
+                  <h3 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{activeChatSession.customer_name}</h3>
+                  <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Email: {activeChatSession.customer_email}</p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
-                  className="px-4 py-1.5 border border-ink/10 rounded-[5px] text-[7px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose hover:border-rose transition-all duration-300"
+                  className="px-4 py-1.5 border border-ink/10 rounded-[5px] text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose hover:border-rose transition-all duration-300"
                   onClick={async () => {
                     await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', activeChatSession.id);
                     fetchChatSessions();
@@ -572,7 +572,7 @@ export function MessagesTab({
                 <div key={msg.id} className={cn("flex", msg.sender === 'admin' ? "justify-end" : "justify-start")}>
                   <div className={cn("max-w-[70%] group", msg.sender === 'admin' ? "items-end" : "items-start")}>
                     <div className={cn(
-                      "p-4 rounded-[5px] text-[10px] leading-relaxed",
+                      "p-4 rounded-[5px] text-xs md:text-[10px] leading-relaxed",
                       msg.sender === 'admin'
                         ? msg.is_auto_reply
                           ? "bg-rose/10 border border-rose/20 text-ink shadow-sm"
@@ -622,7 +622,7 @@ export function MessagesTab({
                         value={placeholderSearch}
                         onChange={e => setPlaceholderSearch(e.target.value)}
                         placeholder="Search templates..."
-                        className="flex-1 text-[10px] font-medium bg-transparent outline-none placeholder:text-ink/20"
+                        className="flex-1 text-xs md:text-[10px] font-medium bg-transparent outline-none placeholder:text-ink/20"
                       />
                       <button onClick={() => setPlaceholderOpen(false)} className="text-ink/20 hover:text-ink">
                         <X size={10} />
@@ -630,7 +630,7 @@ export function MessagesTab({
                     </div>
                     <div className="max-h-52 overflow-y-auto minimal-scroll p-1.5 space-y-1">
                       {Object.keys(groupedPlaceholders).length === 0 && (
-                        <p className="text-[9px] text-ink/30 italic text-center py-3">No templates found</p>
+                        <p className="text-xs md:text-[9px] text-ink/30 italic text-center py-3">No templates found</p>
                       )}
                       {Object.entries(groupedPlaceholders).map(([cat, items]) => (
                         <div key={cat}>
@@ -648,8 +648,8 @@ export function MessagesTab({
                               }}
                               className="w-full text-left p-2 rounded-sm hover:bg-ink/[0.02] transition-colors group"
                             >
-                              <p className="text-[9px] font-semibold text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{p.label}</p>
-                              <p className="text-[8px] text-ink/30 leading-relaxed mt-0.5 line-clamp-1">{p.content}</p>
+                              <p className="text-xs md:text-[9px] font-semibold text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{p.label}</p>
+                              <p className="text-[11px] md:text-[8px] text-ink/30 leading-relaxed mt-0.5 line-clamp-1">{p.content}</p>
                             </button>
                           ))}
                         </div>
@@ -672,7 +672,7 @@ export function MessagesTab({
                   )}
                 >
                   <Tag size={11} strokeWidth={1.5} />
-                  <span className="text-[8px] font-semibold uppercase tracking-wider hidden lg:inline">Template</span>
+                  <span className="text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hidden lg:inline">Template</span>
                 </motion.button>
 
                 <textarea
@@ -688,7 +688,7 @@ export function MessagesTab({
                     }
                   }}
                   placeholder="Type archival response..."
-                  className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-sm text-[11px] font-medium outline-none border border-ink/[0.08] placeholder:text-ink/20 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[40px]"
+                  className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-sm text-sm md:text-[11px] font-medium outline-none border border-ink/[0.08] placeholder:text-ink/20 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[40px]"
                 />
                 <motion.button
                   whileHover={{ scale: 1.1, color: '#E8527A' }}
@@ -710,7 +710,7 @@ export function MessagesTab({
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center space-y-4 opacity-20">
             <MessageSquare size={48} strokeWidth={0.5} />
-            <p className="text-[10px] font-medium uppercase tracking-[0.5em] italic">Select inquiry to respond</p>
+            <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.5em] italic">Select inquiry to respond</p>
           </div>
         )}
       </div>

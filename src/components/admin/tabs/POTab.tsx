@@ -28,7 +28,7 @@ export function POTab() {
           <h2 className="text-lg font-display font-medium text-ink">Purchase Orders (PO)</h2>
           <p className="text-xs text-ink/60">Manage supply requests to your partner factories.</p>
         </div>
-        <button className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out">
+        <button className="px-4 py-2 bg-ink text-white text-xs md:text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out">
           <Plus size={14} /> Create PO
         </button>
       </div>
@@ -36,7 +36,7 @@ export function POTab() {
       <div className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-ink/5 text-[10px] uppercase tracking-wider text-ink/60">
+            <tr className="bg-ink/5 text-xs md:text-[10px] uppercase tracking-wider text-ink/60">
               <th className="p-4 font-medium">PO Number</th>
               <th className="p-4 font-medium">Supplier</th>
               <th className="p-4 font-medium">Date</th>
@@ -60,7 +60,7 @@ export function POTab() {
                   {new Date(po.created_at).toLocaleDateString('id-ID')}
                 </td>
                 <td className="p-4">
-                  <span className={`inline-flex px-2 py-0.5 text-[10px] uppercase tracking-wider font-medium rounded-full ${
+                  <span className={`inline-flex px-2 py-0.5 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded-full ${
                     po.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
                     po.status === 'draft' ? 'bg-gray-100 text-gray-600' :
                     'bg-amber-50 text-amber-600'

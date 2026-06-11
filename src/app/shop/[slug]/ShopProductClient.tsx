@@ -27,7 +27,7 @@ function SafeImage({ src, alt, className, sizes, priority = false }: {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/[0.03] text-ink/20">
         <ImageOff size={24} />
-        <span className="text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
+        <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
       </div>
     );
   }
@@ -440,7 +440,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 <motion.div variants={textVariants}>
                   <Link href="/shop" className="flex md:hidden items-center gap-1.5 text-ink/40 hover:text-ink transition-colors group mb-3 lg:mb-5 w-fit">
                     <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-[8px] lg:text-[9px] font-medium uppercase tracking-widest">Back to Catalog</span>
+                    <span className="text-[11px] md:text-[8px] lg:text-[9px] font-medium uppercase tracking-widest">Back to Catalog</span>
                   </Link>
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 mb-0.5 lg:mb-1">
@@ -450,18 +450,18 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                     </span>
                   </div>
                 </motion.div>
-                <motion.h1 variants={textVariants} className="text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
+                <motion.h1 variants={textVariants} className="text-sm md:text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
                 {product.price_tag && (
-                  <motion.div variants={textVariants} className="text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
+                  <motion.div variants={textVariants} className="text-[10px] md:text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
                   </motion.div>
                 )}
-                <motion.p variants={textVariants} className="text-[11px] md:text-sm lg:text-base font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</motion.p>
+                <motion.p variants={textVariants} className="text-sm md:text-[11px] md:text-sm lg:text-base font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</motion.p>
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
-                <motion.h4 variants={textVariants} className="text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
-                <motion.p variants={textVariants} className="text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
+                <motion.h4 variants={textVariants} className="text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
+                <motion.p variants={textVariants} className="text-sm md:text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
                   {isExpanded || (product.description || '').length <= 200
                     ? product.description || 'Premium quality apparel from NINOC.'
                     : (product.description || '').slice(0, 200) + '…'}
@@ -470,7 +470,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                   <motion.button
                     variants={textVariants}
                     onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
-                    className="text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
+                    className="text-[11px] md:text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
                     {isExpanded ? 'Less' : 'More'}
                   </motion.button>
@@ -481,7 +481,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 <motion.div variants={textVariants} className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
-                    className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
+                    className={`text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
@@ -490,7 +490,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                   <span className="text-ink/10">|</span>
                   <button
                     onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
-                    className={`text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
+                    className={`text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
@@ -501,10 +501,10 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px]">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-sm md:text-[11px]">
                       {displaySpecs.map((spec, idx) => (
                         <motion.div variants={textVariants} key={idx} className="flex flex-col border-b border-ink/5 pb-0.5">
-                          <span className="text-ink/40 uppercase tracking-widest text-[8px]">{spec.label}</span>
+                          <span className="text-ink/40 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
                           <span className="font-semibold">{spec.value}</span>
                         </motion.div>
                       ))}
@@ -512,7 +512,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
-                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[8px] font-medium border-b border-ink/10 pb-1 mb-1 min-w-[200px]">
+                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[11px] md:text-[8px] font-medium border-b border-ink/10 pb-1 mb-1 min-w-[200px]">
                         <span className="text-ink/40">SIZE</span>
                         <span className="text-ink/40 text-center">{isPants ? 'WAIST/LENGTH' : 'CHEST/LENGTH'}</span>
                         <span className="text-ink/40 text-right">WEIGHT/HEIGHT</span>
@@ -521,14 +521,14 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         const wh = getWeightAndHeight(m.size);
                         return (
                           <motion.div variants={textVariants} key={idx} className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-1.5 border-b border-ink/5 last:border-0 group-hover:border-ink/10 transition-colors min-w-[200px]">
-                            <span className="text-[11px] font-bold text-ink">{m.size}</span>
-                            <span className="text-[9px] text-ink/70 font-mono tracking-widest text-center">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
-                            <span className="text-[8px] text-ink/50 text-right font-medium">{wh.w} / {wh.h}</span>
+                            <span className="text-sm md:text-[11px] font-bold text-ink">{m.size}</span>
+                            <span className="text-xs md:text-[9px] text-ink/70 font-mono tracking-widest text-center">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
+                            <span className="text-[11px] md:text-[8px] text-ink/50 text-right font-medium">{wh.w} / {wh.h}</span>
                           </motion.div>
                         );
                       })}
                       {displayModelInfo && (
-                        <p className="text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
+                        <p className="text-[11px] md:text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
                       )}
                     </div>
                   )}
@@ -540,7 +540,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
           <motion.div variants={columnVariants} className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                <motion.h4 variants={textVariants} className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
+                <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
                 <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                   {availableSizes.map((size) => (
                     <motion.button
@@ -550,7 +550,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-[10px] lg:text-xs font-medium transition-all border relative",
+                        "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs md:text-[10px] lg:text-xs font-medium transition-all border relative",
                         effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                       )}
                     >
@@ -569,7 +569,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                 {currentSurcharge > 0 && (
                   <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-1 px-1">
                     <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
-                    <span className="text-[8px] font-medium text-rose uppercase tracking-wider">
+                    <span className="text-[11px] md:text-[8px] font-medium text-rose uppercase tracking-wider">
                       +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} surcharge untuk ukuran {effectiveSize}
                     </span>
                   </motion.div>
@@ -577,7 +577,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
                 {availableColors.length > 0 && (
                   <div className="space-y-2">
-                    <motion.h4 variants={textVariants} className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                    <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                     <div className="flex gap-2 flex-wrap">
                       {availableColors.map((color) => (
                         <motion.button
@@ -587,7 +587,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                           transition={{ type: "spring", stiffness: 400, damping: 25 }}
                           onClick={() => setSelectedColor(color)}
                           className={cn(
-                            "px-3 py-1.5 rounded-none text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
+                            "px-3 py-1.5 rounded-none text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
                             effectiveColor === color
                               ? "bg-ink text-white border-ink"
                               : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
@@ -603,13 +603,13 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
-                  <h4 className="text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
+                  <h4 className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
-                    <span className="text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
+                    <span className="text-[11px] md:text-[8px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
                       {availableStock} {dict.product.inStock}
                     </span>
                   ) : (
-                    <span className="text-[8px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
+                    <span className="text-[11px] md:text-[8px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
                       {dict.product.outOfStock}
                     </span>
                   )}
@@ -630,7 +630,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-3 lg:py-3 rounded-none font-medium text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-3 lg:py-3 rounded-none font-medium text-sm md:text-[11px] lg:text-xs uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
@@ -657,7 +657,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                   ].map((badge, i) => (
                     <motion.div variants={textVariants} key={i} className="flex flex-col items-center gap-2 opacity-30 hover:opacity-100 transition-opacity text-center">
                       <badge.icon size={14} className="text-rose" />
-                      <span className="text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
+                      <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest leading-tight">{badge.label}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -673,15 +673,15 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
           )}>
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/40">{dict.product.yourCart}</span>
-                <span className="text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40">{dict.product.yourCart}</span>
+                <span className="text-xs md:text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
               </motion.div>
 
               {items.length === 0 ? (
                 <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
                   <ShoppingCart size={28} className="mb-3 text-ink" />
-                  <span className="text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
-                  <span className="text-[8px] text-ink/40 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
+                  <span className="text-xs md:text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
+                  <span className="text-[11px] md:text-[8px] text-ink/40 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
                 </motion.div>
               ) : (
                 <>
@@ -705,7 +705,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
                           <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div className="flex justify-between items-start gap-2">
-                              <span className="text-[10px] font-medium uppercase leading-tight text-ink truncate pt-0.5">{item.name}</span>
+                              <span className="text-xs md:text-[10px] font-medium uppercase leading-tight text-ink truncate pt-0.5">{item.name}</span>
                               <button
                                 onClick={() => removeItem(item.id, item.size, item.color)}
                                 className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all -mt-0.5 -mr-1"
@@ -715,7 +715,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                               </button>
                             </div>
                             <div className="flex items-center gap-1 mb-auto mt-0.5 relative">
-                              <span className="text-[8px] font-medium text-ink/60 uppercase tracking-wider">
+                              <span className="text-[11px] md:text-[8px] font-medium text-ink/60 uppercase tracking-wider">
                                 {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
                               </span>
                               {displayMeasurements.length > 0 && (
@@ -732,18 +732,18 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                 </button>
                               )}
                               {(item.size_surcharge || 0) > 0 && (
-                                <span className="text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
+                                <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
                               )}
                               {/* Measurement Popover */}
                               {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
                                 <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[200px] animate-in fade-in zoom-in-95 duration-200">
                                   <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
-                                    <span className="text-[8px] font-medium uppercase tracking-widest text-rose">{dict.product.sizeChart}</span>
+                                    <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-rose">{dict.product.sizeChart}</span>
                                     <button onClick={() => setMeasurementPopupItemKey(null)} className="text-white/40 hover:text-white">
                                       <X size={10} />
                                     </button>
                                   </div>
-                                  <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1 border-b border-white/10 pb-1">
+                                  <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[10px] md:text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1 border-b border-white/10 pb-1">
                                     <span>Size</span>
                                     <span className="text-center">{isPants ? 'W/L/Leg' : 'Chest/L'}</span>
                                     <span className="text-right">Wght/Hght</span>
@@ -752,7 +752,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                     const wh = getWeightAndHeight(m.size);
                                     return (
                                       <div key={idx} className={cn(
-                                        "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[8px] font-medium py-1 border-b border-white/5",
+                                        "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[11px] md:text-[8px] font-medium py-1 border-b border-white/5",
                                         m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
                                       )}>
                                         <span className="font-bold">{m.size}</span>
@@ -762,7 +762,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                     );
                                   })}
                                   {displayModelInfo && (
-                                    <p className="text-[7px] text-white/30 mt-1.5 italic">* {displayModelInfo}</p>
+                                    <p className="text-[10px] md:text-[7px] text-white/30 mt-1.5 italic">* {displayModelInfo}</p>
                                   )}
                                   <div className="absolute -top-1.5 left-4 w-3 h-3 bg-ink rotate-45 border-l border-t border-ink" />
                                 </div>
@@ -783,7 +783,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                 >
                                   <Minus size={12} />
                                 </button>
-                                <span className="text-[11px] font-medium w-5 text-center">{item.quantity}</span>
+                                <span className="text-sm md:text-[11px] font-medium w-5 text-center">{item.quantity}</span>
                                 <button
                                   onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
                                   className="w-6 h-6 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
@@ -792,11 +792,11 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                                 </button>
                               </div>
                               <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-medium text-rose">
+                                <span className="text-xs md:text-[9px] font-medium text-rose">
                                   IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID')}
                                 </span>
                                 {(item.size_surcharge || 0) > 0 && (
-                                  <span className="text-[7px] text-ink/30 font-medium">
+                                  <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">
                                     incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge
                                   </span>
                                 )}
@@ -809,8 +809,8 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
                   <motion.div variants={textVariants} className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
                     <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-medium uppercase tracking-widest text-ink/40">{dict.product.total}</span>
-                      <span className="text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                      <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">{dict.product.total}</span>
+                      <span className="text-sm md:text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -818,7 +818,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         variants={textVariants}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => router.push('/checkout')}
-                        className="w-full py-3 bg-rose text-white text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                        className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
                       >
                         {dict.product.checkout}
                       </motion.button>
@@ -826,7 +826,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         variants={textVariants}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => clearCart()}
-                        className="w-full py-2.5 bg-transparent text-ink/40 text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 bg-transparent text-ink/40 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
                         <Trash2 size={12} />
                         {dict.product.clearCart}
@@ -842,8 +842,8 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
         {relatedProducts.length > 0 && (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
-              <h2 className="text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
-              <Link prefetch={false} href="/shop" className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
+              <h2 className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
+              <Link prefetch={false} href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 {dict.product.viewFullCollection} <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
@@ -863,13 +863,13 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     </div>
                     <div className="space-y-1 px-1">
-                      <h3 className="text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
+                      <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
                       {p.price_tag && (
                         <div className="text-[6px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
                           {p.price_tag}
                         </div>
                       )}
-                      <p className="text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      <p className="text-xs md:text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </Link>
                 </motion.div>

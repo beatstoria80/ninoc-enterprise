@@ -28,7 +28,7 @@ export function DOTab() {
           <h2 className="text-lg font-display font-medium text-ink">Inbound Receiving (DO)</h2>
           <p className="text-xs text-ink/60">Receive shipments from suppliers and perform Quality Control (QC).</p>
         </div>
-        <button className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out">
+        <button className="px-4 py-2 bg-ink text-white text-xs md:text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out">
           <Download size={14} /> Receive Stock
         </button>
       </div>
@@ -36,7 +36,7 @@ export function DOTab() {
       <div className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-ink/5 text-[10px] uppercase tracking-wider text-ink/60">
+            <tr className="bg-ink/5 text-xs md:text-[10px] uppercase tracking-wider text-ink/60">
               <th className="p-4 font-medium">DO Number</th>
               <th className="p-4 font-medium">Supplier</th>
               <th className="p-4 font-medium">Destination Hub</th>
@@ -63,7 +63,7 @@ export function DOTab() {
                   {doItem.received_at ? new Date(doItem.received_at).toLocaleDateString('id-ID') : '-'}
                 </td>
                 <td className="p-4">
-                  <span className={`inline-flex px-2 py-0.5 text-[10px] uppercase tracking-wider font-medium rounded-full ${
+                  <span className={`inline-flex px-2 py-0.5 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded-full ${
                     doItem.status === 'received' ? 'bg-emerald-50 text-emerald-600' :
                     doItem.status === 'qc_rejected' ? 'bg-rose/10 text-rose' :
                     'bg-amber-50 text-amber-600'

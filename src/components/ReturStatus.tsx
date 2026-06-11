@@ -124,13 +124,13 @@ export function ReturStatus() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">Retur Saya</h2>
-          <p className="text-[10px] text-ink/40 mt-0.5">Riwayat pengajuan retur</p>
+          <p className="text-xs md:text-[10px] text-ink/40 mt-0.5">Riwayat pengajuan retur</p>
         </div>
         <div className="flex items-center gap-2">
           {pendingCount > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-100 rounded-sm">
               <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-              <p className="text-[8px] font-semibold text-amber-600 uppercase tracking-wider">{pendingCount} pending</p>
+              <p className="text-[11px] md:text-[8px] font-semibold text-amber-600 uppercase tracking-wider">{pendingCount} pending</p>
             </div>
           )}
           <button
@@ -149,7 +149,7 @@ export function ReturStatus() {
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
-              'px-2.5 py-1 text-[8px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors',
+              'px-2.5 py-1 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors',
               filter === f ? 'bg-rose text-white' : 'bg-ink/5 text-ink/40 hover:bg-ink/10'
             )}
           >
@@ -166,7 +166,7 @@ export function ReturStatus() {
       ) : filtered.length === 0 ? (
         <div className="py-12 flex flex-col items-center justify-center text-center space-y-2">
           <RefreshCw size={20} className="text-ink/10" strokeWidth={1} />
-          <p className="text-[9px] uppercase tracking-widest text-ink/30">Belum ada pengajuan retur</p>
+          <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/30">Belum ada pengajuan retur</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -193,17 +193,17 @@ export function ReturStatus() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{r.order_id}</p>
-                      <span className={cn('px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
+                      <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{r.order_id}</p>
+                      <span className={cn('px-1.5 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
                         <Tag size={7} className="inline mr-0.5" />{cfg.label}
                       </span>
                       {r.fraud_suspected && (
-                        <span className="px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
                           <AlertCircle size={7} /> Fraud?
                         </span>
                       )}
                     </div>
-                    <p className="text-[8px] text-ink/30 mt-0.5">
+                    <p className="text-[11px] md:text-[8px] text-ink/30 mt-0.5">
                       {REASON_LABELS[r.reason] || r.reason_label} &middot; {formatDate(r.created_at)}
                     </p>
                   </div>
@@ -226,15 +226,15 @@ export function ReturStatus() {
                         {/* Description */}
                         {r.description && (
                           <div>
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Deskripsi</p>
-                            <p className="text-[9px] text-ink/60 leading-relaxed">{r.description}</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Deskripsi</p>
+                            <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{r.description}</p>
                           </div>
                         )}
 
                         {/* Video Preview */}
                         {r.video_url && (
                           <div>
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Bukti Video</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Bukti Video</p>
                             <div className="border border-ink/5 rounded-sm overflow-hidden bg-black">
                               <video
                                 ref={el => { videoRefs.current[r.id] = el; }}
@@ -245,7 +245,7 @@ export function ReturStatus() {
                               />
                             </div>
                             {r.video_duration_seconds && (
-                              <p className="text-[7px] text-ink/20 mt-1 text-right">
+                              <p className="text-[10px] md:text-[7px] text-ink/20 mt-1 text-right">
                                 Durasi: {r.video_duration_seconds}s
                               </p>
                             )}
@@ -255,23 +255,23 @@ export function ReturStatus() {
                         {/* Refund info */}
                         {r.status === 'approved' && r.refund_amount && (
                           <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2.5">
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1">Refund Disetujui</p>
-                            <p className="text-[11px] font-display italic font-bold text-emerald-700">{formatPrice(r.refund_amount)}</p>
-                            {r.admin_notes && <p className="text-[8px] text-emerald-500 mt-1">{r.admin_notes}</p>}
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1">Refund Disetujui</p>
+                            <p className="text-sm md:text-[11px] font-display italic font-bold text-emerald-700">{formatPrice(r.refund_amount)}</p>
+                            {r.admin_notes && <p className="text-[11px] md:text-[8px] text-emerald-500 mt-1">{r.admin_notes}</p>}
                           </div>
                         )}
 
                         {/* Admin notes */}
                         {r.admin_notes && r.status !== 'approved' && (
                           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5">
-                            <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Catatan Admin</p>
-                            <p className="text-[9px] text-ink/60 leading-relaxed">{r.admin_notes}</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Catatan Admin</p>
+                            <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{r.admin_notes}</p>
                           </div>
                         )}
 
                         {/* Timeline */}
                         <div>
-                          <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Timeline</p>
+                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Timeline</p>
                           <div className="flex items-center gap-0">
                             {STATUS_FLOW.map((step, idx) => {
                               const stepIdx = STATUS_FLOW.findIndex(s => s.key === r.status);
@@ -309,7 +309,7 @@ export function ReturStatus() {
                           <motion.button
                             whileTap={{ scale: 0.97 }}
                             onClick={() => openChat(r)}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-ink text-white text-[8px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-ink text-white text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
                           >
                             <MessageSquare size={10} /> Chat Support
                           </motion.button>
@@ -319,7 +319,7 @@ export function ReturStatus() {
                               href={r.video_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-ink/5 text-ink/50 text-[8px] font-semibold uppercase tracking-wider hover:bg-ink/10 transition-colors rounded-sm"
+                              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-ink/5 text-ink/50 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider hover:bg-ink/10 transition-colors rounded-sm"
                             >
                               <ExternalLink size={10} /> Lihat Video
                             </motion.a>

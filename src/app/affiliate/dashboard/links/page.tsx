@@ -104,7 +104,7 @@ export default function LinksPage() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-ink/5 text-ink/60 text-[10px] uppercase tracking-wider">
+                <thead className="bg-ink/5 text-ink/60 text-xs md:text-[10px] uppercase tracking-wider">
                   <tr>
                     <th className="px-6 py-4 font-medium">Link Tujuan</th>
                     <th className="px-6 py-4 font-medium text-right">Total Klik</th>
@@ -121,7 +121,7 @@ export default function LinksPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-ink font-medium truncate max-w-[200px]">{item.target}</span>
-                          <span className="text-[10px] text-ink/40 mt-1">ninoc.storem{item.target}?ref=johndoe</span>
+                          <span className="text-xs md:text-[10px] text-ink/40 mt-1">ninoc.storem{item.target}?ref=johndoe</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right font-medium text-ink">{item.clicks}</td>

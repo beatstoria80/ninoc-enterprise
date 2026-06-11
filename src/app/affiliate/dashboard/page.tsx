@@ -32,7 +32,7 @@ export default function AffiliateDashboardOverview() {
             <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
               <DollarSign size={20} />
             </div>
-            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs md:text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
               <ArrowUpRight size={12} /> 12.5%
             </span>
           </div>
@@ -51,7 +51,7 @@ export default function AffiliateDashboardOverview() {
             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
               <MousePointerClick size={20} />
             </div>
-            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs md:text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
               <ArrowUpRight size={12} /> 8.2%
             </span>
           </div>
@@ -101,7 +101,7 @@ export default function AffiliateDashboardOverview() {
                     <td className="px-6 py-4 text-ink/60">Hari ini, 14:30</td>
                     <td className="px-6 py-4 text-ink font-medium">Oversized Obsidian T-Shirt</td>
                     <td className="px-6 py-4">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-sm">Berhasil</span>
+                      <span className="text-xs md:text-[10px] uppercase tracking-wider font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-sm">Berhasil</span>
                     </td>
                     <td className="px-6 py-4 text-right font-medium text-ink">Rp 45.000</td>
                   </tr>

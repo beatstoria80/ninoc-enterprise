@@ -40,7 +40,7 @@ export default async function SuccessPage({ searchParams }: Props) {
       <main className="min-h-screen bg-cr flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+          <p className="text-xs md:text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
         </div>
       </main>
     }>

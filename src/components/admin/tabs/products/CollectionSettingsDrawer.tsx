@@ -255,7 +255,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "flex-1 py-1.5 text-[10px] uppercase tracking-wider font-medium rounded transition-colors",
+                    "flex-1 py-1.5 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded transition-colors",
                     activeTab === tab ? "bg-white text-ink shadow-sm" : "text-gray-500 hover:text-ink hover:bg-white/50"
                   )}
                 >
@@ -333,7 +333,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       ) : (
                         <div className="relative w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col items-center justify-center gap-1">
                           <ImageIcon size={16} className="text-gray-400" />
-                          <span className="text-[9px] text-gray-400 font-medium">No Media</span>
+                          <span className="text-xs md:text-[9px] text-gray-400 font-medium">No Media</span>
                         </div>
                       )}
 
@@ -358,7 +358,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                             disabled={isUploadingBanner}
                           />
                         </label>
-                        <p className="text-[10px] text-gray-400 mt-2">
+                        <p className="text-xs md:text-[10px] text-gray-400 mt-2">
                           Recommended format: JPG, PNG, MP4, WEBM. Ratio 16:9 or 3:1.
                         </p>
                       </div>
@@ -451,7 +451,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-ink truncate">{product.name}</p>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
+                            <p className="text-xs md:text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
                           </div>
                           <p className="text-xs font-medium text-ink">
                             Rp {product.price.toLocaleString('id-ID')}

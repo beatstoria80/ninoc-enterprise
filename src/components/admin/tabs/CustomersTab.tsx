@@ -30,7 +30,7 @@ export function CustomersTab({
       <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Customers</h2>
-          <span className="text-[9px] text-gray-400">— {customers.length} members</span>
+          <span className="text-xs md:text-[9px] text-gray-400">— {customers.length} members</span>
         </div>
         <button
           onClick={() => {
@@ -56,7 +56,7 @@ export function CustomersTab({
           className="flex items-center gap-1.5 px-3 py-1.5 bg-rose text-white rounded hover:bg-rose/90 transition-colors"
         >
           <Plus size={12} />
-          <span className="text-[9px] uppercase tracking-wider">Add</span>
+          <span className="text-xs md:text-[9px] uppercase tracking-wider">Add</span>
         </button>
       </div>
 
@@ -68,7 +68,7 @@ export function CustomersTab({
               <Users size={18} className="text-rose" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Members</p>
+              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Members</p>
               <p className="text-lg font-medium text-gray-900">{customers.length}</p>
             </div>
           </div>
@@ -79,7 +79,7 @@ export function CustomersTab({
               <Shield size={18} className="text-emerald-600" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-400">Verified</p>
+              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Verified</p>
               <p className="text-lg font-medium text-gray-900">{customers.filter(c => c.is_verified).length}</p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export function CustomersTab({
               <CreditCard size={18} className="text-amber-600" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
+              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
               <p className="text-lg font-medium text-gray-900">IDR {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function CustomersTab({
               <Star size={18} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Orders</p>
+              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Orders</p>
               <p className="text-lg font-medium text-gray-900">{customers.reduce((sum, c) => sum + (c.total_orders || 0), 0)}</p>
             </div>
           </div>
@@ -126,14 +126,14 @@ export function CustomersTab({
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Customer #</th>
-              <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Name</th>
-              <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Email</th>
-              <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Phone</th>
-              <th className="px-6 py-3 text-left text-[10px] uppercase tracking-wider text-gray-500">Location</th>
-              <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Status</th>
-              <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Orders</th>
-              <th className="px-6 py-3 text-center text-[10px] uppercase tracking-wider text-gray-500">Actions</th>
+              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Customer #</th>
+              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Name</th>
+              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Email</th>
+              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Phone</th>
+              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Location</th>
+              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Status</th>
+              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Orders</th>
+              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -164,7 +164,7 @@ export function CustomersTab({
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{customer.full_name || `${customer.first_name} ${customer.last_name}`}</p>
-                        <p className="text-[10px] text-gray-400">{customer.membership_tier || 'Member'}</p>
+                        <p className="text-xs md:text-[10px] text-gray-400">{customer.membership_tier || 'Member'}</p>
                       </div>
                     </div>
                   </td>
@@ -188,9 +188,9 @@ export function CustomersTab({
                   </td>
                   <td className="px-6 py-4 text-center">
                     {customer.is_verified ? (
-                      <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full">Verified</span>
+                      <span className="text-xs md:text-[9px] uppercase tracking-wider px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full">Verified</span>
                     ) : (
-                      <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-gray-100 text-gray-500 rounded-full">Unverified</span>
+                      <span className="text-xs md:text-[9px] uppercase tracking-wider px-2 py-1 bg-gray-100 text-gray-500 rounded-full">Unverified</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -219,7 +219,7 @@ export function CustomersTab({
                           });
                           setIsCustomerModalOpen(true);
                         }}
-                        className="px-3 py-1.5 text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
+                        className="px-3 py-1.5 text-xs md:text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
                       >
                         Edit
                       </button>

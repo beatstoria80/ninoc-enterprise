@@ -34,12 +34,12 @@ export const SidebarItem = ({
       >
         <div className="flex items-center gap-3">
           <Icon size={16} className={cn(active ? "text-white" : "text-current")} />
-          <span className="text-[10px] font-medium uppercase tracking-[0.3em]">{label}</span>
+          <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em]">{label}</span>
         </div>
         <div className="flex items-center gap-2">
           {badge !== undefined && badge > 0 && (
             <span className={cn(
-              "text-[8px] px-2 py-0.5 rounded-full",
+              "text-[11px] md:text-[8px] px-2 py-0.5 rounded-full",
               active ? "bg-white/20 text-white" : "bg-rose/10 text-rose"
             )}>
               {badge}
@@ -57,7 +57,7 @@ export const SidebarItem = ({
               key={i}
               onClick={sub.onClick}
               className={cn(
-                "w-full text-left pl-[44px] pr-6 py-2.5 text-[9px] font-medium uppercase tracking-[0.2em] transition-colors duration-200",
+                "w-full text-left pl-[44px] pr-6 py-2.5 text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] transition-colors duration-200",
                 sub.active ? "text-rose" : "text-ink/50 hover:text-ink hover:bg-ink/[0.04]"
               )}
             >

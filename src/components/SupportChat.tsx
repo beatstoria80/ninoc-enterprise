@@ -1433,9 +1433,9 @@ export default function SupportChat() {
               </button>
             </div>
             <div className="p-4 space-y-3">
-              <p className="text-[8px] font-medium text-rose uppercase tracking-widest">New Message</p>
-              <p className="text-[9px] font-medium text-ink uppercase italic">{lastNotif.subject}</p>
-              <p className="text-[9px] font-medium text-ink/50 leading-relaxed line-clamp-2">{lastNotif.message}</p>
+              <p className="text-[11px] md:text-[8px] font-medium text-rose uppercase tracking-widest">New Message</p>
+              <p className="text-xs md:text-[9px] font-medium text-ink uppercase italic">{lastNotif.subject}</p>
+              <p className="text-xs md:text-[9px] font-medium text-ink/50 leading-relaxed line-clamp-2">{lastNotif.message}</p>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -1447,7 +1447,7 @@ export default function SupportChat() {
                     openTicket(t);
                   }
                 }}
-                className="w-full bg-rose text-white py-2.5 rounded-lg text-[8px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-600 transition-colors"
+                className="w-full bg-rose text-white py-2.5 rounded-lg text-[11px] md:text-[8px] font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-600 transition-colors"
               >
                 <MessageSquare size={10} /> Open Support
               </motion.button>
@@ -1467,7 +1467,7 @@ export default function SupportChat() {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
-              className="absolute -top-2 -right-2 bg-rose text-white text-[8px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-lg z-10"
+              className="absolute -top-2 -right-2 bg-rose text-white text-[11px] md:text-[8px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-lg z-10"
             >
               {notifCount > 9 ? '9+' : notifCount}
             </motion.div>
@@ -1556,8 +1556,8 @@ export default function SupportChat() {
                           >
                             <QuickIcon name={action.icon} className={action.iconColor} />
                             <div>
-                              <p className="text-[9px] font-semibold uppercase tracking-wide leading-tight">{action.label}</p>
-                              <p className="text-[7px] opacity-60 leading-snug">{action.sublabel}</p>
+                              <p className="text-xs md:text-[9px] font-semibold uppercase tracking-wide leading-tight">{action.label}</p>
+                              <p className="text-[10px] md:text-[7px] opacity-60 leading-snug">{action.sublabel}</p>
                             </div>
                           </motion.button>
                         ))}
@@ -1580,7 +1580,7 @@ export default function SupportChat() {
                               className="w-full flex items-center justify-between p-2.5 bg-ink/[0.02] border border-ink/5 rounded-xl hover:bg-ink/[0.04] hover:border-ink/10 transition-all duration-200 text-left group"
                             >
                               <div className="min-w-0 flex-1">
-                                <p className="text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
+                                <p className="text-xs md:text-[9px] font-medium text-ink uppercase truncate">{t.subject}</p>
                                 <p className="text-[6px] font-medium text-ink/30 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
                               </div>
                               <ChevronRight size={10} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
@@ -1590,7 +1590,7 @@ export default function SupportChat() {
                       ) : (
                         <div className="py-8 flex flex-col items-center justify-center text-center space-y-2 opacity-25">
                           <MessageSquare size={18} strokeWidth={1} />
-                          <p className="text-[7px] italic text-ink/40 uppercase tracking-widest">Belum ada percakapan</p>
+                          <p className="text-[10px] md:text-[7px] italic text-ink/40 uppercase tracking-widest">Belum ada percakapan</p>
                         </div>
                       )}
                     </div>
@@ -1605,7 +1605,7 @@ export default function SupportChat() {
                       onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
                       placeholder="Ketik pertanyaan Anda..."
-                      className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
+                      className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-sm md:text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
                     />
                     <div className="flex items-end gap-1 mt-1.5">
                       <p className="flex-1 text-[5px] text-ink/15 uppercase tracking-widest font-medium">
@@ -1630,19 +1630,19 @@ export default function SupportChat() {
                   exit={{ opacity: 0, x: -20 }}
                   className="p-4 space-y-3 flex-1 flex flex-col justify-center relative bg-white"
                 >
-                  <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} onClick={() => setActiveTab('home')} className="text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1 absolute top-4 left-4">
+                  <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} onClick={() => setActiveTab('home')} className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-rose flex items-center gap-1 absolute top-4 left-4">
                     <ArrowLeft size={8} /> Back
                   </motion.button>
                   <div className="text-center space-y-1 mb-4 pt-6">
                     <p className="text-[6px] font-medium uppercase tracking-widest text-ink/40">Topik Terpilih</p>
-                    <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink">{subject}</h4>
+                    <h4 className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-ink">{subject}</h4>
                   </div>
                   <div className="space-y-3 bg-ink/[0.02] p-4 rounded-xl border border-ink/5">
                     <div className="space-y-1.5 text-center">
-                      <label className="text-[7px] font-medium uppercase tracking-widest text-ink/50">Punya ID Pesanan? (Opsional)</label>
-                      <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="Contoh: NCO-12345" className="w-full bg-white border border-ink/10 rounded-lg py-2.5 px-3 text-[10px] font-medium outline-none placeholder:text-ink/20 focus:border-rose/30 focus:shadow-sm transition-all text-center" />
+                      <label className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/50">Punya ID Pesanan? (Opsional)</label>
+                      <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="Contoh: NCO-12345" className="w-full bg-white border border-ink/10 rounded-lg py-2.5 px-3 text-xs md:text-[10px] font-medium outline-none placeholder:text-ink/20 focus:border-rose/30 focus:shadow-sm transition-all text-center" />
                     </div>
-                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={startNewTicket} className="w-full bg-ink text-white py-2.5 rounded-lg text-[9px] font-medium uppercase tracking-[0.2em] mt-3 hover:bg-rose transition-colors duration-200">
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={startNewTicket} className="w-full bg-ink text-white py-2.5 rounded-lg text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] mt-3 hover:bg-rose transition-colors duration-200">
                       Mulai Chat
                     </motion.button>
                   </div>
@@ -1658,7 +1658,7 @@ export default function SupportChat() {
                       <ArrowLeft size={12} strokeWidth={1.5} />
                     </motion.button>
                     <div className="text-center">
-                      <p className="text-[8px] font-medium text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject}</p>
+                      <p className="text-[11px] md:text-[8px] font-medium text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject}</p>
                       <p className="text-[6px] font-medium text-ink/20 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
                     </div>
                     <div className="w-4" />
@@ -1675,7 +1675,7 @@ export default function SupportChat() {
                         className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
                       >
                         <div className="max-w-[80%]">
-                          <div className={`px-2.5 py-1.5 rounded-xl text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
+                          <div className={`px-2.5 py-1.5 rounded-xl text-xs md:text-[9px] leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
                             {m.message}
                           </div>
                           {(m.sender_role === 'admin' || m.is_auto_reply) && (
@@ -1700,7 +1700,7 @@ export default function SupportChat() {
                         animate={{ opacity: 1 }}
                         className="flex justify-start"
                       >
-                        <div className="px-2.5 py-1.5 rounded-xl text-[9px] bg-ink/5 text-ink/40 rounded-bl-none flex items-center gap-1">
+                        <div className="px-2.5 py-1.5 rounded-xl text-xs md:text-[9px] bg-ink/5 text-ink/40 rounded-bl-none flex items-center gap-1">
                           <span className="flex gap-0.5">
                             <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                             <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -1722,7 +1722,7 @@ export default function SupportChat() {
                         onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                         placeholder="Type message..."
-                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
+                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-sm md:text-[11px] font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
                       />
                       <button onClick={() => sendMessage()} className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90" aria-label="Send message">
                         <Send size={13} strokeWidth={2} />

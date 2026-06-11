@@ -21,7 +21,7 @@ function SafeImage({ src, alt, className, sizes, priority = false }: {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/[0.03] text-ink/20">
         <ImageOff size={24} />
-        <span className="text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
+        <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest">Image Unavailable</span>
       </div>
     );
   }
@@ -87,7 +87,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "px-4 py-2 rounded-full text-[10px] font-medium uppercase tracking-wider whitespace-nowrap transition-all",
+                "px-4 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-wider whitespace-nowrap transition-all",
                 selectedCategory === cat
                   ? "bg-rose text-white"
                   : "bg-ink/5 text-ink/40"
@@ -103,10 +103,10 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
         {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
           <div key={category} className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">
+              <h2 className="text-sm md:text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">
                 {category}
               </h2>
-              <span className="text-[9px] text-ink/30 uppercase tracking-wider">
+              <span className="text-xs md:text-[9px] text-ink/30 uppercase tracking-wider">
                 {categoryProducts.length} {dict.shop.pieces}
               </span>
             </div>
@@ -136,16 +136,16 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                     </div>
                     <div className="p-2 space-y-1.5 flex flex-col justify-between flex-grow">
                       <div>
-                        <h3 className="text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+                        <h3 className="text-xs md:text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
                           {product.name}
                         </h3>
-                        <p className="text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
                           {product.category}
                         </p>
                       </div>
 
                       <div className="space-y-1.5">
-                        <p className="text-[10px] font-display font-medium italic text-rose">
+                        <p className="text-xs md:text-[10px] font-display font-medium italic text-rose">
                           {product.price_tag === 'REDEEM'
                             ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                             : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -171,7 +171,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
         {filteredProducts.length === 0 && (
           <div className="py-10 text-center">
-            <p className="text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
+            <p className="text-sm md:text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
           </div>
         )}
       </div>
@@ -210,7 +210,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={cn(
-                    "px-6 py-2 rounded-full text-[10px] font-medium uppercase tracking-widest transition-all whitespace-nowrap",
+                    "px-6 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-widest transition-all whitespace-nowrap",
                     selectedCategory === cat
                       ? "bg-ink text-white shadow-xl shadow-ink/20"
                       : "text-ink/40 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
@@ -250,12 +250,12 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         sizes="(max-width: 1280px) 25vw, 20vw"
                       />
 
-                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm">
+                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm">
                         {product.badge_text || 'STUDIO EDITION'}
                       </div>
 
                       {product.price_tag && (
-                        <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
+                        <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
                           {product.price_tag}
                         </div>
                       )}
@@ -269,21 +269,21 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
 
                     <div className="p-2.5 flex flex-col flex-grow justify-between gap-2">
                       <div>
-                        <h3 className="text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
+                        <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
                           {product.name}
                         </h3>
-                        <p className="text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
+                        <p className="text-xs md:text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
                           {product.category}
                         </p>
                       </div>
 
                       <div className="space-y-2">
                         {product.price_tag === 'REDEEM' ? (
-                          <div className="text-[10px] md:text-xs font-display font-medium italic text-rose">
+                          <div className="text-xs md:text-[10px] md:text-xs font-display font-medium italic text-rose">
                             {(product.price ?? 0).toLocaleString('id-ID')} POINTS
                           </div>
                         ) : (
-                          <div className="text-[10px] md:text-xs font-display font-medium italic text-rose">
+                          <div className="text-xs md:text-[10px] md:text-xs font-display font-medium italic text-rose">
                             IDR {(product.price ?? 0).toLocaleString('id-ID')}
                           </div>
                         )}
@@ -291,9 +291,9 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                           <div className="flex items-center gap-1.5 opacity-40">
                             <ArrowRight size={10} className="group-hover/card:translate-x-1 group-hover/card:text-rose transition-all" />
-                            <span className="text-[8px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
+                            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
                           </div>
-                          <span className="text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                          <span className="text-[11px] md:text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
                             {dict.shop.available}
                           </span>
                         </div>
@@ -360,7 +360,7 @@ function ShopClientInner({ initialCategory, isMobile }: { initialCategory: strin
       <div className="min-h-screen bg-cr flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+          <p className="text-xs md:text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
         </div>
       </div>
     );
@@ -379,7 +379,7 @@ export default function ShopClient() {
       <div className="min-h-screen bg-cr flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+          <p className="text-xs md:text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
         </div>
       </div>
     }>

@@ -67,7 +67,7 @@ export function CustomerModal({
             {/* Header */}
             <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400">Customer Detail</p>
+                <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Customer Detail</p>
                 <h2 className="text-xl font-medium text-gray-900">
                   {customer ? `CST-${String(customer.customer_number).padStart(3, '0')}` : 'Add New Customer'}
                 </h2>
@@ -84,7 +84,7 @@ export function CustomerModal({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Email</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Email</label>
                     <input
                       type="email"
                       value={form.email}
@@ -94,7 +94,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Phone</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Phone</label>
                     <input
                       type="tel"
                       value={form.phone}
@@ -107,7 +107,7 @@ export function CustomerModal({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">First Name</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">First Name</label>
                     <input
                       type="text"
                       value={form.first_name}
@@ -117,7 +117,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Last Name</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Last Name</label>
                     <input
                       type="text"
                       value={form.last_name}
@@ -129,7 +129,7 @@ export function CustomerModal({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Full Name</label>
+                  <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Full Name</label>
                   <input
                     type="text"
                     value={form.full_name}
@@ -141,7 +141,7 @@ export function CustomerModal({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tanggal Lahir</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Tanggal Lahir</label>
                     <input
                       type="date"
                       value={form.birth_date}
@@ -150,7 +150,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Jenis Kelamin</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Jenis Kelamin</label>
                     <select
                       value={form.gender}
                       onChange={(e) => setForm({ ...form, gender: e.target.value })}
@@ -169,7 +169,7 @@ export function CustomerModal({
                 <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Address Information</h3>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Street Address</label>
+                  <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Street Address</label>
                   <input
                     type="text"
                     value={form.street}
@@ -181,7 +181,7 @@ export function CustomerModal({
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">House Number</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">House Number</label>
                     <input
                       type="text"
                       value={form.house_number}
@@ -191,7 +191,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">RT</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">RT</label>
                     <input
                       type="text"
                       value={form.rt}
@@ -201,7 +201,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">RW</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">RW</label>
                     <input
                       type="text"
                       value={form.rw}
@@ -214,7 +214,7 @@ export function CustomerModal({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">City</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">City</label>
                     <input
                       type="text"
                       value={form.city}
@@ -224,7 +224,7 @@ export function CustomerModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Province</label>
+                    <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Province</label>
                     <input
                       type="text"
                       value={form.province}
@@ -236,7 +236,7 @@ export function CustomerModal({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Postal Code</label>
+                  <label className="block text-xs md:text-[10px] uppercase tracking-wider text-gray-500 mb-2">Postal Code</label>
                   <input
                     type="text"
                     value={form.postal_code}
@@ -261,7 +261,7 @@ export function CustomerModal({
                 className="flex items-center gap-2 px-6 py-2.5 bg-rose text-white rounded-lg hover:bg-rose/90"
               >
                 <Save size={16} />
-                <span className="text-[10px] uppercase tracking-wider">{customer ? 'Update Customer' : 'Save Customer'}</span>
+                <span className="text-xs md:text-[10px] uppercase tracking-wider">{customer ? 'Update Customer' : 'Save Customer'}</span>
               </button>
             </div>
           </motion.div>

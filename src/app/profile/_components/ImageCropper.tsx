@@ -99,7 +99,7 @@ export default function ImageCropper({ imageSrc, onClose, onCropComplete }: Imag
         className="w-full max-w-md bg-white flex flex-col overflow-hidden"
       >
         <div className="flex items-center justify-between p-4 border-b border-ink/5">
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-ink">Sesuaikan Foto</h3>
+          <h3 className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink">Sesuaikan Foto</h3>
           <button onClick={onClose} className="p-2 -mr-2 text-ink/40 hover:text-rose transition-colors">
             <X size={16} />
           </button>
@@ -122,8 +122,8 @@ export default function ImageCropper({ imageSrc, onClose, onCropComplete }: Imag
         <div className="p-6 space-y-6">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <label className="text-[9px] uppercase tracking-widest text-ink/40">Zoom</label>
-              <span className="text-[9px] font-mono text-ink/40">{Math.round(zoom * 100)}%</span>
+              <label className="text-xs md:text-[9px] uppercase tracking-widest text-ink/40">Zoom</label>
+              <span className="text-xs md:text-[9px] font-mono text-ink/40">{Math.round(zoom * 100)}%</span>
             </div>
             <input
               type="range"
@@ -140,7 +140,7 @@ export default function ImageCropper({ imageSrc, onClose, onCropComplete }: Imag
           <button
             onClick={handleSave}
             disabled={isProcessing}
-            className="w-full bg-ink text-white py-4 rounded-none text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50"
+            className="w-full bg-ink text-white py-4 rounded-none text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50"
           >
             {isProcessing ? 'Memproses...' : 'Potong & Simpan'}
             {!isProcessing && <Check size={14} />}

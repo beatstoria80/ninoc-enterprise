@@ -159,7 +159,7 @@ export default function AffiliatesTab() {
         <div className="flex p-1 bg-ink/5 rounded-none">
           <button
             onClick={() => setActiveTab('applications')}
-            className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`px-6 py-2 text-xs md:text-[10px] font-bold uppercase tracking-widest transition-all ${
               activeTab === 'applications' ? 'bg-white text-ink shadow-sm' : 'text-ink/40 hover:text-ink'
             }`}
           >
@@ -167,7 +167,7 @@ export default function AffiliatesTab() {
           </button>
           <button
             onClick={() => setActiveTab('active')}
-            className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`px-6 py-2 text-xs md:text-[10px] font-bold uppercase tracking-widest transition-all ${
               activeTab === 'active' ? 'bg-white text-ink shadow-sm' : 'text-ink/40 hover:text-ink'
             }`}
           >
@@ -175,7 +175,7 @@ export default function AffiliatesTab() {
           </button>
           <button
             onClick={() => setActiveTab('withdrawals')}
-            className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`px-6 py-2 text-xs md:text-[10px] font-bold uppercase tracking-widest transition-all ${
               activeTab === 'withdrawals' ? 'bg-white text-ink shadow-sm' : 'text-ink/40 hover:text-ink'
             }`}
           >
@@ -190,29 +190,29 @@ export default function AffiliatesTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/5">
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Applicant</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Channel</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Status</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Actions</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Applicant</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Channel</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Status</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {applications.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No applications found.</td>
+                    <td colSpan={4} className="p-8 text-center text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No applications found.</td>
                   </tr>
                 ) : applications.map((app) => (
                   <tr key={app.id} className="hover:bg-ink/[0.02] transition-colors">
                     <td className="p-4">
                       <p className="text-xs font-medium text-ink uppercase tracking-tight">{app.full_name}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{app.email}</p>
+                      <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">{app.email}</p>
                     </td>
                     <td className="p-4">
                       <p className="text-xs font-medium text-ink uppercase tracking-tight">{app.channel_name}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5 max-w-[150px] truncate">IG: {app.instagram_link}</p>
+                      <p className="text-xs md:text-[10px] text-ink/50 mt-0.5 max-w-[150px] truncate">IG: {app.instagram_link}</p>
                     </td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                      <span className={`px-2 py-1 text-xs md:text-[9px] font-bold uppercase tracking-widest ${
                         app.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                         app.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
                         'bg-rose/10 text-rose'
@@ -246,18 +246,18 @@ export default function AffiliatesTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/5">
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Clicks</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Orders</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales Generated</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Balance</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Action</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Clicks</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Orders</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales Generated</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Balance</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {affiliates.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No active affiliates yet.</td>
+                    <td colSpan={6} className="p-8 text-center text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No active affiliates yet.</td>
                   </tr>
                 ) : affiliates.map((aff) => {
                   const metrics = getMetrics(aff.id);
@@ -265,7 +265,7 @@ export default function AffiliatesTab() {
                   <tr key={aff.id} className="hover:bg-ink/[0.02] transition-colors cursor-pointer group" onClick={() => setSelectedAffiliate(aff)}>
                     <td className="p-4">
                       <p className="text-xs font-bold text-ink tracking-widest">{aff.code}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{aff.tier} • {aff.commission_rate}%</p>
+                      <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">{aff.tier} • {aff.commission_rate}%</p>
                     </td>
                     <td className="p-4 text-center">
                       <p className="text-xs font-medium text-ink">{metrics.clicks}</p>
@@ -280,7 +280,7 @@ export default function AffiliatesTab() {
                       <p className="text-xs font-bold text-ink">Rp {aff.balance.toLocaleString('id-ID')}</p>
                     </td>
                     <td className="p-4 text-right">
-                      <button className="text-[10px] uppercase tracking-widest font-bold text-rose opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end w-full gap-1">
+                      <button className="text-xs md:text-[10px] uppercase tracking-widest font-bold text-rose opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end w-full gap-1">
                         View <ChevronRight size={14} />
                       </button>
                     </td>
@@ -298,33 +298,33 @@ export default function AffiliatesTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/5">
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Bank Account</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Amount</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
-                  <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Actions</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Partner Code</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Bank Account</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Amount</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
+                  <th className="p-4 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {withdrawals.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-[10px] uppercase tracking-widest text-ink/40">No withdrawal requests found.</td>
+                    <td colSpan={5} className="p-8 text-center text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No withdrawal requests found.</td>
                   </tr>
                 ) : withdrawals.map((w) => (
                   <tr key={w.id} className="hover:bg-ink/[0.02] transition-colors">
                     <td className="p-4">
                       <p className="text-xs font-bold text-ink tracking-widest">{w.affiliates?.code}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{new Date(w.created_at).toLocaleDateString('id-ID')}</p>
+                      <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">{new Date(w.created_at).toLocaleDateString('id-ID')}</p>
                     </td>
                     <td className="p-4">
                       <p className="text-xs font-medium text-ink uppercase">{w.bank_name}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{w.account_number} a/n {w.account_name}</p>
+                      <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">{w.account_number} a/n {w.account_name}</p>
                     </td>
                     <td className="p-4 text-right">
                       <p className="text-xs font-bold text-ink">Rp {w.amount.toLocaleString('id-ID')}</p>
                     </td>
                     <td className="p-4 text-center">
-                      <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest ${
+                      <span className={`px-2 py-1 text-xs md:text-[9px] font-bold uppercase tracking-widest ${
                         w.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                         w.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                         w.status === 'processing' ? 'bg-blue-100 text-blue-700' :
@@ -401,19 +401,19 @@ export default function AffiliatesTab() {
                       {/* Metric Cards */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
-                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Clicks</p>
+                          <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Clicks</p>
                           <p className="text-2xl font-bold text-ink">{metrics.clicks}</p>
                         </div>
                         <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
-                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Orders</p>
+                          <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest mb-1">Total Orders</p>
                           <p className="text-2xl font-bold text-ink">{metrics.totalOrders}</p>
                         </div>
                         <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
-                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Conversion</p>
+                          <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest mb-1">Conversion</p>
                           <p className="text-2xl font-bold text-emerald-600">{metrics.conversionRate}%</p>
                         </div>
                         <div className="bg-white border border-ink/10 p-4 rounded-lg shadow-sm">
-                          <p className="text-[10px] text-ink/50 uppercase tracking-widest mb-1">Sales Generated</p>
+                          <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest mb-1">Sales Generated</p>
                           <p className="text-2xl font-bold text-ink">Rp {metrics.salesGenerated.toLocaleString('id-ID')}</p>
                         </div>
                       </div>
@@ -424,14 +424,14 @@ export default function AffiliatesTab() {
                         <form onSubmit={updateConfig} className="bg-white border border-ink/10 p-5 rounded-lg shadow-sm space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-[10px] uppercase tracking-widest text-ink/60 mb-1">Customer Discount Type</label>
+                              <label className="block text-xs md:text-[10px] uppercase tracking-widest text-ink/60 mb-1">Customer Discount Type</label>
                               <select name="discount_type" defaultValue={selectedAffiliate.customer_discount_type || 'percentage'} className="w-full bg-ink/5 border-none text-xs p-2.5 outline-none rounded-sm">
                                 <option value="percentage">Percentage (%)</option>
                                 <option value="fixed_amount">Fixed Amount (Rp)</option>
                               </select>
                             </div>
                             <div>
-                              <label className="block text-[10px] uppercase tracking-widest text-ink/60 mb-1">Discount Value</label>
+                              <label className="block text-xs md:text-[10px] uppercase tracking-widest text-ink/60 mb-1">Discount Value</label>
                               <input type="number" name="discount_value" defaultValue={selectedAffiliate.customer_discount_value || 0} className="w-full bg-ink/5 border-none text-xs p-2.5 outline-none rounded-sm" />
                             </div>
                           </div>
@@ -440,7 +440,7 @@ export default function AffiliatesTab() {
                             <label htmlFor="auto_approve" className="text-xs font-medium text-ink">Auto-Approve Withdrawals</label>
                           </div>
                           <div className="flex justify-end pt-2 border-t border-ink/10">
-                            <button type="submit" disabled={savingConfig} className="px-6 py-2 bg-ink text-white text-[10px] uppercase tracking-widest disabled:opacity-50 hover:bg-ink/80 transition-colors">
+                            <button type="submit" disabled={savingConfig} className="px-6 py-2 bg-ink text-white text-xs md:text-[10px] uppercase tracking-widest disabled:opacity-50 hover:bg-ink/80 transition-colors">
                               {savingConfig ? 'Saving...' : 'Save Configuration'}
                             </button>
                           </div>
@@ -454,11 +454,11 @@ export default function AffiliatesTab() {
                           <table className="w-full text-left text-sm">
                             <thead className="bg-ink/5 border-b border-ink/10">
                               <tr>
-                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60">Date</th>
-                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60">Order ID</th>
-                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales</th>
-                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Commission</th>
-                                <th className="p-3 text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
+                                <th className="p-3 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Date</th>
+                                <th className="p-3 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60">Order ID</th>
+                                <th className="p-3 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Sales</th>
+                                <th className="p-3 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-right">Commission</th>
+                                <th className="p-3 text-xs md:text-[10px] font-bold uppercase tracking-widest text-ink/60 text-center">Status</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-ink/5">
@@ -473,7 +473,7 @@ export default function AffiliatesTab() {
                                   <td className="p-3 text-xs text-right text-ink/70">Rp {h.sales_amount?.toLocaleString('id-ID') || 0}</td>
                                   <td className="p-3 text-xs text-right font-medium text-emerald-600">Rp {h.commission_amount?.toLocaleString('id-ID') || 0}</td>
                                   <td className="p-3 text-center">
-                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${
+                                    <span className={`px-2 py-0.5 rounded text-xs md:text-[9px] font-bold uppercase tracking-widest ${
                                       h.status === 'paid' ? 'bg-emerald-100 text-emerald-700' :
                                       h.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                                       'bg-rose/10 text-rose'

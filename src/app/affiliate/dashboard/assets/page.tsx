@@ -70,7 +70,7 @@ export default function AssetsPage() {
                 </button>
               </div>
               <div className="absolute top-4 left-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm bg-white/90 text-ink shadow-sm backdrop-blur-sm">
+                <span className="text-xs md:text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm bg-white/90 text-ink shadow-sm backdrop-blur-sm">
                   {asset.type}
                 </span>
               </div>
@@ -82,7 +82,7 @@ export default function AssetsPage() {
               
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-medium uppercase tracking-wider text-ink/50">Suggested Copywriting</label>
+                  <label className="text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50">Suggested Copywriting</label>
                   <div className="flex gap-2">
                     <MessageCircle size={12} className="text-ink/40" />
                     <PlaySquare size={12} className="text-ink/40" />
@@ -103,7 +103,7 @@ export default function AssetsPage() {
               </div>
 
               <div className="pt-4 mt-4 border-t border-ink/5">
-                <button className="text-[10px] font-medium uppercase tracking-wider text-rose hover:text-ink transition-colors flex items-center gap-1">
+                <button className="text-xs md:text-[10px] font-medium uppercase tracking-wider text-rose hover:text-ink transition-colors flex items-center gap-1">
                   Lihat Produk di Web <ExternalLink size={12} />
                 </button>
               </div>

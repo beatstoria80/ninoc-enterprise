@@ -50,7 +50,7 @@ function StatusBadge({ status }: { status: SessionStatus }) {
   const cfg = map[status] || map.draft;
   const Icon = cfg.icon;
   return (
-    <span className={cn('inline-flex items-center gap-1 px-2 py-1 border text-[8px] font-bold uppercase tracking-widest rounded-sm', cfg.color, cfg.bg)}>
+    <span className={cn('inline-flex items-center gap-1 px-2 py-1 border text-[11px] md:text-[8px] font-bold uppercase tracking-widest rounded-sm', cfg.color, cfg.bg)}>
       <Icon size={8} /> {cfg.label}
     </span>
   );
@@ -149,7 +149,7 @@ export function WABroadcastTab() {
           <h2 className="text-[13px] font-display italic font-medium uppercase tracking-widest text-ink">
             WhatsApp Broadcast
           </h2>
-          <p className="text-[8px] text-ink/30 uppercase tracking-widest mt-0.5">
+          <p className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest mt-0.5">
             Kirim pesan promo massal via WhatsApp Cloud API
           </p>
         </div>
@@ -159,12 +159,12 @@ export function WABroadcastTab() {
             {isConfigured ? (
               <>
                 <Wifi size={10} className="text-emerald-500" />
-                <span className="text-[8px] font-semibold text-emerald-500 uppercase tracking-wider">WA Connected</span>
+                <span className="text-[11px] md:text-[8px] font-semibold text-emerald-500 uppercase tracking-wider">WA Connected</span>
               </>
             ) : (
               <>
                 <WifiOff size={10} className="text-red-400" />
-                <span className="text-[8px] font-semibold text-red-400 uppercase tracking-wider">Not Configured</span>
+                <span className="text-[11px] md:text-[8px] font-semibold text-red-400 uppercase tracking-wider">Not Configured</span>
               </>
             )}
           </div>
@@ -178,7 +178,7 @@ export function WABroadcastTab() {
           {/* New campaign */}
           <button
             onClick={() => setShowForm(prev => !prev)}
-            className="flex items-center gap-2 px-4 py-2 bg-rose text-white rounded-sm text-[9px] font-bold uppercase tracking-wider hover:bg-rose/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-rose text-white rounded-sm text-xs md:text-[9px] font-bold uppercase tracking-wider hover:bg-rose/90 transition-colors"
           >
             <Send size={10} />
             {showForm ? 'Batal' : 'Campaign Baru'}
@@ -191,15 +191,15 @@ export function WABroadcastTab() {
         <div className="grid grid-cols-3 gap-3 mb-4 shrink-0">
           <div className="bg-white border border-ink/5 p-4 rounded-sm text-center">
             <p className="text-[22px] font-display italic font-bold text-emerald-500">{waStatus.today.sent}</p>
-            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Terkirim Hari Ini</p>
+            <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Terkirim Hari Ini</p>
           </div>
           <div className="bg-white border border-ink/5 p-4 rounded-sm text-center">
             <p className="text-[22px] font-display italic font-bold text-red-400">{waStatus.today.failed}</p>
-            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Gagal Hari Ini</p>
+            <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Gagal Hari Ini</p>
           </div>
           <div className="bg-white border border-ink/5 p-4 rounded-sm text-center">
             <p className="text-[22px] font-display italic font-bold text-ink">{sessions.filter(s => s.status === 'queued' || s.status === 'processing').length}</p>
-            <p className="text-[7px] text-ink/30 uppercase tracking-widest mt-1">Campaign Aktif</p>
+            <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-1">Campaign Aktif</p>
           </div>
         </div>
       )}
@@ -215,7 +215,7 @@ export function WABroadcastTab() {
           >
             <form onSubmit={handleSubmit} className="bg-white border border-rose/20 rounded-sm p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-[10px] font-bold uppercase tracking-wider text-rose">Campaign Baru</h3>
+                <h3 className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-rose">Campaign Baru</h3>
                 <button type="button" onClick={() => setShowForm(false)} className="text-ink/20 hover:text-ink">
                   <X size={12} />
                 </button>
@@ -223,20 +223,20 @@ export function WABroadcastTab() {
 
               {/* Campaign name */}
               <div>
-                <label className="block text-[8px] font-semibold uppercase tracking-widest text-ink/40 mb-1.5">Nama Campaign</label>
+                <label className="block text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-ink/40 mb-1.5">Nama Campaign</label>
                 <input
                   type="text"
                   value={campaignName}
                   onChange={e => setCampaignName(e.target.value)}
                   placeholder="Contoh: Promo Juni 2026 — Diskon 20%"
                   maxLength={100}
-                  className="w-full px-3 py-2.5 border border-ink/10 rounded-sm text-[11px] focus:outline-none focus:border-rose/40 transition-colors"
+                  className="w-full px-3 py-2.5 border border-ink/10 rounded-sm text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors"
                 />
               </div>
 
               {/* Segment */}
               <div>
-                <label className="block text-[8px] font-semibold uppercase tracking-widest text-ink/40 mb-2">Segmentasi Penerima</label>
+                <label className="block text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-ink/40 mb-2">Segmentasi Penerima</label>
                 <div className="grid grid-cols-3 gap-2">
                   {SEGMENTS.map(seg => (
                     <button
@@ -250,8 +250,8 @@ export function WABroadcastTab() {
                           : 'border-ink/10 hover:border-rose/20'
                       )}
                     >
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-ink">{seg.label}</p>
-                      <p className="text-[7px] text-ink/40 mt-0.5 leading-snug">{seg.desc}</p>
+                      <p className="text-xs md:text-[9px] font-bold uppercase tracking-wider text-ink">{seg.label}</p>
+                      <p className="text-[10px] md:text-[7px] text-ink/40 mt-0.5 leading-snug">{seg.desc}</p>
                     </button>
                   ))}
                 </div>
@@ -260,33 +260,33 @@ export function WABroadcastTab() {
               {/* Message */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-[8px] font-semibold uppercase tracking-widest text-ink/40">Isi Pesan Promo</label>
-                  <span className={cn('text-[7px]', message.length > 900 ? 'text-rose font-bold' : 'text-ink/30')}>{message.length}/1024</span>
+                  <label className="text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-ink/40">Isi Pesan Promo</label>
+                  <span className={cn('text-[10px] md:text-[7px]', message.length > 900 ? 'text-rose font-bold' : 'text-ink/30')}>{message.length}/1024</span>
                 </div>
                 <textarea
                   value={message}
                   onChange={e => setMessage(e.target.value)}
                   placeholder="Ketik pesan promo di sini... Pesan akan dikirim menggunakan template yang sudah di-approve Meta."
                   rows={5}
-                  className="w-full px-3 py-2.5 border border-ink/10 rounded-sm text-[11px] focus:outline-none focus:border-rose/40 transition-colors resize-none"
+                  className="w-full px-3 py-2.5 border border-ink/10 rounded-sm text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors resize-none"
                 />
-                <p className="text-[7px] text-ink/30 mt-1">
+                <p className="text-[10px] md:text-[7px] text-ink/30 mt-1">
                   Pesan menggunakan template WhatsApp Business. Pastikan template sudah di-approve di Meta Business Console.
                 </p>
               </div>
 
               {/* Preview */}
               <div className="bg-ink/5 rounded-sm p-3">
-                <p className="text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Preview:</p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Preview:</p>
                 <div className="bg-emerald-500/10 border border-emerald-200/50 rounded-lg p-3 max-w-[200px]">
-                  <p className="text-[8px] font-semibold text-emerald-700">NINOC STUDIO</p>
-                  <p className="text-[9px] text-ink/70 mt-1 leading-relaxed">
+                  <p className="text-[11px] md:text-[8px] font-semibold text-emerald-700">NINOC STUDIO</p>
+                  <p className="text-xs md:text-[9px] text-ink/70 mt-1 leading-relaxed">
                     Halo {segment === 'all' ? 'Pelanggan' : segment === 'has_order' ? 'Customer Setia' : 'Customer Baru'}! 👋
                   </p>
-                  <p className="text-[9px] text-ink/70 mt-1 leading-relaxed">
+                  <p className="text-xs md:text-[9px] text-ink/70 mt-1 leading-relaxed">
                     {message || '[Ketik pesan promo di atas...]'}
                   </p>
-                  <p className="text-[8px] text-ink/40 mt-2 italic">NINOC STUDIO — Kirim via WhatsApp</p>
+                  <p className="text-[11px] md:text-[8px] text-ink/40 mt-2 italic">NINOC STUDIO — Kirim via WhatsApp</p>
                 </div>
               </div>
 
@@ -294,13 +294,13 @@ export function WABroadcastTab() {
               {submitError && (
                 <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-sm">
                   <AlertTriangle size={12} className="text-red-500 shrink-0" />
-                  <p className="text-[9px] text-red-600">{submitError}</p>
+                  <p className="text-xs md:text-[9px] text-red-600">{submitError}</p>
                 </div>
               )}
               {submitSuccess && (
                 <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-sm">
                   <CheckCircle size={12} className="text-emerald-500 shrink-0" />
-                  <p className="text-[9px] text-emerald-700">{submitSuccess}</p>
+                  <p className="text-xs md:text-[9px] text-emerald-700">{submitSuccess}</p>
                 </div>
               )}
 
@@ -309,14 +309,14 @@ export function WABroadcastTab() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 text-[9px] font-semibold uppercase tracking-wider text-ink/40 hover:text-ink transition-colors"
+                  className="px-4 py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider text-ink/40 hover:text-ink transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-sm text-[9px] font-bold uppercase tracking-wider hover:bg-rose/90 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-sm text-xs md:text-[9px] font-bold uppercase tracking-wider hover:bg-rose/90 transition-colors disabled:opacity-50"
                 >
                   {submitting ? <Loader2 size={10} className="animate-spin" /> : <Send size={10} />}
                   {submitting ? 'Mengirim...' : 'Mulai Broadcast'}
@@ -336,7 +336,7 @@ export function WABroadcastTab() {
         ) : sessions.length === 0 ? (
           <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 opacity-20">
             <MessageSquare size={36} strokeWidth={0.8} />
-            <p className="text-[9px] font-medium uppercase tracking-[0.3em] italic">Belum ada campaign broadcast</p>
+            <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] italic">Belum ada campaign broadcast</p>
           </div>
         ) : (
           sessions.map((session, idx) => {
@@ -360,22 +360,22 @@ export function WABroadcastTab() {
                 <div className="p-4 flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-ink truncate">{session.name}</p>
+                      <p className="text-xs md:text-[10px] font-bold uppercase tracking-wider text-ink truncate">{session.name}</p>
                       <StatusBadge status={session.status} />
                     </div>
-                    <p className="text-[7px] text-ink/30 uppercase tracking-widest">
+                    <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">
                       {SEGMENTS.find(s => s.value === session.segment)?.label || session.segment} • {session.total_recipients} penerima
                     </p>
-                    <p className="text-[7px] text-ink/20 mt-0.5 italic">
+                    <p className="text-[10px] md:text-[7px] text-ink/20 mt-0.5 italic">
                       {new Date(session.created_at).toLocaleString('id-ID')}
                     </p>
                   </div>
 
                   <div className="text-right shrink-0 space-y-1">
                     <p className="text-[14px] font-display italic font-bold text-emerald-500">{session.total_sent}</p>
-                    <p className="text-[7px] text-ink/30 uppercase tracking-widest">terkirim</p>
+                    <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">terkirim</p>
                     {session.total_failed > 0 && (
-                      <p className="text-[8px] text-red-400 font-semibold">{session.total_failed} gagal</p>
+                      <p className="text-[11px] md:text-[8px] text-red-400 font-semibold">{session.total_failed} gagal</p>
                     )}
                   </div>
                 </div>
@@ -383,7 +383,7 @@ export function WABroadcastTab() {
                 {/* Progress bar */}
                 {isActive && (
                   <div className="px-4 pb-3">
-                    <div className="flex justify-between text-[7px] text-amber-500 font-semibold uppercase tracking-widest mb-1">
+                    <div className="flex justify-between text-[10px] md:text-[7px] text-amber-500 font-semibold uppercase tracking-widest mb-1">
                       <span>Sedang diproses...</span>
                       <span>{progress}%</span>
                     </div>
@@ -397,7 +397,7 @@ export function WABroadcastTab() {
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <Play size={8} className="text-amber-400" />
-                      <p className="text-[7px] text-amber-400/60">Queue processor aktif — cron berjalan setiap 1 menit</p>
+                      <p className="text-[10px] md:text-[7px] text-amber-400/60">Queue processor aktif — cron berjalan setiap 1 menit</p>
                     </div>
                   </div>
                 )}
@@ -406,8 +406,8 @@ export function WABroadcastTab() {
                 {session.template_message && (
                   <div className="px-4 pb-4">
                     <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5">
-                      <p className="text-[8px] text-ink/40 uppercase tracking-widest font-semibold mb-1">Isi Pesan:</p>
-                      <p className="text-[9px] text-ink/60 leading-relaxed line-clamp-2">{session.template_message}</p>
+                      <p className="text-[11px] md:text-[8px] text-ink/40 uppercase tracking-widest font-semibold mb-1">Isi Pesan:</p>
+                      <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed line-clamp-2">{session.template_message}</p>
                     </div>
                   </div>
                 )}
@@ -416,7 +416,7 @@ export function WABroadcastTab() {
                 {session.status === 'completed' && (
                   <div className="px-4 pb-3 flex items-center gap-2">
                     <CheckCircle size={9} className="text-emerald-400" />
-                    <p className="text-[7px] text-emerald-400/60 uppercase tracking-widest font-semibold">
+                    <p className="text-[10px] md:text-[7px] text-emerald-400/60 uppercase tracking-widest font-semibold">
                       Selesai {session.completed_at ? new Date(session.completed_at).toLocaleString('id-ID') : ''}
                     </p>
                   </div>

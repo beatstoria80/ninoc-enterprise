@@ -245,7 +245,7 @@ export function MarketingTab() {
     return (
       <div className="flex flex-col items-center justify-center py-20 opacity-50">
         <TrendingUp className="w-8 h-8 animate-pulse text-ink mb-4" />
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-ink">Menghitung Data ROAS & HPP...</p>
+        <p className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Menghitung Data ROAS & HPP...</p>
       </div>
     );
   }
@@ -259,7 +259,7 @@ export function MarketingTab() {
           <TrendingUp className="w-5 h-5" />
           Marketing & Real ROAS
         </h1>
-        <p className="text-[11px] text-ink/50 mt-1 uppercase tracking-widest">
+        <p className="text-sm md:text-[11px] text-ink/50 mt-1 uppercase tracking-widest">
           Analisis Margin Kotor, Laba Bersih, dan Return on Ad Spend berstandar e-Commerce.
         </p>
       </div>
@@ -267,18 +267,18 @@ export function MarketingTab() {
       {/* OVERALL ROAS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-ink text-white rounded-sm p-5 relative overflow-hidden">
-          <p className="text-[9px] font-semibold text-white/50 uppercase tracking-widest mb-1">True Net Profit</p>
+          <p className="text-xs md:text-[9px] font-semibold text-white/50 uppercase tracking-widest mb-1">True Net Profit</p>
           <p className={cn("text-2xl font-mono tracking-tight", metrics.netProfit >= 0 ? "text-emerald-400" : "text-rose")}>
             IDR {fIDR(metrics.netProfit)}
           </p>
-          <p className="text-[9px] text-white/40 mt-2">Gross Profit - Marketing Spend</p>
+          <p className="text-xs md:text-[9px] text-white/40 mt-2">Gross Profit - Marketing Spend</p>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-sm p-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5"><TrendingUp size={64} /></div>
-          <p className="text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Real ROAS</p>
+          <p className="text-xs md:text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Real ROAS</p>
           <p className="text-2xl font-mono tracking-tight text-ink">{metrics.roas.toFixed(1)}%</p>
-          <div className="flex items-center gap-1 mt-2 text-[10px]">
+          <div className="flex items-center gap-1 mt-2 text-xs md:text-[10px]">
             {metrics.roas >= 100 ? (
               <span className="text-emerald-600 flex items-center gap-1"><ArrowUpRight size={12}/> Profitable</span>
             ) : (
@@ -288,15 +288,15 @@ export function MarketingTab() {
         </div>
 
         <div className="bg-white border border-ink/10 rounded-sm p-5">
-          <p className="text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Total Marketing Spend</p>
+          <p className="text-xs md:text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Total Marketing Spend</p>
           <p className="text-2xl font-mono tracking-tight text-rose">IDR {fIDR(metrics.marketingSpend)}</p>
-          <p className="text-[9px] text-ink/40 mt-2">Diskon + Komisi</p>
+          <p className="text-xs md:text-[9px] text-ink/40 mt-2">Diskon + Komisi</p>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-sm p-5">
-          <p className="text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Gross Profit</p>
+          <p className="text-xs md:text-[9px] font-semibold text-ink/50 uppercase tracking-widest mb-1">Gross Profit</p>
           <p className="text-2xl font-mono tracking-tight text-emerald-600">IDR {fIDR(metrics.grossProfit)}</p>
-          <p className="text-[9px] text-ink/40 mt-2">Revenue - COGS</p>
+          <p className="text-xs md:text-[9px] text-ink/40 mt-2">Revenue - COGS</p>
         </div>
       </div>
 
@@ -305,7 +305,7 @@ export function MarketingTab() {
         
         {/* VOUCHER ANALYTICS */}
         <div className="space-y-4">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
+          <h2 className="text-sm md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
             <Ticket className="w-4 h-4 text-ink/40" /> Internal Vouchers
           </h2>
           
@@ -313,33 +313,33 @@ export function MarketingTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Code</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Net Profit</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Discount Cost</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Real ROAS</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Code</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Net Profit</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Discount Cost</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Real ROAS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {topVouchers.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-[10px] text-ink/40">No voucher data yet</td></tr>
+                  <tr><td colSpan={4} className="px-4 py-8 text-center text-xs md:text-[10px] text-ink/40">No voucher data yet</td></tr>
                 ) : (
                   topVouchers.map((v, i) => (
                     <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-[10px] font-semibold text-ink">{v.code}</p>
-                        <p className="text-[8px] text-ink/40 uppercase tracking-wider">{v.usages} uses</p>
+                        <p className="text-xs md:text-[10px] font-semibold text-ink">{v.code}</p>
+                        <p className="text-[11px] md:text-[8px] text-ink/40 uppercase tracking-wider">{v.usages} uses</p>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <p className={cn("text-[10px] font-mono", v.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
+                        <p className={cn("text-xs md:text-[10px] font-mono", v.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
                           IDR {fIDR(v.netProfit)}
                         </p>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <p className="text-[10px] font-mono text-rose">IDR {fIDR(v.discount)}</p>
+                        <p className="text-xs md:text-[10px] font-mono text-rose">IDR {fIDR(v.discount)}</p>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className={cn(
-                          "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
+                          "px-2 py-0.5 rounded-sm text-xs md:text-[9px] font-mono font-medium",
                           v.roas >= 100 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
                           {v.roas.toFixed(0)}%
@@ -355,7 +355,7 @@ export function MarketingTab() {
 
         {/* AFFILIATE ANALYTICS */}
         <div className="space-y-4">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
+          <h2 className="text-sm md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
             <Users className="w-4 h-4 text-ink/40" /> Affiliate Program
           </h2>
 
@@ -363,33 +363,33 @@ export function MarketingTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Affiliate</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Net Profit</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Comm Cost</th>
-                  <th className="px-4 py-2 text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Real ROAS</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Affiliate</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Net Profit</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Comm Cost</th>
+                  <th className="px-4 py-2 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest text-right">Real ROAS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {topAffiliates.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-[10px] text-ink/40">No affiliate data yet</td></tr>
+                  <tr><td colSpan={4} className="px-4 py-8 text-center text-xs md:text-[10px] text-ink/40">No affiliate data yet</td></tr>
                 ) : (
                   topAffiliates.map((a, i) => (
                     <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-[10px] font-semibold text-ink truncate max-w-[100px]" title={a.name}>{a.name}</p>
-                        <p className="text-[7px] text-ink/30 uppercase tracking-wider mt-0.5">{a.clicks} clicks • {a.orders} orders</p>
+                        <p className="text-xs md:text-[10px] font-semibold text-ink truncate max-w-[100px]" title={a.name}>{a.name}</p>
+                        <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-wider mt-0.5">{a.clicks} clicks • {a.orders} orders</p>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <p className={cn("text-[10px] font-mono", a.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
+                        <p className={cn("text-xs md:text-[10px] font-mono", a.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
                           IDR {fIDR(a.netProfit)}
                         </p>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <p className="text-[10px] font-mono text-rose">IDR {fIDR(a.commission)}</p>
+                        <p className="text-xs md:text-[10px] font-mono text-rose">IDR {fIDR(a.commission)}</p>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className={cn(
-                          "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
+                          "px-2 py-0.5 rounded-sm text-xs md:text-[9px] font-mono font-medium",
                           a.roas >= 100 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
                           {a.roas.toFixed(0)}%
@@ -407,14 +407,14 @@ export function MarketingTab() {
       {/* COSTING CONFIGURATION GRID */}
       <div className="pt-10">
         <div className="flex items-center justify-between mb-4 border-b border-ink/10 pb-2">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2">
+          <h2 className="text-sm md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2">
             <PackageOpen className="w-4 h-4 text-ink/40" /> Product Costing Configuration
           </h2>
           {Object.keys(editingCostings).length > 0 && (
             <button 
               onClick={saveCostings}
               disabled={savingCosting}
-              className="px-4 py-1.5 bg-ink text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose transition-colors flex items-center gap-2"
+              className="px-4 py-1.5 bg-ink text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose transition-colors flex items-center gap-2"
             >
               {savingCosting ? 'Saving...' : <><Save size={12}/> Save Changes</>}
             </button>
@@ -425,13 +425,13 @@ export function MarketingTab() {
           <table className="w-full text-left whitespace-nowrap">
             <thead>
               <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest sticky left-0 bg-white">Product</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Selling Price (IDR)</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">HPP Pabrik (IDR)</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Packaging (IDR)</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Operational (%)</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Target Margin (%)</th>
-                <th className="px-4 py-3 text-[8px] font-medium text-ink/40 uppercase tracking-widest">Target ROAS (%)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest sticky left-0 bg-white">Product</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Selling Price (IDR)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">HPP Pabrik (IDR)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Packaging (IDR)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Operational (%)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Target Margin (%)</th>
+                <th className="px-4 py-3 text-[11px] md:text-[8px] font-medium text-ink/40 uppercase tracking-widest">Target ROAS (%)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -442,15 +442,15 @@ export function MarketingTab() {
                 return (
                   <tr key={p.id} className="hover:bg-ink/[0.01] transition-colors">
                     <td className="px-4 py-3 sticky left-0 bg-white group-hover:bg-ink/[0.01]">
-                      <p className="text-[10px] font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
+                      <p className="text-xs md:text-[10px] font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-[10px] font-mono text-ink">IDR {fIDR(p.price)}</p>
+                      <p className="text-xs md:text-[10px] font-mono text-ink">IDR {fIDR(p.price)}</p>
                     </td>
                     <td className="px-4 py-2">
                       <input 
                         type="number"
-                        className="w-24 text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
+                        className="w-24 text-xs md:text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
                         value={currentData.supplier_cost}
                         onChange={(e) => handleCostingChange(p.id, 'supplier_cost', e.target.value)}
                       />
@@ -458,7 +458,7 @@ export function MarketingTab() {
                     <td className="px-4 py-2">
                       <input 
                         type="number"
-                        className="w-20 text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
+                        className="w-20 text-xs md:text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
                         value={currentData.packaging_cost}
                         onChange={(e) => handleCostingChange(p.id, 'packaging_cost', e.target.value)}
                       />
@@ -467,33 +467,33 @@ export function MarketingTab() {
                       <div className="relative w-16">
                         <input 
                           type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
+                          className="w-full text-xs md:text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
                           value={currentData.operational_pct}
                           onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
                         />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/40">%</span>
+                        <span className="absolute right-2 top-1.5 text-xs md:text-[10px] text-ink/40">%</span>
                       </div>
                     </td>
                     <td className="px-4 py-2">
                       <div className="relative w-16">
                         <input 
                           type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
+                          className="w-full text-xs md:text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
                           value={currentData.target_margin_pct}
                           onChange={(e) => handleCostingChange(p.id, 'target_margin_pct', e.target.value)}
                         />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/40">%</span>
+                        <span className="absolute right-2 top-1.5 text-xs md:text-[10px] text-ink/40">%</span>
                       </div>
                     </td>
                     <td className="px-4 py-2">
                       <div className="relative w-20">
                         <input 
                           type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
+                          className="w-full text-xs md:text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
                           value={currentData.target_roas}
                           onChange={(e) => handleCostingChange(p.id, 'target_roas', e.target.value)}
                         />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/40">%</span>
+                        <span className="absolute right-2 top-1.5 text-xs md:text-[10px] text-ink/40">%</span>
                       </div>
                     </td>
                   </tr>
@@ -502,7 +502,7 @@ export function MarketingTab() {
             </tbody>
           </table>
         </div>
-        <p className="text-[9px] text-ink/40 mt-3 italic">
+        <p className="text-xs md:text-[9px] text-ink/40 mt-3 italic">
           * Mengubah parameter HPP akan langsung mengubah kalkulasi Real ROAS dan Profit pada seluruh riwayat penjualan.
         </p>
       </div>

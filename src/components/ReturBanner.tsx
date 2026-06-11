@@ -19,14 +19,14 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
             <RefreshCw size={18} className="text-rose" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
-            <p className="text-[9px] text-ink/40 mt-0.5">
+            <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
+            <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">
               Klaim 2x24 jam · Video 1-shot tanpa edit · Guest bisa ajukan
             </p>
           </div>
           <Link
             href="/retur"
-            className="shrink-0 flex items-center gap-1 text-[9px] font-semibold text-rose uppercase tracking-wider hover:text-rose/70 transition-colors"
+            className="shrink-0 flex items-center gap-1 text-xs md:text-[9px] font-semibold text-rose uppercase tracking-wider hover:text-rose/70 transition-colors"
           >
             Ajukan <ChevronRight size={12} />
           </Link>
@@ -49,7 +49,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
               <RefreshCw size={22} className="text-white" strokeWidth={1.5} />
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/50 mb-1">Policy</p>
+              <p className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-white/50 mb-1">Policy</p>
               <p className="text-[14px] font-display italic font-medium text-white uppercase tracking-tight leading-tight mb-2">
                 Retur & Refund
               </p>
@@ -60,14 +60,14 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 bg-rose rounded-full" />
-                    <span className="text-[9px] font-semibold text-white uppercase">{item.label}</span>
-                    <span className="text-[7px] text-white/40">{item.desc}</span>
+                    <span className="text-xs md:text-[9px] font-semibold text-white uppercase">{item.label}</span>
+                    <span className="text-[10px] md:text-[7px] text-white/40">{item.desc}</span>
                   </div>
                 ))}
               </div>
               <Link
                 href="/retur"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-ink text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-ink text-xs md:text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose hover:text-white transition-colors"
               >
                 Ajukan Sekarang <ChevronRight size={11} />
               </Link>
@@ -88,8 +88,8 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
             <RefreshCw size={18} className="text-rose" strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
-            <p className="text-[9px] text-ink/40 mt-0.5">Klaim mudah, proses cepat, tanpa ribet</p>
+            <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
+            <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">Klaim mudah, proses cepat, tanpa ribet</p>
           </div>
         </div>
 
@@ -108,8 +108,8 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                   <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center">
                     <Icon size={14} className="text-rose" strokeWidth={1.5} />
                   </div>
-                  <span className="text-[10px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
-                  <span className="text-[7px] text-ink/30 uppercase tracking-widest">{item.desc}</span>
+                  <span className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
+                  <span className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">{item.desc}</span>
                 </div>
               );
             })}
@@ -127,7 +127,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                 <div className="w-3.5 h-3.5 bg-rose/10 rounded-full flex items-center justify-center mt-0.5 shrink-0">
                   <Check size={7} className="text-rose" strokeWidth={2.5} />
                 </div>
-                <p className="text-[9px] text-ink/50 leading-relaxed">{text}</p>
+                <p className="text-xs md:text-[9px] text-ink/50 leading-relaxed">{text}</p>
               </div>
             ))}
           </div>
@@ -135,14 +135,14 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
           {/* CTA */}
           <Link
             href="/retur"
-            className="w-full flex items-center justify-center gap-2 py-3 bg-rose text-white text-[10px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-rose text-white text-xs md:text-[10px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors"
           >
             <RefreshCw size={12} strokeWidth={1.5} />
             Ajukan Retur & Refund
           </Link>
 
           {/* Sub link */}
-          <p className="text-[8px] text-center text-ink/20">
+          <p className="text-[11px] md:text-[8px] text-center text-ink/20">
             Guest tidak perlu login — siapkan Order ID dan email aktif
           </p>
         </div>

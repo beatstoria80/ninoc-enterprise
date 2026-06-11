@@ -59,7 +59,7 @@ export default function AffiliateDashboardLayout({ children }: { children: React
       {/* MOBILE TOP BAR */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b border-ink/5 z-50 flex items-center justify-between px-4">
         <Link href="/" className="font-display font-medium text-lg italic tracking-tighter text-ink uppercase">
-          NINOC <span className="text-rose text-[10px]">CREATORS</span>
+          NINOC <span className="text-rose text-xs md:text-[10px]">CREATORS</span>
         </Link>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

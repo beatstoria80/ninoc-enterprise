@@ -51,7 +51,7 @@ export function CatalogsView() {
         </div>
         <button className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded hover:bg-ink/90 transition-colors">
           <Plus size={12} />
-          <span className="text-[9px] uppercase tracking-wider">New Catalog</span>
+          <span className="text-xs md:text-[9px] uppercase tracking-wider">New Catalog</span>
         </button>
       </div>
 
@@ -59,12 +59,12 @@ export function CatalogsView() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider">Catalog Name</th>
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider">Type</th>
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider">Pricing</th>
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider">Customers</th>
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider">Products</th>
-              <th className="px-4 py-3 text-[10px] font-medium text-gray-500 uppercase tracking-wider text-right">Actions</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider">Catalog Name</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider">Pricing</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider">Customers</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider">Products</th>
+              <th className="px-4 py-3 text-xs md:text-[10px] font-medium text-gray-500 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -75,12 +75,12 @@ export function CatalogsView() {
                     <FileText size={14} className="text-gray-400" />
                     <div>
                       <div className="font-medium text-sm text-ink">{catalog.name}</div>
-                      <div className="text-[10px] text-gray-500">Currency: {catalog.currency}</div>
+                      <div className="text-xs md:text-[10px] text-gray-500">Currency: {catalog.currency}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-sm font-medium">
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs md:text-[10px] rounded-sm font-medium">
                     {catalog.type}
                   </span>
                 </td>

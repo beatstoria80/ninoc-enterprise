@@ -55,7 +55,7 @@ export function ProductsTab({
               className="flex items-center gap-1.5 px-3 py-1.5 bg-rose text-white rounded hover:bg-rose/90 transition-colors"
             >
               <Plus size={12} />
-              <span className="text-[9px] uppercase tracking-wider">Add Product</span>
+              <span className="text-xs md:text-[9px] uppercase tracking-wider">Add Product</span>
             </button>
           )}
         </div>
@@ -66,7 +66,7 @@ export function ProductsTab({
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id as SubTabId)}
               className={cn(
-                "px-3 py-1.5 text-[10px] uppercase tracking-wider font-medium rounded-md transition-all",
+                "px-3 py-1.5 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded-md transition-all",
                 activeSubTab === tab.id
                   ? "bg-white text-ink shadow-sm ring-1 ring-black/5"
                   : "text-gray-500 hover:text-ink hover:bg-black/5"

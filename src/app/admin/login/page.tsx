@@ -81,14 +81,14 @@ export default function AdminLoginPage() {
             <form onSubmit={handleEmailAuth} className="space-y-4">
               {/* Email */}
               <div>
-                <label className="text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Email Resmi / ID Karyawan</label>
+                <label className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Email Resmi / ID Karyawan</label>
                 <div className="relative">
                   <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
                   <input
                     type="text"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
+                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
                     placeholder="NAMA@NINOC.COM"
                     required
                     aria-label="Email Resmi"
@@ -98,14 +98,14 @@ export default function AdminLoginPage() {
 
               {/* Password */}
               <div>
-                <label className="text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Kata Sandi</label>
+                <label className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Kata Sandi</label>
                 <div className="relative">
                   <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 pr-12 text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
+                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 pr-12 text-xs md:text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
                     placeholder="KATA SANDI"
                     required
                     aria-label="Password"
@@ -115,14 +115,14 @@ export default function AdminLoginPage() {
 
               {/* Error */}
               {error && (
-                <p className="text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
               )}
 
               {/* Submit */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-white text-ink py-3 rounded-none text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink mt-2"
+                className="w-full bg-white text-ink py-3 rounded-none text-xs md:text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink mt-2"
               >
                 <span>{isLoading ? 'Memproses...' : 'Akses Sistem'}</span>
                 <ArrowRight size={12} />
@@ -136,12 +136,12 @@ export default function AdminLoginPage() {
                     setEmail('adm');
                     setPassword('111');
                   }}
-                  className="w-full bg-rose/10 text-rose py-3 rounded-none text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer"
+                  className="w-full bg-rose/10 text-rose py-3 rounded-none text-xs md:text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer"
                 >
                   <Shield size={12} />
                   <span>UI/UX Access: Super Admin</span>
                 </button>
-                <p className="text-center text-[8px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
+                <p className="text-center text-[11px] md:text-[8px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
               </div>
             </form>
           </div>
@@ -238,7 +238,7 @@ export default function AdminLoginPage() {
                     <Shield size={14} />
                     <span>UI/UX Access: Super Admin</span>
                   </button>
-                  <p className="text-center text-[9px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
+                  <p className="text-center text-xs md:text-[9px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
                 </div>
 
               </form>

@@ -115,7 +115,7 @@ function NavLink({ href, children, isDark, index = 0 }: { href: string; children
         prefetch={false}
         href={href}
         className={cn(
-          "text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
+          "text-sm md:text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
           isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
         )}
         onMouseEnter={() => setIsHovered(true)}
@@ -213,7 +213,7 @@ function CartItem({
               {item.name}
             </motion.h3>
           </div>
-          <p className="text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Ref: #{item.id.slice(0, 8)}</p>
+          <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Ref: #{item.id.slice(0, 8)}</p>
         </div>
 
         <div className="flex items-end justify-between">
@@ -242,7 +242,7 @@ function CartItem({
                 <Plus size={12} strokeWidth={2} />
               </PressScale>
             </motion.div>
-            <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Size {item.size || 'N/A'}</div>
+            <div className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Size {item.size || 'N/A'}</div>
           </div>
           <motion.div
             className="text-sm font-display font-medium italic text-rose"
@@ -300,14 +300,14 @@ function SearchResultItem({ product, index, onClick }: {
         </motion.div>
         <div className="flex flex-col justify-center">
           <motion.h3
-            className="text-[10px] font-medium uppercase tracking-tight"
+            className="text-xs md:text-[10px] font-medium uppercase tracking-tight"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
             {product.name}
           </motion.h3>
           <motion.p
-            className="text-[9px] font-medium text-ink/30 mt-0.5 italic"
+            className="text-xs md:text-[9px] font-medium text-ink/30 mt-0.5 italic"
             animate={{ opacity: isHovered ? 1 : 0.7 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -459,7 +459,7 @@ export default function GlobalHeader() {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: DURATION.medium, ease: EASING.out }}
               >
-                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white/60 hover:text-white" : "text-ink/40 hover:text-rose")}>
+                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white/60 hover:text-white" : "text-ink/40 hover:text-rose")}>
                   <motion.span animate={{ x: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: EASING.inOut }}>
                     <ArrowLeft size={10} />
                   </motion.span>
@@ -489,7 +489,7 @@ export default function GlobalHeader() {
           {/* Language Toggle */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
-            className="flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em]"
+            className="flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em]"
           >
             <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
               ID
@@ -541,7 +541,7 @@ export default function GlobalHeader() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 key={items.length}
-                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
+                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[10px] md:text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
               >
                 {items.length}
               </motion.div>
@@ -559,7 +559,7 @@ export default function GlobalHeader() {
               <MoreVertical size={24} strokeWidth={1.5} />
             </PressScale>
           </div>
-          <div className="pointer-events-auto flex items-center gap-1.5 text-[8px] font-medium tracking-[0.2em] text-ink/60 mt-1">
+          <div className="pointer-events-auto flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em] text-ink/60 mt-1">
             <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
               ID
             </a>
@@ -613,8 +613,8 @@ export default function GlobalHeader() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3, duration: DURATION.medium }}
                 >
-                  <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30">Origin Studio</span>
-                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
+                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30">Origin Studio</span>
+                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
                 </motion.div>
               </div>
               <PressScale onClick={() => setIsCartOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
@@ -651,7 +651,7 @@ export default function GlobalHeader() {
                     <div className="text-ink/20">
                       <ShoppingCart size={36} />
                     </div>
-                    <p className="text-[10px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
+                    <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -672,7 +672,7 @@ export default function GlobalHeader() {
                   >
                     <div className="space-y-4">
                       <motion.p
-                        className="text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40"
+                        className="text-xs md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
@@ -685,11 +685,11 @@ export default function GlobalHeader() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                       >
-                        <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                        <div className="flex justify-between text-sm md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                           <span>Raw Value</span>
                           <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                         </div>
-                        <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                        <div className="flex justify-between text-sm md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                           <span>Handling Fee</span>
                           <span className="text-emerald-600 italic">Complimentary</span>
                         </div>
@@ -703,7 +703,7 @@ export default function GlobalHeader() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6, duration: DURATION.medium, ease: EASING.out }}
                       >
-                        <span className="text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-2">Total</span>
+                        <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-2">Total</span>
                         <motion.span
                           className="text-2xl md:text-3xl font-display font-medium italic text-rose leading-none"
                           key={totalPrice()}
@@ -724,7 +724,7 @@ export default function GlobalHeader() {
                         <Link
                           href="/checkout"
                           onClick={() => setIsCartOpen(false)}
-                          className="w-full bg-ink text-white py-3.5 font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+                          className="w-full bg-ink text-white py-3.5 font-medium text-xs md:text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
                         >
                           <motion.span
                             whileHover={{ x: 4 }}
@@ -738,7 +738,7 @@ export default function GlobalHeader() {
                           className="flex items-center justify-center gap-2 opacity-30 grayscale"
                         >
                           <ShieldCheck size={12} />
-                          <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
+                          <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
                         </div>
                       </motion.div>
                     </div>
@@ -807,7 +807,7 @@ export default function GlobalHeader() {
                     )}
                   </AnimatePresence>
                 </div>
-                <PressScale onClick={() => setIsSearchOpen(false)} className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 hover:text-rose flex items-center gap-2">
+                <PressScale onClick={() => setIsSearchOpen(false)} className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 hover:text-rose flex items-center gap-2">
                   Close
                 </PressScale>
               </div>
@@ -844,7 +844,7 @@ export default function GlobalHeader() {
                               exit={{ opacity: 0 }}
                               className="col-span-full py-4 text-center"
                             >
-                              <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">No matching items found</p>
+                              <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">No matching items found</p>
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -911,7 +911,7 @@ export default function GlobalHeader() {
                     <Link
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors"
+                      className="text-sm md:text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -920,8 +920,8 @@ export default function GlobalHeader() {
               </div>
 
               <div className="px-6 md:px-10 py-6 border-t border-ink/5 bg-white">
-                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Language</p>
-                <div className="flex items-center gap-1.5 text-[10px] font-medium tracking-[0.2em] text-ink/60">
+                <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Language</p>
+                <div className="flex items-center gap-1.5 text-xs md:text-[10px] font-medium tracking-[0.2em] text-ink/60">
                   <a onClick={() => setIsMenuOpen(false)} href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
                     ID
                   </a>

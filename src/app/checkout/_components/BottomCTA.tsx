@@ -67,11 +67,11 @@ export default function BottomCTA({
           <div className="flex justify-center gap-6 mb-3">
             <div className="flex items-center gap-1.5">
               <Shield size={10} className="text-rose/50" />
-              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Lock size={10} className="text-rose/50" />
-              <span className="text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
             </div>
           </div>
 
@@ -82,7 +82,7 @@ export default function BottomCTA({
               form={formId}
               disabled={disabled || isLoading}
               className={cn(
-                "w-full py-4 rounded-none text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
+                "w-full py-4 rounded-none text-xs md:text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
                 // iOS active state styling
                 "active:scale-[0.98] active:bg-rose/90",
                 // Disabled state
@@ -109,7 +109,7 @@ export default function BottomCTA({
               disabled={disabled || isLoading}
               onClick={onClick}
               className={cn(
-                "w-full py-4 rounded-none text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
+                "w-full py-4 rounded-none text-xs md:text-[10px] font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-3",
                 "active:scale-[0.98] active:bg-rose/90",
                 disabled || isLoading
                   ? "bg-ink/5 text-ink/20 cursor-not-allowed"

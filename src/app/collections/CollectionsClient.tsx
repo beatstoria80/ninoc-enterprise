@@ -186,7 +186,7 @@ function CollectionCard({ col, index }: {
               {col.name}
             </motion.h3>
             <motion.span
-              className="text-[8px] md:text-[9px] font-medium uppercase tracking-widest drop-shadow-sm"
+              className="text-[11px] md:text-[8px] md:text-[9px] font-medium uppercase tracking-widest drop-shadow-sm"
               animate={{ color: hasBanner ? 'rgba(255,255,255,0.8)' : (isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(20,20,20,0.4)') }}
               transition={{ duration: DURATION.fast }}
             >
@@ -264,14 +264,14 @@ function ProductCard({ product }: { product: Product }) {
 
         <div className="space-y-0.5">
           <motion.span
-            className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/25 block"
+            className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/25 block"
             animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.25)' }}
             transition={{ duration: DURATION.fast }}
           >
             {product.category}
           </motion.span>
           <motion.h3
-            className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
+            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -283,7 +283,7 @@ function ProductCard({ product }: { product: Product }) {
             animate={{ opacity: isHovered ? 1 : 0.6 }}
             transition={{ duration: DURATION.fast }}
           >
-            <span className="text-[8px] md:text-[9px] font-medium text-ink/50">
+            <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50">
               IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </motion.div>
@@ -331,7 +331,7 @@ export default function CollectionsClient() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DURATION.normal, ease: EASING.out }}
-            className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
+            className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
           >
             <Layers size={10} className="text-rose" />
             Curated Campaigns
@@ -339,7 +339,7 @@ export default function CollectionsClient() {
 
           <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
             <ArrowLeft size={10} className="rotate-180" />
-            <span className="text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
+            <span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
           </PressButton>
         </div>
 
@@ -354,14 +354,14 @@ export default function CollectionsClient() {
           ))}
           {collections.length === 0 && !isLoading && (
             <div className="col-span-full py-24 text-center border border-dashed border-ink/10 rounded-xl">
-              <p className="text-[10px] text-ink/40 uppercase tracking-widest">No active campaigns</p>
+              <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest">No active campaigns</p>
             </div>
           )}
         </div>
 
         {/* ALL PRODUCTS GRID */}
         <div className="pt-2 md:pt-4">
-          <h2 className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 mb-4">All Products Archive</h2>
+          <h2 className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 mb-4">All Products Archive</h2>
           <AnimatePresence mode="wait">
             <motion.div
               variants={productGridVariants}
@@ -391,7 +391,7 @@ export default function CollectionsClient() {
                   animate={{ opacity: 1 }}
                   className="col-span-full py-16 text-center bg-white"
                 >
-                  <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">
+                  <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/20">
                     No products found
                   </p>
                 </motion.div>
@@ -414,7 +414,7 @@ export default function CollectionsClient() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Items</p>
+                <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Items</p>
                 <p className="text-lg font-display font-medium italic text-ink">{products.length}</p>
               </motion.div>
               <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
@@ -423,12 +423,12 @@ export default function CollectionsClient() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Collections</p>
+                <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Collections</p>
                 <p className="text-lg font-display font-medium italic text-ink">{collections.length}</p>
               </motion.div>
             </div>
             <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
-              <span className="text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
+              <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
               <ChevronRight size={14} />
             </PressButton>
           </div>

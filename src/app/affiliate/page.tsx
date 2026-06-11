@@ -120,14 +120,14 @@ const FileUploader = ({
           {path ? <CheckCircle size={18} /> : <FileText size={18} />}
         </div>
         <div>
-          <p className="text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
-          <p className="text-[10px] text-ink/50 mt-0.5">
+          <p className="text-sm md:text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
+          <p className="text-xs md:text-[10px] text-ink/50 mt-0.5">
             {uploading === type ? dict.uploading : path ? dict.uploaded : dict.upload_hint}
           </p>
         </div>
       </div>
       {!path && uploading !== type && (
-        <div className="text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
+        <div className="text-xs md:text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
           {dict.btn_upload}
         </div>
       )}
@@ -251,7 +251,7 @@ export default function AffiliateApplicationPage() {
           </p>
           <Link 
             href="/"
-            className="inline-flex items-center justify-center w-full px-6 py-4 bg-ink text-white text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-rose transition-colors"
+            className="inline-flex items-center justify-center w-full px-6 py-4 bg-ink text-white text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-rose transition-colors"
           >
             {dict.return_home}
           </Link>
@@ -277,13 +277,13 @@ export default function AffiliateApplicationPage() {
           </p>
           
           <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar pb-8">
-            <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
+            <h3 className="text-xs md:text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
             
             <div className="flex items-start gap-3">
               <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">{dict.p1_title}</p>
-                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p1_desc}</p>
+                <p className="text-xs md:text-[10px] text-ink/60 max-w-[250px]">{dict.p1_desc}</p>
               </div>
             </div>
             
@@ -291,7 +291,7 @@ export default function AffiliateApplicationPage() {
               <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">{dict.p2_title}</p>
-                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p2_desc}</p>
+                <p className="text-xs md:text-[10px] text-ink/60 max-w-[250px]">{dict.p2_desc}</p>
               </div>
             </div>
             
@@ -299,7 +299,7 @@ export default function AffiliateApplicationPage() {
               <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
               <div>
                 <p className="text-xs font-bold text-ink">{dict.p3_title}</p>
-                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p3_desc}</p>
+                <p className="text-xs md:text-[10px] text-ink/60 max-w-[250px]">{dict.p3_desc}</p>
               </div>
             </div>
           </div>
@@ -320,69 +320,69 @@ export default function AffiliateApplicationPage() {
             {/* Grid 2: Data Perusahaan -> Personal & Platform Info */}
             <div className="lg:col-span-3 space-y-2 h-full overflow-y-auto no-scrollbar pr-4 pb-12 px-1 -mx-1">
               
-              <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1 mb-1 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
+              <h3 className="text-xs md:text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1 mb-1 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.full_name}</label>
-                  <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="John Doe" />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.full_name}</label>
+                  <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="John Doe" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.npwp}</label>
-                  <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.npwp}</label>
+                  <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.email}</label>
-                  <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="john@example.com" />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.email}</label>
+                  <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="john@example.com" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.phone}</label>
-                  <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62 812..." />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.phone}</label>
+                  <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62 812..." />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.address}</label>
-                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-y min-h-[44px] max-h-[120px]" placeholder="Street, City, Province, Postal Code..." />
+                <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.address}</label>
+                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-y min-h-[44px] max-h-[120px]" placeholder="Street, City, Province, Postal Code..." />
               </div>
 
-              <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1 mb-1 sticky top-[-1px] bg-white z-10 pt-2 mt-2">{dict.step2}</h3>
+              <h3 className="text-xs md:text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1 mb-1 sticky top-[-1px] bg-white z-10 pt-2 mt-2">{dict.step2}</h3>
               
               <div>
-                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.channel_name}</label>
-                <input required type="text" name="channelName" value={formData.channelName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="@fashionguru" />
+                <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.channel_name}</label>
+                <input required type="text" name="channelName" value={formData.channelName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="@fashionguru" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.ig_url}</label>
-                  <input required type="url" name="instagramLink" value={formData.instagramLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://instagram.com/..." />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.ig_url}</label>
+                  <input required type="url" name="instagramLink" value={formData.instagramLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://instagram.com/..." />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.tiktok_url}</label>
-                  <input required type="url" name="tiktokLink" value={formData.tiktokLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://tiktok.com/@..." />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.tiktok_url}</label>
+                  <input required type="url" name="tiktokLink" value={formData.tiktokLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://tiktok.com/@..." />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.yt_url}</label>
-                  <input required type="url" name="youtubeLink" value={formData.youtubeLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://youtube.com/c/..." />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.yt_url}</label>
+                  <input required type="url" name="youtubeLink" value={formData.youtubeLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://youtube.com/c/..." />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.fb_url}</label>
-                  <input required type="url" name="facebookLink" value={formData.facebookLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://facebook.com/..." />
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.fb_url}</label>
+                  <input required type="url" name="facebookLink" value={formData.facebookLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-2.5 text-sm md:text-[11px] focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://facebook.com/..." />
                 </div>
               </div>
             </div>
 
             {/* Grid 3: Legal & Terms */}
             <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-3 pb-8 px-1 -mx-1">
-                <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step3}</h3>
-                <p className="text-[10px] text-ink/50 leading-tight">{dict.kyc_desc}</p>
+                <h3 className="text-xs md:text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step3}</h3>
+                <p className="text-xs md:text-[10px] text-ink/50 leading-tight">{dict.kyc_desc}</p>
                 
                 <div className="space-y-2">
                   <FileUploader label={dict.ktp_label} type="ktp" path={ktpUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
@@ -399,7 +399,7 @@ export default function AffiliateApplicationPage() {
                     <FileUploader label={dict.fb_insight_label} type="fb_insight" path={fbInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
                   )}
                   {!formData.instagramLink && !formData.tiktokLink && !formData.youtubeLink && !formData.facebookLink && (
-                    <div className="p-4 border border-dashed border-ink/10 rounded bg-cr noise text-center text-[10px] text-ink/40 font-medium">
+                    <div className="p-4 border border-dashed border-ink/10 rounded bg-cr noise text-center text-xs md:text-[10px] text-ink/40 font-medium">
                       Fill platform URLs to upload insights
                     </div>
                   )}
@@ -412,7 +412,7 @@ export default function AffiliateApplicationPage() {
                   <p className="text-[9.5px] text-ink/70 leading-relaxed text-justify">
                     {dict.t_summary}
                   </p>
-                  <Link href="/affiliate/terms" className="inline-flex items-center gap-1.5 text-[9px] font-medium text-rose hover:text-ink transition-colors group">
+                  <Link href="/affiliate/terms" className="inline-flex items-center gap-1.5 text-xs md:text-[9px] font-medium text-rose hover:text-ink transition-colors group">
                     <FileText size={10} className="group-hover:scale-110 transition-transform" />
                     <span className="uppercase tracking-wider underline underline-offset-4 decoration-rose/30 group-hover:decoration-ink/50">{dict.t_link}</span>
                   </Link>
@@ -424,7 +424,7 @@ export default function AffiliateApplicationPage() {
                   <div>
                     <input required type="checkbox" name="agree_sla" className="w-3.5 h-3.5 accent-rose cursor-pointer" />
                   </div>
-                  <span className="text-[10px] text-ink/70 group-hover:text-ink transition-colors leading-tight">
+                  <span className="text-xs md:text-[10px] text-ink/70 group-hover:text-ink transition-colors leading-tight">
                     {dict.agree}
                   </span>
                 </label>
@@ -432,7 +432,7 @@ export default function AffiliateApplicationPage() {
                 <button
                   disabled={isSubmitting || !isFormValid()}
                   type="submit"
-                  className="w-full bg-ink text-white p-4 text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
+                  className="w-full bg-ink text-white p-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? dict.submitting : dict.submit}
                   {!isSubmitting && <ArrowRight size={14} />}

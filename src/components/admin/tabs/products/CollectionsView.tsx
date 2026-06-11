@@ -95,7 +95,7 @@ export function CollectionsView() {
           className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded hover:bg-ink/90 transition-colors"
         >
           <Plus size={12} />
-          <span className="text-[9px] uppercase tracking-wider">Create Collection</span>
+          <span className="text-xs md:text-[9px] uppercase tracking-wider">Create Collection</span>
         </button>
       </div>
 
@@ -133,7 +133,7 @@ export function CollectionsView() {
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                   <div className="absolute top-3 right-3 flex items-center gap-2">
                     <span className={cn(
-                      "px-2 py-1 text-[8px] uppercase tracking-wider rounded-full font-medium backdrop-blur-md",
+                      "px-2 py-1 text-[11px] md:text-[8px] uppercase tracking-wider rounded-full font-medium backdrop-blur-md",
                       collection.status === 'active' ? "bg-emerald-500/90 text-white" :
                       collection.status === 'scheduled' ? "bg-amber-500/90 text-white" :
                       "bg-white/90 text-gray-600"
@@ -169,7 +169,7 @@ export function CollectionsView() {
                     </div>
                     
                     {(collection.start_date || collection.end_date) && (
-                      <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                      <div className="flex items-center gap-2 text-xs md:text-[10px] text-gray-400">
                         <Calendar size={12} />
                         <span>
                           {collection.start_date ? new Date(collection.start_date).toLocaleDateString() : 'Now'} - {collection.end_date ? new Date(collection.end_date).toLocaleDateString() : 'Ongoing'}

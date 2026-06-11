@@ -90,14 +90,14 @@ function ProductCard({ product }: { product: Product }) {
 
         <div className="space-y-0.5">
           <motion.span
-            className="text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 block"
+            className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 block"
             animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }}
             transition={{ duration: DURATION.fast }}
           >
             {product.category}
           </motion.span>
           <motion.h3
-            className="text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight truncate"
+            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight truncate"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -109,7 +109,7 @@ function ProductCard({ product }: { product: Product }) {
             animate={{ opacity: isHovered ? 1 : 0.6 }}
             transition={{ duration: DURATION.fast }}
           >
-            <span className="text-[8px] md:text-[9px] font-medium text-ink/50">
+            <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50">
               IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </motion.div>
@@ -235,7 +235,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
         <div className="absolute top-16 md:top-24 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-10">
           <Link href="/collections" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform ease-[cubic-bezier(0.23,1,0.32,1)] duration-200" />
-            <span className="text-[10px] uppercase tracking-[0.2em]">All Collections</span>
+            <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">All Collections</span>
           </Link>
         </div>
 
@@ -248,20 +248,20 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
               transition={{ duration: DURATION.slow, ease: EASING.out }}
             >
               <div className="flex items-center gap-3 mb-3">
-                <span className="px-2.5 py-1 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium bg-white text-ink">
+                <span className="px-2.5 py-1 text-[11px] md:text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium bg-white text-ink">
                   {collection.collection_type === 'smart' ? 'Smart Collection' : 'Curated Drop'}
                 </span>
                 {isOngoing && collection.status === 'active' ? (
-                  <span className="flex items-center gap-1 text-[9px] text-emerald-400 uppercase tracking-widest font-medium">
+                  <span className="flex items-center gap-1 text-xs md:text-[9px] text-emerald-400 uppercase tracking-widest font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Live Now
                   </span>
                 ) : collection.status === 'scheduled' ? (
-                  <span className="flex items-center gap-1 text-[9px] text-amber-400 uppercase tracking-widest font-medium">
+                  <span className="flex items-center gap-1 text-xs md:text-[9px] text-amber-400 uppercase tracking-widest font-medium">
                     <Calendar size={10} /> Coming Soon
                   </span>
                 ) : (
-                  <span className="text-[9px] text-white/50 uppercase tracking-widest">Archived</span>
+                  <span className="text-xs md:text-[9px] text-white/50 uppercase tracking-widest">Archived</span>
                 )}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display italic uppercase tracking-tight text-white mb-4">
@@ -283,17 +283,17 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
           <div className="flex items-center gap-4 md:gap-6">
             <Link href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors">
               <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[8px] font-medium uppercase tracking-[0.2em] hidden md:inline">Back to Catalog</span>
-              <span className="text-[8px] font-medium uppercase tracking-[0.2em] md:hidden">Catalog</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] hidden md:inline">Back to Catalog</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] md:hidden">Catalog</span>
             </Link>
             <span className="text-ink/20">|</span>
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
+              <span className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{collection.name}</span>
               <span className="text-ink/20 hidden md:inline">/</span>
-              <span className="text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items</span>
+              <span className="text-[11px] md:text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items</span>
             </div>
           </div>
-          <div className="text-[8px] font-mono tracking-tighter text-ink/30 uppercase">
+          <div className="text-[11px] md:text-[8px] font-mono tracking-tighter text-ink/30 uppercase">
             NINOC-COL-{collection.id.substring(0, 6)}
           </div>
         </div>
@@ -316,7 +316,7 @@ export default function CollectionLandingClient({ slug }: { slug: string }) {
               ) : (
                 <div className="w-full py-8 md:py-12 flex flex-col items-center text-center">
                   <Package size={24} className="mx-auto mb-3 text-ink/20" />
-                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40">
+                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40">
                     No items curated yet
                   </p>
                 </div>

@@ -24,14 +24,14 @@ export default function GlobalFooter() {
           <Link href="/" className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             <span className="text-base font-display font-medium italic tracking-tighter text-ink leading-none">{storeName}</span>
           </Link>
-          <p className="text-[8px] font-medium leading-relaxed text-ink/40 mt-1 uppercase tracking-widest">
+          <p className="text-[11px] md:text-[8px] font-medium leading-relaxed text-ink/40 mt-1 uppercase tracking-widest">
             {dict.footer.aboutText}
           </p>
         </div>
 
         {/* Navigation */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.shop}</h4>
+          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.shop}</h4>
           <div className="flex flex-col gap-1">
             {[
               { label: dict.header.shop, href: '/shop' },
@@ -45,7 +45,7 @@ export default function GlobalFooter() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm"
+                className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm"
               >
                 {item.label}
               </Link>
@@ -55,40 +55,40 @@ export default function GlobalFooter() {
 
         {/* Legal */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.legal}</h4>
-          <Link href="/legal" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{dict.footer.legal}</h4>
+          <Link href="/legal" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             {dict.footer.terms}
           </Link>
-          <Link href="/help" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/help" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             {dict.footer.support}
           </Link>
-          <Link href="/track" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/track" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             {dict.header.track}
           </Link>
-          <Link href="/retur" className="text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
+          <Link href="/retur" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-rose hover:text-rose/80 transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer">
             {dict.footer.returns}
           </Link>
         </div>
 
         {/* Base */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{storeName} Base</h4>
+          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">{storeName} Base</h4>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
-              <p className="text-[8px] font-medium uppercase tracking-widest text-ink/40 leading-tight">
+              <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 leading-tight">
                 Bandung City, West Java, ID 40112
               </p>
             </div>
             <div className="flex items-center gap-1.5">
               <Mail size={9} className="text-rose flex-shrink-0" />
-              <a href="mailto:beatstoria.ai@gmail.com" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+              <a href="mailto:beatstoria.ai@gmail.com" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
                 beatstoria.ai@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-1.5">
               <Phone size={9} className="text-rose flex-shrink-0" />
-              <a href="tel:+628211983774" className="text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+              <a href="tel:+628211983774" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
                 +62 8211983774
               </a>
             </div>
@@ -99,28 +99,28 @@ export default function GlobalFooter() {
 
       <div className="w-full mt-3 pt-2 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-2">
         <div className="flex items-center gap-3">
-          <p className="text-[7px] font-medium uppercase tracking-widest text-ink/30">© 2026 {storeName} ENTERPRISE.</p>
+          <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/30">© 2026 {storeName} ENTERPRISE.</p>
           <div className="h-2 w-[1px] bg-ink/10 hidden md:block" />
-          <p className="text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20 leading-none hidden md:block">
+          <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20 leading-none hidden md:block">
             Data privasi terlindungi melalui enkripsi standar. Tidak membagikan informasi pribadi ke pihak ketiga.
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">
+            <div className="flex items-center gap-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">
               <Shield size={7} strokeWidth={1.5} className="text-rose/40" />
               <span>Aman</span>
             </div>
-            <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">
+            <div className="flex items-center gap-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">
               <Lock size={7} strokeWidth={1.5} className="text-rose/40" />
               <span>Enkripsi</span>
             </div>
           </div>
           <div className="h-2 w-[1px] bg-ink/10 hidden md:block" />
           <div className="flex items-center gap-2">
-            <span className="text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20">Verified Merchant</span>
-            <span className="text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20">Midtrans Secure</span>
+            <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20">Verified Merchant</span>
+            <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20">Midtrans Secure</span>
           </div>
         </div>
       </div>

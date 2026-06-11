@@ -15,7 +15,7 @@ export function StatusBadge({ status }: { status: string }) {
 
   return (
     <span className={cn(
-      "inline-flex px-2.5 py-1 text-[9px] uppercase tracking-wider rounded-full",
+      "inline-flex px-2.5 py-1 text-xs md:text-[9px] uppercase tracking-wider rounded-full",
       styles[status] || 'bg-gray-100 text-gray-600'
     )}>
       {status}

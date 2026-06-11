@@ -90,7 +90,7 @@ export default function SupplierSubmissionsPage() {
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out"
+          className="px-4 py-2 bg-ink text-white text-xs md:text-[10px] uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose active:scale-[0.97] transition-all duration-150 ease-out"
         >
           <Plus size={14} /> New Submission
         </button>
@@ -99,7 +99,7 @@ export default function SupplierSubmissionsPage() {
       <div className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-ink/5 text-[10px] uppercase tracking-wider text-ink/60">
+            <tr className="bg-ink/5 text-xs md:text-[10px] uppercase tracking-wider text-ink/60">
               <th className="p-4 font-medium">Product Name</th>
               <th className="p-4 font-medium">Category</th>
               <th className="p-4 font-medium">Base HPP</th>
@@ -122,7 +122,7 @@ export default function SupplierSubmissionsPage() {
                   Rp {sub.base_hpp.toLocaleString('id-ID')}
                 </td>
                 <td className="p-4">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] uppercase tracking-wider font-medium rounded-full ${
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded-full ${
                     sub.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
                     sub.status === 'rejected' ? 'bg-rose/10 text-rose' :
                     'bg-amber-50 text-amber-600'
@@ -161,13 +161,13 @@ export default function SupplierSubmissionsPage() {
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Product Name</label>
+                <label className="block text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Product Name</label>
                 <input required name="name" type="text" className="w-full border border-ink/10 rounded px-3 py-2 text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all" placeholder="e.g. Heavyweight Cotton Oversized T-Shirt" />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Category</label>
+                  <label className="block text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Category</label>
                   <select required name="category" className="w-full border border-ink/10 rounded px-3 py-2 text-sm focus:border-rose outline-none transition-all bg-white">
                     <option value="">Select Category...</option>
                     {categories.map(c => (
@@ -177,7 +177,7 @@ export default function SupplierSubmissionsPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Base Factory Price (HPP)</label>
+                  <label className="block text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Base Factory Price (HPP)</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40 text-sm">Rp</span>
                     <input required name="hpp" type="number" min="0" className="w-full border border-ink/10 rounded pl-8 pr-3 py-2 text-sm focus:border-rose outline-none transition-all" placeholder="50000" />
@@ -186,7 +186,7 @@ export default function SupplierSubmissionsPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Material & Specs Description</label>
+                <label className="block text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Material & Specs Description</label>
                 <textarea required name="description" rows={3} className="w-full border border-ink/10 rounded px-3 py-2 text-sm focus:border-rose outline-none transition-all resize-none" placeholder="100% Cotton, 235gsm, preshrunk..."></textarea>
               </div>
 

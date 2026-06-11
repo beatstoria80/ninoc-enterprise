@@ -193,19 +193,19 @@ export function InventoryTab({ products }: { products: Product[] }) {
       <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-ink uppercase tracking-wide">Inventory Control</h2>
-          <span className="text-[9px] text-ink/40 hidden sm:inline-block">— stock & SKU directory</span>
+          <span className="text-xs md:text-[9px] text-ink/40 hidden sm:inline-block">— stock & SKU directory</span>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={exportCSV}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-ink bg-white border border-ink/20 hover:border-ink hover:bg-ink/5 rounded transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink bg-white border border-ink/20 hover:border-ink hover:bg-ink/5 rounded transition-colors"
           >
             <Download size={12} />
             CSV
           </button>
           <button 
             onClick={exportPDF}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-white bg-ink hover:bg-ink/90 rounded transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-[10px] font-medium uppercase tracking-wider text-white bg-ink hover:bg-ink/90 rounded transition-colors"
           >
             <FileText size={12} />
             Print Report
@@ -222,7 +222,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
           { label: 'Out of Stock', value: outOfStockCount, highlight: outOfStockCount > 0, critical: true }
         ].map((m, i) => (
           <div key={i} className={cn("px-4 py-3", i < 3 && "border-r border-ink/10")}>
-            <p className="text-[8px] uppercase tracking-[0.2em] text-ink/40 mb-1">{m.label}</p>
+            <p className="text-[11px] md:text-[8px] uppercase tracking-[0.2em] text-ink/40 mb-1">{m.label}</p>
             <p className={cn("text-sm font-medium font-mono", m.critical ? "text-rose" : m.highlight ? "text-amber-600" : "text-ink")}>{m.value}</p>
           </div>
         ))}
@@ -243,16 +243,16 @@ export function InventoryTab({ products }: { products: Product[] }) {
                     {p.image_url ? <Image src={p.image_url} alt={p.name || 'Product image'} width={40} height={40} className="object-cover" /> : <Box size={16} className="text-ink/20" />}
                   </div>
                   <div>
-                    <p className="text-[11px] font-medium text-ink uppercase tracking-wider">{p.name}</p>
+                    <p className="text-sm md:text-[11px] font-medium text-ink uppercase tracking-wider">{p.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-[9px] text-ink/40 uppercase tracking-widest">{p.category} • {p.variants?.length || 0} SKUs</p>
+                      <p className="text-xs md:text-[9px] text-ink/40 uppercase tracking-widest">{p.category} • {p.variants?.length || 0} SKUs</p>
                       {allSkusVerified && (
-                        <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-1 py-0.5 border border-emerald-100/50 rounded-sm">
+                        <div className="flex items-center gap-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-1 py-0.5 border border-emerald-100/50 rounded-sm">
                           <CheckCircle2 size={8} /> Verified
                         </div>
                       )}
                       {!allSkusVerified && p.variants && p.variants.length > 0 && (
-                        <div className="flex items-center gap-1 text-[7px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 px-1 py-0.5 border border-rose/10 rounded-sm">
+                        <div className="flex items-center gap-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 px-1 py-0.5 border border-rose/10 rounded-sm">
                           <AlertCircle size={8} /> Missing SKU
                         </div>
                       )}
@@ -260,8 +260,8 @@ export function InventoryTab({ products }: { products: Product[] }) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] uppercase tracking-[0.2em] text-ink/40 mb-0.5">Total Quantity</p>
-                  <p className="text-[11px] font-mono font-medium text-ink">{pTotalStock}</p>
+                  <p className="text-[11px] md:text-[8px] uppercase tracking-[0.2em] text-ink/40 mb-0.5">Total Quantity</p>
+                  <p className="text-sm md:text-[11px] font-mono font-medium text-ink">{pTotalStock}</p>
                 </div>
               </div>
 
@@ -277,13 +277,13 @@ export function InventoryTab({ products }: { products: Product[] }) {
                         isOOS ? "bg-rose/5" : "bg-white hover:bg-ink/[0.01] transition-colors"
                       )}>
                         <div>
-                          <p className="text-[10px] font-medium text-ink uppercase">Size: {v.size || 'OS'} / Color: {v.color || '-'}</p>
+                          <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Size: {v.size || 'OS'} / Color: {v.color || '-'}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <p className="text-[8px] font-mono font-bold text-ink/60 bg-ink/5 px-1 py-0.5 rounded-sm border border-ink/10">{v.sku || v.id?.slice(0, 8) || 'N/A'}</p>
+                            <p className="text-[11px] md:text-[8px] font-mono font-bold text-ink/60 bg-ink/5 px-1 py-0.5 rounded-sm border border-ink/10">{v.sku || v.id?.slice(0, 8) || 'N/A'}</p>
                             {v.sku && (
                               <button
                                 onClick={() => printBarcode(v.sku!, p.name, v.size || 'OS', v.color || '-')}
-                                className="text-[8px] flex items-center gap-1 text-ink/40 hover:text-rose transition-colors uppercase tracking-widest font-medium border border-transparent hover:border-rose/20 px-1 py-0.5 rounded-sm"
+                                className="text-[11px] md:text-[8px] flex items-center gap-1 text-ink/40 hover:text-rose transition-colors uppercase tracking-widest font-medium border border-transparent hover:border-rose/20 px-1 py-0.5 rounded-sm"
                                 title="Print Barcode Label"
                               >
                                 <Printer size={10} /> Print
@@ -299,7 +299,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
                             {v.stock_quantity}
                           </p>
                           <p className={cn(
-                            "text-[7px] uppercase tracking-widest mt-0.5 font-medium",
+                            "text-[10px] md:text-[7px] uppercase tracking-widest mt-0.5 font-medium",
                             isOOS ? "text-rose" : isLow ? "text-amber-600" : "text-ink/40"
                           )}>
                             {isOOS ? 'OOS' : isLow ? 'LOW' : 'STOCK'}
@@ -310,7 +310,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
                   })}
                 </div>
               ) : (
-                <div className="p-3 text-center text-[9px] text-ink/30 uppercase tracking-widest">
+                <div className="p-3 text-center text-xs md:text-[9px] text-ink/30 uppercase tracking-widest">
                   No Origin Specifications (Variants)
                 </div>
               )}

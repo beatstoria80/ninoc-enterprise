@@ -141,7 +141,7 @@ function SectionContent({ value }: { value: any }) {
               <IconWhatsApp />
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">WhatsApp</p>
+              <p className="text-xs md:text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">WhatsApp</p>
               <p className="text-[13px] font-medium text-ink mt-0.5">{value.wa}</p>
             </div>
           </div>
@@ -152,7 +152,7 @@ function SectionContent({ value }: { value: any }) {
               <IconEmail />
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Email</p>
+              <p className="text-xs md:text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Email</p>
               <p className="text-[13px] font-medium text-ink mt-0.5">{value.email}</p>
             </div>
           </div>
@@ -163,7 +163,7 @@ function SectionContent({ value }: { value: any }) {
               <IconClock />
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Jam Operasional</p>
+              <p className="text-xs md:text-[9px] uppercase tracking-[0.2em] text-ink/50 font-medium">Jam Operasional</p>
               <p className="text-[13px] font-medium text-ink mt-0.5">{value.hours}</p>
             </div>
           </div>
@@ -181,11 +181,11 @@ function SectionContent({ value }: { value: any }) {
         <SplitText text={value.guide} />
         {value.accounts?.length > 0 && (
           <div className="pt-3 border-t border-ink/5">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Rekening Tujuan</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Rekening Tujuan</p>
             <div className="space-y-1.5">
               {value.accounts.map((acc: string, i: number) => (
                 <div key={i} className="flex items-start gap-2 p-2 border border-ink/8 bg-ink/[0.015]">
-                  <span className="text-[10px] font-medium text-rose mt-0.5 w-4 text-center">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-xs md:text-[10px] font-medium text-rose mt-0.5 w-4 text-center">{String(i + 1).padStart(2, '0')}</span>
                   <span className="text-[13px] font-medium text-ink">{acc}</span>
                 </div>
               ))}
@@ -201,7 +201,7 @@ function SectionContent({ value }: { value: any }) {
       <div className="space-y-3">
         <SplitText text={value.info} />
         {value.area && (
-          <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-rose pt-3 border-t border-ink/5">{value.area}</p>
+          <p className="text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium text-rose pt-3 border-t border-ink/5">{value.area}</p>
         )}
       </div>
     );
@@ -212,19 +212,19 @@ function SectionContent({ value }: { value: any }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {value.policy && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-rose mb-2">Kebijakan Retur</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium text-rose mb-2">Kebijakan Retur</p>
             <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.policy}</p>
           </div>
         )}
         {value.process && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Alur Proses</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Alur Proses</p>
             <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.process}</p>
           </div>
         )}
         {value.notes && (
           <div className="border border-ink/8 p-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Catatan</p>
+            <p className="text-xs md:text-[10px] uppercase tracking-[0.2em] font-medium text-ink/50 mb-2">Catatan</p>
             <p className="text-[13px] leading-[1.8] whitespace-pre-line text-ink font-medium">{value.notes}</p>
           </div>
         )}
@@ -278,9 +278,9 @@ export default function HelpClient() {
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
               <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
+            <span className="text-[11px] md:text-[8px] uppercase tracking-[0.2em] font-medium">Return to Archive Catalog</span>
           </Link>
-          <span className="text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium hidden sm:block">Help Guide</span>
+          <span className="text-[10px] md:text-[7px] uppercase tracking-[0.15em] text-ink/20 font-medium hidden sm:block">Help Guide</span>
         </div>
       </div>
 
@@ -306,7 +306,7 @@ export default function HelpClient() {
                       <span className={`w-6 h-6 rounded-sm flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/30'}`}>
                         {section.icon}
                       </span>
-                      <span className="text-[10px] font-medium uppercase tracking-[0.08em]">{section.label}</span>
+                      <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.08em]">{section.label}</span>
                     </button>
                   );
                 })}
@@ -326,12 +326,12 @@ export default function HelpClient() {
                     </div>
                     <div className="flex-1">
                       <h2 className="text-[13px] font-medium uppercase tracking-[0.15em] text-ink">{activeMeta?.label}</h2>
-                      <p className="text-[9px] text-ink/50 uppercase tracking-[0.2em]">
+                      <p className="text-xs md:text-[9px] text-ink/50 uppercase tracking-[0.2em]">
                         {activeItem.key.replace('help_guide_', '').replace(/_/g, ' ').toUpperCase()}
                       </p>
                     </div>
                     {activeSection === 'help_guide_return' && (
-                      <Link href="/retur" className="shrink-0 px-3 py-1.5 bg-rose text-white text-[8px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">
+                      <Link href="/retur" className="shrink-0 px-3 py-1.5 bg-rose text-white text-[11px] md:text-[8px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">
                         Ajukan Retur
                       </Link>
                     )}
@@ -345,7 +345,7 @@ export default function HelpClient() {
                       <path d="M7 1v6M7 10v1M2 7h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
                     </svg>
                   </div>
-                  <p className="text-[9px] uppercase tracking-[0.2em] font-medium">Content not available</p>
+                  <p className="text-xs md:text-[9px] uppercase tracking-[0.2em] font-medium">Content not available</p>
                 </div>
               )}
             </div>

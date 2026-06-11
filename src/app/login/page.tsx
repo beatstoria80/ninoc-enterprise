@@ -112,7 +112,7 @@ export default function LoginPage() {
             <button
               onClick={handleGoogleAuth}
               disabled={isLoading}
-              className="w-full bg-white border border-ink/10 text-ink py-4 rounded-none text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-3 hover:bg-ink/5 transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
+              className="w-full bg-white border border-ink/10 text-ink py-4 rounded-none text-xs md:text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-3 hover:bg-ink/5 transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
             >
               {isLoading ? (
                 <span>Memproses...</span>
@@ -126,7 +126,7 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-4 py-2">
               <hr className="flex-1 border-ink/5" />
-              <span className="text-[8px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
               <hr className="flex-1 border-ink/5" />
             </div>
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
                   type="text"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
                   placeholder="EMAIL / USERNAME"
                   required
                 />
@@ -149,7 +149,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
                   placeholder="KATA SANDI"
                   required
                 />
@@ -157,7 +157,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-ink text-white py-3 rounded-none text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+                className="w-full bg-ink text-white py-3 rounded-none text-xs md:text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
               >
                 <span>Masuk</span>
                 <ArrowRight size={12} />
@@ -166,7 +166,7 @@ export default function LoginPage() {
 
             {/* Error */}
             {error && (
-              <p className="text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
+              <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
             )}
 
             {/* Guest */}
@@ -221,7 +221,7 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-4 py-2">
                 <hr className="flex-1 border-ink/5" />
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
                 <hr className="flex-1 border-ink/5" />
               </div>
 
@@ -281,8 +281,8 @@ export default function LoginPage() {
                 <Shield size={12} strokeWidth={1.5} className="text-rose/60" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Aman</span>
-                <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">Proteksi Data</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Aman</span>
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/20">Proteksi Data</span>
               </div>
             </div>
             <div className="flex items-start gap-2">
@@ -290,8 +290,8 @@ export default function LoginPage() {
                 <Lock size={12} strokeWidth={1.5} className="text-rose/60" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Enkripsi</span>
-                <span className="text-[8px] font-medium uppercase tracking-widest text-ink/20">SSL Terjamin</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink">Enkripsi</span>
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/20">SSL Terjamin</span>
               </div>
             </div>
           </div>
