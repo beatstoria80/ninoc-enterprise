@@ -616,7 +616,17 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
               </div>
 
               {availableStock > 0 && (
-                <div className="mt-4 w-full">
+                <div className="mt-4 w-full relative">
+                  {items.length > 0 && (
+                    <motion.div 
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute -top-2.5 -right-2 bg-rose text-white text-[10px] md:text-[9px] font-bold px-2 py-0.5 shadow-md z-10 flex items-center gap-1 border border-white/20"
+                    >
+                      <ShoppingCart size={10} />
+                      <span>{items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                    </motion.div>
+                  )}
                   <motion.button
                     variants={textVariants}
                     whileTap={{ scale: 0.97 }}
@@ -635,7 +645,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                       ) : (
                         <div className="flex items-center gap-3">
                           <ShoppingCart size={16} />
-                          <span>{dict.product.addToCart}</span>
+                          <span>ADD TO CART</span>
                         </div>
                       )}
                   </motion.button>
