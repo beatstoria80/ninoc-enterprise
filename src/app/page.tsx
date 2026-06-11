@@ -542,6 +542,16 @@ export default function Home() {
     };
   }, [scene]);
 
+  // Listen for replay-opening event (when Home tab is tapped again)
+  useEffect(() => {
+    const handleReplay = () => {
+      window.scrollTo(0, 0);
+      setScene('hero');
+    };
+    window.addEventListener('replay-opening', handleReplay);
+    return () => window.removeEventListener('replay-opening', handleReplay);
+  }, []);
+
   const handleShopClick = () => {
     setScene('transitioning');
     setTimeout(() => {

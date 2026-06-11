@@ -643,7 +643,16 @@ export default function MobileLayout({
           <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
-            <Link prefetch={false} href="/" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
+            <button
+              onClick={() => {
+                if (pathname === '/') {
+                  window.dispatchEvent(new CustomEvent('replay-opening'));
+                } else {
+                  router.push('/');
+                }
+              }}
+              className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]"
+            >
               <motion.div
                 animate={{ scale: isActive('/') ? 1.1 : 1 }}
                 transition={{ duration: DURATION.fast }}
@@ -663,7 +672,7 @@ export default function MobileLayout({
                   layoutId="activeIndicator"
                 />
               )}
-            </Link>
+            </button>
 
             {/* Cart */}
             <Link prefetch={false} href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
