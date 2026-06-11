@@ -1,16 +1,145 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, User, FileText, Upload, CheckCircle, ArrowRight, Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ShieldCheck, Share2, ArrowRight, FileText, CheckCircle, AlertCircle, UserCheck } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { supabase } from '@/lib/supabase';
-import { useDictionary } from '@/hooks/useDictionary';
+import { usePathname } from 'next/navigation';
+
+const DICT = {
+  ID: {
+    title: "Become an Affiliate.",
+    desc: "Ubah pengaruh Anda menjadi pendapatan pasif berkelanjutan. Ekosistem NINOC memberikan komisi eksklusif bagi mitra yang berhasil mereferensikan transaksi sukses.",
+    pillars: "Pilar Afiliasi",
+    p1_title: "Komisi Transparan",
+    p1_desc: "Dapatkan persentase tetap untuk setiap penjualan valid melalui tautan referral Anda.",
+    p2_title: "Akses Eksklusif",
+    p2_desc: "Jadilah yang pertama tahu rilis koleksi baru dan dapatkan sampel produk gratis (S&K berlaku).",
+    p3_title: "Dashboard Real-Time",
+    p3_desc: "Lacak klik, konversi, dan komisi Anda secara real-time dari satu dasbor.",
+    form_title: "Formulir Aplikasi Afiliasi",
+    step1: "1. Data Pribadi",
+    full_name: "Nama Lengkap",
+    email: "Email Utama",
+    phone: "Nomor WhatsApp",
+    step2: "2. Informasi Platform",
+    channel_name: "Nama Channel/Akun Utama",
+    ig_url: "URL Profil Instagram",
+    tiktok_url: "URL Profil TikTok",
+    yt_url: "URL Channel YouTube",
+    fb_url: "URL Halaman/Profil Facebook",
+    address: "Alamat Pengiriman (Untuk Sampel)",
+    npwp: "NPWP Pribadi (Opsional)",
+    step3: "3. Dokumen Verifikasi",
+    kyc_desc: "Diperlukan untuk validasi identitas dan audiens.",
+    ktp_label: "KTP Identitas Asli",
+    insight_label: "Screenshot Insight Audiens",
+    uploading: "Mengunggah...",
+    uploaded: "File tersimpan.",
+    upload_hint: "PDF/JPG (Max 5MB)",
+    btn_upload: "Upload",
+    terms_title: "Syarat & Ketentuan Afiliasi",
+    t1: "1. KOMISI: Afiliator akan menerima komisi yang disepakati untuk setiap penjualan yang selesai menggunakan tautan/kode rujukan.",
+    t2: "2. KONTEN: Afiliator dilarang menggunakan materi promosi yang menyesatkan atau merusak reputasi NINOC.",
+    t3: "3. PENCAIRAN: Komisi dapat dicairkan setelah mencapai batas minimum dan melewati masa garansi pengembalian produk (7 hari).",
+    agree: "Saya setuju dengan Syarat Layanan Afiliasi dan Kebijakan Privasi NINOC.",
+    submit: "Kirim Aplikasi",
+    submitting: "Mengirim...",
+    success: "Aplikasi Diterima!",
+    success_desc: "Aplikasi afiliasi Anda sedang kami tinjau. Tim kami akan menghubungi Anda melalui email dalam waktu 1-3 hari kerja.",
+    return_home: "Kembali ke Beranda"
+  },
+  EN: {
+    title: "Become an Affiliate.",
+    desc: "Turn your influence into sustainable passive income. The NINOC ecosystem provides exclusive commissions for partners who drive successful transactions.",
+    pillars: "Affiliate Pillars",
+    p1_title: "Transparent Commissions",
+    p1_desc: "Earn a fixed percentage on every valid sale made through your unique referral link.",
+    p2_title: "Exclusive Access",
+    p2_desc: "Be the first to know about new collection drops and get free product samples (T&C apply).",
+    p3_title: "Real-Time Dashboard",
+    p3_desc: "Track your clicks, conversions, and commissions in real-time from a single dashboard.",
+    form_title: "Affiliate Application Form",
+    step1: "1. Personal Data",
+    full_name: "Full Name",
+    email: "Primary Email",
+    phone: "WhatsApp Number",
+    step2: "2. Platform Info",
+    channel_name: "Main Channel/Account Name",
+    ig_url: "Instagram Profile URL",
+    tiktok_url: "TikTok Profile URL",
+    yt_url: "YouTube Channel URL",
+    fb_url: "Facebook Page/Profile URL",
+    address: "Shipping Address (For Samples)",
+    npwp: "Tax ID (Optional)",
+    step3: "3. Verification Docs",
+    kyc_desc: "Required for identity and audience validation.",
+    ktp_label: "Owner's ID (KTP)",
+    insight_label: "Audience Insights Screenshot",
+    uploading: "Uploading...",
+    uploaded: "File stored.",
+    upload_hint: "PDF/JPG (Max 5MB)",
+    btn_upload: "Upload",
+    terms_title: "Affiliate Terms & Conditions",
+    t1: "1. COMMISSION: Affiliates earn an agreed percentage for every completed sale using their referral link/code.",
+    t2: "2. CONTENT: Affiliates must not use misleading promotional materials or damage NINOC's reputation.",
+    t3: "3. PAYOUTS: Commissions can be withdrawn after reaching the minimum threshold and clearing the product return window (7 days).",
+    agree: "I agree to the NINOC Affiliate Terms of Service and Privacy Policy.",
+    submit: "Submit Application",
+    submitting: "Submitting...",
+    success: "Application Received!",
+    success_desc: "Your affiliate application is under review. Our team will contact you via email within 1-3 business days.",
+    return_home: "Return to Home"
+  }
+};
+
+const FileUploader = ({ 
+  label, 
+  type, 
+  path,
+  uploading,
+  onUpload,
+  dict
+}: { 
+  label: string; 
+  type: string; 
+  path: boolean;
+  uploading: string | null;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>, type: string) => void;
+  dict: any;
+}) => (
+  <div className="border border-dashed border-ink/20 p-4 rounded bg-white/50 group hover:border-rose/50 transition-colors">
+    <label className="flex items-center justify-between cursor-pointer">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/40'}`}>
+          {path ? <CheckCircle size={18} /> : <FileText size={18} />}
+        </div>
+        <div>
+          <p className="text-[11px] font-bold text-ink uppercase tracking-wider">{label}</p>
+          <p className="text-[10px] text-ink/50 mt-0.5">
+            {uploading === type ? dict.uploading : path ? dict.uploaded : dict.upload_hint}
+          </p>
+        </div>
+      </div>
+      {!path && uploading !== type && (
+        <div className="text-[10px] uppercase font-medium bg-ink/5 px-3 py-1.5 rounded text-ink/60 group-hover:bg-rose group-hover:text-white transition-colors">
+          {dict.btn_upload}
+        </div>
+      )}
+      <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => onUpload(e, type)} disabled={uploading === type} />
+    </label>
+  </div>
+);
 
 export default function AffiliateApplicationPage() {
-  const dict = useDictionary();
+  const pathname = usePathname();
+  const lang = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = DICT[lang];
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -26,16 +155,40 @@ export default function AffiliateApplicationPage() {
     npwp: ''
   });
 
+  // Mock document states for visual completeness
+  const [ktpUploaded, setKtpUploaded] = useState(false);
+  const [insightUploaded, setInsightUploaded] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(type);
+    // Simulate upload delay
+    setTimeout(() => {
+      if (type === 'ktp') setKtpUploaded(true);
+      if (type === 'insight') setInsightUploaded(true);
+      setUploading(null);
+    }, 1000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ktpUploaded || !insightUploaded) {
+      setError("Please upload both required documents.");
+      return;
+    }
+
     setIsSubmitting(true);
+    setError(null);
     
     try {
-      const { error } = await supabase
+      const { error: dbError } = await supabase
         .from('affiliate_applications')
         .insert([{
           full_name: formData.fullName,
@@ -51,11 +204,10 @@ export default function AffiliateApplicationPage() {
           status: 'pending'
         }]);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
       setIsSuccess(true);
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      alert(dict.affiliate.error);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred.');
     } finally {
       setIsSubmitting(false);
     }
@@ -63,24 +215,24 @@ export default function AffiliateApplicationPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-cr noise flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white max-w-md w-full rounded-2xl shadow-sm border border-gray-100 p-8 text-center"
+          className="bg-white max-w-md w-full rounded-2xl shadow-xl border border-ink/5 p-8 text-center"
         >
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={32} />
           </div>
-          <h2 className="text-2xl font-display font-medium text-ink mb-3">{dict.affiliate.received}</h2>
-          <p className="text-gray-500 mb-8 leading-relaxed">
-            {dict.affiliate.receivedDesc}
+          <h2 className="text-2xl font-display font-medium text-ink mb-3">{dict.success}</h2>
+          <p className="text-sm text-ink/60 mb-8 leading-relaxed">
+            {dict.success_desc}
           </p>
           <Link 
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-ink text-white rounded-full font-medium hover:bg-ink/90 transition-transform active:scale-95"
+            className="inline-flex items-center justify-center w-full px-6 py-4 bg-ink text-white text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-rose transition-colors"
           >
-            {dict.affiliate.returnHome}
+            {dict.return_home}
           </Link>
         </motion.div>
       </div>
@@ -88,266 +240,165 @@ export default function AffiliateApplicationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pt-32 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
+      <div className="w-[96vw] max-w-[1800px] h-[92vh] max-h-[1000px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10">
         
-        {/* Header */}
-        <div className="text-center mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-display font-medium text-ink mb-3">{dict.affiliate.title}</h1>
-            <p className="text-gray-500 max-w-xl mx-auto">
-              {dict.affiliate.subtitle}
-            </p>
-          </motion.div>
+        {/* Grid 1 - Info */}
+        <div className="lg:col-span-3 flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
+          <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4 shadow-xl relative z-10 shrink-0">
+            <UserCheck size={24} />
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display italic font-medium tracking-tight text-ink relative z-10 leading-none shrink-0">
+            {dict.title}
+          </h1>
+          <p className="text-sm text-ink/70 leading-relaxed max-w-sm relative z-10 shrink-0">
+            {dict.desc}
+          </p>
+          
+          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar">
+            <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
+            
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
+              <div>
+                <p className="text-xs font-bold text-ink">{dict.p1_title}</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p1_desc}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
+              <div>
+                <p className="text-xs font-bold text-ink">{dict.p2_title}</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p2_desc}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="text-emerald-600 mt-0.5 shrink-0" size={16} />
+              <div>
+                <p className="text-xs font-bold text-ink">{dict.p3_title}</p>
+                <p className="text-[10px] text-ink/60 max-w-[250px]">{dict.p3_desc}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Main Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
-        >
-          <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
-            
-            {/* 1. Personal Info */}
-            <div className="p-5 md:p-6 space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-rose/10 text-rose flex items-center justify-center">
-                  <User size={16} />
-                </div>
-                <h2 className="text-lg font-medium text-ink">{dict.affiliate.personalInfo}</h2>
-              </div>
+        {/* Grid 2 & 3 - Form */}
+        <div className="lg:col-span-9 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+          <h2 className="text-xl font-display font-medium text-ink mb-6 shrink-0">{dict.form_title}</h2>
+          
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-medium border border-red-100 flex gap-2 items-start shrink-0">
+              <AlertCircle size={14} className="mt-0.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
+            {/* Grid 2: Data Perusahaan -> Personal & Platform Info */}
+            <div className="lg:col-span-3 space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.fullName}</label>
-                  <input 
-                    required
-                    type="text" 
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.email}</label>
-                  <div className="relative">
-                    <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      required
-                      type="email" 
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.whatsapp}</label>
-                  <div className="relative">
-                    <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      required
-                      type="tel" 
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="+62 812 3456 7890"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Platform Info */}
-            <div className="p-5 md:p-6 space-y-4 bg-gray-50/30">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                  <Share2 size={16} />
-                </div>
-                <h2 className="text-lg font-medium text-ink">{dict.affiliate.channelInfo}</h2>
-              </div>
+              <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.channelName}</label>
-                  <div className="relative">
-                    <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      required
-                      type="text" 
-                      name="channelName"
-                      value={formData.channelName}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="e.g. @fashionguru"
-                    />
-                  </div>
-                </div>
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.full_name}</label>
+                <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="John Doe" />
+              </div>
 
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.igUrl}</label>
-                  <div className="relative">
-                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="url" 
-                      required
-                      name="instagramLink"
-                      value={formData.instagramLink}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="https://instagram.com/..."
-                    />
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.email}</label>
+                  <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="john@example.com" />
                 </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">TikTok Profile URL</label>
-                  <div className="relative">
-                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="url" 
-                      required
-                      name="tiktokLink"
-                      value={formData.tiktokLink}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="https://tiktok.com/@..."
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">YouTube Channel URL</label>
-                  <div className="relative">
-                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="url" 
-                      required
-                      name="youtubeLink"
-                      value={formData.youtubeLink}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="https://youtube.com/c/..."
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">Facebook Page/Profile URL</label>
-                  <div className="relative">
-                    <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="url" 
-                      required
-                      name="facebookLink"
-                      value={formData.facebookLink}
-                      onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                      placeholder="https://facebook.com/..."
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.address}</label>
-                  <div className="relative">
-                    <MapPin size={16} className="absolute left-4 top-4 text-gray-400" />
-                    <textarea 
-                      required
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none resize-none"
-                      placeholder="Street, City, Province, Postal Code..."
-                    />
-                  </div>
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.phone}</label>
+                  <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62 812..." />
                 </div>
               </div>
-            </div>
 
-            {/* 3. Verification Documents */}
-            <div className="p-5 md:p-6 space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
-                  <FileText size={16} />
-                </div>
-                <h2 className="text-lg font-medium text-ink">{dict.affiliate.addressInfo}</h2>
-              </div>
+              <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-[-1px] bg-white z-10 pt-4 mt-6">{dict.step2}</h3>
               
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">{dict.affiliate.npwp}</label>
-                  <input 
-                    type="text" 
-                    name="npwp"
-                    value={formData.npwp}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-rose/50 focus:ring-2 focus:ring-rose/20 rounded-xl transition-all outline-none"
-                    placeholder="00.000.000.0-000.000"
-                  />
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.channel_name}</label>
+                <input required type="text" name="channelName" value={formData.channelName} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="@fashionguru" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.ig_url}</label>
+                  <input required type="url" name="instagramLink" value={formData.instagramLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://instagram.com/..." />
                 </div>
-
-                <div className="space-y-4">
-                  <label className="text-sm font-medium text-gray-700">Upload Required Documents</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Document 1 */}
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 hover:border-rose/30 transition-colors cursor-pointer group">
-                      <div className="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-rose/10 group-hover:text-rose transition-colors">
-                        <Upload size={18} />
-                      </div>
-                      <p className="text-sm font-medium text-ink mb-1">Owner&apos;s ID (KTP)</p>
-                      <p className="text-xs text-gray-400">JPG, PNG or PDF (Max 5MB)</p>
-                    </div>
-
-                    {/* Document 2 */}
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 hover:border-rose/30 transition-colors cursor-pointer group">
-                      <div className="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-rose/10 group-hover:text-rose transition-colors">
-                        <Upload size={18} />
-                      </div>
-                      <p className="text-sm font-medium text-ink mb-1">Profile Insights Screenshot</p>
-                      <p className="text-xs text-gray-400">Audience demography & reach</p>
-                    </div>
-                  </div>
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.tiktok_url}</label>
+                  <input required type="url" name="tiktokLink" value={formData.tiktokLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://tiktok.com/@..." />
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.yt_url}</label>
+                  <input required type="url" name="youtubeLink" value={formData.youtubeLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://youtube.com/c/..." />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.fb_url}</label>
+                  <input required type="url" name="facebookLink" value={formData.facebookLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://facebook.com/..." />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.address}</label>
+                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-none" placeholder="Street, City, Province, Postal Code..." />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.npwp}</label>
+                <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
+              </div>
+
             </div>
 
-            {/* Footer / Submit */}
-            <div className="p-5 md:p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-gray-500 max-w-sm">
-                By submitting this application, you agree to our <Link href="/affiliate/terms" className="text-ink underline hover:text-rose transition-colors">Affiliate Terms of Service</Link> and Privacy Policy.
-              </p>
-              <button 
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-ink text-white rounded-full font-medium transition-all ${
-                  isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-ink/90 active:scale-95 hover:shadow-lg hover:shadow-ink/20"
-                }`}
-              >
-                {isSubmitting ? (
-                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    {dict.affiliate.submit}
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
-            </div>
+            {/* Grid 3: Legal & Terms */}
+            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8 px-1 -mx-1">
+              <div className="space-y-4 shrink-0">
+                <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step3}</h3>
+                <p className="text-[10px] text-ink/50">{dict.kyc_desc}</p>
+                
+                <div className="space-y-2">
+                  <FileUploader label={dict.ktp_label} type="ktp" path={ktpUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                  <FileUploader label={dict.insight_label} type="insight" path={insightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
+                </div>
+              </div>
 
+              <div className="pt-2 border-t border-ink/10 flex-1 flex flex-col">
+                <h3 className="text-xs font-bold text-ink mb-2 shrink-0">{dict.terms_title}</h3>
+                <div className="bg-cr noise p-3 border border-ink/10 overflow-y-auto flex-1 mb-4 text-[10px] text-ink/70 space-y-2 font-mono leading-relaxed no-scrollbar min-h-[80px]">
+                  <p><strong>{dict.t1}</strong></p>
+                  <p><strong>{dict.t2}</strong></p>
+                  <p><strong>{dict.t3}</strong></p>
+                </div>
+
+                <label className="flex items-start gap-3 cursor-pointer group mb-4 shrink-0">
+                  <div className="pt-0.5">
+                    <input required type="checkbox" name="agree_sla" className="w-4 h-4 accent-rose cursor-pointer" />
+                  </div>
+                  <span className="text-[11px] text-ink/70 group-hover:text-ink transition-colors leading-tight">
+                    {dict.agree}
+                  </span>
+                </label>
+
+                <button
+                  disabled={isSubmitting || !ktpUploaded || !insightUploaded}
+                  type="submit"
+                  className="w-full shrink-0 bg-ink text-white p-4 text-[10px] font-medium uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-rose transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? dict.submitting : dict.submit}
+                  {!isSubmitting && <ArrowRight size={14} />}
+                </button>
+              </div>
+            </div>
           </form>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
