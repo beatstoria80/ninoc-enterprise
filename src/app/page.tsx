@@ -398,79 +398,7 @@ function ProductCard({ product, index }: ProductCardProps) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// CATEGORY QUICK ACCESS — Mobile optimized size
-// ═══════════════════════════════════════════════════════════════
 
-function CategoryQuickAccess() {
-  const brandColor = useBrandColor();
-
-  return (
-    <div className="flex items-center gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-2">
-      {CATEGORIES.map((cat, i) => {
-        const Icon = cat.icon;
-        return (
-          <motion.div
-            key={cat.id}
-            variants={categoryPillVariants}
-            initial="hidden"
-            animate="visible"
-            custom={i}
-          >
-            <PressButton
-              href={cat.href}
-              className="flex items-center gap-2 md:gap-4 bg-white border border-ink/10 px-3 py-2.5 md:px-6 md:py-4 group whitespace-nowrap rounded-none"
-              whileHover={{ borderColor: brandColor.color, backgroundColor: brandColor.color }}
-              whileTap={{ scale: 0.97 }}
-            >
-              {/* Icon container - bigger for mobile */}
-              <motion.div
-                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-ink/5 rounded-none"
-                animate={{ backgroundColor: brandColor.color }}
-                transition={{ duration: DURATION.fast }}
-              >
-                <motion.div
-                  animate={{ color: '#ffffff' }}
-                  transition={{ duration: DURATION.fast }}
-                  className="text-rose"
-                >
-                  <Icon />
-                </motion.div>
-              </motion.div>
-
-              {/* Label */}
-              <div className="flex flex-col leading-none gap-0.5">
-                <motion.span
-                  className="text-sm md:text-base font-display font-medium italic uppercase tracking-tight"
-                  animate={{ color: '#141414' }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  {cat.label}
-                </motion.span>
-                <motion.span
-                  className="text-xs md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
-                  animate={{ color: 'rgba(20,20,20,0.5)' }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  {cat.sublabel}
-                </motion.span>
-              </div>
-
-              {/* Arrow */}
-              <motion.div
-                className="ml-2"
-                animate={{ x: 0, opacity: 0.4 }}
-                transition={{ duration: DURATION.fast }}
-              >
-                <ArrowRight size={14} />
-              </motion.div>
-            </PressButton>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════
 // FADE-UP SECTION WRAPPER
@@ -801,27 +729,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CATEGORY INDEX — QUICK ACCESS - Mobile optimized */}
-      <section className="px-4 md:px-12 max-w-[1800px] mx-auto mt-4 md:mt-16 mb-0 md:mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-          className="flex items-end justify-between mb-4 md:mb-6"
-        >
-          <div className="flex items-center gap-2">
-            <div className="text-rose">
-              <Grid3X3 size={12} />
-            </div>
-            <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
-          </div>
-          <PressButton href="/category" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
-            View All
-          </PressButton>
-        </motion.div>
-        <CategoryQuickAccess />
-      </section>
+
 
       {/* CATALOG */}
       <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
