@@ -338,6 +338,16 @@ export default function AffiliateApplicationPage() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.address}</label>
+                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-none" placeholder="Street, City, Province, Postal Code..." />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.npwp}</label>
+                <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
+              </div>
+
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-[-1px] bg-white z-10 pt-4 mt-6">{dict.step2}</h3>
               
               <div>
@@ -365,16 +375,6 @@ export default function AffiliateApplicationPage() {
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.fb_url}</label>
                   <input required type="url" name="facebookLink" value={formData.facebookLink} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="https://facebook.com/..." />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.address}</label>
-                <textarea required name="address" value={formData.address} onChange={handleChange} rows={2} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all resize-none" placeholder="Street, City, Province, Postal Code..." />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.npwp}</label>
-                <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
               </div>
               
               {/* Extra spacing to prevent clipping */}
