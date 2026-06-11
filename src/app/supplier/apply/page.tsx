@@ -205,10 +205,10 @@ export default function SupplierApplicationPage() {
 
   return (
     <div className="h-screen w-screen bg-cr noise flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
-      <div className="w-full max-w-[1600px] h-full max-h-[900px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10">
+      <div className="w-[96vw] max-w-[1800px] h-[92vh] max-h-[1000px] flex flex-col md:grid md:grid-cols-1 lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-hidden z-10">
         
         {/* Grid 1 - Info */}
-        <div className="lg:col-span-4 flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
+        <div className="lg:col-span-3 flex flex-col justify-center space-y-6 bg-cr noise p-8 md:p-12 border-r border-ink/5 h-full relative">
           <div className="w-12 h-12 bg-ink text-white flex items-center justify-center rounded-none mb-4 shadow-xl relative z-10 shrink-0">
             <Factory size={24} />
           </div>
@@ -249,7 +249,7 @@ export default function SupplierApplicationPage() {
         </div>
 
         {/* Grid 2 & 3 - Form */}
-        <div className="lg:col-span-8 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+        <div className="lg:col-span-9 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
           <h2 className="text-xl font-display font-medium text-ink mb-6 shrink-0">{dict.form_title}</h2>
           
           {error && (
@@ -261,12 +261,12 @@ export default function SupplierApplicationPage() {
 
           <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan */}
-            <div className="space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8">
+            <div className="space-y-4 overflow-y-auto no-scrollbar pr-4 pb-8 px-1 -mx-1">
               <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_entity}</label>
-                  <select required name="legal_entity" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors">
+                  <select required name="legal_entity" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all">
                     <option value="PT">PT</option>
                     <option value="CV">CV</option>
                     <option value="Perorangan">Perorangan</option>
@@ -275,40 +275,40 @@ export default function SupplierApplicationPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_name}</label>
-                  <input required type="text" name="legal_name" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="PT Jaya Garment" />
+                  <input required type="text" name="legal_name" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="PT Jaya Garment" />
                 </div>
               </div>
               
               <div>
                 <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.director}</label>
-                <input required type="text" name="director_name" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="Budi Santoso" />
+                <input required type="text" name="director_name" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="Budi Santoso" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.npwp}</label>
-                  <input required type="text" name="tax_id" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="00.000.000.0-000.000" />
+                  <input required type="text" name="tax_id" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.nib}</label>
-                  <input required type="text" name="nib" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="1234567890123" />
+                  <input required type="text" name="nib" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="1234567890123" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.email}</label>
-                  <input required type="email" name="email" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="director@jayagarment.com" />
+                  <input required type="email" name="email" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="director@jayagarment.com" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.phone}</label>
-                  <input required type="tel" name="phone" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:border-rose transition-colors" placeholder="+62..." />
+                  <input required type="tel" name="phone" className="w-full bg-cr noise border border-ink/10 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62..." />
                 </div>
               </div>
             </div>
 
             {/* Grid 3: Legal & Terms */}
-            <div className="flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8">
+            <div className="flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-4 pb-8 px-1 -mx-1">
               <div className="space-y-4 shrink-0">
                 <h3 className="text-xs font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-2 sticky top-0 bg-white z-10 pt-1">{dict.step2}</h3>
                 <p className="text-[10px] text-ink/50">{dict.kyc_desc}</p>
