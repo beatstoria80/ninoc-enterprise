@@ -216,7 +216,7 @@ export default function SupplierApplicationPage() {
             {dict.desc}
           </p>
           
-          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-hidden">
+          <div className="pt-6 border-t border-ink/10 space-y-4 relative z-10 flex-1 overflow-y-auto no-scrollbar pb-8">
             <h3 className="text-[10px] uppercase font-medium tracking-[0.2em] text-ink/50">{dict.pillars}</h3>
             
             <div className="flex items-start gap-3">
@@ -258,7 +258,7 @@ export default function SupplierApplicationPage() {
 
           <form onSubmit={handleSubmit} className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 min-h-0">
             {/* Grid 2: Data Perusahaan */}
-            <div className="lg:col-span-3 space-y-2.5 overflow-hidden pr-4 px-1 -mx-1">
+            <div className="lg:col-span-3 space-y-2.5 h-full overflow-y-auto no-scrollbar pr-4 pb-12 px-1 -mx-1">
               <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="lg:col-span-2">
@@ -306,7 +306,7 @@ export default function SupplierApplicationPage() {
             </div>
 
             {/* Grid 3: Legal & Terms */}
-            <div className="lg:col-span-2 flex flex-col h-full overflow-hidden pr-4 space-y-3 px-1 -mx-1">
+            <div className="lg:col-span-2 flex flex-col h-full overflow-y-auto no-scrollbar pr-4 space-y-3 pb-8 px-1 -mx-1">
               <div className="space-y-3 shrink-0">
                 <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step2}</h3>
                 <p className="text-[10px] text-ink/50 leading-tight">{dict.kyc_desc}</p>
