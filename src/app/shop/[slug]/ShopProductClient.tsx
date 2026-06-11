@@ -437,15 +437,9 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
           <motion.div variants={columnVariants} className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:h-full">
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
-                <motion.div variants={textVariants}>
-                  <Link href="/shop" className="flex md:hidden items-center gap-1.5 text-ink/40 hover:text-ink transition-colors group mb-3 lg:mb-5 w-fit">
-                    <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-[11px] md:text-[8px] lg:text-[9px] font-medium uppercase tracking-widest">Back to Catalog</span>
-                  </Link>
-                </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 mb-0.5 lg:mb-1">
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-ink text-white rounded-none w-fit shadow-md">
-                    <span className="text-[6px] lg:text-[7px] font-medium uppercase tracking-[0.3em]">
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-ink text-white rounded-none w-fit shadow-md">
+                    <span className="text-[8px] md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em]">
                       {product.badge_text || 'STUDIO EDITION'}
                     </span>
                   </div>
