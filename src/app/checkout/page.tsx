@@ -610,7 +610,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className={cn("bg-white border-t border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="email" className={labelClass}>Email</label>
-                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-sm md:text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
+                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-sm md:text-[11px] font-medium tracking-normal text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
