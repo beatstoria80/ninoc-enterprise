@@ -10,7 +10,8 @@ import {
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star, Factory, FileText, ClipboardCheck, ArrowRightLeft,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
-  Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen
+  Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen,
+  AlertTriangle, Check
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -128,6 +129,8 @@ export default function AdminDashboard() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [isReprintModalOpen, setIsReprintModalOpen] = useState(false);
+  const [reprintReason, setReprintReason] = useState('');
   const [isPrinting, setIsPrinting] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -1046,6 +1049,165 @@ export default function AdminDashboard() {
     }
     return item;
   });
+
+  const executePrint = async (order: Order, isAuthorizedReprint: boolean) => {
+    // Fraud Prevention: Log Print Event
+    const newCount = (order.print_count || 0) + 1;
+    const printedBy = adminUser?.email || 'Unknown';
+    const reasonText = isAuthorizedReprint ? ` - REASON: ${reprintReason}` : '';
+    const newPrintedBy = isAuthorizedReprint ? `${printedBy}${reasonText}` : printedBy;
+    
+    try {
+      await supabase
+        .from('orders')
+        .update({ 
+          print_count: newCount, 
+          last_printed_by: newPrintedBy,
+          last_printed_at: new Date().toISOString()
+        })
+        .eq('id', order.id);
+        
+      // Optimistic update
+      setSelectedOrder({ ...order, print_count: newCount, last_printed_by: newPrintedBy });
+    } catch (e) {
+      console.error('Failed to update print count', e);
+    }
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) return;
+    
+    const items = order?.order_items || [];
+    const enrichedItems = items.map((item: any) => {
+      const variantSku = products.find((p: any) => p.id === item.product_id)?.variants?.find((v: any) => v.id === item.variant_id)?.sku;
+      return { ...item, sku: variantSku || 'N/A' };
+    });
+    const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
+    
+    // Check if it's a duplicate print for the HTML view
+    // If it's an authorized reprint, we still show a small watermark to indicate it's a copy
+    const watermarkHtml = newCount > 1 ? `
+      <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(0,0,0,0.1); border: 4px solid rgba(0,0,0,0.1); padding: 5px 10px; text-transform: uppercase; letter-spacing: 5px; z-index: 10; pointer-events: none; white-space: nowrap;">
+        ${isAuthorizedReprint ? 'AUTHORIZED REPRINT' : 'REPRINT'}
+        <div style="font-size: 10px; text-align: center; margin-top: 5px; letter-spacing: 1px;">
+          OLEH: ${printedBy}
+        </div>
+      </div>
+    ` : '';
+
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<title>Label Pengiriman - NINOC</title>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+<style>
+@page { size: 100mm 150mm; margin: 0; }
+body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif; }
+.label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.header { display: flex; border-bottom: 2px solid #000; height: 45px; }
+.brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background: #000; color: #fff; }
+.brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+.brand-sub { font-size: 7px; font-weight: 600; letter-spacing: 3px; opacity: 0.8; }
+.courier-box { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; }
+.courier-name { font-size: 12px; font-weight: 800; }
+.barcode-row { padding: 16px 12px; border-bottom: 2px solid #000; text-align: center; }
+.barcode-text { font-weight: 800; font-size: 14px; letter-spacing: 4px; font-family: monospace; margin-top: 8px; }
+.flex-row { display: flex; border-bottom: 2px solid #000; }
+.col-left { flex: 1.6; padding: 12px; border-right: 2px solid #000; display: flex; flex-direction: column; }
+.col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
+.inverted-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; background: #000; color: #fff; padding: 3px 8px; display: inline-block; border-radius: 2px; }
+.outline-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; border: 2px solid #000; padding: 1px 6px; display: inline-block; border-radius: 2px; }
+.person-name { font-weight: 900; font-size: 15px; text-transform: uppercase; line-height: 1.1; }
+.person-phone { font-size: 11px; font-weight: 700; margin-top: 4px; font-family: monospace; }
+.person-address { font-size: 11px; font-weight: 500; margin-top: 8px; line-height: 1.4; color: #333; }
+.person-city { font-weight: 800; font-size: 11px; margin-top: 6px; text-transform: uppercase; }
+.person-zip { font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px; }
+.content-title { font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666; }
+.item-line { font-size: 10px; font-weight: 600; display: flex; justify-content: space-between; padding: 2px 0; }
+.qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.qr-label { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-top: 8px; color: #666; }
+.order-id-val { font-weight: 900; font-size: 11px; letter-spacing: 1px; font-family: monospace; }
+.meta-pills { display: flex; justify-content: center; gap: 8px; margin-top: 8px; font-size: 9px; font-weight: 800; }
+.pill { background: #e5e5e5; padding: 2px 6px; border-radius: 2px; }
+.footer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #000; color: #fff; }
+.footer-date { font-size: 9px; font-weight: 600; font-family: monospace; }
+.fragile { font-weight: 900; font-size: 10px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div class="label">
+  ${watermarkHtml}
+  <div class="header">
+    <div class="brand-box">
+      <div class="brand-name">NINOC</div>
+      <div class="brand-sub">STUDIO</div>
+    </div>
+    <div class="courier-box">
+      <span class="courier-name">${order?.courier || 'STANDARD'}</span>
+    </div>
+  </div>
+  <div class="barcode-row">
+    ${order?.tracking_id ? `
+      <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="${order.tracking_id}" jsbarcode-width="2" jsbarcode-height="50" jsbarcode-displayValue="false"></svg>
+      <div class="barcode-text">${order.tracking_id}</div>
+    ` : `
+      <div style="font-weight:700;font-size:12px;padding:16px 0;color:#999;letter-spacing:2px;border:2px dashed #e5e5e5;text-align:center;">AWAITING TRACKING ID</div>
+    `}
+  </div>
+  <div class="flex-row">
+    <div class="col-left">
+      <div class="inverted-tag">TO / PENERIMA</div>
+      <div class="person-name">${order?.shipping_address?.name || 'GUEST'}</div>
+      <div class="person-phone">${order?.shipping_address?.phone || '-'}</div>
+      <div class="person-address">${order?.shipping_address?.address || '-'}</div>
+      <div class="person-city">${order?.shipping_address?.city || '-'}, ${order?.shipping_address?.province || '-'}</div>
+      <div class="person-zip">${order?.shipping_address?.postal_code || '-'}</div>
+    </div>
+    <div class="col-right">
+      <div class="outline-tag">FROM / PENGIRIM</div>
+      <div style="font-weight:800;font-size:11px;">NINOC STUDIO</div>
+      <div style="font-size:9px;font-weight:600;margin-top:2px;font-family:monospace;color:#666;">0812-XXXX-XXXX</div>
+      <div style="font-size:9px;font-weight:500;margin-top:6px;line-height:1.4;color:#444;">Bandung, Jawa Barat<br/>Indonesia</div>
+    </div>
+  </div>
+  <div class="flex-row">
+    <div class="col-left">
+      <div class="content-title">CONTENTS / ISI PAKET</div>
+      ${enrichedItems.map((i: any) => `
+        <div class="item-line" style="flex-direction: column; padding-bottom: 6px;">
+          <div style="display: flex; justify-content: space-between; width: 100%;">
+            <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
+            <span style="font-weight:800;">×${i.quantity}</span>
+          </div>
+          <div style="font-family: monospace; font-size: 8px; color: #666; margin-top: 2px;">SKU: ${i.sku}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="col-right qr-box">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=54x54&data=${encodeURIComponent(order?.id?.toUpperCase() || '')}" alt="QR" width="54" height="54" />
+      <div class="qr-label">ORDER ID</div>
+      <div class="order-id-val">#${(order?.id || '').slice(0, 8).toUpperCase()}</div>
+      <div class="meta-pills">
+        <span class="pill">${totalItems} PCS</span>
+        <span class="pill">${totalItems * 300}g</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-row">
+    <span class="footer-date">${new Date(order?.created_at || '').toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}).toUpperCase()}</span>
+    <span class="fragile">FRAGILE</span>
+  </div>
+</div>
+<script>
+  JsBarcode(".barcode").init();
+  window.onload = () => { setTimeout(() => { window.print(); }, 500); }
+</script>
+</body>
+</html>`;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+
 
   return (
     <>
@@ -2566,161 +2728,18 @@ export default function AdminDashboard() {
                     
                     <div className="p-4 bg-white border-t border-gray-200 shrink-0">
                       <button
-                        onClick={async () => {
+                        onClick={() => {
                           const order = selectedOrder;
                           if (!order) return;
-
-                          // Fraud Prevention: Log Print Event
-                          const newCount = (order.print_count || 0) + 1;
-                          const printedBy = adminUser?.email || 'Unknown';
                           
-                          try {
-                            await supabase
-                              .from('orders')
-                              .update({ 
-                                print_count: newCount, 
-                                last_printed_by: printedBy,
-                                last_printed_at: new Date().toISOString()
-                              })
-                              .eq('id', order.id);
-                              
-                            // Optimistic update
-                            setSelectedOrder({ ...order, print_count: newCount, last_printed_by: printedBy });
-                          } catch (e) {
-                            console.error('Failed to update print count', e);
+                          if ((order.print_count || 0) > 0) {
+                            // Already printed -> Show Authorization Modal
+                            setReprintReason('');
+                            setIsReprintModalOpen(true);
+                          } else {
+                            // First time printing -> Execute immediately
+                            executePrint(order, false);
                           }
-
-                          const printWindow = window.open('', '_blank', 'width=800,height=600');
-                          if (!printWindow) return;
-                          
-                          const items = order?.order_items || [];
-                          const enrichedItems = items.map((item: any) => {
-                            const variantSku = products.find((p: any) => p.id === item.product_id)?.variants?.find((v: any) => v.id === item.variant_id)?.sku;
-                            return { ...item, sku: variantSku || 'N/A' };
-                          });
-                          const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
-                          
-                          // Check if it's a duplicate print for the HTML view
-                          const watermarkHtml = newCount > 1 ? `
-                            <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%) rotate(-30deg); font-size: 48px; font-weight: 900; color: rgba(0,0,0,0.1); border: 8px solid rgba(0,0,0,0.1); padding: 10px 20px; text-transform: uppercase; letter-spacing: 5px; z-index: 10; pointer-events: none; white-space: nowrap;">
-                              REPRINT
-                              <div style="font-size: 14px; text-align: center; margin-top: 10px; letter-spacing: 2px;">
-                                OLEH: ${printedBy}
-                              </div>
-                            </div>
-                          ` : '';
-
-                          const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Label Pengiriman - NINOC</title>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-  <style>
-    @page { size: 100mm 150mm; margin: 0; }
-    body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif; }
-    .label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .header { display: flex; border-bottom: 2px solid #000; height: 45px; }
-    .brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background: #000; color: #fff; }
-    .brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
-    .brand-sub { font-size: 7px; font-weight: 600; letter-spacing: 3px; opacity: 0.8; }
-    .courier-box { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; }
-    .courier-name { font-size: 12px; font-weight: 800; }
-    .barcode-row { padding: 16px 12px; border-bottom: 2px solid #000; text-align: center; }
-    .barcode-text { font-weight: 800; font-size: 14px; letter-spacing: 4px; font-family: monospace; margin-top: 8px; }
-    .flex-row { display: flex; border-bottom: 2px solid #000; }
-    .col-left { flex: 1.6; padding: 12px; border-right: 2px solid #000; display: flex; flex-direction: column; }
-    .col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
-    .inverted-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; background: #000; color: #fff; padding: 3px 8px; display: inline-block; border-radius: 2px; }
-    .outline-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; border: 2px solid #000; padding: 1px 6px; display: inline-block; border-radius: 2px; }
-    .person-name { font-weight: 900; font-size: 15px; text-transform: uppercase; line-height: 1.1; }
-    .person-phone { font-size: 11px; font-weight: 700; margin-top: 4px; font-family: monospace; }
-    .person-address { font-size: 11px; font-weight: 500; margin-top: 8px; line-height: 1.4; color: #333; }
-    .person-city { font-weight: 800; font-size: 11px; margin-top: 6px; text-transform: uppercase; }
-    .person-zip { font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px; }
-    .content-title { font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666; }
-    .item-line { font-size: 10px; font-weight: 600; display: flex; justify-content: space-between; padding: 2px 0; }
-    .qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .qr-label { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-top: 8px; color: #666; }
-    .order-id-val { font-weight: 900; font-size: 11px; letter-spacing: 1px; font-family: monospace; }
-    .meta-pills { display: flex; justify-content: center; gap: 8px; margin-top: 8px; font-size: 9px; font-weight: 800; }
-    .pill { background: #e5e5e5; padding: 2px 6px; border-radius: 2px; }
-    .footer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #000; color: #fff; }
-    .footer-date { font-size: 9px; font-weight: 600; font-family: monospace; }
-    .fragile { font-weight: 900; font-size: 10px; letter-spacing: 2px; }
-  </style>
-</head>
-<body>
-  <div class="label">
-    ${watermarkHtml}
-    <div class="header">
-      <div class="brand-box">
-        <div class="brand-name">NINOC</div>
-        <div class="brand-sub">STUDIO</div>
-      </div>
-      <div class="courier-box">
-        <span class="courier-name">${order?.courier || 'STANDARD'}</span>
-      </div>
-    </div>
-    <div class="barcode-row">
-      ${order?.tracking_id ? `
-        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="${order.tracking_id}" jsbarcode-width="2" jsbarcode-height="50" jsbarcode-displayValue="false"></svg>
-        <div class="barcode-text">${order.tracking_id}</div>
-      ` : `
-        <div style="font-weight:700;font-size:12px;padding:16px 0;color:#999;letter-spacing:2px;border:2px dashed #e5e5e5;text-align:center;">AWAITING TRACKING ID</div>
-      `}
-    </div>
-    <div class="flex-row">
-      <div class="col-left">
-        <div class="inverted-tag">TO / PENERIMA</div>
-        <div class="person-name">${order?.shipping_address?.name || 'GUEST'}</div>
-        <div class="person-phone">${order?.shipping_address?.phone || '-'}</div>
-        <div class="person-address">${order?.shipping_address?.address || '-'}</div>
-        <div class="person-city">${order?.shipping_address?.city || '-'}, ${order?.shipping_address?.province || '-'}</div>
-        <div class="person-zip">${order?.shipping_address?.postal_code || '-'}</div>
-      </div>
-      <div class="col-right">
-        <div class="outline-tag">FROM / PENGIRIM</div>
-        <div style="font-weight:800;font-size:11px;">NINOC STUDIO</div>
-        <div style="font-size:9px;font-weight:600;margin-top:2px;font-family:monospace;color:#666;">0812-XXXX-XXXX</div>
-        <div style="font-size:9px;font-weight:500;margin-top:6px;line-height:1.4;color:#444;">Bandung, Jawa Barat<br/>Indonesia</div>
-      </div>
-    </div>
-    <div class="flex-row">
-      <div class="col-left">
-        <div class="content-title">CONTENTS / ISI PAKET</div>
-        ${enrichedItems.map((i: any) => `
-          <div class="item-line" style="flex-direction: column; padding-bottom: 6px;">
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-              <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
-              <span style="font-weight:800;">×${i.quantity}</span>
-            </div>
-            <div style="font-family: monospace; font-size: 8px; color: #666; margin-top: 2px;">SKU: ${i.sku}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="col-right qr-box">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=54x54&data=${encodeURIComponent(order?.id?.toUpperCase() || '')}" alt="QR" width="54" height="54" />
-        <div class="qr-label">ORDER ID</div>
-        <div class="order-id-val">#${(order?.id || '').slice(0, 8).toUpperCase()}</div>
-        <div class="meta-pills">
-          <span class="pill">${totalItems} PCS</span>
-          <span class="pill">${totalItems * 300}g</span>
-        </div>
-      </div>
-    </div>
-    <div class="footer-row">
-      <span class="footer-date">${new Date(order?.created_at || '').toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}).toUpperCase()}</span>
-      <span class="fragile">FRAGILE</span>
-    </div>
-  </div>
-  <script>
-    JsBarcode(".barcode").init();
-    window.onload = () => { setTimeout(() => { window.print(); }, 500); }
-  </script>
-</body>
-</html>`;
-                          printWindow.document.write(htmlContent);
-                          printWindow.document.close();
                         }}
                         className="w-full py-3 bg-black text-white font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
                       >
@@ -2745,6 +2764,148 @@ export default function AdminDashboard() {
         setForm={setCustomerForm}
         onSave={saveCustomer}
       />
+
+      {/* ===== REPRINT AUTHORIZATION MODAL ===== */}
+      <AnimatePresence>
+        {isReprintModalOpen && selectedOrder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[600] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setIsReprintModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-amber-50 border-b border-amber-200 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                    <AlertTriangle size={20} className="text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-amber-900 text-sm">Otorisasi Cetak Ulang</h3>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Resi ini sudah pernah dicetak {selectedOrder.print_count || 1}× sebelumnya
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-5 space-y-4">
+                {/* Print History Info */}
+                <div className="bg-gray-50 rounded-lg p-3 space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Order ID</span>
+                    <span className="font-mono font-semibold text-gray-900">#{(selectedOrder.id || '').slice(0, 8).toUpperCase()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Terakhir dicetak oleh</span>
+                    <span className="font-medium text-gray-900">{selectedOrder.last_printed_by || '-'}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Waktu cetak terakhir</span>
+                    <span className="font-medium text-gray-900">
+                      {selectedOrder.last_printed_at 
+                        ? new Date(selectedOrder.last_printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : '-'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Reason Selection */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                    Alasan Cetak Ulang <span className="text-rose">*</span>
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      { value: 'Printer Rusak / Mati Lampu', icon: '⚡' },
+                      { value: 'Hasil Cetak Tidak Jelas / Buram', icon: '🖨️' },
+                      { value: 'Label Robek / Rusak Fisik', icon: '📄' },
+                      { value: 'Perubahan Data Pengiriman', icon: '📦' },
+                      { value: 'Permintaan Supervisor', icon: '👤' },
+                    ].map((opt) => (
+                      <label
+                        key={opt.value}
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                          reprintReason === opt.value
+                            ? 'border-rose bg-rose/5'
+                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="reprint-reason"
+                          value={opt.value}
+                          checked={reprintReason === opt.value}
+                          onChange={(e) => setReprintReason(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                          reprintReason === opt.value ? 'border-rose bg-rose' : 'border-gray-300'
+                        }`}>
+                          {reprintReason === opt.value && (
+                            <Check size={12} className="text-white" />
+                          )}
+                        </div>
+                        <span className="text-sm">{opt.icon}</span>
+                        <span className="text-xs font-medium text-gray-700">{opt.value}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Confirmation Checkbox */}
+                <div className="bg-blue-50 rounded-lg p-3 flex items-start gap-3">
+                  <div className="mt-0.5">
+                    <Info size={14} className="text-blue-500" />
+                  </div>
+                  <p className="text-[11px] text-blue-700 leading-relaxed">
+                    Cetak ulang diperbolehkan selama <strong>stok fisik barang tidak ada selisih</strong>. 
+                    Setiap aktivitas cetak ulang akan terekam di sistem audit secara otomatis 
+                    (siapa, kapan, dan alasannya).
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-5 border-t border-gray-100 flex gap-3">
+                <button
+                  onClick={() => setIsReprintModalOpen(false)}
+                  className="flex-1 py-2.5 px-4 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  disabled={!reprintReason}
+                  onClick={() => {
+                    if (!reprintReason || !selectedOrder) return;
+                    setIsReprintModalOpen(false);
+                    executePrint(selectedOrder, true);
+                    showToast(`Reprint terotorisasi: ${reprintReason}`, 'info');
+                  }}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    reprintReason
+                      ? 'bg-amber-500 text-white hover:bg-amber-600 cursor-pointer'
+                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Printer size={14} />
+                  Cetak Ulang
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
 
     {/* ===== PRINTABLE SHIPPING LABEL ===== */}
