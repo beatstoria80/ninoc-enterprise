@@ -95,12 +95,17 @@ export function LogisticsTab({
     }
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .update({ status: 'shipped' })
-        .eq('id', targetOrder.id);
+        .eq('id', targetOrder.id)
+        .eq('status', 'paid')
+        .select();
         
       if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('Pesanan ini sudah diproses oleh staf lain!');
+      }
 
       setScanStatus('success');
       setScanMessage(`Success! Order #${targetOrder.id.slice(0,8).toUpperCase()} Dispatched.`);

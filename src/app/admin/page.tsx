@@ -111,7 +111,7 @@ export default function AdminDashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [adminUser, setAdminUser] = useState<{ id: string; email?: string } | null>(null);
+  const [adminUser, setAdminUser] = useState<{ id: string; email?: string; role?: string } | null>(null);
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -259,11 +259,22 @@ export default function AdminDashboard() {
   const [logisticsFilter, setLogisticsFilter] = useState<string>('all');
   const [logisticsSelectedOrder, setLogisticsSelectedOrder] = useState<Order | null>(null);
 
-  // Fetch logged-in admin user
+  // Fetch logged-in admin user and their role
   useEffect(() => {
     const fetchAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) setAdminUser(user);
+      if (user) {
+        let role = 'super_admin'; // default fallback for safety during transition
+        const { data: roleData } = await supabase
+          .from('admin_roles')
+          .select('role')
+          .eq('email', user.email)
+          .single();
+        if (roleData) {
+          role = roleData.role;
+        }
+        setAdminUser({ ...user, role });
+      }
     };
     fetchAdmin();
   }, []);
@@ -979,10 +990,11 @@ export default function AdminDashboard() {
     }
   };
 
-  const navItems = [
-    { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', activeKeys: ['overview'] },
+  const allNavItems: any[] = [
+    { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', activeKeys: ['overview'], roles: ['super_admin', 'finance'] },
     { 
       id: 'catalog', icon: Package, label: 'Product', activeKeys: ['products', 'upload'],
+      roles: ['super_admin'],
       subItems: [
         { id: 'products', label: 'Product List' },
         { id: 'upload', label: 'Upload Images' }
@@ -990,39 +1002,50 @@ export default function AdminDashboard() {
     },
     { 
       id: 'transaction', icon: ShoppingCart, label: 'Transaction', activeKeys: ['orders', 'logistics'], badge: pendingOrders,
+      roles: ['super_admin', 'outbound_logistics'],
       subItems: [
         { id: 'orders', label: 'Online Order' },
         { id: 'logistics', label: 'Logistics' }
       ]
     },
-    { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'] },
-    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'] },
+    { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'], roles: ['super_admin'] },
+    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'], roles: ['super_admin', 'outbound_logistics'] },
     { 
       id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['submissions', 'suppliers', 'warehouse'],
+      roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'submissions', label: 'Product Submissions' },
         { id: 'suppliers', label: 'Partner Review' },
         { id: 'warehouse', label: 'Ninoc Warehouse Hub' }
       ]
     },
-    { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length },
-    { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'] },
-    { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'] },
+    { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length, roles: ['super_admin'] },
+    { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'], roles: ['super_admin', 'finance'] },
+    { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'], roles: ['super_admin'] },
     { 
       id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger'],
+      roles: ['super_admin', 'finance', 'inbound_warehouse'],
       subItems: [
-        { id: 'inventory', label: 'Stock Management' },
-        { id: 'po', label: 'Purchase Orders (PO)' },
-        { id: 'do', label: 'Receiving (DO)' },
-        { id: 'stock_ledger', label: 'Kartu Stok (Ledger)' }
+        { id: 'inventory', label: 'Stock Management', roles: ['super_admin', 'inbound_warehouse'] },
+        { id: 'po', label: 'Purchase Orders (PO)', roles: ['super_admin', 'finance'] },
+        { id: 'do', label: 'Receiving (DO)', roles: ['super_admin', 'inbound_warehouse'] },
+        { id: 'stock_ledger', label: 'Kartu Stok (Ledger)', roles: ['super_admin', 'inbound_warehouse'] }
       ]
     },
-    { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'] },
-    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats },
-    { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'] },
-    { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'] },
-    { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'] }
+    { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'], roles: ['super_admin', 'finance'] },
+    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats, roles: ['super_admin', 'outbound_logistics'] },
+    { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'], roles: ['super_admin'] },
+    { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'], roles: ['super_admin'] },
+    { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'], roles: ['super_admin'] }
   ];
+
+  const userRole = adminUser?.role || 'outbound_logistics'; // fallback
+  const navItems = allNavItems.filter((item: any) => item.roles.includes(userRole)).map((item: any) => {
+    if (item.subItems) {
+      return { ...item, subItems: item.subItems.filter((sub: any) => !sub.roles || sub.roles.includes(userRole)) };
+    }
+    return item;
+  });
 
   return (
     <>
@@ -1092,29 +1115,25 @@ export default function AdminDashboard() {
       )}
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex w-64 bg-white border-r border-ink/5 flex-col z-50 shrink-0 h-screen sticky top-0">
-        <div className="p-6 border-b border-ink/5">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-ink flex items-center justify-center rounded-sm">
-              <span className="text-white font-display italic font-medium text-xs">N</span>
-            </div>
-            <div className="font-display font-medium text-lg italic tracking-tighter text-ink uppercase leading-none">NINOC</div>
+      <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 z-10 shrink-0 h-full overflow-y-auto custom-scrollbar">
+        <div className="p-6 sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-50 flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase">NINOC</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Internal Portal</span>
           </div>
         </div>
-        <nav className="flex-1 overflow-y-auto minimal-scroll py-4">
+        <nav className="flex-1 px-4 py-6 space-y-1">
           {navItems.map((item) => (
             <SidebarItem 
-              key={item.id}
+              key={item.id} 
               icon={item.icon} 
               label={item.label} 
               active={item.activeKeys.includes(activeTab)} 
               onClick={() => {
-                if (!item.subItems) {
-                  setActiveTab(item.activeKeys[0]);
-                }
-              }} 
+                if (!item.subItems) setActiveTab(item.activeKeys[0]);
+              }}
               badge={item.badge}
-              subItems={item.subItems?.map(sub => ({
+              subItems={item.subItems?.map((sub: any) => ({
                 label: sub.label,
                 id: sub.id,
                 active: activeTab === sub.id,
@@ -2547,16 +2566,50 @@ export default function AdminDashboard() {
                     
                     <div className="p-4 bg-white border-t border-gray-200 shrink-0">
                       <button
-                        onClick={() => {
+                        onClick={async () => {
+                          const order = selectedOrder;
+                          if (!order) return;
+
+                          // Fraud Prevention: Log Print Event
+                          const newCount = (order.print_count || 0) + 1;
+                          const printedBy = adminUser?.email || 'Unknown';
+                          
+                          try {
+                            await supabase
+                              .from('orders')
+                              .update({ 
+                                print_count: newCount, 
+                                last_printed_by: printedBy,
+                                last_printed_at: new Date().toISOString()
+                              })
+                              .eq('id', order.id);
+                              
+                            // Optimistic update
+                            setSelectedOrder({ ...order, print_count: newCount, last_printed_by: printedBy });
+                          } catch (e) {
+                            console.error('Failed to update print count', e);
+                          }
+
                           const printWindow = window.open('', '_blank', 'width=800,height=600');
                           if (!printWindow) return;
-                          const order = selectedOrder;
+                          
                           const items = order?.order_items || [];
                           const enrichedItems = items.map((item: any) => {
                             const variantSku = products.find((p: any) => p.id === item.product_id)?.variants?.find((v: any) => v.id === item.variant_id)?.sku;
                             return { ...item, sku: variantSku || 'N/A' };
                           });
                           const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
+                          
+                          // Check if it's a duplicate print for the HTML view
+                          const watermarkHtml = newCount > 1 ? `
+                            <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%) rotate(-30deg); font-size: 48px; font-weight: 900; color: rgba(0,0,0,0.1); border: 8px solid rgba(0,0,0,0.1); padding: 10px 20px; text-transform: uppercase; letter-spacing: 5px; z-index: 10; pointer-events: none; white-space: nowrap;">
+                              REPRINT
+                              <div style="font-size: 14px; text-align: center; margin-top: 10px; letter-spacing: 2px;">
+                                OLEH: ${printedBy}
+                              </div>
+                            </div>
+                          ` : '';
+
                           const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -2565,7 +2618,7 @@ export default function AdminDashboard() {
   <style>
     @page { size: 100mm 150mm; margin: 0; }
     body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif; }
-    .label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+    .label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .header { display: flex; border-bottom: 2px solid #000; height: 45px; }
     .brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background: #000; color: #fff; }
     .brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
@@ -2598,10 +2651,11 @@ export default function AdminDashboard() {
 </head>
 <body>
   <div class="label">
+    ${watermarkHtml}
     <div class="header">
       <div class="brand-box">
         <div class="brand-name">NINOC</div>
-        <div class="brand-sub">STORE</div>
+        <div class="brand-sub">STUDIO</div>
       </div>
       <div class="courier-box">
         <span class="courier-name">${order?.courier || 'STANDARD'}</span>

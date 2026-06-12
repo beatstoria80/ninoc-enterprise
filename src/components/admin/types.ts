@@ -56,6 +56,9 @@ export interface Order {
   printed_at: string | null;
   created_at: string;
   order_items?: OrderItem[];
+  print_count?: number;
+  last_printed_by?: string;
+  last_printed_at?: string;
 }
 
 export interface OrderItem {

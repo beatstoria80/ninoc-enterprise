@@ -131,8 +131,33 @@ export function ShippingLabel({ order }: { order: Order }) {
         display: 'flex',
         alignItems: 'stretch',
         borderBottom: '2px solid black',
-        height: '45px'
+        height: '45px',
+        position: 'relative'
       }}>
+        {/* DUPLICATE WATERMARK */}
+        {(order.print_count || 0) > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: '50px',
+            left: '50%',
+            transform: 'translateX(-50%) rotate(-30deg)',
+            fontSize: '48px',
+            fontWeight: '900',
+            color: 'rgba(0,0,0,0.1)',
+            border: '8px solid rgba(0,0,0,0.1)',
+            padding: '10px 20px',
+            textTransform: 'uppercase',
+            letterSpacing: '5px',
+            zIndex: 10,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap'
+          }}>
+            REPRINT
+            <div style={{ fontSize: '14px', textAlign: 'center', marginTop: '10px', letterSpacing: '2px' }}>
+              OLEH: {order.last_printed_by || 'ADMIN'}
+            </div>
+          </div>
+        )}
         <div style={{ 
           flex: 1, 
           padding: '0 12px', 
