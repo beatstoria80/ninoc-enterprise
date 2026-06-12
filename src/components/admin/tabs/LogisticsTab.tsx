@@ -161,7 +161,7 @@ export function LogisticsTab({
       {/* STAT CELLS — 4 compact cells, no gap, cell-block */}
       <div className="shrink-0 grid grid-cols-4 border border-gray-200 bg-white">
         {[
-          { label: 'Awaiting Dispatch', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
+          { label: 'Siap Kirim', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
           { label: 'In Transit', count: inTransitCount, color: 'text-blue-600', bg: 'bg-blue-50', filterKey: 'shipped' },
           { label: 'Delivered', count: deliveredCount, color: 'text-emerald-600', bg: 'bg-emerald-50', filterKey: 'delivered' },
           { label: 'Cancelled', count: cancelledCount, color: 'text-red-500', bg: 'bg-red-50', filterKey: 'cancelled' },
@@ -249,7 +249,7 @@ export function LogisticsTab({
                         order.status === 'delivered' && "bg-emerald-100 text-emerald-700",
                         order.status === 'cancelled' && "bg-red-100 text-red-600",
                       )}>
-                        {order.status === 'paid' ? 'PENDING' : order.status.toUpperCase()}
+                        {order.status === 'paid' ? 'SIAP KIRIM' : order.status.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-3 py-1.5">
