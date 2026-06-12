@@ -39,7 +39,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     );
   }
 
-  const displayId = order.order_number ? order.order_number.toUpperCase() : order.id.toUpperCase();
+  const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const tax = Math.round(sub * 0.11);
   const platform = 2500;
@@ -275,7 +275,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 function PrintableInvoice({ order, courierName }: { order: Order; courierName: string }) {
   const date = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
   const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  const displayId = order.order_number ? order.order_number.toUpperCase() : order.id.toUpperCase();
+  const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
   const shipping = Math.max(0, order.total_price - sub - platform);
