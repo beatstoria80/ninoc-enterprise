@@ -1,19 +1,33 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer, FileText, X, Copy, Check } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Invoice } from '@/components/Invoice';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 interface OrderItem { id: string; product_name: string; size: string | null; quantity: number; price_at_purchase: number; }
-interface ShippingAddress { name?: string; address: string; city: string; postal_code: string; email?: string; }
-interface Order { id: string; order_number?: string; created_at: string; total_price: number; courier?: string; shipping_address: ShippingAddress; customer_name?: string; order_items: OrderItem[]; }
+interface ShippingAddress { name?: string; phone?: string; address: string; city: string; postal_code: string; province?: string; email?: string; }
+interface Order {
+  id: string;
+  order_number?: string;
+  created_at: string;
+  total_price: number;
+  courier?: string;
+  shipping_address: ShippingAddress;
+  customer_name?: string;
+  order_items: OrderItem[];
+  midtrans_id?: string;
+  snap_token?: string;
+  status?: string;
+  payment_status?: string;
+}
 
 interface Props {
   order: Order | null;
@@ -21,7 +35,28 @@ interface Props {
   isInvalid: boolean;
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="ml-2 p-1 hover:bg-ink/5 rounded transition-colors text-ink/30 hover:text-ink/60"
+      title="Copy to clipboard"
+    >
+      {copied ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+    </button>
+  );
+}
+
 export default function SuccessContent({ order, courierName, isInvalid }: Props) {
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+
   if (isInvalid || !order) {
     return (
       <div className="min-h-screen bg-cr noise flex flex-col items-center justify-center px-4">
@@ -40,6 +75,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
   }
 
   const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
+  const invoiceId = `NCO-${order.id.slice(0, 8).toUpperCase()}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const tax = Math.round(sub * 0.11);
   const platform = 2500;
@@ -84,7 +120,11 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 Continue Collecting
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+                <FileText size={14} />
+                View Full Invoice
+              </button>
+              <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
                 <Printer size={14} />
                 Save as PDF
               </button>
@@ -119,6 +159,35 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
+              </div>
+
+              {/* ─── Invoice & Payment IDs ─── */}
+              <div className="px-3 md:px-8 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Invoice ID</p>
+                    <div className="flex items-center">
+                      <p className="text-xs md:text-[10px] font-mono font-semibold text-ink">{invoiceId}</p>
+                      <CopyButton text={invoiceId} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Order No</p>
+                    <div className="flex items-center">
+                      <p className="text-xs md:text-[10px] font-mono font-semibold text-ink">#{displayId}</p>
+                      <CopyButton text={displayId} />
+                    </div>
+                  </div>
+                </div>
+                {order.midtrans_id && (
+                  <div className="mt-2 pt-2 border-t border-ink/5">
+                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Midtrans Transaction ID</p>
+                    <div className="flex items-center">
+                      <p className="text-[10px] md:text-[9px] font-mono font-semibold text-ink/70 break-all">{order.midtrans_id}</p>
+                      <CopyButton text={order.midtrans_id} />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="px-3 md:px-8 py-2 md:py-4 border-b border-ink/5">
@@ -164,6 +233,15 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <p className="text-xs md:text-[10px] font-medium text-ink/70">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
                 </div>
               )}
+
+              {/* View Invoice Button (inside receipt card) */}
+              <button
+                onClick={() => setShowInvoiceModal(true)}
+                className="w-full px-3 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose cursor-pointer group"
+              >
+                <FileText size={13} className="group-hover:scale-110 transition-transform" />
+                Lihat Invoice Lengkap
+              </button>
             </motion.div>
           </div>
 
@@ -249,7 +327,11 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               Continue Collecting
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+            <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <FileText size={14} />
+              View Full Invoice
+            </button>
+            <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
               <Printer size={14} />
               Save as PDF
             </button>
@@ -268,6 +350,66 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     <div className="hidden print:block bg-white text-black p-8 w-full h-full max-w-4xl mx-auto font-sans m-0">
       <PrintableInvoice order={order} courierName={courierName} />
     </div>
+
+    {/* ===== INVOICE MODAL ===== */}
+    <AnimatePresence>
+      {showInvoiceModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] bg-ink/70 backdrop-blur-sm flex items-start justify-center p-4 md:p-8 overflow-y-auto"
+          onClick={() => setShowInvoiceModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative bg-white shadow-2xl mt-4 md:mt-8 max-w-[600px] w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowInvoiceModal(false)}
+              className="absolute -top-3 -right-3 md:-top-4 md:-right-4 w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center hover:bg-rose transition-colors shadow-lg z-10 cursor-pointer"
+            >
+              <X size={14} />
+            </button>
+
+            {/* Invoice Content */}
+            <div className="overflow-auto max-h-[70vh] md:max-h-[85vh] w-full bg-ink/[0.02] p-4 md:p-8 flex justify-start md:justify-center">
+              <Invoice order={order as any} />
+            </div>
+            
+            {/* Scroll Hint for Mobile */}
+            <div className="md:hidden text-center p-2 text-[9px] uppercase tracking-widest text-ink/40 bg-ink/[0.02] border-t border-ink/5">
+              Geser untuk melihat lebih lengkap →
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="border-t border-ink/10 p-4 flex gap-3">
+              <button
+                onClick={() => {
+                  setShowInvoiceModal(false);
+                  setTimeout(() => window.print(), 300);
+                }}
+                className="flex-1 bg-ink text-white py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors cursor-pointer"
+              >
+                <Printer size={13} />
+                Cetak / Save PDF
+              </button>
+              <button
+                onClick={() => setShowInvoiceModal(false)}
+                className="flex-1 bg-ink/5 text-ink py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     </>
   );
 }
@@ -290,6 +432,9 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
         <div className="text-right">
           <h2 className="text-xl font-medium uppercase tracking-wider mb-2">Invoice</h2>
           <p className="text-xs font-mono">{displayId}</p>
+          {order.midtrans_id && (
+            <p className="text-[10px] font-mono text-ink/50 mt-1">TX: {order.midtrans_id}</p>
+          )}
           <p className="text-xs md:text-[10px] uppercase mt-1">{order.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
         </div>
       </div>

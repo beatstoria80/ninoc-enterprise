@@ -7,10 +7,11 @@ interface Props {
 }
 
 async function fetchOrder(orderId?: string, orderNumber?: string) {
+  const selectFields = '*, order_items(*)';
   if (orderId) {
     const { data } = await supabase
       .from('orders')
-      .select('*, order_items(*)')
+      .select(selectFields)
       .eq('id', orderId)
       .single();
     return data;
@@ -18,7 +19,7 @@ async function fetchOrder(orderId?: string, orderNumber?: string) {
   if (orderNumber) {
     const { data } = await supabase
       .from('orders')
-      .select('*, order_items(*)')
+      .select(selectFields)
       .eq('order_number', orderNumber)
       .single();
     return data;
