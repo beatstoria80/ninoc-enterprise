@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       const { data: order } = await supabase
         .from('orders')
         .select(`
-          id, shipping_address, total_price, wa_invoice_sent, affiliate_id,
+          id, order_number, shipping_address, total_price, wa_invoice_sent, affiliate_id,
           order_items ( id, supplier_id, supplier_hpp )
         `)
         .eq('id', orderId)
@@ -189,7 +189,8 @@ export async function POST(req: Request) {
           })}`;
 
           const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
-          const paymentUrl = `${appUrl}/profile/orders/${order.id}`;
+          const trackId = order.order_number || order.id;
+          const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 
           console.log(`[Payment Webhook] Sending invoice WA to ${formattedPhone} for order ${order.id}`);
 

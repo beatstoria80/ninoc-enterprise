@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from '@/components/LocalizedLink';
 import Footer from '@/components/Footer';
 import { X } from 'lucide-react';
@@ -88,21 +89,36 @@ function formatPrice(n: number) {
 }
 
 export default function TrackClient() {
-  const [orderNumber, setOrderNumber] = useState('');
-  const [phone, setPhone] = useState('');
+  const searchParams = useSearchParams();
+  const [orderNumber, setOrderNumber] = useState(searchParams.get('order_number') || '');
+  const [phone, setPhone] = useState(searchParams.get('phone') || '');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
 
-  async function handleTrack(e: React.FormEvent) {
+  // Auto-track if query params are present
+  useEffect(() => {
+    const qOrder = searchParams.get('order_number');
+    const qPhone = searchParams.get('phone');
+    if (qOrder && qPhone) {
+      // Create a mock event to pass to handleTrack
+      const mockEvent = { preventDefault: () => {} } as React.FormEvent;
+      handleTrack(mockEvent, qOrder, qPhone);
+    }
+  }, [searchParams]);
+
+  async function handleTrack(e: React.FormEvent, directOrder?: string, directPhone?: string) {
     e.preventDefault();
-    if (!orderNumber.trim() || !phone.trim()) return;
+    const trackOrder = directOrder || orderNumber;
+    const trackPhone = directPhone || phone;
+    
+    if (!trackOrder.trim() || !trackPhone.trim()) return;
     setLoading(true);
     setError('');
     setSearched(true);
     try {
-      const res = await fetch(`/api/track?order_number=${encodeURIComponent(orderNumber.trim())}&phone=${encodeURIComponent(phone.trim())}`);
+      const res = await fetch(`/api/track?order_number=${encodeURIComponent(trackOrder.trim())}&phone=${encodeURIComponent(trackPhone.trim())}`);
       const json = await res.json();
       if (!res.ok || json.error) {
         setError(json.error || 'Gagal mengambil data pesanan.');
