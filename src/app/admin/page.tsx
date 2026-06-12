@@ -1092,7 +1092,7 @@ export default function AdminDashboard() {
                     }
                   }} 
                   badge={item.badge}
-                  subItems={item.subItems?.map(sub => ({
+                  subItems={item.subItems?.map((sub: any) => ({
                     label: sub.label,
                     id: sub.id,
                     active: activeTab === sub.id,
