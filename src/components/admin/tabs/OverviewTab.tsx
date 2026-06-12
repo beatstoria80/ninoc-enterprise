@@ -59,6 +59,36 @@ export function OverviewTab({
         </div>
       </div>
 
+      {/* Low Stock Alerts */}
+      {(() => {
+        const lowStockItems = products.flatMap(p => 
+          (p.variants || []).filter(v => v.stock_quantity <= (v.reorder_point || 5))
+            .map(v => ({ productName: p.name, size: v.size, qty: v.stock_quantity, sku: v.sku }))
+        );
+        if (lowStockItems.length === 0) return null;
+        
+        return (
+          <div className="bg-rose/5 border border-rose/20 rounded-sm p-4 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-rose">⚠️</span>
+              <h3 className="text-xs font-bold text-rose uppercase tracking-widest">Low Stock Alert ({lowStockItems.length} items)</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {lowStockItems.slice(0, 5).map((item, idx) => (
+                <span key={idx} className="bg-white/50 border border-rose/10 px-2 py-1 text-[10px] text-rose font-medium rounded-sm">
+                  {item.productName} ({item.size}) - <span className="font-bold">Sisa {item.qty}</span>
+                </span>
+              ))}
+              {lowStockItems.length > 5 && (
+                <span className="bg-white/50 border border-rose/10 px-2 py-1 text-[10px] text-rose font-medium rounded-sm">
+                  +{lowStockItems.length - 5} lainnya
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Charts */}
       <React.Suspense fallback={<div className="h-[260px] bg-ink/[0.02] animate-pulse rounded-sm border border-ink/10" />}>
         <LazyCharts salesData={salesChartData} profitData={profitChartData} />

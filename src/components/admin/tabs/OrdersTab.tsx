@@ -240,6 +240,66 @@ export function OrdersTab({
     setOpenDropdown(null);
   }, []);
 
+  // ── Barcode Scanner Listener ──
+  const barcodeBuffer = useRef('');
+  const lastKeyTime = useRef(0);
+  
+  useEffect(() => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input or textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      const currentTime = Date.now();
+      // If time between keystrokes is more than 50ms, it's a human typing, not a scanner. Reset buffer.
+      if (currentTime - lastKeyTime.current > 50) {
+        barcodeBuffer.current = '';
+      }
+      lastKeyTime.current = currentTime;
+
+      if (e.key === 'Enter') {
+        const scannedCode = barcodeBuffer.current.trim();
+        barcodeBuffer.current = '';
+
+        if (scannedCode) {
+          // Check if scanned code matches an order ID or Tracking ID
+          const matchedOrder = orders.find(o => 
+            o.id.toLowerCase() === scannedCode.toLowerCase() || 
+            (o.tracking_id && o.tracking_id.toLowerCase() === scannedCode.toLowerCase())
+          );
+
+          if (matchedOrder) {
+            // Only update if it's not already shipped or delivered
+            if (['pending', 'paid'].includes(matchedOrder.status)) {
+              try {
+                await supabase
+                  .from('orders')
+                  .update({ status: 'shipped', updated_at: new Date().toISOString() })
+                  .eq('id', matchedOrder.id);
+                // Trigger visual feedback (could just use alert for now)
+                alert(`📦 Order ${matchedOrder.id.slice(0, 8).toUpperCase()} otomatis diubah menjadi SHIPPED.`);
+                // Note: the parent page.tsx will pick up the change if we have real-time or if we poll,
+                // but realistically we should call a refresh prop. Since we don't have one, we rely on the 
+                // parent's polling or the user refreshing. 
+                // Alternatively, we can update local state if we passed `setOrders` but we didn't.
+              } catch (err) {
+                console.error('Failed to update order via scanner', err);
+              }
+            } else {
+              alert(`⚠️ Order ${matchedOrder.id.slice(0, 8).toUpperCase()} sudah berstatus ${matchedOrder.status.toUpperCase()}.`);
+            }
+          } else {
+            console.log('Barcode not found in orders:', scannedCode);
+          }
+        }
+      } else if (e.key.length === 1) {
+        barcodeBuffer.current += e.key;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [orders]);
+
   // ── Derive unique courier options from data ──
   const courierOptions = useMemo(() => {
     const unique = new Set<string>();

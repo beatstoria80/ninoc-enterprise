@@ -28,6 +28,8 @@ import PoManager from '@/components/admin/PoManager';
 import DoReceiving from '@/components/admin/DoReceiving';
 import StockLedger from '@/components/admin/StockLedger';
 import FinanceDashboard from '@/components/admin/FinanceDashboard';
+import StockOpname from '@/components/admin/StockOpname';
+import OpexTracker from '@/components/admin/OpexTracker';
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
 import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
@@ -1026,16 +1028,24 @@ export default function AdminDashboard() {
     { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'], roles: ['super_admin', 'finance'] },
     { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'], roles: ['super_admin'] },
     { 
-      id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger'],
+      id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger', 'stock_opname'],
       roles: ['super_admin', 'finance', 'inbound_warehouse'],
       subItems: [
         { id: 'inventory', label: 'Stock Management', roles: ['super_admin', 'inbound_warehouse'] },
+        { id: 'stock_opname', label: 'Stock Opname', roles: ['super_admin', 'inbound_warehouse'] },
         { id: 'po', label: 'Purchase Orders (PO)', roles: ['super_admin', 'finance'] },
         { id: 'do', label: 'Receiving (DO)', roles: ['super_admin', 'inbound_warehouse'] },
         { id: 'stock_ledger', label: 'Kartu Stok (Ledger)', roles: ['super_admin', 'inbound_warehouse'] }
       ]
     },
-    { id: 'finance', icon: DollarSign, label: 'Report', activeKeys: ['finance'], roles: ['super_admin', 'finance'] },
+    { 
+      id: 'report', icon: DollarSign, label: 'Report', activeKeys: ['finance', 'opex'],
+      roles: ['super_admin', 'finance'],
+      subItems: [
+        { id: 'finance', label: 'Finance Dashboard' },
+        { id: 'opex', label: 'Opex (Biaya Operasional)' }
+      ]
+    },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats, roles: ['super_admin', 'outbound_logistics'] },
     { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'], roles: ['super_admin'] },
     { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'], roles: ['super_admin'] },
@@ -1346,7 +1356,9 @@ body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif
                activeTab === 'po' ? 'Purchase Orders' :
                activeTab === 'do' ? 'Inbound Receiving' :
                activeTab === 'stock_ledger' ? 'Kartu Stok' :
+               activeTab === 'stock_opname' ? 'Stock Opname' :
                activeTab === 'finance' ? 'Finance' :
+               activeTab === 'opex' ? 'Opex Tracker' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' || activeTab === 'wabroadcast' ? 'Placeholder / WA Broadcast' :
                activeTab === 'settings' ? 'Settings' : activeTab}
@@ -1437,6 +1449,7 @@ body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif
           {activeTab === 'po' && <PoManager products={products} />}
           {activeTab === 'do' && <DoReceiving />}
           {activeTab === 'stock_ledger' && <StockLedger />}
+          {activeTab === 'stock_opname' && <StockOpname products={products} adminEmail={adminUser?.email || 'admin'} />}
 
           {activeTab === 'orders' && (
             <OrdersTab 
@@ -1480,6 +1493,8 @@ body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif
           {activeTab === 'warehouse' && (
             <WarehouseTab />
           )}
+
+          {activeTab === 'opex' && <OpexTracker adminEmail={adminUser?.email || 'admin'} />}
 
           {activeTab === 'finance' && (
             <FinanceDashboard />
