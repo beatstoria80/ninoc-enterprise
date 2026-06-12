@@ -191,7 +191,8 @@ export async function POST(req: Request) {
         affiliate_id: affiliate_id,
         customer_name: customerDetails.name || null,
         total_price: grossAmount,
-        status: 'pending',
+        status: 'paid', // FOR TESTING: immediately paid
+        payment_status: 'success', // FOR TESTING: immediately success
         courier: shippingDetails.method,
         shipping_address: {
           ...customerDetails,
@@ -253,16 +254,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'DB Error (Inventory): ' + inventoryError.message }, { status: 409 });
     }
 
-    // 4. Create Midtrans Transaction
-    const transaction = await snap.createTransaction(parameter);
-
-    // 5. Update Order with Snap Token
+    // FOR TESTING: Bypass Midtrans completely and return a mock token
+    // This allows the frontend to immediately redirect to success page
+    const mockToken = 'MOCK_TOKEN_FOR_TESTING';
     await supabaseAdmin
       .from('orders')
-      .update({ snap_token: transaction.token })
+      .update({ snap_token: mockToken })
       .eq('id', orderId);
 
-    return NextResponse.json({ token: transaction.token, orderId, orderNumber });
+    return NextResponse.json({ token: mockToken, orderId, orderNumber });
   } catch (err) {
     const error = err as Error;
     console.error('Midtrans API Error:', error);
