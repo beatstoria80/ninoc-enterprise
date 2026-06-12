@@ -262,6 +262,57 @@ export async function POST(req: Request) {
       .update({ snap_token: mockToken })
       .eq('id', orderId);
 
+    // --- TEST BYPASS INTEGRATION FIX ---
+    // Simulate webhook logic so the admin dashboard (supplier, affiliate) is fully integrated
+    console.log(`[TEST BYPASS] Running mock integration for order ${orderId}...`);
+    
+    // 1. Supplier Ledgers
+    const ledgerEntries = finalItemDetails
+      .filter((item: any) => item.supplier_id && item.supplier_hpp > 0)
+      .map((item: any) => {
+        return {
+          supplier_id: item.supplier_id,
+          order_id: orderId,
+          order_item_id: crypto.randomUUID(), // For test bypass we can just use a random uuid or fetch the actual item
+          hpp_amount: item.supplier_hpp,
+          status: 'pending'
+        };
+      });
+      
+    if (ledgerEntries.length > 0) {
+      await supabaseAdmin.from('supplier_ledgers').insert(ledgerEntries);
+      console.log(`[TEST BYPASS] Created ${ledgerEntries.length} supplier ledgers`);
+    }
+
+    // 2. Affiliate Commission
+    if (affiliate_id) {
+      const { data: affiliate } = await supabaseAdmin
+        .from('affiliates')
+        .select('commission_rate')
+        .eq('id', affiliate_id)
+        .single();
+        
+      if (affiliate) {
+        let eligibleTotal = 0;
+        for (const item of finalItemDetails) {
+          if (item.id !== 'SHIPPING' && item.id !== 'PROMO') {
+            // Simplification for test mode: assume all items eligible
+            eligibleTotal += (item.price * item.quantity);
+          }
+        }
+        if (eligibleTotal > 0) {
+          const amount = (eligibleTotal * Number(affiliate.commission_rate)) / 100;
+          await supabaseAdmin.from('affiliate_commissions').insert({
+            affiliate_id: affiliate_id,
+            order_id: orderId,
+            amount: amount,
+            status: 'pending'
+          });
+          console.log(`[TEST BYPASS] Created affiliate commission: Rp ${amount}`);
+        }
+      }
+    }
+
     return NextResponse.json({ token: mockToken, orderId, orderNumber });
   } catch (err) {
     const error = err as Error;
