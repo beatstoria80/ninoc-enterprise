@@ -33,6 +33,7 @@ interface MidtransSnapResult {
 // Define Snap callbacks
 interface SnapCallbacks {
   onSuccess?: (result: MidtransSnapResult) => void;
+  onPending?: (result: MidtransSnapResult) => void;
   onError?: (err: unknown) => void;
   onClose?: () => void;
 }
