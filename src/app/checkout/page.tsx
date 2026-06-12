@@ -427,7 +427,9 @@ export default function CheckoutPage() {
       // --- TEST MODE BYPASS ---
       if (paymentToken === 'MOCK_TOKEN_FOR_TESTING') {
         console.log('Test mode bypass: Payment simulated successful');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsRedirecting(true);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPaymentToken(null);
         const params = new URLSearchParams({ courier: shippingMethod });
         if (createdOrderId) params.set('order_id', createdOrderId);
