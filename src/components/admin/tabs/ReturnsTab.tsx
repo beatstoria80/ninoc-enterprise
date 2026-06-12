@@ -49,6 +49,7 @@ export function ReturnsTab() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [notesModal, setNotesModal] = useState<{ id: string; notes: string } | null>(null);
+  const [dispositionModal, setDispositionModal] = useState<{ id: string; items: any[]; orderItems: any[]; dispositions: Record<string, 'restock' | 'reject_defect'> } | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
   const fetchReturns = useCallback(async () => {
@@ -80,13 +81,13 @@ export function ReturnsTab() {
     return () => { supabase.removeChannel(channel); };
   }, [fetchReturns]);
 
-  const handleStatusUpdate = async (id: string, status: ReturnStatus, adminNotes?: string) => {
+  const handleStatusUpdate = async (id: string, status: ReturnStatus, adminNotes?: string, dispositions?: {return_item_id: string, disposition: string}[]) => {
     setActionLoading(id);
     try {
       const res = await fetch(`/api/returns/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, admin_notes: adminNotes }),
+        body: JSON.stringify({ status, admin_notes: adminNotes, dispositions }),
       });
       if (!res.ok) throw new Error('Update failed');
       await fetchReturns();
@@ -97,6 +98,7 @@ export function ReturnsTab() {
     } finally {
       setActionLoading(null);
       setNotesModal(null);
+      setDispositionModal(null);
     }
   };
 
@@ -314,7 +316,15 @@ export function ReturnsTab() {
                                   )}
                                   {ret.status === 'approved' && (
                                     <button
-                                      onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'received'); }}
+                                      onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        setDispositionModal({
+                                          id: ret.id,
+                                          items: ret.items || [],
+                                          orderItems: orderItems,
+                                          dispositions: {}
+                                        });
+                                      }}
                                       disabled={isLoadingAction}
                                       className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors disabled:opacity-50"
                                     >
@@ -386,6 +396,85 @@ export function ReturnsTab() {
                 className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600"
               >
                 Confirm Reject
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Disposition Modal */}
+      {dispositionModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-ink/20 backdrop-blur-sm" onClick={() => setDispositionModal(null)} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative bg-white w-full max-w-lg rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          >
+            <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between shrink-0">
+              <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Kondisi Barang Retur</h3>
+              <button onClick={() => setDispositionModal(null)} className="text-ink/30 hover:text-rose"><X size={14} /></button>
+            </div>
+            
+            <div className="p-5 overflow-y-auto minimal-scroll space-y-4">
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-sm text-xs mb-4">
+                <p className="font-semibold uppercase tracking-widest text-[9px] mb-1">Perhatian</p>
+                <p>Tentukan apakah barang ini masih bisa dijual kembali (Restock) atau masuk ke Gudang Reject (Cacat).</p>
+              </div>
+
+              {dispositionModal.items.map((rItem, idx) => {
+                const oItem = dispositionModal.orderItems.find(oi => oi.id === rItem.order_item_id);
+                const currentDisp = dispositionModal.dispositions[rItem.id];
+                
+                return (
+                  <div key={rItem.id} className="border border-ink/10 p-3 rounded-sm">
+                    <div className="flex gap-3 mb-3">
+                      <div className="w-10 h-10 bg-ink/5 flex items-center justify-center shrink-0">
+                        <Package size={16} className="text-ink/40" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-ink">{oItem?.product_name || 'Unknown Item'}</p>
+                        <p className="text-xs text-ink/50">Qty Diretur: <strong>{rItem.quantity}</strong></p>
+                        {rItem.reason && <p className="text-[10px] text-ink/40 mt-1 italic">Alasan Konsumen: &quot;{rItem.reason}&quot;</p>}
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setDispositionModal(prev => prev ? { ...prev, dispositions: { ...prev.dispositions, [rItem.id]: 'restock' } } : null)}
+                        className={cn(
+                          "flex-1 py-2 text-xs font-semibold uppercase tracking-wider border transition-colors rounded-sm",
+                          currentDisp === 'restock' ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-ink/10 text-ink/40 hover:border-emerald-300 hover:bg-emerald-50/50"
+                        )}
+                      >
+                        ✅ Bagus (Restock)
+                      </button>
+                      <button
+                        onClick={() => setDispositionModal(prev => prev ? { ...prev, dispositions: { ...prev.dispositions, [rItem.id]: 'reject_defect' } } : null)}
+                        className={cn(
+                          "flex-1 py-2 text-xs font-semibold uppercase tracking-wider border transition-colors rounded-sm",
+                          currentDisp === 'reject_defect' ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-ink/10 text-ink/40 hover:border-red-300 hover:bg-red-50/50"
+                        )}
+                      >
+                        ❌ Cacat (Reject)
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2 shrink-0 bg-ink/[0.02]">
+              <button onClick={() => setDispositionModal(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink">Batal</button>
+              <button
+                disabled={Object.keys(dispositionModal.dispositions).length !== dispositionModal.items.length || actionLoading === dispositionModal.id}
+                onClick={() => {
+                  const arr = Object.entries(dispositionModal.dispositions).map(([k, v]) => ({ return_item_id: k, disposition: v }));
+                  handleStatusUpdate(dispositionModal.id, 'received', undefined, arr);
+                }}
+                className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {actionLoading === dispositionModal.id ? 'Memproses...' : 'Konfirmasi Penerimaan'}
               </button>
             </div>
           </motion.div>

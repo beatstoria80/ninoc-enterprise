@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
       .from('order_returns')
       .select(`
         *,
+        items:return_items(*),
         order:orders(
           id, total_price, created_at, status,
           customer:customer_profiles(full_name, phone),

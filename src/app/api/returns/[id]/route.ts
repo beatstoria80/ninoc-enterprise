@@ -57,6 +57,21 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
+    const { admin_notes, dispositions, admin_email } = body;
+
+    // Process dispositions if provided (e.g. when marking as received or completed)
+    if (dispositions && dispositions.length > 0) {
+      const { error: rpcError } = await supabaseAdmin.rpc('process_return_disposition', {
+        p_return_id: id,
+        p_dispositions: dispositions,
+        p_admin_email: admin_email || 'system'
+      });
+      if (rpcError) {
+        console.error('[api/returns/[id]] RPC error:', rpcError);
+        throw rpcError;
+      }
+    }
+
     const { data, error } = await supabaseAdmin
       .from('order_returns')
       .update({
