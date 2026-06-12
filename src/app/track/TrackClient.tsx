@@ -106,6 +106,7 @@ export default function TrackClient() {
       const mockEvent = { preventDefault: () => {} } as React.FormEvent;
       handleTrack(mockEvent, qOrder, qPhone);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   async function handleTrack(e: React.FormEvent, directOrder?: string, directPhone?: string) {

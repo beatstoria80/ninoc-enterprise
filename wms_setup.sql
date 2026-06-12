@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS purchase_orders (
 CREATE TABLE IF NOT EXISTS po_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   po_id UUID REFERENCES purchase_orders(id) ON DELETE CASCADE,
-  variant_id UUID REFERENCES product_variants(id) ON DELETE CASCADE,
+  variant_id UUID REFERENCES variants(id) ON DELETE CASCADE,
   qty_ordered INTEGER NOT NULL DEFAULT 0,
   qty_received INTEGER NOT NULL DEFAULT 0,
   unit_cost DECIMAL(15, 2) NOT NULL DEFAULT 0,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS po_items (
 -- 3. Stock Ledgers (Kartu Mutasi Stok)
 CREATE TABLE IF NOT EXISTS stock_ledgers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  variant_id UUID REFERENCES product_variants(id) ON DELETE CASCADE,
+  variant_id UUID REFERENCES variants(id) ON DELETE CASCADE,
   type VARCHAR(20) NOT NULL, -- 'in_po', 'out_order', 'adj_manual', 'retur'
   qty INTEGER NOT NULL, -- positive for in, negative for out
   reference_id VARCHAR(100), -- e.g., PO number or Order ID
@@ -71,7 +71,7 @@ BEGIN
   WHERE id = p_po_item_id;
 
   -- Update Product Variant stock
-  UPDATE product_variants
+  UPDATE variants
   SET stock_quantity = stock_quantity + p_qty_received
   WHERE id = v_variant_id;
 

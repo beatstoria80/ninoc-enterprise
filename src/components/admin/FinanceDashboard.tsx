@@ -12,10 +12,6 @@ export default function FinanceDashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchFinanceMetrics();
-  }, []);
-
   const fetchFinanceMetrics = async () => {
     try {
       // 1. Get all completed orders (paid, shipped, delivered)
@@ -64,6 +60,11 @@ export default function FinanceDashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchFinanceMetrics();
+  }, []);
 
   if (loading) return <div className="p-12 text-center text-gray-500">Loading Financial Data...</div>;
 

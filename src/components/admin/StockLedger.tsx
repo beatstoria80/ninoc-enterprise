@@ -6,10 +6,6 @@ export default function StockLedger() {
   const [ledgers, setLedgers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchLedgers();
-  }, []);
-
   const fetchLedgers = async () => {
     const { data } = await supabase
       .from('stock_ledgers')
@@ -19,6 +15,11 @@ export default function StockLedger() {
     if (data) setLedgers(data);
     setLoading(false);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchLedgers();
+  }, []);
 
   const getBadgeColor = (type: string) => {
     switch (type) {

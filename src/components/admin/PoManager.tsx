@@ -12,10 +12,6 @@ export default function PoManager({ products }: { products: any[] }) {
   const [expectedDate, setExpectedDate] = useState('');
   const [poItems, setPoItems] = useState<{variant_id: string, qty: number, unit_cost: number}[]>([]);
 
-  useEffect(() => {
-    fetchPos();
-  }, []);
-
   const fetchPos = async () => {
     const { data } = await supabase
       .from('purchase_orders')
@@ -23,6 +19,11 @@ export default function PoManager({ products }: { products: any[] }) {
       .order('created_at', { ascending: false });
     if (data) setPos(data);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchPos();
+  }, []);
 
   const addPoItem = () => {
     setPoItems([...poItems, { variant_id: '', qty: 0, unit_cost: 0 }]);

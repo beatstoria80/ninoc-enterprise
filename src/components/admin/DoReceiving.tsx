@@ -5,10 +5,6 @@ import { supabase } from '@/lib/supabase';
 export default function DoReceiving() {
   const [pos, setPos] = useState<any[]>([]);
 
-  useEffect(() => {
-    fetchPendingPos();
-  }, []);
-
   const fetchPendingPos = async () => {
     // Fetch POs that are not fully received yet
     const { data } = await supabase
@@ -18,6 +14,11 @@ export default function DoReceiving() {
       .order('created_at', { ascending: false });
     if (data) setPos(data);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchPendingPos();
+  }, []);
 
   const handleReceiveItem = async (poId: string, itemId: string, qtyOrdered: number, qtyReceived: number) => {
     const qtyToReceive = prompt(`Enter quantity to receive (Ordered: ${qtyOrdered}, Already Received: ${qtyReceived}):`, String(qtyOrdered - qtyReceived));
