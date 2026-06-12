@@ -8,6 +8,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Invoice } from '@/components/Invoice';
 
+import html2canvas from 'html2canvas';
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -56,6 +58,36 @@ function CopyButton({ text }: { text: string }) {
 
 export default function SuccessContent({ order, courierName, isInvalid }: Props) {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const displayId = order?.order_number ? String(order.order_number).toUpperCase() : String(order?.id || '').toUpperCase();
+
+  const handleDownloadImage = async () => {
+    const element = document.getElementById('responsive-invoice-container');
+    if (!element) return;
+    
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2, // High resolution for mobile zooming
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+      });
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `Invoice_NINOC_${displayId}.png`;
+      link.click();
+    } catch (error) {
+      console.error('Error generating image:', error);
+      alert('Gagal mengunduh gambar invoice. Silakan coba lagi.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (isInvalid || !order) {
     return (
@@ -379,7 +411,9 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
             {/* Invoice Content */}
             <div className="overflow-auto max-h-[70vh] md:max-h-[85vh] w-full bg-ink/[0.02] p-4 md:p-8 flex justify-start md:justify-center">
-              <Invoice order={order as any} />
+              <div id="responsive-invoice-container" className="w-full shrink-0">
+                <Invoice order={order as any} />
+              </div>
             </div>
             
             {/* Scroll Hint for Mobile */}
@@ -388,22 +422,28 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
             </div>
 
             {/* Bottom Actions */}
-            <div className="border-t border-ink/10 p-4 flex gap-3">
+            <div className="border-t border-ink/10 p-4 flex flex-col md:flex-row gap-3">
+              <button
+                onClick={handleDownloadImage}
+                disabled={isDownloading}
+                className="flex-1 bg-ink text-white py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isDownloading ? (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                )}
+                {isDownloading ? 'Menyimpan...' : 'Simpan Gambar (PNG)'}
+              </button>
               <button
                 onClick={() => {
                   setShowInvoiceModal(false);
                   setTimeout(() => window.print(), 300);
                 }}
-                className="flex-1 bg-ink text-white py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors cursor-pointer"
+                className="flex-1 bg-white border border-ink/10 text-ink py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/5 transition-colors cursor-pointer"
               >
                 <Printer size={13} />
                 Cetak / Save PDF
-              </button>
-              <button
-                onClick={() => setShowInvoiceModal(false)}
-                className="flex-1 bg-ink/5 text-ink py-3 text-xs font-medium uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors cursor-pointer"
-              >
-                Tutup
               </button>
             </div>
           </motion.div>
