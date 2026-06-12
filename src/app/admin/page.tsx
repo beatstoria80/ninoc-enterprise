@@ -23,6 +23,10 @@ import { InventoryTab } from '@/components/admin/tabs/InventoryTab';
 import { OrdersTab } from '@/components/admin/tabs/OrdersTab';
 import { LogisticsTab } from '@/components/admin/tabs/LogisticsTab';
 import { FinanceTab } from '@/components/admin/tabs/FinanceTab';
+import PoManager from '@/components/admin/PoManager';
+import DoReceiving from '@/components/admin/DoReceiving';
+import StockLedger from '@/components/admin/StockLedger';
+import FinanceDashboard from '@/components/admin/FinanceDashboard';
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
 import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
@@ -1249,9 +1253,9 @@ export default function AdminDashboard() {
             />
           )}
 
-          {activeTab === 'po' && <POTab />}
-          {activeTab === 'do' && <DOTab />}
-          {activeTab === 'stock_ledger' && <StockLedgerTab />}
+          {activeTab === 'po' && <PoManager products={products} />}
+          {activeTab === 'do' && <DoReceiving />}
+          {activeTab === 'stock_ledger' && <StockLedger />}
 
           {activeTab === 'orders' && (
             <OrdersTab 
@@ -1297,17 +1301,7 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'finance' && (
-            <FinanceTab 
-              finance={finance}
-              products={products}
-              orders={orders}
-              financeTab={financeTab}
-              setFinanceTab={setFinanceTab}
-              productCostings={productCostings}
-              setSelectedProductForCosting={setSelectedProductForCosting}
-              setIsCostingModalOpen={setIsCostingModalOpen}
-              setCostingForm={setCostingForm}
-            />
+            <FinanceDashboard />
           )}
 
           {activeTab === 'messages' && (
