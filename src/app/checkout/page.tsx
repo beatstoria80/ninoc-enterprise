@@ -69,6 +69,7 @@ export default function CheckoutPage() {
   const [paymentToken, setPaymentToken] = useState<string | null>(null);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Promo Code State
   const [promoLoading, setPromoLoading] = useState(false);
@@ -428,6 +429,8 @@ export default function CheckoutPage() {
           embedId: 'snap-container',
           onSuccess: (result: MidtransSnapResult) => {
             console.log('Payment successful:', result);
+            setIsRedirecting(true);
+            setPaymentToken(null); // Close the Midtrans overlay
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);
@@ -917,7 +920,7 @@ export default function CheckoutPage() {
       )}
 
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
-      {paymentToken && (
+      {paymentToken && !isRedirecting && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
           <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto md:h-auto md:min-h-[600px]">
             <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5 bg-ink/[0.02]">
@@ -942,6 +945,24 @@ export default function CheckoutPage() {
             </div>
             {/* Snap Container */}
             <div id="snap-container" className="w-full flex-1 md:h-[600px] overflow-hidden bg-white"></div>
+          </div>
+        </div>
+      )}
+
+      {/* REDIRECTING OVERLAY */}
+      {isRedirecting && (
+        <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-cr/95 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="flex flex-col items-center text-center max-w-sm">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6">
+              <CheckCircle size={24} className="text-emerald-500" />
+            </div>
+            <h2 className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight text-ink mb-2">Payment Confirmed</h2>
+            <p className="text-xs md:text-[10px] text-ink/50 font-medium uppercase tracking-[0.2em] leading-relaxed mb-8">
+              Preparing your transaction receipt...
+            </p>
+            <div className="w-48 h-1 bg-ink/5 overflow-hidden">
+              <div className="h-full bg-rose w-1/2 animate-[slideRight_1s_ease-in-out_infinite]" />
+            </div>
           </div>
         </div>
       )}
