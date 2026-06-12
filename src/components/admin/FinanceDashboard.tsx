@@ -7,6 +7,7 @@ export default function FinanceDashboard() {
     grossRevenue: 0,
     totalHpp: 0,
     totalAffiliateCommissions: 0,
+    totalOpex: 0,
     netProfit: 0,
     pendingSupplierPayments: 0,
   });
@@ -44,13 +45,21 @@ export default function FinanceDashboard() {
         
       const totalAffiliateCommissions = commissions?.reduce((sum, c) => sum + Number(c.amount || 0), 0) || 0;
 
-      // 4. Calculate Net Profit
-      const netProfit = grossRevenue - totalHpp - totalAffiliateCommissions;
+      // 4. Get OPEX (Operational Expenses)
+      const { data: opex } = await supabase
+        .from('operational_expenses')
+        .select('amount');
+        
+      const totalOpex = opex?.reduce((sum, o) => sum + Number(o.amount || 0), 0) || 0;
+
+      // 5. Calculate Net Profit
+      const netProfit = grossRevenue - totalHpp - totalAffiliateCommissions - totalOpex;
 
       setMetrics({
         grossRevenue,
         totalHpp,
         totalAffiliateCommissions,
+        totalOpex,
         netProfit,
         pendingSupplierPayments
       });
@@ -102,8 +111,17 @@ export default function FinanceDashboard() {
           <p className="text-2xl font-bold text-ink">Rp {metrics.totalAffiliateCommissions.toLocaleString('id-ID')}</p>
         </div>
 
-        {/* Net Profit */}
+        {/* Total OPEX */}
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 mb-4 relative z-10">
+            <TrendingUp size={20} className="rotate-180" />
+          </div>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 relative z-10">Total OPEX</p>
+          <p className="text-2xl font-bold text-ink relative z-10">Rp {metrics.totalOpex.toLocaleString('id-ID')}</p>
+        </div>
+
+        {/* Net Profit */}
+        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden md:col-span-2 lg:col-span-1">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <TrendingUp size={64} className="text-rose" />
           </div>
@@ -157,6 +175,21 @@ export default function FinanceDashboard() {
                 <div 
                   className="bg-orange-400 h-2 rounded-full" 
                   style={{ width: `${metrics.grossRevenue > 0 ? Math.round((metrics.totalHpp / metrics.grossRevenue) * 100) : 0}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="font-medium text-gray-500">OPEX Ratio</span>
+                <span className="font-bold text-ink">
+                  {metrics.grossRevenue > 0 ? Math.round((metrics.totalOpex / metrics.grossRevenue) * 100) : 0}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2">
+                <div 
+                  className="bg-purple-400 h-2 rounded-full" 
+                  style={{ width: `${metrics.grossRevenue > 0 ? Math.round((metrics.totalOpex / metrics.grossRevenue) * 100) : 0}%` }}
                 ></div>
               </div>
             </div>

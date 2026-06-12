@@ -1360,7 +1360,8 @@ body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif
                activeTab === 'finance' ? 'Finance' :
                activeTab === 'opex' ? 'Opex Tracker' :
                activeTab === 'messages' ? 'Support Chat' :
-               activeTab === 'placeholders' || activeTab === 'wabroadcast' ? 'Placeholder / WA Broadcast' :
+               activeTab === 'placeholders' ? 'Placeholder' :
+               activeTab === 'wabroadcast' ? 'WA Broadcast' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
