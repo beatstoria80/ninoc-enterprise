@@ -436,6 +436,15 @@ export default function CheckoutPage() {
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);
             router.push(`/payment/success?${params.toString()}`);
           },
+          onPending: (result: MidtransSnapResult) => {
+            console.log('Payment pending:', result);
+            setIsRedirecting(true);
+            setPaymentToken(null);
+            const params = new URLSearchParams({ courier: shippingMethod });
+            if (createdOrderId) params.set('order_id', createdOrderId);
+            if (createdOrderNumber) params.set('order_number', createdOrderNumber);
+            router.push(`/payment/success?${params.toString()}`);
+          },
           onError: (err: unknown) => {
             console.error('Midtrans payment error:', err);
             setIsProcessing(false);
@@ -444,7 +453,8 @@ export default function CheckoutPage() {
           },
           onClose: () => {
             console.log('Payment popup closed by user');
-            // If they close the snap iframe inside the embed (sometimes possible), we just clean up
+            setPaymentToken(null);
+            setIsProcessing(false);
           }
         });
       }
