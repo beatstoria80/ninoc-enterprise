@@ -106,7 +106,6 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     );
   }
 
-  const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
   const invoiceId = `NCO-${order.id.slice(0, 8).toUpperCase()}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const tax = Math.round(sub * 0.11);
