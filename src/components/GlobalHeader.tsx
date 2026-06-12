@@ -424,15 +424,15 @@ export default function GlobalHeader() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: DURATION.slow, ease: EASING.out }}
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] px-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
+            "fixed top-0 inset-x-0 z-[150] pl-2 pr-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
             isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
           )}
         >
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-1.5 md:gap-6">
             {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
-            className={cn("transition-colors cursor-pointer p-2 -m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-rose")}
+            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-rose")}
           >
             <MoreVertical size={24} strokeWidth={1.5} />
           </PressScale>
