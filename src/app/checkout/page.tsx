@@ -81,6 +81,9 @@ export default function CheckoutPage() {
   const [dynamicShippingOptions, setDynamicShippingOptions] = useState<any[]>([]);
   const [loadingShipping, setLoadingShipping] = useState<boolean>(false);
 
+  // Email Check State
+  const [emailCheckStatus, setEmailCheckStatus] = useState<'idle' | 'checking' | 'registered' | 'unregistered'>('idle');
+
   // Platform detection for mobile-specific UI
   const { isMobile, isIPhone } = useDevice();
 
@@ -139,6 +142,48 @@ export default function CheckoutPage() {
   const [villages, setVillages] = useState<LocationItem[]>([]);
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
+
+  // Watch Email for validation
+  useEffect(() => {
+    if (!formData.email) {
+      setEmailCheckStatus('idle');
+      return;
+    }
+    
+    // Simple email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setEmailCheckStatus('idle');
+      return;
+    }
+
+    // Don't check if user is already logged in with this email
+    if (userId) {
+      setEmailCheckStatus('idle');
+      return;
+    }
+
+    setEmailCheckStatus('checking');
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setEmailCheckStatus(data.isRegistered ? 'registered' : 'unregistered');
+        } else {
+          setEmailCheckStatus('idle');
+        }
+      } catch (err) {
+        setEmailCheckStatus('idle');
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.email, userId]);
 
   // Fetch Provinces on mount
   useEffect(() => {
@@ -634,9 +679,12 @@ export default function CheckoutPage() {
                   <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
                   <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-sm md:text-[11px] font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
                 </div>
-                <div className={cn("bg-white border-t border-ink/40", isMobile ? "p-2.5" : "p-4")}>
-                  <label htmlFor="email" className={labelClass}>Email</label>
-                  <input id="email" required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-sm md:text-[11px] font-medium tracking-normal text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
+                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
+                  <label htmlFor="email" className={labelClass}>Email (Opsional)</label>
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-sm md:text-[11px] font-medium tracking-normal text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="your@email.com" />
+                  {emailCheckStatus === 'checking' && <p className="text-[9px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
+                  {emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
+                  {emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>

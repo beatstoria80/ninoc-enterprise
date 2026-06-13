@@ -156,7 +156,7 @@ export async function POST(req: Request) {
       customer_details: {
         first_name: firstName,
         last_name: lastName,
-        email: customerDetails.email || '',
+        ...(customerDetails.email ? { email: customerDetails.email } : {}),
         phone: customerDetails.phone || '',
         billing_address: {
           first_name: firstName,
@@ -168,7 +168,7 @@ export async function POST(req: Request) {
         shipping_address: {
           first_name: firstName,
           last_name: lastName,
-          email: customerDetails.email || '',
+          ...(customerDetails.email ? { email: customerDetails.email } : {}),
           phone: customerDetails.phone || '',
           address: customerDetails.address || '',
           city: customerDetails.city || '',
