@@ -77,10 +77,33 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
       });
       
       const dataUrl = canvas.toDataURL('image/png');
+      
+      try {
+        // Coba gunakan Web Share API (sangat membantu untuk HP/Mobile Safari/Chrome)
+        // Agar pengguna bisa langsung "Save Image" atau "Share to WhatsApp"
+        if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          const file = new File([blob], `Invoice_NINOC_${displayId}.png`, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `Invoice NINOC ${displayId}`
+            });
+            return; // Sukses via Web Share
+          }
+        }
+      } catch (shareError) {
+        console.error('Web Share API gagal, fallback ke download biasa', shareError);
+      }
+
+      // Fallback download standar (harus di-append ke body agar bekerja di beberapa browser)
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `Invoice_NINOC_${displayId}.png`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating image:', error);
       alert('Gagal mengunduh gambar invoice. Silakan coba lagi.');

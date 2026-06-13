@@ -45,6 +45,15 @@ function PaymentStatusBadge({ status }: { status: string }) {
 // ─── RESPONSIVE WEB INVOICE (FOR PC & MOBILE SCREENS) ───────────────────────
 
 export function Invoice({ order }: InvoiceProps) {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const subtotal = order.order_items?.reduce((s, i) => s + i.price_at_purchase * i.quantity, 0) || 0;
   const shippingCost = 0; // Override if shipping data exists
   const discount = 0;
@@ -59,15 +68,15 @@ export function Invoice({ order }: InvoiceProps) {
       
       {/* HEADER */}
       <div className="flex flex-col md:flex-row border-b-4 border-ink">
-        <div className="flex-1 bg-ink text-white p-6 md:p-10 flex flex-col justify-center">
+        <div className="flex-1 bg-ink text-white p-4 md:p-10 flex flex-col justify-center">
           <span className="text-4xl md:text-5xl font-black tracking-tighter leading-none">NINOC</span>
           <span className="text-[10px] md:text-xs font-bold tracking-[0.4em] opacity-70 mt-1">STUDIO</span>
-          <span className="text-[10px] opacity-50 mt-4 tracking-widest">Bandung, Jawa Barat — Indonesia</span>
+          <span className="text-[10px] opacity-50 mt-2 md:mt-4 tracking-widest">Bandung, Jawa Barat — Indonesia</span>
         </div>
-        <div className="flex-1 p-6 md:p-10 flex flex-col justify-center items-start md:items-end bg-ink/[0.02]">
+        <div className="flex-1 p-4 md:p-10 flex flex-col justify-center items-start md:items-end bg-ink/[0.02]">
           <span className="text-2xl md:text-3xl font-black tracking-widest text-ink">INVOICE</span>
           <span className="text-xs md:text-sm font-bold tracking-[0.1em] font-mono text-ink/60 mt-1">{orderNumber}</span>
-          <div className="flex flex-row md:flex-col gap-6 md:gap-2 mt-6">
+          <div className="flex flex-row md:flex-col gap-3 md:gap-2 mt-3 md:mt-6">
             <div className="flex flex-col items-start md:items-end">
               <span className="text-[9px] md:text-[10px] text-ink/40 tracking-[0.2em] uppercase font-bold">Tanggal</span>
               <span className="text-xs md:text-sm font-bold text-ink">{formatDate(order.created_at)}</span>
@@ -82,16 +91,16 @@ export function Invoice({ order }: InvoiceProps) {
 
       {/* FROM / TO */}
       <div className="flex flex-col sm:flex-row border-b border-ink/10">
-        <div className="flex-1 p-6 md:p-8 border-b sm:border-b-0 sm:border-r border-ink/10">
+        <div className="flex-1 p-3 md:p-8 border-b sm:border-b-0 sm:border-r border-ink/10">
           <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase">Pengirim / From</span>
-          <div className="mt-3 flex flex-col gap-1 text-xs md:text-sm leading-relaxed">
+          <div className="mt-1 md:mt-3 flex flex-col text-[10px] md:text-sm leading-snug md:leading-relaxed">
             <span className="font-bold text-ink">NINOC STUDIO</span>
             <span className="text-ink/60">Bandung, Jawa Barat<br/>Indonesia<br/>hello@ninoc.store</span>
           </div>
         </div>
-        <div className="flex-1 p-6 md:p-8">
+        <div className="flex-1 p-3 md:p-8">
           <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase">Penerima / To</span>
-          <div className="mt-3 flex flex-col gap-1 text-xs md:text-sm leading-relaxed">
+          <div className="mt-1 md:mt-3 flex flex-col text-[10px] md:text-sm leading-snug md:leading-relaxed">
             <span className="font-bold text-ink">{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
             <span className="text-ink/60">
               {order.shipping_address?.phone || '-'}<br/>
@@ -115,16 +124,16 @@ export function Invoice({ order }: InvoiceProps) {
           {order.order_items?.map((item, idx) => {
             const itemSubtotal = item.price_at_purchase * item.quantity;
             return (
-              <div key={item.id} className={`flex flex-col sm:flex-row sm:items-center px-6 md:px-8 py-4 sm:py-5 gap-3 sm:gap-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-ink/[0.02]'}`}>
+              <div key={item.id} className={`flex flex-col sm:flex-row sm:items-center px-3 md:px-8 py-2 sm:py-5 gap-1.5 sm:gap-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-ink/[0.02]'}`}>
                 {/* Mobile: Row Layout for Item Details */}
                 <div className="flex-[3] flex flex-col">
-                  <span className="text-xs md:text-sm font-bold text-ink uppercase tracking-wider">{item.product_name?.toUpperCase() || 'PRODUK'}</span>
-                  {item.size && <span className="text-[10px] md:text-xs text-ink/50 mt-1">Ukuran: {item.size}</span>}
+                  <span className="text-[11px] md:text-sm font-bold text-ink uppercase tracking-wider leading-none">{item.product_name?.toUpperCase() || 'PRODUK'}</span>
+                  {item.size && <span className="text-[9px] md:text-xs text-ink/50 mt-0.5">Ukuran: {item.size}</span>}
                   
                   {/* Mobile Only Details */}
-                  <div className="sm:hidden flex items-center justify-between mt-3 text-xs">
-                    <span className="font-bold">x{item.quantity}</span>
-                    <span className="text-ink/60">{formatCurrency(item.price_at_purchase)}</span>
+                  <div className="sm:hidden flex items-center justify-between mt-1.5 text-xs">
+                    <span className="font-bold text-[10px]">x{item.quantity}</span>
+                    <span className="text-ink/60 text-[10px]">{formatCurrency(item.price_at_purchase)}</span>
                   </div>
                 </div>
                 
@@ -133,9 +142,9 @@ export function Invoice({ order }: InvoiceProps) {
                 <div className="hidden sm:block flex-[1.5] text-right text-xs md:text-sm font-semibold text-ink/70">{formatCurrency(item.price_at_purchase)}</div>
                 
                 {/* Subtotal (Both) */}
-                <div className="flex-[1.5] flex justify-between sm:block text-right border-t border-ink/5 sm:border-0 pt-3 sm:pt-0 mt-1 sm:mt-0">
-                  <span className="sm:hidden text-xs font-bold text-ink/50 uppercase tracking-widest">Subtotal</span>
-                  <span className="text-sm font-bold text-ink">{formatCurrency(itemSubtotal)}</span>
+                <div className="flex-[1.5] flex justify-between sm:block text-right border-t border-ink/5 sm:border-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0">
+                  <span className="sm:hidden text-[9px] font-bold text-ink/50 uppercase tracking-widest">Subtotal</span>
+                  <span className="text-[11px] md:text-sm font-bold text-ink">{formatCurrency(itemSubtotal)}</span>
                 </div>
               </div>
             );
@@ -145,75 +154,75 @@ export function Invoice({ order }: InvoiceProps) {
 
       {/* TOTALS */}
       <div className="flex flex-col sm:flex-row border-b border-ink/10">
-        <div className="flex-1 p-6 md:p-8 border-b sm:border-b-0 sm:border-r border-ink/10 bg-ink/[0.01]">
-          <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase block mb-3">Metode Pembayaran</span>
-          <span className="text-xs md:text-sm font-bold text-ink tracking-widest">
+        <div className="flex-1 p-3 md:p-8 border-b sm:border-b-0 sm:border-r border-ink/10 bg-ink/[0.01]">
+          <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase block mb-1 md:mb-3">Metode Pembayaran</span>
+          <span className="text-[10px] md:text-sm font-bold text-ink tracking-widest">
             {order.payment_status === 'success' ? 'VIRTUAL ACCOUNT' : 'MIDTRANS'}
           </span>
         </div>
         <div className="w-full sm:w-[320px]">
-          <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5">
-            <span className="text-xs text-ink/60 font-medium">Subtotal</span>
-            <span className="text-xs md:text-sm font-bold text-ink">{formatCurrency(subtotal)}</span>
+          <div className="flex justify-between items-center p-2 md:p-5 border-b border-ink/5">
+            <span className="text-[10px] md:text-xs text-ink/60 font-medium">Subtotal</span>
+            <span className="text-[10px] md:text-sm font-bold text-ink">{formatCurrency(subtotal)}</span>
           </div>
-          <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5">
-            <span className="text-xs text-ink/60 font-medium">Ongkos Kirim</span>
-            <span className="text-xs md:text-sm font-bold text-ink">{formatCurrency(shippingCost)}</span>
+          <div className="flex justify-between items-center p-2 md:p-5 border-b border-ink/5">
+            <span className="text-[10px] md:text-xs text-ink/60 font-medium">Ongkos Kirim</span>
+            <span className="text-[10px] md:text-sm font-bold text-ink">{formatCurrency(shippingCost)}</span>
           </div>
           {discount > 0 && (
-            <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5">
-              <span className="text-xs text-emerald-600 font-medium">Diskon</span>
-              <span className="text-xs md:text-sm font-bold text-emerald-600">-{formatCurrency(discount)}</span>
+            <div className="flex justify-between items-center p-2 md:p-5 border-b border-ink/5">
+              <span className="text-[10px] md:text-xs text-emerald-600 font-medium">Diskon</span>
+              <span className="text-[10px] md:text-sm font-bold text-emerald-600">-{formatCurrency(discount)}</span>
             </div>
           )}
-          <div className="flex justify-between items-center p-5 md:p-6 bg-ink text-white">
-            <span className="text-xs md:text-sm font-bold tracking-[0.1em] uppercase">Total</span>
-            <span className="text-lg md:text-xl font-black tracking-wide">{formatCurrency(total)}</span>
+          <div className="flex justify-between items-center p-3 md:p-6 bg-ink text-white">
+            <span className="text-[11px] md:text-sm font-bold tracking-[0.1em] uppercase">Total</span>
+            <span className="text-base md:text-xl font-black tracking-wide">{formatCurrency(total)}</span>
           </div>
         </div>
       </div>
 
       {/* PAYMENT INFO + QR */}
       <div className="flex flex-col sm:flex-row border-b border-ink/10 bg-white">
-        <div className="flex-[2] p-6 md:p-8 sm:border-r border-ink/10">
-          <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase block mb-4">Status & Detail Pembayaran</span>
-          <div className="flex flex-col items-start gap-4">
+        <div className="flex-[2] p-3 md:p-8 sm:border-r border-ink/10">
+          <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase block mb-2 md:mb-4">Status & Detail Pembayaran</span>
+          <div className="flex flex-col items-start gap-2 md:gap-4">
             <PaymentStatusBadge status={order.payment_status} />
             
             {(order.midtrans_id || order.snap_token) && (
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mt-1 md:mt-2">
                 {order.midtrans_id && (
                   <div>
-                    <span className="text-[8px] md:text-[9px] font-bold text-ink/40 uppercase tracking-[0.15em] block mb-1">Midtrans ID</span>
-                    <span className="text-xs font-mono font-semibold text-ink/80 break-all">{order.midtrans_id}</span>
+                    <span className="text-[8px] md:text-[9px] font-bold text-ink/40 uppercase tracking-[0.15em] block mb-0.5 md:mb-1">Midtrans ID</span>
+                    <span className="text-[10px] md:text-xs font-mono font-semibold text-ink/80 break-all">{order.midtrans_id}</span>
                   </div>
                 )}
                 {order.snap_token && (
                   <div>
-                    <span className="text-[8px] md:text-[9px] font-bold text-ink/40 uppercase tracking-[0.15em] block mb-1">Snap Token</span>
-                    <span className="text-xs font-mono font-semibold text-ink/80 break-all">{order.snap_token.slice(0, 16)}...</span>
+                    <span className="text-[8px] md:text-[9px] font-bold text-ink/40 uppercase tracking-[0.15em] block mb-0.5 md:mb-1">Snap Token</span>
+                    <span className="text-[10px] md:text-xs font-mono font-semibold text-ink/80 break-all">{order.snap_token.slice(0, 16)}...</span>
                   </div>
                 )}
               </div>
             )}
           </div>
         </div>
-        <div className="flex-1 p-6 md:p-8 flex flex-col items-center justify-center gap-3 bg-ink/[0.02]">
-          <div className="bg-white p-3 border border-ink/10 shadow-sm rounded-lg">
-            <QRCodeCanvas value={order.id.toUpperCase()} size={160} level="M" />
+        <div className="flex-1 p-3 md:p-8 flex flex-col items-center justify-center gap-1.5 md:gap-3 bg-ink/[0.02]">
+          <div className="bg-white p-2 md:p-3 border border-ink/10 shadow-sm rounded-lg">
+            <QRCodeCanvas value={order.id.toUpperCase()} size={isMobile ? 100 : 160} level="M" />
           </div>
-          <span className="text-[8px] font-bold tracking-[0.25em] text-ink/40 text-center uppercase">Scan untuk verifikasi</span>
-          <span className="text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</span>
+          <span className="text-[7px] md:text-[8px] font-bold tracking-[0.25em] text-ink/40 text-center uppercase mt-1">Scan untuk verifikasi</span>
+          <span className="text-[8px] md:text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</span>
         </div>
       </div>
 
       {/* FOOTER */}
-      <div className="p-4 md:p-6 bg-ink/[0.03] flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] md:text-[10px] font-bold tracking-[0.15em] text-ink/50">NINOC STUDIO — BANDUNG, JAWA BARAT</span>
-          <span className="text-[9px] md:text-[10px] text-ink/40">hello@ninoc.store • www.ninoc.store</span>
+      <div className="p-3 md:p-6 bg-ink/[0.03] flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-center md:text-left">
+        <div className="flex flex-col gap-0.5 md:gap-1">
+          <span className="text-[8px] md:text-[10px] font-bold tracking-[0.15em] text-ink/50">NINOC STUDIO — BANDUNG, JAWA BARAT</span>
+          <span className="text-[8px] md:text-[10px] text-ink/40">hello@ninoc.store • www.ninoc.store</span>
         </div>
-        <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/30 uppercase">
+        <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-ink/30 uppercase">
           INVOICE — {orderNumber}
         </span>
       </div>

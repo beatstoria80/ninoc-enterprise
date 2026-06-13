@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS defect_inventory (
 
 -- Enable RLS
 ALTER TABLE defect_inventory ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all access for authenticated users" ON defect_inventory;
 CREATE POLICY "Enable all access for authenticated users" ON defect_inventory FOR ALL USING (true);
 
 
