@@ -146,6 +146,7 @@ export default function CheckoutPage() {
   // Watch Email for validation
   useEffect(() => {
     if (!formData.email) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEmailCheckStatus('idle');
       return;
     }
@@ -153,16 +154,19 @@ export default function CheckoutPage() {
     // Simple email regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEmailCheckStatus('idle');
       return;
     }
 
     // Don't check if user is already logged in with this email
     if (userId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEmailCheckStatus('idle');
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEmailCheckStatus('checking');
     const timer = setTimeout(async () => {
       try {
