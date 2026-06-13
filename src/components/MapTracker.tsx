@@ -64,6 +64,7 @@ interface Props {
   destinationCity?: string;
   status?: string;
   logs?: TrackingLog[];
+  className?: string;
 }
 
 // MapUpdater safely uses the Leaflet map instance to animate pan/zoom
@@ -78,7 +79,7 @@ function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-export default function MapTracker({ destinationCity, status, logs = [] }: Props) {
+export default function MapTracker({ destinationCity, status, logs = [], className }: Props) {
   const [destCoords, setDestCoords] = useState<[number, number] | null>(null);
   const [currentCoords, setCurrentCoords] = useState<[number, number]>(ORIGIN_COORDS);
 
@@ -180,7 +181,7 @@ export default function MapTracker({ destinationCity, status, logs = [] }: Props
   const linePositions = destCoords ? [ORIGIN_COORDS, destCoords] : [ORIGIN_COORDS];
 
   return (
-    <div className="w-full h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0">
+    <div className={className || "w-full h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
       <MapContainer 
         center={currentCoords} 
         zoom={14} 

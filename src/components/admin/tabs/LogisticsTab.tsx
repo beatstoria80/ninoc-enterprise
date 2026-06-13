@@ -4,6 +4,7 @@ import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircl
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 import { supabase } from '@/lib/supabase';
+import MapTracker from '@/components/MapTracker';
 
 export function LogisticsTab({
   orders,
@@ -378,70 +379,11 @@ export function LogisticsTab({
 
                 {/* 4. Map Visualization */}
                 <div className="relative w-full h-[180px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-1">
-                  <svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 600 300">
-                    {/* Map background pattern to simulate streets */}
-                    <g stroke="#ffffff" strokeWidth="8" strokeLinecap="round">
-                      <path d="M-50,50 L650,250 M-50,150 L650,350 M-50,-50 L650,150" opacity="0.8" />
-                      <path d="M100,-50 L-50,350 M300,-50 L150,350 M500,-50 L350,350" opacity="0.8" />
-                      <path d="M200,0 L200,300 M450,0 L450,300" strokeWidth="12" opacity="0.6" />
-                    </g>
-                    
-                    {/* Compass UI (Timur / Barat orientation) */}
-                    <g transform="translate(40, 40)">
-                      <circle cx="0" cy="0" r="20" fill="white" stroke="#e2e8f0" strokeWidth="2" opacity="0.9" />
-                      <path d="M0,-14 L5,-3 L0,-5 L-5,-3 Z" fill="#E8527A" />
-                      <path d="M0,14 L5,3 L0,5 L-5,3 Z" fill="#94a3b8" />
-                      <text x="0" y="-17" fill="#64748b" fontSize="10" fontWeight="bold" textAnchor="middle">N</text>
-                      <text x="0" y="24" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">S</text>
-                      <text x="-18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">W</text>
-                      <text x="18" y="3" fill="#64748b" fontSize="8" fontWeight="bold" textAnchor="middle">E</text>
-                    </g>
-
-                    {/* City Labels */}
-                    <text x="450" y="80" fill="#cbd5e1" fontSize="16" fontWeight="bold" letterSpacing="2" opacity="0.7">ORIGIN SENDER</text>
-                    <text x="80" y="220" fill="#cbd5e1" fontSize="14" fontWeight="bold" letterSpacing="1" opacity="0.7">DESTINATION</text>
-
-                    {/* Route Path */}
-                    {(() => {
-                      const isDelivered = logisticsSelectedOrder.status === 'delivered';
-                      const isShipped = logisticsSelectedOrder.status === 'shipped';
-                      const pathStr = "M420,100 Q300,180 120,200";
-                      
-                      return (
-                        <>
-                          <path d={pathStr} fill="none" stroke="#E8527A" strokeWidth="4" />
-                          
-                          {/* Origin Dot */}
-                          <circle cx="420" cy="100" r="6" fill="#141414" stroke="#ffffff" strokeWidth="3" />
-                          
-                          {/* Animated Truck/Pulse Icon */}
-                          {(isShipped || isDelivered) && (
-                            <motion.g
-                              initial={{ offsetDistance: isDelivered ? '100%' : '0%' }}
-                              animate={{ offsetDistance: isDelivered ? '100%' : '75%' }}
-                              transition={{ duration: 5, ease: 'easeInOut' }}
-                              style={{ offsetPath: `path('${pathStr}')`, offsetRotate: '0deg' }}
-                            >
-                              <circle r="18" fill="rgba(232, 82, 122, 0.2)" />
-                              <circle r="12" fill="#E8527A" />
-                              {/* Truck flipped horizontally so it faces Left without being upside down */}
-                              <g transform="scale(-1, 1) translate(0, 0)">
-                                <svg x="-6" y="-6" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <rect x="1" y="3" width="15" height="13" />
-                                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                  <circle cx="5.5" cy="18.5" r="2.5" />
-                                  <circle cx="18.5" cy="18.5" r="2.5" />
-                                </svg>
-                              </g>
-                            </motion.g>
-                          )}
-
-                          {/* Destination Dot */}
-                          <circle cx="120" cy="200" r="6" fill="#E8527A" stroke="#ffffff" strokeWidth="3" />
-                        </>
-                      );
-                    })()}
-                  </svg>
+                  <MapTracker 
+                    destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
+                    status={logisticsSelectedOrder.status} 
+                    className="w-full h-full relative z-0"
+                  />
                 </div>
 
                 {/* 5. Timeline */}
