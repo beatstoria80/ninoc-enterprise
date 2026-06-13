@@ -33,6 +33,15 @@ export async function GET(request: Request) {
 
     // 2. Handle Order Tracking
     if (orderNumber && phone) {
+      // Clean order number (remove # if user typed it)
+      const cleanOrderNumber = orderNumber.replace(/^#/, '').trim();
+      
+      // Since order_number is an integer in DB, only query it if input is numeric
+      const isNumeric = /^\d+$/.test(cleanOrderNumber);
+      const orQuery = isNumeric 
+        ? `order_number.eq.${cleanOrderNumber},id.eq.${cleanOrderNumber}`
+        : `id.eq.${cleanOrderNumber}`;
+
       // Find order by order_number or id
       const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -48,10 +57,11 @@ export async function GET(request: Request) {
           customer_name,
           shipping_address
         `)
-        .or(`order_number.eq.${orderNumber},id.eq.${orderNumber}`)
+        .or(orQuery)
         .single();
 
       if (orderError || !order) {
+        console.error('Order query error:', orderError);
         return NextResponse.json({ error: 'Pesanan tidak ditemukan' }, { status: 404 });
       }
 
