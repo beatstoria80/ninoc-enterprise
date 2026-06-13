@@ -5,6 +5,16 @@ import { useSearchParams } from 'next/navigation';
 import Link from '@/components/LocalizedLink';
 import Footer from '@/components/Footer';
 import { X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const MapTracker = dynamic(() => import('@/components/MapTracker'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full min-h-[300px] md:min-h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
+      Initializing Live Map...
+    </div>
+  )
+});
 
 interface OrderItem {
   id: string;
@@ -200,6 +210,14 @@ export default function TrackClient() {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="pt-4 pb-2">
+              <MapTracker 
+                destinationCity={order.shipping_address?.city} 
+                status={order.status}
+                latestLocation={order.logs.length > 0 ? (order.logs[0].location || order.logs[0].description || undefined) : undefined} 
+              />
             </div>
 
             {order.logs.length > 0 && (
