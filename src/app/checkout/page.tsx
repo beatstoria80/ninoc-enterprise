@@ -148,10 +148,13 @@ export default function CheckoutPage() {
         const res = await fetch('/api/location/provinces');
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-        setProvinces(data && data.length > 0 ? data : FALLBACK_PROVINCES);
+        const sortedData = data && data.length > 0 ? data : FALLBACK_PROVINCES;
+        sortedData.sort((a: LocationItem, b: LocationItem) => a.name.localeCompare(b.name));
+        setProvinces(sortedData);
       } catch (e) {
         console.error("Province fetch failed:", e);
-        setProvinces(FALLBACK_PROVINCES);
+        const sortedFallback = [...FALLBACK_PROVINCES].sort((a, b) => a.name.localeCompare(b.name));
+        setProvinces(sortedFallback);
       }
       setLoadingLoc(prev => ({ ...prev, p: false }));
     };
@@ -173,8 +176,9 @@ export default function CheckoutPage() {
       const res = await fetch(`/api/location/regencies?province_id=${province.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setCities(Array.isArray(data) ? data : []);
-      return data;
+      const sortedData = Array.isArray(data) ? data.sort((a: LocationItem, b: LocationItem) => a.name.localeCompare(b.name)) : [];
+      setCities(sortedData);
+      return sortedData;
     } catch (e) {
       console.error('[fetchCities] Fetch failed:', e);
       return null;
@@ -198,8 +202,9 @@ export default function CheckoutPage() {
       const res = await fetch(`/api/location/districts?city_id=${city.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setDistricts(Array.isArray(data) ? data : []);
-      return data;
+      const sortedData = Array.isArray(data) ? data.sort((a: LocationItem, b: LocationItem) => a.name.localeCompare(b.name)) : [];
+      setDistricts(sortedData);
+      return sortedData;
     } catch (e) {
       console.error('[fetchDistricts] Fetch failed:', e);
       return null;
@@ -223,8 +228,9 @@ export default function CheckoutPage() {
       const res = await fetch(`/api/location/villages?district_id=${district.id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setVillages(Array.isArray(data) ? data : []);
-      return data;
+      const sortedData = Array.isArray(data) ? data.sort((a: LocationItem, b: LocationItem) => a.name.localeCompare(b.name)) : [];
+      setVillages(sortedData);
+      return sortedData;
     } catch (e) {
       console.error('[fetchVillages] Fetch failed:', e);
       return null;
