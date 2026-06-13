@@ -114,7 +114,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-4 md:px-6 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 py-6 md:py-0 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -123,20 +123,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-12 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
-          <div className="lg:col-span-3 flex flex-col space-y-4 order-1">
-            <div className="space-y-4">
-              <h1 className="text-xl md:text-3xl font-display font-medium italic text-ink tracking-tighter flex items-center gap-3">
+          <div className="lg:col-span-3 flex flex-col space-y-2 md:space-y-4 order-1">
+            <div className="space-y-1 md:space-y-4">
+              <h1 className="text-lg md:text-3xl font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
                 Payment Successful.
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", damping: 10, stiffness: 100 }}
-                  className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
+                  className="w-5 h-5 md:w-6 md:h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
                 >
-                  <CheckCircle size={14} />
+                  <CheckCircle size={12} />
                 </motion.div>
               </h1>
-              <p className="text-[11px] md:text-sm text-ink/50 font-medium uppercase tracking-wider leading-snug max-w-sm">
+              <p className="text-[11px] md:text-sm text-ink/40 font-medium leading-tight">
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
@@ -147,20 +147,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               transition={{ delay: 1 }}
               className="hidden lg:flex flex-col space-y-4 pt-8 border-t border-ink/5"
             >
-              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[11px] md:text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
                 Continue Collecting
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
                 <FileText size={14} />
                 View Full Invoice
               </button>
-              <button onClick={() => window.print()} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
+              <button onClick={() => window.print()} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-widest text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
                 <Printer size={14} />
                 Save as PDF
               </button>
               <div className="text-center pt-2">
-                <Link href="/" className="inline-block px-8 py-3 text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+                <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                   Return to Atelier
                 </Link>
               </div>
@@ -175,140 +175,140 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               transition={{ delay: 0.5 }}
               className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
             >
-              <div className="px-3 md:px-8 py-2 md:py-5 border-b border-ink/5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-ink/[0.03] flex items-center justify-center">
-                    <Printer size={14} className="text-ink/40" />
+              {/* Receipt Header */}
+              <div className="px-4 md:px-8 py-3 md:py-5 border-b border-ink/5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 md:w-8 md:h-8 bg-ink/[0.03] flex items-center justify-center">
+                    <Printer size={13} className="text-ink/40" />
                   </div>
                   <div>
-                    <h3 className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink">Transaction Receipt</h3>
-                    <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mt-0.5">{displayId}</p>
+                    <h3 className="text-xs md:text-sm font-semibold text-ink leading-none">Transaction Receipt</h3>
+                    <p className="text-[10px] font-mono text-ink/50 mt-0.5">{displayId}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60">
-                    {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </p>
-                </div>
+                <p className="text-[10px] font-medium text-ink/40">
+                  {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </p>
               </div>
 
-              {/* ─── Invoice & Payment IDs ─── */}
-              <div className="px-3 md:px-8 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
-                <div className="grid grid-cols-2 gap-3">
+              {/* Invoice & Payment IDs */}
+              <div className="px-4 md:px-8 py-2.5 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Invoice ID</p>
+                    <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-0.5">Invoice</p>
                     <div className="flex items-center">
-                      <p className="text-[11px] md:text-xs font-mono font-semibold text-ink">{invoiceId}</p>
+                      <p className="text-[11px] font-mono font-semibold text-ink">{invoiceId}</p>
                       <CopyButton text={invoiceId} />
                     </div>
                   </div>
                   <div>
-                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Order No</p>
+                    <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-0.5">Order</p>
                     <div className="flex items-center">
-                      <p className="text-[11px] md:text-xs font-mono font-semibold text-ink">#{displayId}</p>
+                      <p className="text-[11px] font-mono font-semibold text-ink">#{displayId}</p>
                       <CopyButton text={displayId} />
                     </div>
                   </div>
                 </div>
                 {order.midtrans_id && (
                   <div className="mt-2 pt-2 border-t border-ink/5">
-                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Midtrans Transaction ID</p>
+                    <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-0.5">Midtrans ID</p>
                     <div className="flex items-center">
-                      <p className="text-[10px] md:text-xs font-mono font-semibold text-ink/70 break-all">{order.midtrans_id}</p>
+                      <p className="text-[10px] font-mono font-medium text-ink/60 break-all">{order.midtrans_id}</p>
                       <CopyButton text={order.midtrans_id} />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="px-3 md:px-8 py-2 md:py-4 border-b border-ink/5">
-                <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-2">Purchased Items</p>
-                <div className="space-y-3">
+              {/* Purchased Items */}
+              <div className="px-4 md:px-8 py-3 md:py-4 border-b border-ink/5">
+                <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-2">Items</p>
+                <div className="space-y-2">
                   {order.order_items?.map((item: OrderItem) => (
-                    <div key={item.id} className="flex items-center justify-between">
+                    <div key={item.id} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
-                        <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}</p>
+                        <p className="text-[11px] md:text-sm font-semibold text-ink truncate leading-tight">{item.product_name}</p>
+                        <p className="text-[10px] text-ink/40 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · ×{item.quantity}</p>
                       </div>
-                      <p className="text-[11px] md:text-sm font-mono font-medium text-ink ml-4 shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
+                      <p className="text-[11px] md:text-sm font-mono font-semibold text-ink shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="px-3 md:px-8 py-2 md:py-4 space-y-1.5 md:space-y-2">
-                <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-2">Financial Breakdown</p>
+              {/* Financial Breakdown */}
+              <div className="px-4 md:px-8 py-3 md:py-4 space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Subtotal</span>
-                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[10px] text-ink/50">Subtotal</span>
+                  <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Logistics ({courierName})</span>
-                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[10px] text-ink/50">Logistics ({courierName})</span>
+                  <span className="text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Platform Fee</span>
-                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">+ IDR 2.500</span>
+                  <span className="text-[10px] text-ink/50">Platform Fee</span>
+                  <span className="text-[11px] font-mono font-medium text-ink">+ IDR 2.500</span>
                 </div>
-                <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
-                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/80">Total</span>
-                  <span className="text-lg font-display font-medium italic text-rose">IDR {order.total_price.toLocaleString('id-ID')}</span>
+                <div className="flex justify-between items-center pt-2 mt-1 border-t border-ink/10">
+                  <span className="text-[11px] font-semibold text-ink">Total</span>
+                  <span className="text-base md:text-lg font-display font-semibold italic text-rose">IDR {order.total_price.toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
+              {/* Shipping Address */}
               {order.shipping_address && (
-                <div className="px-3 md:px-8 py-2 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
-                  <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-1.5">Shipping To</p>
-                  <p className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
-                  <p className="text-[11px] md:text-xs font-medium text-ink/70 mt-0.5">{order.shipping_address.address}</p>
-                  <p className="text-[11px] md:text-xs font-medium text-ink/70">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+                <div className="px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
+                  <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-1">Ship To</p>
+                  <p className="text-[11px] font-semibold text-ink leading-tight">{order.shipping_address.name || order.customer_name}</p>
+                  <p className="text-[10px] text-ink/50 mt-0.5 leading-snug">{order.shipping_address.address}, {order.shipping_address.city} {order.shipping_address.postal_code}</p>
                 </div>
               )}
 
               {/* View Invoice Button (inside receipt card) */}
               <button
                 onClick={() => setShowInvoiceModal(true)}
-                className="w-full px-3 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose cursor-pointer group"
+                className="w-full px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink/40 hover:text-rose cursor-pointer group"
               >
-                <FileText size={13} className="group-hover:scale-110 transition-transform" />
+                <FileText size={12} className="group-hover:scale-110 transition-transform" />
                 Lihat Invoice Lengkap
               </button>
             </motion.div>
           </div>
 
           {/* Column 3: Timeline */}
-          <div className="lg:col-span-5 w-full flex flex-col space-y-4 md:space-y-8 order-3">
+          <div className="lg:col-span-5 w-full flex flex-col order-3">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="bg-white border border-ink/5 p-4 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
             >
-              <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/40 mb-4 md:mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
+              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-ink/30 mb-4 md:mb-8 flex items-center justify-between border-b border-ink/5 pb-3 md:pb-4">
                 <span>Shipment Status</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="text-[11px] md:text-[8px] text-emerald-600 uppercase">Live Update</span>
+                  <span className="text-[9px] text-emerald-600">Live</span>
                 </div>
               </h3>
 
-              <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 flex flex-col gap-0 md:gap-4 md:gap-8">
+              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-8">
 
                 <motion.div
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
                   className="relative group"
                 >
-                  <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                    <ShieldCheck size={18} strokeWidth={2.5} className="animate-pulse" />
+                  <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <ShieldCheck size={16} strokeWidth={2.5} className="animate-pulse" />
                   </div>
-                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-4 md:p-6 rounded-none relative overflow-hidden border-b-0 md:border-b">
+                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-3 md:p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
-                    <div className="flex items-center gap-3 mb-1.5 relative">
-                      <h4 className="text-[12px] font-medium uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
-                      <span className="bg-emerald-500 text-white text-[11px] md:text-[8px] font-medium px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
+                    <div className="flex items-center gap-2 mb-1 relative">
+                      <h4 className="text-[11px] md:text-xs font-semibold text-emerald-700">Payment Confirmed</h4>
+                      <span className="bg-emerald-500 text-white text-[8px] font-bold px-1.5 py-px rounded">ACTIVE</span>
                     </div>
-                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
-                      <Clock size={12} strokeWidth={2} /> Just Now · System Authenticated
+                    <p className="text-[9px] md:text-[10px] text-emerald-600/60 flex items-center gap-1 relative">
+                      <Clock size={10} strokeWidth={2} /> Just Now · Authenticated
                     </p>
                   </div>
                 </motion.div>
@@ -317,14 +317,12 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}
                   className="relative group hover:scale-[1.01] transition-transform"
                 >
-                  <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
-                    <Package size={18} strokeWidth={2} />
+                  <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                    <Package size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-4 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all border-b-0 md:border-b">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
-                    </div>
-                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-ink/30 uppercase">Pending Quality Control</p>
+                  <div className="p-3 md:p-6 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                    <h4 className="text-[11px] md:text-xs font-semibold text-ink/40 group-hover:text-ink/70 transition-colors mb-0.5">Processing in Atelier</h4>
+                    <p className="text-[9px] md:text-[10px] text-ink/30">Pending Quality Control</p>
                   </div>
                 </motion.div>
 
@@ -332,14 +330,12 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
                   className="relative group hover:scale-[1.01] transition-transform"
                 >
-                  <div className="absolute -left-[44px] md:-left-[54px] p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
-                    <Truck size={18} strokeWidth={2} />
+                  <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/30 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
+                    <Truck size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-4 md:p-6 border border-ink/5 rounded-none bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
-                    </div>
-                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
+                  <div className="p-3 md:p-6 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                    <h4 className="text-[11px] md:text-xs font-semibold text-ink/40 group-hover:text-ink/70 transition-colors mb-0.5">Handed to Logistics</h4>
+                    <p className="text-[9px] md:text-[10px] text-ink/30">Courier: <span className="text-ink/50">{courierName}</span></p>
                   </div>
                 </motion.div>
 
@@ -352,23 +348,23 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="lg:hidden w-full flex flex-col space-y-3 pt-3 border-t border-ink/5 order-4"
+            className="lg:hidden w-full flex flex-col space-y-2 pt-2 border-t border-ink/5 order-4"
           >
-            <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[11px] md:text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+            <Link href="/shop" className="w-full bg-ink text-white px-5 py-3.5 text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
               Continue Collecting
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
-              <FileText size={14} />
+            <button onClick={() => setShowInvoiceModal(true)} className="w-full px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <FileText size={13} />
               View Full Invoice
             </button>
-            <button onClick={() => window.print()} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
-              <Printer size={14} />
-              Save as PDF
-            </button>
-            <div className="text-center pt-2">
-              <Link href="/" className="inline-block px-8 py-3 text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
-                Return to Atelier
+            <div className="flex gap-2">
+              <button onClick={() => window.print()} className="flex-1 px-4 py-2.5 text-[9px] font-medium uppercase tracking-wider text-ink/40 hover:text-rose transition-colors flex items-center justify-center gap-1.5 border border-ink/5 hover:border-rose/20 bg-white/50">
+                <Printer size={12} />
+                Save PDF
+              </button>
+              <Link href="/" className="flex-1 px-4 py-2.5 text-[9px] font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors flex items-center justify-center border border-ink/5 hover:border-rose/20 bg-white/50">
+                Back to Home
               </Link>
             </div>
           </motion.div>

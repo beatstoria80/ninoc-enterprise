@@ -86,7 +86,7 @@ export function Invoice({ order }: InvoiceProps) {
           <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase">Pengirim / From</span>
           <div className="mt-3 flex flex-col gap-1 text-xs md:text-sm leading-relaxed">
             <span className="font-bold text-ink">NINOC STUDIO</span>
-            <span className="text-ink/60">Bandung, Jawa Barat<br/>Indonesia<br/>0812-XXXX-XXXX<br/>hello@ninoc.store</span>
+            <span className="text-ink/60">Bandung, Jawa Barat<br/>Indonesia<br/>hello@ninoc.store</span>
           </div>
         </div>
         <div className="flex-1 p-6 md:p-8">
@@ -199,8 +199,8 @@ export function Invoice({ order }: InvoiceProps) {
           </div>
         </div>
         <div className="flex-1 p-6 md:p-8 flex flex-col items-center justify-center gap-3 bg-ink/[0.02]">
-          <div className="bg-white p-2 border border-ink/10 shadow-sm rounded-lg">
-            <QRCodeSVG value={order.id.toUpperCase()} size={80} level="M" />
+          <div className="bg-white p-3 border border-ink/10 shadow-sm rounded-lg">
+            <QRCodeSVG value={order.id.toUpperCase()} size={160} level="M" />
           </div>
           <span className="text-[8px] font-bold tracking-[0.25em] text-ink/40 text-center uppercase">Scan untuk verifikasi</span>
           <span className="text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</span>
@@ -290,7 +290,6 @@ export function PrintableInvoice({ order }: InvoiceProps) {
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#111', letterSpacing: '0.5px' }}>NINOC STUDIO</span>
                 <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>Bandung, Jawa Barat</span>
                 <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>Indonesia</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>0812-XXXX-XXXX</span>
                 <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>hello@ninoc.store</span>
               </div>
             </div>
@@ -367,7 +366,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               )}
             </div>
             <div style={{ width: '200px', padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <QRCodeSVG value={order.id.toUpperCase()} size={60} level="M" />
+              <QRCodeSVG value={order.id.toUpperCase()} size={120} level="M" />
               <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '2px', color: '#888', textAlign: 'center' }}>SCAN UNTUK VERIFIKASI</span>
               <span style={{ fontSize: '10px', fontWeight: '900', fontFamily: 'monospace', color: '#111', letterSpacing: '1px' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
             </div>
