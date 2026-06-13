@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Order } from '@/components/admin/types';
 
 interface InvoiceProps {
@@ -200,7 +200,7 @@ export function Invoice({ order }: InvoiceProps) {
         </div>
         <div className="flex-1 p-6 md:p-8 flex flex-col items-center justify-center gap-3 bg-ink/[0.02]">
           <div className="bg-white p-3 border border-ink/10 shadow-sm rounded-lg">
-            <QRCodeSVG value={order.id.toUpperCase()} size={160} level="M" />
+            <QRCodeCanvas value={order.id.toUpperCase()} size={160} level="M" />
           </div>
           <span className="text-[8px] font-bold tracking-[0.25em] text-ink/40 text-center uppercase">Scan untuk verifikasi</span>
           <span className="text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</span>
@@ -366,7 +366,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               )}
             </div>
             <div style={{ width: '200px', padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <QRCodeSVG value={order.id.toUpperCase()} size={120} level="M" />
+              <QRCodeCanvas value={order.id.toUpperCase()} size={120} level="M" />
               <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '2px', color: '#888', textAlign: 'center' }}>SCAN UNTUK VERIFIKASI</span>
               <span style={{ fontSize: '10px', fontWeight: '900', fontFamily: 'monospace', color: '#111', letterSpacing: '1px' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
             </div>
