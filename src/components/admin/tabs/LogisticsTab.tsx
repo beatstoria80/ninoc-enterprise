@@ -410,7 +410,7 @@ export function LogisticsTab({
                             <Truck size={10} className="text-gray-500" /> Now
                           </div>
                           <div className="text-[11px] md:text-[8px] text-gray-500 mt-1 pl-4">
-                            {new Date(logisticsSelectedOrder.updated_at || logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                            {new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                         <div>
@@ -432,7 +432,7 @@ export function LogisticsTab({
                         <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
                           <div className="w-20 shrink-0 pt-0.5">
                             <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
-                              <Box size={10} /> {new Date(new Date(logisticsSelectedOrder.updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                              <Box size={10} /> {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                           </div>
                           <div>

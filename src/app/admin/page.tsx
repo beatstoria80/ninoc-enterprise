@@ -1083,8 +1083,11 @@ export default function AdminDashboard() {
       console.error('Failed to update print count', e);
     }
 
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (!printWindow) return;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Jendela cetak diblokir oleh browser. Mohon izinkan pop-up (Pop-up Blocker) untuk website ini lalu coba lagi.');
+      return;
+    }
     
     const items = order?.order_items || [];
     const enrichedItems = items.map((item: any) => {
@@ -1104,115 +1107,283 @@ export default function AdminDashboard() {
       </div>
     ` : '';
 
-    const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-<title>Label Pengiriman - NINOC</title>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-<style>
-@page { size: 100mm 150mm; margin: 0; }
-body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif; }
-.label { width: 100mm; min-height: 150mm; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-.header { display: flex; border-bottom: 2px solid #000; height: 45px; }
-.brand-box { flex: 1; padding: 0 12px; display: flex; flex-direction: column; justify-content: center; background: #000; color: #fff; }
-.brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
-.brand-sub { font-size: 7px; font-weight: 600; letter-spacing: 3px; opacity: 0.8; }
-.courier-box { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; }
-.courier-name { font-size: 12px; font-weight: 800; }
-.barcode-row { padding: 16px 12px; border-bottom: 2px solid #000; text-align: center; }
-.barcode-text { font-weight: 800; font-size: 14px; letter-spacing: 4px; font-family: monospace; margin-top: 8px; }
-.flex-row { display: flex; border-bottom: 2px solid #000; }
-.col-left { flex: 1.6; padding: 12px; border-right: 2px solid #000; display: flex; flex-direction: column; }
-.col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
-.inverted-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; background: #000; color: #fff; padding: 3px 8px; display: inline-block; border-radius: 2px; }
-.outline-tag { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; border: 2px solid #000; padding: 1px 6px; display: inline-block; border-radius: 2px; }
-.person-name { font-weight: 900; font-size: 15px; text-transform: uppercase; line-height: 1.1; }
-.person-phone { font-size: 11px; font-weight: 700; margin-top: 4px; font-family: monospace; }
-.person-address { font-size: 11px; font-weight: 500; margin-top: 8px; line-height: 1.4; color: #333; }
-.person-city { font-weight: 800; font-size: 11px; margin-top: 6px; text-transform: uppercase; }
-.person-zip { font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px; }
-.content-title { font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; color: #666; }
-.item-line { font-size: 10px; font-weight: 600; display: flex; justify-content: space-between; padding: 2px 0; }
-.qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.qr-label { font-size: 8px; font-weight: 800; letter-spacing: 1px; margin-top: 8px; color: #666; }
-.order-id-val { font-weight: 900; font-size: 11px; letter-spacing: 1px; font-family: monospace; }
-.meta-pills { display: flex; justify-content: center; gap: 8px; margin-top: 8px; font-size: 9px; font-weight: 800; }
-.pill { background: #e5e5e5; padding: 2px 6px; border-radius: 2px; }
-.footer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #000; color: #fff; }
-.footer-date { font-size: 9px; font-weight: 600; font-family: monospace; }
-.fragile { font-weight: 900; font-size: 10px; letter-spacing: 2px; }
-</style>
-</head>
-<body>
-<div class="label">
-  ${watermarkHtml}
-  <div class="header">
-    <div class="brand-box">
-      <div class="brand-name">NINOC</div>
-      <div class="brand-sub">STUDIO</div>
-    </div>
-    <div class="courier-box">
-      <span class="courier-name">${order?.courier || 'STANDARD'}</span>
-    </div>
-  </div>
-  <div class="barcode-row">
-    ${order?.tracking_id ? `
-      <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="${order.tracking_id}" jsbarcode-width="2" jsbarcode-height="50" jsbarcode-displayValue="false"></svg>
-      <div class="barcode-text">${order.tracking_id}</div>
-    ` : `
-      <div style="font-weight:700;font-size:12px;padding:16px 0;color:#999;letter-spacing:2px;border:2px dashed #e5e5e5;text-align:center;">AWAITING TRACKING ID</div>
-    `}
-  </div>
-  <div class="flex-row">
-    <div class="col-left">
-      <div class="inverted-tag">TO / PENERIMA</div>
-      <div class="person-name">${order?.shipping_address?.name || 'GUEST'}</div>
-      <div class="person-phone">${order?.shipping_address?.phone || '-'}</div>
-      <div class="person-address">${order?.shipping_address?.address || '-'}</div>
-      <div class="person-city">${order?.shipping_address?.city || '-'}, ${order?.shipping_address?.province || '-'}</div>
-      <div class="person-zip">${order?.shipping_address?.postal_code || '-'}</div>
-    </div>
-    <div class="col-right">
-      <div class="outline-tag">FROM / PENGIRIM</div>
-      <div style="font-weight:800;font-size:11px;">NINOC STUDIO</div>
-      <div style="font-size:9px;font-weight:600;margin-top:2px;font-family:monospace;color:#666;">0812-XXXX-XXXX</div>
-      <div style="font-size:9px;font-weight:500;margin-top:6px;line-height:1.4;color:#444;">Bandung, Jawa Barat<br/>Indonesia</div>
-    </div>
-  </div>
-  <div class="flex-row">
-    <div class="col-left">
-      <div class="content-title">CONTENTS / ISI PAKET</div>
-      ${enrichedItems.map((i: any) => `
-        <div class="item-line" style="flex-direction: column; padding-bottom: 6px;">
-          <div style="display: flex; justify-content: space-between; width: 100%;">
-            <span style="text-transform:uppercase;">${i.product_name || 'PRODUCT'} ${i.size ? '['+i.size+']' : ''}</span>
-            <span style="font-weight:800;">×${i.quantity}</span>
-          </div>
-          <div style="font-family: monospace; font-size: 8px; color: #666; margin-top: 2px;">SKU: ${i.sku}</div>
-        </div>
-      `).join('')}
-    </div>
-    <div class="col-right qr-box">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=54x54&data=${encodeURIComponent(order?.id?.toUpperCase() || '')}" alt="QR" width="54" height="54" />
-      <div class="qr-label">ORDER ID</div>
-      <div class="order-id-val">#${(order?.id || '').slice(0, 8).toUpperCase()}</div>
-      <div class="meta-pills">
-        <span class="pill">${totalItems} PCS</span>
-        <span class="pill">${totalItems * 300}g</span>
-      </div>
-    </div>
-  </div>
-  <div class="footer-row">
-    <span class="footer-date">${new Date(order?.created_at || '').toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}).toUpperCase()}</span>
-    <span class="fragile">FRAGILE</span>
-  </div>
-</div>
-<script>
-  JsBarcode(".barcode").init();
-  window.onload = () => { setTimeout(() => { window.print(); }, 500); }
-</script>
-</body>
-</html>`;
+    const maskPhone = (phone: string | undefined) => {
+      if (!phone || phone.length < 8) return phone || '-';
+      return phone.slice(0, 4) + '-****-' + phone.slice(-4);
+    };
+
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Label Pengiriman - NINOC Archive</title>
+            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+            <style>
+              @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
+              
+              body { 
+                font-family: 'Courier Prime', monospace; 
+                margin: 0; 
+                padding: 0; 
+                background: white; 
+                color: #000;
+              }
+              
+              /* Thermal Label Standard Size (approx 100x150mm) */
+              .label { 
+                background: white; 
+                width: 100mm; 
+                min-height: 120mm;
+                padding: 4mm;
+                margin: 0 auto; 
+                box-sizing: border-box;
+                position: relative;
+              }
+
+              .label-inner {
+                border: 2px solid #000;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+              }
+
+              /* Header Section */
+              .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4mm;
+                border-bottom: 2px solid #000;
+              }
+              .brand {
+                font-family: 'Inter', sans-serif;
+                font-size: 14px;
+                font-weight: 900;
+                font-style: italic;
+                letter-spacing: -0.5px;
+              }
+              .brand span {
+                font-size: 8px;
+                font-weight: 600;
+                margin-left: 4px;
+                font-style: normal;
+                letter-spacing: 1px;
+              }
+              .courier-box {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+              }
+              .courier-badge {
+                background: #000;
+                color: #fff;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+                font-size: 10px;
+                padding: 2px 4px;
+                letter-spacing: 0.5px;
+              }
+
+              /* Barcode Section */
+              .barcode-section {
+                padding: 4mm;
+                text-align: center;
+                border-bottom: 2px solid #000;
+              }
+              .barcode-section img {
+                width: 100%;
+                height: 50px;
+                display: block;
+                margin: 0 auto;
+              }
+              .awb-text {
+                font-family: 'Courier Prime', monospace;
+                font-weight: 700;
+                font-size: 14px;
+                margin-top: 4px;
+                letter-spacing: 2px;
+              }
+
+              /* Address Grid */
+              .address-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                border-bottom: 2px solid #000;
+              }
+              .address-box {
+                padding: 4mm;
+              }
+              .address-box.left {
+                border-right: 2px solid #000;
+              }
+              .box-title {
+                font-family: 'Inter', sans-serif;
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                margin-bottom: 4px;
+                text-decoration: underline;
+              }
+              .person-name {
+                font-weight: 700;
+                font-size: 12px;
+                margin-bottom: 2px;
+                font-family: 'Inter', sans-serif;
+              }
+              .person-phone {
+                font-size: 10px;
+                margin-bottom: 6px;
+              }
+              .person-address {
+                font-size: 9px;
+                line-height: 1.3;
+              }
+
+              /* Content Grid */
+              .content-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                border-bottom: 2px solid #000;
+                flex: 1;
+              }
+              .content-box {
+                padding: 4mm;
+              }
+              .content-box.left {
+                border-right: 2px solid #000;
+              }
+              .item-line {
+                font-size: 10px;
+                line-height: 1.4;
+                margin-bottom: 2px;
+              }
+              
+              .order-id-box {
+                text-align: center;
+                padding-top: 4mm;
+              }
+              .order-id-val {
+                font-family: 'Inter', sans-serif;
+                font-size: 12px;
+                font-weight: 800;
+                margin-top: 4px;
+              }
+              .qty-val {
+                font-size: 9px;
+                margin-top: 8px;
+                display: flex;
+                justify-content: space-between;
+                padding: 0 4px;
+              }
+
+              /* Footer */
+              .footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 2mm 4mm;
+                font-size: 8px;
+              }
+              .fragile-badge {
+                background: #000;
+                color: #fff;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+                padding: 2px 6px;
+                font-size: 10px;
+                letter-spacing: 1px;
+              }
+
+              @media print {
+                @page { margin: 0; size: 100mm 150mm; }
+              }
+            </style>
+          </head>
+          <body>
+              <div class="label">
+                ${watermarkHtml}
+                <div class="label-inner">
+                  
+                  <div class="header">
+                    <div class="brand">NINOC <span>ARCHIVE</span></div>
+                    <div class="courier-box">
+                      <div class="courier-badge">${(order.courier || 'STD').toUpperCase().slice(0, 5)}</div>
+                    </div>
+                  </div>
+
+                  <div class="barcode-section">
+                    <svg class="barcode"
+                      jsbarcode-format="CODE128"
+                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}"
+                      jsbarcode-textmargin="0"
+                      jsbarcode-fontoptions="bold"
+                      jsbarcode-height="50"
+                      jsbarcode-displayvalue="false"
+                      jsbarcode-width="2"
+                      jsbarcode-margin="0">
+                    </svg>
+                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}</div>
+                  </div>
+
+                  <div class="address-grid">
+                    <div class="address-box left">
+                      <div class="box-title">PENERIMA / TO</div>
+                      <div class="person-name">${order.shipping_address?.name || 'GUEST'}</div>
+                      <div class="person-phone">${maskPhone(order.shipping_address?.phone)}</div>
+                      <div class="person-address">
+                        ${order.shipping_address?.address || '-'}<br/>
+                        ${order.shipping_address?.city || '-'}
+                      </div>
+                    </div>
+                    <div class="address-box">
+                      <div class="box-title">PENGIRIM / FROM</div>
+                      <div class="person-name">NINOC STUDIO</div>
+                      <div class="person-phone">0812-XXXX-XXXX</div>
+                      <div class="person-address">
+                        Jl. Gudang Selatan No. 22<br/>
+                        Bandung, Jawa Barat<br/>
+                        40113
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="content-grid">
+                    <div class="content-box left">
+                      <div class="box-title">ISI PAKET / CONTENTS</div>
+                      ${enrichedItems?.map((i: any) => `
+                        <div class="item-line">${i.product_name} ${i.size ? `(Sz: ${i.size})` : ''} x${i.quantity}</div>
+                      `).join('') || '<div class="item-line">No items found</div>'}
+                    </div>
+                    <div class="content-box">
+                      <div class="order-id-box">
+                        <div class="box-title" style="text-decoration:none;">ORDER ID</div>
+                        <div class="order-id-val">#${order.id.slice(0, 8).toUpperCase()}</div>
+                      </div>
+                      <div class="qty-val">
+                        <span>Qty: ${totalItems}</span>
+                        <span>~${totalItems * 300}g</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="footer">
+                    <div>${new Date(order.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
+                    <div>NINOC ARCHIVE - BANDUNG, INDONESIA</div>
+                    <div class="fragile-badge">FRAGILE</div>
+                  </div>
+
+                </div>
+              </div>
+            
+            <script>
+              JsBarcode(".barcode").init();
+              window.onload = () => { setTimeout(() => { window.print(); }, 800); }
+            </script>
+          </body>
+        </html>
+      `;
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   };
@@ -2737,7 +2908,7 @@ body { margin: 0; padding: 0; background: #fff; font-family: 'Inter', sans-serif
                     
                     {/* Label Canvas Preview - Scaled to fit */}
                     <div className="flex-1 p-6 flex items-center justify-center overflow-auto bg-gray-50/50">
-                      <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '10cm', height: '8cm', transform: 'scale(0.75)', transformOrigin: 'center' }}>
+                      <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '100mm', minHeight: '150mm', transform: 'scale(0.7)', transformOrigin: 'top center', overflow: 'hidden' }}>
                         <ShippingLabel order={selectedOrder} />
                       </div>
                     </div>

@@ -68,14 +68,20 @@ interface Props {
 }
 
 // MapUpdater safely uses the Leaflet map instance to animate pan/zoom
-function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }) {
+function MapUpdater({ positions }: { positions: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
-    if (center) {
-      // flyTo gives a detailed, close-up industry standard zoom
-      map.flyTo(center, zoom, { duration: 1.5 });
+    if (positions && positions.length > 0) {
+      if (positions.length === 1) {
+        // flyTo gives a detailed, close-up industry standard zoom
+        map.flyTo(positions[0], 14, { duration: 1.5 });
+      } else {
+        // fitBounds ensures all points (origin and destination) are fully visible
+        const bounds = L.latLngBounds(positions);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14, duration: 1.5 });
+      }
     }
-  }, [map, center, zoom]);
+  }, [map, positions]);
   return null;
 }
 
@@ -190,7 +196,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
         className="w-full h-full absolute inset-0 z-0"
       >
         <ZoomControl position="bottomright" />
-        <MapUpdater center={currentCoords} zoom={14} />
+        <MapUpdater positions={linePositions} />
         
         <TileLayer
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -224,13 +230,11 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
         ))}
 
         {/* Current Live Location Pulse (At the very end of the current progress) */}
-        {logs.length > 0 && (
-          <Marker position={currentCoords} icon={pulseIcon}>
-            <Tooltip permanent direction="top" offset={[0, -10]} className="custom-tooltip border-emerald-500/20">
-              <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600">POSISI TERKINI</span>
-            </Tooltip>
-          </Marker>
-        )}
+        <Marker position={currentCoords} icon={pulseIcon}>
+          <Tooltip permanent direction="top" offset={[0, -10]} className="custom-tooltip border-emerald-500/20">
+            <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600">POSISI TERKINI</span>
+          </Tooltip>
+        </Marker>
       </MapContainer>
 
       {/* Decorative Overlay */}

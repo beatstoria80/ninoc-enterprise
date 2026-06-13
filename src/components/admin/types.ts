@@ -60,6 +60,7 @@ export interface Order {
   print_count?: number;
   last_printed_by?: string;
   last_printed_at?: string;
+  updated_at?: string;
 }
 
 export interface OrderItem {
