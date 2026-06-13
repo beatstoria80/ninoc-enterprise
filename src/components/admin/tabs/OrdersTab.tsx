@@ -417,6 +417,7 @@ export function OrdersTab({
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       setIsPrinting(false);
+      alert('Jendela cetak diblokir oleh browser. Mohon izinkan pop-up (Pop-up Blocker) untuk website ini lalu coba lagi.');
       return;
     }
 
