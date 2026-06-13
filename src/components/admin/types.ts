@@ -33,6 +33,7 @@ export interface Variant {
   size: string | null;
   color: string | null;
   stock_quantity: number;
+  reorder_point?: number | null;
   sku?: string | null;
 }
 
@@ -272,4 +273,20 @@ export interface AffiliateCommission {
   status: AffiliateCommissionStatus;
   created_at: string;
   updated_at: string;
+}
+
+export type WABroadcastStatus = 'draft' | 'sending' | 'completed' | 'failed';
+
+export interface WABroadcastCampaign {
+  id: string;
+  campaign_name: string;
+  audience_segment: string;
+  message_template: string;
+  recipient_count: number;
+  cost_per_message: number;
+  total_cost: number;
+  status: WABroadcastStatus;
+  sent_at: string | null;
+  created_at: string;
+  created_by?: string;
 }

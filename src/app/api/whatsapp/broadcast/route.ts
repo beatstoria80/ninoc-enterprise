@@ -176,6 +176,28 @@ export async function POST(req: NextRequest) {
       .update({ status: 'queued' })
       .eq('id', session.id);
 
+    // ─── 5. Inject OPEX (Operational Expenses) ──────────────────────────
+    const COST_PER_MSG = 450; // IDR
+    const total_cost = recipients.length * COST_PER_MSG;
+    
+    if (total_cost > 0) {
+      const { error: opexError } = await adminClient
+        .from('operational_expenses')
+        .insert({
+          category: 'marketing',
+          description: `WA Broadcast: ${name}`,
+          amount: total_cost,
+          expense_date: new Date().toISOString().slice(0, 10),
+          created_by: 'System (WA API)'
+        });
+        
+      if (opexError) {
+        console.error('[Broadcast API] Failed to inject OPEX:', opexError);
+      } else {
+        console.log(`[Broadcast API] Injected Rp ${total_cost} to OPEX for campaign "${name}".`);
+      }
+    }
+
     console.log(`[Broadcast API] Campaign "${name}" created with ${recipients.length} recipients. Session ID: ${session.id}`);
 
     return NextResponse.json({

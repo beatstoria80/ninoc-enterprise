@@ -93,12 +93,12 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     return (
       <div className="min-h-screen bg-cr noise flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-rose mb-3">Invalid Order</p>
+          <p className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-rose mb-3">Invalid Order</p>
           <h1 className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight text-ink mb-3">Order Not Found</h1>
-          <p className="text-xs md:text-[10px] text-ink/50 font-medium leading-relaxed mb-8">
+          <p className="text-[11px] md:text-xs text-ink/50 font-medium leading-relaxed mb-4 md:mb-8">
             Pesanan tidak ditemukan atau belum menyelesaikan pembayaran. Jika Anda baru saja menyelesaikan pembayaran, tunggu beberapa saat lalu coba lagi.
           </p>
-          <Link href="/checkout" className="inline-block px-6 py-3 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
+          <Link href="/checkout" className="inline-block px-6 py-3 bg-rose text-white text-[10px] md:text-xs font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
             Kembali ke Checkout
           </Link>
         </div>
@@ -136,7 +136,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <CheckCircle size={14} />
                 </motion.div>
               </h1>
-              <p className="text-sm md:text-[11px] text-ink/50 font-medium uppercase tracking-[0.1em] leading-relaxed max-w-sm">
+              <p className="text-[11px] md:text-sm text-ink/50 font-medium uppercase tracking-wider leading-snug max-w-sm">
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
@@ -147,20 +147,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               transition={{ delay: 1 }}
               className="hidden lg:flex flex-col space-y-4 pt-8 border-t border-ink/5"
             >
-              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[11px] md:text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
                 Continue Collecting
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
                 <FileText size={14} />
                 View Full Invoice
               </button>
-              <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
+              <button onClick={() => window.print()} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
                 <Printer size={14} />
                 Save as PDF
               </button>
               <div className="text-center pt-2">
-                <Link href="/" className="inline-block px-8 py-3 text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+                <Link href="/" className="inline-block px-8 py-3 text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                   Return to Atelier
                 </Link>
               </div>
@@ -181,12 +181,12 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     <Printer size={14} className="text-ink/40" />
                   </div>
                   <div>
-                    <h3 className="text-sm md:text-[11px] font-medium uppercase tracking-[0.15em] text-ink">Transaction Receipt</h3>
-                    <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mt-0.5">{displayId}</p>
+                    <h3 className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink">Transaction Receipt</h3>
+                    <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mt-0.5">{displayId}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/60">
+                  <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60">
                     {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -196,25 +196,25 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               <div className="px-3 md:px-8 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Invoice ID</p>
+                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Invoice ID</p>
                     <div className="flex items-center">
-                      <p className="text-xs md:text-[10px] font-mono font-semibold text-ink">{invoiceId}</p>
+                      <p className="text-[11px] md:text-xs font-mono font-semibold text-ink">{invoiceId}</p>
                       <CopyButton text={invoiceId} />
                     </div>
                   </div>
                   <div>
-                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Order No</p>
+                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Order No</p>
                     <div className="flex items-center">
-                      <p className="text-xs md:text-[10px] font-mono font-semibold text-ink">#{displayId}</p>
+                      <p className="text-[11px] md:text-xs font-mono font-semibold text-ink">#{displayId}</p>
                       <CopyButton text={displayId} />
                     </div>
                   </div>
                 </div>
                 {order.midtrans_id && (
                   <div className="mt-2 pt-2 border-t border-ink/5">
-                    <p className="text-[9px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-ink/40 mb-0.5">Midtrans Transaction ID</p>
+                    <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-ink/40 mb-0.5">Midtrans Transaction ID</p>
                     <div className="flex items-center">
-                      <p className="text-[10px] md:text-[9px] font-mono font-semibold text-ink/70 break-all">{order.midtrans_id}</p>
+                      <p className="text-[10px] md:text-xs font-mono font-semibold text-ink/70 break-all">{order.midtrans_id}</p>
                       <CopyButton text={order.midtrans_id} />
                     </div>
                   </div>
@@ -222,53 +222,53 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               <div className="px-3 md:px-8 py-2 md:py-4 border-b border-ink/5">
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-2">Purchased Items</p>
+                <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-2">Purchased Items</p>
                 <div className="space-y-3">
                   {order.order_items?.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm md:text-[11px] font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
-                        <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.15em] text-ink/60 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}</p>
+                        <p className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink truncate">{item.product_name}</p>
+                        <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · Qty {item.quantity}</p>
                       </div>
-                      <p className="text-sm md:text-[11px] font-mono font-medium text-ink ml-4 shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
+                      <p className="text-[11px] md:text-sm font-mono font-medium text-ink ml-4 shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="px-3 md:px-8 py-2 md:py-4 space-y-1.5 md:space-y-2">
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-2">Financial Breakdown</p>
+                <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-2">Financial Breakdown</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Subtotal</span>
-                  <span className="text-sm md:text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Subtotal</span>
+                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Logistics ({courierName})</span>
-                  <span className="text-sm md:text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Logistics ({courierName})</span>
+                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.15em] text-ink/70">Platform Fee</span>
-                  <span className="text-sm md:text-[11px] font-mono font-medium text-ink">+ IDR 2.500</span>
+                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/70">Platform Fee</span>
+                  <span className="text-[11px] md:text-sm font-mono font-medium text-ink">+ IDR 2.500</span>
                 </div>
                 <div className="flex justify-between items-center pt-3 mt-2 border-t border-ink/10">
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/80">Total</span>
+                  <span className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/80">Total</span>
                   <span className="text-lg font-display font-medium italic text-rose">IDR {order.total_price.toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
               {order.shipping_address && (
                 <div className="px-3 md:px-8 py-2 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
-                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-1.5">Shipping To</p>
-                  <p className="text-sm md:text-[11px] font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
-                  <p className="text-xs md:text-[10px] font-medium text-ink/70 mt-0.5">{order.shipping_address.address}</p>
-                  <p className="text-xs md:text-[10px] font-medium text-ink/70">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
+                  <p className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/60 mb-1.5">Shipping To</p>
+                  <p className="text-[11px] md:text-sm font-medium uppercase tracking-wider text-ink">{order.shipping_address.name || order.customer_name}</p>
+                  <p className="text-[11px] md:text-xs font-medium text-ink/70 mt-0.5">{order.shipping_address.address}</p>
+                  <p className="text-[11px] md:text-xs font-medium text-ink/70">{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
                 </div>
               )}
 
               {/* View Invoice Button (inside receipt card) */}
               <button
                 onClick={() => setShowInvoiceModal(true)}
-                className="w-full px-3 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose cursor-pointer group"
+                className="w-full px-3 md:px-8 py-3 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose cursor-pointer group"
               >
                 <FileText size={13} className="group-hover:scale-110 transition-transform" />
                 Lihat Invoice Lengkap
@@ -277,14 +277,14 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
           </div>
 
           {/* Column 3: Timeline */}
-          <div className="lg:col-span-5 w-full flex flex-col space-y-8 order-3">
+          <div className="lg:col-span-5 w-full flex flex-col space-y-4 md:space-y-8 order-3">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="bg-white border border-ink/5 p-4 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
             >
-              <h3 className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
+              <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/40 mb-4 md:mb-8 flex items-center justify-between border-b border-ink/5 pb-4">
                 <span>Shipment Status</span>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -292,7 +292,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 </div>
               </h3>
 
-              <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 flex flex-col gap-0 md:gap-8">
+              <div className="relative pl-8 md:pl-10 border-l-2 border-ink/5 ml-6 md:ml-8 mt-6 flex flex-col gap-0 md:gap-4 md:gap-8">
 
                 <motion.div
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
@@ -307,7 +307,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                       <h4 className="text-[12px] font-medium uppercase tracking-widest text-emerald-700">Payment Confirmed</h4>
                       <span className="bg-emerald-500 text-white text-[11px] md:text-[8px] font-medium px-2 py-0.5 rounded uppercase tracking-widest">Active</span>
                     </div>
-                    <p className="text-xs md:text-[9px] font-medium tracking-[0.15em] text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
+                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-emerald-600/70 uppercase flex items-center gap-1.5 relative">
                       <Clock size={12} strokeWidth={2} /> Just Now · System Authenticated
                     </p>
                   </div>
@@ -324,7 +324,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     <div className="flex items-center gap-2 mb-1.5">
                       <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Processing in Atelier</h4>
                     </div>
-                    <p className="text-xs md:text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Pending Quality Control</p>
+                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-ink/30 uppercase">Pending Quality Control</p>
                   </div>
                 </motion.div>
 
@@ -339,7 +339,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     <div className="flex items-center gap-2 mb-1.5">
                       <h4 className="text-[12px] font-medium uppercase tracking-widest text-ink/40 group-hover:text-ink/70 transition-colors">Handed to Logistics</h4>
                     </div>
-                    <p className="text-xs md:text-[9px] font-medium tracking-[0.15em] text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
+                    <p className="text-[10px] md:text-xs font-medium tracking-wider text-ink/30 uppercase">Courier: <span className="text-ink/60">{courierName}</span></p>
                   </div>
                 </motion.div>
 
@@ -354,20 +354,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
             transition={{ delay: 1 }}
             className="lg:hidden w-full flex flex-col space-y-3 pt-3 border-t border-ink/5 order-4"
           >
-            <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+            <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 rounded-none text-[11px] md:text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
               Continue Collecting
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+            <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
               <FileText size={14} />
               View Full Invoice
             </button>
-            <button onClick={() => window.print()} className="w-full px-6 py-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
+            <button onClick={() => window.print()} className="w-full px-6 py-4 text-[11px] md:text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
               <Printer size={14} />
               Save as PDF
             </button>
             <div className="text-center pt-2">
-              <Link href="/" className="inline-block px-8 py-3 text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+              <Link href="/" className="inline-block px-8 py-3 text-[10px] md:text-xs font-medium uppercase tracking-wider text-ink/40 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                 Return to Atelier
               </Link>
             </div>
@@ -466,7 +466,7 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
       <div className="flex justify-between items-start border-b-[3px] border-black pb-6 mb-6">
         <div>
           <h1 className="font-display font-medium text-4xl italic uppercase tracking-tighter mb-1">NINOC</h1>
-          <p className="text-xs md:text-[10px] tracking-[0.2em] uppercase font-medium">Archival Studio Investment</p>
+          <p className="text-[11px] md:text-xs tracking-wider uppercase font-medium">Archival Studio Investment</p>
         </div>
         <div className="text-right">
           <h2 className="text-xl font-medium uppercase tracking-wider mb-2">Invoice</h2>
@@ -474,28 +474,28 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
           {order.midtrans_id && (
             <p className="text-[10px] font-mono text-ink/50 mt-1">TX: {order.midtrans_id}</p>
           )}
-          <p className="text-xs md:text-[10px] uppercase mt-1">{order.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
+          <p className="text-[11px] md:text-xs uppercase mt-1">{order.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-12 mb-8 text-sm">
+      <div className="grid grid-cols-2 gap-12 mb-4 md:mb-8 text-sm">
         <div>
-          <p className="text-xs md:text-[9px] uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Billed To</p>
+          <p className="text-[10px] md:text-xs uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Billed To</p>
           <p className="font-medium">{order.customer_name || 'Customer Name'}</p>
           <p className="text-xs mt-1">{order.shipping_address?.email || 'customer@email.com'}</p>
           <p className="text-xs font-mono">{order.shipping_address?.name || '+62 812-XXXX-XXXX'}</p>
         </div>
         <div>
-          <p className="text-xs md:text-[9px] uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Shipped To</p>
+          <p className="text-[10px] md:text-xs uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Shipped To</p>
           <p className="text-xs">{order.shipping_address?.address || 'Jakarta Selatan, DKI Jakarta'}</p>
           <p className="text-xs">{order.shipping_address?.city || '12345'}, {order.shipping_address?.postal_code || 'Indonesia'}</p>
-          <p className="text-xs md:text-[10px] font-medium mt-2 uppercase tracking-wider">Via <span className="font-medium underline">{order.courier || courierName}</span></p>
+          <p className="text-[11px] md:text-xs font-medium mt-2 uppercase tracking-wider">Via <span className="font-medium underline">{order.courier || courierName}</span></p>
         </div>
       </div>
 
-      <table className="w-full mb-8 text-sm border-collapse">
+      <table className="w-full mb-4 md:mb-8 text-sm border-collapse">
         <thead>
-          <tr className="border-b-[3px] border-black text-xs md:text-[9px] uppercase tracking-widest text-left">
+          <tr className="border-b-[3px] border-black text-[10px] md:text-xs uppercase tracking-widest text-left">
             <th className="py-2">Item Description</th>
             <th className="py-2 text-center">Qty</th>
             <th className="py-2 text-right">Unit Price</th>
@@ -517,15 +517,15 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
       <div className="flex justify-end">
         <div className="w-1/2 space-y-2 text-sm">
           <div className="flex justify-between border-b border-black/10 pb-1">
-            <span className="text-xs md:text-[10px] uppercase tracking-widest font-medium">Subtotal</span>
+            <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Subtotal</span>
             <span className="font-mono">IDR {sub.toLocaleString('id-ID')}</span>
           </div>
           <div className="flex justify-between border-b border-black/10 pb-1">
-            <span className="text-xs md:text-[10px] uppercase tracking-widest font-medium">Logistics</span>
+            <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Logistics</span>
             <span className="font-mono">IDR {shipping > 0 ? shipping.toLocaleString('id-ID') : '0'}</span>
           </div>
           <div className="flex justify-between border-b border-black/10 pb-1">
-            <span className="text-xs md:text-[10px] uppercase tracking-widest font-medium">Platform Fee</span>
+            <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Platform Fee</span>
             <span className="font-mono">IDR 2,500</span>
           </div>
           <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">

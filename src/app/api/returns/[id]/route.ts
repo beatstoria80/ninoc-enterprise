@@ -57,7 +57,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
-    const { admin_notes, dispositions, admin_email } = body;
+    const { dispositions, admin_email } = body;
 
     // Process dispositions if provided (e.g. when marking as received or completed)
     if (dispositions && dispositions.length > 0) {

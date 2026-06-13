@@ -1,29 +1,138 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link as LinkIcon, Copy, Plus, CheckCircle, ExternalLink, Scissors } from 'lucide-react';
+import { Link as LinkIcon, Copy, Plus, CheckCircle, Scissors, Loader2, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+
+interface AffiliateProfile {
+  id: string;
+  code: string;
+}
+
+interface AffiliateLink {
+  id: string;
+  destination_url: string;
+  code: string;
+  clicks: number;
+  created_at: string;
+}
 
 export default function LinksPage() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<AffiliateProfile | null>(null);
+  const [links, setLinks] = useState<AffiliateLink[]>([]);
+
   const [urlInput, setUrlInput] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!urlInput) return;
-    
-    // Mock logic: simply append ?ref=johndoe
-    const base = urlInput.includes('?') ? '&' : '?';
-    setGeneratedLink(`${urlInput}${base}ref=johndoe`);
-    setIsCopied(false);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function fetchData() {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
+      const { data: affData, error: affError } = await supabase
+        .from('affiliates')
+        .select('id, code')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (affError || !affData) throw new Error("Affiliate profile not found");
+      setProfile(affData);
+
+      const { data: linksData } = await supabase
+        .from('affiliate_links')
+        .select('*')
+        .eq('affiliate_id', affData.id)
+        .order('created_at', { ascending: false });
+      
+      if (linksData) setLinks(linksData);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(generatedLink);
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!urlInput || !profile) return;
+    
+    setIsGenerating(true);
+    
+    try {
+      // Clean up URL to relative path
+      let dest = urlInput;
+      try {
+        const urlObj = new URL(urlInput);
+        dest = urlObj.pathname + urlObj.search;
+      } catch (e) {
+        // If it's already a relative path, ensure it starts with /
+        if (!dest.startsWith('/')) dest = '/' + dest;
+      }
+
+      // We append ?ref=CODE for the actual link the user shares.
+      // We will store the destination URL and a unique link code for tracking if needed.
+      const linkCode = `${profile.code}-${Math.random().toString(36).substr(2, 6)}`.toUpperCase();
+      
+      const { data, error } = await supabase
+        .from('affiliate_links')
+        .insert({
+          affiliate_id: profile.id,
+          code: linkCode,
+          destination_url: dest,
+          clicks: 0
+        })
+        .select()
+        .single();
+        
+      if (error) throw error;
+      
+      setLinks([data, ...links]);
+      
+      const base = dest.includes('?') ? '&' : '?';
+      setGeneratedLink(`https://ninoc.store${dest}${base}ref=${profile.code}`);
+      setIsCopied(false);
+      setUrlInput('');
+    } catch (err: any) {
+      alert("Gagal membuat link: " + err.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopy = (textToCopy: string) => {
+    navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="animate-spin text-ink/30" size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <AlertCircle className="text-rose mx-auto" size={40} />
+          <p className="text-ink/60">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -58,18 +167,23 @@ export default function LinksPage() {
                 <div className="relative">
                   <LinkIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
                   <input 
-                    type="url" 
+                    type="text" 
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="https://ninoc.storem/shop/..." 
+                    placeholder="https://ninoc.store/shop/..." 
                     required
                     className="w-full bg-ink/[0.03] border border-ink/5 rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:border-rose focus:ring-2 focus:ring-rose/20" 
                   />
                 </div>
               </div>
               
-              <button type="submit" className="w-full bg-ink text-white px-5 py-3 rounded-lg text-xs font-medium uppercase tracking-wider hover:bg-rose transition-colors flex justify-center items-center gap-2">
-                <Plus size={14} /> Generate Link Afiliasi
+              <button 
+                type="submit" 
+                disabled={isGenerating}
+                className="w-full bg-ink text-white px-5 py-3 rounded-lg text-xs font-medium uppercase tracking-wider hover:bg-rose transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
+              >
+                {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} 
+                {isGenerating ? 'Membuat...' : 'Generate Link Afiliasi'}
               </button>
             </form>
 
@@ -84,7 +198,7 @@ export default function LinksPage() {
                     <p className="text-sm font-medium text-emerald-800 truncate">{generatedLink}</p>
                   </div>
                   <button 
-                    onClick={handleCopy}
+                    onClick={() => handleCopy(generatedLink)}
                     className="shrink-0 bg-white border border-ink/10 text-ink p-3 rounded-lg hover:bg-ink hover:text-white transition-colors"
                   >
                     {isCopied ? <CheckCircle size={20} className="text-emerald-500" /> : <Copy size={20} />}
@@ -107,27 +221,43 @@ export default function LinksPage() {
                 <thead className="bg-ink/5 text-ink/60 text-xs md:text-[10px] uppercase tracking-wider">
                   <tr>
                     <th className="px-6 py-4 font-medium">Link Tujuan</th>
-                    <th className="px-6 py-4 font-medium text-right">Total Klik</th>
-                    <th className="px-6 py-4 font-medium text-right">Penjualan</th>
+                    <th className="px-6 py-4 font-medium text-center">Total Klik</th>
+                    <th className="px-6 py-4 font-medium text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-ink/5">
-                  {[
-                    { target: '/collections/summer-sale', clicks: 842, sales: 24 },
-                    { target: '/shop/oversized-tshirt', clicks: 124, sales: 3 },
-                    { target: '/category/outerwear', clicks: 89, sales: 0 },
-                  ].map((item, idx) => (
-                    <tr key={idx} className="hover:bg-ink/[0.02] transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="text-ink font-medium truncate max-w-[200px]">{item.target}</span>
-                          <span className="text-xs md:text-[10px] text-ink/40 mt-1">ninoc.storem{item.target}?ref=johndoe</span>
-                        </div>
+                  {links.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-8 text-center text-xs text-ink/40 uppercase tracking-wider">
+                        Belum ada link yang dibuat.
                       </td>
-                      <td className="px-6 py-4 text-right font-medium text-ink">{item.clicks}</td>
-                      <td className="px-6 py-4 text-right font-medium text-emerald-600">{item.sales}</td>
                     </tr>
-                  ))}
+                  ) : links.map((link) => {
+                    const base = link.destination_url.includes('?') ? '&' : '?';
+                    const fullLink = `https://ninoc.store${link.destination_url}${base}ref=${profile?.code}`;
+                    return (
+                      <tr key={link.id} className="hover:bg-ink/[0.02] transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            <span className="text-ink font-medium truncate max-w-[200px]">{link.destination_url}</span>
+                            <span className="text-xs md:text-[10px] text-ink/40 mt-1">{fullLink.replace('https://', '')}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center font-medium text-ink">{link.clicks.toLocaleString('id-ID')}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(fullLink);
+                              alert("Tautan disalin!");
+                            }}
+                            className="text-xs font-medium text-rose hover:text-ink transition-colors uppercase tracking-wider"
+                          >
+                            Copy
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
