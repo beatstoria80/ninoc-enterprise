@@ -415,7 +415,10 @@ export function OrdersTab({
     });
 
     const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+    if (!printWindow) {
+      setIsPrinting(false);
+      return;
+    }
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -700,6 +703,10 @@ export function OrdersTab({
       `;
       printWindow.document.write(htmlContent);
       printWindow.document.close();
+      
+      // Reset state and close modal
+      setIsPrinting(false);
+      setIsPrintModalOpen(false);
   };
 
   const handleExportData = () => {
