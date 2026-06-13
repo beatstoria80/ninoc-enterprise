@@ -277,10 +277,10 @@ export function OrdersTab({
                   .eq('id', matchedOrder.id);
                 // Trigger visual feedback (could just use alert for now)
                 alert(`📦 Order ${matchedOrder.id.slice(0, 8).toUpperCase()} otomatis diubah menjadi SHIPPED.`);
-                // Note: the parent page.tsx will pick up the change if we have real-time or if we poll,
-                // but realistically we should call a refresh prop. Since we don't have one, we rely on the 
-                // parent's polling or the user refreshing. 
-                // Alternatively, we can update local state if we passed `setOrders` but we didn't.
+                // Optimistic update
+                matchedOrder.status = 'shipped';
+                // Trigger a re-render by calling setStatusFilter with the same value
+                setStatusFilter(statusFilter);
               } catch (err) {
                 console.error('Failed to update order via scanner', err);
               }
@@ -751,7 +751,6 @@ export function OrdersTab({
                 <th>Customer Name</th>
                 <th>Status</th>
                 <th>Payment</th>
-                <th>Tax / PPN (11%)</th>
                 <th>Total Amount (IDR)</th>
               </tr>
             </thead>
@@ -765,14 +764,12 @@ export function OrdersTab({
                     '<td>' + (order.shipping_address?.name || '-') + '</td>' +
                     '<td>' + order.status.toUpperCase() + '</td>' +
                     '<td>' + order.payment_status.toUpperCase() + '</td>' +
-                    '<td>' + tax.toLocaleString('id-ID', {maximumFractionDigits: 0}) + '</td>' +
                     '<td>' + order.total_price.toLocaleString('id-ID') + '</td>' +
                   '</tr>'
                 );
               }).join('')}
               <tr class="total-row">
                 <td colspan="5" style="text-align: right;">GRAND TOTAL</td>
-                <td>${filteredOrders.reduce((acc, order) => acc + (order.total_price * 0.11), 0).toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
                 <td>${filteredOrders.reduce((acc, order) => acc + order.total_price, 0).toLocaleString('id-ID')}</td>
               </tr>
             </tbody>

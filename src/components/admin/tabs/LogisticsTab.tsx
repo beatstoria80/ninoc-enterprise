@@ -409,7 +409,9 @@ export function LogisticsTab({
                           <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-900 font-medium">
                             <Truck size={10} className="text-gray-500" /> Now
                           </div>
-                          <div className="text-[11px] md:text-[8px] text-gray-500 mt-1 pl-4">6:39 PM</div>
+                          <div className="text-[11px] md:text-[8px] text-gray-500 mt-1 pl-4">
+                            {new Date(logisticsSelectedOrder.updated_at || logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
                         </div>
                         <div>
                           <p className="text-xs md:text-[10px] font-medium text-gray-900">
@@ -423,33 +425,35 @@ export function LogisticsTab({
                       </div>
                     </div>
 
-                    {/* Step 2: Sorting Center */}
-                    <div className="relative">
-                      <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-                        <div className="w-20 shrink-0 pt-0.5">
-                          <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
-                            <Box size={10} /> 11:54 AM
+                    {/* Step 2: Sorting Center (Only if shipped/delivered) */}
+                    {['shipped', 'delivered'].includes(logisticsSelectedOrder.status) && (
+                      <div className="relative">
+                        <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+                          <div className="w-20 shrink-0 pt-0.5">
+                            <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
+                              <Box size={10} /> {new Date(new Date(logisticsSelectedOrder.updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <p className="text-xs md:text-[10px] font-medium text-gray-900">In the sorting facility</p>
-                          <p className="text-xs md:text-[9px] text-gray-500 mt-1 uppercase">{logisticsSelectedOrder.courier || 'Expedition'} Hub, Regional Branch</p>
+                          <div>
+                            <p className="text-xs md:text-[10px] font-medium text-gray-900">In the sorting facility</p>
+                            <p className="text-xs md:text-[9px] text-gray-500 mt-1 uppercase">{logisticsSelectedOrder.courier || 'Expedition'} Hub, Regional Branch</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                     
-                    {/* Step 3: Dispatched */}
+                    {/* Step 3: Dispatched / Created */}
                     <div className="relative">
                       <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
                       <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
                         <div className="w-20 shrink-0 pt-0.5">
                           <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
-                            <Package size={10} /> 09:12 AM
+                            <Package size={10} /> {new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                         <div>
-                          <p className="text-xs md:text-[10px] font-medium text-gray-900">Package dispatched</p>
+                          <p className="text-xs md:text-[10px] font-medium text-gray-900">Order created & processed</p>
                           <p className="text-xs md:text-[9px] text-gray-500 mt-1 uppercase">Sender Origin Facility</p>
                         </div>
                       </div>
