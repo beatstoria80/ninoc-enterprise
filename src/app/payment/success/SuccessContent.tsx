@@ -15,7 +15,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface OrderItem { id: string; product_name: string; size: string | null; quantity: number; price_at_purchase: number; }
-interface ShippingAddress { name?: string; phone?: string; address: string; city: string; postal_code: string; province?: string; email?: string; }
+interface ShippingAddress { name?: string; phone?: string; address: string; city: string; postal_code: string; province?: string; email?: string; shipping_cost?: number; }
 interface Order {
   id: string;
   order_number?: string;
@@ -131,9 +131,10 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   const invoiceId = `NCO-${order.id.slice(0, 8).toUpperCase()}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-  const tax = Math.round(sub * 0.11);
   const platform = 2500;
-  const shipping = Math.max(0, order.total_price - sub - tax - platform);
+  const shipping = typeof order.shipping_address?.shipping_cost === 'number' 
+    ? order.shipping_address.shipping_cost 
+    : Math.max(0, order.total_price - sub - platform);
 
   return (
     <>
@@ -478,7 +479,9 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
   const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
-  const shipping = Math.max(0, order.total_price - sub - platform);
+  const shipping = typeof order.shipping_address?.shipping_cost === 'number' 
+    ? order.shipping_address.shipping_cost 
+    : Math.max(0, order.total_price - sub - platform);
 
   return (
     <div className="border border-black p-8 bg-white">

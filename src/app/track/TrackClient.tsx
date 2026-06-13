@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic';
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
   loading: () => (
-    <div className="w-full min-h-[300px] md:min-h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
+    <div className="w-full h-[250px] md:h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
       Initializing Live Map...
     </div>
   )

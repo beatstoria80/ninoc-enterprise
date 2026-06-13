@@ -55,9 +55,11 @@ export function Invoice({ order }: InvoiceProps) {
   }, []);
 
   const subtotal = order.order_items?.reduce((s, i) => s + i.price_at_purchase * i.quantity, 0) || 0;
-  const shippingCost = 0; // Override if shipping data exists
-  const discount = 0;
-  const total = subtotal + shippingCost - discount;
+  const shippingCost = typeof (order.shipping_address as any)?.shipping_cost === 'number' 
+    ? (order.shipping_address as any).shipping_cost 
+    : Math.max(0, order.total_price - subtotal);
+  const total = order.total_price;
+  const discount = Math.max(0, subtotal + shippingCost - total);
 
   const orderNumber = order.shipping_address?.name
     ? `NCO-${order.id.slice(0, 8).toUpperCase()}`
@@ -235,9 +237,11 @@ export function Invoice({ order }: InvoiceProps) {
 
 export function PrintableInvoice({ order }: InvoiceProps) {
   const subtotal = order.order_items?.reduce((s, i) => s + i.price_at_purchase * i.quantity, 0) || 0;
-  const shippingCost = 0;
-  const discount = 0;
-  const total = subtotal + shippingCost - discount;
+  const shippingCost = typeof (order.shipping_address as any)?.shipping_cost === 'number' 
+    ? (order.shipping_address as any).shipping_cost 
+    : Math.max(0, order.total_price - subtotal);
+  const discount = Math.max(0, subtotal + shippingCost - order.total_price);
+  const total = order.total_price;
 
   const orderNumber = order.shipping_address?.name
     ? `NCO-${order.id.slice(0, 8).toUpperCase()}`

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -50,7 +50,6 @@ const cityCoordinates: Record<string, [number, number]> = {
 };
 
 const ORIGIN_COORDS: [number, number] = [-6.2088, 106.8456]; // Jakarta Atelier
-const DEFAULT_CENTER: [number, number] = [-2.5489, 118.0149]; // Center of Indonesia
 
 interface TrackingLog {
   id: string;
@@ -112,6 +111,26 @@ export default function MapTracker({ destinationCity, status, logs = [] }: Props
         .custom-tooltip::before {
           display: none;
         }
+        /* Custom UI overrides for Leaflet Zoom Controls */
+        .leaflet-control-zoom {
+          border: none !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+          border-radius: 8px !important;
+          overflow: hidden;
+        }
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+          background-color: rgba(255,255,255,0.95) !important;
+          color: #111827 !important;
+          font-family: inherit !important;
+          width: 32px !important;
+          height: 32px !important;
+          line-height: 32px !important;
+          border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+        }
+        .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
+          background-color: #f9fafb !important;
+          color: #10b981 !important;
+        }
       `;
       document.head.appendChild(style);
     }
@@ -161,13 +180,15 @@ export default function MapTracker({ destinationCity, status, logs = [] }: Props
   const linePositions = destCoords ? [ORIGIN_COORDS, destCoords] : [ORIGIN_COORDS];
 
   return (
-    <div className="w-full h-full min-h-[350px] md:min-h-[450px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0">
+    <div className="w-full h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0">
       <MapContainer 
         center={currentCoords} 
         zoom={14} 
         scrollWheelZoom={false}
+        zoomControl={false}
         className="w-full h-full absolute inset-0 z-0"
       >
+        <ZoomControl position="bottomright" />
         <MapUpdater center={currentCoords} zoom={14} />
         
         <TileLayer
@@ -212,11 +233,9 @@ export default function MapTracker({ destinationCity, status, logs = [] }: Props
       </MapContainer>
 
       {/* Decorative Overlay */}
-      <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-3 py-1.5 border border-ink/10 shadow-sm pointer-events-none rounded-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[9px] uppercase tracking-widest font-semibold text-ink">Live Logistics</span>
-        </div>
+      <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-3 py-1.5 border border-ink/10 shadow-sm pointer-events-none rounded-full flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span className="text-[10px] uppercase tracking-widest font-bold text-ink">Live Logistics</span>
       </div>
     </div>
   );
