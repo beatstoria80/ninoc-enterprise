@@ -380,6 +380,13 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Validate phone number length (10-13 digits)
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10 || phoneDigits.length > 13) {
+      alert('Nomor HP tidak valid. Masukkan 10 hingga 13 digit angka.');
+      return;
+    }
+
     setIsProcessing(true);
 
     const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}`;
