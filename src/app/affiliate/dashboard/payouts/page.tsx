@@ -38,11 +38,7 @@ export default function PayoutsPage() {
   const [idUploaded, setIdUploaded] = useState(false);
   const [docUploading, setDocUploading] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  async function fetchData() {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -70,6 +66,12 @@ export default function PayoutsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();

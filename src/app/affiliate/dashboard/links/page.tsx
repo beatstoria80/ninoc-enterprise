@@ -33,7 +33,7 @@ export default function LinksPage() {
     fetchData();
   }, []);
 
-  async function fetchData() {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -60,7 +60,7 @@ export default function LinksPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,13 +107,13 @@ export default function LinksPage() {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }
 
   const handleCopy = (textToCopy: string) => {
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
-  };
+  }
 
   if (loading) {
     return (
