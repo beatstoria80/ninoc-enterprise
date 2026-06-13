@@ -216,7 +216,7 @@ export default function TrackClient() {
               <MapTracker 
                 destinationCity={order.shipping_address?.city} 
                 status={order.status}
-                latestLocation={order.logs.length > 0 ? (order.logs[0].location || order.logs[0].description || undefined) : undefined} 
+                logs={order.logs}
               />
             </div>
 

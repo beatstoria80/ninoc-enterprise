@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -21,19 +21,19 @@ L.Marker.prototype.options.icon = defaultIcon;
 const pulseIcon = L.divIcon({
   className: 'custom-pulse-icon',
   html: `<div style="
-    width: 20px; 
-    height: 20px; 
+    width: 16px; 
+    height: 16px; 
     background-color: #10B981; 
     border-radius: 50%; 
-    border: 3px solid white;
+    border: 2px solid white;
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
     animation: mapPulse 2s infinite;
   "></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 10]
+  iconSize: [16, 16],
+  iconAnchor: [8, 8]
 });
 
-// A small dictionary of major Indonesian cities coordinates to simulate real-time routing
+// A small dictionary of major Indonesian cities coordinates
 const cityCoordinates: Record<string, [number, number]> = {
   'jakarta': [-6.2088, 106.8456],
   'bandung': [-6.9175, 107.6191],
@@ -52,27 +52,65 @@ const cityCoordinates: Record<string, [number, number]> = {
 const ORIGIN_COORDS: [number, number] = [-6.2088, 106.8456]; // Jakarta Atelier
 const DEFAULT_CENTER: [number, number] = [-2.5489, 118.0149]; // Center of Indonesia
 
+interface TrackingLog {
+  id: string;
+  description: string | null;
+  location: string | null;
+  created_at: string;
+  biteship_status: string | null;
+  internal_status: string | null;
+}
+
 interface Props {
   destinationCity?: string;
   status?: string;
-  latestLocation?: string;
+  logs?: TrackingLog[];
 }
 
-export default function MapTracker({ destinationCity, status, latestLocation }: Props) {
+// MapUpdater safely uses the Leaflet map instance to animate pan/zoom
+function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      // flyTo gives a detailed, close-up industry standard zoom
+      map.flyTo(center, zoom, { duration: 1.5 });
+    }
+  }, [map, center, zoom]);
+  return null;
+}
+
+export default function MapTracker({ destinationCity, status, logs = [] }: Props) {
   const [destCoords, setDestCoords] = useState<[number, number] | null>(null);
   const [currentCoords, setCurrentCoords] = useState<[number, number]>(ORIGIN_COORDS);
-  const [zoom, setZoom] = useState(5);
 
   useEffect(() => {
-    // Inject the pulse animation styles if not present
-    if (!document.getElementById('map-pulse-style')) {
+    if (!document.getElementById('map-custom-styles')) {
       const style = document.createElement('style');
-      style.id = 'map-pulse-style';
+      style.id = 'map-custom-styles';
       style.innerHTML = `
         @keyframes mapPulse {
           0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); transform: scale(0.95); }
-          70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); transform: scale(1); }
+          70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); transform: scale(1); }
           100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(0.95); }
+        }
+        @keyframes mapDash {
+          to { stroke-dashoffset: -20; }
+        }
+        .animated-route-line {
+          animation: mapDash 1s linear infinite;
+        }
+        .custom-tooltip {
+          background-color: rgba(255, 255, 255, 0.95);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          color: #111827;
+          font-family: inherit;
+          padding: 4px 8px;
+          border-radius: 2px;
+          margin-left: 8px;
+        }
+        .custom-tooltip::before {
+          display: none;
         }
       `;
       document.head.appendChild(style);
@@ -84,7 +122,6 @@ export default function MapTracker({ destinationCity, status, latestLocation }: 
     
     if (destinationCity) {
       const normalizedCity = destinationCity.toLowerCase().trim();
-      // Try exact match or partial match
       const matchedKey = Object.keys(cityCoordinates).find(k => normalizedCity.includes(k));
       if (matchedKey) {
         targetCoords = cityCoordinates[matchedKey];
@@ -93,76 +130,89 @@ export default function MapTracker({ destinationCity, status, latestLocation }: 
       }
     }
 
-    // Determine current position based on status
     if (status === 'delivered' && targetCoords) {
       setCurrentCoords(targetCoords);
-      setZoom(12);
     } else if (status === 'shipped' && targetCoords) {
-      // Simulate half-way point for visual effect if shipped
+      // Simulate half-way point for current location
       const lat = (ORIGIN_COORDS[0] + targetCoords[0]) / 2;
       const lng = (ORIGIN_COORDS[1] + targetCoords[1]) / 2;
       setCurrentCoords([lat, lng]);
-      setZoom(6);
     } else {
-      // Processing or Paid -> still at origin
       setCurrentCoords(ORIGIN_COORDS);
-      setZoom(10);
     }
   }, [destinationCity, status]);
 
-  const mapCenter = destCoords 
-    ? [(ORIGIN_COORDS[0] + currentCoords[0]) / 2, (ORIGIN_COORDS[1] + currentCoords[1]) / 2] as [number, number]
-    : DEFAULT_CENTER;
+  // Sort logs chronologically (oldest first) to plot them along the route
+  const sortedLogs = [...logs].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  
+  // Calculate interpolated positions for each log point
+  const logPoints = sortedLogs.map((log, index) => {
+    const totalLogs = sortedLogs.length;
+    // Distribute points between origin and current location
+    const fraction = totalLogs > 1 ? index / (totalLogs - 1) : 1;
+    
+    const lat = ORIGIN_COORDS[0] + (currentCoords[0] - ORIGIN_COORDS[0]) * fraction;
+    // Add slight curve/jitter to longitude so lines aren't completely straight if needed, but straight is fine for now
+    const lng = ORIGIN_COORDS[1] + (currentCoords[1] - ORIGIN_COORDS[1]) * fraction;
 
-  // Polyline coordinates from origin to destination (or current)
+    return { lat, lng, log };
+  });
+
   const linePositions = destCoords ? [ORIGIN_COORDS, destCoords] : [ORIGIN_COORDS];
 
   return (
-    <div className="w-full h-full min-h-[300px] md:min-h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0">
+    <div className="w-full h-full min-h-[350px] md:min-h-[450px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0">
       <MapContainer 
-        center={mapCenter} 
-        zoom={destCoords ? zoom : 5} 
+        center={currentCoords} 
+        zoom={14} 
         scrollWheelZoom={false}
         className="w-full h-full absolute inset-0 z-0"
       >
-        {/* Using CartoDB Positron for a minimal, premium light aesthetic */}
+        <MapUpdater center={currentCoords} zoom={14} />
+        
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         
-        {/* Origin Marker (NINOC Atelier) */}
-        <CircleMarker center={ORIGIN_COORDS} radius={6} pathOptions={{ color: '#111827', fillColor: '#111827', fillOpacity: 1 }}>
-          <Popup className="font-sans text-xs">
-            <b>NINOC Atelier</b><br/>Origin Facility
-          </Popup>
-        </CircleMarker>
-
         {/* Destination Marker */}
         {destCoords && (
-          <CircleMarker center={destCoords} radius={6} pathOptions={{ color: '#9CA3AF', fillColor: '#F3F4F6', fillOpacity: 1 }}>
-            <Popup className="font-sans text-xs">
-              <b>Destination</b><br/>{destinationCity}
-            </Popup>
+          <CircleMarker center={destCoords} radius={5} pathOptions={{ color: '#9CA3AF', fillColor: '#F3F4F6', fillOpacity: 1, weight: 2 }}>
+            <Tooltip permanent direction="bottom" offset={[0, 10]} className="custom-tooltip">
+              <span className="text-[9px] uppercase tracking-widest font-semibold text-ink/50">{destinationCity} (Tujuan)</span>
+            </Tooltip>
           </CircleMarker>
         )}
 
         {/* Route Line */}
         {destCoords && (
-          <Polyline positions={linePositions} pathOptions={{ color: '#111827', weight: 2, dashArray: '5, 10', opacity: 0.4 }} />
+          <Polyline positions={linePositions} pathOptions={{ color: '#111827', weight: 2, dashArray: '4, 8', opacity: 0.3, className: 'animated-route-line' }} />
         )}
 
-        {/* Current Live Location Pulse */}
-        <Marker position={currentCoords} icon={pulseIcon}>
-          <Popup className="font-sans text-xs uppercase tracking-widest font-semibold text-emerald-600">
-            {status === 'delivered' ? 'DELIVERED' : status === 'shipped' ? 'IN TRANSIT' : 'PROCESSING'}
-            {latestLocation && <div className="text-[9px] text-ink/50 mt-1">{latestLocation}</div>}
-          </Popup>
-        </Marker>
+        {/* Individual Log Points */}
+        {logPoints.map((point, idx) => (
+          <CircleMarker key={point.log.id} center={[point.lat, point.lng]} radius={4} pathOptions={{ color: '#111827', fillColor: '#ffffff', fillOpacity: 1, weight: 2 }}>
+            <Tooltip permanent={true} direction={idx % 2 === 0 ? "right" : "left"} offset={idx % 2 === 0 ? [10, 0] : [-10, 0]} className="custom-tooltip">
+              <div className="flex flex-col">
+                <span className="text-[8px] uppercase tracking-widest font-bold text-ink">{point.log.location || point.log.biteship_status || 'UPDATE'}</span>
+                {point.log.description && <span className="text-[7px] uppercase tracking-wider text-ink/50 mt-0.5 max-w-[120px] whitespace-normal leading-tight">{point.log.description}</span>}
+              </div>
+            </Tooltip>
+          </CircleMarker>
+        ))}
+
+        {/* Current Live Location Pulse (At the very end of the current progress) */}
+        {logs.length > 0 && (
+          <Marker position={currentCoords} icon={pulseIcon}>
+            <Tooltip permanent direction="top" offset={[0, -10]} className="custom-tooltip border-emerald-500/20">
+              <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600">POSISI TERKINI</span>
+            </Tooltip>
+          </Marker>
+        )}
       </MapContainer>
 
-      {/* Decorative Overlay for Premium Feel */}
-      <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-3 py-1.5 border border-ink/10 shadow-lg pointer-events-none">
+      {/* Decorative Overlay */}
+      <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-3 py-1.5 border border-ink/10 shadow-sm pointer-events-none rounded-sm">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="text-[9px] uppercase tracking-widest font-semibold text-ink">Live Logistics</span>
