@@ -125,6 +125,74 @@ export function LogisticsTab({
     }, 4000);
   };
 
+  const [isDispatching, setIsDispatching] = useState(false);
+
+  const handleRequestPickup = async (order: Order) => {
+    if (!order || order.status !== 'paid') return;
+    setIsDispatching(true);
+    
+    try {
+      // Basic split for courier string (e.g. "SICEPAT REG")
+      const parts = (order.courier || 'sicepat reg').split(' ');
+      const courierCompany = parts[0].toLowerCase();
+      const courierType = parts.slice(1).join(' ').toLowerCase() || 'reg';
+      
+      const payload = {
+        order_id: order.id,
+        courier_company: courierCompany,
+        courier_type: courierType,
+        destination: {
+          contact_name: order.shipping_address?.name || 'Customer',
+          contact_phone: order.shipping_address?.phone || '0800000000',
+          address: order.shipping_address?.address || 'Alamat tidak diketahui',
+          postal_code: order.shipping_address?.postal_code || 12345,
+          note: `Pesanan NINOC #${order.id.slice(0,8)}`
+        },
+        origin: {
+          contact_name: "NINOC Warehouse",
+          contact_phone: "081234567890",
+          address: "Jalan Contoh Gudang No. 1",
+          postal_code: 12345,
+          note: "Gudang Utama NINOC"
+        },
+        items: order.order_items?.map(item => ({
+          name: item.product_name || 'Garment Item',
+          value: item.price_at_purchase || 0,
+          quantity: item.quantity || 1,
+          weight: 500 // default 500g
+        })) || []
+      };
+
+      const res = await fetch('/api/biteship/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to dispatch order via Biteship');
+      }
+
+      // Optimistic Update
+      setLogisticsSelectedOrder({
+        ...order,
+        status: 'shipped',
+        tracking_id: data.tracking_id || data.waybill_id,
+        courier: `${data.courier_company} ${data.courier_type}`.toUpperCase()
+      });
+      
+      alert(`Berhasil! Nomor Resi: ${data.tracking_id || data.waybill_id}`);
+
+    } catch (err: any) {
+      console.error('Dispatch error:', err);
+      alert(`Gagal request pickup: ${err.message}`);
+    } finally {
+      setIsDispatching(false);
+    }
+  };
+
   const getTimeAgo = (dateStr: string) => {
     if (!now) return '-';
     const diff = now - new Date(dateStr).getTime();
@@ -393,9 +461,35 @@ export function LogisticsTab({
                       <span className="text-xs md:text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
                       <span className="text-[11px] md:text-[8px] text-gray-400">Updated 5 mins ago</span>
                     </div>
-                    <button className="px-3 py-1.5 bg-gray-50 text-[11px] md:text-[8px] font-medium text-gray-600 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
-                      Refresh
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {logisticsSelectedOrder.status === 'paid' && (
+                        <button 
+                          onClick={() => handleRequestPickup(logisticsSelectedOrder)}
+                          disabled={isDispatching}
+                          className={cn(
+                            "px-3 py-1.5 text-[11px] md:text-[8px] font-medium rounded border transition-colors flex items-center gap-1.5",
+                            isDispatching 
+                              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                              : "bg-ink text-white border-ink hover:bg-ink/90"
+                          )}
+                        >
+                          {isDispatching ? (
+                            <>
+                              <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
+                              Memproses...
+                            </>
+                          ) : (
+                            <>
+                              <Truck size={10} />
+                              Request Pickup (Dispatch)
+                            </>
+                          )}
+                        </button>
+                      )}
+                      <button className="px-3 py-1.5 bg-gray-50 text-[11px] md:text-[8px] font-medium text-gray-600 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                        Refresh
+                      </button>
+                    </div>
                   </div>
 
                   <div className="relative pl-3.5 border-l border-gray-200 space-y-4 ml-2">
