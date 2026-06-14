@@ -296,6 +296,8 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
   }
   const images = rawImages;
 
+  const localizedDescription = dict.locale === 'EN' && product.description_en ? product.description_en : product.description;
+
   const availableColors = Array.from(new Set(
     product?.variants?.filter(v => (!hasSizes || v.size?.toUpperCase() === effectiveSize.toUpperCase()) && v.color).map(v => v.color as string) || []
   ));
@@ -463,11 +465,11 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <motion.h4 variants={textVariants} className="text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-sm md:text-[11px] md:text-xs lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {isExpanded || (product.description || '').length <= 200
-                    ? product.description || 'Premium quality apparel from NINOC.'
-                    : (product.description || '').slice(0, 200) + '…'}
+                  {isExpanded || (localizedDescription || '').length <= 200
+                    ? localizedDescription || 'Premium quality apparel from NINOC.'
+                    : (localizedDescription || '').slice(0, 200) + '…'}
                 </motion.p>
-                {(product.description || '').length > 200 && (
+                {(localizedDescription || '').length > 200 && (
                   <motion.button
                     variants={textVariants}
                     onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
