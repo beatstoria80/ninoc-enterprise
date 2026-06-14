@@ -8,6 +8,7 @@ import { X, MapPin, Truck } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import CourierLogo from '@/components/CourierLogo';
 import { supabase } from '@/lib/supabase';
+import jsQR from 'jsqr';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
@@ -108,6 +109,12 @@ export default function TrackClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  
+  // QR Scan State
+  const [mode, setMode] = useState<'manual' | 'qr'>('manual');
+  const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'success' | 'error'>('idle');
+  const [scanMessage, setScanMessage] = useState('');
+  const phoneInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const qOrder = searchParams.get('order_number');
@@ -180,21 +187,110 @@ export default function TrackClient() {
   const currentStep = order ? getStepIndex(order.status) : -1;
   const scrollbarStyles = "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-ink/20";
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setScanStatus('scanning');
+    setScanMessage('Menganalisis Gambar...');
+    setError('');
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          setScanStatus('error');
+          setScanMessage('Gagal memproses gambar. Silakan isi manual.');
+          return;
+        }
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+
+        if (code && code.data) {
+          setOrderNumber(code.data);
+          setScanStatus('success');
+          setScanMessage('QR Ditemukan! Silakan masukkan Nomor WA Anda.');
+          // Switch to manual mode so they can enter phone
+          setTimeout(() => {
+            setMode('manual');
+            phoneInputRef.current?.focus();
+          }, 1500);
+        } else {
+          setScanStatus('error');
+          setScanMessage('QR Tidak Terbaca. Pastikan gambar jelas atau isi manual.');
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const renderForm = () => (
-    <form onSubmit={handleTrack} className="bg-ink/[0.01] border border-ink/5 p-4 flex flex-col gap-4">
-      <div className="space-y-1">
-        <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
-        <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
+    <div className="bg-ink/[0.01] border border-ink/5 p-4 flex flex-col gap-4">
+      {/* TABS */}
+      <div className="flex border-b border-ink/10">
+        <button 
+          onClick={() => setMode('manual')}
+          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'manual' ? 'text-rose border-b-2 border-rose' : 'text-ink/40 hover:text-ink/70'}`}
+        >
+          Manual Input
+        </button>
+        <button 
+          onClick={() => setMode('qr')}
+          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'qr' ? 'text-rose border-b-2 border-rose' : 'text-ink/40 hover:text-ink/70'}`}
+        >
+          Upload Invoice (QR)
+        </button>
       </div>
-      <div className="space-y-1">
-        <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
-        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
-      </div>
-      {error && <div className="px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
-      <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2">
-        {loading ? 'Loading…' : 'Lacak Pesanan'}
-      </button>
-    </form>
+
+      {mode === 'manual' ? (
+        <form onSubmit={handleTrack} className="flex flex-col gap-4 mt-2">
+          <div className="space-y-1">
+            <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
+            <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
+            <input ref={phoneInputRef} type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
+            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest mt-1 italic">*Wajib diisi demi keamanan data pengiriman.</p>
+          </div>
+          {error && <div className="px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
+          <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 mt-2">
+            {loading ? 'Loading…' : 'Lacak Pesanan'}
+          </button>
+        </form>
+      ) : (
+        <div className="flex flex-col gap-4 mt-2">
+          <p className="text-xs md:text-[10px] text-ink/60 leading-relaxed uppercase tracking-widest">Unggah *screenshot* atau foto Invoice Anda. Sistem akan otomatis memindai QR Code untuk mendapatkan Nomor Pesanan.</p>
+          
+          <label className="border-2 border-dashed border-ink/20 bg-white p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-rose/50 hover:bg-rose/5 transition-colors group">
+            <input type="file" accept="image/png, image/jpeg, image/jpg" className="hidden" onChange={handleFileUpload} />
+            <div className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center group-hover:bg-rose/10 group-hover:text-rose text-ink/40 transition-colors">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <span className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink/60 group-hover:text-rose">Pilih Gambar Invoice (PNG/JPG)</span>
+          </label>
+
+          {scanStatus !== 'idle' && (
+            <div className={`px-3 py-2 border text-xs md:text-[9px] font-semibold uppercase tracking-wider ${
+              scanStatus === 'scanning' ? 'bg-blue-50 border-blue-200 text-blue-600' :
+              scanStatus === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' :
+              'bg-red-50 border-red-200 text-red-500'
+            }`}>
+              {scanMessage}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 
   return (
