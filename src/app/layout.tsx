@@ -137,10 +137,10 @@ export default async function RootLayout({
               },
               address: {
                 '@type': 'PostalAddress',
-                streetAddress: 'Jl. Gudang Selatan No. 22',
+                streetAddress: 'Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari',
                 addressLocality: 'Bandung',
                 addressRegion: 'Jawa Barat',
-                postalCode: '40113',
+                postalCode: '40292',
                 addressCountry: 'ID',
               },
               contactPoint: {
@@ -171,10 +171,10 @@ export default async function RootLayout({
               description: 'Distributor resmi dan toko ritel untuk produk apparel dan aksesoris fungsional NINOC.',
               address: {
                 '@type': 'PostalAddress',
-                streetAddress: 'Jl. Gudang Selatan No. 22',
+                streetAddress: 'Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari',
                 addressLocality: 'Bandung',
                 addressRegion: 'Jawa Barat',
-                postalCode: '40113',
+                postalCode: '40292',
                 addressCountry: 'ID'
               },
               geo: {
