@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash, AlertTriangle } from 'lucide-react';
+import { format } from 'date-fns';
+import CourierLogo from '@/components/CourierLogo';
 import { cn } from '@/lib/utils';
 import { Order, Product } from '../types';
 import Image from 'next/image';
@@ -1132,7 +1134,10 @@ export function OrdersTab({
                                         <div className="flex items-start gap-2">
                                           <Truck size={10} className="text-ink/30 mt-0.5 shrink-0" />
                                           <div>
-                                            <p className="text-xs md:text-[10px] font-medium text-ink uppercase">{order.courier || 'Not Assigned'}</p>
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <CourierLogo courier={order.courier || ''} className="h-4" />
+                                              <p className="text-xs md:text-[10px] font-medium text-ink uppercase">{order.courier || 'Not Assigned'}</p>
+                                            </div>
                                             {order.tracking_id && (
                                               <p className="text-xs md:text-[9px] text-ink/50 font-mono mt-0.5">Resi: {order.tracking_id}</p>
                                             )}

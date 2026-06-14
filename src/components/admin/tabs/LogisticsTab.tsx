@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import CourierLogo from '@/components/CourierLogo';
 import { Order } from '../types';
 import { supabase } from '@/lib/supabase';
 import MapTracker from '@/components/MapTracker';
@@ -332,7 +334,10 @@ export function LogisticsTab({
                       <div className="text-[11px] md:text-[8px] text-gray-400 truncate max-w-[120px]">{order.shipping_address?.city}</div>
                     </td>
                     <td className="px-3 py-1.5">
-                      <span className="text-xs md:text-[9px] text-gray-600 uppercase">{order.courier || '—'}</span>
+                      <div className="flex items-center gap-1.5">
+                        <CourierLogo courier={order.courier || ''} className="h-3.5" />
+                        <span className="text-xs md:text-[9px] text-gray-600 uppercase">{order.courier || '—'}</span>
+                      </div>
                     </td>
                     <td className="px-3 py-1.5">
                       {order.tracking_id ? (

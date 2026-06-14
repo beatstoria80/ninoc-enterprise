@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { useDevice } from './_components/useDevice';
 import BottomCTA from './_components/BottomCTA';
 import { useDictionary } from '@/hooks/useDictionary';
+import CourierLogo from '@/components/CourierLogo';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -803,7 +804,10 @@ export default function CheckoutPage() {
                     {isMobile ? (
                       <>
                         <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1 pr-2">
-                          <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                          <div className="flex items-center gap-2 mb-1">
+                            <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
+                            <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                          </div>
                           <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} â€¢ {option.duration}</span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -821,6 +825,7 @@ export default function CheckoutPage() {
                       /* Desktop: vertical layout with hover tooltip */
                       <>
                         <div className="flex items-center gap-1.5 mb-1">
+                          <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
                           <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
                           <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/30 hover:text-ink")}>
                             <Info size={10} />

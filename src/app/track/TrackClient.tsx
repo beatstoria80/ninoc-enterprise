@@ -6,6 +6,7 @@ import Link from '@/components/LocalizedLink';
 import Footer from '@/components/Footer';
 import { X, MapPin, Truck } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import CourierLogo from '@/components/CourierLogo';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
@@ -207,9 +208,15 @@ export default function TrackClient() {
                   <div className="pt-4 border-t border-ink/5 mt-2">
                     <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Nomor Resi</p>
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex items-center gap-2">
                         <span className="text-sm md:text-[11px] font-semibold uppercase tracking-wider">{order.tracking_id}</span>
-                        {order.courier && <span className="text-[11px] md:text-[8px] text-ink/30 ml-2 uppercase tracking-widest">via {order.courier}</span>}
+                        {order.courier && (
+                          <div className="flex items-center gap-1.5 ml-1">
+                            <span className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest">via</span>
+                            <CourierLogo courier={order.courier} className="h-3" />
+                            <span className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest">{order.courier}</span>
+                          </div>
+                        )}
                       </div>
                       <button onClick={() => navigator.clipboard.writeText(order.tracking_id!)} className="text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-rose hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm" aria-label="Copy tracking ID">Copy</button>
                     </div>
@@ -313,9 +320,13 @@ export default function TrackClient() {
                                   </p>
                                 )}
                                 {log.courier_company && (
-                                  <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.courier_company}{log.courier_driver_name ? ` — ${log.courier_driver_name}` : ''}
-                                  </p>
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                      <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> 
+                                      <CourierLogo courier={log.courier_company} className="h-2.5" />
+                                      {log.courier_company}{log.courier_driver_name ? ` — ${log.courier_driver_name}` : ''}
+                                    </p>
+                                  </div>
                                 )}
                               </div>
                             )}

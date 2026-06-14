@@ -180,7 +180,7 @@ export function ShippingLabel({ order }: { order: Order }) {
         }}>
           {courierLogo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain', filter: 'grayscale(100%) contrast(120%)' }} />
+            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain', filter: 'brightness(0)' }} />
           ) : (
             <span style={{ fontSize: '12px', fontWeight: '800' }}>{courierInfo.name}</span>
           )}
