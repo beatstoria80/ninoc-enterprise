@@ -58,6 +58,23 @@ const FALLBACK_PROVINCES: LocationItem[] = [
   { id: '73', name: 'SULAWESI SELATAN' }
 ];
 
+interface CheckoutFormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  street: string;
+  house_number: string;
+  rt: string;
+  rw: string;
+  kelurahan: string;
+  kecamatan: string;
+  city: string;
+  province: string;
+  postal_code: string;
+  referral_code: string;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice } = useCart();
@@ -121,7 +138,7 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  const [formData, setFormData] = useState(() => {
+  const [formData, setFormData] = useState<CheckoutFormData>(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('ninoc_checkout_form');
       if (saved) {
