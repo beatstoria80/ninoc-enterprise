@@ -121,21 +121,39 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    street: '',
-    house_number: '',
-    rt: '',
-    rw: '',
-    kelurahan: '',
-    kecamatan: '',
-    city: '',
-    province: '',
-    referral_code: ''
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('ninoc_checkout_form');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse saved checkout form data', e);
+        }
+      }
+    }
+    return {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      street: '',
+      house_number: '',
+      rt: '',
+      rw: '',
+      kelurahan: '',
+      kecamatan: '',
+      city: '',
+      province: '',
+      referral_code: ''
+    };
   });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('ninoc_checkout_form', JSON.stringify(formData));
+    }
+  }, [formData]);
 
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
   const [cities, setCities] = useState<LocationItem[]>([]);
