@@ -1,21 +1,71 @@
 import React from 'react';
 
-// URL Logo Resmi dengan Background Transparan (Resolusi Tinggi)
-export const COURIER_LOGOS: Record<string, string> = {
-  'jne': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
-  'sicepat': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
-  'j&t': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
-  'jnt': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
-  'anteraja': 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Anteraja.png',
-  'ninja': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
-  'pos': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
+// SVGs inline untuk mencegah broken image / di block oleh CORS
+const LOGO_SVGS: Record<string, React.ReactNode> = {
+  jne: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <text x="5" y="22" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="24" fill="#003180" fontStyle="italic">JNE</text>
+      <text x="60" y="22" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="24" fill="#E3000F" fontStyle="italic">EXPRESS</text>
+      <rect x="5" y="26" width="50" height="4" fill="#E3000F" />
+    </svg>
+  ),
+  sicepat: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="4" fill="#E3000F" />
+      <text x="50" y="20" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="16" fill="#FFFFFF" fontStyle="italic" textAnchor="middle">SiCepat</text>
+    </svg>
+  ),
+  "j&t": (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="0" fill="#E3000F" />
+      <text x="50" y="21" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="18" fill="#FFFFFF" textAnchor="middle">J&amp;T EXPRESS</text>
+    </svg>
+  ),
+  jnt: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="0" fill="#E3000F" />
+      <text x="50" y="21" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="18" fill="#FFFFFF" textAnchor="middle">J&amp;T EXPRESS</text>
+    </svg>
+  ),
+  anteraja: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="15" fill="#EE2C3C" />
+      <text x="50" y="20" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="16" fill="#FFFFFF" textAnchor="middle">AnterAja</text>
+    </svg>
+  ),
+  ninja: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="4" fill="#C51C2A" />
+      <text x="50" y="20" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="16" fill="#FFFFFF" fontStyle="italic" textAnchor="middle">ninjaVAN</text>
+    </svg>
+  ),
+  gosend: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="15" fill="#00AA13" />
+      <text x="50" y="20" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="16" fill="#FFFFFF" textAnchor="middle">GoSend</text>
+    </svg>
+  ),
+  grabexpress: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="100" height="30" rx="15" fill="#00B14F" />
+      <text x="50" y="20" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="14" fill="#FFFFFF" textAnchor="middle">GrabExpress</text>
+    </svg>
+  ),
+  pos: (
+    <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <text x="5" y="22" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="22" fill="#F36F21" fontStyle="italic">POS</text>
+      <text x="55" y="22" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="18" fill="#000000">Indonesia</text>
+    </svg>
+  )
 };
 
-export function getCourierLogoUrl(courierName: string | null | undefined): string | null {
+export const COURIER_LOGOS = LOGO_SVGS;
+
+export function getCourierSvg(courierName: string | null | undefined): React.ReactNode | null {
   if (!courierName) return null;
   const key = courierName.toLowerCase().trim();
-  for (const [k, url] of Object.entries(COURIER_LOGOS)) {
-    if (key.includes(k)) return url;
+  for (const [k, svg] of Object.entries(LOGO_SVGS)) {
+    if (key.includes(k)) return svg;
   }
   return null;
 }
@@ -27,26 +77,23 @@ interface CourierLogoProps {
 }
 
 export default function CourierLogo({ courier, className = "", forceBlackForPrint = false }: CourierLogoProps) {
-  const url = getCourierLogoUrl(courier);
+  const svgContent = getCourierSvg(courier);
   
-  if (!url) {
-    // Fallback jika logo tidak ditemukan
+  if (!svgContent) {
+    // Fallback Text jika tidak ada SVG match
     return (
-      <span className={`font-semibold uppercase ${className}`}>
+      <span className={`font-semibold uppercase ${className} inline-flex items-center justify-center px-2 py-0.5 bg-ink/5 border border-ink/10 rounded-sm text-ink text-[10px]`}>
         {courier}
       </span>
     );
   }
 
-  // forceBlackForPrint menggunakan trik brightness(0) agar logo warna menjadi hitam solid (cocok untuk label resi).
-  // Di UI biasa, logo akan tampil dengan warna original sesuai hukum hak cipta.
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img 
-      src={url} 
-      alt={`${courier} logo`} 
-      className={`object-contain ${className}`}
-      style={forceBlackForPrint ? { filter: 'brightness(0)' } : undefined}
-    />
+    <div 
+      className={`inline-block ${className}`}
+      style={forceBlackForPrint ? { filter: 'grayscale(100%) brightness(0)' } : undefined}
+    >
+      {svgContent}
+    </div>
   );
 }
