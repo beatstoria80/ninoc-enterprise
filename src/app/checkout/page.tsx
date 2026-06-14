@@ -357,6 +357,7 @@ export default function CheckoutPage() {
             kecamatan: profile.kecamatan || '',
             city: profile.city || '',
             province: profile.province || '',
+            postal_code: profile.postal_code || '',
             referral_code: ''
           };
           setFormData(newData);
