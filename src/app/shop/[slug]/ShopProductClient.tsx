@@ -244,8 +244,10 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
     };
   }, [slug]);
 
+  const hasSizes = product?.variants?.some(v => v.size && v.size.trim() !== '');
+
   const availableSizes = (() => {
-    if (!product?.variants?.length) return ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+    if (!product?.variants?.length || !hasSizes) return [];
     const sizes = Array.from(new Set(product.variants.map(v => v.size).filter(Boolean))) as string[];
     
     const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
@@ -258,23 +260,24 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
       return idxA - idxB;
     });
 
-    // Fallback to default if somehow variants exist but have no sizes
-    return sizes.length > 0 ? sizes : ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+    return sizes;
   })();
 
   const effectiveSize = (() => {
-    if (availableSizes.includes(selectedSize)) return selectedSize;
-    return availableSizes[0] || selectedSize;
+    if (!hasSizes) return '';
+    const match = availableSizes.find(s => s.toUpperCase() === selectedSize.toUpperCase());
+    if (match) return match;
+    return availableSizes[0] || '';
   })();
 
   const effectiveColor = (() => {
     if (!product?.variants?.length) return selectedColor;
     const colorsForSize = Array.from(new Set(
-      product.variants.filter(v => v.size === effectiveSize && v.color).map(v => v.color as string)
+      product.variants.filter(v => (!hasSizes || v.size?.toUpperCase() === effectiveSize.toUpperCase()) && v.color).map(v => v.color as string)
     ));
-    if (colorsForSize.length > 0 && !colorsForSize.includes(selectedColor)) return colorsForSize[0];
-    if (colorsForSize.length === 0 && selectedColor !== '') return '';
-    return selectedColor;
+    const match = colorsForSize.find(c => c.toUpperCase() === selectedColor.toUpperCase());
+    if (match) return match;
+    return colorsForSize[0] || '';
   })();
 
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
@@ -294,10 +297,14 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
   const images = rawImages;
 
   const availableColors = Array.from(new Set(
-    product?.variants?.filter(v => v.size === effectiveSize && v.color).map(v => v.color as string) || []
+    product?.variants?.filter(v => (!hasSizes || v.size?.toUpperCase() === effectiveSize.toUpperCase()) && v.color).map(v => v.color as string) || []
   ));
 
-  const selectedVariant = product?.variants?.find(v => v.size === effectiveSize && (v.color === effectiveColor || (!v.color && !effectiveColor)));
+  const selectedVariant = product?.variants?.find(v => 
+    (!hasSizes ? !v.size : v.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
+    (!effectiveColor ? !v.color : v.color?.toUpperCase() === effectiveColor.toUpperCase())
+  );
+  
   const availableStock = selectedVariant ? selectedVariant.stock_quantity : 0;
   const displayQuantity = availableStock === 0 ? 0 : Math.min(quantity, availableStock);
 
@@ -533,67 +540,69 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
           <motion.div variants={columnVariants} className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
-              <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
-                <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
-                  {availableSizes.map((size) => (
-                    <motion.button
-                      variants={textVariants}
-                      key={size}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs md:text-[10px] lg:text-xs font-medium transition-all border relative",
-                        effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
-                      )}
-                    >
-                      {size}
-                      {isSurchargeSize(size) && (
-                        <span className={cn(
-                          "absolute -top-1.5 -right-1 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
-                          effectiveSize === size ? "bg-white text-rose" : "bg-rose text-white"
-                        )}>
-                          +15K
-                        </span>
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-                {currentSurcharge > 0 && (
-                  <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-1 px-1">
-                    <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
-                    <span className="text-[11px] md:text-[8px] font-medium text-rose uppercase tracking-wider">
-                      +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} surcharge untuk ukuran {effectiveSize}
-                    </span>
-                  </motion.div>
-                )}
-
-                {availableColors.length > 0 && (
-                  <div className="space-y-2">
-                    <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
-                    <div className="flex gap-2 flex-wrap">
-                      {availableColors.map((color) => (
-                        <motion.button
-                          variants={textVariants}
-                          key={color}
-                          whileTap={{ scale: 0.97 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                          onClick={() => setSelectedColor(color)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-none text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
-                            effectiveColor === color
-                              ? "bg-ink text-white border-ink"
-                              : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
-                          )}
-                        >
-                          {color}
-                        </motion.button>
-                      ))}
-                    </div>
+              {hasSizes && (
+                <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
+                  <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
+                  <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
+                    {availableSizes.map((size) => (
+                      <motion.button
+                        variants={textVariants}
+                        key={size}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        onClick={() => setSelectedSize(size)}
+                        className={cn(
+                          "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs md:text-[10px] lg:text-xs font-medium transition-all border relative",
+                          effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
+                        )}
+                      >
+                        {size}
+                        {isSurchargeSize(size) && (
+                          <span className={cn(
+                            "absolute -top-1.5 -right-1 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
+                            effectiveSize === size ? "bg-white text-rose" : "bg-rose text-white"
+                          )}>
+                            +15K
+                          </span>
+                        )}
+                      </motion.button>
+                    ))}
                   </div>
-                )}
-              </div>
+                  {currentSurcharge > 0 && (
+                    <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-1 px-1">
+                      <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
+                      <span className="text-[11px] md:text-[8px] font-medium text-rose uppercase tracking-wider">
+                        +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} surcharge untuk ukuran {effectiveSize}
+                      </span>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {availableColors.length > 0 && (
+                <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
+                  <motion.h4 variants={textVariants} className="text-xs md:text-[10px] lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                  <div className="flex gap-2 flex-wrap">
+                    {availableColors.map((color) => (
+                      <motion.button
+                        variants={textVariants}
+                        key={color}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        onClick={() => setSelectedColor(color)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-none text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
+                          effectiveColor === color
+                            ? "bg-ink text-white border-ink"
+                            : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
+                        )}
+                      >
+                        {color}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
@@ -609,9 +618,9 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                   )}
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
-                  <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))} disabled={availableStock === 0} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
                   <span className="text-[14px] font-medium w-10 text-center text-ink">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(prev => Math.min(availableStock, prev + 1))} disabled={availableStock === 0 || quantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </motion.div>
               </div>
 
