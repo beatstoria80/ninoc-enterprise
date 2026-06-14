@@ -89,8 +89,8 @@ function ProductCard({ product }: { product: Product }) {
       <Link href={`/shop/${product.slug}`} className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5">
         <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-white flex items-center justify-center border border-ink/5">
           {product.image_url ? (
-            <div className="w-[60%] aspect-square relative z-10 mix-blend-multiply">
-              <Image src={product.image_url} alt={product.name} fill className="object-contain transition-transform duration-700" sizes="(max-width: 768px) 30vw, 15vw" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(100%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+            <div className="w-full h-full relative z-10 mix-blend-multiply">
+              <Image src={product.image_url} alt={product.name} fill className="object-cover transition-transform duration-700" sizes="(max-width: 768px) 30vw, 15vw" style={{ filter: isHovered ? 'grayscale(0%)' : 'grayscale(100%)', transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
             </div>
           ) : (
             <div className="w-[45%] py-12 flex items-center justify-center text-ink/10"><Package size={24} /></div>
