@@ -78,6 +78,29 @@ export async function POST(req: Request) {
     const apiKey = process.env.BITESHIP_API_KEY;
     const courierType = courier_type.toLowerCase();
 
+    // Check if already shipped to prevent double dispatch
+    const { data: existingOrder } = await supabase
+      .from('orders')
+      .select('status, tracking_id, print_count, courier')
+      .eq('id', order_id)
+      .single();
+
+    if (existingOrder?.status === 'shipped') {
+      const newCount = (existingOrder.print_count || 0) + 1;
+      await supabase.from('orders').update({ print_count: newCount }).eq('id', order_id);
+      
+      console.log(`[Biteship Create Order] Order ${order_id} already dispatched. Reprinting.`);
+      return NextResponse.json({
+        success: true,
+        source: 'reprint',
+        waybill_id: existingOrder.tracking_id,
+        tracking_id: existingOrder.tracking_id,
+        courier_company: existingOrder.courier?.split(' ')[0] || courier_company,
+        status: 'shipped',
+        message: 'Order was already dispatched. Incrementing print count.'
+      });
+    }
+
     // Try real Biteship API if key is configured
     if (apiKey && apiKey !== 'your_biteship_api_key_here') {
       try {
