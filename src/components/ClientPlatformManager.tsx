@@ -44,8 +44,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return (
       <MobileLayout
         cartCount={items.length}
-        hideTabBar={pathname === '/checkout' || pathname === '/login' || pathname?.startsWith('/affiliate/dashboard')}
-        hideHeader={pathname === '/checkout' || pathname === '/help' || pathname === '/track' || pathname?.startsWith('/profile') || pathname === '/retur' || pathname === '/onboarding' || pathname === '/login' || pathname?.startsWith('/affiliate/dashboard')}
+        hideTabBar={isCheckoutPage || isLoginPage || isAffiliateDashboard}
+        hideHeader={!showGlobalHeader}
       >
         {children}
       </MobileLayout>
