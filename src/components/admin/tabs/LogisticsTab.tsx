@@ -582,7 +582,7 @@ export function LogisticsTab({
                                 </p>
                                 <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
                                   <p className={`text-[10px] md:text-[8px] uppercase tracking-widest flex items-center gap-1.5 ${step.isActive ? 'text-ink/60' : 'text-ink/30'}`}>
-                                    {React.cloneElement(step.icon as React.ReactElement, { className: step.isActive ? "text-rose/50" : "text-ink/30" })} {step.location}
+                                    {React.cloneElement(step.icon as React.ReactElement<{ className?: string }>, { className: step.isActive ? "text-rose/50" : "text-ink/30" })} {step.location}
                                   </p>
                                 </div>
                               </div>
