@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer, FileText, X, Copy, Check } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Package, Truck, Clock, Printer, FileText, X, Copy, Check, AlertCircle } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -168,6 +168,24 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
+
+            {/* GUEST WARNING ALERT */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8 }}
+              className="bg-amber-50/50 border border-amber-200 p-4 mt-6"
+            >
+              <div className="flex items-start gap-3">
+                <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-800 mb-1">Simpan Bukti Pembelian</p>
+                  <p className="text-[10px] md:text-xs text-amber-700/80 leading-relaxed">
+                    Jika Anda berbelanja sebagai <strong className="font-bold">GUEST</strong>, sangat disarankan untuk <strong>Menyimpan (Screenshot/PDF)</strong> halaman ini atau mengunduh <strong>Full Invoice</strong> di bawah. Nomor Order (<strong className="font-mono">#{displayId}</strong>) ini merupakan kunci Anda untuk melacak pengiriman paket.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0 }}
