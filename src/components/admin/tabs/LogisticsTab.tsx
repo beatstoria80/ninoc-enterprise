@@ -426,32 +426,38 @@ export function LogisticsTab({
                   </div>
                 </div>
 
-                {/* 3. Ordered Products */}
-                <div className="pt-1">
-                  <p className="text-xs md:text-[9px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
-                  <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
-                    {logisticsSelectedOrder.order_items?.map((item, idx) => (
-                      <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl min-w-[220px] shrink-0 items-center bg-white shadow-sm hover:shadow-md transition-shadow">
-                        <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
-                          <Package size={16} className="text-gray-300" />
+                {/* 3 & 4. 2-Grid Layout: Ordered Products (Left) & Map (Right) */}
+                <div className="grid grid-cols-[1.2fr_1fr] gap-4 pt-1 mt-2">
+                  {/* Left Side: Ordered Products */}
+                  <div className="flex flex-col">
+                    <p className="text-xs md:text-[9px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                    <div className="flex flex-col gap-2 overflow-y-auto max-h-[160px] custom-scrollbar pr-2">
+                      {logisticsSelectedOrder.order_items?.map((item, idx) => (
+                        <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
+                          <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
+                            <Package size={16} className="text-gray-300" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs md:text-[10px] text-gray-900 truncate font-medium">{item.product_name || 'Garment Item'}</p>
+                            <p className="text-[11px] md:text-[8px] text-gray-500 mt-0.5">1 item • SZ:{item.size || 'OS'}</p>
+                            <p className="text-xs md:text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs md:text-[10px] text-gray-900 truncate font-medium">{item.product_name || 'Garment Item'}</p>
-                          <p className="text-[11px] md:text-[8px] text-gray-500 mt-0.5">1 item • SZ:{item.size || 'OS'}</p>
-                          <p className="text-xs md:text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* 4. Map Visualization */}
-                <div className="relative w-full h-[180px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 mt-1">
-                  <MapTracker 
-                    destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
-                    status={logisticsSelectedOrder.status} 
-                    className="w-full h-full relative z-0"
-                  />
+                  {/* Right Side: Map Visualization */}
+                  <div className="flex flex-col">
+                    <p className="text-xs md:text-[9px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
+                    <div className="relative w-full h-[160px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
+                      <MapTracker 
+                        destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
+                        status={logisticsSelectedOrder.status} 
+                        className="w-full h-full relative z-[1]"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* 5. Timeline */}
