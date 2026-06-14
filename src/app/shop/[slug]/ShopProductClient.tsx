@@ -234,7 +234,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         try { supabase.removeChannel(channel); } catch { /* ignore */ }
       }
     };
-  }, [product?.id]);
+  }, [product?.id, product?.category]);
 
   const hasSizes = product?.variants?.some(v => v.size && v.size.trim() !== '');
 

@@ -300,7 +300,7 @@ export function OrdersTab({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [orders]);
+  }, [orders, setStatusFilter, statusFilter]);
 
   // ── Derive unique courier options from data ──
   const courierOptions = useMemo(() => {
