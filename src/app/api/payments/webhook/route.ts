@@ -225,7 +225,7 @@ export async function POST(req: Request) {
         }
 
         // --- EMAIL NOTIFICATION ---
-        const customerEmail = shippingAddress?.email;
+        const customerEmail = (order.shipping_address as Record<string, string> | null)?.email;
         if (customerEmail) {
           console.log(`[Payment Webhook] Attempting to send Email Invoice to ${customerEmail}...`);
           await sendEmailInvoice(order, customerEmail);
