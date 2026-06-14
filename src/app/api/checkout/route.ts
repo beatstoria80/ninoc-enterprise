@@ -216,8 +216,8 @@ export async function POST(req: Request) {
         affiliate_id: affiliate_id,
         customer_name: customerDetails.name || null,
         total_price: grossAmount,
-        status: 'paid', // TESTING: Auto-mark as paid for testing admin flow
-        payment_status: 'success', // TESTING: Auto-mark as success for testing admin flow
+        status: 'pending',
+        payment_status: 'pending',
         courier: shippingDetails.method,
         shipping_address: {
           ...customerDetails,
