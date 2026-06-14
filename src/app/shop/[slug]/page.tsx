@@ -82,15 +82,27 @@ export default async function ShopProductPage({ params }: Props) {
     description,
     image: product.image_url ? [product.image_url] : [],
     url: `${BASE_URL}/shop/${slug}`,
+    sku: slug,
+    category: product.category || 'Apparel',
     brand: { '@type': 'Brand', name: 'NINOC' },
+    manufacturer: {
+      '@type': 'Organization',
+      name: 'NINOC Enterprise',
+      address: 'Bandung, Indonesia'
+    },
     offers: {
       '@type': 'Offer',
       price: product.price,
       priceCurrency: 'IDR',
+      itemCondition: 'https://schema.org/NewCondition',
       availability: product.price_tag === 'PREORDER'
         ? 'https://schema.org/PreOrder'
         : 'https://schema.org/InStock',
       url: `${BASE_URL}/shop/${slug}`,
+      seller: {
+        '@type': 'Organization',
+        name: 'NINOC STORE',
+      }
     },
   };
 

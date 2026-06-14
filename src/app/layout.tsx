@@ -118,17 +118,23 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Structured Data — Organization */}
+        {/* Structured Data — Organization & Manufacturer */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'NINOC STORE',
+              '@type': ['Organization', 'Manufacturer', 'Brand'],
+              name: 'NINOC Enterprise',
+              alternateName: 'NINOC STORE',
               url: BASE_URL,
               logo: `${BASE_URL}/logo.png`,
-              description: 'Premium Archival Garment Studio dari Indonesia',
+              description: 'NINOC Enterprise adalah produsen dan distributor garment pakaian bergaya industrial dan fungsional dari Bandung, Indonesia.',
+              foundingDate: '2024',
+              foundingLocation: {
+                '@type': 'Place',
+                name: 'Bandung, Indonesia'
+              },
               address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Jl. Gudang Selatan No. 22',
@@ -141,6 +147,7 @@ export default async function RootLayout({
                 '@type': 'ContactPoint',
                 telephone: '+62-812-0000-0000',
                 contactType: 'customer service',
+                areaServed: 'ID',
                 availableLanguage: ['Indonesian', 'English'],
               },
               sameAs: [
@@ -150,19 +157,39 @@ export default async function RootLayout({
             }),
           }}
         />
-        {/* Structured Data — Store */}
+        {/* Structured Data — Store & Distributor (LocalBusiness) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'Store',
+              '@type': ['ClothingStore', 'WholesaleStore'],
               name: 'NINOC STORE',
               image: `${BASE_URL}/og-image.png`,
               url: BASE_URL,
-              priceRange: '$$',
-              servesCuisine: 'Fashion',
-              acceptReservation: false,
+              priceRange: 'IDR',
+              description: 'Distributor resmi dan toko ritel untuk produk apparel dan aksesoris fungsional NINOC.',
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Jl. Gudang Selatan No. 22',
+                addressLocality: 'Bandung',
+                addressRegion: 'Jawa Barat',
+                postalCode: '40113',
+                addressCountry: 'ID'
+              },
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: '-6.914744',
+                longitude: '107.609810'
+              },
+              openingHoursSpecification: [
+                {
+                  '@type': 'OpeningHoursSpecification',
+                  dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                  opens: '09:00',
+                  closes: '17:00'
+                }
+              ]
             }),
           }}
         />
