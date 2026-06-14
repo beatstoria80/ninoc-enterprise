@@ -145,7 +145,7 @@ export default async function RootLayout({
               },
               contactPoint: {
                 '@type': 'ContactPoint',
-                telephone: '+62-812-0000-0000',
+                telephone: '+62-821-1983-774',
                 contactType: 'customer service',
                 areaServed: 'ID',
                 availableLanguage: ['Indonesian', 'English'],
