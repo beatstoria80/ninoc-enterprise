@@ -8,7 +8,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Invoice } from '@/components/Invoice';
 
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -68,56 +68,46 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     
     setIsDownloading(true);
     try {
-      // Create a temporary clone to ensure full height capture without overflow issues
-      const clone = element.cloneNode(true) as HTMLElement;
-      clone.style.position = 'fixed';
-      clone.style.top = '-9999px';
-      clone.style.left = '-9999px';
-      clone.style.width = '800px'; // fixed desktop width for good quality
-      clone.style.height = 'auto';
-      clone.style.overflow = 'visible';
-      document.body.appendChild(clone);
-
-      const canvas = await html2canvas(clone, {
-        scale: 2, // High resolution for mobile zooming
-        useCORS: true,
+      // Use html-to-image to render the element directly into a Blob.
+      // This is much more reliable in React/Next.js than html2canvas.
+      const blob = await toBlob(element, {
+        pixelRatio: 2,
         backgroundColor: '#ffffff',
+        style: {
+          margin: '0',
+          transform: 'scale(1)',
+        }
       });
       
-      document.body.removeChild(clone);
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) throw new Error("Gagal membuat blob");
-        
-        try {
-          if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
-            const file = new File([blob], `Invoice_NINOC_${displayId}.png`, { type: 'image/png' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                files: [file],
-                title: `Invoice NINOC ${displayId}`
-              });
-              setIsDownloading(false);
-              return;
-            }
+      if (!blob) throw new Error("Gagal membuat blob gambar");
+      
+      try {
+        if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+          const file = new File([blob], `Invoice_NINOC_${displayId}.png`, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `Invoice NINOC ${displayId}`
+            });
+            setIsDownloading(false);
+            return;
           }
-        } catch (shareError) {
-          console.error('Web Share API gagal, fallback ke download biasa', shareError);
         }
+      } catch (shareError) {
+        console.error('Web Share API gagal, fallback ke download biasa', shareError);
+      }
 
-        // Fallback download standar via Object URL (lebih reliable di HP/WebView)
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        link.download = `Invoice_NINOC_${displayId}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Revoke URL setelah beberapa saat
-        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-        setIsDownloading(false);
-      }, 'image/png', 1.0);
+      // Fallback download standar via Object URL
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = `Invoice_NINOC_${displayId}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      setIsDownloading(false);
       
     } catch (error) {
       console.error('Error generating image:', error);
