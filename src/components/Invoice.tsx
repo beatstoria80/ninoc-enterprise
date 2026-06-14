@@ -106,8 +106,8 @@ export function Invoice({ order }: InvoiceProps) {
             <span className="font-bold text-ink">{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
             <span className="text-ink/60">
               {order.shipping_address?.phone || '-'}<br/>
-              {order.shipping_address?.address || '-'}<br/>
-              {order.shipping_address?.city || ''}, {order.shipping_address?.postal_code || ''}
+              {order.shipping_address?.address?.toUpperCase() || '-'}<br/>
+              {order.shipping_address?.city?.toUpperCase() || ''}, {order.shipping_address?.postal_code || ''}
             </span>
           </div>
         </div>
@@ -311,8 +311,8 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#111', letterSpacing: '0.5px' }}>{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
                 <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>{order.shipping_address?.phone || '-'}</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>{order.shipping_address?.address || '-'}</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>{`${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''} ${order.shipping_address?.postal_code || ''}`}</span>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555', textTransform: 'uppercase' }}>{order.shipping_address?.address || '-'}</span>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555', textTransform: 'uppercase' }}>{`${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''} ${order.shipping_address?.postal_code || ''}`}</span>
               </div>
             </div>
           </div>

@@ -543,6 +543,7 @@ export function OrdersTab({
                 font-size: 12px;
                 margin-bottom: 2px;
                 font-family: 'Inter', sans-serif;
+                text-transform: uppercase;
               }
               .person-phone {
                 font-size: 10px;
@@ -551,6 +552,7 @@ export function OrdersTab({
               .person-address {
                 font-size: 9px;
                 line-height: 1.3;
+                text-transform: uppercase;
               }
 
               /* Content Grid */
@@ -570,6 +572,7 @@ export function OrdersTab({
                 font-size: 10px;
                 line-height: 1.4;
                 margin-bottom: 2px;
+                text-transform: uppercase;
               }
               
               .order-id-box {
