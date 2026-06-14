@@ -898,7 +898,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed italic">"{r.review_text}"</p>
+                  <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed italic">&quot;{r.review_text}&quot;</p>
                   <span className="text-[9px] md:text-[7px] font-medium uppercase tracking-widest text-ink/30 mt-auto pt-2">{new Date(r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 </motion.div>
               ))}
