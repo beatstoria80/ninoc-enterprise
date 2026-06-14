@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from '@/components/LocalizedLink';
 import Footer from '@/components/Footer';
-import { X, MapPin, Truck, CheckCircle, Package } from 'lucide-react';
+import { X, MapPin, Truck } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[250px] md:h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
+    <div className="w-full h-full min-h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
       Initializing Live Map...
     </div>
   )
@@ -107,12 +107,10 @@ export default function TrackClient() {
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
 
-  // Auto-track if query params are present
   useEffect(() => {
     const qOrder = searchParams.get('order_number');
     const qPhone = searchParams.get('phone');
     if (qOrder && qPhone) {
-      // Create a mock event to pass to handleTrack
       const mockEvent = { preventDefault: () => {} } as React.FormEvent;
       handleTrack(mockEvent, qOrder, qPhone);
     }
@@ -146,125 +144,176 @@ export default function TrackClient() {
   }
 
   const currentStep = order ? getStepIndex(order.status) : -1;
+  const scrollbarStyles = "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-ink/20";
+
+  const renderForm = () => (
+    <form onSubmit={handleTrack} className="bg-ink/[0.01] border border-ink/5 p-4 flex flex-col gap-4">
+      <div className="space-y-1">
+        <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
+        <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
+      </div>
+      <div className="space-y-1">
+        <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
+        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
+      </div>
+      {error && <div className="px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
+      <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2">
+        {loading ? 'Loading…' : 'Lacak Pesanan'}
+      </button>
+    </form>
+  );
 
   return (
     <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
-      <div className="flex-1 pt-20 max-w-[800px] w-full mx-auto px-4 sm:px-6 pb-24">
-        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start">
+      <div className="flex-1 pt-20 max-w-[1600px] w-full mx-auto px-4 sm:px-6 flex flex-col">
+        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start shrink-0">
           <div>
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
-              <span className="text-xs md:text-[10px] uppercase tracking-widest text-ink font-semibold">GUEST ACCESS</span>
+              <span className="text-xs md:text-[10px] uppercase tracking-widest text-ink font-semibold bg-ink/5 px-2 py-0.5 rounded-sm">GUEST ACCESS</span>
             </div>
-            <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Lacak status pesanan tanpa perlu login</p>
+            <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Dashboard Pelacakan Multi-Grid</p>
           </div>
           <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0" title="Kembali ke Beranda">
             <X size={14} strokeWidth={1.5} />
           </Link>
         </div>
 
-        <form onSubmit={handleTrack} className="mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-ink/10 bg-ink/[0.01]">
-            <div className="space-y-1">
-              <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
-              <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
-            </div>
-          </div>
-          {error && <div className="mt-2 px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
-          <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="mt-3 w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2">
-            {loading ? 'Loading…' : 'Lacak Pesanan'}
-          </button>
-        </form>
+        {!loading && searched && order ? (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6 items-stretch flex-1 lg:h-[calc(100vh-180px)] pb-10 lg:pb-0">
+            {/* GRID 1: Form & Overview */}
+            <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
+              {renderForm()}
+              
+              <div className="bg-ink/[0.01] border border-ink/5 p-4 flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-4 pb-4 border-b border-ink/5">
+                  <div>
+                    <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink mb-1 font-semibold">Order Number</p>
+                    <p className="text-[13px] font-semibold uppercase tracking-wider text-ink">{order.order_number}</p>
+                  </div>
+                  <StatusBadge status={order.status} />
+                </div>
 
-        {!loading && searched && order && (
-          <div className="space-y-6">
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-ink/5">
-              <div>
-                <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink mb-1 font-semibold">Order Number</p>
-                <p className="text-[13px] font-semibold uppercase tracking-wider text-ink">{order.order_number}</p>
-              </div>
-              <StatusBadge status={order.status} />
-            </div>
+                {order.shipping_address && (
+                  <div>
+                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Alamat Pengiriman</p>
+                    <p className="text-xs md:text-[10px] font-semibold">{order.shipping_address.name}</p>
+                    <p className="text-xs md:text-[9px] text-ink/50 mt-1 leading-relaxed">{order.shipping_address.address}</p>
+                    <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
+                  </div>
+                )}
 
-            <div className="space-y-3">
-              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold">Status Pengiriman</p>
-              <div className="flex items-center gap-0">
-                {STATUS_STEPS.filter(s => s.key !== 'cancelled').map((step, idx) => {
-                  const done = currentStep > idx;
-                  const active = currentStep === idx;
-                  return (
-                    <div key={step.key} className="flex items-center flex-1 last:flex-none">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${done ? 'bg-rose border-rose' : active ? 'bg-white border-rose' : 'bg-white border-ink/10'}`}>
-                          {done && <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3.5 6L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                          {!done && active && <div className="w-2 h-2 rounded-full bg-rose" />}
-                        </div>
-                        <p className={`text-[10px] md:text-[7px] font-semibold uppercase tracking-wider ${active ? 'text-rose' : done ? 'text-ink/50' : 'text-ink/20'}`}>{step.label}</p>
+                {order.tracking_id && (
+                  <div className="pt-4 border-t border-ink/5 mt-2">
+                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Nomor Resi</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-sm md:text-[11px] font-semibold uppercase tracking-wider">{order.tracking_id}</span>
+                        {order.courier && <span className="text-[11px] md:text-[8px] text-ink/30 ml-2 uppercase tracking-widest">via {order.courier}</span>}
                       </div>
-                      {idx < STATUS_STEPS.filter(s => s.key !== 'cancelled').length - 1 && <div className={`flex-1 h-px mx-1 mb-4 ${done ? 'bg-rose' : 'bg-ink/10'}`} />}
+                      <button onClick={() => navigator.clipboard.writeText(order.tracking_id!)} className="text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-rose hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm" aria-label="Copy tracking ID">Copy</button>
                     </div>
-                  );
-                })}
+                    {order.logs.find(l => l.courier_link) && (
+                      <a href={order.logs.find(l => l.courier_link)?.courier_link || '#'} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-1.5 text-xs md:text-[9px] font-semibold text-rose uppercase tracking-widest hover:underline">
+                        Lacak di Website Kurir <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-4 border-t border-ink/5 mt-auto">
+                  <Link href="/help" className="flex-1 py-2 text-[10px] md:text-[8px] uppercase tracking-widest font-semibold text-center border border-ink/10 text-ink/50 hover:border-ink/20 hover:text-ink transition-colors cursor-pointer rounded-sm">Help Guide</Link>
+                  <button onClick={() => { setOrder(null); setSearched(false); setOrderNumber(''); setPhone(''); }} className="flex-1 py-2 bg-ink/5 text-ink text-[10px] md:text-[8px] uppercase tracking-widest font-semibold text-center hover:bg-ink/10 transition-colors cursor-pointer rounded-sm">Reset</button>
+                </div>
               </div>
             </div>
 
-            <div className="pt-4 pb-2">
-              <MapTracker 
-                destinationCity={order.shipping_address?.city} 
-                status={order.status}
-                logs={order.logs}
-              />
+            {/* GRID 2: Status & Items */}
+            <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
+              <div className="bg-ink/[0.01] border border-ink/5 p-5">
+                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Status Pengiriman</p>
+                <div className="flex flex-col gap-0">
+                  {STATUS_STEPS.filter(s => s.key !== 'cancelled').map((step, idx) => {
+                    const done = currentStep > idx;
+                    const active = currentStep === idx;
+                    const isLast = idx === STATUS_STEPS.filter(s => s.key !== 'cancelled').length - 1;
+                    return (
+                      <div key={step.key} className="flex items-stretch">
+                        <div className="flex flex-col items-center mr-4">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors z-10 ${done ? 'bg-rose border-rose' : active ? 'bg-white border-rose' : 'bg-white border-ink/10'}`}>
+                            {done && <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3.5 6L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                            {!done && active && <div className="w-2 h-2 rounded-full bg-rose" />}
+                          </div>
+                          {!isLast && <div className={`w-px flex-1 my-1 min-h-[20px] ${done ? 'bg-rose' : 'bg-ink/10'}`} />}
+                        </div>
+                        <div className={`pb-6 pt-0.5`}>
+                           <p className={`text-[11px] md:text-[9px] font-bold uppercase tracking-wider ${active ? 'text-rose' : done ? 'text-ink/80' : 'text-ink/30'}`}>{step.label}</p>
+                           <p className={`text-[10px] md:text-[8px] mt-1 ${active ? 'text-ink/60' : done ? 'text-ink/40' : 'text-ink/20'}`}>{step.sub}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {order.items.length > 0 && (
+                <div className="bg-ink/[0.01] border border-ink/5 p-5 flex-1">
+                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-5">Item Pesanan</p>
+                  <div className="space-y-4">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex flex-col gap-1 pb-4 border-b border-ink/5 last:border-0 last:pb-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-[11px] md:text-[10px] font-semibold text-ink leading-tight">{item.product_name}</p>
+                          <span className="text-[11px] md:text-[9px] font-semibold text-ink/70 shrink-0">{formatPrice(item.price_at_purchase)}</span>
+                        </div>
+                        <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-wider">{item.size ? `Size ${item.size} · ` : ''}Qty {item.quantity}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between pt-4 mt-4 border-t border-ink/10">
+                    <span className="text-xs md:text-[9px] uppercase tracking-widest font-semibold text-ink/40">Total Tagihan</span>
+                    <span className="text-[14px] font-bold text-ink">{formatPrice(order.total_price)}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {order.logs.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-ink/5">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Logistics History</p>
-                <div className="relative pl-6 border-l border-ink/10 space-y-6 ml-2 pb-4">
+            {/* GRID 3: History */}
+            <div className={`bg-ink/[0.01] border border-ink/5 p-5 lg:overflow-y-auto pr-2 ${scrollbarStyles}`}>
+              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Logistics History</p>
+              {order.logs.length > 0 ? (
+                <div className="relative pl-5 border-l border-ink/10 space-y-7 ml-2 pb-4">
                   {order.logs.map((log, idx) => {
                     const isLatest = idx === 0;
                     return (
                       <div key={log.id} className="relative">
-                        {/* Timeline Dot */}
-                        <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center bg-white ${isLatest ? 'border-rose' : 'border-ink/20'}`}>
+                        <div className={`absolute -left-[27px] top-0.5 w-3 h-3 rounded-full border-2 flex items-center justify-center bg-white ${isLatest ? 'border-rose' : 'border-ink/20'}`}>
                           {isLatest && <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />}
                         </div>
-                        
-                        {/* Timeline Content */}
-                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
-                          {/* Time Column */}
-                          <div className="w-24 shrink-0 pt-0.5">
-                            <span className={`text-[11px] md:text-[9px] font-semibold tracking-widest uppercase ${isLatest ? 'text-rose' : 'text-ink/40'}`}>
-                              {formatDate(log.created_at).split(' ')[0]}
+                        <div className="flex flex-col gap-1.5">
+                          <div>
+                            <span className={`text-[10px] md:text-[8px] font-bold tracking-widest uppercase ${isLatest ? 'text-rose' : 'text-ink/40'}`}>
+                              {formatDate(log.created_at)}
                             </span>
-                            <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
-                              {formatDate(log.created_at).split(' ').slice(1).join(' ')}
-                            </div>
                           </div>
-                          
-                          {/* Detail Column */}
-                          <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
-                            <p className={`text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 ${isLatest ? 'text-ink' : 'text-ink/60'}`}>
+                          <div>
+                            <p className={`text-[11px] md:text-[9px] font-bold uppercase tracking-wider mb-1.5 ${isLatest ? 'text-ink' : 'text-ink/60'}`}>
                               {log.biteship_status || log.internal_status || 'UPDATE'}
                             </p>
                             {log.description && (
-                              <p className={`text-[11px] md:text-[9px] leading-relaxed mb-2 ${isLatest ? 'text-ink/80 font-medium' : 'text-ink/50'}`}>
+                              <p className={`text-[11px] md:text-[9px] leading-relaxed mb-2.5 ${isLatest ? 'text-ink/80' : 'text-ink/50'}`}>
                                 {log.description}
                               </p>
                             )}
-                            
                             {(log.location || log.courier_company) && (
-                              <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-ink/5">
                                 {log.location && (
-                                  <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                  <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
                                     <MapPin size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.location}
                                   </p>
                                 )}
                                 {log.courier_company && (
-                                  <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                  <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
                                     <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.courier_company}{log.courier_driver_name ? ` — ${log.courier_driver_name}` : ''}
                                   </p>
                                 )}
@@ -276,78 +325,50 @@ export default function TrackClient() {
                     );
                   })}
                 </div>
-              </div>
-            )}
-
-            {order.tracking_id && (
-              <div className="p-4 border border-ink/10 bg-ink/[0.01]">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Nomor Resi</p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-sm md:text-[11px] font-semibold uppercase tracking-wider">{order.tracking_id}</span>
-                    {order.courier && <span className="text-[11px] md:text-[8px] text-ink/30 ml-3 uppercase tracking-widest">via {order.courier}</span>}
-                  </div>
-                  <button onClick={() => navigator.clipboard.writeText(order.tracking_id!)} className="text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-rose hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm" aria-label="Copy tracking ID">Copy</button>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                   <p className="text-[10px] md:text-[8px] uppercase tracking-widest font-semibold">Menunggu Update</p>
+                   <p className="text-[10px] md:text-[8px] text-ink/40 text-center mt-2">Belum ada history perjalanan dari kurir.</p>
                 </div>
-                {order.logs.find(l => l.courier_link) && (
-                  <a href={order.logs.find(l => l.courier_link)?.courier_link || '#'} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-1.5 text-xs md:text-[9px] font-semibold text-rose uppercase tracking-widest hover:underline">
-                    Lacak di Website Kurir <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </a>
-                )}
-              </div>
-            )}
+              )}
+            </div>
 
-            {order.items.length > 0 && (
-              <div className="space-y-3">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold">Item Pesanan</p>
-                <div className="space-y-2">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 border border-ink/5 bg-ink/[0.01]">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs md:text-[10px] font-semibold text-ink">{item.product_name}</p>
-                        <p className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-wider mt-0.5">{item.size ? `Size ${item.size} · ` : ''}Qty {item.quantity}</p>
-                      </div>
-                      <span className="text-xs md:text-[10px] font-semibold text-ink/70 shrink-0 ml-3">{formatPrice(item.price_at_purchase)}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-ink/5">
-                  <span className="text-xs md:text-[9px] uppercase tracking-widest font-semibold text-ink/40">Total</span>
-                  <span className="text-[12px] font-semibold text-ink">{formatPrice(order.total_price)}</span>
-                </div>
+            {/* GRID 4: Map */}
+            <div className="border border-ink/5 bg-ink/[0.01] h-[400px] lg:h-full relative overflow-hidden flex flex-col">
+              <div className="p-3 border-b border-ink/5 bg-white/80 backdrop-blur-md z-10 shrink-0 shadow-sm shadow-ink/5">
+                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/60 font-bold flex items-center gap-2">
+                  <MapPin size={12} className="text-rose" /> Live Map Tracker
+                </p>
               </div>
-            )}
-
-            {order.shipping_address && (
-              <div className="p-4 border border-ink/5 bg-ink/[0.01]">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Alamat Pengiriman</p>
-                <p className="text-xs md:text-[10px] font-semibold">{order.shipping_address.name}</p>
-                <p className="text-xs md:text-[9px] text-ink/50 mt-1">{order.shipping_address.address}</p>
-                <p className="text-xs md:text-[9px] text-ink/30 mt-0.5">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
+              <div className="flex-1 relative w-full h-full">
+                <MapTracker 
+                  destinationCity={order.shipping_address?.city} 
+                  status={order.status}
+                  logs={order.logs}
+                />
               </div>
-            )}
-
-            <div className="flex gap-3 pt-2">
-              <Link href="/help" className="flex-1 py-3 text-xs md:text-[9px] uppercase tracking-widest font-semibold text-center border border-ink/10 text-ink/50 hover:border-ink/20 hover:text-ink transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">Help Guide</Link>
-              <button onClick={() => { setOrder(null); setSearched(false); setOrderNumber(''); setPhone(''); }} className="flex-1 py-3 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold text-center hover:bg-rose/90 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-sm">Lacak Pesanan Lain</button>
             </div>
           </div>
-        )}
-
-        {!loading && !searched && (
-          <div className="flex flex-col items-center py-16 gap-4 text-ink/20">
-            <div className="w-12 h-12 border border-ink/10 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1"/><path d="M10 6v5M10 14v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </div>
-            <div className="text-center">
-              <p className="text-xs md:text-[9px] uppercase tracking-widest font-semibold mb-1">Input Required</p>
-              <p className="text-[11px] md:text-[8px] text-ink/30 max-w-xs">Masukkan nomor pesanan dan nomor WhatsApp yang digunakan saat checkout untuk melacak pesanan Anda.</p>
-            </div>
+        ) : (
+          <div className="max-w-[500px] w-full mx-auto mt-10">
+            {renderForm()}
+            {!loading && !searched && (
+              <div className="flex flex-col items-center py-16 gap-4 text-ink/20 mt-8 border border-ink/5 bg-ink/[0.01]">
+                <div className="w-12 h-12 border border-ink/10 flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1"/><path d="M10 6v5M10 14v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </div>
+                <div className="text-center px-4">
+                  <p className="text-xs md:text-[9px] uppercase tracking-widest font-semibold mb-2">Input Required</p>
+                  <p className="text-[11px] md:text-[9px] text-ink/40 max-w-xs leading-relaxed">Masukkan nomor pesanan dan nomor WhatsApp yang digunakan saat checkout untuk melacak pesanan Anda.</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      <Footer />
+      
+      {/* Hide footer when order is displayed to save space for 4-grids layout */}
+      {(!searched || !order) && <Footer />}
     </main>
   );
 }
