@@ -30,7 +30,7 @@ export default async function LogbookPage() {
     .select('*')
     .order('published_date', { ascending: false });
 
-  let formattedEntries = [];
+  let formattedEntries: any[] = [];
   if (data) {
     formattedEntries = data.map((item: any) => ({
       id: item.entry_id, 
