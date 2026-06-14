@@ -512,6 +512,13 @@ export default function Home() {
     }
     return 'hero';
   });
+
+  const [isReturningVisitor] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !!sessionStorage.getItem('ninoc_intro_played');
+    }
+    return false;
+  });
   
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
@@ -649,13 +656,13 @@ export default function Home() {
         {(scene === 'archive' || scene === 'transitioning') && (
           <motion.div
             className="w-full min-h-screen bg-white relative z-40"
-            initial={{ opacity: 0, scale: 0.95, y: 60 }}
+            initial={isReturningVisitor ? false : { opacity: 0, scale: 0.95, y: 60 }}
             animate={{ 
               opacity: scene === 'archive' || scene === 'transitioning' ? 1 : 0,
               scale: scene === 'archive' || scene === 'transitioning' ? 1 : 0.95,
               y: scene === 'archive' || scene === 'transitioning' ? 0 : 60 
             }}
-            transition={{ duration: 1.2, ease: EASING.inOut, delay: 0.1 }} // Cinematic scale up and reveal
+            transition={{ duration: isReturningVisitor ? 0.3 : 1.2, ease: EASING.inOut, delay: isReturningVisitor ? 0 : 0.1 }} // Cinematic scale up and reveal
           >
              {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
              <div className="mobile-momentum select-none">

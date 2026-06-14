@@ -317,7 +317,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
   );
 }
 
-function ShopContent() {
+function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
 
@@ -326,45 +326,15 @@ function ShopContent() {
 
   const { isMobile } = useDevice();
 
-  return <ShopClientInner initialCategory={initialCategory} isMobile={isMobile} />;
+  return <ShopClientInner initialCategory={initialCategory} isMobile={isMobile} initialProducts={initialProducts} />;
 }
 
-function ShopClientInner({ initialCategory, isMobile }: { initialCategory: string; isMobile: boolean | null }) {
+function ShopClientInner({ initialCategory, isMobile, initialProducts }: { initialCategory: string; isMobile: boolean | null; initialProducts: Product[] }) {
   const pathname = usePathname();
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const dict = getDictionaryByLocale(lang);
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*');
-
-        if (error) throw error;
-        setProducts(data || []);
-      } catch (error: unknown) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-cr flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-xs md:text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const products = initialProducts;
 
   if (isMobile) {
     return <MobileShopView products={products} initialCategory={initialCategory} dict={dict} />;
@@ -373,7 +343,7 @@ function ShopClientInner({ initialCategory, isMobile }: { initialCategory: strin
   return <DesktopShopView products={products} initialCategory={initialCategory} dict={dict} />;
 }
 
-export default function ShopClient() {
+export default function ShopClient({ initialProducts = [] }: { initialProducts?: Product[] }) {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-cr flex items-center justify-center">
@@ -383,7 +353,7 @@ export default function ShopClient() {
         </div>
       </div>
     }>
-      <ShopContent />
+      <ShopContent initialProducts={initialProducts} />
     </Suspense>
   );
 }

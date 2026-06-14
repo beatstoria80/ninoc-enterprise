@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CategoryPage() {
-  return <CategoryClient />;
+import { supabase } from '@/lib/supabase';
+
+export const revalidate = 60; // Cache for 60 seconds
+
+export default async function CategoryPage() {
+  const { data } = await supabase.from('products').select('*');
+  const products = data || [];
+
+  return <CategoryClient initialProducts={products} />;
 }

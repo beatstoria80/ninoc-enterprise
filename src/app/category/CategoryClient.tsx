@@ -110,9 +110,9 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-export default function CategoryClient() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function CategoryClient({ initialProducts = [] }: { initialProducts?: Product[] }) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -121,19 +121,7 @@ export default function CategoryClient() {
     return products;
   }, [selectedCategory, products]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data } = await supabase.from('products').select('*');
-        setProducts(data || []);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+  // useEffect fetch removed since we use server-side initialProducts
 
   return (
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">

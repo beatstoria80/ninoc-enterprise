@@ -97,13 +97,14 @@ interface ShopProductClientProps {
   slug: string;
   productSchema?: string | null;
   dict: Dictionary;
+  initialProduct?: Product;
 }
 
-export default function ShopProductClient({ slug, productSchema, dict }: ShopProductClientProps) {
+export default function ShopProductClient({ slug, productSchema, dict, initialProduct }: ShopProductClientProps) {
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState<Product | null>(initialProduct || null);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
@@ -186,63 +187,54 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
   };
 
   useEffect(() => {
+    if (!product) return;
+    
     let channel: ReturnType<typeof supabase.channel> | null = null;
-    const timeout = setTimeout(() => setIsLoading(false), 10000); // 10s fallback
-
-    const fetchProduct = async (isRefetch = false) => {
+    
+    const fetchRelated = async () => {
       try {
-        const { data, error } = await supabase
+        const { data: related } = await supabase
           .from('products')
-          .select('*, variants(*)')
-          .eq('slug', slug)
-          .single();
-
-        if (error) throw error;
-        if (data) {
-          setProduct(data);
-
-          if (!isRefetch) {
-            const { data: related } = await supabase
-              .from('products')
-              .select('*')
-              .eq('category', data.category)
-              .neq('id', data.id)
-              .limit(4);
-            setRelatedProducts(related || []);
-
-            try {
-              channel = supabase
-                .channel(`variants-stock-${data.id}`)
-                .on('postgres_changes', {
-                  event: '*',
-                  schema: 'public',
-                  table: 'variants',
-                  filter: `product_id=eq.${data.id}`
-                }, () => {
-                  fetchProduct(true);
-                })
-                .subscribe();
-            } catch {
-              console.warn('Realtime subscription unavailable — stock will update on page reload.');
-            }
-          }
-        }
-      } catch (error: unknown) {
-        console.error('Failed to fetch product:', error);
-      } finally {
-        clearTimeout(timeout);
-        if (!isRefetch) setIsLoading(false);
+          .select('*')
+          .eq('category', product.category)
+          .neq('id', product.id)
+          .limit(4);
+        setRelatedProducts(related || []);
+      } catch (e) {
+        console.error('Failed to fetch related', e);
       }
     };
-    fetchProduct();
+    
+    fetchRelated();
+    
+    try {
+      channel = supabase
+        .channel(`variants-stock-${product.id}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'variants',
+          filter: `product_id=eq.${product.id}`
+        }, async () => {
+          // Refetch variants if stock changes
+          const { data } = await supabase
+            .from('products')
+            .select('*, variants(*)')
+            .eq('id', product.id)
+            .single();
+          if (data) setProduct(data);
+        })
+        .subscribe();
+    } catch {
+      console.warn('Realtime subscription unavailable');
+    }
 
     return () => {
-      clearTimeout(timeout);
       if (channel) {
         try { supabase.removeChannel(channel); } catch { /* ignore */ }
       }
     };
-  }, [slug]);
+  }, [product?.id]);
 
   const hasSizes = product?.variants?.some(v => v.size && v.size.trim() !== '');
 

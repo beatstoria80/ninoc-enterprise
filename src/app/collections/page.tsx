@@ -16,6 +16,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CollectionsPage() {
-  return <CollectionsClient />;
+import { supabase } from '@/lib/supabase';
+
+export const revalidate = 60; // Cache for 60 seconds
+
+export default async function CollectionsPage() {
+  const [prodRes, colRes] = await Promise.all([
+    supabase.from('products').select('*'),
+    supabase.from('collections').select('*').eq('status', 'active')
+  ]);
+  
+  const products = prodRes.data || [];
+  const collections = colRes.data || [];
+
+  return <CollectionsClient initialProducts={products} initialCollections={collections} />;
 }

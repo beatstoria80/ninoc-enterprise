@@ -62,7 +62,7 @@ export default async function ShopProductPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from('products')
-    .select('name, description, price, image_url, category, price_tag')
+    .select('*')
     .eq('slug', slug)
     .single();
 
@@ -126,7 +126,7 @@ export default async function ShopProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <ShopProductClient slug={slug} dict={await getDictionary()} />
+      <ShopProductClient slug={slug} dict={await getDictionary()} initialProduct={product} />
     </>
   );
 }

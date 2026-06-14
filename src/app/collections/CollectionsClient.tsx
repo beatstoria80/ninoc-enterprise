@@ -297,29 +297,12 @@ function ProductCard({ product }: { product: Product }) {
 // COLLECTIONS PAGE
 // ═══════════════════════════════════════════════════════════════
 
-export default function CollectionsClient() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function CollectionsClient({ initialProducts = [], initialCollections = [] }: { initialProducts?: Product[], initialCollections?: Collection[] }) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [prodRes, colRes] = await Promise.all([
-          supabase.from('products').select('*'),
-          supabase.from('collections').select('*').eq('status', 'active')
-        ]);
-        
-        setProducts(prodRes.data || []);
-        setCollections(colRes.data || []);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect fetch removed since we use server-side initial data
 
   return (
     <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">

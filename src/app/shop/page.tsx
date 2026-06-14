@@ -28,10 +28,17 @@ function LoadingShop() {
   );
 }
 
-export default function ShopPage() {
+import { supabase } from '@/lib/supabase';
+
+export const revalidate = 60; // Cache for 60 seconds
+
+export default async function ShopPage() {
+  const { data } = await supabase.from('products').select('*');
+  const products = data || [];
+
   return (
     <Suspense fallback={<LoadingShop />}>
-      <ShopClient />
+      <ShopClient initialProducts={products} />
     </Suspense>
   );
 }
