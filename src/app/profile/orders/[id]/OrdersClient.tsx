@@ -7,6 +7,7 @@ import Link from '@/components/LocalizedLink';
 import AnimatedShippingMap from '../../_components/AnimatedShippingMap';
 import { ReturnModal } from './_components/ReturnModal';
 import { PrintableInvoice } from '@/components/Invoice';
+import { supabase } from '@/lib/supabase';
 
 export interface Order {
   id: string;
@@ -61,11 +62,42 @@ export default function OrdersClient({
   initialLogs: TrackingLog[];
   initialReturnRequest: { id: string; status: string } | null;
 }) {
-  const [order] = useState<Order>(initialOrder);
+  const [order, setOrder] = useState<Order>(initialOrder);
   const [items] = useState<OrderItem[]>(initialItems);
-  const [trackingLogs] = useState<TrackingLog[]>(initialLogs);
+  const [trackingLogs, setTrackingLogs] = useState<TrackingLog[]>(initialLogs);
   const [returnRequest, setReturnRequest] = useState<{ id: string; status: string } | null>(initialReturnRequest);
   const [showReturnModal, setShowReturnModal] = useState(false);
+
+  // Realtime subscription
+  React.useEffect(() => {
+    if (!order.id) return;
+
+    const channel = supabase
+      .channel(`profile-orders-${order.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'orders',
+        filter: `id=eq.${order.id}`
+      }, async () => {
+        const { data } = await supabase.from('orders').select('*').eq('id', order.id).single();
+        if (data) setOrder(data);
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'tracking_logs',
+        filter: `order_id=eq.${order.id}`
+      }, async () => {
+        const { data } = await supabase.from('tracking_logs').select('*').eq('order_id', order.id).order('created_at', { ascending: false });
+        if (data) setTrackingLogs(data);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [order.id]);
 
   const printInvoice = () => { window.print(); };
 
