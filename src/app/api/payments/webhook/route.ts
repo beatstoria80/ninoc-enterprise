@@ -60,6 +60,7 @@ export async function POST(req: Request) {
       .from('orders')
       .update({
         status: orderUpdateStatus,
+        payment_status: orderUpdateStatus === 'paid' ? 'success' : orderUpdateStatus === 'cancelled' ? 'failed' : 'pending',
         midtrans_id: transactionId,
       })
       .eq('id', orderId);
