@@ -1,6 +1,7 @@
 import React from 'react';
 import { Order } from './types';
 import { QRCodeSVG } from 'qrcode.react';
+import CourierLogo from '@/components/CourierLogo';
 
 export function encodeCode128(text: string): number[] {
   const CODE128_B: Record<string, number> = {};
@@ -69,33 +70,6 @@ export function BarcodeCode128({ value, width = 280, height = 50 }: { value: str
   );
 }
 
-// ============ COURIER LOGO MAPPING ============
-const COURIER_LOGOS: Record<string, string> = {
-  'jne': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
-  'jne reg': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
-  'jne yes': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
-  'jne oke': 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png',
-  'sicepat': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
-  'sicepat best': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
-  'sicepat reg': 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png',
-  'j&t': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
-  'j&t express': 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png',
-  'anteraja': 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Anteraja.png',
-  'pos': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
-  'pos indonesia': 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png',
-  'ninja': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
-  'ninja express': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png',
-};
-
-export function getCourierLogo(courier: string | null): string | null {
-  if (!courier) return null;
-  const key = courier.toLowerCase().trim();
-  for (const [k, v] of Object.entries(COURIER_LOGOS)) {
-    if (key.includes(k)) return v;
-  }
-  return null;
-}
-
 export function getCourierService(courier: string | null): { name: string; service: string } {
   if (!courier) return { name: 'STANDARD', service: 'REG' };
   const parts = courier.split(' ');
@@ -107,7 +81,6 @@ export function getCourierService(courier: string | null): { name: string; servi
 
 export function ShippingLabel({ order }: { order: Order }) {
   const courierInfo = getCourierService(order.courier);
-  const courierLogo = getCourierLogo(order.courier);
   const trackingId = order.tracking_id || '';
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
   const totalWeight = totalItems * 300; // est. 300g per item
@@ -178,12 +151,7 @@ export function ShippingLabel({ order }: { order: Order }) {
           padding: '0 12px',
           gap: '8px' 
         }}>
-          {courierLogo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={courierLogo} alt={courierInfo.name} style={{ height: '18px', objectFit: 'contain', filter: 'brightness(0)' }} />
-          ) : (
-            <span style={{ fontSize: '12px', fontWeight: '800' }}>{courierInfo.name}</span>
-          )}
+          <CourierLogo courier={order.courier || ''} className="h-5" forceBlackForPrint={true} />
           <div style={{ width: '1px', height: '20px', backgroundColor: '#e5e5e5' }} />
           <span style={{
             fontSize: '11px',
