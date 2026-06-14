@@ -51,7 +51,7 @@ export async function sendEmailInvoice(order: any, customerEmail: string) {
     `;
   }
 
-  const trackingUrl = `https://ninoc.store/track?id=${order.id}`;
+  const trackingUrl = `https://ninoc.store/track?order_number=${order.order_number}&phone=${encodeURIComponent(order.shipping_address?.phone || '')}`;
 
   const emailHtml = `
   <!DOCTYPE html>
