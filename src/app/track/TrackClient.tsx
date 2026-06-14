@@ -302,7 +302,7 @@ export default function TrackClient() {
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
               <span className="text-xs md:text-[10px] uppercase tracking-widest text-ink font-semibold bg-ink/5 px-2 py-0.5 rounded-sm">GUEST ACCESS</span>
             </div>
-            <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Dashboard Pelacakan Multi-Grid</p>
+            <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Sistem Pelacakan Real-Time</p>
           </div>
           <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0" title="Kembali ke Beranda">
             <X size={14} strokeWidth={1.5} />
