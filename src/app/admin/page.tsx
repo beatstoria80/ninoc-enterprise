@@ -315,7 +315,8 @@ export default function AdminDashboard() {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
         const completedOrders = orderData.filter(o =>
-          o.status === 'paid' || o.status === 'delivered' || o.status === 'shipped'
+          (o.status === 'paid' || o.status === 'delivered' || o.status === 'shipped') &&
+          (o.payment_status === 'success' || o.payment_status === 'settlement')
         );
         const pendingOrders = orderData.filter(o => o.status === 'pending');
 
@@ -1054,7 +1055,7 @@ export default function AdminDashboard() {
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'], roles: ['super_admin'] }
   ];
 
-  const userRole = adminUser?.role || 'outbound_logistics'; // fallback
+  const userRole = adminUser?.role || 'super_admin'; // default to super_admin for global admin login
   const navItems = allNavItems.filter((item: any) => item.roles.includes(userRole)).map((item: any) => {
     if (item.subItems) {
       return { ...item, subItems: item.subItems.filter((sub: any) => !sub.roles || sub.roles.includes(userRole)) };
