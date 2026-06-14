@@ -507,10 +507,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
-                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[11px] md:text-[10px] font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[200px]">
-                        <span className="text-ink/60">SIZE</span>
-                        <span className="text-ink/60 text-center">{isPants ? 'WAIST/LENGTH' : 'CHEST/LENGTH'}</span>
-                        <span className="text-ink/60 text-right">WEIGHT/HEIGHT</span>
+                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[11px] md:text-xs font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[200px]">
+                        <span className="text-ink/80">SIZE</span>
+                        <span className="text-ink/80 text-center">{isPants ? 'WAIST/LENGTH' : 'CHEST/LENGTH'}</span>
+                        <span className="text-ink/80 text-right">WEIGHT/HEIGHT</span>
                       </div>
                       {displayMeasurements.map((m, idx) => {
                         const wh = getWeightAndHeight(m.size);
@@ -520,9 +520,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                             "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-2 border-b last:border-0 transition-colors min-w-[200px]",
                             isSelected ? "border-ink/20 bg-ink/5" : "border-ink/10 hover:border-ink/20 hover:bg-ink/[0.02]"
                           )}>
-                            <span className={cn("text-sm md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/80")}>{m.size}</span>
-                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink/80 font-medium")}>{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
-                            <span className={cn("text-[11px] md:text-[10px] text-right", isSelected ? "text-ink/90 font-semibold" : "text-ink/70 font-medium")}>{wh.w} / {wh.h}</span>
+                            <span className={cn("text-sm md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-right", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
                           </motion.div>
                         );
                       })}
