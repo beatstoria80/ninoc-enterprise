@@ -38,6 +38,12 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    if (pathname !== '/') {
+      sessionStorage.setItem('ninoc_intro_played', 'true');
+    }
+  }, [pathname]);
+
   // Removed !mounted return to ensure `children` (e.g. video) renders instantly on SSR!
 
   if (mounted && isMobile) {

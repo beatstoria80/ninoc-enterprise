@@ -644,7 +644,7 @@ export default function MobileLayout({
             <button
               onClick={() => {
                 if (pathname === '/') {
-                  window.dispatchEvent(new CustomEvent('replay-opening'));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                   router.push('/');
                 }
