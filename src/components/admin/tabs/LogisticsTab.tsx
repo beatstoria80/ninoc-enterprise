@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle } from 'lucide-react';
+import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Order } from '../types';
 import { supabase } from '@/lib/supabase';
