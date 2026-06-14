@@ -520,11 +520,15 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                       </div>
                       {displayMeasurements.map((m, idx) => {
                         const wh = getWeightAndHeight(m.size);
+                        const isSelected = effectiveSize && m.size.toUpperCase() === effectiveSize.toUpperCase();
                         return (
-                          <motion.div variants={textVariants} key={idx} className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-1.5 border-b border-ink/5 last:border-0 group-hover:border-ink/10 transition-colors min-w-[200px]">
-                            <span className="text-sm md:text-[11px] font-bold text-ink">{m.size}</span>
-                            <span className="text-xs md:text-[9px] text-ink/70 font-mono tracking-widest text-center">{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
-                            <span className="text-[11px] md:text-[8px] text-ink/50 text-right font-medium">{wh.w} / {wh.h}</span>
+                          <motion.div variants={textVariants} key={idx} className={cn(
+                            "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-1.5 border-b last:border-0 transition-colors min-w-[200px]",
+                            isSelected ? "border-ink/20 bg-ink/5" : "border-ink/5 group-hover:border-ink/10"
+                          )}>
+                            <span className={cn("text-sm md:text-[11px] font-bold", isSelected ? "text-ink" : "text-ink/60")}>{m.size}</span>
+                            <span className={cn("text-xs md:text-[9px] font-mono tracking-widest text-center", isSelected ? "text-ink/90" : "text-ink/70")}>{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
+                            <span className={cn("text-[11px] md:text-[8px] text-right font-medium", isSelected ? "text-ink/80" : "text-ink/50")}>{wh.w} / {wh.h}</span>
                           </motion.div>
                         );
                       })}
@@ -550,7 +554,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         key={size}
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() => { setSelectedSize(size); setQuantity(1); }}
                         className={cn(
                           "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs md:text-[10px] lg:text-xs font-medium transition-all border relative",
                           effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
@@ -589,7 +593,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
                         key={color}
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() => { setSelectedColor(color); setQuantity(1); }}
                         className={cn(
                           "px-3 py-1.5 rounded-none text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
