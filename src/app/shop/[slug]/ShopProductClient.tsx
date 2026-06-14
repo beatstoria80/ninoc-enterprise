@@ -234,6 +234,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         try { supabase.removeChannel(channel); } catch { /* ignore */ }
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id, product?.category]);
 
   const hasSizes = product?.variants?.some(v => v.size && v.size.trim() !== '');
