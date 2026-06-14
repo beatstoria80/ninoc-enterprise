@@ -68,46 +68,60 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     
     setIsDownloading(true);
     try {
-      const canvas = await html2canvas(element, {
+      // Create a temporary clone to ensure full height capture without overflow issues
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.style.position = 'fixed';
+      clone.style.top = '-9999px';
+      clone.style.left = '-9999px';
+      clone.style.width = '800px'; // fixed desktop width for good quality
+      clone.style.height = 'auto';
+      clone.style.overflow = 'visible';
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
         scale: 2, // High resolution for mobile zooming
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
       });
       
-      const dataUrl = canvas.toDataURL('image/png');
-      
-      try {
-        // Coba gunakan Web Share API (sangat membantu untuk HP/Mobile Safari/Chrome)
-        // Agar pengguna bisa langsung "Save Image" atau "Share to WhatsApp"
-        if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
-          const res = await fetch(dataUrl);
-          const blob = await res.blob();
-          const file = new File([blob], `Invoice_NINOC_${displayId}.png`, { type: 'image/png' });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: `Invoice NINOC ${displayId}`
-            });
-            return; // Sukses via Web Share
-          }
-        }
-      } catch (shareError) {
-        console.error('Web Share API gagal, fallback ke download biasa', shareError);
-      }
+      document.body.removeChild(clone);
 
-      // Fallback download standar (harus di-append ke body agar bekerja di beberapa browser)
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `Invoice_NINOC_${displayId}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error("Gagal membuat blob");
+        
+        try {
+          if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+            const file = new File([blob], `Invoice_NINOC_${displayId}.png`, { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: `Invoice NINOC ${displayId}`
+              });
+              setIsDownloading(false);
+              return;
+            }
+          }
+        } catch (shareError) {
+          console.error('Web Share API gagal, fallback ke download biasa', shareError);
+        }
+
+        // Fallback download standar via Object URL (lebih reliable di HP/WebView)
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = `Invoice_NINOC_${displayId}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Revoke URL setelah beberapa saat
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+        setIsDownloading(false);
+      }, 'image/png', 1.0);
+      
     } catch (error) {
       console.error('Error generating image:', error);
       alert('Gagal mengunduh gambar invoice. Silakan coba lagi.');
-    } finally {
       setIsDownloading(false);
     }
   };
