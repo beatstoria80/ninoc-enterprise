@@ -1193,23 +1193,7 @@ export function OrdersTab({
                                                 order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
                                                 "bg-red-50 text-red-600"
                                               )}>{order.status === 'pending' ? 'Waiting' : order.status}</span>
-                                              
-                                              {/* MANUAL OVERRIDE BUTTON FOR DEV TESTING */}
-                                              {order.status === 'pending' && (
-                                                <button
-                                                  onClick={async (e) => {
-                                                    e.stopPropagation();
-                                                    if(confirm('Tandai sebagai PAID? (Simulasi Webhook)')) {
-                                                      await supabase.from('orders').update({ status: 'paid', payment_status: 'success' }).eq('id', order.id);
-                                                      alert('Berhasil! Silakan refresh halaman.');
-                                                      window.location.reload();
-                                                    }
-                                                  }}
-                                                  className="text-[8px] uppercase tracking-wider bg-ink text-white px-2 py-0.5 rounded-sm hover:bg-rose transition-colors"
-                                                >
-                                                  Mark Paid
-                                                </button>
-                                              )}
+
                                             </div>
                                           </div>
                                         </div>
