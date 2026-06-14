@@ -327,9 +327,9 @@ export default function TrackClient() {
                 {order.shipping_address && (
                   <div>
                     <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Alamat Pengiriman</p>
-                    <p className="text-xs md:text-[10px] font-semibold">{order.shipping_address.name}</p>
-                    <p className="text-xs md:text-[9px] text-ink/50 mt-1 leading-relaxed">{order.shipping_address.address}</p>
-                    <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
+                    <p className="text-xs md:text-[10px] font-semibold uppercase">{order.shipping_address.name}</p>
+                    <p className="text-xs md:text-[9px] text-ink/50 mt-1 leading-relaxed uppercase">{order.shipping_address.address}</p>
+                    <p className="text-xs md:text-[9px] text-ink/40 mt-0.5 uppercase">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
                   </div>
                 )}
 
