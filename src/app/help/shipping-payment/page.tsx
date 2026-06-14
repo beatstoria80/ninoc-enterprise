@@ -169,8 +169,8 @@ export default function ShippingPaymentTermsPage() {
     <div className="min-h-screen bg-[#f8f9fa] selection:bg-ink selection:text-white pb-24">
       
       {/* Header Section */}
-      <div className="pt-32 pb-16 max-w-[1000px] w-full mx-auto px-6 border-b border-ink/5">
-        <h1 className="font-display font-medium italic text-3xl md:text-5xl tracking-tighter text-ink mb-4 uppercase leading-tight">
+      <div className="pt-12 pb-8 max-w-[1000px] w-full mx-auto px-6 border-b border-ink/5">
+        <h1 className="font-display font-medium italic text-2xl md:text-3xl tracking-tighter text-ink mb-2 uppercase leading-tight">
           {dict.title}
         </h1>
         <p className="text-xs md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/40">
@@ -179,12 +179,12 @@ export default function ShippingPaymentTermsPage() {
       </div>
 
       {/* Vertical List Content */}
-      <div className="max-w-[1000px] w-full mx-auto px-6 py-12 flex flex-col gap-12">
+      <div className="max-w-[1000px] w-full mx-auto px-6 py-6 flex flex-col gap-6">
         {dict.services.map((service, index) => (
           <section key={service.id} className="bg-white border border-ink/10 rounded-sm shadow-sm overflow-hidden group hover:border-ink/20 transition-colors">
             
             {/* Service Header */}
-            <div className="p-6 md:p-8 bg-ink/[0.01] border-b border-ink/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="p-4 md:p-5 bg-ink/[0.01] border-b border-ink/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-ink/5 shrink-0">
                   {service.icon}
@@ -203,7 +203,7 @@ export default function ShippingPaymentTermsPage() {
             </div>
 
             {/* Service Specs Details */}
-            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+            <div className="p-4 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               {service.specs.map((spec, i) => (
                 <div key={i} className="flex gap-4 items-start">
                   <div className="w-4 h-4 rounded-full bg-ink/5 flex items-center justify-center shrink-0 mt-0.5">

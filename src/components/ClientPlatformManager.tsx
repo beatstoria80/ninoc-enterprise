@@ -18,7 +18,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isAdminPage = pathname?.startsWith('/admin');
   const isCheckoutPage = pathname === '/checkout';
   const isLegalPage = pathname === '/legal';
-  const isHelpPage = pathname === '/help';
+  const isHelpPage = pathname?.startsWith('/help');
   const isTrackPage = pathname === '/track';
   const isProfilePage = pathname?.startsWith('/profile');
   const isReturPage = pathname === '/retur';
