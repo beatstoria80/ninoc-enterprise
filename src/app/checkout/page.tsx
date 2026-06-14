@@ -77,7 +77,7 @@ interface CheckoutFormData {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, totalPrice } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
   const dict = useDictionary();
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
@@ -537,6 +537,7 @@ export default function CheckoutPage() {
             console.log('Payment successful:', result);
             setIsRedirecting(true);
             setPaymentToken(null); // Close the Midtrans overlay
+            clearCart();
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);
@@ -546,6 +547,7 @@ export default function CheckoutPage() {
             console.log('Payment pending:', result);
             setIsRedirecting(true);
             setPaymentToken(null);
+            clearCart();
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);
