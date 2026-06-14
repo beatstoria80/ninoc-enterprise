@@ -195,7 +195,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
         zoomControl={false}
         className="w-full h-full absolute inset-0 z-0"
       >
-        <ZoomControl position="bottomright" />
+        <ZoomControl position="topleft" />
         <MapUpdater positions={linePositions} />
         
         <TileLayer
@@ -237,11 +237,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
         </Marker>
       </MapContainer>
 
-      {/* Decorative Overlay */}
-      <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-3 py-1.5 border border-ink/10 shadow-sm pointer-events-none rounded-full flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span className="text-[10px] uppercase tracking-widest font-bold text-ink">Live Logistics</span>
-      </div>
+
     </div>
   );
 }
