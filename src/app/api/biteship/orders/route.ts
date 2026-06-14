@@ -22,13 +22,23 @@ async function saveOrderToSupabase(
   mock: boolean = false,
   rawPayload?: object
 ) {
-  // Update order with tracking info
+  // Get current print count
+  const { data: orderData } = await supabase
+    .from('orders')
+    .select('print_count, status')
+    .eq('id', orderId)
+    .single();
+
+  const currentCount = orderData?.print_count || 0;
+
+  // Update order with tracking info and increment print count
   const { error: updateError } = await supabase
     .from('orders')
     .update({
       tracking_id: trackingId,
       courier: `${courierCompany} ${courierType}`.toUpperCase(),
-      status: 'paid',
+      status: orderData?.status === 'paid' ? 'shipped' : orderData?.status || 'shipped',
+      print_count: currentCount + 1,
     })
     .eq('id', orderId);
 

@@ -180,6 +180,7 @@ export function LogisticsTab({
         ...order,
         status: 'shipped',
         tracking_id: data.tracking_id || data.waybill_id,
+        print_count: (order.print_count || 0) + 1,
         courier: `${data.courier_company} ${data.courier_type}`.toUpperCase()
       });
       
@@ -486,10 +487,10 @@ export function LogisticsTab({
                               <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
                               Memproses...
                             </>
-                          ) : logisticsSelectedOrder.status === 'shipped' ? (
+                          ) : logisticsSelectedOrder.status === 'shipped' || (logisticsSelectedOrder.print_count && logisticsSelectedOrder.print_count > 0) ? (
                             <>
                               <Truck size={10} />
-                              Request Pickup (Sudah 1x Print)
+                              Request Pickup (Sudah {logisticsSelectedOrder.print_count || 1}x Print)
                             </>
                           ) : (
                             <>
