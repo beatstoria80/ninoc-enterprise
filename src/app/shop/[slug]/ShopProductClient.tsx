@@ -93,17 +93,21 @@ interface Product {
   model_info?: string | null;
 }
 
+import type { ProductReview } from '@/components/admin/types';
+
 interface ShopProductClientProps {
   slug: string;
   productSchema?: string | null;
   dict: Dictionary;
   initialProduct?: Product;
+  initialReviews?: ProductReview[];
 }
 
-export default function ShopProductClient({ slug, productSchema, dict, initialProduct }: ShopProductClientProps) {
+export default function ShopProductClient({ slug, productSchema, dict, initialProduct, initialReviews = [] }: ShopProductClientProps) {
   const router = useRouter();
   const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
+  const [reviews] = useState<ProductReview[]>(initialReviews);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -447,6 +451,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </div>
                 </motion.div>
                 <motion.h1 variants={textVariants} className="text-sm md:text-[11px] md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
+                {reviews.length > 0 && (
+                  <motion.div variants={textVariants} className="flex items-center gap-1.5 mb-1.5 mt-0.5">
+                    <div className="flex text-amber-500">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={10} fill={i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
+                      ))}
+                    </div>
+                    <span className="text-[9px] md:text-[8px] font-bold text-ink/40 uppercase tracking-widest">{reviews.length} Reviews</span>
+                  </motion.div>
+                )}
                 {product.price_tag && (
                   <motion.div variants={textVariants} className="text-[10px] md:text-[7px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
@@ -851,6 +865,46 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             </div>
           </motion.div>
         </motion.div>
+
+        {reviews.length > 0 && (
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-8 lg:mt-12 border-t border-ink/5 pt-6 lg:pt-8">
+            <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-2 lg:pb-3 mb-4 lg:mb-6">
+              <h2 className="text-xs md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Customer Reviews</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs md:text-[10px] font-bold text-ink">{reviews.length}</span>
+                <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">Verified Ratings</span>
+              </div>
+            </motion.div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {reviews.map((r) => (
+                <motion.div key={r.id} variants={textVariants} className="p-4 md:p-5 bg-ink/[0.01] border border-ink/5 rounded-sm flex flex-col gap-3">
+                  <div className="flex items-center justify-between border-b border-ink/5 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-ink/10 flex items-center justify-center text-[10px] font-bold text-ink uppercase">
+                        {r.author_name.charAt(0)}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs md:text-[10px] font-bold text-ink uppercase tracking-wider">{r.author_name}</span>
+                        {r.is_verified_purchase && (
+                          <span className="text-[9px] md:text-[7px] font-bold uppercase tracking-widest text-emerald-600 mt-0.5 flex items-center gap-0.5">
+                            <ShieldCheck size={8} /> Verified
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={10} fill={i < r.rating ? "currentColor" : "none"} className="text-amber-500" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed italic">"{r.review_text}"</p>
+                  <span className="text-[9px] md:text-[7px] font-medium uppercase tracking-widest text-ink/30 mt-auto pt-2">{new Date(r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {relatedProducts.length > 0 && (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">

@@ -68,7 +68,46 @@ export default async function ShopProductPage({ params }: Props) {
 
   if (!product) {
     const dict = await getDictionary();
-    return <ShopProductClient slug={slug} dict={dict} />;
+    return <ShopProductClient slug={slug} dict={dict} initialReviews={[]} />;
+  }
+
+  const { data: reviews } = await supabase
+    .from('product_reviews')
+    .select('*')
+    .eq('product_id', product.id)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
+
+  let aggregateRating;
+  let reviewSchema;
+  
+  if (reviews && reviews.length > 0) {
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const avgRating = (totalRating / reviews.length).toFixed(1);
+    
+    aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: avgRating,
+      reviewCount: reviews.length,
+      bestRating: 5,
+      worstRating: 1
+    };
+
+    reviewSchema = reviews.map(r => ({
+      '@type': 'Review',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: r.rating,
+        bestRating: 5,
+        worstRating: 1
+      },
+      author: {
+        '@type': 'Person',
+        name: r.author_name
+      },
+      datePublished: new Date(r.created_at).toISOString().split('T')[0],
+      reviewBody: r.review_text || ''
+    }));
   }
 
   const description = product.description
@@ -104,6 +143,8 @@ export default async function ShopProductPage({ params }: Props) {
         name: 'NINOC STORE',
       }
     },
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviewSchema ? { review: reviewSchema } : {}),
   };
 
   const breadcrumbSchema = {
@@ -126,7 +167,7 @@ export default async function ShopProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <ShopProductClient slug={slug} dict={await getDictionary()} initialProduct={product} />
+      <ShopProductClient slug={slug} dict={await getDictionary()} initialProduct={product} initialReviews={reviews || []} />
     </>
   );
 }

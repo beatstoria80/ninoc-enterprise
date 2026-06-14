@@ -291,3 +291,15 @@ export interface WABroadcastCampaign {
   created_at: string;
   created_by?: string;
 }
+
+export interface ProductReview {
+  id: string;
+  product_id: string;
+  user_id: string | null;
+  rating: number;
+  review_text: string | null;
+  author_name: string;
+  is_verified_purchase: boolean;
+  status: 'published' | 'hidden';
+  created_at: string;
+}
