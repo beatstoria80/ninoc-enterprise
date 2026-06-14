@@ -61,7 +61,7 @@ interface Order {
 
 const STATUS_STEPS = [
   { key: 'pending', label: 'Order Placed', sub: 'Pesanan diterima' },
-  { key: 'paid', label: 'Payment Verified', sub: 'Pembayaran terkonfirmasi' },
+  { key: 'paid', label: 'Paid', sub: 'Pembayaran terkonfirmasi' },
   { key: 'processing', label: 'Processing', sub: 'Sedang diolah di studio' },
   { key: 'shipped', label: 'In Transit', sub: 'Dalam perjalanan' },
   { key: 'delivered', label: 'Delivered', sub: 'Sudah diterima' },
