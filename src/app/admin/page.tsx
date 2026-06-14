@@ -1346,11 +1346,11 @@ export default function AdminDashboard() {
                     <div class="address-box">
                       <div class="box-title">PENGIRIM / FROM</div>
                       <div class="person-name">NINOC STUDIO</div>
-                      <div class="person-phone">0812-XXXX-XXXX</div>
+                      <div class="person-phone">0821-1983-774</div>
                       <div class="person-address">
-                        Jl. Gudang Selatan No. 22<br/>
-                        Bandung, Jawa Barat<br/>
-                        40113
+                        Kota Bandung<br/>
+                        Jawa Barat<br/>
+                        40292
                       </div>
                     </div>
                   </div>

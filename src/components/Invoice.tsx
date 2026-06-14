@@ -97,7 +97,7 @@ export function Invoice({ order }: InvoiceProps) {
           <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-ink/40 uppercase">Pengirim / From</span>
           <div className="mt-1 md:mt-3 flex flex-col text-[10px] md:text-sm leading-snug md:leading-relaxed">
             <span className="font-bold text-ink">NINOC STUDIO</span>
-            <span className="text-ink/60">Bandung, Jawa Barat<br/>Indonesia<br/>hello@ninoc.store</span>
+            <span className="text-ink/60">0821-1983-774<br/>Kota Bandung, Jawa Barat<br/>40292</span>
           </div>
         </div>
         <div className="flex-1 p-3 md:p-8">
@@ -301,9 +301,9 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '2px', color: '#888', textTransform: 'uppercase' }}>PENGIRIM / FROM</span>
               <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#111', letterSpacing: '0.5px' }}>NINOC STUDIO</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>Bandung, Jawa Barat</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>Indonesia</span>
-                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>hello@ninoc.store</span>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>0821-1983-774</span>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>Kota Bandung, Jawa Barat</span>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: '#555' }}>40292</span>
               </div>
             </div>
             <div style={{ flex: 1, padding: '20px 24px' }}>
