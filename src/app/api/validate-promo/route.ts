@@ -29,6 +29,12 @@ export async function POST(req: Request) {
       if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) {
         return NextResponse.json({ error: 'Voucher has expired' }, { status: 400 });
       }
+      // Check usage limits (if configured)
+      if (voucher.max_usage && voucher.usage_count !== undefined) {
+        if (voucher.usage_count >= voucher.max_usage) {
+          return NextResponse.json({ error: 'Voucher usage limit reached' }, { status: 400 });
+        }
+      }
       // Check min order
       if (voucher.min_order_amount && subtotal < voucher.min_order_amount) {
         return NextResponse.json({ error: `Minimum order amount is Rp ${Number(voucher.min_order_amount).toLocaleString('id-ID')}` }, { status: 400 });

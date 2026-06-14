@@ -486,18 +486,6 @@ export default function CheckoutPage() {
   // Effect to trigger Snap Embed when paymentToken is available
   useEffect(() => {
     if (paymentToken && snapLoaded) {
-      // --- TEST MODE BYPASS ---
-      if (paymentToken === 'MOCK_TOKEN_FOR_TESTING') {
-        console.log('Test mode bypass: Payment simulated successful');
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setIsRedirecting(true);
-        setPaymentToken(null);
-        const params = new URLSearchParams({ courier: shippingMethod });
-        if (createdOrderId) params.set('order_id', createdOrderId);
-        if (createdOrderNumber) params.set('order_number', createdOrderNumber);
-        router.push(`/payment/success?${params.toString()}`);
-        return;
-      }
 
       const snapObj = (window as unknown as Window & { snap: { embed: (token: string, options: SnapOptions) => void } }).snap;
       if (snapObj && typeof snapObj.embed === 'function') {
