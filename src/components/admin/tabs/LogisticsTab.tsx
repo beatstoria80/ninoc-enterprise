@@ -506,99 +506,92 @@ export function LogisticsTab({
                     </div>
                   </div>
 
-                  <div className="relative pl-6 border-l border-ink/10 space-y-6 ml-2 pb-4">
-                    {/* Step 1: Current Status */}
-                    <div className="relative">
-                      {/* Timeline Dot */}
-                      <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
-                      </div>
-                      
-                      {/* Timeline Content */}
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
-                        <div className="w-24 shrink-0 pt-0.5">
-                          <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-rose">
-                            {new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                          </span>
-                          <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
-                            {new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                        </div>
-                        <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
-                          <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink">
-                            {logisticsSelectedOrder.status === 'delivered' ? 'Pesanan Selesai' : 
-                             logisticsSelectedOrder.status === 'shipped' ? 'Sedang Dikirim' : 'Diproses (Menunggu Kurir)'}
-                          </p>
-                          <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/80 font-medium">
-                            Status terakhir pesanan sesuai dengan pembaruan sistem.
-                          </p>
-                          <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
-                            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                              <MapPin size={10} className="text-rose/50" /> {logisticsSelectedOrder.shipping_address?.city || 'Origin'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 2: Sorting Center (Only if shipped/delivered) */}
-                    {['shipped', 'delivered'].includes(logisticsSelectedOrder.status) && (
-                      <div className="relative">
-                        <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-ink/20 rounded-full" />
-                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
-                          <div className="w-24 shrink-0 pt-0.5">
-                            <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-ink/40">
-                              {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                            </span>
-                            <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
-                              {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                          </div>
-                          <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
-                            <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink/60">
-                              Paket di Fasilitas Transit
-                            </p>
-                            <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/50">
-                              Paket sedang diproses di pusat penyortiran kurir regional.
-                            </p>
-                            <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
-                              <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                                <Truck size={10} className="text-ink/30" /> {logisticsSelectedOrder.courier || 'Expedition'} Hub
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  {(() => {
+                    const activeIndex = logisticsSelectedOrder.status === 'delivered' ? 3 : 
+                                        logisticsSelectedOrder.status === 'shipped' ? 2 : 0;
                     
-                    {/* Step 3: Created */}
-                    <div className="relative">
-                      <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-ink/20 rounded-full" />
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
-                        <div className="w-24 shrink-0 pt-0.5">
-                          <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-ink/40">
-                            {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                          </span>
-                          <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
-                            {new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    const skeletonSteps = [
+                      {
+                        index: 3,
+                        title: 'Pesanan Selesai (Tiba di Tujuan)',
+                        desc: 'Paket telah berhasil dikirimkan ke alamat tujuan.',
+                        icon: <MapPin size={10} />,
+                        location: logisticsSelectedOrder.shipping_address?.city || 'Destination',
+                        isReached: activeIndex >= 3,
+                        isActive: activeIndex === 3,
+                        time: activeIndex >= 3 ? new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at) : null
+                      },
+                      {
+                        index: 2,
+                        title: 'Dalam Pengiriman (Transit)',
+                        desc: 'Paket sedang dalam perjalanan menuju kota tujuan.',
+                        icon: <Truck size={10} />,
+                        location: `${logisticsSelectedOrder.courier || 'Expedition'} Hub`,
+                        isReached: activeIndex >= 2,
+                        isActive: activeIndex === 2,
+                        time: activeIndex >= 2 ? new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000) : null
+                      },
+                      {
+                        index: 1,
+                        title: 'Dijemput Kurir / Proses Sortir',
+                        desc: 'Paket telah diserahkan kepada kurir dan sedang disortir.',
+                        icon: <Box size={10} />,
+                        location: 'Origin Sorting Center',
+                        isReached: activeIndex >= 2,
+                        isActive: activeIndex === 1,
+                        time: activeIndex >= 2 ? new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 7200000) : null
+                      },
+                      {
+                        index: 0,
+                        title: 'Pesanan Dibuat (Gudang NINOC)',
+                        desc: 'Pemesanan telah diterima dan paket mulai disiapkan oleh tim NINOC.',
+                        icon: <Package size={10} />,
+                        location: 'Gudang NINOC, Bandung',
+                        isReached: true,
+                        isActive: activeIndex === 0,
+                        time: new Date(logisticsSelectedOrder.created_at)
+                      }
+                    ];
+
+                    return (
+                      <div className="relative pl-6 border-l border-ink/10 space-y-6 ml-2 pb-4">
+                        {skeletonSteps.map((step) => (
+                          <div key={step.index} className={`relative transition-opacity duration-300 ${!step.isReached ? 'opacity-40 grayscale' : 'opacity-100'}`}>
+                            {/* Timeline Dot */}
+                            <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 rounded-full flex items-center justify-center ${step.isActive ? 'border-rose' : step.isReached ? 'border-ink/40 bg-ink/5' : 'border-ink/20'}`}>
+                              {step.isActive && <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />}
+                              {step.isReached && !step.isActive && <div className="w-1.5 h-1.5 bg-ink/40 rounded-full" />}
+                            </div>
+                            
+                            {/* Timeline Content */}
+                            <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
+                              <div className="w-24 shrink-0 pt-0.5">
+                                <span className={`text-[11px] md:text-[9px] font-semibold tracking-widest uppercase ${step.isActive ? 'text-rose' : 'text-ink/40'}`}>
+                                  {step.time ? step.time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : '---'}
+                                </span>
+                                <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
+                                  {step.time ? step.time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                                </div>
+                              </div>
+                              <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
+                                <p className={`text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 ${step.isActive ? 'text-ink' : step.isReached ? 'text-ink/70' : 'text-ink/40'}`}>
+                                  {step.title}
+                                </p>
+                                <p className={`text-[11px] md:text-[9px] leading-relaxed mb-2 ${step.isActive ? 'text-ink/80 font-medium' : 'text-ink/50'}`}>
+                                  {step.desc}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                                  <p className={`text-[10px] md:text-[8px] uppercase tracking-widest flex items-center gap-1.5 ${step.isActive ? 'text-ink/60' : 'text-ink/30'}`}>
+                                    {React.cloneElement(step.icon as React.ReactElement, { className: step.isActive ? "text-rose/50" : "text-ink/30" })} {step.location}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
-                          <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink/60">
-                            Pesanan Dibuat
-                          </p>
-                          <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/50">
-                            Pemesanan telah diterima dan paket mulai disiapkan oleh tim NINOC.
-                          </p>
-                          <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
-                            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                              <Package size={10} className="text-ink/30" /> Sender Origin Facility
-                            </p>
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             </motion.div>
