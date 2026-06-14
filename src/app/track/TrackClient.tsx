@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { X, MapPin, Truck } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import CourierLogo from '@/components/CourierLogo';
+import { supabase } from '@/lib/supabase';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
@@ -143,6 +144,38 @@ export default function TrackClient() {
       setLoading(false);
     }
   }
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!order?.id) return;
+
+    const channel = supabase
+      .channel(`track-${order.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'orders',
+        filter: `id=eq.${order.id}`
+      }, () => {
+        const mockEvent = { preventDefault: () => {} } as React.FormEvent;
+        handleTrack(mockEvent, orderNumber, phone);
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'tracking_logs',
+        filter: `order_id=eq.${order.id}`
+      }, () => {
+        const mockEvent = { preventDefault: () => {} } as React.FormEvent;
+        handleTrack(mockEvent, orderNumber, phone);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order?.id, orderNumber, phone]);
 
   const currentStep = order ? getStepIndex(order.status) : -1;
   const scrollbarStyles = "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-ink/20";
