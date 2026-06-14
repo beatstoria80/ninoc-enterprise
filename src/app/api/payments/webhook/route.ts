@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { coreApi } from '@/lib/midtrans';
 import { supabase } from '@/lib/supabase';
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { sendEmailInvoice } from '@/lib/email';
 
 export async function POST(req: Request) {
   try {
@@ -221,6 +222,15 @@ export async function POST(req: Request) {
         }
         } else {
           console.log(`[Payment Webhook] Invoice WA already sent for order ${order.id}, skipping`);
+        }
+
+        // --- EMAIL NOTIFICATION ---
+        const customerEmail = shippingAddress?.email;
+        if (customerEmail) {
+          console.log(`[Payment Webhook] Attempting to send Email Invoice to ${customerEmail}...`);
+          await sendEmailInvoice(order, customerEmail);
+        } else {
+          console.log(`[Payment Webhook] No customer email found in shipping_address for order ${order.id}`);
         }
       }
     }
