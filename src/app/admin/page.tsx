@@ -37,6 +37,7 @@ import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
 import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
 import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
+import { EmailBroadcastTab } from '@/components/admin/tabs/EmailBroadcastTab';
 import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
 import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
@@ -1048,6 +1049,7 @@ export default function AdminDashboard() {
     },
     { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats, roles: ['super_admin', 'outbound_logistics'] },
     { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'], roles: ['super_admin'] },
+    { id: 'email_broadcast', icon: Mail, label: 'Email Broadcast', activeKeys: ['email_broadcast'], roles: ['super_admin'] },
     { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'], roles: ['super_admin'] },
     { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'], roles: ['super_admin'] }
   ];
@@ -1510,7 +1512,7 @@ export default function AdminDashboard() {
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Inventory / ' :
                ['finance'].includes(activeTab) ? 'Report / ' :
-               ['messages', 'placeholders', 'wabroadcast'].includes(activeTab) ? 'Support / ' :
+               ['messages', 'placeholders', 'wabroadcast', 'email_broadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-xs md:text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1533,6 +1535,7 @@ export default function AdminDashboard() {
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' ? 'Placeholder' :
                activeTab === 'wabroadcast' ? 'WA Broadcast' :
+               activeTab === 'email_broadcast' ? 'Email Broadcast' :
                activeTab === 'settings' ? 'Settings' : activeTab}
             </h1>
           </div>
@@ -1687,6 +1690,7 @@ export default function AdminDashboard() {
           {activeTab === 'placeholders' && <PlaceholderTab />}
 
           {activeTab === 'wabroadcast' && <WABroadcastTab />}
+          {activeTab === 'email_broadcast' && <EmailBroadcastTab customers={customers} />}
 
           {activeTab === 'customers' && (
             <CustomersTab 
