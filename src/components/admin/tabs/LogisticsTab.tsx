@@ -468,21 +468,32 @@ export function LogisticsTab({
                       <span className="text-[11px] md:text-[8px] text-gray-400">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {logisticsSelectedOrder.status === 'paid' && (
+                      {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
-                          onClick={() => handleRequestPickup(logisticsSelectedOrder)}
-                          disabled={isDispatching}
+                          onClick={() => {
+                            if (logisticsSelectedOrder.status === 'paid') {
+                              handleRequestPickup(logisticsSelectedOrder);
+                            }
+                          }}
+                          disabled={isDispatching || logisticsSelectedOrder.status === 'shipped'}
                           className={cn(
                             "px-3 py-1.5 text-[11px] md:text-[8px] font-medium rounded border transition-colors flex items-center gap-1.5",
                             isDispatching 
                               ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-                              : "bg-ink text-white border-ink hover:bg-ink/90"
+                              : logisticsSelectedOrder.status === 'shipped'
+                                ? "bg-orange-500 text-white border-orange-500 cursor-default"
+                                : "bg-ink text-white border-ink hover:bg-ink/90"
                           )}
                         >
                           {isDispatching ? (
                             <>
                               <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
                               Memproses...
+                            </>
+                          ) : logisticsSelectedOrder.status === 'shipped' ? (
+                            <>
+                              <Truck size={10} />
+                              Request Pickup (Sudah 1x Print)
                             </>
                           ) : (
                             <>

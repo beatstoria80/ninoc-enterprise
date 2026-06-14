@@ -123,9 +123,10 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
           background-color: rgba(255,255,255,0.95) !important;
           color: #111827 !important;
           font-family: inherit !important;
-          width: 32px !important;
-          height: 32px !important;
-          line-height: 32px !important;
+          width: 22px !important;
+          height: 22px !important;
+          line-height: 22px !important;
+          font-size: 14px !important;
           border-bottom: 1px solid rgba(0,0,0,0.05) !important;
         }
         .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
