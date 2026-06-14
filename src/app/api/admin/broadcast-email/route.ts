@@ -67,6 +67,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // ─── Double Submission Check (Idempotency) ───
+    // Prevent sending the exact same subject within 1 minute
+    const { data: recentLogs } = await supabase
+      .from('operational_expenses')
+      .select('created_at')
+      .eq('description', `Email Broadcast: ${subject}`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (recentLogs) {
+      const diffSeconds = (new Date().getTime() - new Date(recentLogs.created_at).getTime()) / 1000;
+      if (diffSeconds < 60) {
+        return NextResponse.json({ error: 'Email dengan subjek ini baru saja dikirim. Harap tunggu 1 menit untuk mengirim ulang.' }, { status: 429 });
+      }
+    }
+
     const { SMTP_EMAIL, SMTP_PASSWORD } = process.env;
 
     if (!SMTP_EMAIL || !SMTP_PASSWORD) {
@@ -94,6 +111,15 @@ export async function POST(req: Request) {
 
     const info = await transporter.sendMail(mailOptions);
     console.log(`[Broadcast Email] Sent successfully. Message ID: ${info.messageId}, Recipients: ${recipients.length}`);
+
+    // Log to operational_expenses to prevent double submission and track activity
+    await supabase.from('operational_expenses').insert({
+      category: 'marketing',
+      description: `Email Broadcast: ${subject}`,
+      amount: 0, // Free
+      expense_date: new Date().toISOString().split('T')[0],
+      created_by: 'System (Email API)'
+    });
 
     return NextResponse.json({ 
       success: true, 

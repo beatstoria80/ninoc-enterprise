@@ -42,6 +42,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'promo_text exceeds maximum length (1024 characters)' }, { status: 400 });
     }
 
+    // ─── Double Submission Check (Idempotency) ───
+    const { data: recentSession } = await adminClient
+      .from('wa_broadcast_sessions')
+      .select('created_at')
+      .eq('name', name)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (recentSession) {
+      const diffSeconds = (new Date().getTime() - new Date(recentSession.created_at).getTime()) / 1000;
+      if (diffSeconds < 60) {
+        return NextResponse.json({ error: 'Campaign WA dengan nama ini baru saja dibuat. Harap tunggu 1 menit untuk menghindari pengiriman ganda.' }, { status: 429 });
+      }
+    }
+
     // ─── 1. Fetch recipients ─────────────────────────────────────────────
     let recipients: { id: string; name: string; phone: string }[] = [];
 

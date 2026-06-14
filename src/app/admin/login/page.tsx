@@ -1,251 +1,98 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Lock, ArrowLeft, Mail, Shield } from 'lucide-react';
-import Link from '@/components/LocalizedLink';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { useDevice } from '@/app/checkout/_components/useDevice';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { Lock, ShieldAlert, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export default function AdminLoginPage() {
-  const router = useRouter();
-  const { isMobile, isIPhone } = useDevice();
-  const [email, setEmail] = useState('');
+export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      let loginEmail = email;
-      let loginPassword = password;
-
-      // Smart Backdoor (maps dummy credentials to the real auth account to get a valid token)
-      if (email === 'adm' && password === '111') {
-        loginEmail = 'admin@ninoc.store';
-        loginPassword = 'NinocAdmin2026!';
-      }
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({ 
-        email: loginEmail, 
-        password: loginPassword 
+      const res = await fetch('/api/auth/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
       });
-      if (signInError) {
-        setError('Kredensial tidak valid atau Anda tidak memiliki akses staf.');
-        setIsLoading(false);
-        return;
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        router.push('/admin');
+        router.refresh();
+      } else {
+        setError(data.message || 'Invalid password');
       }
-      
-      router.push('/admin'); // Staf diarahkan langsung ke admin panel
     } catch (err) {
-      setError((err as Error)?.message || 'Autentikasi gagal.');
+      setError('Connection error. Try again.');
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <main className={cn(
-      "min-h-screen bg-ink selection:bg-cr selection:text-ink flex items-center justify-center p-4",
-      isIPhone && "pt-[env(safe-area-inset-top)]"
-    )}>
-      {isMobile ? (
-        /* MOBILE: Full width card */
-        <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link prefetch={false} href="/login" className="flex items-center gap-2 text-white/40 hover:text-white py-4 border-b border-white/5">
-            <ArrowLeft size={14} />
-            <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
-          </Link>
-          <div className="bg-ink rounded-none border-t-0 border-x-0 border-b border-white/5 p-5 space-y-6 text-white">
-            {/* Title */}
-            <div>
-              <h1 className="text-2xl font-display font-medium italic uppercase text-white">
-                Portal Internal <span className="text-rose">NINOC</span>
-              </h1>
-              <p className="text-xs font-medium uppercase tracking-wider text-white/40 mt-1">
-                Akses khusus staf dan admin
-              </p>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleEmailAuth} className="space-y-4">
-              {/* Email */}
-              <div>
-                <label className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Email Resmi / ID Karyawan</label>
-                <div className="relative">
-                  <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
-                  <input
-                    type="text"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
-                    placeholder="NAMA@NINOC.COM"
-                    required
-                    aria-label="Email Resmi"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-white/50 mb-2 block">Kata Sandi</label>
-                <div className="relative">
-                  <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-none py-3 px-10 pr-12 text-xs md:text-[10px] font-medium text-white outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-white/20"
-                    placeholder="KATA SANDI"
-                    required
-                    aria-label="Password"
-                  />
-                </div>
-              </div>
-
-              {/* Error */}
-              {error && (
-                <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
-              )}
-
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-white text-ink py-3 rounded-none text-xs md:text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink mt-2"
-              >
-                <span>{isLoading ? 'Memproses...' : 'Akses Sistem'}</span>
-                <ArrowRight size={12} />
-              </button>
-
-              {/* Super Admin Quick Access */}
-              <div className="pt-4 border-t border-white/10 mt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('adm');
-                    setPassword('111');
-                  }}
-                  className="w-full bg-rose/10 text-rose py-3 rounded-none text-xs md:text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer"
-                >
-                  <Shield size={12} />
-                  <span>UI/UX Access: Super Admin</span>
-                </button>
-                <p className="text-center text-[11px] md:text-[8px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
-              </div>
-            </form>
+    <div className="min-h-screen bg-neutral-900 flex flex-col justify-center items-center p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-8 text-center bg-black text-white relative">
+          <div className="absolute top-4 left-4">
+            <ShieldAlert className="text-orange-500 opacity-50" size={24} />
           </div>
+          <h1 className="text-2xl font-bold tracking-widest mt-4">NINOC ENTERPRISE</h1>
+          <p className="text-sm text-gray-400 mt-2">SECURE ADMIN PORTAL</p>
         </div>
-      ) : (
-        /* DESKTOP: Centered card with motion */
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center gap-6"
-        >
-          <div className="w-full md:w-[480px] lg:w-[500px] max-w-[95vw] bg-ink border border-white/10 rounded-xl shadow-2xl p-1">
-            <div className="bg-ink/50 backdrop-blur-md rounded-lg h-full p-6 lg:p-8 space-y-6">
-              {/* Header */}
-              <Link prefetch={false} href="/login" className="flex items-center gap-2 text-white/40 hover:text-white py-2 border-b border-white/5 transition-colors w-fit">
-                <ArrowLeft size={14} />
-                <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
-              </Link>
-
-              {/* Title */}
-              <div className="text-center pt-2">
-                <div className="mx-auto w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-4">
-                  <Shield size={20} className="text-rose" />
-                </div>
-                <h1 className="text-2xl font-display font-medium italic uppercase text-white">
-                  Portal Internal <span className="text-rose">NINOC</span>
-                </h1>
-                <p className="text-xs font-medium uppercase tracking-wider text-white/40 mt-2">
-                  Akses khusus staf dan admin
-                </p>
+        
+        <form onSubmit={handleLogin} className="p-8">
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center border border-red-100">
+              {error}
+            </div>
+          )}
+          
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-gray-400" />
               </div>
-
-              {/* Form */}
-              <form onSubmit={handleEmailAuth} className="space-y-4 pt-4">
-                {/* Email */}
-                <div>
-                  <label className="text-xs font-medium uppercase tracking-wider text-white/50 mb-2 block">Email Resmi / ID Karyawan</label>
-                  <div className="relative">
-                    <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
-                    <input
-                      type="text"
-                      value={email}
-                      onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                      className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-white outline-none focus:ring-2 focus:ring-rose/20 transition-all placeholder:text-white/20"
-                      placeholder="nama@ninoc.com"
-                      required
-                      aria-label="Email Resmi"
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="text-xs font-medium uppercase tracking-wider text-white/50 mb-2 block">Kata Sandi</label>
-                  <div className="relative">
-                    <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25" />
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-white/[0.03] border border-white/10 focus:border-rose rounded-lg py-3 px-10 pr-12 text-sm font-medium text-white outline-none focus:ring-2 focus:ring-rose/20 transition-all placeholder:text-white/20"
-                      placeholder="Kata Sandi"
-                      required
-                      aria-label="Password"
-                    />
-                  </div>
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <p className="text-xs font-medium text-rose bg-rose/10 border border-rose/20 px-4 py-2.5 rounded-lg text-center mt-2">{error}</p>
-                )}
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-white text-ink py-3.5 mt-4 rounded-lg text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink shadow-lg shadow-white/5"
-                >
-                  <span>{isLoading ? 'Memproses...' : 'Akses Sistem'}</span>
-                  <ArrowRight size={14} />
-                </button>
-
-                {/* Super Admin Quick Access */}
-                <div className="pt-4 mt-6 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('adm');
-                      setPassword('111');
-                    }}
-                    className="w-full bg-rose/10 text-rose border border-rose/20 py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-all cursor-pointer shadow-sm"
-                  >
-                    <Shield size={14} />
-                    <span>UI/UX Access: Super Admin</span>
-                  </button>
-                  <p className="text-center text-xs md:text-[9px] text-white/30 uppercase tracking-widest mt-2">(USER: ADM | PASS: 111)</p>
-                </div>
-
-              </form>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-black focus:border-black sm:text-sm bg-gray-50 transition-colors"
+                placeholder="Enter global admin password"
+                required
+              />
             </div>
           </div>
-        </motion.div>
-      )}
-    </main>
+          
+          <button
+            type="submit"
+            disabled={isLoading || !password}
+            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                ACCESS SECURE PORTAL
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+      
+      <p className="mt-8 text-xs text-gray-500 max-w-sm text-center">
+        Unauthorised access to this portal is strictly prohibited and is monitored 24/7. Your IP address is recorded.
+      </p>
+    </div>
   );
 }

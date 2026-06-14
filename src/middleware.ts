@@ -4,7 +4,24 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   
-  // Exclude static files, api, _next, and admin routes
+  // 1. Check for Admin Routes Protection
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    const adminSession = request.cookies.get('admin_session');
+    if (!adminSession || adminSession.value !== 'authenticated') {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+  }
+
+  // 2. Protect Admin APIs
+  // Ensure we don't block the auth API itself
+  if (pathname.startsWith('/api/admin') && !pathname.startsWith('/api/auth/admin')) {
+    const adminSession = request.cookies.get('admin_session');
+    if (!adminSession || adminSession.value !== 'authenticated') {
+      return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+    }
+  }
+
+  // Exclude static files, api, _next, and non-protected routes from i18n
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
