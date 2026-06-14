@@ -10,7 +10,8 @@ export async function POST(req: Request) {
 
     if (password === correctPassword) {
       // Set HttpOnly cookie
-      cookies().set({
+      const cookieStore = await cookies();
+      cookieStore.set({
         name: 'admin_session',
         value: 'authenticated',
         httpOnly: true,

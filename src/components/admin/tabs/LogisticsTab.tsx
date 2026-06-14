@@ -507,8 +507,8 @@ export function LogisticsTab({
                   </div>
 
                   {(() => {
-                    const activeIndex = logisticsSelectedOrder.status === 'delivered' ? 3 : 
-                                        logisticsSelectedOrder.status === 'shipped' ? 2 : 0;
+                    const activeIndex: number = logisticsSelectedOrder.status === 'delivered' ? 3 : 
+                                                logisticsSelectedOrder.status === 'shipped' ? 2 : 0;
                     
                     const skeletonSteps = [
                       {
