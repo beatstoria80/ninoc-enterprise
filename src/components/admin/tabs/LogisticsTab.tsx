@@ -128,7 +128,7 @@ export function LogisticsTab({
   const [isDispatching, setIsDispatching] = useState(false);
 
   const handleRequestPickup = async (order: Order) => {
-    if (!order || order.status !== 'paid') return;
+    if (!order || !['paid', 'shipped'].includes(order.status)) return;
     setIsDispatching(true);
     
     try {
@@ -470,18 +470,14 @@ export function LogisticsTab({
                     <div className="flex items-center gap-2">
                       {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
-                          onClick={() => {
-                            if (logisticsSelectedOrder.status === 'paid') {
-                              handleRequestPickup(logisticsSelectedOrder);
-                            }
-                          }}
-                          disabled={isDispatching || logisticsSelectedOrder.status === 'shipped'}
+                          onClick={() => handleRequestPickup(logisticsSelectedOrder)}
+                          disabled={isDispatching}
                           className={cn(
                             "px-3 py-1.5 text-[11px] md:text-[8px] font-medium rounded border transition-colors flex items-center gap-1.5",
                             isDispatching 
                               ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                               : logisticsSelectedOrder.status === 'shipped'
-                                ? "bg-orange-500 text-white border-orange-500 cursor-default"
+                                ? "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
                                 : "bg-ink text-white border-ink hover:bg-ink/90"
                           )}
                         >
