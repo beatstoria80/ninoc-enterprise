@@ -95,7 +95,7 @@ export function AllProductsView({
               <div className="p-3 space-y-2">
                 {/* Product Name */}
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display font-medium italic text-xs text-ink leading-tight truncate">{product.name}</h3>
+                  <h3 className="font-display font-medium italic text-xs text-ink leading-tight line-clamp-2">{product.name}</h3>
                   <div className="shrink-0 flex flex-wrap justify-end gap-1">
                     {product.is_featured && (
                       <span className="px-1.5 py-0.5 bg-rose text-white text-[11px] md:text-[8px] uppercase tracking-wider rounded">Featured</span>

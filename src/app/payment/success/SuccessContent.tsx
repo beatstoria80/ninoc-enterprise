@@ -273,7 +273,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   {order.order_items?.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] md:text-sm font-semibold text-ink truncate leading-tight">{item.product_name}</p>
+                        <p className="text-[11px] md:text-sm font-semibold text-ink line-clamp-2 leading-tight">{item.product_name}</p>
                         <p className="text-[10px] text-ink/40 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · ×{item.quantity}</p>
                       </div>
                       <p className="text-[11px] md:text-sm font-mono font-semibold text-ink shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>

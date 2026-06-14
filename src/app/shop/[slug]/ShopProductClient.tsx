@@ -723,7 +723,7 @@ export default function ShopProductClient({ slug, productSchema, dict }: ShopPro
 
                           <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div className="flex justify-between items-start gap-2">
-                              <span className="text-xs md:text-[10px] font-medium uppercase leading-tight text-ink truncate pt-0.5">{item.name}</span>
+                              <span className="text-xs md:text-[10px] font-medium uppercase leading-tight text-ink line-clamp-2 pt-0.5">{item.name}</span>
                               <button
                                 onClick={() => removeItem(item.id, item.size, item.color)}
                                 className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all -mt-0.5 -mr-1"

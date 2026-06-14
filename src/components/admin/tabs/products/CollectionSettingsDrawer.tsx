@@ -450,7 +450,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-ink truncate">{product.name}</p>
+                            <p className="text-sm font-medium text-ink line-clamp-2">{product.name}</p>
                             <p className="text-xs md:text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
                           </div>
                           <p className="text-xs font-medium text-ink">

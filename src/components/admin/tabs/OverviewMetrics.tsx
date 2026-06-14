@@ -217,7 +217,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
                   <span className="text-[10px] md:text-[7px] font-medium text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs md:text-[9px] font-medium text-ink truncate leading-none">{product.name}</span>
+                      <span className="text-xs md:text-[9px] font-medium text-ink line-clamp-2 leading-none">{product.name}</span>
                       <span className="text-[11px] md:text-[8px] font-semibold text-rose shrink-0 leading-none">
                         {product.totalRevenue >= 1000
                           ? `IDR ${(product.totalRevenue / 1000).toFixed(0)}K`

@@ -999,7 +999,7 @@ export function OrdersTab({
                         </td>
                         <td className="px-3 py-2">
                           <div className="max-w-[160px]">
-                            <p className="text-xs md:text-[10px] font-medium text-ink truncate">{order.order_items?.[0]?.product_name || '—'}</p>
+                            <p className="text-xs md:text-[10px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
                               <span className="text-xs md:text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
                             )}
@@ -1073,7 +1073,7 @@ export function OrdersTab({
                                                 )}
                                               </div>
                                               <div className="flex-1 min-w-0">
-                                                <p className="text-sm md:text-[11px] font-medium text-ink truncate">{item.product_name || 'Product'}</p>
+                                                <p className="text-sm md:text-[11px] font-medium text-ink line-clamp-2">{item.product_name || 'Product'}</p>
                                                 <div className="flex items-center gap-2 mt-0.5">
                                                   {item.size && <span className="text-xs md:text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
                                                   <span className="text-xs md:text-[9px] font-medium text-ink/50">×{item.quantity}</span>

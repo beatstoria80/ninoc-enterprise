@@ -145,7 +145,7 @@ export function CollectionsView() {
                 
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium text-ink truncate pr-2">{collection.name}</h3>
+                    <h3 className="font-medium text-ink line-clamp-2 pr-2">{collection.name}</h3>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="p-1 text-gray-400 hover:text-ink hover:bg-gray-100 rounded transition-colors" title="Edit">
                         <Edit2 size={12} />

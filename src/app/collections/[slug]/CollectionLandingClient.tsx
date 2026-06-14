@@ -97,7 +97,7 @@ function ProductCard({ product }: { product: Product }) {
             {product.category}
           </motion.span>
           <motion.h3
-            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight truncate"
+            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight line-clamp-2"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >

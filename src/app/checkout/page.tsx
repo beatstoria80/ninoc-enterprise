@@ -634,7 +634,7 @@ export default function CheckoutPage() {
                       {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs md:text-[9px] font-medium uppercase truncate text-ink">{item.name}</p>
+                      <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
                       <div className="flex items-center gap-1">
                         <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
                         {(item.size_surcharge || 0) > 0 && (
@@ -874,7 +874,7 @@ export default function CheckoutPage() {
                         {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm md:text-[11px] font-medium uppercase truncate text-ink">{item.name}</p>
+                        <p className="text-sm md:text-[11px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
                         <div className="flex items-center gap-1">
                           <p className="text-xs md:text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
                           {(item.size_surcharge || 0) > 0 && (

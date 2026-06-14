@@ -99,7 +99,7 @@ function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="space-y-1">
           <motion.p className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.15em] text-ink/30 hidden md:block" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{CATEGORIES.find((c) => c.id === product.category)?.label}</motion.p>
-          <motion.h3 className="text-xs md:text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink truncate" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>
+          <motion.h3 className="text-xs md:text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink line-clamp-2" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>
           <motion.div className="flex items-center justify-between pt-1 md:pt-2 border-t border-ink/5 mt-1 md:mt-2" animate={{ opacity: isHovered ? 1 : 0.8 }} transition={{ duration: DURATION.fast }}>
             <motion.span className="text-[11px] md:text-[8px] md:text-[10px] font-display font-medium italic text-rose" animate={{ scale: isHovered ? 1.02 : 1 }} transition={{ duration: DURATION.fast }}>IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</motion.span>
             {product.price_tag && <motion.span className="text-[5px] md:text-[6px] font-medium uppercase tracking-[0.1em] text-emerald-600 hidden md:inline" animate={{ opacity: isHovered ? 1 : 0.7 }} transition={{ duration: DURATION.fast }}>{product.price_tag}</motion.span>}
