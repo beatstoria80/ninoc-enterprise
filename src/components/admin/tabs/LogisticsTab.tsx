@@ -506,29 +506,37 @@ export function LogisticsTab({
                     </div>
                   </div>
 
-                  <div className="relative pl-3.5 border-l border-gray-200 space-y-4 ml-2">
+                  <div className="relative pl-6 border-l border-ink/10 space-y-6 ml-2 pb-4">
                     {/* Step 1: Current Status */}
                     <div className="relative">
-                      <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-rose rounded-full" />
+                      {/* Timeline Dot */}
+                      <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-rose rounded-full flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
                       </div>
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-                        <div className="w-20 shrink-0 pt-0.5">
-                          <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-900 font-medium">
-                            <Truck size={10} className="text-gray-500" /> Now
-                          </div>
-                          <div className="text-[11px] md:text-[8px] text-gray-500 mt-1 pl-4">
+                      
+                      {/* Timeline Content */}
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
+                        <div className="w-24 shrink-0 pt-0.5">
+                          <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-rose">
+                            {new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                          </span>
+                          <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
                             {new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
-                        <div>
-                          <p className="text-xs md:text-[10px] font-medium text-gray-900">
-                            {logisticsSelectedOrder.status === 'delivered' ? 'Delivered' : 
-                             logisticsSelectedOrder.status === 'shipped' ? 'In transit' : 'Processing'}
+                        <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
+                          <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink">
+                            {logisticsSelectedOrder.status === 'delivered' ? 'Pesanan Selesai' : 
+                             logisticsSelectedOrder.status === 'shipped' ? 'Sedang Dikirim' : 'Diproses (Menunggu Kurir)'}
                           </p>
-                          <p className="text-xs md:text-[9px] text-gray-500 mt-1 leading-relaxed max-w-[200px]">
-                            {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.postal_code}, {logisticsSelectedOrder.shipping_address?.city}
+                          <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/80 font-medium">
+                            Status terakhir pesanan sesuai dengan pembaruan sistem.
                           </p>
+                          <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                              <MapPin size={10} className="text-rose/50" /> {logisticsSelectedOrder.shipping_address?.city || 'Origin'}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -536,33 +544,57 @@ export function LogisticsTab({
                     {/* Step 2: Sorting Center (Only if shipped/delivered) */}
                     {['shipped', 'delivered'].includes(logisticsSelectedOrder.status) && (
                       <div className="relative">
-                        <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
-                        <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-                          <div className="w-20 shrink-0 pt-0.5">
-                            <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
-                              <Box size={10} /> {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-ink/20 rounded-full" />
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
+                          <div className="w-24 shrink-0 pt-0.5">
+                            <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-ink/40">
+                              {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                            </span>
+                            <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
+                              {new Date(new Date((logisticsSelectedOrder as any).updated_at || logisticsSelectedOrder.created_at).getTime() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                           </div>
-                          <div>
-                            <p className="text-xs md:text-[10px] font-medium text-gray-900">In the sorting facility</p>
-                            <p className="text-xs md:text-[9px] text-gray-500 mt-1 uppercase">{logisticsSelectedOrder.courier || 'Expedition'} Hub, Regional Branch</p>
+                          <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
+                            <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink/60">
+                              Paket di Fasilitas Transit
+                            </p>
+                            <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/50">
+                              Paket sedang diproses di pusat penyortiran kurir regional.
+                            </p>
+                            <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                              <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                <Truck size={10} className="text-ink/30" /> {logisticsSelectedOrder.courier || 'Expedition'} Hub
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     )}
                     
-                    {/* Step 3: Dispatched / Created */}
+                    {/* Step 3: Created */}
                     <div className="relative">
-                      <div className="absolute -left-[18px] top-1 w-3.5 h-3.5 bg-white border-2 border-gray-200 rounded-full" />
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-                        <div className="w-20 shrink-0 pt-0.5">
-                          <div className="flex items-center gap-1.5 text-xs md:text-[9px] text-gray-500">
-                            <Package size={10} /> {new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                      <div className="absolute -left-[31px] top-1 w-3.5 h-3.5 bg-white border-2 border-ink/20 rounded-full" />
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
+                        <div className="w-24 shrink-0 pt-0.5">
+                          <span className="text-[11px] md:text-[9px] font-semibold tracking-widest uppercase text-ink/40">
+                            {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                          </span>
+                          <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
+                            {new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
-                        <div>
-                          <p className="text-xs md:text-[10px] font-medium text-gray-900">Order created & processed</p>
-                          <p className="text-xs md:text-[9px] text-gray-500 mt-1 uppercase">Sender Origin Facility</p>
+                        <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
+                          <p className="text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 text-ink/60">
+                            Pesanan Dibuat
+                          </p>
+                          <p className="text-[11px] md:text-[9px] leading-relaxed mb-2 text-ink/50">
+                            Pemesanan telah diterima dan paket mulai disiapkan oleh tim NINOC.
+                          </p>
+                          <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                              <Package size={10} className="text-ink/30" /> Sender Origin Facility
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>

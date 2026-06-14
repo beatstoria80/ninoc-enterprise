@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from '@/components/LocalizedLink';
 import Footer from '@/components/Footer';
-import { X } from 'lucide-react';
+import { X, MapPin, Truck, CheckCircle, Package } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
@@ -221,23 +221,60 @@ export default function TrackClient() {
             </div>
 
             {order.logs.length > 0 && (
-              <div className="space-y-3">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold">Logistics History</p>
-                <div className="space-y-2">
-                  {order.logs.map((log) => (
-                    <div key={log.id} className="flex gap-3 p-3 border border-ink/5 bg-ink/[0.01]">
-                      <div className="w-3 h-3 rounded-full bg-rose/30 border border-rose/30 shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[11px] md:text-[8px] font-semibold uppercase tracking-widest text-rose/60">{log.biteship_status || log.internal_status || '—'}</span>
-                          <span className="text-[10px] md:text-[7px] text-ink/20">{formatDate(log.created_at)}</span>
+              <div className="mt-8 pt-6 border-t border-ink/5">
+                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Logistics History</p>
+                <div className="relative pl-6 border-l border-ink/10 space-y-6 ml-2 pb-4">
+                  {order.logs.map((log, idx) => {
+                    const isLatest = idx === 0;
+                    return (
+                      <div key={log.id} className="relative">
+                        {/* Timeline Dot */}
+                        <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center bg-white ${isLatest ? 'border-rose' : 'border-ink/20'}`}>
+                          {isLatest && <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />}
                         </div>
-                        {log.description && <p className="text-xs md:text-[9px] text-ink/50 font-medium">{log.description}</p>}
-                        {log.location && <p className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-wider mt-0.5">{log.location}</p>}
-                        {log.courier_company && <div className="mt-1 pt-1 border-t border-ink/5"><span className="text-[10px] md:text-[7px] text-ink/20 uppercase tracking-widest">{log.courier_company}{log.courier_driver_name ? ` · ${log.courier_driver_name}` : ''}</span></div>}
+                        
+                        {/* Timeline Content */}
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6">
+                          {/* Time Column */}
+                          <div className="w-24 shrink-0 pt-0.5">
+                            <span className={`text-[11px] md:text-[9px] font-semibold tracking-widest uppercase ${isLatest ? 'text-rose' : 'text-ink/40'}`}>
+                              {formatDate(log.created_at).split(' ')[0]}
+                            </span>
+                            <div className="text-[10px] md:text-[8px] text-ink/40 mt-0.5 font-medium">
+                              {formatDate(log.created_at).split(' ').slice(1).join(' ')}
+                            </div>
+                          </div>
+                          
+                          {/* Detail Column */}
+                          <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
+                            <p className={`text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 ${isLatest ? 'text-ink' : 'text-ink/60'}`}>
+                              {log.biteship_status || log.internal_status || 'UPDATE'}
+                            </p>
+                            {log.description && (
+                              <p className={`text-[11px] md:text-[9px] leading-relaxed mb-2 ${isLatest ? 'text-ink/80 font-medium' : 'text-ink/50'}`}>
+                                {log.description}
+                              </p>
+                            )}
+                            
+                            {(log.location || log.courier_company) && (
+                              <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                                {log.location && (
+                                  <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                    <MapPin size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.location}
+                                  </p>
+                                )}
+                                {log.courier_company && (
+                                  <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
+                                    <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.courier_company}{log.courier_driver_name ? ` — ${log.courier_driver_name}` : ''}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
