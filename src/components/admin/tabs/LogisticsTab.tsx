@@ -472,11 +472,11 @@ export function LogisticsTab({
                       {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
                           onClick={() => handleRequestPickup(logisticsSelectedOrder)}
-                          disabled={isDispatching}
+                          disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
                           className={cn(
-                            "px-3 py-1.5 text-[11px] md:text-[8px] font-medium rounded border transition-colors flex items-center gap-1.5",
-                            isDispatching 
-                              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                            "px-3 py-1.5 text-[11px] md:text-[8px] font-medium rounded border transition-all flex items-center gap-1.5",
+                            (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
+                              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-50"
                               : logisticsSelectedOrder.status === 'shipped'
                                 ? "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
                                 : "bg-ink text-white border-ink hover:bg-ink/90"
