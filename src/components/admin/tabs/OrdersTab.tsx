@@ -1184,14 +1184,33 @@ export function OrdersTab({
                                           <Clock size={10} className="text-ink/30" />
                                           <div>
                                             <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-0.5">Status</p>
-                                            <span className={cn(
-                                              "inline-block text-xs md:text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium",
-                                              order.status === 'pending' ? "bg-amber-50 text-amber-600" :
-                                              order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
-                                              order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
-                                              order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
-                                              "bg-red-50 text-red-600"
-                                            )}>{order.status === 'pending' ? 'Waiting' : order.status}</span>
+                                            <div className="flex items-center gap-2">
+                                              <span className={cn(
+                                                "inline-block text-xs md:text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium",
+                                                order.status === 'pending' ? "bg-amber-50 text-amber-600" :
+                                                order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
+                                                order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
+                                                order.status === 'delivered' ? "bg-teal-50 text-teal-600" :
+                                                "bg-red-50 text-red-600"
+                                              )}>{order.status === 'pending' ? 'Waiting' : order.status}</span>
+                                              
+                                              {/* MANUAL OVERRIDE BUTTON FOR DEV TESTING */}
+                                              {order.status === 'pending' && (
+                                                <button
+                                                  onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    if(confirm('Tandai sebagai PAID? (Simulasi Webhook)')) {
+                                                      await supabase.from('orders').update({ status: 'paid', payment_status: 'success' }).eq('id', order.id);
+                                                      alert('Berhasil! Silakan refresh halaman.');
+                                                      window.location.reload();
+                                                    }
+                                                  }}
+                                                  className="text-[8px] uppercase tracking-wider bg-ink text-white px-2 py-0.5 rounded-sm hover:bg-rose transition-colors"
+                                                >
+                                                  Mark Paid
+                                                </button>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                         {order.midtrans_id && (
