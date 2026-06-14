@@ -236,28 +236,13 @@ function SectionContent({ value }: { value: any }) {
   return <SplitText text={str} />;
 }
 
-export default function HelpClient() {
-  const [settings, setSettings] = useState<Record<string, SettingItem>>({});
-  const [loading, setLoading] = useState(true);
+export default function HelpClient({ initialSettings = [] }: { initialSettings?: SettingItem[] }) {
+  const [settings] = useState<Record<string, SettingItem>>(() => {
+    const map: Record<string, SettingItem> = {};
+    initialSettings.forEach((item) => { map[item.key] = item; });
+    return map;
+  });
   const [activeSection, setActiveSection] = useState('help_guide_customer_care');
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch('/api/help');
-        const json = await res.json();
-        const data: SettingItem[] = json.data || [];
-        const map: Record<string, SettingItem> = {};
-        data.forEach((item) => { map[item.key] = item; });
-        setSettings(map);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
 
   const activeItem = useMemo(() => {
     const dbItem = settings[activeSection];
@@ -314,11 +299,7 @@ export default function HelpClient() {
             </div>
 
             <div className="lg:pl-6 pt-3 lg:pt-3 min-w-0 overflow-y-auto pb-4">
-              {loading ? (
-                <div className="flex items-center justify-center h-40">
-                  <div className="w-5 h-5 border border-ink/10 border-t-rose rounded-full animate-spin" />
-                </div>
-              ) : activeItem ? (
+              {activeItem ? (
                 <>
                   <div className="flex items-center gap-2 mb-3 pb-2 border-b border-ink/5">
                     <div className="w-7 h-7 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">

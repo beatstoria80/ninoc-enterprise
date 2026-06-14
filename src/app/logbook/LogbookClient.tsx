@@ -45,30 +45,11 @@ function LogbookCard({ entry, index }: { entry: LogEntry; index: number }) {
   );
 }
 
-export default function LogbookClient() {
+export default function LogbookClient({ initialEntries = [] }: { initialEntries?: LogEntry[] }) {
   const dict = useDictionary();
-  const [entries, setEntries] = useState<LogEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [entries] = useState<LogEntry[]>(initialEntries);
 
-  useEffect(() => {
-    const fetchEntries = async () => {
-      try {
-        const { data, error } = await supabase.from('logbook_entries').select('*').order('published_date', { ascending: false });
-        if (error) throw error;
-        if (data) {
-          const formattedEntries: LogEntry[] = data.map((item: any) => ({
-            id: item.entry_id, date: item.published_date ? item.published_date.replace(/-/g, '.') : '', category: item.category || '', title: item.title || '', title_en: item.title_en || '', excerpt: item.excerpt || '', excerpt_en: item.excerpt_en || '', slug: item.slug || ''
-          }));
-          setEntries(formattedEntries);
-        }
-      } catch (err) {
-        console.warn('Could not fetch logbook entries:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEntries();
-  }, []);
+  // Fetch removed for SSR
 
   return (
     <main className="min-h-screen bg-cr noise pt-8 md:pt-20 px-4 md:px-12 pb-[120px]">
@@ -85,9 +66,7 @@ export default function LogbookClient() {
         </div>
 
         <motion.div variants={pageVariants} initial="hidden" animate="visible" className="flex flex-col">
-          {isLoading ? (
-            <div className="py-12 flex justify-center"><div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin" /></div>
-          ) : entries.length === 0 ? (
+          {entries.length === 0 ? (
             <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">{dict.logbook.empty}</p><p className="text-[10px] md:text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
           ) : (
             entries.map((entry, index) => <LogbookCard key={entry.id} entry={entry} index={index} />)

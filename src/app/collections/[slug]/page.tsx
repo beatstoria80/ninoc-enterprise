@@ -21,9 +21,36 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function CollectionLandingPage({ params }: { params: Promise<{ slug: string }> }) {
-  // We can fetch data here or in the client.
-  // Since we rely on a lot of client-side animation and real-time feel,
-  // we'll pass the slug to the client component and let it handle the data fetching.
   const resolvedParams = await params;
-  return <CollectionLandingClient slug={resolvedParams.slug} />;
+  
+  const { data: collection, error: colError } = await supabase
+    .from('collections')
+    .select('*')
+    .eq('slug', resolvedParams.slug)
+    .single();
+
+  if (colError || !collection) {
+    return <CollectionLandingClient slug={resolvedParams.slug} initialCollection={null} initialProducts={[]} />;
+  }
+
+  // Fetch Products relation
+  const { data: relData } = await supabase
+    .from('collection_products')
+    .select('product_id')
+    .eq('collection_id', collection.id);
+
+  let products = [];
+  if (relData && relData.length > 0) {
+    const productIds = relData.map(r => r.product_id);
+    const { data: prodData } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', productIds);
+      
+    if (prodData) {
+      products = prodData;
+    }
+  }
+
+  return <CollectionLandingClient slug={resolvedParams.slug} initialCollection={collection} initialProducts={products} />;
 }

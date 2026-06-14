@@ -123,62 +123,10 @@ function ProductCard({ product }: { product: Product }) {
 // COLLECTION LANDING CLIENT
 // ═══════════════════════════════════════════════════════════════
 
-export default function CollectionLandingClient({ slug }: { slug: string }) {
-  const [collection, setCollection] = useState<Collection | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isNotFound, setIsNotFound] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch Collection
-        const { data: colData, error: colError } = await supabase
-          .from('collections')
-          .select('*')
-          .eq('slug', slug)
-          .single();
-
-        if (colError || !colData) {
-          setIsNotFound(true);
-          return;
-        }
-
-        setCollection(colData);
-
-        // Fetch Products relation
-        const { data: relData } = await supabase
-          .from('collection_products')
-          .select('product_id')
-          .eq('collection_id', colData.id);
-
-        if (relData && relData.length > 0) {
-          const productIds = relData.map(r => r.product_id);
-          const { data: prodData } = await supabase
-            .from('products')
-            .select('*')
-            .in('id', productIds);
-            
-          if (prodData) {
-            setProducts(prodData);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch collection data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [slug]);
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-cr noise pt-24 px-4 flex justify-center">
-        <div className="w-8 h-8 border-2 border-ink/10 border-t-rose rounded-full animate-spin" />
-      </main>
-    );
-  }
+export default function CollectionLandingClient({ slug, initialCollection, initialProducts }: { slug: string; initialCollection?: Collection | null; initialProducts?: Product[] }) {
+  const [collection] = useState<Collection | null>(initialCollection || null);
+  const [products] = useState<Product[]>(initialProducts || []);
+  const isNotFound = !initialCollection;
 
   if (isNotFound || !collection) {
     return (
