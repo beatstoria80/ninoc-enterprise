@@ -306,8 +306,8 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               {order.shipping_address && (
                 <div className="px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
                   <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-1">Ship To</p>
-                  <p className="text-[11px] font-semibold text-ink leading-tight">{order.shipping_address.name || order.customer_name}</p>
-                  <p className="text-[10px] text-ink/50 mt-0.5 leading-snug">{order.shipping_address.address}, {order.shipping_address.city} {order.shipping_address.postal_code}</p>
+                  <p className="text-[11px] font-semibold text-ink leading-tight uppercase">{order.shipping_address.name || order.customer_name}</p>
+                  <p className="text-[10px] text-ink/50 mt-0.5 leading-snug uppercase">{order.shipping_address.address}, {order.shipping_address.city} {order.shipping_address.postal_code}</p>
                 </div>
               )}
 
