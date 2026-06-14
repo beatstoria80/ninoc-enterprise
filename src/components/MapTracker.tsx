@@ -68,20 +68,14 @@ interface Props {
 }
 
 // MapUpdater safely uses the Leaflet map instance to animate pan/zoom
-function MapUpdater({ positions }: { positions: [number, number][] }) {
+function MapUpdater({ center }: { center: [number, number] }) {
   const map = useMap();
   useEffect(() => {
-    if (positions && positions.length > 0) {
-      if (positions.length === 1) {
-        // flyTo gives a detailed, close-up industry standard zoom
-        map.flyTo(positions[0], 14, { duration: 1.5 });
-      } else {
-        // fitBounds ensures all points (origin and destination) are fully visible
-        const bounds = L.latLngBounds(positions);
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14, duration: 1.5 });
-      }
+    if (center) {
+      // flyTo gives a detailed, close-up industry standard zoom perfectly centered
+      map.flyTo(center, 13, { duration: 1.5 });
     }
-  }, [map, positions]);
+  }, [map, center]);
   return null;
 }
 
@@ -187,16 +181,16 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
   const linePositions = destCoords ? [ORIGIN_COORDS, destCoords] : [ORIGIN_COORDS];
 
   return (
-    <div className={className || "w-full h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
+    <div className={className || "w-full max-w-4xl mx-auto h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
       <MapContainer 
         center={currentCoords} 
-        zoom={14} 
+        zoom={13} 
         scrollWheelZoom={false}
         zoomControl={false}
         className="w-full h-full absolute inset-0 z-0"
       >
         <ZoomControl position="topleft" />
-        <MapUpdater positions={linePositions} />
+        <MapUpdater center={destCoords || ORIGIN_COORDS} />
         
         <TileLayer
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
