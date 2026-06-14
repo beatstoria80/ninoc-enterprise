@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -392,6 +392,11 @@ export default function CheckoutPage() {
     setShippingMethod(id);
     setShippingCost(price);
   };
+
+  // --- SLA ENFORCEMENT ---
+  // Detect if current time in WIB is >= 15:00
+  const currentHourWIB = parseInt(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false }));
+  const isLateForInstant = currentHourWIB >= 15;
 
   const subtotal = totalPrice();
   const tax = 0; // VAT removed as prices are nett
@@ -786,8 +791,8 @@ export default function CheckoutPage() {
                 {displayOptions.map((option) => {
                   const methodId = `${option.courier_name} ${option.courier_service_name}`;
                   return (
+                  <React.Fragment key={`${option.company}-${option.courier_service_name}`}>
                   <button
-                    key={`${option.company}-${option.courier_service_name}`}
                     type="button"
                     onClick={() => handleShippingChange(methodId, option.price)}
                     className={cn(
@@ -850,6 +855,16 @@ export default function CheckoutPage() {
                       </>
                     )}
                   </button>
+                  {/* LATE SLA WARNING */}
+                  {shippingMethod === methodId && (option.courier_name.toLowerCase().includes('gosend') || option.courier_name.toLowerCase().includes('grab') || option.duration.toLowerCase().includes('same day') || option.duration.toLowerCase().includes('instant')) && isLateForInstant && (
+                    <div className={cn("col-span-1 lg:col-span-1 p-2 bg-rose/5 border-t border-rose/10 flex items-start gap-2", isMobile ? "" : "border-l-0")}>
+                      <AlertTriangle size={12} className="text-rose shrink-0 mt-0.5" />
+                      <p className="text-[10px] md:text-[8px] font-medium text-rose/90 uppercase tracking-wide leading-tight">
+                        Melewati batas operasional (15:00 WIB). Pesanan Instant/SameDay ini akan diproses & dikirim BESOK HARI.
+                      </p>
+                    </div>
+                  )}
+                  </React.Fragment>
                 )})}
               </div>
             </section>

@@ -199,6 +199,10 @@ export async function POST(req: Request) {
       item_details: finalItemDetails,
       credit_card: {
         secure: true
+      },
+      custom_expiry: {
+        expiry_duration: 24,
+        unit: 'hour'
       }
     };
 
