@@ -9,7 +9,8 @@ export const en = {
     affiliate: "Affiliate",
     logbook: "Logbook",
     track: "Track",
-    account: "Account"
+    account: "Account",
+    shippingTerms: "Shipping & Payment Terms"
   },
   home: {
     heroTitle: "NINOC ATELIER",

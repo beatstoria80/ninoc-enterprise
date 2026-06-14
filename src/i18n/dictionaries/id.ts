@@ -9,7 +9,8 @@ export const id = {
     affiliate: "Afiliasi",
     logbook: "Jurnal",
     track: "Lacak",
-    account: "Akun"
+    account: "Akun",
+    shippingTerms: "Syarat Pengiriman & Pembayaran"
   },
   home: {
     heroTitle: "NINOC ATELIER",
