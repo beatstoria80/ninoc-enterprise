@@ -14,7 +14,8 @@ export function LogisticsTab({
   setLogisticsFilter,
   logisticsSelectedOrder,
   setLogisticsSelectedOrder,
-  openOrderDetail
+  openOrderDetail,
+  onOrderUpdated
 }: {
   orders: Order[];
   logisticsFilter: string;

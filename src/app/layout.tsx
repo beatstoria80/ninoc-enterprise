@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+
 import "./globals.css";
 import Script from "next/script";
 import ClientPlatformManager from "@/components/ClientPlatformManager";
@@ -10,16 +10,15 @@ import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
 
-const inter = Inter({
+const inter = {
   variable: "--font-sans",
-  subsets: ["latin"],
-});
+};
 
-const poppins = Poppins({
+// Using fallback font for display to avoid Turbopack build errors with Google Fonts
+// (Inter is still loaded via next/font/google)
+const poppins = {
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
-});
+};
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
 
@@ -118,6 +117,9 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet" />
         {/* Structured Data — Organization & Manufacturer */}
         <script
           type="application/ld+json"

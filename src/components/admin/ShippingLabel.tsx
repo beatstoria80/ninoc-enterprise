@@ -89,7 +89,7 @@ export function ShippingLabel({ order }: { order: Order }) {
     day: '2-digit', month: '2-digit', year: 'numeric'
   }).replace(/\//g, '-');
 
-  const receiverName = order.shipping_address?.name || order.customer_name || 'Customer';
+  const receiverName = order.shipping_address?.name || 'Customer';
   const receiverPhone = order.shipping_address?.phone || '+628000000000';
   const receiverAddress = order.shipping_address?.address || '';
   const receiverLocation = `${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''}`;
