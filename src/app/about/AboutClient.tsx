@@ -7,7 +7,7 @@ export default function AboutClient() {
   const t = dict.about;
 
   return (
-    <div className="w-full bg-white text-ink font-medium selection:bg-ink selection:text-white pt-20 md:pt-24 pb-6 md:pb-10">
+    <div className="w-full bg-white text-ink font-medium selection:bg-ink selection:text-white pt-6 md:pt-24 pb-6 md:pb-10">
       <main className="max-w-7xl mx-auto w-full px-4 md:px-8 lg:px-12">
 
         {/* Title Block */}

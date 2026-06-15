@@ -99,14 +99,14 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
         </div>
       </div>
 
-      <div className="p-4 space-y-4 pb-12">
+      <div className="px-3 pt-3 space-y-4 pb-10">
         {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
-          <div key={category} className="space-y-3">
-            <div className="flex items-center justify-between">
+          <div key={category} className="space-y-2">
+            <div className="flex items-center justify-between px-1">
               <h2 className="text-sm md:text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">
                 {category}
               </h2>
-              <span className="text-xs md:text-[9px] text-ink/30 uppercase tracking-wider">
+              <span className="text-[10px] md:text-[9px] text-ink/30 uppercase tracking-wider">
                 {categoryProducts.length} {dict.shop.pieces}
               </span>
             </div>
@@ -129,31 +129,31 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                         sizes="(max-width: 768px) 50vw, 25vw"
                       />
                       {product.price_tag && (
-                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
+                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
                           {product.price_tag}
                         </div>
                       )}
                     </div>
-                    <div className="p-2 space-y-1.5 flex flex-col justify-between flex-grow">
+                    <div className="p-1.5 space-y-1.5 flex flex-col justify-between flex-grow">
                       <div>
-                        <h3 className="text-xs md:text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+                        <h3 className="text-[11px] md:text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
                           {product.name}
                         </h3>
-                        <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[9px] md:text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
                           {product.category}
                         </p>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <p className="text-xs md:text-[10px] font-display font-medium italic text-rose">
+                      <div className="space-y-1">
+                        <p className="text-[11px] md:text-[10px] font-display font-medium italic text-rose">
                           {product.price_tag === 'REDEEM'
                             ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                             : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
                         </p>
 
-                        <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+                        <div className="flex items-center justify-between pt-1 border-t border-ink/5">
                           <div className="flex items-center gap-1 opacity-40">
-                            <ArrowRight size={8} />
+                            <ArrowRight size={7} />
                             <span className="text-[6px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
                           </div>
                           <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
@@ -170,8 +170,8 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
         ))}
 
         {filteredProducts.length === 0 && (
-          <div className="py-10 text-center">
-            <p className="text-sm md:text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
+          <div className="py-6 text-center">
+            <p className="text-xs md:text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
           </div>
         )}
       </div>

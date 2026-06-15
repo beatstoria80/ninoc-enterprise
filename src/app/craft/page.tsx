@@ -17,15 +17,15 @@ export const metadata: Metadata = {
 
 export default function Craft() {
   return (
-    <main className="min-h-screen bg-cr noise pt-8 md:pt-24 px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-24 px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
-        <div className="mb-6 md:mb-12">
+        <div className="mb-4 md:mb-12">
           <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.5em] text-rose">NINOC</span>
-          <h1 className="text-3xl md:text-7xl font-display font-medium italic tracking-tighter text-ink uppercase mt-2">Craft</h1>
-          <p className="text-xs font-medium text-ink/50 uppercase tracking-wider mt-2 max-w-xl">The art of making, the love of detail.</p>
+          <h1 className="text-3xl md:text-7xl font-display font-medium italic tracking-tighter text-ink uppercase mt-1 md:mt-2">Craft</h1>
+          <p className="text-[11px] md:text-xs font-medium text-ink/50 uppercase tracking-wider mt-1 md:mt-2 max-w-xl">The art of making, the love of detail.</p>
         </div>
 
-        <div className="pb-24 space-y-8 md:space-y-16">
+        <div className="pb-12 md:pb-24 space-y-6 md:space-y-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10 items-center">
             <div className="space-y-3">
               <h3 className="text-xl md:text-3xl font-display font-medium italic uppercase tracking-tight">Premium Materials</h3>

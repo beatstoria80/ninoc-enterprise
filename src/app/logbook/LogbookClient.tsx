@@ -52,9 +52,9 @@ export default function LogbookClient({ initialEntries = [] }: { initialEntries?
   // Fetch removed for SSR
 
   return (
-    <main className="min-h-screen bg-cr noise pt-8 md:pt-20 px-4 md:px-12 pb-[120px]">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
       <div className="max-w-[1200px] mx-auto">
-        <div className="flex items-center justify-between mb-8 md:mb-12 border-b border-ink/10 pb-4">
+        <div className="flex items-center justify-between mb-4 md:mb-12 border-b border-ink/10 pb-2 md:pb-4">
           <div className="flex items-center gap-3">
             <BookOpen size={12} className="text-rose" />
             <div className="flex flex-col">

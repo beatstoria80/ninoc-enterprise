@@ -705,7 +705,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               </motion.div>
 
               {items.length === 0 ? (
-                <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-10 px-4">
+                <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-4 md:py-10 px-4">
                   <ShoppingCart size={28} className="mb-3 text-ink" />
                   <span className="text-xs md:text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
                   <span className="text-[11px] md:text-[8px] text-ink/40 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
