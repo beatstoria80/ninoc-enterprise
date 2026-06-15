@@ -427,21 +427,23 @@ export function OrdersTab({
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Label Pengiriman - J&T Format</title>
+            <title>Label Pengiriman</title>
             <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
             <style>
-              @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
-              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
+              /* Force background colors to print */
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
               
               body { 
                 margin: 0; 
                 padding: 20px; 
                 background: #e5e7eb; 
                 color: #000;
-                font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+                font-family: Arial, sans-serif;
               }
               
-              /* Thermal Label Standard Size (exactly 100x150mm to prevent gaps) */
               .label { 
                 background: white; 
                 width: 100mm; 
@@ -486,17 +488,23 @@ export function OrdersTab({
                 align-items: center;
                 padding: 6px 8px;
                 border-bottom: 1px solid black;
-                height: 45px;
+                min-height: 45px;
               }
               .courier-logo {
-                font-size: 16px;
-                font-weight: 900;
+                font-size: 14px;
+                font-weight: 800;
                 font-style: italic;
-                letter-spacing: -1px;
+                letter-spacing: -0.5px;
                 color: black;
               }
               .hotline { font-size: 8px; font-weight: bold; margin-top: 2px; color: #dd0000; }
-              .service-type { font-size: 28px; font-weight: 900; letter-spacing: -1px; text-align: center; }
+              .service-type { 
+                font-size: 18px; 
+                font-weight: 800; 
+                text-align: center; 
+                padding: 0 8px;
+                line-height: 1.1;
+              }
 
               .sender-info {
                 padding: 6px 8px;
@@ -510,9 +518,9 @@ export function OrdersTab({
                 border-bottom: 1px solid black;
               }
               .address-bold {
-                font-size: 13px;
-                font-weight: 900;
-                line-height: 1.2;
+                font-size: 12px;
+                font-weight: bold;
+                line-height: 1.3;
                 text-transform: capitalize;
                 margin-top: 4px;
               }
@@ -529,25 +537,25 @@ export function OrdersTab({
                 padding: 6px 8px;
                 font-size: 10px;
                 position: relative;
-                min-height: 35px;
+                min-height: 30px;
                 border-bottom: 1px solid black;
               }
 
               .routing-box {
-                background-color: black;
-                color: white;
+                background-color: black !important;
+                color: white !important;
                 text-align: center;
                 font-weight: bold;
                 font-size: 14px;
                 padding: 4px 0;
                 letter-spacing: 1px;
+                border-bottom: 1px solid black;
               }
 
               .routing-code {
                 text-align: center;
-                font-size: 32px;
-                font-weight: 900;
-                letter-spacing: -1px;
+                font-size: 28px;
+                font-weight: bold;
                 padding: 8px 0 4px;
                 line-height: 1;
               }
@@ -560,8 +568,8 @@ export function OrdersTab({
                 border-bottom: 1px solid black;
               }
               .tracking-text {
-                font-size: 16px;
-                font-weight: 900;
+                font-size: 14px;
+                font-weight: bold;
                 margin-top: 4px;
                 letter-spacing: 2px;
               }
@@ -607,8 +615,9 @@ export function OrdersTab({
           <body>
             ${ordersToPrint.map(order => {
               const trackingId = order.tracking_id || 'JX9689052297';
-              const courierName = (order.courier || 'J&T').toUpperCase().split(' ')[0];
-              const serviceType = (order.courier || 'J&T EXPRESS REG').toUpperCase().split(' ').slice(1).join(' ') || 'REG';
+              const courierParts = (order.courier || 'J&T EXPRESS').toUpperCase().split(' ');
+              const courierName = courierParts[0];
+              const serviceType = courierParts.slice(1).join(' ') || 'REG';
               const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
               const totalWeight = (totalItems * 0.150).toFixed(3);
               const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
@@ -643,7 +652,7 @@ export function OrdersTab({
                   
                   <div class="header-section">
                     <div style="flex:1">
-                      <div class="courier-logo">${courierName} EXPRESS</div>
+                      <div class="courier-logo">${courierName}</div>
                       <div class="hotline">(021) 80661888</div>
                     </div>
                     <div class="service-type">${serviceType}</div>
@@ -688,7 +697,7 @@ export function OrdersTab({
                       jsbarcode-value="${trackingId}"
                       jsbarcode-textmargin="0"
                       jsbarcode-fontoptions="bold"
-                      jsbarcode-height="60"
+                      jsbarcode-height="50"
                       jsbarcode-displayvalue="false"
                       jsbarcode-width="2"
                       jsbarcode-margin="0">
@@ -718,7 +727,7 @@ export function OrdersTab({
                   </div>
 
                   <div class="footer-logos">
-                    <div style="font-size:18px; font-weight:900; letter-spacing:-1px">ninoc.store</div>
+                    <div style="font-size:16px; font-weight:bold; letter-spacing:-1px">ninoc.store</div>
                     <div style="font-size:6px; text-align:right">
                       Order ID: ${order.id.toUpperCase()}<br/>
                       Printed: ${new Date().toLocaleString('id-ID')}
