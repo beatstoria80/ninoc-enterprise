@@ -9,6 +9,7 @@ import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
+import { Toaster } from "sonner";
 
 const inter = {
   variable: "--font-sans",
@@ -284,6 +285,7 @@ export default async function RootLayout({
               <main id="main-content">
                 {children}
               </main>
+              <Toaster position="top-center" richColors theme="light" />
             </BrandProvider>
           </ClientPlatformManager>
           <div className="print:hidden">

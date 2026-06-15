@@ -19,9 +19,9 @@ async function triggerWebhook() {
       gross_amount: '178999.00'
     };
     
-    const fetch = require('node-fetch');
+    
     try {
-      const res = await fetch('http://localhost:3000/api/payments/webhook', {
+      const res = await fetch('https://ninoc.store/api/payments/webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

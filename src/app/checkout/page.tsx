@@ -13,6 +13,7 @@ import { useDevice } from './_components/useDevice';
 import BottomCTA from './_components/BottomCTA';
 import { useDictionary } from '@/hooks/useDictionary';
 import CourierLogo from '@/components/CourierLogo';
+import { toast } from 'sonner';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -467,14 +468,25 @@ export default function CheckoutPage() {
 
     // Ensure Midtrans script is loaded
     if (!snapLoaded || !(window as Window & { snap?: { pay: (token: string, callbacks: SnapCallbacks) => void } }).snap) {
-      alert('Payment gateway is not ready. Please refresh the page.');
+      toast.error('Payment gateway is not ready. Please refresh the page.');
+      return;
+    }
+
+    // Input Validations
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error('Format email tidak valid. Pastikan penulisan benar dan tidak ada email berulang.');
+      return;
+    }
+    
+    if (formData.first_name.length > 50 || formData.last_name.length > 50) {
+      toast.error('Nama terlalu panjang. Mohon masukkan nama yang wajar.');
       return;
     }
 
     // Validate phone number length (10-13 digits)
     const phoneDigits = formData.phone.replace(/\D/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 13) {
-      alert('Nomor HP tidak valid. Masukkan 10 hingga 13 digit angka.');
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      toast.error('Nomor HP tidak valid. Masukkan 10 hingga 15 digit angka yang benar.');
       return;
     }
 
@@ -518,7 +530,7 @@ export default function CheckoutPage() {
       console.error('[handleCheckout] Error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setIsProcessing(false);
-      alert(`Checkout failed: ${errorMessage}. Please check your details and try again.`);
+      toast.error(`Checkout failed: ${errorMessage}. Please check your details and try again.`);
     }
   };
 
@@ -557,7 +569,7 @@ export default function CheckoutPage() {
             console.error('Midtrans payment error:', err);
             setIsProcessing(false);
             setPaymentToken(null);
-            alert('Payment failed. Please try again or contact support.');
+            toast.error('Payment failed. Please try again or contact support.');
           },
           onClose: () => {
             console.log('Payment popup closed by user');
