@@ -7,9 +7,18 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export async function GET(req: NextRequest) {
   try {
+    // 1. AUTHENTICATION CHECK
+    const supabaseServer = await createClient();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status') || 'all';
     const limit = parseInt(searchParams.get('limit') || '20', 10);

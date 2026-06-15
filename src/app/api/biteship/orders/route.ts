@@ -5,6 +5,18 @@
  */
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
+import { z } from 'zod';
+
+const OrderPayloadSchema = z.object({
+  order_id: z.string().uuid(),
+  courier_company: z.string().min(1),
+  courier_type: z.string().min(1),
+  destination: z.any().optional(),
+  origin: z.any().optional(),
+  items: z.array(z.any()).optional(),
+  metadata: z.any().optional()
+});
 
 // Generate mock tracking ID for development/pre-activation
 function generateMockWaybill(courierCompany: string): string {
@@ -61,6 +73,33 @@ async function saveOrderToSupabase(
 
 export async function POST(req: Request) {
   try {
+    // 1. AUTHENTICATION CHECK
+    const supabaseServer = await createClient();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+    }
+
+    // 2. AUTHORIZATION CHECK (RBAC)
+    const { data: roleData } = await supabaseServer
+      .from('admin_roles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!roleData || !['super_admin', 'outbound_logistics'].includes(roleData.role)) {
+      return NextResponse.json({ error: 'Forbidden. Insufficient privileges.' }, { status: 403 });
+    }
+
+    // 3. PAYLOAD SANITIZATION (Zod)
+    const json = await req.json();
+    const parseResult = OrderPayloadSchema.safeParse(json);
+    
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'Invalid payload schema', details: parseResult.error.format() }, { status: 400 });
+    }
+
     const {
       order_id,
       courier_company,
@@ -69,11 +108,7 @@ export async function POST(req: Request) {
       origin,
       items,
       metadata
-    } = await req.json();
-
-    if (!order_id || !courier_company || !courier_type) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
+    } = parseResult.data;
 
     const apiKey = process.env.BITESHIP_API_KEY;
     const courierType = courier_type.toLowerCase();

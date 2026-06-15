@@ -482,6 +482,25 @@ export function OrdersTab({
                 position: relative;
               }
 
+              .watermark-fraud {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 32px;
+                font-weight: 900;
+                color: rgba(255, 0, 0, 0.4);
+                border: 4px solid rgba(255, 0, 0, 0.4);
+                padding: 10px 20px;
+                text-align: center;
+                pointer-events: none;
+                z-index: 9999;
+                text-transform: uppercase;
+                width: 120%;
+                box-sizing: border-box;
+                white-space: pre-wrap;
+              }
+
               .header-section {
                 display: flex;
                 justify-content: space-between;
@@ -649,7 +668,7 @@ export function OrdersTab({
                 </div>
 
                 <div class="main-content">
-                  
+                  ${order.print_count && order.print_count > 1 ? '<div class="watermark-fraud">DUPLICATE REPRINT<br/><span style="font-size: 16px;">UNAUTHORIZED DISPATCH</span></div>' : ''}
                   <div class="header-section">
                     <div style="flex:1">
                       <div class="courier-logo">${courierName}</div>
