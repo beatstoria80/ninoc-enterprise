@@ -189,11 +189,11 @@ export function ShippingLabel({ order }: { order: Order }) {
           <div style={{ fontSize: '9px', textTransform: 'uppercase', marginBottom: '4px' }}>
             {receiverLocation}
           </div>
-          {/* BIG BOLD ADDRESS - CRITICAL FEATURE */}
+          {/* RECEIVER ADDRESS */}
           <div style={{ 
-            fontSize: '13px', 
-            fontWeight: '900', 
-            lineHeight: '1.2',
+            fontSize: '11px', 
+            fontWeight: 'normal', 
+            lineHeight: '1.3',
             textTransform: 'capitalize' 
           }}>
             {receiverAddress}
