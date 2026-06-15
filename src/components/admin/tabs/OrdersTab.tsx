@@ -537,11 +537,11 @@ export function OrdersTab({
                 border-bottom: 1px solid black;
               }
               .address-bold {
-                font-size: 12px;
-                font-weight: bold;
-                line-height: 1.3;
+                font-size: 9px;
+                font-weight: 400;
+                line-height: 1.1;
                 text-transform: capitalize;
-                margin-top: 4px;
+                margin-top: 2px;
               }
 
               .weight-date {
@@ -644,17 +644,18 @@ export function OrdersTab({
               const routingCode = 'NNC-' + (order.shipping_address?.postal_code || '10110').slice(0, 5);
               const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
               
-              let shortItemsStr = order.order_items?.slice(0, 3).map(i => i.product_name + ' (' + (i.size || 'One Size') + ')').join(', ') || '';
+              let shortItemsStr = order.order_items?.slice(0, 3).map(i => { const v = [i.color, i.size].filter(Boolean).join(' / '); return i.product_name + ' (' + (v || 'One Size') + ')'; }).join(', ') || '';
               if ((order.order_items?.length || 0) > 3) shortItemsStr += ', dll...';
 
               const receiverName = order.shipping_address?.name || 'Customer';
-              const receiverPhone = order.shipping_address?.phone || '+628000000000';
+              const rawPhone = order.shipping_address?.phone || '+628000000000';
+              const receiverPhone = rawPhone.length >= 8 ? rawPhone.slice(0, 4) + 'XXXX' + rawPhone.slice(-4) : rawPhone;
               const receiverAddress = order.shipping_address?.address || '';
               const receiverLocation = (order.shipping_address?.city || '') + ', ' + (order.shipping_address?.province || '');
 
               const maxItems = 4;
               const itemsList = order.order_items?.slice(0, maxItems).map(i => 
-                '<tr><td>' + i.product_name + '</td><td>' + (i.size || '-') + '</td><td style="text-align:right">' + i.quantity + '</td></tr>'
+                '<tr><td>' + i.product_name + '</td><td>' + ([i.color, i.size].filter(Boolean).join(' / ') || '-') + '</td><td style="text-align:right">' + i.quantity + '</td></tr>'
               ).join('') || '';
               
               const itemsRemaining = (order.order_items?.length || 0) - maxItems;
@@ -676,7 +677,7 @@ export function OrdersTab({
                     </div>
                     <div class="service-type">${serviceType}</div>
                     <div style="flex:1; text-align:right">
-                       <div style="display:inline-block; width:36px; height:36px; border:2px solid #000; color:#000; font-size:10px; line-height:36px; font-weight:bold; text-align:center">QR</div>
+                       <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${trackingId}" alt="QR" style="width:36px; height:36px; display:inline-block;" />
                     </div>
                   </div>
 
@@ -694,7 +695,7 @@ export function OrdersTab({
                       <div>${receiverPhone}</div>
                     </div>
                     <div class="uppercase-sm">${receiverLocation}</div>
-                    <div class="address-bold">${receiverAddress}, ${receiverLocation}</div>
+                    <div class="address-bold">${receiverAddress}</div>
                   </div>
 
                   <div class="weight-date">
@@ -1143,7 +1144,8 @@ export function OrdersTab({
                                               <div className="flex-1 min-w-0">
                                                 <p className="text-sm md:text-[11px] font-medium text-ink line-clamp-2">{item.product_name || 'Product'}</p>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                  {item.size && <span className="text-xs md:text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">Size: {item.size}</span>}
+                                                  {item.color && <span className="text-xs md:text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">{item.color}</span>}
+                                                  {item.size && <span className="text-xs md:text-[9px] font-medium text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">{item.size}</span>}
                                                   <span className="text-xs md:text-[9px] font-medium text-ink/50">×{item.quantity}</span>
                                                 </div>
                                               </div>

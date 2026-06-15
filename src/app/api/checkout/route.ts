@@ -19,6 +19,7 @@ interface CheckoutItem {
   price: number; // Ignored for security
   quantity: number;
   size?: string;
+  color?: string;
   size_surcharge?: number; // Ignored for security
 }
 

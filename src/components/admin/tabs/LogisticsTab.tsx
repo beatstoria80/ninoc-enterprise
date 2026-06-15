@@ -450,7 +450,7 @@ export function LogisticsTab({
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs md:text-[10px] text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
-                            <p className="text-[11px] md:text-[8px] text-gray-500 mt-0.5">1 item • SZ:{item.size || 'OS'}</p>
+                            <p className="text-[11px] md:text-[8px] text-gray-500 mt-0.5">{item.quantity} item • {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ') || 'OS'}</p>
                             <p className="text-xs md:text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
                           </div>
                         </div>
