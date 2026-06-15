@@ -2760,7 +2760,7 @@ export default function AdminDashboard() {
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
-                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}...</h2>
+                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}</h2>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => {
