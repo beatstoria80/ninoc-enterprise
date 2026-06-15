@@ -123,6 +123,8 @@ export async function POST(req: Request) {
         price: itemPrice,
         quantity: item.quantity,
         name: (dbProduct.name + (surcharge > 0 ? ' (XXL+)' : '')).substring(0, 50),
+        size: item.size || null,
+        color: item.color || null,
         supplier_id: dbProduct.supplier_id,
         supplier_hpp: supplierBasePrice,
         ninoc_markup: ninocMarkup
@@ -235,7 +237,7 @@ export async function POST(req: Request) {
     // 2. Save individual order items
     if (finalItemDetails.length > 0) {
       const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO').map((item: any) => {
-        const matchingItem = items.find((i: any) => i.id === item.id);
+        const matchingItem = items.find((i: any) => i.id === item.id && i.size === item.size && i.color === item.color);
         const dbProduct = dbProducts.find((p: any) => p.id === item.id);
         
         let variant = null;
