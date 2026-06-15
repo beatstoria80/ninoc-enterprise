@@ -22,6 +22,7 @@ export function LogisticsTab({
   logisticsSelectedOrder: Order | null;
   setLogisticsSelectedOrder: (o: Order | null) => void;
   openOrderDetail: (o: Order) => void;
+  onOrderUpdated?: (o: Order) => void;
 }) {
   const logisticsOrders = logisticsFilter === 'all'
     ? orders.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
@@ -115,6 +116,7 @@ export function LogisticsTab({
       
       // Optimistic update
       targetOrder.status = 'shipped';
+      if (onOrderUpdated) onOrderUpdated({ ...targetOrder });
       
     } catch (err: any) {
       setScanStatus('error');
@@ -178,13 +180,15 @@ export function LogisticsTab({
       }
 
       // Optimistic Update
-      setLogisticsSelectedOrder({
+      const updatedOrder = {
         ...order,
-        status: 'shipped',
+        status: 'shipped' as const,
         tracking_id: data.tracking_id || data.waybill_id,
         print_count: (order.print_count || 0) + 1,
         courier: `${data.courier_company} ${data.courier_type}`.toUpperCase()
-      });
+      };
+      setLogisticsSelectedOrder(updatedOrder);
+      if (onOrderUpdated) onOrderUpdated(updatedOrder);
       
       alert(`Berhasil! Nomor Resi: ${data.tracking_id || data.waybill_id}`);
 

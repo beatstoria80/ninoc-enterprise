@@ -1650,6 +1650,9 @@ export default function AdminDashboard() {
               logisticsSelectedOrder={logisticsSelectedOrder}
               setLogisticsSelectedOrder={setLogisticsSelectedOrder}
               openOrderDetail={openOrderDetail}
+              onOrderUpdated={(updatedOrder) => {
+                setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+              }}
             />
           )}
 
