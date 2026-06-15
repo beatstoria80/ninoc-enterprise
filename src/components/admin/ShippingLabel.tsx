@@ -181,19 +181,19 @@ export function ShippingLabel({ order }: { order: Order }) {
         </div>
 
         {/* RECEIVER INFO */}
-        <div style={{ padding: '6px 8px', borderBottom: '1px solid black' }}>
+        <div style={{ padding: '4px 8px', borderBottom: '1px solid black' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
             <div><span style={{ fontWeight: 'bold' }}>Penerima :</span> {receiverName}</div>
             <div>{receiverPhone}</div>
           </div>
-          <div style={{ fontSize: '9px', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <div style={{ fontSize: '9px', textTransform: 'uppercase', marginBottom: '2px' }}>
             {receiverLocation}
           </div>
           {/* RECEIVER ADDRESS */}
           <div style={{ 
-            fontSize: '11px', 
+            fontSize: '9px', 
             fontWeight: 'normal', 
-            lineHeight: '1.3',
+            lineHeight: '1.1',
             textTransform: 'capitalize' 
           }}>
             {receiverAddress}
