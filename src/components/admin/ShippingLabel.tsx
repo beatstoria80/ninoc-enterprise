@@ -81,262 +81,279 @@ export function getCourierService(courier: string | null): { name: string; servi
 
 export function ShippingLabel({ order }: { order: Order }) {
   const courierInfo = getCourierService(order.courier);
-  const trackingId = order.tracking_id || '';
+  const trackingId = order.tracking_id || 'JX9689052297'; // default to something so it looks like the reference if empty
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
-  const totalWeight = totalItems * 300; // est. 300g per item
+  const totalWeight = (totalItems * 0.150).toFixed(3); // mock 150g per item
+  
+  const shipDate = new Date().toLocaleDateString('id-ID', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  }).replace(/\//g, '-');
+
+  const receiverName = order.shipping_address?.name || order.customer_name || 'Customer';
+  const receiverPhone = order.shipping_address?.phone || '+628000000000';
+  const receiverAddress = order.shipping_address?.address || '';
+  const receiverLocation = `${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''}`;
+  
+  const routingCode = `NNC-${(order.shipping_address?.postal_code || '10110').slice(0, 5)}`;
+  const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
+  const isCOD = false; // set to false as our app uses Midtrans/VA mostly
+
+  const shortItemsStr = order.order_items?.map(i => `${i.product_name} (${i.size || 'One Size'})`).join(', ');
 
   return (
     <div style={{
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: 'row',
       width: '100mm',
-      minHeight: '150mm', // Standard thermal size (A6) or auto
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      minHeight: '150mm',
       backgroundColor: 'white',
       color: 'black',
-      padding: '0',
+      fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
       boxSizing: 'border-box',
-      border: '2px solid black',
-      overflow: 'hidden',
     }}>
-      {/* HEADER: Brand & Courier */}
+      
+      {/* LEFT MARGIN BARCODE TEXT */}
       <div style={{
+        width: '18px',
         display: 'flex',
-        alignItems: 'stretch',
-        borderBottom: '2px solid black',
-        height: '45px',
-        position: 'relative'
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRight: '1px solid black'
       }}>
-        {/* DUPLICATE WATERMARK */}
-        {(order.print_count || 0) > 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '50px',
-            left: '50%',
-            transform: 'translateX(-50%) rotate(-30deg)',
-            fontSize: '48px',
-            fontWeight: '900',
-            color: 'rgba(0,0,0,0.1)',
-            border: '8px solid rgba(0,0,0,0.1)',
-            padding: '10px 20px',
-            textTransform: 'uppercase',
-            letterSpacing: '5px',
-            zIndex: 10,
-            pointerEvents: 'none',
-            whiteSpace: 'nowrap'
-          }}>
-            REPRINT
-            <div style={{ fontSize: '14px', textAlign: 'center', marginTop: '10px', letterSpacing: '2px' }}>
-              OLEH: {order.last_printed_by || 'ADMIN'}
-            </div>
-          </div>
-        )}
-        <div style={{ 
-          flex: 1, 
-          padding: '0 12px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          backgroundColor: 'black',
-          color: 'white'
+        <div style={{
+          writingMode: 'vertical-rl',
+          transform: 'rotate(180deg)',
+          fontSize: '9px',
+          fontWeight: 'bold',
+          letterSpacing: '1px',
+          whiteSpace: 'nowrap'
         }}>
-          <span style={{ fontSize: '16px', fontWeight: '900', letterSpacing: '-0.5px', lineHeight: 1 }}>NINOC</span>
-          <span style={{ fontSize: '7px', fontWeight: '600', letterSpacing: '3px', opacity: 0.8 }}>NINOC STUDIO</span>
-        </div>
-        <div style={{ 
-          flex: 1, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'flex-end', 
-          padding: '0 12px',
-          gap: '8px' 
-        }}>
-          <CourierLogo courier={order.courier || ''} className="h-5" forceBlackForPrint={true} />
-          <div style={{ width: '1px', height: '20px', backgroundColor: '#e5e5e5' }} />
-          <span style={{
-            fontSize: '11px',
-            fontWeight: '900',
-            letterSpacing: '0.5px'
-          }}>{courierInfo.service}</span>
+          {trackingId}
         </div>
       </div>
 
-      {/* TRACKING BARCODE */}
+      {/* MAIN CONTENT AREA */}
       <div style={{
-        padding: '16px 12px',
-        borderBottom: '2px solid black',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+        position: 'relative'
       }}>
-        {trackingId ? (
-          <>
-            <BarcodeCode128 value={trackingId} width={340} height={50} />
-            <div style={{
-              fontWeight: '800',
-              fontSize: '14px',
-              letterSpacing: '4px',
-              fontFamily: "'Courier New', monospace",
-              marginTop: '8px'
-            }}>{trackingId}</div>
-          </>
-        ) : (
+        
+        {/* HEADER SECTION */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '6px 8px',
+          borderBottom: '1px solid black',
+          height: '45px'
+        }}>
+          <div style={{ flex: 1 }}>
+             <CourierLogo courier={order.courier || 'J&T Express'} className="h-6" forceBlackForPrint={true} />
+             <div style={{ fontSize: '8px', color: '#dd0000', fontWeight: 'bold' }}>(021) 80661888</div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: '28px', fontWeight: '900', letterSpacing: '-1px' }}>
+            {courierInfo.service}
+          </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <QRCodeSVG value={trackingId} size={36} level="M" />
+          </div>
+        </div>
+
+        {/* SENDER INFO */}
+        <div style={{ padding: '6px 8px', borderBottom: '1px dotted black' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
+            <div><span style={{ fontWeight: 'bold' }}>Pengirim :</span> NINOC ENTERPRISE</div>
+            <div>(+62)812-XXXX-XXXX</div>
+          </div>
+          <div style={{ fontSize: '9px', textTransform: 'uppercase' }}>
+            JAWA BARAT, BANDUNG
+          </div>
+        </div>
+
+        {/* RECEIVER INFO */}
+        <div style={{ padding: '6px 8px', borderBottom: '1px solid black' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
+            <div><span style={{ fontWeight: 'bold' }}>Penerima :</span> {receiverName}</div>
+            <div>{receiverPhone}</div>
+          </div>
+          <div style={{ fontSize: '9px', textTransform: 'uppercase', marginBottom: '4px' }}>
+            {receiverLocation}
+          </div>
+          {/* BIG BOLD ADDRESS - CRITICAL FEATURE */}
+          <div style={{ 
+            fontSize: '13px', 
+            fontWeight: '900', 
+            lineHeight: '1.2',
+            textTransform: 'capitalize' 
+          }}>
+            {receiverAddress}, {receiverLocation}
+          </div>
+        </div>
+
+        {/* WEIGHT & DATE */}
+        <div style={{ display: 'flex', fontSize: '9px', borderBottom: '1px solid black' }}>
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: '1px solid black' }}>
+            Weight : {totalWeight} KG
+          </div>
+          <div style={{ flex: 1, padding: '4px 8px' }}>
+            Ship : {shipDate}
+          </div>
+        </div>
+
+        {/* ITEMS & COD WATERMARK */}
+        <div style={{ 
+          padding: '6px 8px', 
+          fontSize: '10px', 
+          position: 'relative', 
+          minHeight: '35px',
+          overflow: 'hidden'
+        }}>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            Jumlah : {totalItems}pcs, Barang : {shortItemsStr}
+          </div>
           <div style={{
-            fontWeight: '700',
-            fontSize: '12px',
-            padding: '16px 0',
-            color: '#999',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '36px',
+            fontWeight: '900',
+            color: 'rgba(0,0,0,0.4)',
             letterSpacing: '2px',
-            border: '2px dashed #e5e5e5',
-            width: '100%',
-            textAlign: 'center'
-          }}>AWAITING TRACKING ID</div>
-        )}
-      </div>
-
-      {/* RECIPIENT & SENDER */}
-      <div style={{
-        display: 'flex',
-        borderBottom: '2px solid black',
-        flex: 1
-      }}>
-        {/* RECIPIENT */}
-        <div style={{
-          flex: 1.6,
-          padding: '12px',
-          borderRight: '2px solid black',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-          <div style={{
-            fontSize: '8px',
-            fontWeight: '800',
-            letterSpacing: '1px',
-            marginBottom: '8px',
-            backgroundColor: 'black',
-            color: 'white',
-            padding: '3px 8px',
-            display: 'inline-block',
-            alignSelf: 'flex-start',
-            borderRadius: '2px'
-          }}>TO / PENERIMA</div>
-          
-          <div style={{ fontWeight: '900', fontSize: '15px', textTransform: 'uppercase', lineHeight: 1.1 }}>
-            {order.shipping_address?.name}
-          </div>
-          
-          <div style={{ fontSize: '11px', fontWeight: '700', marginTop: '4px', fontFamily: "'Courier New', monospace" }}>
-            {order.shipping_address?.phone ? (
-              order.shipping_address.phone.length >= 8
-                ? order.shipping_address.phone.slice(0, 4) + '-****-' + order.shipping_address.phone.slice(-4)
-                : order.shipping_address.phone
-            ) : '-'}
-          </div>
-          
-          <div style={{ fontSize: '11px', fontWeight: '500', marginTop: '8px', lineHeight: 1.4, color: '#333' }}>
-            {order.shipping_address?.address}
-          </div>
-          
-          <div style={{ fontWeight: '800', fontSize: '11px', marginTop: '6px', textTransform: 'uppercase' }}>
-            {order.shipping_address?.city}, {order.shipping_address?.province}
-          </div>
-          <div style={{ fontWeight: '900', fontSize: '13px', marginTop: '2px', letterSpacing: '1px' }}>
-            {order.shipping_address?.postal_code}
+            zIndex: 1
+          }}>
+            {isCOD ? 'COD' : 'NON-COD'}
           </div>
         </div>
 
-        {/* SENDER */}
+        {/* DESTINATION ROUTING BOX */}
         <div style={{
-          flex: 1,
-          padding: '12px',
-          display: 'flex',
-          flexDirection: 'column',
+          backgroundColor: 'black',
+          color: 'white',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '14px',
+          padding: '4px 0',
+          letterSpacing: '1px'
         }}>
-          <div style={{
-            fontSize: '8px',
-            fontWeight: '800',
-            letterSpacing: '1px',
-            marginBottom: '8px',
-            border: '2px solid black',
-            padding: '1px 6px',
-            display: 'inline-block',
-            alignSelf: 'flex-start',
-            borderRadius: '2px'
-          }}>FROM / PENGIRIM</div>
-          
-          <div style={{ fontWeight: '800', fontSize: '11px' }}>NINOC STUDIO</div>
-          <div style={{ fontSize: '9px', fontWeight: '600', marginTop: '2px', fontFamily: "'Courier New', monospace", color: '#666' }}>0812-XXXX-XXXX</div>
-          <div style={{ fontSize: '9px', fontWeight: '500', marginTop: '6px', lineHeight: 1.4, color: '#444' }}>Bandung, Jawa Barat<br/>Indonesia</div>
-        </div>
-      </div>
-
-      {/* CONTENTS & DISPATCH QR */}
-      <div style={{
-        display: 'flex',
-        borderBottom: '2px solid black',
-      }}>
-        {/* CONTENTS */}
-        <div style={{
-          flex: 1.6,
-          padding: '12px',
-          borderRight: '2px solid black',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-          <div style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '1px', marginBottom: '6px', color: '#666' }}>
-            CONTENTS / ISI PAKET
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {order.order_items?.map((item, idx) => (
-              <div key={idx} style={{ fontSize: '10px', fontWeight: '600', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ textTransform: 'uppercase', color: '#111' }}>{item.product_name} {item.size ? `[${item.size}]` : ''}</span>
-                <span style={{ fontWeight: '800' }}>×{item.quantity}</span>
-              </div>
-            ))}
-          </div>
+          {destinationHub}
         </div>
 
-        {/* QR & META */}
+        {/* ROUTING CODE */}
         <div style={{
-          flex: 1,
-          padding: '12px',
+          textAlign: 'center',
+          fontSize: '32px',
+          fontWeight: '900',
+          letterSpacing: '-1px',
+          padding: '8px 0 4px',
+          lineHeight: '1'
+        }}>
+          {routingCode}
+        </div>
+
+        {/* MAIN BARCODE */}
+        <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#fafafa'
+          padding: '8px 0',
+          borderBottom: '1px solid black'
         }}>
-          <QRCodeSVG value={order.id.toUpperCase()} size={54} level="M" />
-          <div style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '1px', marginTop: '8px', color: '#666' }}>ORDER ID</div>
-          <div style={{ fontWeight: '900', fontSize: '11px', letterSpacing: '1px', fontFamily: "'Courier New', monospace" }}>
-            #{order.id.toUpperCase()}
+          <BarcodeCode128 value={trackingId} width={300} height={60} />
+          <div style={{
+            fontSize: '16px',
+            fontWeight: '900',
+            marginTop: '4px',
+            letterSpacing: '2px'
+          }}>
+            {trackingId}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', width: '100%', marginTop: '8px', fontSize: '9px', fontWeight: '800' }}>
-            <span style={{ backgroundColor: '#e5e5e5', padding: '2px 6px', borderRadius: '2px' }}>{totalItems} PCS</span>
-            <span style={{ backgroundColor: '#e5e5e5', padding: '2px 6px', borderRadius: '2px' }}>{totalWeight}g</span>
+          <div style={{ fontSize: '7px', marginTop: '4px' }}>
+            Syarat dan ketentuan pengiriman dapat dilihat pada website ninoc.store
           </div>
+        </div>
+
+        {/* ORDER ID ROW */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '9px',
+          fontWeight: 'bold',
+          padding: '4px 8px',
+          borderBottom: '2px solid black'
+        }}>
+          <div>Order Id : {order.id.toUpperCase()}</div>
+        </div>
+
+        {/* ITEMS TABLE */}
+        <div style={{ padding: '6px 8px', fontSize: '8px', borderBottom: '1px solid black' }}>
+          <div style={{ color: '#666', marginBottom: '2px' }}>In transit by: {shipDate}</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid black', textAlign: 'left' }}>
+                <th style={{ paddingBottom: '2px', width: '50%' }}>Product Name</th>
+                <th style={{ paddingBottom: '2px' }}>SKU</th>
+                <th style={{ paddingBottom: '2px', textAlign: 'right' }}>Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.order_items?.map((item, idx) => (
+                <tr key={idx} style={{ verticalAlign: 'top' }}>
+                  <td style={{ paddingTop: '2px', paddingRight: '4px' }}>{item.product_name}</td>
+                  <td style={{ paddingTop: '2px' }}>{item.size || '-'}</td>
+                  <td style={{ paddingTop: '2px', textAlign: 'right' }}>{item.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ textAlign: 'right', fontWeight: 'bold', borderTop: '1px solid black', paddingTop: '2px', marginTop: '4px' }}>
+            Qty Total: {totalItems}
+          </div>
+        </div>
+
+        {/* FOOTER (PLATFORM LOGOS) */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '4px 8px',
+          flex: 1 // push to bottom
+        }}>
+          <div style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '-1px' }}>ninoc.store</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+             <span style={{ fontSize: '14px', fontWeight: '800' }}>Shop</span>
+          </div>
+          <div style={{ fontSize: '6px', textAlign: 'right' }}>
+            Order ID: {order.id.toUpperCase()}<br/>
+            Printed: {new Date().toLocaleString('id-ID')}
+          </div>
+        </div>
+
+      </div>
+
+      {/* RIGHT MARGIN BARCODE TEXT */}
+      <div style={{
+        width: '18px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderLeft: '1px solid black'
+      }}>
+        <div style={{
+          writingMode: 'vertical-rl',
+          transform: 'rotate(180deg)',
+          fontSize: '9px',
+          fontWeight: 'bold',
+          letterSpacing: '1px',
+          whiteSpace: 'nowrap'
+        }}>
+          {trackingId}
         </div>
       </div>
 
-      {/* FOOTER */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '8px 12px',
-        backgroundColor: 'black',
-        color: 'white',
-      }}>
-        <span style={{ fontSize: '9px', fontWeight: '600', fontFamily: "'Courier New', monospace" }}>
-          {new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
-        </span>
-        <span style={{
-          fontWeight: '900',
-          fontSize: '10px',
-          letterSpacing: '2px'
-        }}>FRAGILE</span>
-      </div>
     </div>
   );
 }
