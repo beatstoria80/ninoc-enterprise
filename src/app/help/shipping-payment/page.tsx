@@ -167,10 +167,10 @@ export default function ShippingPaymentTermsPage() {
   // because ClientPlatformManager already injects them globally.
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] selection:bg-ink selection:text-white pb-24">
+    <div className="min-h-screen bg-[#f8f9fa] selection:bg-ink selection:text-white pb-12 md:pb-24">
       
       {/* Back Button */}
-      <div className="pt-8 max-w-[1000px] w-full mx-auto px-6">
+      <div className="pt-4 md:pt-8 max-w-[1000px] w-full mx-auto px-4 md:px-6 flex justify-start">
         <Link 
           href="/" 
           className="inline-flex items-center gap-2 text-xs md:text-[11px] font-medium uppercase tracking-[0.15em] text-ink/60 hover:text-ink transition-colors group"
@@ -181,49 +181,49 @@ export default function ShippingPaymentTermsPage() {
       </div>
 
       {/* Header Section */}
-      <div className="pt-8 pb-8 max-w-[1000px] w-full mx-auto px-6 border-b border-ink/5">
-        <h1 className="font-display font-medium italic text-2xl md:text-3xl tracking-tighter text-ink mb-2 uppercase leading-tight">
+      <div className="pt-2 pb-4 md:pt-4 md:pb-8 max-w-[1000px] w-full mx-auto px-4 md:px-6 border-b border-ink/5">
+        <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tighter text-ink mb-1 md:mb-2 uppercase leading-tight">
           {dict.title}
         </h1>
-        <p className="text-xs md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/40">
+        <p className="text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/40">
           {dict.subtitle}
         </p>
       </div>
 
       {/* Vertical List Content */}
-      <div className="max-w-[1000px] w-full mx-auto px-6 py-6 flex flex-col gap-6">
+      <div className="max-w-[1000px] w-full mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col gap-4 md:gap-6">
         {dict.services.map((service, index) => (
           <section key={service.id} className="bg-white border border-ink/10 rounded-sm shadow-sm overflow-hidden group hover:border-ink/20 transition-colors">
             
             {/* Service Header */}
-            <div className="p-4 md:p-5 bg-ink/[0.01] border-b border-ink/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-ink/5 shrink-0">
+            <div className="p-3 md:p-5 bg-ink/[0.01] border-b border-ink/5 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-ink/5 shrink-0">
                   {service.icon}
                 </div>
                 <div>
-                  <h2 className="text-base md:text-sm font-bold uppercase tracking-[0.1em] text-ink">{service.title}</h2>
-                  <p className="text-xs md:text-[11px] text-ink/60 mt-1.5 leading-relaxed max-w-[600px]">{service.description}</p>
+                  <h2 className="text-sm md:text-sm font-bold uppercase tracking-[0.1em] text-ink leading-tight">{service.title}</h2>
+                  <p className="text-[10px] md:text-[11px] text-ink/60 mt-1 md:mt-1.5 leading-relaxed max-w-[600px]">{service.description}</p>
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-4 items-center shrink-0">
+              <div className="flex flex-wrap gap-2 md:gap-4 items-center shrink-0 mt-1 md:mt-0">
                 {service.logos.map(logo => (
-                  <CourierLogo key={logo} courier={logo} className="h-6 w-auto opacity-90 group-hover:opacity-100 transition-opacity" />
+                  <CourierLogo key={logo} courier={logo} className="h-5 md:h-6 w-auto opacity-90 group-hover:opacity-100 transition-opacity" />
                 ))}
               </div>
             </div>
 
             {/* Service Specs Details */}
-            <div className="p-4 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div className="p-3 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 md:gap-y-4">
               {service.specs.map((spec, i) => (
-                <div key={i} className="flex gap-4 items-start">
-                  <div className="w-4 h-4 rounded-full bg-ink/5 flex items-center justify-center shrink-0 mt-0.5">
+                <div key={i} className="flex gap-3 md:gap-4 items-start">
+                  <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-ink/5 flex items-center justify-center shrink-0 mt-0.5">
                     <CheckCircle size={10} className="text-ink/50" />
                   </div>
                   <div>
-                    <h3 className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40 mb-1.5">{spec.label}</h3>
-                    <p className="text-sm md:text-[12px] text-ink/80 leading-relaxed font-medium">{spec.value}</p>
+                    <h3 className="text-[10px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40 mb-1 md:mb-1.5">{spec.label}</h3>
+                    <p className="text-xs md:text-[12px] text-ink/80 leading-relaxed font-medium">{spec.value}</p>
                   </div>
                 </div>
               ))}
