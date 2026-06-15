@@ -78,6 +78,7 @@ export function Invoice({ order }: InvoiceProps) {
         <div className="flex-1 p-4 md:p-10 flex flex-col justify-center items-start md:items-end bg-ink/[0.02]">
           <span className="text-2xl md:text-3xl font-black tracking-widest text-ink">INVOICE</span>
           <span className="text-xs md:text-sm font-bold tracking-[0.1em] font-mono text-ink/60 mt-1">{orderNumber}</span>
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.1em] font-mono text-ink/40 mt-0.5">ORDER: #{order.id}</span>
           <div className="flex flex-row md:flex-col gap-3 md:gap-2 mt-3 md:mt-6">
             <div className="flex flex-col items-start md:items-end">
               <span className="text-[9px] md:text-[10px] text-ink/40 tracking-[0.2em] uppercase font-bold">Tanggal</span>
@@ -214,7 +215,7 @@ export function Invoice({ order }: InvoiceProps) {
             <QRCodeCanvas value={order.id.toUpperCase()} size={isMobile ? 100 : 160} level="M" />
           </div>
           <span className="text-[7px] md:text-[8px] font-bold tracking-[0.25em] text-ink/40 text-center uppercase mt-1">Scan untuk verifikasi</span>
-          <span className="text-[8px] md:text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</span>
+          <span className="text-[8px] md:text-[10px] font-mono font-bold text-ink/80 tracking-widest">#{order.id.toUpperCase()}</span>
         </div>
       </div>
 
@@ -286,6 +287,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '12px 16px', alignItems: 'flex-end', gap: '4px' }}>
               <span style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '2px', color: '#111' }}>INVOICE</span>
               <span style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '1px', fontFamily: 'monospace', color: '#444' }}>{orderNumber}</span>
+              <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '1px', fontFamily: 'monospace', color: '#888' }}>ORDER: #{order.id}</span>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', marginTop: '4px' }}>
                 <span style={{ fontSize: '9px', color: '#888', letterSpacing: '1px' }}>TANGGAL</span>
                 <span style={{ fontSize: '11px', fontWeight: '700', color: '#111' }}>{formatDate(order.created_at)}</span>
@@ -381,7 +383,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             <div style={{ width: '200px', padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <QRCodeCanvas value={order.id.toUpperCase()} size={120} level="M" />
               <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '2px', color: '#888', textAlign: 'center' }}>SCAN UNTUK VERIFIKASI</span>
-              <span style={{ fontSize: '10px', fontWeight: '900', fontFamily: 'monospace', color: '#111', letterSpacing: '1px' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
+              <span style={{ fontSize: '10px', fontWeight: '900', fontFamily: 'monospace', color: '#111', letterSpacing: '1px' }}>#{order.id.toUpperCase()}</span>
             </div>
           </div>
 

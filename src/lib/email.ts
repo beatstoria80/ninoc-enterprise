@@ -84,7 +84,7 @@ export async function sendEmailInvoice(order: any, customerEmail: string) {
               <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px; text-align: right;">Date</td>
             </tr>
             <tr>
-              <td style="font-size: 16px; font-weight: bold; color: #141414; font-family: monospace;">#${orderIdShort}</td>
+              <td style="font-size: 16px; font-weight: bold; color: #141414; font-family: monospace;">#${order.id.toUpperCase()}</td>
               <td style="font-size: 14px; font-weight: bold; color: #141414; text-align: right;">${orderDate}</td>
             </tr>
           </table>

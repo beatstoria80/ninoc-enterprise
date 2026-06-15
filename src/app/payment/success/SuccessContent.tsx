@@ -60,7 +60,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const displayId = order?.order_number ? String(order.order_number).toUpperCase() : String(order?.id || '').toUpperCase();
+  const displayId = String(order?.id || '').toUpperCase();
 
   const handleDownloadImage = async () => {
     const element = document.getElementById('responsive-invoice-container');
@@ -498,7 +498,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 function PrintableInvoice({ order, courierName }: { order: Order; courierName: string }) {
   const date = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
   const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  const displayId = order.order_number ? String(order.order_number).toUpperCase() : String(order.id).toUpperCase();
+  const displayId = String(order.id).toUpperCase();
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
   const shipping = typeof order.shipping_address?.shipping_cost === 'number' 
