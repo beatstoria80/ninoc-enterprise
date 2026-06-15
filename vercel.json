@@ -8,10 +8,6 @@
           {
                   "path": "/api/whatsapp/queue",
                   "schedule": "0 0 * * *"
-          },
-          {
-                  "path": "/api/cron/sync-payments",
-                  "schedule": "*/5 * * * *"
           }
     ]
 }
