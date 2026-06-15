@@ -14,6 +14,7 @@ import BottomCTA from './_components/BottomCTA';
 import { useDictionary } from '@/hooks/useDictionary';
 import CourierLogo from '@/components/CourierLogo';
 import { toast } from 'sonner';
+import { useRef } from 'react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -81,6 +82,7 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const dict = useDictionary();
   const [isProcessing, setIsProcessing] = useState(false);
+  const isProcessingRef = useRef(false);
   const [shippingMethod, setShippingMethod] = useState<string>('');
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [userId, setUserId] = useState<string | null>(null);
@@ -464,6 +466,7 @@ export default function CheckoutPage() {
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isProcessingRef.current) return;
     if (!shippingMethod) return;
 
     // Ensure Midtrans script is loaded
@@ -490,6 +493,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    isProcessingRef.current = true;
     setIsProcessing(true);
 
     const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}`;
@@ -529,6 +533,7 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error('[handleCheckout] Error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      isProcessingRef.current = false;
       setIsProcessing(false);
       toast.error(`Checkout failed: ${errorMessage}. Please check your details and try again.`);
     }
@@ -567,6 +572,7 @@ export default function CheckoutPage() {
           },
           onError: (err: unknown) => {
             console.error('Midtrans payment error:', err);
+            isProcessingRef.current = false;
             setIsProcessing(false);
             setPaymentToken(null);
             toast.error('Payment failed. Please try again or contact support.');
@@ -574,6 +580,7 @@ export default function CheckoutPage() {
           onClose: () => {
             console.log('Payment popup closed by user');
             setPaymentToken(null);
+            isProcessingRef.current = false;
             setIsProcessing(false);
           }
         });
