@@ -1041,10 +1041,11 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'report', icon: DollarSign, label: 'Report', activeKeys: ['finance', 'opex'],
+      id: 'report', icon: DollarSign, label: 'Report', activeKeys: ['finance', 'accounting', 'opex'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'finance', label: 'Finance Dashboard' },
+        { id: 'accounting', label: 'Accounting / Jurnal' },
         { id: 'opex', label: 'Opex (Biaya Operasional)' }
       ]
     },
@@ -1680,6 +1681,20 @@ export default function AdminDashboard() {
 
           {activeTab === 'finance' && (
             <FinanceDashboard />
+          )}
+
+          {activeTab === 'accounting' && (
+            <FinanceTab
+              finance={finance}
+              products={products}
+              orders={orders}
+              financeTab={financeTab}
+              setFinanceTab={setFinanceTab}
+              productCostings={productCostings}
+              setSelectedProductForCosting={setSelectedProductForCosting}
+              setCostingForm={setCostingForm}
+              setIsCostingModalOpen={setIsCostingModalOpen}
+            />
           )}
 
           {activeTab === 'messages' && (
