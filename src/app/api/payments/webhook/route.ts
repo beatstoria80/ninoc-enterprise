@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { coreApi } from '@/lib/midtrans';
-import { supabase } from '@/lib/supabase';
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 export async function POST(req: Request) {
   try {
@@ -19,7 +24,7 @@ export async function POST(req: Request) {
     console.log(`[Payment Webhook] Order: ${orderId} | TX: ${transactionId} | Status: ${transactionStatus} | Fraud: ${fraudStatus}`);
 
     // 2. Validate order exists in database
-    const { data: existingOrder, error: fetchError } = await supabase
+    const { data: existingOrder, error: fetchError } = await supabaseAdmin
       .from('orders')
       .select('id, status, midtrans_id')
       .eq('id', orderId)
@@ -57,7 +62,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Update order status + store midtrans_id and payment_type
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('orders')
       .update({
         status: orderUpdateStatus,
@@ -73,7 +78,7 @@ export async function POST(req: Request) {
 
     // --- INVENTORY RESTOCK (IF CANCELLED/EXPIRED) ---
     if (orderUpdateStatus === 'cancelled') {
-      const { error: restockError } = await supabase.rpc('restock_inventory', { p_order_id: orderId });
+      const { error: restockError } = await supabaseAdmin.rpc('restock_inventory', { p_order_id: orderId });
       if (restockError) {
         console.error(`[Payment Webhook] Failed to restock inventory for order ${orderId}:`, restockError);
       } else {
@@ -83,7 +88,7 @@ export async function POST(req: Request) {
 
     // 5. Send WhatsApp Invoice Notification, Generate Affiliate Commission, and Distribute Supplier Ledger
     if (orderUpdateStatus === 'paid') {
-      const { data: order } = await supabase
+      const { data: order } = await supabaseAdmin
         .from('orders')
         .select(`
           id, order_number, shipping_address, total_price, wa_invoice_sent, affiliate_id,
@@ -107,14 +112,14 @@ export async function POST(req: Request) {
           
           if (ledgerEntries.length > 0) {
             // Check if already created
-            const { data: existingLedger } = await supabase
+            const { data: existingLedger } = await supabaseAdmin
               .from('supplier_ledgers')
               .select('id')
               .eq('order_id', order.id)
               .limit(1);
             
             if (!existingLedger || existingLedger.length === 0) {
-              const { error: ledgerError } = await supabase
+              const { error: ledgerError } = await supabaseAdmin
                 .from('supplier_ledgers')
                 .insert(ledgerEntries);
               if (ledgerError) console.error('[Payment Webhook] Failed to create supplier ledger entries:', ledgerError);
@@ -124,14 +129,14 @@ export async function POST(req: Request) {
         }
         // --- AFFILIATE COMMISSION LOGIC ---
         if (order.affiliate_id) {
-          const { data: existingCommission } = await supabase
+          const { data: existingCommission } = await supabaseAdmin
             .from('affiliate_commissions')
             .select('id')
             .eq('order_id', order.id)
             .maybeSingle();
 
           if (!existingCommission) {
-            const { data: affiliate } = await supabase
+            const { data: affiliate } = await supabaseAdmin
               .from('affiliates')
               .select('commission_rate')
               .eq('id', order.affiliate_id)
@@ -139,7 +144,7 @@ export async function POST(req: Request) {
 
             if (affiliate) {
               // Fraud Prevention: Only calculate commission on eligible products
-              const { data: orderItems } = await supabase
+              const { data: orderItems } = await supabaseAdmin
                 .from('order_items')
                 .select(`
                   price_at_purchase,
@@ -162,7 +167,7 @@ export async function POST(req: Request) {
 
               if (eligibleTotal > 0) {
                 const commissionAmount = (eligibleTotal * Number(affiliate.commission_rate)) / 100;
-                await supabase
+                await supabaseAdmin
                   .from('affiliate_commissions')
                   .insert({
                     affiliate_id: order.affiliate_id,
@@ -207,7 +212,7 @@ export async function POST(req: Request) {
           if (waResult.success) {
             console.log(`[Payment Webhook] Invoice WA sent. Message ID: ${waResult.message_id}`);
             // Only mark as sent if WhatsApp actually succeeded
-            await supabase
+            await supabaseAdmin
               .from('orders')
               .update({
                 wa_invoice_sent: true,
