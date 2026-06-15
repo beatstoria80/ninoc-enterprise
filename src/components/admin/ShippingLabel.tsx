@@ -192,7 +192,7 @@ export function ShippingLabel({ order }: { order: Order }) {
           {/* RECEIVER ADDRESS */}
           <div style={{ 
             fontSize: '9px', 
-            fontWeight: 'normal', 
+            fontWeight: 400, 
             lineHeight: '1.1',
             textTransform: 'capitalize' 
           }}>
