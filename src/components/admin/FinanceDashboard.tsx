@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, CreditCard, PieChart } from 'lucide-react';
+import { BarChart3, TrendingUp, CreditCard, PieChart } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export default function FinanceDashboard() {
@@ -87,7 +87,7 @@ export default function FinanceDashboard() {
         {/* Gross Revenue */}
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
           <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
-            <DollarSign size={20} />
+            <BarChart3 size={20} />
           </div>
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
           <p className="text-2xl font-bold text-ink">Rp {metrics.grossRevenue.toLocaleString('id-ID')}</p>

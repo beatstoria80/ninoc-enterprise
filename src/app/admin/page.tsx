@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Plus, Search,
   TrendingUp, Box, LogOut, X, Save, Menu,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
-  Clock, DollarSign, Minus,
+  Clock, Minus,
   MessageSquare, Send, User, Users, Mail, Phone,
   MapPin, CreditCard, Shield, Star, Factory, FileText, ClipboardCheck, ArrowRightLeft,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
