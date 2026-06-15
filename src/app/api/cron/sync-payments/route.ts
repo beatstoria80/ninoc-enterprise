@@ -40,7 +40,7 @@ export async function GET() {
     for (const order of pendingOrders) {
       try {
         // 2. Check status directly from Midtrans API
-        const statusResponse = await coreApi.transaction.status(order.id);
+        const statusResponse = await (coreApi.transaction as any).status(order.id);
 
         const transactionStatus = statusResponse.transaction_status;
         const fraudStatus = statusResponse.fraud_status;
