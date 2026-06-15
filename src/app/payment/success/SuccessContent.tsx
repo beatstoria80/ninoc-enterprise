@@ -133,7 +133,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     );
   }
 
-  const invoiceId = `NCO-${order.id.toUpperCase()}`;
+  const invoiceId = `#${displayId}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
   const shipping = typeof order.shipping_address?.shipping_cost === 'number' 
@@ -307,6 +307,9 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 <div className="px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
                   <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-1">Ship To</p>
                   <p className="text-[11px] font-semibold text-ink leading-tight uppercase">{order.shipping_address.name || order.customer_name}</p>
+                  {order.shipping_address.phone && (
+                    <p className="text-[10px] text-ink/60 mt-0.5 leading-snug">{order.shipping_address.phone}</p>
+                  )}
                   <p className="text-[10px] text-ink/50 mt-0.5 leading-snug uppercase">{order.shipping_address.address}, {order.shipping_address.city} {order.shipping_address.postal_code}</p>
                 </div>
               )}
@@ -525,9 +528,9 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
       <div className="grid grid-cols-2 gap-12 mb-4 md:mb-8 text-sm">
         <div>
           <p className="text-[10px] md:text-xs uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Billed To</p>
-          <p className="font-medium">{order.customer_name || 'Customer Name'}</p>
+          <p className="font-medium">{order.customer_name || order.shipping_address?.name || 'Customer Name'}</p>
           <p className="text-xs mt-1">{order.shipping_address?.email || 'customer@email.com'}</p>
-          <p className="text-xs font-mono">{order.shipping_address?.name || '+62 812-XXXX-XXXX'}</p>
+          <p className="text-xs font-mono">{order.shipping_address?.phone || '+62 812-XXXX-XXXX'}</p>
         </div>
         <div>
           <p className="text-[10px] md:text-xs uppercase tracking-widest font-medium mb-2 border-b border-black/20 pb-1">Shipped To</p>
