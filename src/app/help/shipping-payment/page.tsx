@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import CourierLogo from '@/components/CourierLogo';
-import { ShieldCheck, Truck, CreditCard, Clock, CheckCircle, Zap } from 'lucide-react';
+import { ShieldCheck, Truck, CreditCard, Clock, CheckCircle, Zap, ArrowLeft } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════
 // DICTIONARY: BAHASA INDONESIA
@@ -168,8 +169,19 @@ export default function ShippingPaymentTermsPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fa] selection:bg-ink selection:text-white pb-24">
       
+      {/* Back Button */}
+      <div className="pt-8 max-w-[1000px] w-full mx-auto px-6">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-xs md:text-[11px] font-medium uppercase tracking-[0.15em] text-ink/60 hover:text-ink transition-colors group"
+        >
+          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+          {isEn ? "Back to Home" : "Kembali ke Beranda"}
+        </Link>
+      </div>
+
       {/* Header Section */}
-      <div className="pt-12 pb-8 max-w-[1000px] w-full mx-auto px-6 border-b border-ink/5">
+      <div className="pt-8 pb-8 max-w-[1000px] w-full mx-auto px-6 border-b border-ink/5">
         <h1 className="font-display font-medium italic text-2xl md:text-3xl tracking-tighter text-ink mb-2 uppercase leading-tight">
           {dict.title}
         </h1>
