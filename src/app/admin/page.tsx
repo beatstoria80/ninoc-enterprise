@@ -11,7 +11,7 @@ import {
   MapPin, CreditCard, Shield, Star, Factory, FileText, ClipboardCheck, ArrowRightLeft,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
   Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen,
-  AlertTriangle, Check
+  AlertTriangle, Check, BarChart3
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -1041,7 +1041,7 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'report', icon: DollarSign, label: 'Report', activeKeys: ['finance', 'accounting', 'opex'],
+      id: 'report', icon: BarChart3, label: 'Report', activeKeys: ['finance', 'accounting', 'opex'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'finance', label: 'Finance Dashboard' },
