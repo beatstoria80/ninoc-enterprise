@@ -212,6 +212,7 @@ export async function POST(req: Request) {
       .from('orders')
       .insert({
         id: orderId,
+        order_number: orderNumber,
         user_id: customerDetails.user_id ? customerDetails.user_id : null,
         affiliate_id: affiliate_id,
         customer_name: customerDetails.name || null,

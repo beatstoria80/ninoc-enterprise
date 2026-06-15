@@ -30,9 +30,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // 3. Idempotency check — skip if already processed with same transaction_id
-    if (existingOrder.midtrans_id === transactionId) {
-      console.log(`[Payment Webhook] Duplicate webhook for order ${orderId}, transaction ${transactionId} — skipping`);
+    // 3. Idempotency check — only skip if order already reached a final state (paid/cancelled)
+    if (existingOrder.midtrans_id === transactionId && (existingOrder.status === 'paid' || existingOrder.status === 'cancelled')) {
+      console.log(`[Payment Webhook] Duplicate webhook for order ${orderId} (already ${existingOrder.status}) — skipping`);
       return NextResponse.json({ status: 'OK', note: 'Already processed' });
     }
 
