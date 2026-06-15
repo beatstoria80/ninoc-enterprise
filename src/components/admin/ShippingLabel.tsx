@@ -98,18 +98,20 @@ export function ShippingLabel({ order }: { order: Order }) {
   const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
   const isCOD = false; // set to false as our app uses Midtrans/VA mostly
 
-  const shortItemsStr = order.order_items?.map(i => `${i.product_name} (${i.size || 'One Size'})`).join(', ');
+  let shortItemsStr = order.order_items?.slice(0, 3).map(i => `${i.product_name} (${i.size || 'One Size'})`).join(', ') || '';
+  if ((order.order_items?.length || 0) > 3) shortItemsStr += ', dll...';
 
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'row',
       width: '100mm',
-      minHeight: '150mm',
+      height: '150mm',
       backgroundColor: 'white',
       color: 'black',
       fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
       boxSizing: 'border-box',
+      overflow: 'hidden'
     }}>
       
       {/* LEFT MARGIN BARCODE TEXT */}
@@ -299,13 +301,20 @@ export function ShippingLabel({ order }: { order: Order }) {
               </tr>
             </thead>
             <tbody>
-              {order.order_items?.map((item, idx) => (
+              {order.order_items?.slice(0, 4).map((item, idx) => (
                 <tr key={idx} style={{ verticalAlign: 'top' }}>
                   <td style={{ paddingTop: '2px', paddingRight: '4px' }}>{item.product_name}</td>
                   <td style={{ paddingTop: '2px' }}>{item.size || '-'}</td>
                   <td style={{ paddingTop: '2px', textAlign: 'right' }}>{item.quantity}</td>
                 </tr>
               ))}
+              {(order.order_items?.length || 0) > 4 && (
+                <tr style={{ verticalAlign: 'top' }}>
+                  <td colSpan={3} style={{ paddingTop: '4px', fontStyle: 'italic', color: '#555' }}>
+                    + {(order.order_items?.length || 0) - 4} produk lainnya... (Lihat Packing Slip)
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
           <div style={{ textAlign: 'right', fontWeight: 'bold', borderTop: '1px solid black', paddingTop: '2px', marginTop: '4px' }}>
