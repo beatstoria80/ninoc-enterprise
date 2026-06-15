@@ -237,9 +237,13 @@ export async function POST(req: Request) {
         const matchingItem = items.find((i: any) => i.id === item.id);
         const dbProduct = dbProducts.find((p: any) => p.id === item.id);
         
+        let variant = null;
         let variant_id = null;
         if (dbProduct && dbProduct.variants && dbProduct.variants.length > 0) {
-          const variant = dbProduct.variants.find((v: any) => v.size === matchingItem?.size);
+          variant = dbProduct.variants.find((v: any) => 
+            v.size === matchingItem?.size && 
+            (!matchingItem?.color || v.color === matchingItem.color)
+          );
           variant_id = variant ? variant.id : dbProduct.variants[0].id;
         }
 
@@ -252,6 +256,7 @@ export async function POST(req: Request) {
           quantity: item.quantity,
           price_at_purchase: item.price,
           size: matchingItem?.size || null,
+          color: matchingItem?.color || (variant ? variant.color : null),
           supplier_id: item.supplier_id || null,
           supplier_hpp: item.supplier_hpp || 0,
           ninoc_markup: item.ninoc_markup || 0
