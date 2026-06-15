@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -152,6 +152,15 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
       }
     }
   };
+
+  useEffect(() => {
+    if (step === 2 && termsRef.current) {
+      const { scrollHeight, clientHeight } = termsRef.current;
+      if (scrollHeight <= clientHeight + 10) {
+        setTermsScrolled(true);
+      }
+    }
+  }, [step]);
 
   const canProceedStep1 = orderId.trim().length >= 4 && reason !== '' && (!isGuest || (guestEmail.includes('@') && guestEmail.includes('.')));
   const canProceedStep2 = description.trim().length >= 10 && videoFile !== null && termsAccepted && termsScrolled;
