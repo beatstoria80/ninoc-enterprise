@@ -85,19 +85,19 @@ export async function POST(req: Request) {
       .eq('id', order_id)
       .single();
 
-    if (existingOrder?.status === 'shipped') {
+    if (existingOrder?.tracking_id) {
       const newCount = (existingOrder.print_count || 0) + 1;
       await supabase.from('orders').update({ print_count: newCount }).eq('id', order_id);
       
-      console.log(`[Biteship Create Order] Order ${order_id} already dispatched. Reprinting.`);
+      console.log(`[Biteship Create Order] Order ${order_id} already has a tracking ID. Reprinting.`);
       return NextResponse.json({
         success: true,
         source: 'reprint',
         waybill_id: existingOrder.tracking_id,
         tracking_id: existingOrder.tracking_id,
         courier_company: existingOrder.courier?.split(' ')[0] || courier_company,
-        status: 'shipped',
-        message: 'Order was already dispatched. Incrementing print count.'
+        status: existingOrder.status || 'shipped',
+        message: 'Order already has a tracking ID. Incrementing print count.'
       });
     }
 
