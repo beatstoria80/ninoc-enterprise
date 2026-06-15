@@ -148,7 +148,7 @@ export function LogisticsTab({
           contact_phone: order.shipping_address?.phone || '0800000000',
           address: order.shipping_address?.address || 'Alamat tidak diketahui',
           postal_code: order.shipping_address?.postal_code || 12345,
-          note: `Pesanan NINOC #${order.id.slice(0,8)}`
+          note: `Pesanan NINOC #${order.id}`
         },
         origin: {
           contact_name: "NINOC Warehouse",
@@ -316,7 +316,7 @@ export function LogisticsTab({
                     )}
                   >
                     <td className="px-3 py-1.5">
-                      <span className="font-mono text-xs md:text-[10px] text-gray-900">#{order.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="font-mono text-xs md:text-[10px] text-gray-900">#{order.id.toUpperCase()}</span>
                     </td>
                     <td className="px-3 py-1.5">
                       <span className={cn(
@@ -415,7 +415,7 @@ export function LogisticsTab({
                 <div className="grid grid-cols-4 gap-3 pt-3 border-t border-gray-100">
                   <div>
                     <p className="text-[11px] md:text-[8px] uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
-                    <p className="text-xs md:text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.slice(0,8).toUpperCase()}</p>
+                    <p className="text-xs md:text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.toUpperCase()}</p>
                   </div>
                   <div className="col-span-2">
                     <p className="text-[11px] md:text-[8px] uppercase tracking-wider text-gray-400 mb-1">Shipping Address</p>

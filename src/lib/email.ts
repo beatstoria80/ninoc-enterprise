@@ -20,7 +20,7 @@ export async function sendEmailInvoice(order: any, customerEmail: string) {
     return;
   }
 
-  const orderIdShort = order.id.slice(0, 8).toUpperCase();
+  const orderIdShort = order.id.toUpperCase();
   const orderDate = new Date(order.created_at).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',

@@ -310,7 +310,7 @@ export function ShippingLabel({ order }: { order: Order }) {
           <QRCodeSVG value={order.id.toUpperCase()} size={54} level="M" />
           <div style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '1px', marginTop: '8px', color: '#666' }}>ORDER ID</div>
           <div style={{ fontWeight: '900', fontSize: '11px', letterSpacing: '1px', fontFamily: "'Courier New', monospace" }}>
-            #{order.id.slice(0, 8).toUpperCase()}
+            #{order.id.toUpperCase()}
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', width: '100%', marginTop: '8px', fontSize: '9px', fontWeight: '800' }}>
             <span style={{ backgroundColor: '#e5e5e5', padding: '2px 6px', borderRadius: '2px' }}>{totalItems} PCS</span>

@@ -1322,7 +1322,7 @@ export default function AdminDashboard() {
                   <div class="barcode-section">
                     <svg class="barcode"
                       jsbarcode-format="CODE128"
-                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}"
+                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.toUpperCase()}"
                       jsbarcode-textmargin="0"
                       jsbarcode-fontoptions="bold"
                       jsbarcode-height="50"
@@ -1330,7 +1330,7 @@ export default function AdminDashboard() {
                       jsbarcode-width="2"
                       jsbarcode-margin="0">
                     </svg>
-                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}</div>
+                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.toUpperCase()}</div>
                   </div>
 
                   <div class="address-grid">
@@ -1365,7 +1365,7 @@ export default function AdminDashboard() {
                     <div class="content-box">
                       <div class="order-id-box">
                         <div class="box-title" style="text-decoration:none;">ORDER ID</div>
-                        <div class="order-id-val">#${order.id.slice(0, 8).toUpperCase()}</div>
+                        <div class="order-id-val">#${order.id.toUpperCase()}</div>
                       </div>
                       <div class="qty-val">
                         <span>Qty: ${totalItems}</span>
@@ -2760,7 +2760,7 @@ export default function AdminDashboard() {
               <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
-                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id.slice(0, 12)}...</h2>
+                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}...</h2>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => {
@@ -2999,7 +2999,7 @@ export default function AdminDashboard() {
                 <div className="bg-gray-50 rounded-lg p-3 space-y-1.5">
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Order ID</span>
-                    <span className="font-mono font-semibold text-gray-900">#{(selectedOrder.id || '').slice(0, 8).toUpperCase()}</span>
+                    <span className="font-mono font-semibold text-gray-900">#{(selectedOrder.id || '').toUpperCase()}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Terakhir dicetak oleh</span>

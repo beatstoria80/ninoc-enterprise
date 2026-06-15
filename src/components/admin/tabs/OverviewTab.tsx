@@ -113,7 +113,7 @@ export function OverviewTab({
               <div className="flex items-center gap-6">
                 <div>
                   <p className="text-[10px] md:text-[7px] uppercase tracking-widest text-ink/40 mb-0.5">Order ID</p>
-                  <p className="text-xs md:text-[10px] font-semibold text-ink font-mono tracking-wide">#{order.id.slice(0, 8).toUpperCase()}</p>
+                  <p className="text-xs md:text-[10px] font-semibold text-ink font-mono tracking-wide">#{order.id.toUpperCase()}</p>
                 </div>
                 <div>
                   <p className="text-[10px] md:text-[7px] uppercase tracking-widest text-ink/40 mb-0.5">Customer</p>

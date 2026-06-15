@@ -62,8 +62,8 @@ export function Invoice({ order }: InvoiceProps) {
   const discount = Math.max(0, subtotal + shippingCost - total);
 
   const orderNumber = order.shipping_address?.name
-    ? `NCO-${order.id.slice(0, 8).toUpperCase()}`
-    : `NCO-${order.id.slice(0, 8).toUpperCase()}`;
+    ? `NCO-${order.id.toUpperCase()}`
+    : `NCO-${order.id.toUpperCase()}`;
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white text-ink font-sans border border-ink/10 shadow-xl print:hidden">
@@ -247,8 +247,8 @@ export function PrintableInvoice({ order }: InvoiceProps) {
   const total = order.total_price;
 
   const orderNumber = order.shipping_address?.name
-    ? `NCO-${order.id.slice(0, 8).toUpperCase()}`
-    : `NCO-${order.id.slice(0, 8).toUpperCase()}`;
+    ? `NCO-${order.id.toUpperCase()}`
+    : `NCO-${order.id.toUpperCase()}`;
 
   // Kept entirely inline-styled for strict A5 PDF generation
   return (

@@ -638,7 +638,7 @@ export function OrdersTab({
                   <div class="barcode-section">
                     <svg class="barcode"
                       jsbarcode-format="CODE128"
-                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}"
+                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.toUpperCase()}"
                       jsbarcode-textmargin="0"
                       jsbarcode-fontoptions="bold"
                       jsbarcode-height="50"
@@ -646,7 +646,7 @@ export function OrdersTab({
                       jsbarcode-width="2"
                       jsbarcode-margin="0">
                     </svg>
-                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.slice(0,8).toUpperCase()}</div>
+                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.toUpperCase()}</div>
                   </div>
 
                   <div class="address-grid">
@@ -681,7 +681,7 @@ export function OrdersTab({
                     <div class="content-box">
                       <div class="order-id-box">
                         <div class="box-title" style="text-decoration:none;">ORDER ID</div>
-                        <div class="order-id-val">#${order.id.slice(0, 8).toUpperCase()}</div>
+                        <div class="order-id-val">#${order.id.toUpperCase()}</div>
                       </div>
                       <div class="qty-val">
                         <span>Qty: ${order.order_items?.reduce((acc, curr) => acc + curr.quantity, 0) || 0}</span>
@@ -765,7 +765,7 @@ export function OrdersTab({
                 return (
                   '<tr>' +
                     '<td>' + new Date(order.created_at).toLocaleString('id-ID') + '</td>' +
-                    '<td style="font-family: monospace;">' + order.id.slice(0, 8).toUpperCase() + '</td>' +
+                    '<td style="font-family: monospace;">' + order.id.toUpperCase() + '</td>' +
                     '<td>' + (order.shipping_address?.name || '-') + '</td>' +
                     '<td>' + order.status.toUpperCase() + '</td>' +
                     '<td>' + order.payment_status.toUpperCase() + '</td>' +
@@ -991,7 +991,7 @@ export function OrdersTab({
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
                         <td className="px-3 py-2">
-                          <span className="text-xs md:text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</span>
+                          <span className="text-xs md:text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
                         </td>
                         <td className="px-3 py-2">
                           <span className="text-xs md:text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
@@ -1166,7 +1166,7 @@ export function OrdersTab({
                                       <div className="bg-white border border-ink/5 p-3 rounded-sm space-y-3">
                                         <div>
                                           <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Order ID</p>
-                                          <p className="text-xs md:text-[10px] font-medium text-ink font-mono">#{order.id.slice(0, 16).toUpperCase()}</p>
+                                          <p className="text-xs md:text-[10px] font-medium text-ink font-mono">#{order.id.toUpperCase()}</p>
                                         </div>
                                         <div className="h-px bg-ink/5" />
                                         <div>
@@ -1358,7 +1358,7 @@ export function OrdersTab({
                           <div className="flex-1 flex flex-wrap items-center justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <p className="text-xs font-medium text-ink font-mono tracking-wider">#{order.id.slice(0, 10).toUpperCase()}</p>
+                                <p className="text-xs font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</p>
                                 <span className="text-xs md:text-[9px] text-ink/70 font-medium font-mono bg-ink/5 px-1.5 py-0.5 rounded-sm border border-ink/10">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                               </div>
                               <p className="text-sm md:text-[11px] font-medium text-ink mt-1 truncate">

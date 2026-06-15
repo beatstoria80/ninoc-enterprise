@@ -133,7 +133,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     );
   }
 
-  const invoiceId = `NCO-${order.id.slice(0, 8).toUpperCase()}`;
+  const invoiceId = `NCO-${order.id.toUpperCase()}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
   const shipping = typeof order.shipping_address?.shipping_cost === 'number' 

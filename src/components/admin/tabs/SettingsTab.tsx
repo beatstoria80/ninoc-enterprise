@@ -1195,7 +1195,7 @@ function BiteshipActivationSection() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs md:text-[9px] font-medium text-ink font-mono">{order.id.slice(0, 18)}…</span>
+                            <span className="text-xs md:text-[9px] font-medium text-ink font-mono">{order.id}…</span>
                             <span className={cn(
                               "text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-medium",
                               pickerType === 'delivered'
