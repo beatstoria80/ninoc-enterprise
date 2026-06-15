@@ -427,188 +427,174 @@ export function OrdersTab({
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Label Pengiriman - NINOC Archive</title>
+            <title>Label Pengiriman - J&T Format</title>
             <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
             <style>
               @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
               @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
               
               body { 
-                font-family: 'Courier Prime', monospace; 
                 margin: 0; 
                 padding: 20px; 
                 background: #e5e7eb; 
                 color: #000;
+                font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
               }
               
-              /* Thermal Label Standard Size (approx 100x150mm) */
+              /* Thermal Label Standard Size (exactly 100x150mm to prevent gaps) */
               .label { 
                 background: white; 
                 width: 100mm; 
-                min-height: 120mm;
-                padding: 4mm;
+                height: 150mm;
                 margin: 0 auto 20px auto; 
                 box-sizing: border-box;
                 page-break-after: always;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: row;
+                overflow: hidden;
               }
 
-              .label-inner {
-                border: 2px solid #000;
-                width: 100%;
-                height: 100%;
+              .side-margin {
+                width: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .side-margin.left { border-right: 1px solid black; }
+              .side-margin.right { border-left: 1px solid black; }
+
+              .vertical-text {
+                writing-mode: vertical-rl;
+                transform: rotate(180deg);
+                font-size: 9px;
+                font-weight: bold;
+                letter-spacing: 1px;
+                white-space: nowrap;
+              }
+
+              .main-content {
+                flex: 1;
                 display: flex;
                 flex-direction: column;
+                position: relative;
               }
 
-              /* Header Section */
-              .header {
+              .header-section {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 4mm;
-                border-bottom: 2px solid #000;
+                padding: 6px 8px;
+                border-bottom: 1px solid black;
+                height: 45px;
               }
-              .brand {
-                font-family: 'Inter', sans-serif;
-                font-size: 14px;
+              .courier-logo {
+                font-size: 16px;
                 font-weight: 900;
                 font-style: italic;
-                letter-spacing: -0.5px;
+                letter-spacing: -1px;
+                color: black;
               }
-              .brand span {
-                font-size: 8px;
-                font-weight: 600;
-                margin-left: 4px;
-                font-style: normal;
-                letter-spacing: 1px;
+              .hotline { font-size: 8px; font-weight: bold; margin-top: 2px; color: #dd0000; }
+              .service-type { font-size: 28px; font-weight: 900; letter-spacing: -1px; text-align: center; }
+
+              .sender-info {
+                padding: 6px 8px;
+                border-bottom: 1px dotted black;
               }
-              .courier-box {
-                display: flex;
-                align-items: center;
-                gap: 4px;
+              .flex-between { display: flex; justify-content: space-between; font-size: 10px; }
+              .uppercase-sm { font-size: 9px; text-transform: uppercase; }
+
+              .receiver-info {
+                padding: 6px 8px;
+                border-bottom: 1px solid black;
               }
-              .courier-badge {
-                background: #000;
-                color: #fff;
-                font-family: 'Inter', sans-serif;
-                font-weight: 800;
-                font-size: 10px;
-                padding: 2px 4px;
-                letter-spacing: 0.5px;
+              .address-bold {
+                font-size: 13px;
+                font-weight: 900;
+                line-height: 1.2;
+                text-transform: capitalize;
+                margin-top: 4px;
               }
 
-              /* Barcode Section */
-              .barcode-section {
-                padding: 4mm;
+              .weight-date {
+                display: flex;
+                font-size: 9px;
+                border-bottom: 1px solid black;
+              }
+              .weight-date > div { flex: 1; padding: 4px 8px; }
+              .weight-date > div:first-child { border-right: 1px solid black; }
+
+              .items-summary {
+                padding: 6px 8px;
+                font-size: 10px;
+                position: relative;
+                min-height: 35px;
+                border-bottom: 1px solid black;
+              }
+
+              .routing-box {
+                background-color: black;
+                color: white;
                 text-align: center;
-                border-bottom: 2px solid #000;
-              }
-              .barcode-section img {
-                width: 100%;
-                height: 50px;
-                display: block;
-                margin: 0 auto;
-              }
-              .awb-text {
-                font-family: 'Courier Prime', monospace;
-                font-weight: 700;
+                font-weight: bold;
                 font-size: 14px;
+                padding: 4px 0;
+                letter-spacing: 1px;
+              }
+
+              .routing-code {
+                text-align: center;
+                font-size: 32px;
+                font-weight: 900;
+                letter-spacing: -1px;
+                padding: 8px 0 4px;
+                line-height: 1;
+              }
+
+              .main-barcode-sec {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid black;
+              }
+              .tracking-text {
+                font-size: 16px;
+                font-weight: 900;
                 margin-top: 4px;
                 letter-spacing: 2px;
               }
+              .tc-text { font-size: 7px; margin-top: 4px; }
 
-              /* Address Grid */
-              .address-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                border-bottom: 2px solid #000;
-              }
-              .address-box {
-                padding: 4mm;
-              }
-              .address-box.left {
-                border-right: 2px solid #000;
-              }
-              .box-title {
-                font-family: 'Inter', sans-serif;
-                font-size: 8px;
-                font-weight: 700;
-                letter-spacing: 1px;
-                margin-bottom: 4px;
-                text-decoration: underline;
-              }
-              .person-name {
-                font-weight: 700;
-                font-size: 12px;
-                margin-bottom: 2px;
-                font-family: 'Inter', sans-serif;
-                text-transform: uppercase;
-              }
-              .person-phone {
-                font-size: 10px;
-                margin-bottom: 6px;
-              }
-              .person-address {
-                font-size: 9px;
-                line-height: 1.3;
-                text-transform: uppercase;
-              }
-
-              /* Content Grid */
-              .content-grid {
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                border-bottom: 2px solid #000;
-                flex: 1;
-              }
-              .content-box {
-                padding: 4mm;
-              }
-              .content-box.left {
-                border-right: 2px solid #000;
-              }
-              .item-line {
-                font-size: 10px;
-                line-height: 1.4;
-                margin-bottom: 2px;
-                text-transform: uppercase;
-              }
-              
-              .order-id-box {
-                text-align: center;
-                padding-top: 4mm;
-              }
-              .order-id-val {
-                font-family: 'Inter', sans-serif;
-                font-size: 12px;
-                font-weight: 800;
-                margin-top: 4px;
-              }
-              .qty-val {
-                font-size: 9px;
-                margin-top: 8px;
+              .order-id-row {
                 display: flex;
                 justify-content: space-between;
-                padding: 0 4px;
+                font-size: 9px;
+                font-weight: bold;
+                padding: 4px 8px;
+                border-bottom: 2px solid black;
               }
 
-              /* Footer */
-              .footer {
+              .items-table-container {
+                padding: 6px 8px;
+                font-size: 8px;
+                border-bottom: 1px solid black;
+              }
+              .items-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 2px;
+              }
+              .items-table th { border-bottom: 1px solid black; text-align: left; padding-bottom: 2px; }
+              .items-table td { padding-top: 2px; vertical-align: top; }
+
+              .footer-logos {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 2mm 4mm;
-                font-size: 8px;
-              }
-              .fragile-badge {
-                background: #000;
-                color: #fff;
-                font-family: 'Inter', sans-serif;
-                font-weight: 800;
-                padding: 2px 6px;
-                font-size: 10px;
-                letter-spacing: 1px;
+                padding: 4px 8px;
+                flex: 1;
               }
 
               @media print {
@@ -620,85 +606,134 @@ export function OrdersTab({
           </head>
           <body>
             ${ordersToPrint.map(order => {
-              const maskPhone = (phone: string | undefined) => {
-                if (!phone || phone.length < 8) return phone || '-';
-                return phone.slice(0, 4) + '-****-' + phone.slice(-4);
-              };
+              const trackingId = order.tracking_id || 'JX9689052297';
+              const courierName = (order.courier || 'J&T').toUpperCase().split(' ')[0];
+              const serviceType = (order.courier || 'J&T EXPRESS REG').toUpperCase().split(' ').slice(1).join(' ') || 'REG';
+              const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+              const totalWeight = (totalItems * 0.150).toFixed(3);
+              const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+              
+              const routingCode = 'NNC-' + (order.shipping_address?.postal_code || '10110').slice(0, 5);
+              const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
+              
+              let shortItemsStr = order.order_items?.slice(0, 3).map(i => i.product_name + ' (' + (i.size || 'One Size') + ')').join(', ') || '';
+              if ((order.order_items?.length || 0) > 3) shortItemsStr += ', dll...';
+
+              const receiverName = order.shipping_address?.name || 'Customer';
+              const receiverPhone = order.shipping_address?.phone || '+628000000000';
+              const receiverAddress = order.shipping_address?.address || '';
+              const receiverLocation = (order.shipping_address?.city || '') + ', ' + (order.shipping_address?.province || '');
+
+              const maxItems = 4;
+              const itemsList = order.order_items?.slice(0, maxItems).map(i => 
+                '<tr><td>' + i.product_name + '</td><td>' + (i.size || '-') + '</td><td style="text-align:right">' + i.quantity + '</td></tr>'
+              ).join('') || '';
+              
+              const itemsRemaining = (order.order_items?.length || 0) - maxItems;
+              const remainingRow = itemsRemaining > 0 ? '<tr><td colspan="3" style="padding-top:4px; font-style:italic; color:#555">+ ' + itemsRemaining + ' produk lainnya... (Lihat Packing Slip)</td></tr>' : '';
+
               return `
               <div class="label">
-                <div class="label-inner">
+                
+                <div class="side-margin left">
+                  <div class="vertical-text">${trackingId}</div>
+                </div>
+
+                <div class="main-content">
                   
-                  <div class="header">
-                    <div class="brand">NINOC <span>ARCHIVE</span></div>
-                    <div class="courier-box">
-                      <div class="courier-badge">${(order.courier || 'STD').toUpperCase().slice(0, 5)}</div>
+                  <div class="header-section">
+                    <div style="flex:1">
+                      <div class="courier-logo">${courierName} EXPRESS</div>
+                      <div class="hotline">(021) 80661888</div>
+                    </div>
+                    <div class="service-type">${serviceType}</div>
+                    <div style="flex:1; text-align:right">
+                       <div style="display:inline-block; width:36px; height:36px; border:2px solid #000; color:#000; font-size:10px; line-height:36px; font-weight:bold; text-align:center">QR</div>
                     </div>
                   </div>
 
-                  <div class="barcode-section">
+                  <div class="sender-info">
+                    <div class="flex-between">
+                      <div><span style="font-weight:bold">Pengirim :</span> NINOC ENTERPRISE</div>
+                      <div>(+62)812-XXXX-XXXX</div>
+                    </div>
+                    <div class="uppercase-sm">JAWA BARAT, BANDUNG</div>
+                  </div>
+
+                  <div class="receiver-info">
+                    <div class="flex-between">
+                      <div><span style="font-weight:bold">Penerima :</span> ${receiverName}</div>
+                      <div>${receiverPhone}</div>
+                    </div>
+                    <div class="uppercase-sm">${receiverLocation}</div>
+                    <div class="address-bold">${receiverAddress}, ${receiverLocation}</div>
+                  </div>
+
+                  <div class="weight-date">
+                    <div>Weight : ${totalWeight} KG</div>
+                    <div>Ship : ${shipDate}</div>
+                  </div>
+
+                  <div class="items-summary">
+                    Jumlah : ${totalItems}pcs, Barang : ${shortItemsStr}
+                  </div>
+
+                  <div class="routing-box">${destinationHub}</div>
+                  
+                  <div class="routing-code">${routingCode}</div>
+
+                  <div class="main-barcode-sec">
                     <svg class="barcode"
                       jsbarcode-format="CODE128"
-                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.toUpperCase()}"
+                      jsbarcode-value="${trackingId}"
                       jsbarcode-textmargin="0"
                       jsbarcode-fontoptions="bold"
-                      jsbarcode-height="50"
+                      jsbarcode-height="60"
                       jsbarcode-displayvalue="false"
                       jsbarcode-width="2"
                       jsbarcode-margin="0">
                     </svg>
-                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.toUpperCase()}</div>
+                    <div class="tracking-text">${trackingId}</div>
+                    <div class="tc-text">Syarat dan ketentuan pengiriman dapat dilihat pada website ninoc.store</div>
                   </div>
 
-                  <div class="address-grid">
-                    <div class="address-box left">
-                      <div class="box-title">PENERIMA / TO</div>
-                      <div class="person-name">${order.shipping_address?.name || 'GUEST'}</div>
-                      <div class="person-phone">${maskPhone(order.shipping_address?.phone)}</div>
-                      <div class="person-address">
-                        ${order.shipping_address?.address || '-'}<br/>
-                        ${order.shipping_address?.city || '-'}
-                      </div>
-                    </div>
-                    <div class="address-box">
-                      <div class="box-title">PENGIRIM / FROM</div>
-                      <div class="person-name">NINOC STUDIO</div>
-                      <div class="person-phone">0821-1983-774</div>
-                      <div class="person-address">
-                        Kota Bandung<br/>
-                        Jawa Barat<br/>
-                        40292
-                      </div>
-                    </div>
+                  <div class="order-id-row">
+                    <div>Order Id : ${order.id.toUpperCase()}</div>
                   </div>
 
-                  <div class="content-grid">
-                    <div class="content-box left">
-                      <div class="box-title">ISI PAKET / CONTENTS</div>
-                      ${order.order_items?.map(i => `
-                        <div class="item-line">${i.product_name} ${i.size ? `(Sz: ${i.size})` : ''} x${i.quantity}</div>
-                      `).join('') || '<div class="item-line">No items found</div>'}
-                    </div>
-                    <div class="content-box">
-                      <div class="order-id-box">
-                        <div class="box-title" style="text-decoration:none;">ORDER ID</div>
-                        <div class="order-id-val">#${order.id.toUpperCase()}</div>
-                      </div>
-                      <div class="qty-val">
-                        <span>Qty: ${order.order_items?.reduce((acc, curr) => acc + curr.quantity, 0) || 0}</span>
-                        <span>~500g</span>
-                      </div>
+                  <div class="items-table-container">
+                    <div style="color:#666; margin-bottom:2px">In transit by: ${shipDate}</div>
+                    <table class="items-table">
+                      <thead>
+                        <tr><th style="width:50%">Product Name</th><th>SKU</th><th style="text-align:right">Qty</th></tr>
+                      </thead>
+                      <tbody>
+                        ${itemsList}
+                        ${remainingRow}
+                      </tbody>
+                    </table>
+                    <div style="text-align:right; font-weight:bold; border-top:1px solid black; padding-top:2px; margin-top:4px">
+                      Qty Total: ${totalItems}
                     </div>
                   </div>
 
-                  <div class="footer">
-                    <div>${new Date(order.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
-                    <div>NINOC ARCHIVE - BANDUNG, INDONESIA</div>
-                    <div class="fragile-badge">FRAGILE</div>
+                  <div class="footer-logos">
+                    <div style="font-size:18px; font-weight:900; letter-spacing:-1px">ninoc.store</div>
+                    <div style="font-size:6px; text-align:right">
+                      Order ID: ${order.id.toUpperCase()}<br/>
+                      Printed: ${new Date().toLocaleString('id-ID')}
+                    </div>
                   </div>
 
                 </div>
+
+                <div class="side-margin right">
+                  <div class="vertical-text">${trackingId}</div>
+                </div>
+
               </div>
-            `}).join('')}
+              `;
+            }).join('')}
             
             <script>
               JsBarcode(".barcode").init();
