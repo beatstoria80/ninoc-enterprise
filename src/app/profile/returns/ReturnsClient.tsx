@@ -84,7 +84,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
 
   return (
     <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white">
-      <div className="max-w-[800px] mx-auto px-6 pt-4 md:pt-40 pb-20">
+      <div className="max-w-[800px] mx-auto px-6 pt-24 md:pt-40 pb-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <Link href="/profile" className="flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group">
