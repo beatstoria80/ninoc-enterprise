@@ -1,6 +1,5 @@
 import React from 'react';
 import { Order } from './types';
-import { QRCodeSVG } from 'qrcode.react';
 import CourierLogo from '@/components/CourierLogo';
 
 export function encodeCode128(text: string): number[] {
@@ -90,7 +89,11 @@ export function ShippingLabel({ order }: { order: Order }) {
   }).replace(/\//g, '-');
 
   const receiverName = order.shipping_address?.name || 'Customer';
-  const receiverPhone = order.shipping_address?.phone || '+628000000000';
+  const rawPhone = order.shipping_address?.phone || '+628000000000';
+  let receiverPhone = rawPhone;
+  if (receiverPhone.length >= 8) {
+    receiverPhone = receiverPhone.slice(0, 4) + 'XXXX' + receiverPhone.slice(-4);
+  }
   const receiverAddress = order.shipping_address?.address || '';
   const receiverLocation = `${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''}`;
   
@@ -98,7 +101,10 @@ export function ShippingLabel({ order }: { order: Order }) {
   const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
   const isCOD = false; // set to false as our app uses Midtrans/VA mostly
 
-  let shortItemsStr = order.order_items?.slice(0, 3).map(i => `${i.product_name} (${i.size || 'One Size'})`).join(', ') || '';
+  let shortItemsStr = order.order_items?.slice(0, 3).map(i => {
+    const variants = [i.color, i.size].filter(Boolean).join(' / ');
+    return `${i.product_name} (${variants || 'One Size'})`;
+  }).join(', ') || '';
   if ((order.order_items?.length || 0) > 3) shortItemsStr += ', dll...';
 
   return (
@@ -159,7 +165,7 @@ export function ShippingLabel({ order }: { order: Order }) {
             {courierInfo.service}
           </div>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            <QRCodeSVG value={trackingId} size={36} level="M" />
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${trackingId}`} alt="QR Code" style={{ width: '36px', height: '36px' }} />
           </div>
         </div>
 
@@ -190,7 +196,7 @@ export function ShippingLabel({ order }: { order: Order }) {
             lineHeight: '1.2',
             textTransform: 'capitalize' 
           }}>
-            {receiverAddress}, {receiverLocation}
+            {receiverAddress}
           </div>
         </div>
 
@@ -304,7 +310,7 @@ export function ShippingLabel({ order }: { order: Order }) {
               {order.order_items?.slice(0, 4).map((item, idx) => (
                 <tr key={idx} style={{ verticalAlign: 'top' }}>
                   <td style={{ paddingTop: '2px', paddingRight: '4px' }}>{item.product_name}</td>
-                  <td style={{ paddingTop: '2px' }}>{item.size || '-'}</td>
+                  <td style={{ paddingTop: '2px' }}>{[item.color, item.size].filter(Boolean).join(' / ') || '-'}</td>
                   <td style={{ paddingTop: '2px', textAlign: 'right' }}>{item.quantity}</td>
                 </tr>
               ))}

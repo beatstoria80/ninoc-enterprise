@@ -69,6 +69,7 @@ export interface OrderItem {
   product_name?: string;
   variant_id: string | null;
   size?: string;
+  color?: string | null;
   quantity: number;
   price_at_purchase: number;
 }
