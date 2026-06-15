@@ -567,7 +567,7 @@ export default function CheckoutPage() {
         });
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod]);
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart]);
 
   if (!mounted) return null;
 
