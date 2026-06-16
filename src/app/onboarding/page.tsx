@@ -389,8 +389,8 @@ export default function OnboardingPage() {
                     <FL>Jenis Kelamin</FL>
                     <select value={f.gender} onChange={e => set('gender', e.target.value)} className={ip}>
                       <option value="">Pilih</option>
-                      <option value="Laki-laki">Laki-laki</option>
-                      <option value="Perempuan">Perempuan</option>
+                      <option value="male">Laki-laki</option>
+                      <option value="female">Perempuan</option>
                     </select>
                   </div>
                 </div>
