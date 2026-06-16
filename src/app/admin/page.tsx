@@ -2932,10 +2932,29 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                     
-                    {/* Label Canvas Preview - Scaled to fit */}
-                    <div className="flex-1 p-6 flex items-center justify-center overflow-auto bg-gray-50/50">
-                      <div className="bg-white shadow-lg flex-shrink-0" style={{ width: '100mm', minHeight: '150mm', transform: 'scale(0.7)', transformOrigin: 'top center', overflow: 'hidden' }}>
-                        <ShippingLabel order={selectedOrder} />
+                    {/* Label Canvas Preview - Scaled to fit container */}
+                    {/* 
+                      scale(0.68) trick: 
+                      - ShippingLabel is 100mm × 150mm
+                      - After scale(0.68): visual footprint = 68mm × 102mm ≈ 257px × 386px
+                      - We size the outer wrapper to the visual size so no dead space or clipping
+                    */}
+                    <div className="flex-1 overflow-auto bg-gray-50/50 flex items-center justify-center py-6">
+                      <div style={{ position: 'relative', width: '68mm', height: '102mm', flexShrink: 0 }}>
+                        <div style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100mm',
+                          height: '150mm',
+                          transform: 'scale(0.68)',
+                          transformOrigin: 'top left',
+                          overflow: 'hidden',
+                        }}>
+                          <div className="bg-white shadow-xl rounded-sm" style={{ width: '100mm', height: '150mm' }}>
+                            <ShippingLabel order={selectedOrder} />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     

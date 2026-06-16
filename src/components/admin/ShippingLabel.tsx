@@ -165,6 +165,7 @@ export function ShippingLabel({ order }: { order: Order }) {
             {courierInfo.service}
           </div>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- QR code from external API, used in print label where next/image is not applicable */}
             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${trackingId}`} alt="QR Code" style={{ width: '36px', height: '36px' }} />
           </div>
         </div>
