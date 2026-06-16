@@ -27,8 +27,8 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isRegisterPage = pathname === '/register';
   const isAffiliateDashboard = pathname?.startsWith('/affiliate/dashboard');
   
-  // Show GlobalHeader on Login, Register, and Profile pages now!
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isReturPage && !isOnboardingPage && !isAffiliateDashboard;
+  // Show GlobalHeader on Login, and Profile pages now, but NOT on Register!
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isReturPage && !isOnboardingPage && !isAffiliateDashboard && !isRegisterPage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
