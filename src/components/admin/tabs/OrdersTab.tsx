@@ -849,200 +849,6 @@ export function OrdersTab({
           <script>
             window.onload = () => { setTimeout(() => { window.print(); }, 500); }
           </script>
-        </body>
-      </html>
-    `;
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-  };
-
-  const handlePrintSingleLabel = (order: Order) => {
-    setSelectedPrintOrders([order.id]);
-    setIsPrintModalOpen(true);
-  };
-
-  return (
-    <>
-      <motion.div
-        key="orders"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col h-full space-y-4"
-      >
-        <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-4">
-          <div>
-            <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
-            <p className="text-xs md:text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History &amp; Management</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrintResi}
-              className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
-            >
-              <Printer size={12} />
-              Print Bulk Labels
-            </button>
-            <button
-              onClick={handleExportData}
-              className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
-            >
-              Export Data
-            </button>
-          </div>
-        </div>
-
-      {/* Status Tabs */}
-      <div className="shrink-0 flex items-center gap-1 border-b border-ink/5 overflow-x-auto no-scrollbar">
-        {[
-          { id: 'all', label: 'All Order', count: orders.length },
-          { id: 'pending', label: 'New Order', count: orders.filter(o => o.status === 'pending').length },
-          { id: 'paid', label: 'Paid', count: orders.filter(o => o.status === 'paid').length },
-          { id: 'shipped', label: 'Sent', count: orders.filter(o => o.status === 'shipped').length },
-          { id: 'delivered', label: 'Completed', count: orders.filter(o => o.status === 'delivered').length },
-          { id: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setStatusFilter(tab.id)}
-            className={cn(
-              "relative px-4 py-3 text-xs md:text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
-              statusFilter === tab.id ? "text-rose" : "text-ink/40 hover:text-ink/70"
-            )}
-          >
-            {tab.label}
-            <span className={cn(
-              "ml-2 px-1.5 py-0.5 text-[11px] md:text-[8px] rounded",
-              statusFilter === tab.id ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/40"
-            )}>
-              {tab.count}
-            </span>
-            {statusFilter === tab.id && (
-              <motion.div layoutId="orderTabIndicator" className="absolute bottom-0 left-0 right-0 h-[2px] bg-rose" />
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Filter Bar */}
-      <div className="shrink-0 flex flex-wrap items-center justify-between gap-4 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Master Filter Button */}
-          <button
-            onClick={activeFilterCount > 0 ? clearAllFilters : undefined}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 border rounded-sm text-xs md:text-[10px] font-medium uppercase tracking-wider transition-colors",
-              activeFilterCount > 0
-                ? "border-rose/30 bg-rose/10 text-rose hover:bg-rose/20"
-                : "border-ink/10 text-ink/60"
-            )}
-          >
-            {activeFilterCount > 0 ? (
-              <>
-                <X size={10} />
-                Clear {activeFilterCount} Filter{activeFilterCount > 1 ? 's' : ''}
-              </>
-            ) : (
-              <>
-                <Filter size={12} /> Filter
-              </>
-            )}
-          </button>
-
-          <div className="h-4 w-px bg-ink/10 mx-1" />
-
-          {/* Payment Method Dropdown */}
-          <FilterDropdown
-            label="Payment Method"
-            options={[
-              { id: 'all', label: 'All Payment' },
-              { id: 'pending', label: 'Pending' },
-              { id: 'success', label: 'Success' },
-              { id: 'failed', label: 'Failed' },
-              { id: 'expired', label: 'Expired' },
-            ]}
-            value={paymentFilter}
-            onChange={setPaymentFilter}
-            isOpen={openDropdown === 'payment'}
-            onToggle={() => toggleDropdown('payment')}
-            onClose={closeDropdown}
-          />
-
-          {/* Courier Dropdown */}
-          <FilterDropdown
-            label="Courier"
-            options={courierOptions}
-            value={courierFilter}
-            onChange={setCourierFilter}
-            isOpen={openDropdown === 'courier'}
-            onToggle={() => toggleDropdown('courier')}
-            onClose={closeDropdown}
-          />
-
-          {/* Date Range Dropdown */}
-          <DateRangeDropdown
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onChangeFrom={setDateFrom}
-            onChangeTo={setDateTo}
-            onClear={() => { setDateFrom(''); setDateTo(''); }}
-            isOpen={openDropdown === 'date'}
-            onToggle={() => toggleDropdown('date')}
-            onClose={closeDropdown}
-          />
-
-          {/* Sort By Dropdown */}
-          <FilterDropdown
-            label="Sort By"
-            options={[
-              { id: 'all', label: 'Default' },
-              { id: 'newest', label: 'Newest First' },
-              { id: 'oldest', label: 'Oldest First' },
-              { id: 'highest', label: 'Highest Amount' },
-              { id: 'lowest', label: 'Lowest Amount' },
-            ]}
-            value={sortBy}
-            onChange={setSortBy}
-            isOpen={openDropdown === 'sort'}
-            onToggle={() => toggleDropdown('sort')}
-            onClose={closeDropdown}
-          />
-        </div>
-        <div className="relative w-full max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
-          <input
-            type="text"
-            placeholder="Search orders..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 bg-white border border-ink/10 rounded-sm text-xs md:text-[10px] font-medium focus:outline-none focus:border-rose/50 transition-colors placeholder:text-ink/20"
-          />
-        </div>
-      </div>
-
-      {/* Order Table */}
-      <div className="flex-1 min-h-0 flex flex-col border border-ink/10 rounded-sm overflow-hidden">
-        {filteredOrders.length === 0 ? (
-          <div className="flex-1 py-12 flex flex-col items-center justify-center">
-            <Box size={24} className="text-ink/20 mb-2" />
-            <p className="text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/40">No orders found</p>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-auto minimal-scroll relative bg-white">
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10 bg-white">
-                <tr className="bg-ink/[0.03] border-b border-ink/10">
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
-                </tr>
-              </thead>
-              <tbody>
                 {filteredOrders.map((order) => {
                   const isExpanded = expandedOrderId === order.id;
                   return (
@@ -1054,19 +860,19 @@ export function OrdersTab({
                         )}
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="max-w-[120px]">
                             <p className="text-xs md:text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
                             <p className="text-xs md:text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
                           </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="max-w-[160px]">
                             <p className="text-xs md:text-[10px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
@@ -1074,7 +880,7 @@ export function OrdersTab({
                             )}
                           </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className={cn(
                             "inline-block text-[11px] md:text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
                             order.status === 'pending' ? "bg-amber-50 text-amber-600" :
@@ -1086,7 +892,7 @@ export function OrdersTab({
                             {order.status === 'pending' ? 'Waiting' : order.status}
                           </span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className={cn(
                             "text-xs md:text-[9px] uppercase tracking-wider font-medium",
                             order.payment_status === 'success' ? "text-emerald-600" :
@@ -1095,13 +901,13 @@ export function OrdersTab({
                             {order.payment_status}
                           </span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
                         </td>
-                        <td className="px-3 py-2 text-right">
+                        <td className="px-2 py-1.5 text-right">
                           <span className="text-xs md:text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="flex items-center gap-1">
                             {isExpanded ? <ChevronUp size={12} className="text-rose" /> : <ChevronDown size={12} className="text-ink/30 group-hover:text-ink/60 transition-colors" />}
                           </div>
@@ -1532,7 +1338,7 @@ export function OrdersTab({
                     {fraudWarningOrders.map(o => (
                       <tr key={o.id}>
                         <td className="px-3 py-2 font-mono font-medium text-ink">{o.id.slice(0, 8).toUpperCase()}</td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium uppercase text-xs md:text-[9px] rounded">{o.status}</span>
                         </td>
                         <td className="px-3 py-2 text-ink/50 font-mono">
