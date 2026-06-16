@@ -41,9 +41,7 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error('[Auth Callback] Session exchange failed:', error.message);
-      const source = requestUrl.searchParams.get('source');
-      const redirectPage = source === 'register' ? 'register' : 'login';
-      return NextResponse.redirect(`${origin}/${redirectPage}?error=auth_callback_failed`);
+      return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
     }
   }
 
