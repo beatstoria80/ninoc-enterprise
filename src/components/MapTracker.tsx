@@ -182,6 +182,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
 
     resolveLocations();
     return () => { isMounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationCity, logs]);
 
   // Helper to extract coordinates from location string
@@ -226,6 +227,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     } else {
       setCurrentCoords(ORIGIN_COORDS);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationCity, status, sortedLogs]);
 
   const linePositions = React.useMemo(() => {
@@ -255,6 +257,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
       }
     }
     return path;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoords, destCoords, sortedLogs]);
   const [routePolyline, setRoutePolyline] = useState<[number, number][]>([]);
 
