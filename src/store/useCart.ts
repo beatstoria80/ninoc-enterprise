@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 // Sizes that incur an extra surcharge (XXL and above)
 export const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
@@ -95,7 +95,7 @@ export const useCart = create<CartStore>()(
     }),
     { 
       name: 'ninoc-cart-storage',
-      storage: typeof window !== 'undefined' ? smartCartStorage : undefined
+      storage: typeof window !== 'undefined' ? createJSONStorage(() => smartCartStorage) : undefined
     }
   )
 );
