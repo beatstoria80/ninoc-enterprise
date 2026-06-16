@@ -138,48 +138,97 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     }
   }, []);
 
+  // Helper to extract coordinates from location string
+  const getCoordsFromLocation = (locStr: string | null | undefined): [number, number] | null => {
+    if (!locStr) return null;
+    const normalized = locStr.toLowerCase().trim();
+    const matchedKey = Object.keys(cityCoordinates).find(k => normalized.includes(k));
+    if (matchedKey) return cityCoordinates[matchedKey];
+    return null;
+  };
+
+  // Sort logs chronologically (oldest first)
+  const sortedLogs = [...logs].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
   useEffect(() => {
     let targetCoords: [number, number] | null = null;
     
     if (destinationCity) {
-      const normalizedCity = destinationCity.toLowerCase().trim();
-      const matchedKey = Object.keys(cityCoordinates).find(k => normalizedCity.includes(k));
-      if (matchedKey) {
-        targetCoords = cityCoordinates[matchedKey];
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+      targetCoords = getCoordsFromLocation(destinationCity);
+      if (targetCoords) {
         setDestCoords(targetCoords);
       }
     }
 
+    // Try to find valid coordinates from logs
+    const validLogCoords = sortedLogs
+      .map(log => getCoordsFromLocation(log.location))
+      .filter(Boolean) as [number, number][];
+
     if (status === 'delivered' && targetCoords) {
       setCurrentCoords(targetCoords);
+    } else if (validLogCoords.length > 0) {
+      // Set to the latest known location from the timeline logs
+      setCurrentCoords(validLogCoords[validLogCoords.length - 1]);
     } else if (status === 'shipped' && targetCoords) {
-      // Simulate half-way point for current location
+      // Fallback: Simulate halfway point if shipped but no location data yet
       const lat = (ORIGIN_COORDS[0] + targetCoords[0]) / 2;
       const lng = (ORIGIN_COORDS[1] + targetCoords[1]) / 2;
       setCurrentCoords([lat, lng]);
     } else {
       setCurrentCoords(ORIGIN_COORDS);
     }
-  }, [destinationCity, status]);
+  }, [destinationCity, status, sortedLogs]);
 
-  // Sort logs chronologically (oldest first) to plot them along the route
-  const sortedLogs = [...logs].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  
-  // Calculate interpolated positions for each log point
+  // Build route path segments from origin -> (known log coordinates) -> current -> destination
+  const buildRoutePath = (): [number, number][] => {
+    const path: [number, number][] = [ORIGIN_COORDS];
+    const uniqueCoords = new Set<string>([`${ORIGIN_COORDS[0]},${ORIGIN_COORDS[1]}`]);
+
+    sortedLogs.forEach(log => {
+      const coords = getCoordsFromLocation(log.location);
+      if (coords) {
+        const key = `${coords[0]},${coords[1]}`;
+        if (!uniqueCoords.has(key)) {
+          path.push(coords);
+          uniqueCoords.add(key);
+        }
+      }
+    });
+
+    const currentKey = `${currentCoords[0]},${currentCoords[1]}`;
+    if (!uniqueCoords.has(currentKey)) {
+      path.push(currentCoords);
+    }
+    
+    if (destCoords) {
+      const destKey = `${destCoords[0]},${destCoords[1]}`;
+      if (!uniqueCoords.has(destKey)) {
+        path.push(destCoords);
+      }
+    }
+    return path;
+  };
+
+  const linePositions = buildRoutePath();
+
+  // Interpolate log points along the line segment from origin to currentCoords
   const logPoints = sortedLogs.map((log, index) => {
     const totalLogs = sortedLogs.length;
-    // Distribute points between origin and current location
     const fraction = totalLogs > 1 ? index / (totalLogs - 1) : 1;
     
+    // If we have actual coordinates for this log, use them
+    const actualCoords = getCoordsFromLocation(log.location);
+    if (actualCoords) {
+      return { lat: actualCoords[0], lng: actualCoords[1], log };
+    }
+
+    // Otherwise, fallback to interpolating along the path
     const lat = ORIGIN_COORDS[0] + (currentCoords[0] - ORIGIN_COORDS[0]) * fraction;
-    // Add slight curve/jitter to longitude so lines aren't completely straight if needed, but straight is fine for now
     const lng = ORIGIN_COORDS[1] + (currentCoords[1] - ORIGIN_COORDS[1]) * fraction;
 
     return { lat, lng, log };
   });
-
-  const linePositions = destCoords ? [ORIGIN_COORDS, destCoords] : [ORIGIN_COORDS];
 
   return (
     <div className={className || "w-full max-w-4xl mx-auto h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
