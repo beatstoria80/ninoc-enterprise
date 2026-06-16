@@ -537,14 +537,19 @@ export default function GlobalHeader() {
               <div className={cn("transition-colors", isDarkBg ? "text-white/80 group-hover:text-white" : "text-ink/40 group-hover:text-rose")}>
                 <ShoppingCart size={20} strokeWidth={1.5} />
               </div>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                key={items.length}
-                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[10px] md:text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
-              >
-                {items.length}
-              </motion.div>
+              <AnimatePresence>
+                {items.length > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    key={items.length}
+                    className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[10px] md:text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
+                  >
+                    {items.length}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </PressScale>
           </motion.div>
         </motion.div>
