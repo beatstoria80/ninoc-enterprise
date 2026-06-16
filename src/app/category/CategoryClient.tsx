@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
-import { Grid3X3, ChevronRight, ArrowLeft, Package } from 'lucide-react';
+import { Grid3X3, ChevronRight, ArrowLeft, Package, ShoppingCart } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
+import { useCart } from '@/store/useCart';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -83,6 +85,15 @@ function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
   const darkColor = { color: '#141414' };
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const handleQuickBuy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+    router.push('/checkout');
+  };
 
   return (
     <motion.div variants={productCardVariants} whileHover="hover" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
@@ -101,8 +112,18 @@ function ProductCard({ product }: { product: Product }) {
           <motion.p className="text-[6px] md:text-[7px] font-medium uppercase tracking-[0.15em] text-ink/30 hidden md:block" animate={{ opacity: isHovered ? 0.7 : 1 }} transition={{ duration: DURATION.fast }}>{CATEGORIES.find((c) => c.id === product.category)?.label}</motion.p>
           <motion.h3 className="text-xs md:text-[9px] md:text-[11px] font-display font-medium italic uppercase tracking-tight text-ink line-clamp-2" animate={isHovered ? brandColor : darkColor} transition={{ duration: DURATION.fast }}>{product.name}</motion.h3>
           <motion.div className="flex items-center justify-between pt-1 md:pt-2 border-t border-ink/5 mt-1 md:mt-2" animate={{ opacity: isHovered ? 1 : 0.8 }} transition={{ duration: DURATION.fast }}>
-            <motion.span className="text-[11px] md:text-[8px] md:text-[10px] font-display font-medium italic text-rose" animate={{ scale: isHovered ? 1.02 : 1 }} transition={{ duration: DURATION.fast }}>IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</motion.span>
-            {product.price_tag && <motion.span className="text-[5px] md:text-[6px] font-medium uppercase tracking-[0.1em] text-emerald-600 hidden md:inline" animate={{ opacity: isHovered ? 1 : 0.7 }} transition={{ duration: DURATION.fast }}>{product.price_tag}</motion.span>}
+            <div>
+              <motion.span className="text-[11px] md:text-[8px] md:text-[10px] font-display font-medium italic text-rose block" animate={{ scale: isHovered ? 1.02 : 1 }} transition={{ duration: DURATION.fast }}>IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</motion.span>
+              {product.price_tag && <motion.span className="text-[5px] md:text-[6px] font-medium uppercase tracking-[0.1em] text-emerald-600 hidden md:inline" animate={{ opacity: isHovered ? 1 : 0.7 }} transition={{ duration: DURATION.fast }}>{product.price_tag}</motion.span>}
+            </div>
+            
+            <motion.button
+              onClick={handleQuickBuy}
+              className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+              animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+            >
+              <ShoppingCart className="w-3 h-3" />
+            </motion.button>
           </motion.div>
         </div>
       </Link>

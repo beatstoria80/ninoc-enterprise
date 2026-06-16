@@ -722,6 +722,19 @@ export default function GlobalHeader() {
                         transition={{ delay: 0.7, duration: DURATION.medium }}
                       >
                         <Link
+                          href="/cart"
+                          onClick={() => setIsCartOpen(false)}
+                          className="w-full bg-ink/5 text-ink hover:bg-ink/10 py-3.5 font-medium text-xs md:text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+                        >
+                          <motion.span
+                            whileHover={{ x: 4 }}
+                            transition={{ duration: DURATION.fast }}
+                            className="flex items-center gap-3"
+                          >
+                            <span>View Full Cart</span>
+                          </motion.span>
+                        </Link>
+                        <Link
                           href="/checkout"
                           onClick={() => setIsCartOpen(false)}
                           className="w-full bg-ink text-white py-3.5 font-medium text-xs md:text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
@@ -731,7 +744,7 @@ export default function GlobalHeader() {
                             transition={{ duration: DURATION.fast }}
                             className="flex items-center gap-3"
                           >
-                            <span>Checkout</span>
+                            <span>Guest Checkout</span>
                           </motion.span>
                         </Link>
                         <div

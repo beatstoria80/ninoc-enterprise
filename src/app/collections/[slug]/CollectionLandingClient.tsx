@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowLeft, Package, Calendar } from 'lucide-react';
+import { ArrowLeft, Package, Calendar, ShoppingCart } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
+import { useCart } from '@/store/useCart';
+import { useRouter } from 'next/navigation';
 
 // ═══════════════════════════════════════════════════════════════
 // ANIMATION ENGINE
@@ -48,6 +50,15 @@ function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
   const darkColor = { color: '#141414' };
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const handleQuickBuy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+    router.push('/checkout');
+  };
 
   return (
     <motion.div
@@ -105,13 +116,20 @@ function ProductCard({ product }: { product: Product }) {
           </motion.h3>
 
           <motion.div
-            className="flex items-center gap-1"
+            className="flex items-center justify-between"
             animate={{ opacity: isHovered ? 1 : 0.6 }}
             transition={{ duration: DURATION.fast }}
           >
             <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50">
               IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
+            <motion.button
+              onClick={handleQuickBuy}
+              className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+              animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+            >
+              <ShoppingCart className="w-3 h-3" />
+            </motion.button>
           </motion.div>
         </div>
       </Link>

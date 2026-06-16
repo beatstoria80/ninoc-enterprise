@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { ShoppingCart } from 'lucide-react';
+import { useCart } from '@/store/useCart';
+import { useRouter } from 'next/navigation';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,6 +35,16 @@ interface ProductCardProps {
  * - Image scale on hover/touch
  */
 export function NativeMobileProductCard({ product, onTap }: { product: ProductCardProps; onTap?: () => void }) {
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const handleQuickBuy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+    router.push('/checkout');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,11 +70,9 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
         )}
 
         {/* Quick Add Button (appears on touch) */}
-        <div className="absolute bottom-2 right-2">
-          <button className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-none flex items-center justify-center border border-ink/10 shadow-sm active:scale-90 transition-transform">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
+        <div className="absolute bottom-2 right-2 z-10">
+          <button onClick={handleQuickBuy} className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-none flex items-center justify-center border border-ink/10 shadow-sm active:scale-90 transition-all text-ink hover:text-white hover:bg-ink">
+            <ShoppingCart size={14} strokeWidth={1.5} />
           </button>
         </div>
       </div>

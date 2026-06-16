@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight, ShoppingCart } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
+import { useCart } from '@/store/useCart';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { CategoryType } from '@/types';
@@ -12,7 +13,7 @@ import { useBrandColor } from '@/components/BrandProvider';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -290,9 +291,18 @@ function ProductCard({ product, index }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const brandColor = useBrandColor();
   const darkColor = { color: '#141414' };
+  const { addItem } = useCart();
+  const router = useRouter();
 
   const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
   const CategoryIcon = categoryInfo?.icon || PakaianIcon;
+
+  const handleQuickBuy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+    router.push('/checkout');
+  };
 
   return (
     <motion.div
@@ -378,18 +388,27 @@ function ProductCard({ product, index }: ProductCardProps) {
                 IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </motion.p>
 
-              <motion.div
-                className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center"
-                animate={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
-                transition={{ duration: DURATION.fast }}
-              >
-                <motion.div
-                  animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : '#141414' }}
-                  transition={{ duration: DURATION.fast, ease: EASING.out }}
+              <div className="flex gap-2">
+                <motion.button
+                  onClick={handleQuickBuy}
+                  className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+                  animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
                 >
-                  <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                </motion.button>
+                <motion.div
+                  className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center"
+                  animate={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  <motion.div
+                    animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : '#141414' }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  >
+                    <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  </motion.div>
                 </motion.div>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
