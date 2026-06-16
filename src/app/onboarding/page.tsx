@@ -355,7 +355,7 @@ export default function OnboardingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 12 }}
                 transition={{ duration: 0.15 }}
-                className="p-6 md:p-8"
+                className="p-5 md:p-8"
               >
                 {/* Section label */}
                 <div className="flex items-center gap-3 mb-6">
@@ -416,7 +416,7 @@ export default function OnboardingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -12 }}
                 transition={{ duration: 0.15 }}
-                className="p-6 md:p-8"
+                className="p-5 md:p-8"
               >
                 {/* Section label */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-3">
@@ -425,18 +425,18 @@ export default function OnboardingPage() {
                     <span className="text-base font-bold tracking-normal text-slate-800">Alamat Lengkap</span>
                   </div>
                   {/* Address Type Selector */}
-                  <div className="flex bg-slate-100 p-1 rounded-lg">
+                  <div className="flex bg-slate-100 p-1 rounded-lg w-full md:w-auto">
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
-                      className={cn("px-4 py-2 text-sm font-bold tracking-normal transition-colors rounded-md", f.address_type === 'Home' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
+                      className={cn("flex-1 px-2 md:px-4 py-2 text-xs md:text-sm font-bold tracking-normal transition-colors rounded-md truncate", f.address_type === 'Home' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
                     >
                       Rumah / Home
                     </button>
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
-                      className={cn("px-4 py-2 text-sm font-bold tracking-normal transition-colors rounded-md", f.address_type === 'Office' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
+                      className={cn("flex-1 px-2 md:px-4 py-2 text-xs md:text-sm font-bold tracking-normal transition-colors rounded-md truncate", f.address_type === 'Office' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
                     >
                       Kantor / Office
                     </button>
@@ -497,7 +497,7 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end gap-3 border-t border-slate-100 pt-6 mt-2">
+                <div className="flex flex-col-reverse md:flex-row md:justify-end gap-3 border-t border-slate-100 pt-6 mt-2">
                   <button
                     type="button"
                     onClick={() => setActiveStep(1)}
