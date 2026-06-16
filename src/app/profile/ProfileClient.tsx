@@ -111,9 +111,9 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
       <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-6 md:pt-8")}>
 
         {!isMobile && (
-        <Link href="/" className="inline-flex items-center gap-2 text-ink/30 hover:text-ink transition-colors mb-6 group">
+        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">Return to Studio Catalog</span>
+          <span className="text-sm font-medium">Return to Studio Catalog</span>
         </Link>
         )}
 
@@ -148,32 +148,32 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
             </div>
 
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-2xl font-display italic text-ink uppercase tracking-tight">{user?.full_name}</h1>
+              <h1 className="text-2xl font-bold text-slate-800">{user?.full_name}</h1>
               {user?.customer_number && (
-                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-xs md:text-[10px] text-ink/50 font-mono tracking-widest">
-                  <CornerDownRight size={12} className="text-ink/30" />
+                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-sm text-slate-500 font-medium">
+                  <CornerDownRight size={14} className="text-slate-400" />
                   ID: {user.customer_number}
                 </div>
               )}
-              <p className="text-[11px] md:text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>
+              <p className="text-sm text-slate-500 mt-1">Ninoc Membership • Est. {memberSince}</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
-                <div className="space-y-1">
-                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Email Reference</p>
-                  <p className="text-xs md:text-[10px] text-ink/70">{user?.email}</p>
+                <div className="space-y-0.5">
+                  <p className="text-xs text-slate-500">Email Reference</p>
+                  <p className="text-sm font-medium text-slate-800">{user?.email}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Member Status</p>
-                  <p className="text-xs md:text-[10px] text-rose">Verified Individual</p>
+                <div className="space-y-0.5">
+                  <p className="text-xs text-slate-500">Member Status</p>
+                  <p className="text-sm font-medium text-rose">Verified Individual</p>
                 </div>
               </div>
             </div>
 
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 text-xs md:text-[9px] uppercase tracking-[0.2em] px-5 py-2.5 border border-ink/10 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-ink/60"
+              className="flex items-center gap-2 text-sm font-medium px-5 py-2.5 border border-slate-200 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-slate-600"
             >
-              <LogOut size={12} />
+              <LogOut size={14} />
               Studio Exit
             </button>
           </div>
@@ -188,8 +188,8 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
                 <RefreshCw size={13} className="text-rose" />
               </div>
               <div>
-                <p className="text-xs md:text-[10px] font-semibold uppercase tracking-wider text-ink">Return Tracker</p>
-                <p className="text-[11px] md:text-[8px] text-ink/40">Lacak status pengajuan retur & refund</p>
+                <p className="text-sm font-semibold text-slate-800">Return Tracker</p>
+                <p className="text-xs text-slate-500">Lacak status pengajuan retur & refund</p>
               </div>
             </div>
             <ChevronRight size={12} className="text-rose/50 group-hover:text-rose group-hover:translate-x-1 transition-all" />
@@ -197,49 +197,49 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
 
           {/* Section: Activity Logs (Orders) */}
           <div className="space-y-4">
-            <div className="flex items-end justify-between border-b border-ink/5 pb-4">
+            <div className="flex items-end justify-between border-b border-slate-100 pb-4">
               <div className="space-y-1">
-                <h2 className="text-xs uppercase tracking-[0.4em] text-ink">Investment Logs</h2>
-                <p className="text-xs md:text-[9px] text-ink/40 tracking-wider">Historical record of all origin specifications acquired.</p>
+                <h2 className="text-lg font-bold text-slate-800">Investment Logs</h2>
+                <p className="text-sm text-slate-500">Historical record of all origin specifications acquired.</p>
               </div>
-              <p className="text-xs md:text-[9px] font-medium text-ink/30">{orders.length} Entries Found</p>
+              <p className="text-sm font-medium text-slate-500">{orders.length} Entries Found</p>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
               {orders.length === 0 ? (
-                <div className="py-8 md:py-20 text-center border border-dashed border-ink/10 rounded-[10px]">
-                  <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/30 italic">No historical records available.</p>
+                <div className="py-8 md:py-20 text-center border border-dashed border-slate-200 rounded-[10px]">
+                  <p className="text-sm text-slate-500 italic">No historical records available.</p>
                 </div>
               ) : (
                 orders.map((order) => (
                   <Link 
                     key={order.id} 
                     href={`/profile/orders/${order.id}`}
-                    className="group border border-ink/5 rounded-[4px] p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-ink/[0.01] transition-all"
+                    className="group border border-slate-100 rounded-[4px] p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-slate-50 transition-all"
                   >
                     <div className="flex flex-col gap-1 flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-xs md:text-[10px] text-ink uppercase tracking-wider">{order.id}</span>
-                        <span className={`text-[11px] md:text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                        <span className="text-sm font-bold text-slate-800 uppercase">{order.id}</span>
+                        <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded-full ${
                           order.status === 'paid' ? 'bg-green-50 text-green-600' : 
-                          order.status === 'shipped' ? 'bg-blue-50 text-blue-600' : 'bg-ink/5 text-ink/40'
+                          order.status === 'shipped' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'
                         }`}>
                           {order.status}
                         </span>
                       </div>
-                      <p className="text-xs md:text-[9px] text-ink/40">Registered on {new Date(order.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-500">Registered on {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
 
                     <div className="flex items-center gap-12 text-right">
-                      <div className="space-y-1">
-                        <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Total Investment</p>
-                        <p className="text-xs text-ink">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      <div className="space-y-0.5">
+                        <p className="text-xs text-slate-500">Total Investment</p>
+                        <p className="text-sm font-semibold text-slate-800">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
-                      <div className="space-y-1">
-                        <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30">Logistics</p>
-                        <p className="text-xs md:text-[10px] text-ink/60 uppercase">{order.courier || 'Unassigned'}</p>
+                      <div className="space-y-0.5">
+                        <p className="text-xs text-slate-500">Logistics</p>
+                        <p className="text-sm font-medium text-slate-700 uppercase">{order.courier || 'Unassigned'}</p>
                       </div>
-                      <ChevronRight size={14} className="text-ink/20 group-hover:text-rose group-hover:translate-x-1 transition-all" />
+                      <ChevronRight size={16} className="text-slate-300 group-hover:text-rose group-hover:translate-x-1 transition-all" />
                     </div>
                   </Link>
                 ))
