@@ -82,6 +82,7 @@ function MapUpdater({ center }: { center: [number, number] }) {
 export default function MapTracker({ destinationCity, status, logs = [], className }: Props) {
   const [destCoords, setDestCoords] = useState<[number, number] | null>(null);
   const [currentCoords, setCurrentCoords] = useState<[number, number]>(ORIGIN_COORDS);
+  const [dynamicCoords, setDynamicCoords] = useState<Record<string, [number, number] | null>>({});
 
   useEffect(() => {
     if (!document.getElementById('map-custom-styles')) {
@@ -112,7 +113,6 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
         .custom-tooltip::before {
           display: none;
         }
-        /* Custom UI overrides for Leaflet Zoom Controls */
         .leaflet-control-zoom {
           border: none !important;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
@@ -138,17 +138,64 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     }
   }, []);
 
+  // Async Geocoder to resolve unknown cities from Biteship logs
+  useEffect(() => {
+    let isMounted = true;
+    const resolveLocations = async () => {
+      const toResolve = new Set<string>();
+      if (destinationCity) toResolve.add(destinationCity);
+      logs.forEach(l => { if (l.location) toResolve.add(l.location); });
+
+      const newCoords = { ...dynamicCoords };
+      let changed = false;
+
+      for (const loc of toResolve) {
+        const clean = loc.toLowerCase().trim();
+        const matched = Object.keys(cityCoordinates).find(k => clean.includes(k));
+        if (matched) continue; // Found in static dict
+        if (newCoords[loc] !== undefined) continue; // Already processed
+
+        // Clean up common courier prefixes
+        const searchName = clean.replace(/sortation center|transit hub|drop point|cabang|kota adm\.|kota|kab\.|kabupaten|kec\.|kecamatan/gi, '').trim();
+        
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchName + ', Indonesia')}&format=json&limit=1`);
+          const data = await res.json();
+          if (data && data[0] && isMounted) {
+            newCoords[loc] = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            changed = true;
+          } else {
+            newCoords[loc] = null; // Not found
+            changed = true;
+          }
+          await new Promise(r => setTimeout(r, 1100)); // Rate limit 1/sec
+        } catch {
+          newCoords[loc] = null;
+          changed = true;
+        }
+      }
+
+      if (changed && isMounted) {
+        setDynamicCoords(newCoords);
+      }
+    };
+
+    resolveLocations();
+    return () => { isMounted = false; };
+  }, [destinationCity, logs]);
+
   // Helper to extract coordinates from location string
-  const getCoordsFromLocation = (locStr: string | null | undefined): [number, number] | null => {
+  const getCoordsFromLocation = React.useCallback((locStr: string | null | undefined): [number, number] | null => {
     if (!locStr) return null;
     const normalized = locStr.toLowerCase().trim();
     const matchedKey = Object.keys(cityCoordinates).find(k => normalized.includes(k));
     if (matchedKey) return cityCoordinates[matchedKey];
+    if (dynamicCoords[locStr]) return dynamicCoords[locStr];
     return null;
-  };
+  }, [dynamicCoords]);
 
   // Sort logs chronologically (oldest first)
-  const sortedLogs = [...logs].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  const sortedLogs = React.useMemo(() => [...logs].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()), [logs]);
 
   useEffect(() => {
     let targetCoords: [number, number] | null = null;
