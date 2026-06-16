@@ -600,7 +600,7 @@ export default function Home() {
       <AnimatePresence>
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
-            className="fixed inset-0 z-[200] bg-ink overflow-hidden"
+            className="fixed inset-0 z-[200] bg-ink overflow-hidden h-[100dvh]"
             initial={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0 }}
             animate={
@@ -624,7 +624,7 @@ export default function Home() {
             </motion.video>
             
             {/* Minimal UI Overlay */}
-            <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-12 z-10 text-white">
+            <div className="absolute inset-0 h-full flex flex-col justify-between p-6 md:p-12 z-10 text-white">
               {/* Header area */}
               <div className="flex justify-between items-center w-full">
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
@@ -646,8 +646,8 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* Center Content - Moved to bottom */}
-              <div className="flex flex-col items-center justify-end flex-grow text-center pb-12 md:pb-24">
+              {/* Center Content - Moved to bottom with safe-area padding for mobile browsers */}
+              <div className="flex flex-col items-center justify-end flex-grow text-center pb-[calc(2rem+env(safe-area-inset-bottom))] md:pb-24">
                 
                 {/* Scene 02: SHOP Button Interaction */}
                 <motion.button
