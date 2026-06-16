@@ -557,6 +557,7 @@ export default function CheckoutPage() {
             setIsRedirecting(true);
             setPaymentToken(null); // Close the Midtrans overlay
             clearCart();
+            sessionStorage.removeItem('ninoc_checkout_form');
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);
@@ -567,6 +568,7 @@ export default function CheckoutPage() {
             setIsRedirecting(true);
             setPaymentToken(null);
             clearCart();
+            sessionStorage.removeItem('ninoc_checkout_form');
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
             if (createdOrderNumber) params.set('order_number', createdOrderNumber);

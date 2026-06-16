@@ -67,6 +67,9 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
   React.useEffect(() => {
     if (!isInvalid && order) {
       clearCart();
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('ninoc_checkout_form');
+      }
     }
   }, [isInvalid, order, clearCart]);
 
