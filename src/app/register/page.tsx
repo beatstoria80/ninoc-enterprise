@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Shield, Lock } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -20,13 +20,15 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const supabase = createClient();
+
   const handleGoogleAuth = async () => {
     try {
       setIsLoading(true);
       setError('');
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/auth/callback` }
+        options: { redirectTo: `${window.location.origin}/auth/callback?source=register` }
       });
       if (error) throw error;
     } catch (err) {

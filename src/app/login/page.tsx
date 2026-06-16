@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Shield, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -22,6 +22,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const supabase = createClient();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
