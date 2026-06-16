@@ -21,7 +21,7 @@ export interface UserProfile {
   full_name: string;
   avatar_url: string;
   created_at: string;
-  customer_number?: number;
+  customer_number?: string;
 }
 
 export interface Order {
@@ -151,7 +151,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
               {user?.customer_number && (
                 <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-xs md:text-[10px] text-blue-600 font-mono tracking-widest">
                   <CornerDownRight size={12} className="text-blue-500" />
-                  ID: {user.customer_number.toString().padStart(4, '0')}
+                  ID: {user.customer_number}
                 </div>
               )}
               <p className="text-[11px] md:text-[8px] tracking-[0.3em] text-ink/40 uppercase mt-1">Ninoc Membership • Est. {memberSince}</p>

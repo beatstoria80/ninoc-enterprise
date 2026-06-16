@@ -24,8 +24,11 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const isReturPage = pathname === '/retur';
   const isOnboardingPage = pathname === '/onboarding';
   const isLoginPage = pathname === '/login';
+  const isRegisterPage = pathname === '/register';
   const isAffiliateDashboard = pathname?.startsWith('/affiliate/dashboard');
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isProfilePage && !isReturPage && !isOnboardingPage && !isLoginPage && !isAffiliateDashboard;
+  
+  // Show GlobalHeader on Login, Register, and Profile pages now!
+  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isReturPage && !isOnboardingPage && !isAffiliateDashboard;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -50,7 +53,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     return (
       <MobileLayout
         cartCount={items.length}
-        hideTabBar={isCheckoutPage || isLoginPage || isAffiliateDashboard}
+        hideTabBar={isCheckoutPage || isLoginPage || isRegisterPage || isAffiliateDashboard}
         hideHeader={!showGlobalHeader}
       >
         {children}
