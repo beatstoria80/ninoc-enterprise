@@ -946,6 +946,25 @@ export default function AdminDashboard() {
     };
   }, [fetchChatSessions]);
 
+  // Real-time subscription for customer profiles (membership updates)
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_customer_profiles_changes')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'customer_profiles' 
+      }, () => {
+        // Auto refresh data when a new member registers or updates profile
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchData]);
+
   // Mark messages as read when session is active
   useEffect(() => {
     if (activeChatSession && activeTab === 'messages') {
