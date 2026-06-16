@@ -210,7 +210,34 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     return path;
   };
 
-  const linePositions = buildRoutePath();
+  const linePositions = React.useMemo(() => buildRoutePath(), [currentCoords, destCoords, sortedLogs]);
+  const [routePolyline, setRoutePolyline] = useState<[number, number][]>([]);
+
+  useEffect(() => {
+    if (linePositions.length < 2) {
+      setRoutePolyline(linePositions);
+      return;
+    }
+
+    // Fetch actual driving route via OSRM to simulate realistic GPS expedition routes
+    const coordsStr = linePositions.map(p => `${p[1]},${p[0]}`).join(';');
+    
+    fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.routes && data.routes[0]) {
+          // GeoJSON coordinates are [lng, lat], Leaflet Polyline expects [lat, lng]
+          const mappedCoords = data.routes[0].geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
+          setRoutePolyline(mappedCoords);
+        } else {
+          setRoutePolyline(linePositions);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch OSRM route:', err);
+        setRoutePolyline(linePositions); // fallback to straight lines
+      });
+  }, [linePositions]);
 
   // Interpolate log points along the line segment from origin to currentCoords
   const logPoints = sortedLogs.map((log, index) => {
@@ -256,9 +283,9 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
           </CircleMarker>
         )}
 
-        {/* Route Line */}
-        {destCoords && (
-          <Polyline positions={linePositions} pathOptions={{ color: '#111827', weight: 2, dashArray: '4, 8', opacity: 0.3, className: 'animated-route-line' }} />
+        {/* Route Line (Actual GPS Driving Path) */}
+        {routePolyline.length > 0 && (
+          <Polyline positions={routePolyline} pathOptions={{ color: '#111827', weight: 2, dashArray: '4, 8', opacity: 0.3, className: 'animated-route-line' }} />
         )}
 
         {/* Individual Log Points */}
@@ -280,7 +307,6 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
           </Tooltip>
         </Marker>
       </MapContainer>
-
 
     </div>
   );
