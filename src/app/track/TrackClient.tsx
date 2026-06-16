@@ -255,7 +255,7 @@ export default function TrackClient() {
         <form onSubmit={handleTrack} className="flex flex-col gap-4 mt-2">
           <div className="space-y-1">
             <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
-            <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
+            <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} onPaste={e => { const pasted = e.clipboardData.getData('text'); if (pasted) { e.preventDefault(); setOrderNumber(pasted.trim()); } }} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
           </div>
           <div className="space-y-1">
             <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
@@ -296,7 +296,7 @@ export default function TrackClient() {
   return (
     <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
       <div className="flex-1 pt-20 max-w-[1600px] w-full mx-auto px-4 sm:px-6 flex flex-col">
-        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start shrink-0">
+        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start shrink-0 sticky top-14 lg:static bg-white z-30 pt-4 -mt-4">
           <div>
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
