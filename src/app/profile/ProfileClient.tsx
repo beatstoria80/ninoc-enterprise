@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut, RefreshCw } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -35,6 +35,7 @@ export interface Order {
 
 export default function ProfileClient({ initialUser, initialOrders }: { initialUser: UserProfile, initialOrders: Order[] }) {
   const { isMobile, isIPhone } = useDevice();
+  const supabase = createClient();
   const [user, setUser] = useState<UserProfile>(initialUser);
   const [orders] = useState<Order[]>(initialOrders);
   
