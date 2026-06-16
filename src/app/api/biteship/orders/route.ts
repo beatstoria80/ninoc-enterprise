@@ -4,6 +4,7 @@
  * Falls back to mock tracking ID if API not activated
  */
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
 import { z } from 'zod';
@@ -74,22 +75,27 @@ async function saveOrderToSupabase(
 export async function POST(req: Request) {
   try {
     // 1. AUTHENTICATION CHECK
-    const supabaseServer = await createClient();
-    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+    const cookieStore = await cookies();
+    const adminSession = cookieStore.get('admin_session');
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
-    }
+    if (!adminSession || adminSession.value !== 'authenticated') {
+      const supabaseServer = await createClient();
+      const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
 
-    // 2. AUTHORIZATION CHECK (RBAC)
-    const { data: roleData } = await supabaseServer
-      .from('admin_roles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+      if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+      }
 
-    if (!roleData || !['super_admin', 'outbound_logistics'].includes(roleData.role)) {
-      return NextResponse.json({ error: 'Forbidden. Insufficient privileges.' }, { status: 403 });
+      // 2. AUTHORIZATION CHECK (RBAC)
+      const { data: roleData } = await supabaseServer
+        .from('admin_roles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (!roleData || !['super_admin', 'outbound_logistics'].includes(roleData.role)) {
+        return NextResponse.json({ error: 'Forbidden. Insufficient privileges.' }, { status: 403 });
+      }
     }
 
     // 3. PAYLOAD SANITIZATION (Zod)

@@ -179,7 +179,13 @@ export default function LoginPage() {
             )}
 
             {/* Guest */}
-            <div className="pt-6 border-t border-ink/5">
+            <div className="pt-6 border-t border-ink/5 flex flex-col gap-4">
+              <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/40">
+                Belum punya akun?{' '}
+                <Link prefetch={false} href="/register" className="text-rose font-bold hover:text-ink transition-colors">
+                  Daftar di sini
+                </Link>
+              </p>
               <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
                 <span>Lanjut sebagai Tamu (Checkout)</span>
                 <ArrowRight size={12} />
@@ -282,7 +288,13 @@ export default function LoginPage() {
               )}
 
               {/* Guest */}
-              <div className="pt-6 border-t border-ink/5">
+              <div className="pt-6 border-t border-ink/5 flex flex-col gap-4">
+                <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/50">
+                  Belum punya akun?{' '}
+                  <Link prefetch={false} href="/register" className="text-rose font-bold hover:text-ink transition-colors">
+                    Daftar di sini
+                  </Link>
+                </p>
                 <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
                   <span>Lanjut sebagai Tamu (Checkout)</span>
                   <ArrowRight size={12} />
