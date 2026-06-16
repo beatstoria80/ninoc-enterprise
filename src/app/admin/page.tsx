@@ -1154,13 +1154,13 @@ export default function AdminDashboard() {
                 color: #000;
               }
               
-              /* Thermal Label Standard Size (approx 100x150mm) */
+              /* Thermal Label Standard Size */
               .label { 
                 background: white; 
-                width: 100mm; 
-                min-height: 120mm;
-                padding: 4mm;
-                margin: 0 auto; 
+                width: 100%; 
+                height: 100%;
+                padding: 0;
+                margin: 0; 
                 box-sizing: border-box;
                 position: relative;
               }

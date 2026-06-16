@@ -446,8 +446,8 @@ export function OrdersTab({
               
               .label { 
                 background: white; 
-                width: 100mm; 
-                height: 150mm;
+                width: 100%; 
+                height: 100%;
                 margin: 0 auto 20px auto; 
                 box-sizing: border-box;
                 page-break-after: always;

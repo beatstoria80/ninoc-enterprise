@@ -108,11 +108,11 @@ export function ShippingLabel({ order }: { order: Order }) {
   if ((order.order_items?.length || 0) > 3) shortItemsStr += ', dll...';
 
   return (
-    <div style={{
+    <div className="shipping-label-container" style={{
+      width: '100%',
+      height: '100%',
       display: 'flex',
       flexDirection: 'row',
-      width: '100mm',
-      height: '150mm',
       backgroundColor: 'white',
       color: 'black',
       fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
