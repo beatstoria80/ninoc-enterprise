@@ -78,12 +78,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     try {
       // Use html-to-image to render the element directly into a Blob.
       // This is much more reliable in React/Next.js than html2canvas.
+      // Capture full content by using scroll dimensions and removing overflow clipping.
       const blob = await toBlob(element, {
         pixelRatio: 2,
         backgroundColor: '#ffffff',
+        width: element.scrollWidth,
+        height: element.scrollHeight,
         style: {
           margin: '0',
           transform: 'scale(1)',
+          overflow: 'visible',
+        },
+        filter: (node) => {
+          // Include all nodes
+          return true;
         }
       });
       
@@ -150,17 +158,17 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-2 pb-4 md:py-0 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-0 pb-2 md:py-0 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-[1600px] mx-auto w-full"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-12 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-12 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
-          <div className="lg:col-span-3 flex flex-col space-y-2 md:space-y-4 order-1">
-            <div className="space-y-1 md:space-y-4">
+          <div className="lg:col-span-3 flex flex-col space-y-1.5 md:space-y-4 order-1">
+            <div className="space-y-0.5 md:space-y-4">
               <h1 className="text-lg md:text-3xl font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
                 Payment Successful.
                 <motion.div
@@ -172,7 +180,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <CheckCircle size={12} />
                 </motion.div>
               </h1>
-              <p className="text-[11px] md:text-sm text-ink/40 font-medium leading-tight">
+              <p className="text-[10px] md:text-sm text-ink/40 font-medium leading-tight">
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
@@ -182,13 +190,13 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 }}
-              className="bg-amber-50/50 border border-amber-200 p-4 mt-6"
+              className="bg-amber-50/50 border border-amber-200 p-3 md:p-4 mt-2 md:mt-6"
             >
               <div className="flex items-start gap-3">
                 <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-800 mb-1">Simpan Bukti Pembelian</p>
-                  <p className="text-[10px] md:text-xs text-amber-700/80 leading-relaxed">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-800 mb-0.5">Simpan Bukti Pembelian</p>
+                  <p className="text-[9px] md:text-xs text-amber-700/80 leading-relaxed">
                     Jika Anda berbelanja sebagai <strong className="font-bold">GUEST</strong>, sangat disarankan untuk <strong>Menyimpan (Screenshot/PDF)</strong> halaman ini atau mengunduh <strong>Full Invoice</strong> di bawah. Nomor Order (<strong className="font-mono">#{displayId}</strong>) ini merupakan kunci Anda untuk melacak pengiriman paket.
                   </p>
                 </div>
@@ -230,7 +238,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
             >
               {/* Receipt Header */}
-              <div className="px-4 md:px-8 py-3 md:py-5 border-b border-ink/5 flex items-center justify-between">
+              <div className="px-4 md:px-8 py-2 md:py-5 border-b border-ink/5 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 md:w-8 md:h-8 bg-ink/[0.03] flex items-center justify-center">
                     <Printer size={13} className="text-ink/40" />
@@ -246,7 +254,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               {/* Invoice & Payment IDs */}
-              <div className="px-4 md:px-8 py-2.5 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
+              <div className="px-4 md:px-8 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-0.5">Invoice</p>
@@ -275,9 +283,9 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               {/* Purchased Items */}
-              <div className="px-4 md:px-8 py-3 md:py-4 border-b border-ink/5">
+              <div className="px-4 md:px-8 py-2 md:py-4 border-b border-ink/5">
                 <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-2">Items</p>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {order.order_items?.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -291,7 +299,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               {/* Financial Breakdown */}
-              <div className="px-4 md:px-8 py-3 md:py-4 space-y-1">
+              <div className="px-4 md:px-8 py-2 md:py-4 space-y-0.5">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-ink/50">Subtotal</span>
                   <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
@@ -312,7 +320,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
               {/* Shipping Address */}
               {order.shipping_address && (
-                <div className="px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
+                <div className="px-4 md:px-8 py-2 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
                   <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/30 mb-1">Ship To</p>
                   <p className="text-[11px] font-semibold text-ink leading-tight uppercase">{order.shipping_address.name || order.customer_name}</p>
                   {order.shipping_address.phone && (
@@ -349,7 +357,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 </div>
               </h3>
 
-              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-8">
+              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-8" style={{ gap: '0px' }}>
 
                 <motion.div
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
@@ -405,7 +413,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="lg:hidden w-full flex flex-col space-y-2 pt-2 border-t border-ink/5 order-4"
+            className="lg:hidden w-full flex flex-col space-y-1.5 pt-1.5 border-t border-ink/5 order-4"
           >
             <Link href="/shop" className="w-full bg-ink text-white px-5 py-3.5 text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
               Continue Collecting
@@ -463,7 +471,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
             {/* Invoice Content */}
             <div className="overflow-auto max-h-[70vh] md:max-h-[85vh] w-full bg-ink/[0.02] p-4 md:p-8 flex justify-start md:justify-center">
-              <div id="responsive-invoice-container" className="w-full shrink-0">
+              <div id="responsive-invoice-container" className="w-full shrink-0" style={{ overflow: 'visible' }}>
                 <Invoice order={order as any} />
               </div>
             </div>

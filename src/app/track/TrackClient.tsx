@@ -200,19 +200,46 @@ export default function TrackClient() {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        // Downscale large images for better jsQR performance
+        const maxDim = 1500;
+        let w = img.width;
+        let h = img.height;
+        if (w > maxDim || h > maxDim) {
+          const scale = maxDim / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           setScanStatus('error');
           setScanMessage('Gagal memproses gambar. Silakan isi manual.');
           return;
         }
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-        const imageData = ctx.getImageData(0, 0, img.width, img.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'dontInvert',
+        ctx.drawImage(img, 0, 0, w, h);
+        const imageData = ctx.getImageData(0, 0, w, h);
+        
+        // First attempt: normal scan with both inversion modes
+        let code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'attemptBoth',
         });
+
+        // Second attempt: convert to high-contrast grayscale for better detection
+        if (!code) {
+          const grayData = ctx.getImageData(0, 0, w, h);
+          const d = grayData.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            const bw = gray > 128 ? 255 : 0;
+            d[i] = bw;
+            d[i + 1] = bw;
+            d[i + 2] = bw;
+          }
+          code = jsQR(d, grayData.width, grayData.height, {
+            inversionAttempts: 'attemptBoth',
+          });
+        }
 
         if (code && code.data) {
           setOrderNumber(code.data);

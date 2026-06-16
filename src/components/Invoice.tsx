@@ -133,6 +133,20 @@ export function Invoice({ order }: InvoiceProps) {
           )}
         </div>
 
+        {/* QR Code for Order Tracking */}
+        <div className="p-5 border-t border-gray-100 flex flex-col items-center gap-2">
+          <div className="text-gray-400 text-[9px] uppercase tracking-widest">Scan untuk Lacak Pesanan</div>
+          <QRCodeCanvas
+            value={(order as any).order_number || order.id.toUpperCase()}
+            size={100}
+            level="H"
+            includeMargin={true}
+            bgColor="#ffffff"
+            fgColor="#111827"
+          />
+          <div className="text-gray-500 text-[10px] font-mono">{(order as any).order_number || orderNumber}</div>
+        </div>
+
       </div>
     </div>
   );
