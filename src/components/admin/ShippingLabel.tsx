@@ -194,7 +194,7 @@ export function ShippingLabel({ order }: { order: Order }) {
           <div style={{ 
             fontSize: '9px', 
             fontWeight: 400, 
-            lineHeight: '1.1',
+            lineHeight: '1.5',
             textTransform: 'capitalize' 
           }}>
             {receiverAddress}
@@ -211,12 +211,12 @@ export function ShippingLabel({ order }: { order: Order }) {
           </div>
         </div>
 
-        {/* ITEMS & COD WATERMARK */}
-        <div style={{ 
-          padding: '6px 8px', 
-          fontSize: '10px', 
-          position: 'relative', 
-          minHeight: '35px',
+        {/* ITEMS */}
+        <div style={{
+          padding: '8px',
+          borderBottom: '1px solid black',
+          fontSize: '9px',
+          height: '42px',
           overflow: 'hidden'
         }}>
           <div style={{ position: 'relative', zIndex: 2 }}>
@@ -224,30 +224,17 @@ export function ShippingLabel({ order }: { order: Order }) {
           </div>
           <div style={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
+            top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
-            fontSize: '36px',
+            fontSize: '48px',
             fontWeight: '900',
-            color: 'rgba(0,0,0,0.4)',
-            letterSpacing: '2px',
-            zIndex: 1
+            color: 'rgba(0,0,0,0.03)',
+            zIndex: 1,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap'
           }}>
-            {isCOD ? 'COD' : 'NON-COD'}
+            {courierName}
           </div>
-        </div>
-
-        {/* DESTINATION ROUTING BOX */}
-        <div style={{
-          backgroundColor: 'black',
-          color: 'white',
-          textAlign: 'center',
-          fontWeight: 'bold',
-          fontSize: '14px',
-          padding: '4px 0',
-          letterSpacing: '1px'
-        }}>
-          {destinationHub}
         </div>
 
         {/* ROUTING CODE */}

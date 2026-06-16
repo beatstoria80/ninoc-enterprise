@@ -539,7 +539,7 @@ export function OrdersTab({
               .address-bold {
                 font-size: 9px;
                 font-weight: 400;
-                line-height: 1.1;
+                line-height: 1.5;
                 text-transform: capitalize;
                 margin-top: 2px;
               }
@@ -707,8 +707,6 @@ export function OrdersTab({
                     Jumlah : ${totalItems}pcs, Barang : ${shortItemsStr}
                   </div>
 
-                  <div class="routing-box">${destinationHub}</div>
-                  
                   <div class="routing-code">${routingCode}</div>
 
                   <div class="main-barcode-sec">

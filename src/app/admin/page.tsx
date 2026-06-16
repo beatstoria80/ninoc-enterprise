@@ -1263,7 +1263,7 @@ export default function AdminDashboard() {
               }
               .person-address {
                 font-size: 9px;
-                line-height: 1.3;
+                line-height: 1.6;
                 text-transform: uppercase;
               }
 
