@@ -238,7 +238,7 @@ export function ShippingLabel({ order }: { order: Order }) {
             pointerEvents: 'none',
             whiteSpace: 'nowrap'
           }}>
-            {courierName}
+            {courierInfo.name}
           </div>
         </div>
 
