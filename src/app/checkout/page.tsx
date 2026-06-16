@@ -396,7 +396,7 @@ export default function CheckoutPage() {
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            weight: 300, // default 300g per item
+            weight: 100, // default 100g per item
           }));
 
           const res = await fetch('/api/biteship/rates', {

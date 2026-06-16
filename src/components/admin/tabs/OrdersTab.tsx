@@ -638,7 +638,7 @@ export function OrdersTab({
               const courierName = courierParts[0];
               const serviceType = courierParts.slice(1).join(' ') || 'REG';
               const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
-              const totalWeight = (totalItems * 0.150).toFixed(3);
+              const totalWeight = (totalItems * 0.100).toFixed(3);
               const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
               
               const routingCode = order.shipping_address?.postal_code ? 'NNC-' + order.shipping_address.postal_code.slice(0, 5) : 'NNC-STD';

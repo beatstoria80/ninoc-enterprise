@@ -1390,7 +1390,7 @@ export default function AdminDashboard() {
                       </div>
                       <div class="qty-val">
                         <span>Qty: ${totalItems}</span>
-                        <span>~${totalItems * 300}g</span>
+                        <span>~${totalItems * 100}g</span>
                       </div>
                     </div>
                   </div>

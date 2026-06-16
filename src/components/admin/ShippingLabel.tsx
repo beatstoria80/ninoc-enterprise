@@ -82,7 +82,7 @@ export function ShippingLabel({ order }: { order: Order }) {
   const courierInfo = getCourierService(order.courier);
   const trackingId = order.tracking_id || 'JX9689052297'; // default to something so it looks like the reference if empty
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
-  const totalWeight = (totalItems * 0.150).toFixed(3); // mock 150g per item
+  const totalWeight = (totalItems * 0.100).toFixed(3); // mock 100g per item
   
   const shipDate = new Date().toLocaleDateString('id-ID', {
     day: '2-digit', month: '2-digit', year: 'numeric'
