@@ -121,7 +121,7 @@ function CustomDropdown({
 
 // ─── Field Label ───────────────────────────────────────────────────────────
 function FL({ children }: { children: React.ReactNode }) {
-  return <label className="text-sm font-semibold tracking-normal text-slate-700 mb-2 block">{children}</label>;
+  return <label className="text-sm font-medium tracking-normal text-slate-500 mb-1.5 block">{children}</label>;
 }
 
 // ─── Input ────────────────────────────────────────────────────────────────
