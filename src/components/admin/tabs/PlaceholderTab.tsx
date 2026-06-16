@@ -177,7 +177,7 @@ export function PlaceholderTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-xl font-display italic font-medium uppercase tracking-tight text-ink">Placeholder</h2>
-          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">
+          <p className="text-[10px] text-ink/80 uppercase tracking-widest mt-1">
             Quick-reply templates for Support Chat
           </p>
         </div>
@@ -185,7 +185,7 @@ export function PlaceholderTab() {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-ink text-white text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors duration-200"
+          className="flex items-center gap-2 px-2 py-1 bg-ink text-white text-[9px] font-semibold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors duration-200"
         >
           <Plus size={10} strokeWidth={2.5} />
           New Template
@@ -197,10 +197,10 @@ export function PlaceholderTab() {
         <button
           onClick={() => setActiveCategory('all')}
           className={cn(
-            "px-3 py-1.5 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
+            "px-3 py-1.5 text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
             activeCategory === 'all'
               ? "bg-ink text-white"
-              : "bg-ink/5 text-ink/50 hover:bg-ink/10"
+              : "bg-ink/5 text-ink/90 hover:bg-ink/10"
           )}
         >
           All
@@ -213,10 +213,10 @@ export function PlaceholderTab() {
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
             className={cn(
-              "px-3 py-1.5 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
+              "px-3 py-1.5 text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
               activeCategory === cat.id
                 ? "bg-ink text-white"
-                : "bg-ink/5 text-ink/50 hover:bg-ink/10"
+                : "bg-ink/5 text-ink/90 hover:bg-ink/10"
             )}
           >
             {cat.label}
@@ -231,13 +231,13 @@ export function PlaceholderTab() {
 
       {/* Search */}
       <div className="relative mb-3 shrink-0">
-        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
+        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search templates..."
-          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-xs md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80 rounded-sm"
         />
       </div>
 
@@ -249,8 +249,8 @@ export function PlaceholderTab() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
-            <MessageSquare size={24} className="text-ink/20 mx-auto mb-3" strokeWidth={1} />
-            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No templates found</p>
+            <MessageSquare size={24} className="text-ink/80 mx-auto mb-3" strokeWidth={1} />
+            <p className="text-[10px] uppercase tracking-widest text-ink/80">No templates found</p>
           </div>
         ) : (
           <div className="space-y-5">
@@ -262,7 +262,7 @@ export function PlaceholderTab() {
                     <span className={cn("px-2 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-widest rounded-sm border", cat.color)}>
                       {cat.label}
                     </span>
-                    <span className="text-[11px] md:text-[8px] text-ink/20 font-medium">{grouped[cat.id].length} template{grouped[cat.id].length !== 1 ? 's' : ''}</span>
+                    <span className="text-[9px] text-ink/80 font-medium">{grouped[cat.id].length} template{grouped[cat.id].length !== 1 ? 's' : ''}</span>
                   </div>
                   {grouped[cat.id].map(p => (
                     <TemplateCard
@@ -297,7 +297,7 @@ export function PlaceholderTab() {
       {/* Create / Edit Modal */}
       <AnimatePresence>
         {isCreateOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -312,16 +312,16 @@ export function PlaceholderTab() {
               transition={{ duration: 0.2, ease: EASING.out }}
               className="relative bg-white w-full max-w-md rounded-sm shadow-2xl overflow-hidden"
             >
-              <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
+              <div className="px-5 py-2 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
                 <div>
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Support Chat</p>
-                  <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink mt-0.5">New Template</h3>
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Support Chat</p>
+                  <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink mt-0.5">New Template</h3>
                 </div>
-                <button onClick={() => { setIsCreateOpen(false); setEditModal(null); }} className="text-ink/30 hover:text-rose">
+                <button onClick={() => { setIsCreateOpen(false); setEditModal(null); }} className="text-ink/90 hover:text-rose">
                   <X size={14} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-5 space-y-2">
                 {/* Label */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/35">Label</label>
@@ -330,7 +330,7 @@ export function PlaceholderTab() {
                     value={form.label}
                     onChange={e => setForm({ ...form, label: e.target.value })}
                     placeholder="e.g. Salam Hangat"
-                    className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm"
+                    className="w-full px-1.5 py-1.5 border border-ink/10 text-xs md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm"
                   />
                 </div>
                 {/* Category */}
@@ -342,10 +342,10 @@ export function PlaceholderTab() {
                         key={cat.id}
                         onClick={() => setForm({ ...form, category: cat.id })}
                         className={cn(
-                          "py-1.5 rounded-sm text-[11px] md:text-[8px] font-semibold uppercase tracking-wider border transition-all duration-150",
+                          "py-1.5 rounded-sm text-[9px] font-semibold uppercase tracking-wider border transition-all duration-150",
                           form.category === cat.id
                             ? "bg-ink text-white border-ink"
-                            : "bg-white text-ink/40 border-ink/5 hover:border-ink/20"
+                            : "bg-white text-ink/80 border-ink/5 hover:border-ink/20"
                         )}
                       >
                         {cat.label}
@@ -357,7 +357,7 @@ export function PlaceholderTab() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/35">Message Content</label>
-                    <span className={cn("text-[10px] md:text-[7px] font-medium tracking-widest uppercase", charCount > 400 ? "text-rose" : "text-ink/20")}>
+                    <span className={cn("text-[10px] md:text-[7px] font-medium tracking-widest uppercase", charCount > 400 ? "text-rose" : "text-ink/80")}>
                       {charCount}/500
                     </span>
                   </div>
@@ -368,14 +368,14 @@ export function PlaceholderTab() {
                     }}
                     placeholder="Isi pesan template..."
                     rows={5}
-                    className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm resize-none leading-relaxed"
+                    className="w-full px-1.5 py-1.5 border border-ink/10 text-xs md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm resize-none leading-relaxed"
                   />
                 </div>
               </div>
-              <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2 bg-ink/[0.01]">
+              <div className="px-5 py-2 border-t border-ink/5 flex items-center justify-end gap-2 bg-ink/[0.01]">
                 <button
                   onClick={() => { setIsCreateOpen(false); setEditModal(null); }}
-                  className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink hover:bg-ink/5 rounded-sm transition-all"
+                  className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ink/90 hover:text-ink hover:bg-ink/5 rounded-sm transition-all"
                 >
                   Cancel
                 </button>
@@ -384,7 +384,7 @@ export function PlaceholderTab() {
                   whileTap={{ scale: 0.97 }}
                   onClick={savePlaceholder}
                   disabled={saving || !form.label.trim() || !form.content.trim()}
-                  className="px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose rounded-sm transition-colors disabled:opacity-40 flex items-center gap-2"
+                  className="px-5 py-2 text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose rounded-sm transition-colors disabled:opacity-40 flex items-center gap-2"
                 >
                   {saving ? (
                     <>
@@ -406,7 +406,7 @@ export function PlaceholderTab() {
       {/* Edit Modal (same as create but with edit state) */}
       <AnimatePresence>
         {editModal && !isCreateOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -421,23 +421,23 @@ export function PlaceholderTab() {
               transition={{ duration: 0.2, ease: EASING.out }}
               className="relative bg-white w-full max-w-md rounded-sm shadow-2xl overflow-hidden"
             >
-              <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
+              <div className="px-5 py-2 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
                 <div>
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Support Chat</p>
-                  <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink mt-0.5">Edit Template</h3>
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Support Chat</p>
+                  <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink mt-0.5">Edit Template</h3>
                 </div>
-                <button onClick={() => setEditModal(null)} className="text-ink/30 hover:text-rose">
+                <button onClick={() => setEditModal(null)} className="text-ink/90 hover:text-rose">
                   <X size={14} />
                 </button>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-5 space-y-2">
                 <div className="space-y-1.5">
                   <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/35">Label</label>
                   <input
                     type="text"
                     value={form.label}
                     onChange={e => setForm({ ...form, label: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm"
+                    className="w-full px-1.5 py-1.5 border border-ink/10 text-xs md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -448,10 +448,10 @@ export function PlaceholderTab() {
                         key={cat.id}
                         onClick={() => setForm({ ...form, category: cat.id })}
                         className={cn(
-                          "py-1.5 rounded-sm text-[11px] md:text-[8px] font-semibold uppercase tracking-wider border transition-all duration-150",
+                          "py-1.5 rounded-sm text-[9px] font-semibold uppercase tracking-wider border transition-all duration-150",
                           form.category === cat.id
                             ? "bg-ink text-white border-ink"
-                            : "bg-white text-ink/40 border-ink/5 hover:border-ink/20"
+                            : "bg-white text-ink/80 border-ink/5 hover:border-ink/20"
                         )}
                       >
                         {cat.label}
@@ -462,7 +462,7 @@ export function PlaceholderTab() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/35">Message Content</label>
-                    <span className={cn("text-[10px] md:text-[7px] font-medium tracking-widest uppercase", charCount > 400 ? "text-rose" : "text-ink/20")}>
+                    <span className={cn("text-[10px] md:text-[7px] font-medium tracking-widest uppercase", charCount > 400 ? "text-rose" : "text-ink/80")}>
                       {charCount}/500
                     </span>
                   </div>
@@ -472,12 +472,12 @@ export function PlaceholderTab() {
                       if (e.target.value.length <= 500) setForm({ ...form, content: e.target.value });
                     }}
                     rows={5}
-                    className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm resize-none leading-relaxed"
+                    className="w-full px-1.5 py-1.5 border border-ink/10 text-xs md:text-[11px] font-medium outline-none focus:border-rose/40 transition-colors placeholder:text-ink/15 rounded-sm resize-none leading-relaxed"
                   />
                 </div>
               </div>
-              <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2 bg-ink/[0.01]">
-                <button onClick={() => setEditModal(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink hover:bg-ink/5 rounded-sm transition-all">
+              <div className="px-5 py-2 border-t border-ink/5 flex items-center justify-end gap-2 bg-ink/[0.01]">
+                <button onClick={() => setEditModal(null)} className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ink/90 hover:text-ink hover:bg-ink/5 rounded-sm transition-all">
                   Cancel
                 </button>
                 <motion.button
@@ -485,7 +485,7 @@ export function PlaceholderTab() {
                   whileTap={{ scale: 0.97 }}
                   onClick={savePlaceholder}
                   disabled={saving || !form.label.trim() || !form.content.trim()}
-                  className="px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose rounded-sm transition-colors disabled:opacity-40 flex items-center gap-2"
+                  className="px-5 py-2 text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose rounded-sm transition-colors disabled:opacity-40 flex items-center gap-2"
                 >
                   {saving ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={10} />}
                   {saving ? 'Saving...' : 'Update'}
@@ -499,7 +499,7 @@ export function PlaceholderTab() {
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[210] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[210] flex items-center justify-center p-2">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -513,20 +513,20 @@ export function PlaceholderTab() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative bg-white w-full max-w-xs rounded-sm shadow-2xl overflow-hidden"
             >
-              <div className="px-5 py-4 border-b border-ink/5">
-                <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Delete Template</h3>
+              <div className="px-5 py-2 border-b border-ink/5">
+                <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink">Delete Template</h3>
               </div>
               <div className="p-5">
-                <p className="text-sm md:text-[11px] text-ink/60 leading-relaxed">
+                <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed">
                   Are you sure you want to delete this template? This action cannot be undone.
                 </p>
               </div>
-              <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2">
-                <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink rounded-sm">Cancel</button>
+              <div className="px-5 py-2 border-t border-ink/5 flex items-center justify-end gap-2">
+                <button onClick={() => setDeleteId(null)} className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ink/90 hover:text-ink rounded-sm">Cancel</button>
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => deletePlaceholder(deleteId)}
-                  className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600 rounded-sm flex items-center gap-1.5"
+                  className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600 rounded-sm flex items-center gap-1.5"
                 >
                   <Trash2 size={9} /> Delete
                 </motion.button>
@@ -563,7 +563,7 @@ function TemplateCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       className={cn(
-        "bg-white border rounded-sm p-4 group transition-all duration-200",
+        "bg-white border rounded-sm p-2 group transition-all duration-200",
         placeholder.is_active
           ? "border-ink/5 hover:border-ink/10 hover:shadow-sm"
           : "border-ink/5 opacity-50 bg-ink/[0.01]"
@@ -583,29 +583,29 @@ function TemplateCard({
               </span>
             )}
           </div>
-          <h4 className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{placeholder.label}</h4>
-          <p className="text-xs md:text-[9px] text-ink/40 mt-1 leading-relaxed line-clamp-2">{placeholder.content}</p>
+          <h4 className="text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{placeholder.label}</h4>
+          <p className="text-[9px] text-ink/80 mt-1 leading-relaxed line-clamp-2">{placeholder.content}</p>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={onCopy}
-            className="p-1.5 text-ink/30 hover:text-ink transition-colors"
+            className="p-1.5 text-ink/90 hover:text-ink transition-colors"
             title="Copy content"
           >
             {copied ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
           </button>
           <button
             onClick={onEdit}
-            className="p-1.5 text-ink/30 hover:text-rose transition-colors"
+            className="p-1.5 text-ink/90 hover:text-rose transition-colors"
             title="Edit"
           >
             <Edit2 size={11} />
           </button>
           <button
             onClick={onDelete}
-            className="p-1.5 text-ink/30 hover:text-red-500 transition-colors"
+            className="p-1.5 text-ink/90 hover:text-red-500 transition-colors"
             title="Delete"
           >
             <Trash2 size={11} />
@@ -618,7 +618,7 @@ function TemplateCard({
             {placeholder.is_active ? (
               <ToggleRight size={14} className="text-emerald-500" />
             ) : (
-              <ToggleLeft size={14} className="text-ink/20" />
+              <ToggleLeft size={14} className="text-ink/80" />
             )}
           </button>
         </div>

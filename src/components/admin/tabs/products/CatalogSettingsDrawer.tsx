@@ -36,7 +36,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
             className="fixed inset-y-0 right-0 w-full md:w-[500px] bg-white shadow-2xl z-50 flex flex-col border-l border-gray-100"
           >
             {/* Header */}
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-gray-100">
+            <div className="shrink-0 flex items-center justify-between p-2 border-b border-gray-100">
               <div>
                 <h2 className="text-lg font-medium text-ink">Catalog Settings</h2>
                 <p className="text-xs text-gray-500">Managing segment: {catalog.name}</p>
@@ -50,7 +50,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
             </div>
 
             {/* Tabs Navigation */}
-            <div className="shrink-0 flex items-center gap-6 px-4 border-b border-gray-100">
+            <div className="shrink-0 flex items-center gap-3 px-4 border-b border-gray-100">
               {[
                 { id: 'general', label: 'General Info' },
                 { id: 'pricing', label: 'Pricing & Rules' },
@@ -60,7 +60,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={cn(
-                    "py-3 text-sm font-medium transition-colors relative",
+                    "py-1.5 text-xs font-medium transition-colors relative",
                     activeTab === tab.id ? "text-ink" : "text-gray-400 hover:text-gray-600"
                   )}
                 >
@@ -76,7 +76,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 minimal-scroll">
+            <div className="flex-1 overflow-y-auto p-2 md:p-3 minimal-scroll">
               <AnimatePresence mode="wait">
                 {activeTab === 'general' && (
                   <motion.div
@@ -92,16 +92,16 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                       <input
                         type="text"
                         defaultValue={catalog.name}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                        className="w-full px-1.5 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-gray-700">Segment Type</label>
                         <select
                           defaultValue={catalog.type}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                         >
                           <option value="B2C">B2C (Retail)</option>
                           <option value="B2B">B2B (Wholesale)</option>
@@ -114,7 +114,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                         <label className="text-xs font-medium text-gray-700">Currency</label>
                         <select
                           defaultValue={catalog.currency}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                         >
                           <option value="IDR">IDR - Indonesian Rupiah</option>
                           <option value="USD">USD - US Dollar</option>
@@ -128,11 +128,11 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                       <div className="flex items-center gap-3">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input type="radio" name="status" defaultChecked={catalog.status === 'Active'} className="text-ink focus:ring-ink" />
-                          <span className="text-sm">Active</span>
+                          <span className="text-xs">Active</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input type="radio" name="status" defaultChecked={catalog.status !== 'Active'} className="text-ink focus:ring-ink" />
-                          <span className="text-sm">Draft / Inactive</span>
+                          <span className="text-xs">Draft / Inactive</span>
                         </label>
                       </div>
                     </div>
@@ -146,20 +146,20 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="space-y-6"
+                    className="space-y-3"
                   >
-                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex gap-3">
+                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-2 flex gap-3">
                       <ShieldAlert size={16} className="text-gray-400 shrink-0 mt-0.5" />
                       <p className="text-xs text-gray-600 leading-relaxed">
                         Pricing rules defined here will override the default retail price for customers assigned to this catalog.
                       </p>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-gray-700">Adjustment Method</label>
                         <select
-                          className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                           defaultValue={catalog.priceAdjustment === 'None' ? 'none' : catalog.priceAdjustment.includes('%') ? 'percentage' : 'fixed'}
                         >
                           <option value="none">No Adjustment (Use Retail Price)</option>
@@ -176,9 +176,9 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                             <input
                               type="number"
                               defaultValue={catalog.priceAdjustment.replace(/[^0-9]/g, '')}
-                              className="w-full pl-3 pr-8 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                              className="w-full pl-3 pr-8 py-2 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
                           </div>
                         </div>
                       )}
@@ -193,12 +193,12 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="space-y-6"
+                    className="space-y-3"
                   >
                     {/* Customer Assignment */}
                     <div className="space-y-3">
                       <div>
-                        <h3 className="text-sm font-medium text-ink">Assigned Customers</h3>
+                        <h3 className="text-xs font-medium text-ink">Assigned Customers</h3>
                         <p className="text-xs text-gray-500">Customers who can access this catalog.</p>
                       </div>
                       
@@ -207,7 +207,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                         <input
                           type="text"
                           placeholder="Search customer name or email..."
-                          className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                          className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-md text-xs focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                         />
                       </div>
 
@@ -217,7 +217,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                             TS
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-ink">Tony Stark</p>
+                            <p className="text-xs font-medium text-ink">Tony Stark</p>
                             <p className="text-xs text-gray-500">tony@stark.com</p>
                           </div>
                           <button className="text-xs text-red-500 hover:text-red-600 font-medium">Remove</button>
@@ -227,7 +227,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                             PP
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-ink">Peter Parker</p>
+                            <p className="text-xs font-medium text-ink">Peter Parker</p>
                             <p className="text-xs text-gray-500">peter@dailybugle.com</p>
                           </div>
                           <button className="text-xs text-red-500 hover:text-red-600 font-medium">Remove</button>
@@ -243,7 +243,7 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                     {/* Product Visibility */}
                     <div className="space-y-3">
                       <div>
-                        <h3 className="text-sm font-medium text-ink">Product Visibility</h3>
+                        <h3 className="text-xs font-medium text-ink">Product Visibility</h3>
                         <p className="text-xs text-gray-500">What products can these customers see?</p>
                       </div>
 
@@ -251,14 +251,14 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
                         <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors bg-gray-50">
                           <input type="radio" name="visibility" defaultChecked className="mt-1 text-ink focus:ring-ink" />
                           <div>
-                            <p className="text-sm font-medium text-ink">All Products</p>
+                            <p className="text-xs font-medium text-ink">All Products</p>
                             <p className="text-xs text-gray-500">Customers see all active products in the store.</p>
                           </div>
                         </label>
                         <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                           <input type="radio" name="visibility" className="mt-1 text-ink focus:ring-ink" />
                           <div>
-                            <p className="text-sm font-medium text-ink">Custom Product List</p>
+                            <p className="text-xs font-medium text-ink">Custom Product List</p>
                             <p className="text-xs text-gray-500">Handpick specific products or categories available to this segment.</p>
                           </div>
                         </label>
@@ -271,16 +271,16 @@ export function CatalogSettingsDrawer({ isOpen, onClose, catalog }: CatalogSetti
             </div>
 
             {/* Footer */}
-            <div className="shrink-0 p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-end gap-3">
+            <div className="shrink-0 p-2 border-t border-gray-100 bg-gray-50/50 flex items-center justify-end gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-ink transition-colors"
+                className="px-2 py-1 text-xs font-medium text-gray-600 hover:text-ink transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={onClose}
-                className="flex items-center gap-2 px-4 py-2 bg-ink text-white rounded-md text-sm font-medium hover:bg-ink/90 transition-colors"
+                className="flex items-center gap-2 px-2 py-1 bg-ink text-white rounded-md text-xs font-medium hover:bg-ink/90 transition-colors"
               >
                 <Save size={14} />
                 Save Changes

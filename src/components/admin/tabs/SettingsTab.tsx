@@ -34,8 +34,8 @@ function SettingsSection({ title, subtitle, children }: {
   return (
     <div className="bg-white rounded-sm border border-ink/10 p-5">
       <div className="mb-4">
-        <h2 className="text-sm md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink">{title}</h2>
-        {subtitle && <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">{subtitle}</p>}
+        <h2 className="text-xs md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink">{title}</h2>
+        {subtitle && <p className="text-[9px] text-ink/80 mt-0.5">{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -46,9 +46,9 @@ function SettingsSection({ title, subtitle, children }: {
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-medium">{label}</label>
+      <label className="text-[9px] uppercase tracking-widest text-ink/90 font-medium">{label}</label>
       {children}
-      {hint && <p className="text-[11px] md:text-[8px] text-ink/30">{hint}</p>}
+      {hint && <p className="text-[9px] text-ink/90">{hint}</p>}
     </div>
   );
 }
@@ -57,8 +57,8 @@ function Input({ className = '', ...props }: React.InputHTMLAttributes<HTMLInput
   return (
     <input
       className={cn(
-        "w-full px-3 py-2 text-sm md:text-[11px] border border-ink/10 rounded-sm bg-white",
-        "focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20",
+        "w-full px-1.5 py-1 text-xs md:text-[11px] border border-ink/10 rounded-sm bg-white",
+        "focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80",
         className
       )}
       {...props}
@@ -70,8 +70,8 @@ function Textarea({ className = '', ...props }: React.TextareaHTMLAttributes<HTM
   return (
     <textarea
       className={cn(
-        "w-full px-3 py-2 text-sm md:text-[11px] border border-ink/10 rounded-sm bg-white resize-none",
-        "focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20",
+        "w-full px-1.5 py-1 text-xs md:text-[11px] border border-ink/10 rounded-sm bg-white resize-none",
+        "focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80",
         className
       )}
       {...props}
@@ -94,7 +94,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
           checked ? "translate-x-4" : ""
         )} />
       </button>
-      {label && <span className="text-xs md:text-[9px] text-ink/50 font-medium">{label}</span>}
+      {label && <span className="text-[9px] text-ink/90 font-medium">{label}</span>}
     </div>
   );
 }
@@ -104,7 +104,7 @@ function SaveButton({ onClick, loading }: { onClick?: () => void; loading?: bool
     <button
       onClick={onClick}
       disabled={loading}
-      className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="flex items-center gap-1.5 px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (
         <span className="inline-block w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
@@ -170,7 +170,7 @@ function MyStoreSection() {
       subtitle="Informasi dasar toko untuk identitas brand dan pencarian"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Nama Toko">
             <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="Nama toko" />
           </Field>
@@ -181,7 +181,7 @@ function MyStoreSection() {
             <Textarea rows={4} value={description} onChange={e => setDescription(e.target.value)} />
           </Field>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Nomor WhatsApp">
             <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="08xxxxxxxxxx" />
           </Field>
@@ -193,24 +193,24 @@ function MyStoreSection() {
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Logo (Upload)">
-              <div className="border border-ink/10 rounded-sm p-4 text-center bg-ink/[0.02]">
-                <Upload size={20} className="text-ink/20 mx-auto mb-2" />
-                <p className="text-[11px] md:text-[8px] text-ink/30">Klik untuk upload</p>
-                <p className="text-[10px] md:text-[7px] text-ink/20 mt-1">PNG/JPG, max 2MB</p>
+              <div className="border border-ink/10 rounded-sm p-2 text-center bg-ink/[0.02]">
+                <Upload size={20} className="text-ink/80 mx-auto mb-2" />
+                <p className="text-[9px] text-ink/90">Klik untuk upload</p>
+                <p className="text-[10px] md:text-[7px] text-ink/80 mt-1">PNG/JPG, max 2MB</p>
               </div>
             </Field>
             <Field label="Favicon">
-              <div className="border border-ink/10 rounded-sm p-4 text-center bg-ink/[0.02]">
-                <Globe size={20} className="text-ink/20 mx-auto mb-2" />
-                <p className="text-[11px] md:text-[8px] text-ink/30">Klik untuk upload</p>
-                <p className="text-[10px] md:text-[7px] text-ink/20 mt-1">ICO/PNG, 32x32px</p>
+              <div className="border border-ink/10 rounded-sm p-2 text-center bg-ink/[0.02]">
+                <Globe size={20} className="text-ink/80 mx-auto mb-2" />
+                <p className="text-[9px] text-ink/90">Klik untuk upload</p>
+                <p className="text-[10px] md:text-[7px] text-ink/80 mt-1">ICO/PNG, 32x32px</p>
               </div>
             </Field>
           </div>
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -285,32 +285,32 @@ function BankAccountSection() {
             acc.is_default ? "border-rose/30 bg-rose/5" : "border-ink/10 bg-white"
           )}>
             <div className="w-8 h-8 rounded-sm bg-ink/5 flex items-center justify-center shrink-0">
-              <CreditCard size={14} className="text-ink/40" />
+              <CreditCard size={14} className="text-ink/80" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm md:text-[11px] font-semibold text-ink">{acc.bank}</span>
+                <span className="text-xs md:text-[11px] font-semibold text-ink">{acc.bank}</span>
                 {acc.is_default && (
                   <span className="text-[10px] md:text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-medium">DEFAULT</span>
                 )}
               </div>
-              <p className="text-xs md:text-[10px] font-medium text-ink/70 mt-0.5">{acc.account_name}</p>
-              <p className="text-xs md:text-[10px] font-mono text-ink/50 mt-0.5">{acc.account_number}</p>
+              <p className="text-[10px] font-medium text-ink/90 mt-0.5">{acc.account_name}</p>
+              <p className="text-[10px] font-mono text-ink/90 mt-0.5">{acc.account_number}</p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {!acc.is_default && (
-                <button onClick={() => toggleDefault(acc.id)} className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 hover:text-rose transition-colors">
+                <button onClick={() => toggleDefault(acc.id)} className="text-[9px] uppercase tracking-widest text-ink/90 hover:text-rose transition-colors">
                   Set Default
                 </button>
               )}
-              <button onClick={() => setAccounts(prev => prev.filter(a => a.id !== acc.id))} className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 transition-colors">Hapus</button>
+              <button onClick={() => setAccounts(prev => prev.filter(a => a.id !== acc.id))} className="text-[9px] uppercase tracking-widest text-ink/90 hover:text-red-500 transition-colors">Hapus</button>
             </div>
           </div>
         ))}
 
         {showAdd ? (
-          <div className="border border-rose/30 rounded-sm p-4 bg-rose/5 space-y-3">
-            <p className="text-xs md:text-[9px] font-medium text-rose uppercase tracking-widest">Tambah Rekening Baru</p>
+          <div className="border border-rose/30 rounded-sm p-2 bg-rose/5 space-y-3">
+            <p className="text-[9px] font-medium text-rose uppercase tracking-widest">Tambah Rekening Baru</p>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Nama Bank">
                 <Input value={newBank} onChange={e => setNewBank(e.target.value)} placeholder="BCA" />
@@ -323,18 +323,18 @@ function BankAccountSection() {
               </Field>
             </div>
             <div className="flex gap-2">
-              <button onClick={addAccount} className="px-4 py-1.5 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm">Simpan</button>
-              <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 border border-ink/10 text-ink/50 text-xs md:text-[9px] uppercase tracking-widest rounded-sm">Batal</button>
+              <button onClick={addAccount} className="px-4 py-1.5 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm">Simpan</button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 border border-ink/10 text-ink/90 text-[9px] uppercase tracking-widest rounded-sm">Batal</button>
             </div>
           </div>
         ) : (
-          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-4 py-2 border border-dashed border-ink/20 text-ink/40 text-xs md:text-[9px] uppercase tracking-widest rounded-sm hover:border-rose/40 hover:text-rose transition-colors w-full justify-center">
+          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-2 py-1 border border-dashed border-ink/20 text-ink/80 text-[9px] uppercase tracking-widest rounded-sm hover:border-rose/40 hover:text-rose transition-colors w-full justify-center">
             <Plus size={12} /> Tambah Rekening
           </button>
         )}
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -394,7 +394,7 @@ function ScheduleSection() {
       subtitle="Jam operasional toko untuk panduan customer service"
     >
       <div className="space-y-2 mb-5">
-        <div className="grid grid-cols-4 gap-3 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 font-medium mb-2 px-1">
+        <div className="grid grid-cols-4 gap-3 text-[9px] uppercase tracking-widest text-ink/80 font-medium mb-2 px-1">
           <span>Day</span>
           <span>Open</span>
           <span>Close</span>
@@ -402,22 +402,22 @@ function ScheduleSection() {
         </div>
         {schedule.map((s, idx) => (
           <div key={idx} className={cn(
-            "grid grid-cols-4 gap-3 items-center px-3 py-2 rounded-sm transition-colors",
+            "grid grid-cols-4 gap-3 items-center px-1.5 py-1 rounded-sm transition-colors",
             s.active ? "bg-white border border-ink/10" : "bg-ink/[0.02] border border-dashed border-ink/5"
           )}>
-            <span className="text-xs md:text-[10px] font-semibold text-ink">{s.day}</span>
+            <span className="text-[10px] font-semibold text-ink">{s.day}</span>
             <Input
               type="time"
               value={s.open}
               disabled={!s.active}
-              className="text-xs md:text-[10px]"
+              className="text-[10px]"
               onChange={e => setSchedule(prev => prev.map((s, i) => i === idx ? { ...s, open: e.target.value } : s))}
             />
             <Input
               type="time"
               value={s.close}
               disabled={!s.active}
-              className="text-xs md:text-[10px]"
+              className="text-[10px]"
               onChange={e => setSchedule(prev => prev.map((s, i) => i === idx ? { ...s, close: e.target.value } : s))}
             />
             <div className="flex justify-center">
@@ -433,11 +433,11 @@ function ScheduleSection() {
         </Field>
         <div className="flex items-center gap-3">
           <Toggle checked={!autoReplyOff} onChange={v => setAutoReplyOff(!v)} />
-          <span className="text-xs md:text-[9px] text-ink/50 font-medium">Aktifkan auto-reply saat off hours</span>
+          <span className="text-[9px] text-ink/90 font-medium">Aktifkan auto-reply saat off hours</span>
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -510,7 +510,7 @@ function DecorationSection() {
               <div className="w-2 h-2 rounded-full bg-amber-400/40" />
               <div className="w-2 h-2 rounded-full bg-emerald-400/40" />
             </div>
-            <div className="flex-1 bg-white border border-ink/10 rounded px-2 py-0.5 text-[10px] md:text-[7px] text-ink/30 font-mono truncate">
+            <div className="flex-1 bg-white border border-ink/10 rounded px-2 py-0.5 text-[10px] md:text-[7px] text-ink/90 font-mono truncate">
               ninoc.id
             </div>
           </div>
@@ -518,14 +518,14 @@ function DecorationSection() {
           {/* Website content */}
           <div className="bg-white">
             {/* Top nav */}
-            <div className="border-b border-ink/5 px-4 py-2 flex items-center justify-between">
+            <div className="border-b border-ink/5 px-2 py-1 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-sm flex items-center justify-center text-white text-[11px] md:text-[8px] font-medium" style={{ backgroundColor: '#141414' }}>N</div>
-                <span className="text-xs md:text-[9px] font-medium tracking-tight text-ink uppercase">{storeName || 'NINOC STORE'}</span>
+                <div className="w-5 h-5 rounded-sm flex items-center justify-center text-white text-[9px] font-medium" style={{ backgroundColor: '#141414' }}>N</div>
+                <span className="text-[9px] font-medium tracking-tight text-ink uppercase">{storeName || 'NINOC STORE'}</span>
               </div>
               <div className="flex items-center gap-3">
                 {['Shop', 'About', 'Craft', 'Collections'].map(link => (
-                  <span key={link} className="text-[10px] md:text-[7px] text-ink/40 font-medium uppercase tracking-wider">{link}</span>
+                  <span key={link} className="text-[10px] md:text-[7px] text-ink/80 font-medium uppercase tracking-wider">{link}</span>
                 ))}
                 <div className="w-4 h-4 rounded-full bg-ink/5" />
               </div>
@@ -550,7 +550,7 @@ function DecorationSection() {
               </label>
               {!heroBanner && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
+                  <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
                   <p className="text-[10px] md:text-[7px] text-white/30 mt-1">{tagline || 'Archival Garment Studio'}</p>
                   <button
                     className="mt-3 px-4 py-1 text-[10px] md:text-[7px] uppercase tracking-widest font-semibold rounded-sm text-white transition-colors"
@@ -564,10 +564,10 @@ function DecorationSection() {
             </div>
 
             {/* Product Grid */}
-            <div className="px-4 py-3">
+            <div className="px-2 py-1.5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">New Arrivals</p>
-                <span className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
+                <p className="text-[9px] font-medium uppercase tracking-widest text-ink">New Arrivals</p>
+                <span className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {products.length > 0 ? products.map((p) => (
@@ -607,16 +607,16 @@ function DecorationSection() {
             </div>
 
             {/* Collections Row */}
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-2">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">Collections</p>
-                <span className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
+                <p className="text-[9px] font-medium uppercase tracking-widest text-ink">Collections</p>
+                <span className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-wider cursor-pointer hover:text-rose transition-colors">View All</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {categories.length > 0 ? categories.map((col) => (
                   <div key={col.id} className="aspect-[4/3] rounded-sm border border-dashed border-ink/10 bg-ink/[0.02] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-rose/30 transition-colors">
-                    <Upload size={12} className="text-ink/20" />
-                    <span className="text-[10px] md:text-[7px] text-ink/30 text-center px-1">{col.label}</span>
+                    <Upload size={12} className="text-ink/80" />
+                    <span className="text-[10px] md:text-[7px] text-ink/90 text-center px-1">{col.label}</span>
                   </div>
                 )) : (
                   [1,2,3].map(i => (
@@ -632,12 +632,12 @@ function DecorationSection() {
         </div>
 
         {/* Editable Controls */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2">
           <Field label="Nama Toko (preview)">
-            <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="NINOC STORE" className="text-xs md:text-[10px]" />
+            <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="NINOC STORE" className="text-[10px]" />
           </Field>
           <Field label="Tagline">
-            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Archival Garment Studio" className="text-xs md:text-[10px]" />
+            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Archival Garment Studio" className="text-[10px]" />
           </Field>
           <Field label="Accent Color (brand)">
             <div className="flex items-center gap-2">
@@ -647,14 +647,14 @@ function DecorationSection() {
                 onChange={e => setAccentColor(e.target.value)}
                 className="w-8 h-8 rounded-sm border border-ink/10 cursor-pointer shrink-0"
               />
-              <Input value={accentColor} onChange={e => setAccentColor(e.target.value)} className="flex-1 font-mono text-xs md:text-[10px]" />
+              <Input value={accentColor} onChange={e => setAccentColor(e.target.value)} className="flex-1 font-mono text-[10px]" />
             </div>
           </Field>
         </div>
 
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton
           loading={saving}
           onClick={async () => {
@@ -775,23 +775,23 @@ function DeliverySection() {
     >
       <div className="space-y-5">
         <div>
-          <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-medium mb-3">Aktifkan Kurir</p>
+          <p className="text-[9px] uppercase tracking-widest text-ink/90 font-medium mb-3">Aktifkan Kurir</p>
           <div className="space-y-2">
             {couriers.map(c => (
               <div key={c.id} className="flex items-center gap-3 py-2 border-b border-ink/5 last:border-0">
                 <Toggle checked={c.active} onChange={() => toggleCourier(c.id)} />
                 <div className="flex-1">
-                  <span className="text-xs md:text-[10px] font-semibold text-ink">{c.name}</span>
+                  <span className="text-[10px] font-semibold text-ink">{c.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={cn("text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.cod ? "bg-emerald-50 text-emerald-600 font-medium" : "bg-ink/5 text-ink/30")}>COD</span>
-                  <span className={cn("text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.insurable ? "bg-blue-50 text-blue-600 font-medium" : "bg-ink/5 text-ink/30")}>Asuransi</span>
+                  <span className={cn("text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.cod ? "bg-emerald-50 text-emerald-600 font-medium" : "bg-ink/5 text-ink/90")}>COD</span>
+                  <span className={cn("text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm", c.insurable ? "bg-blue-50 text-blue-600 font-medium" : "bg-ink/5 text-ink/90")}>Asuransi</span>
                 </div>
                 <button
                   onClick={() => setDefaultCourier(c.id)}
                   className={cn(
-                    "text-[11px] md:text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm border transition-colors",
-                    defaultCourier === c.id ? "border-rose text-rose font-medium bg-rose/5" : "border-ink/10 text-ink/30 hover:border-ink/30"
+                    "text-[9px] uppercase tracking-widest px-2 py-1 rounded-sm border transition-colors",
+                    defaultCourier === c.id ? "border-rose text-rose font-medium bg-rose/5" : "border-ink/10 text-ink/90 hover:border-ink/30"
                   )}
                 >
                   Default
@@ -800,11 +800,11 @@ function DeliverySection() {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div className="border border-ink/10 rounded-sm p-3.5 space-y-2">
-            <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-medium">Same Day Delivery</p>
+            <p className="text-[9px] uppercase tracking-widest text-ink/90 font-medium">Same Day Delivery</p>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] md:text-[8px] text-ink/30">{sameDayActive ? 'Aktif' : 'Nonaktif'}</span>
+              <span className="text-[9px] text-ink/90">{sameDayActive ? 'Aktif' : 'Nonaktif'}</span>
               <Toggle checked={sameDayActive} onChange={setSameDayActive} />
             </div>
             {sameDayActive && (
@@ -813,14 +813,14 @@ function DeliverySection() {
                 value={sameDayFee}
                 onChange={e => setSameDayFee(e.target.value)}
                 placeholder="Biaya (IDR)"
-                className="text-xs md:text-[10px]"
+                className="text-[10px]"
               />
             )}
           </div>
           <div className="border border-ink/10 rounded-sm p-3.5 space-y-2">
-            <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-medium">Instant Delivery</p>
+            <p className="text-[9px] uppercase tracking-widest text-ink/90 font-medium">Instant Delivery</p>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] md:text-[8px] text-ink/30">{instantActive ? 'Aktif' : 'Nonaktif'}</span>
+              <span className="text-[9px] text-ink/90">{instantActive ? 'Aktif' : 'Nonaktif'}</span>
               <Toggle checked={instantActive} onChange={setInstantActive} />
             </div>
             {instantActive && (
@@ -829,14 +829,14 @@ function DeliverySection() {
                 value={instantFee}
                 onChange={e => setInstantFee(e.target.value)}
                 placeholder="Biaya (IDR)"
-                className="text-xs md:text-[10px]"
+                className="text-[10px]"
               />
             )}
           </div>
           <div className="border border-ink/10 rounded-sm p-3.5 space-y-2">
-            <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-medium">Auto-Assigned Waybill</p>
+            <p className="text-[9px] uppercase tracking-widest text-ink/90 font-medium">Auto-Assigned Waybill</p>
             <div className="flex items-center justify-between">
-              <span className="text-[11px] md:text-[8px] text-ink/30">Otomatis buat resi</span>
+              <span className="text-[9px] text-ink/90">Otomatis buat resi</span>
               <Toggle checked={autoAssign} onChange={setAutoAssign} />
             </div>
             <p className="text-[10px] md:text-[7px] text-ink/25">Otomatis buat waybill saat print label</p>
@@ -844,7 +844,7 @@ function DeliverySection() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
         <SaveButton loading={saving} onClick={handleSave} />
       </div>
     </SettingsSection>
@@ -952,10 +952,10 @@ function BiteshipActivationSection() {
     >
       {/* 1. Pilih Kunci API */}
       <div className="mb-6">
-        <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+        <p className="text-[9px] uppercase tracking-widest text-ink/90 font-semibold mb-3">
           1 — Pilih Kunci API
         </p>
-        <div className="border border-ink/10 rounded-sm p-4 bg-ink/[0.015]">
+        <div className="border border-ink/10 rounded-sm p-2 bg-ink/[0.015]">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 flex-1">
               <input
@@ -965,13 +965,13 @@ function BiteshipActivationSection() {
                 onChange={() => setApiKeyName('API_webhook_ninoc')}
                 className="accent-rose"
               />
-              <label htmlFor="api-webhook-ninoc" className="text-xs md:text-[10px] font-semibold text-ink cursor-pointer">
+              <label htmlFor="api-webhook-ninoc" className="text-[10px] font-semibold text-ink cursor-pointer">
                 API_webhook_ninoc
               </label>
             </div>
             <span className="text-[10px] md:text-[7px] uppercase tracking-widest bg-emerald-50 text-emerald-600 font-medium px-2 py-1 rounded-sm">Production</span>
           </div>
-          <p className="text-[11px] md:text-[8px] text-ink/30 mt-2 ml-5">
+          <p className="text-[9px] text-ink/90 mt-2 ml-5">
             Biteship Production Key — digunakan untuk membuat waybill dan tracking real-time
           </p>
         </div>
@@ -979,10 +979,10 @@ function BiteshipActivationSection() {
 
       {/* 2. Pilih Kurir yang Diaktifkan */}
       <div className="mb-6">
-        <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+        <p className="text-[9px] uppercase tracking-widest text-ink/90 font-semibold mb-3">
           2 — Pilih Kurir yang Akan Diaktifkan
         </p>
-        <div className="border border-ink/10 rounded-sm p-4">
+        <div className="border border-ink/10 rounded-sm p-2">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {ALL_COURIERS.map(c => {
               const isActive = activatedCouriers.includes(c.id);
@@ -991,7 +991,7 @@ function BiteshipActivationSection() {
                   key={c.id}
                   onClick={() => toggleCourier(c.id)}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 border rounded-sm cursor-pointer transition-all",
+                    "flex items-center gap-2 px-1.5 py-1 border rounded-sm cursor-pointer transition-all",
                     isActive
                       ? "border-rose bg-rose/[0.04]"
                       : "border-ink/10 hover:border-ink/30"
@@ -1008,8 +1008,8 @@ function BiteshipActivationSection() {
                     )}
                   </div>
                   <span className={cn(
-                    "text-xs md:text-[9px] font-semibold",
-                    isActive ? "text-rose" : "text-ink/50"
+                    "text-[9px] font-semibold",
+                    isActive ? "text-rose" : "text-ink/90"
                   )}>
                     {c.label}
                   </span>
@@ -1017,7 +1017,7 @@ function BiteshipActivationSection() {
               );
             })}
           </div>
-          <p className="text-[11px] md:text-[8px] text-ink/30 mt-3">
+          <p className="text-[9px] text-ink/90 mt-3">
             {activatedCouriers.length} kurir dipilih
           </p>
         </div>
@@ -1025,13 +1025,13 @@ function BiteshipActivationSection() {
 
       {/* 3. Test Order IDs */}
       <div className="mb-6">
-        <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+        <p className="text-[9px] uppercase tracking-widest text-ink/90 font-semibold mb-3">
           3 — ID Pesanan Test
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border border-ink/10 rounded-sm p-4 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="border border-ink/10 rounded-sm p-2 space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 font-medium">
+              <label className="text-[9px] uppercase tracking-widest text-ink/80 font-medium">
                 Test Delivered (status &quot;delivered&quot;)
               </label>
               <span className="text-[10px] md:text-[7px] text-emerald-600 font-medium">Delivered</span>
@@ -1042,11 +1042,11 @@ function BiteshipActivationSection() {
                 value={testDelivered}
                 onChange={e => setTestDelivered(e.target.value)}
                 placeholder="ID pesanan delivered"
-                className="flex-1 px-3 py-2 text-xs md:text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20"
+                className="flex-1 px-1.5 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80"
               />
               <button
                 onClick={() => openPicker('delivered')}
-                className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest bg-ink/5 text-ink/60 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
+                className="px-1.5 py-1 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/80 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
               >
                 Browse
               </button>
@@ -1059,9 +1059,9 @@ function BiteshipActivationSection() {
               Gunakan order dengan status akhir &quot;delivered&quot; untuk menguji verifikasi tracking sukses.
             </p>
           </div>
-          <div className="border border-ink/10 rounded-sm p-4 space-y-2">
+          <div className="border border-ink/10 rounded-sm p-2 space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 font-medium">
+              <label className="text-[9px] uppercase tracking-widest text-ink/80 font-medium">
                 Test Cancelled (status &quot;cancelled&quot;)
               </label>
               <span className="text-[10px] md:text-[7px] text-red-500 font-medium">Cancelled</span>
@@ -1072,11 +1072,11 @@ function BiteshipActivationSection() {
                 value={testCancelled}
                 onChange={e => setTestCancelled(e.target.value)}
                 placeholder="ID pesanan cancelled"
-                className="flex-1 px-3 py-2 text-xs md:text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20"
+                className="flex-1 px-1.5 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80"
               />
               <button
                 onClick={() => openPicker('cancelled')}
-                className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest bg-ink/5 text-ink/60 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
+                className="px-1.5 py-1 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/80 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors whitespace-nowrap"
               >
                 Browse
               </button>
@@ -1094,7 +1094,7 @@ function BiteshipActivationSection() {
 
       {/* 4. Periksa */}
       <div className="mb-6">
-        <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-3">
+        <p className="text-[9px] uppercase tracking-widest text-ink/90 font-semibold mb-3">
           4 — Periksa Jika Diperlukan
         </p>
         <div className="border border-ink/10 rounded-sm divide-y divide-ink/5">
@@ -1105,7 +1105,7 @@ function BiteshipActivationSection() {
             { checked: hasCod, onChange: setHasCod, label: 'Memiliki pesanan dengan Cash on Delivery (COD)' },
             { checked: usesOwnResi, onChange: setUsesOwnResi, label: 'Menggunakan resi pengiriman sendiri' },
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-3 cursor-pointer" onClick={() => item.onChange(!item.checked)}>
+            <div key={i} className="flex items-center gap-3 px-2 py-1.5 cursor-pointer" onClick={() => item.onChange(!item.checked)}>
               <div className={cn(
                 "w-3.5 h-3.5 rounded-sm border flex items-center justify-center transition-colors shrink-0",
                 item.checked ? "bg-rose border-rose" : "border-ink/30 bg-white"
@@ -1117,15 +1117,15 @@ function BiteshipActivationSection() {
                 )}
               </div>
               <span className={cn(
-                "text-xs md:text-[9px] leading-relaxed",
-                item.checked ? "text-ink font-semibold" : "text-ink/50"
+                "text-[9px] leading-relaxed",
+                item.checked ? "text-ink font-semibold" : "text-ink/90"
               )}>
                 {item.label}
               </span>
             </div>
           ))}
         </div>
-        <p className="text-[11px] md:text-[8px] text-ink/30 mt-2">Centang semua yang berlaku</p>
+        <p className="text-[9px] text-ink/90 mt-2">Centang semua yang berlaku</p>
       </div>
 
       {/* Order Picker Modal */}
@@ -1146,16 +1146,16 @@ function BiteshipActivationSection() {
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-ink/5 bg-ink/[0.02]">
+              <div className="flex items-center justify-between px-2 py-1.5 border-b border-ink/5 bg-ink/[0.02]">
                 <div>
-                  <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">
+                  <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink">
                     Pilih Order — {pickerType === 'delivered' ? 'Status Delivered' : 'Status Cancelled'}
                   </h3>
-                  <p className="text-[11px] md:text-[8px] text-ink/40 mt-0.5">Klik order untuk dipilih sebagai test ID</p>
+                  <p className="text-[9px] text-ink/80 mt-0.5">Klik order untuk dipilih sebagai test ID</p>
                 </div>
                 <button
                   onClick={() => setPickerOpen(false)}
-                  className="text-ink/30 hover:text-ink transition-colors p-1"
+                  className="text-ink/90 hover:text-ink transition-colors p-1"
                 >
                   <X size={14} />
                 </button>
@@ -1169,9 +1169,9 @@ function BiteshipActivationSection() {
                   </div>
                 ) : pickerOrders.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Package size={24} className="text-ink/20 mb-3" />
-                    <p className="text-xs md:text-[10px] font-semibold text-ink/40">Belum ada order dengan status &quot;{pickerType}&quot;</p>
-                    <p className="text-[11px] md:text-[8px] text-ink/25 mt-1">Order akan muncul setelah ada pesanan dengan status ini</p>
+                    <Package size={24} className="text-ink/80 mb-3" />
+                    <p className="text-[10px] font-semibold text-ink/80">Belum ada order dengan status &quot;{pickerType}&quot;</p>
+                    <p className="text-[9px] text-ink/25 mt-1">Order akan muncul setelah ada pesanan dengan status ini</p>
                   </div>
                 ) : (
                   <div className="divide-y divide-ink/5">
@@ -1179,7 +1179,7 @@ function BiteshipActivationSection() {
                       <div
                         key={order.id}
                         onClick={() => selectOrder(order.id)}
-                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-rose/[0.03] transition-colors"
+                        className="flex items-center gap-3 px-2 py-1.5 cursor-pointer hover:bg-rose/[0.03] transition-colors"
                       >
                         <div className={cn(
                           "w-3 h-3 rounded-sm border flex items-center justify-center shrink-0",
@@ -1195,7 +1195,7 @@ function BiteshipActivationSection() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs md:text-[9px] font-medium text-ink font-mono">{order.id}…</span>
+                            <span className="text-[9px] font-medium text-ink font-mono">{order.id}…</span>
                             <span className={cn(
                               "text-[10px] md:text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-medium",
                               pickerType === 'delivered'
@@ -1206,13 +1206,13 @@ function BiteshipActivationSection() {
                             </span>
                           </div>
                           {order.tracking_id && (
-                            <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">Resi: {order.tracking_id}</p>
+                            <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">Resi: {order.tracking_id}</p>
                           )}
-                          <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
+                          <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">
                             {order.customer_name || 'Unknown'} · {order.courier || '—'}
                           </p>
                         </div>
-                        <span className="text-[11px] md:text-[8px] text-ink/30 shrink-0">
+                        <span className="text-[9px] text-ink/90 shrink-0">
                           {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID') : '—'}
                         </span>
                       </div>
@@ -1222,10 +1222,10 @@ function BiteshipActivationSection() {
               </div>
 
               {/* Footer */}
-              <div className="px-4 py-3 border-t border-ink/5 flex justify-end">
+              <div className="px-2 py-1.5 border-t border-ink/5 flex justify-end">
                 <button
                   onClick={() => setPickerOpen(false)}
-                  className="px-4 py-2 text-xs md:text-[9px] uppercase tracking-widest bg-ink/5 text-ink/50 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors"
+                  className="px-2 py-1 text-[9px] uppercase tracking-widest bg-ink/5 text-ink/90 border border-ink/10 rounded-sm hover:bg-ink/10 hover:text-ink transition-colors"
                 >
                   Tutup
                 </button>
@@ -1238,7 +1238,7 @@ function BiteshipActivationSection() {
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-between items-center">
         <div className="flex items-center gap-2">
           {saved && (
-            <span className="text-xs md:text-[9px] text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="text-[9px] text-emerald-600 font-semibold flex items-center gap-1">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                 <circle cx="5" cy="5" r="4" fill="#2E7D32"/>
                 <path d="M2.5 5L4.5 7L7.5 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1248,13 +1248,13 @@ function BiteshipActivationSection() {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[11px] md:text-[8px] text-ink/30">
+          <span className="text-[9px] text-ink/90">
             {activatedCouriers.length} kurir aktif · {apiKeyName}
           </span>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50"
           >
             {saving ? (
               <span className="inline-block w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
@@ -1539,14 +1539,14 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
       subtitle="Panduan customer care, metode pembayaran, dan retur — tampil di halaman help publik"
     >
       {/* Tabs */}
-      <div className="flex gap-1 mb-5 border-b border-ink/5 pb-4">
+      <div className="flex gap-1 mb-5 border-b border-ink/5 pb-2">
         {GUIDE_TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveGuideTab(tab.id)}
             className={cn(
-              "px-4 py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm transition-colors",
-              activeGuideTab === tab.id ? "bg-rose text-white" : "text-ink/40 hover:bg-ink/5"
+              "px-2 py-1 text-[9px] font-semibold uppercase tracking-wider rounded-sm transition-colors",
+              activeGuideTab === tab.id ? "bg-rose text-white" : "text-ink/80 hover:bg-ink/5"
             )}
           >
             {tab.label}
@@ -1556,8 +1556,8 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Customer Care Tab */}
       {activeGuideTab === 'customer-care' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <Field label="WhatsApp CS">
               <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="08211983774" />
             </Field>
@@ -1577,8 +1577,8 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
             />
           </Field>
           <div className="flex justify-end gap-3">
-            {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
-            <button onClick={() => handleSave('customer_care')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('customer_care')} disabled={saving} className="flex items-center gap-1.5 px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1587,7 +1587,7 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Payment Method Tab */}
       {activeGuideTab === 'payment' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Panduan Pembayaran (visible di halaman help)">
             <Textarea
               value={paymentGuide}
@@ -1601,20 +1601,20 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
               <div className="space-y-2 mb-2">
                 {bankAccounts.map((acc, i) => (
                   <div key={i} className="flex items-center gap-2 p-2.5 border border-ink/10 bg-ink/[0.015]">
-                    <span className="text-xs md:text-[10px] font-medium flex-1">{acc}</span>
-                    <button onClick={() => removeBankAccount(i)} className="text-rose text-[11px] md:text-[8px] uppercase tracking-widest hover:underline">Hapus</button>
+                    <span className="text-[10px] font-medium flex-1">{acc}</span>
+                    <button onClick={() => removeBankAccount(i)} className="text-rose text-[9px] uppercase tracking-widest hover:underline">Hapus</button>
                   </div>
                 ))}
               </div>
               <div className="flex gap-2">
                 <Input value={newBank} onChange={e => setNewBank(e.target.value)} placeholder="BCA 123456789 a.n. PT NINOC" className="flex-1" />
-                <button onClick={() => { if (newBank.trim()) { setBankAccounts(prev => [...prev, newBank.trim()]); setNewBank(''); } }} className="px-3 py-2 bg-ink/10 text-xs md:text-[9px] font-semibold uppercase tracking-wider hover:bg-ink/20 transition-colors shrink-0">+ Tambah</button>
+                <button onClick={() => { if (newBank.trim()) { setBankAccounts(prev => [...prev, newBank.trim()]); setNewBank(''); } }} className="px-1.5 py-1 bg-ink/10 text-[9px] font-semibold uppercase tracking-wider hover:bg-ink/20 transition-colors shrink-0">+ Tambah</button>
               </div>
             </Field>
           </div>
           <div className="flex justify-end gap-3">
-            {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
-            <button onClick={() => handleSave('payment')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('payment')} disabled={saving} className="flex items-center gap-1.5 px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1623,7 +1623,7 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Return & Refund Tab */}
       {activeGuideTab === 'return' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Kebijakan Retur (visible di halaman help)">
             <Textarea
               value={returnPolicy}
@@ -1649,8 +1649,8 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
             />
           </Field>
           <div className="flex justify-end gap-3">
-            {saved && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
-            <button onClick={() => handleSave('return')} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
+            <button onClick={() => handleSave('return')} disabled={saving} className="flex items-center gap-1.5 px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1659,7 +1659,7 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Shipping Info Tab */}
       {activeGuideTab === 'shipping' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Informasi Pengiriman Umum (tampil di halaman help)">
             <Textarea value={shippingInfo} onChange={e => setShippingInfo(e.target.value)} rows={5} placeholder="Kami mengirim via JNE, J&T, SiCepat, dan kurir lain sesuai pilihan saat checkout..." />
           </Field>
@@ -1667,8 +1667,8 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
             <Input value={shippingArea} onChange={e => setShippingArea(e.target.value)} placeholder="Kami mengirim ke seluruh Indonesia" />
           </Field>
           <div className="flex justify-end">
-            {savedMsg && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
-            <button onClick={() => handleSave('shipping')} disabled={saving} className="px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('shipping')} disabled={saving} className="px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1677,13 +1677,13 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* How to Order Tab */}
       {activeGuideTab === 'how-to-order' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Cara Memesan">
             <Textarea value={howToOrder} onChange={e => setHowToOrder(e.target.value)} rows={8} placeholder="1. Pilih produk yang diinginkan&#10;2. Pilih size dan jumlah&#10;3. Masukkan ke keranjang&#10;4. Checkout dan isi alamat&#10;5. Pilih metode pembayaran&#10;6. Transfer dan konfirmasi" />
           </Field>
           <div className="flex justify-end">
-            {savedMsg && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
-            <button onClick={() => handleSave('how_to_order')} disabled={saving} className="px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('how_to_order')} disabled={saving} className="px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1692,13 +1692,13 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* How to Track Tab */}
       {activeGuideTab === 'how-to-track' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Cara Melacak Pesanan">
             <Textarea value={howToTrack} onChange={e => setHowToTrack(e.target.value)} rows={6} placeholder="1. Buka halaman Order History di profil&#10;2. Pilih pesanan yang ingin dilacak&#10;3. Nomor resi tersedia setelah pesanan dikirim&#10;4. Klik nomor resi untuk melacak di website kurir" />
           </Field>
           <div className="flex justify-end">
-            {savedMsg && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
-            <button onClick={() => handleSave('how_to_track')} disabled={saving} className="px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('how_to_track')} disabled={saving} className="px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1707,13 +1707,13 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Terms Tab */}
       {activeGuideTab === 'terms' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Syarat & Ketentuan">
             <Textarea value={termsText} onChange={e => setTermsText(e.target.value)} rows={12} placeholder="Syarat dan Ketentuan Penggunaan&#10;&#10;Dengan mengakses dan menggunakan website NINOC..." />
           </Field>
           <div className="flex justify-end">
-            {savedMsg && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
-            <button onClick={() => handleSave('terms')} disabled={saving} className="px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('terms')} disabled={saving} className="px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1722,13 +1722,13 @@ Dengan mengakses situs dan melakukan pembelian, Anda menyatakan telah membaca, m
 
       {/* Privacy Tab */}
       {activeGuideTab === 'privacy' && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Field label="Kebijakan Privasi">
             <Textarea value={privacyText} onChange={e => setPrivacyText(e.target.value)} rows={12} placeholder="Kebijakan Privasi&#10;&#10;NINOC menghargai privasi Anda..." />
           </Field>
           <div className="flex justify-end">
-            {savedMsg && <span className="text-xs md:text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
-            <button onClick={() => handleSave('privacy')} disabled={saving} className="px-4 py-2 bg-rose text-white text-xs md:text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
+            {savedMsg && <span className="text-[9px] text-emerald-600 font-semibold mr-3">{savedMsg}</span>}
+            <button onClick={() => handleSave('privacy')} disabled={saving} className="px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1779,26 +1779,26 @@ function HelpCenterSection() {
     >
       <div className="space-y-3 mb-4">
         {faqs.map(faq => (
-          <div key={faq.id} className="border border-ink/10 rounded-sm p-4 bg-white">
+          <div key={faq.id} className="border border-ink/10 rounded-sm p-2 bg-white">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-2">
-                <span className="text-[10px] md:text-[7px] uppercase tracking-widest bg-ink/5 text-ink/40 px-1.5 py-0.5 rounded-sm font-medium mt-0.5 shrink-0">Q</span>
-                <p className="text-xs md:text-[10px] font-semibold text-ink">{faq.q}</p>
+                <span className="text-[10px] md:text-[7px] uppercase tracking-widest bg-ink/5 text-ink/80 px-1.5 py-0.5 rounded-sm font-medium mt-0.5 shrink-0">Q</span>
+                <p className="text-[10px] font-semibold text-ink">{faq.q}</p>
               </div>
-              <button onClick={() => setFaqs(prev => prev.filter(f => f.id !== faq.id))} className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500 shrink-0">Hapus</button>
+              <button onClick={() => setFaqs(prev => prev.filter(f => f.id !== faq.id))} className="text-[9px] uppercase tracking-widest text-ink/90 hover:text-red-500 shrink-0">Hapus</button>
             </div>
             <div className="ml-5 mt-2">
               <span className="text-[10px] md:text-[7px] uppercase tracking-widest bg-rose/10 text-rose px-1.5 py-0.5 rounded-sm font-medium">A</span>
-              <p className="text-xs md:text-[9px] text-ink/60 mt-1.5 leading-relaxed">{faq.a}</p>
+              <p className="text-[9px] text-ink/80 mt-1.5 leading-relaxed">{faq.a}</p>
             </div>
           </div>
         ))}
       </div>
-      <div className="border border-dashed border-ink/20 rounded-sm p-4 bg-ink/[0.015] space-y-2">
-        <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium">Tambah FAQ</p>
+      <div className="border border-dashed border-ink/20 rounded-sm p-2 bg-ink/[0.015] space-y-2">
+        <p className="text-[9px] uppercase tracking-widest text-ink/80 font-medium">Tambah FAQ</p>
         <Input value={newQ} onChange={e => setNewQ(e.target.value)} placeholder="Pertanyaan" />
         <Textarea value={newA} onChange={e => setNewA(e.target.value)} rows={2} placeholder="Jawaban" />
-        <button onClick={addFaq} className="px-4 py-1.5 bg-ink/10 text-ink/50 text-xs md:text-[9px] uppercase tracking-widest rounded-sm hover:bg-ink/20 transition-colors">+ Tambah FAQ</button>
+        <button onClick={addFaq} className="px-4 py-1.5 bg-ink/10 text-ink/90 text-[9px] uppercase tracking-widest rounded-sm hover:bg-ink/20 transition-colors">+ Tambah FAQ</button>
       </div>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
         <SaveButton loading={saving} onClick={handleSave} />
@@ -1847,22 +1847,22 @@ function ReplyTemplateSection() {
           )}>
             <div className="flex items-center justify-between px-3.5 py-2.5 bg-ink/[0.02] border-b border-ink/5">
               <div className="flex items-center gap-2">
-                <span className="text-xs md:text-[10px] font-semibold text-ink">{t.name}</span>
-                <span className="text-[10px] md:text-[7px] font-mono bg-ink/5 text-ink/40 px-1.5 py-0.5 rounded-sm">{t.shortcut}</span>
+                <span className="text-[10px] font-semibold text-ink">{t.name}</span>
+                <span className="text-[10px] md:text-[7px] font-mono bg-ink/5 text-ink/80 px-1.5 py-0.5 rounded-sm">{t.shortcut}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Toggle checked={t.active} onChange={() => {}} />
-                <button className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 hover:text-rose">Edit</button>
-                <button onClick={() => setTemplates(prev => prev.filter(x => x.id !== t.id))} className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 hover:text-red-500">Hapus</button>
+                <button className="text-[9px] uppercase tracking-widest text-ink/90 hover:text-rose">Edit</button>
+                <button onClick={() => setTemplates(prev => prev.filter(x => x.id !== t.id))} className="text-[9px] uppercase tracking-widest text-ink/90 hover:text-red-500">Hapus</button>
               </div>
             </div>
             <div className="px-3.5 py-2.5">
-              <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{t.content}</p>
+              <p className="text-[9px] text-ink/80 leading-relaxed">{t.content}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="flex items-center gap-2 px-4 py-2 border border-dashed border-ink/20 text-ink/40 text-xs md:text-[9px] uppercase tracking-widest rounded-sm hover:border-rose/40 hover:text-rose transition-colors">
+      <button className="flex items-center gap-2 px-2 py-1 border border-dashed border-ink/20 text-ink/80 text-[9px] uppercase tracking-widest rounded-sm hover:border-rose/40 hover:text-rose transition-colors">
         <Plus size={12} /> Tambah Template
       </button>
       <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end">
@@ -1889,11 +1889,11 @@ function ChangePasswordSection() {
       title="Change Password"
       subtitle="Ganti password admin dashboard"
     >
-      <div className="max-w-sm space-y-4">
+      <div className="max-w-sm space-y-2">
         <Field label="Password Saat Ini">
           <div className="relative">
             <Input type={showCurrent ? 'text' : 'password'} value={current} onChange={e => setCurrent(e.target.value)} placeholder="Masukkan password saat ini" className="pr-8" />
-            <button onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/30">
+            <button onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/90">
               {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
             </button>
           </div>
@@ -1901,7 +1901,7 @@ function ChangePasswordSection() {
         <Field label="Password Baru" hint="Minimal 12 karakter, kombinasi huruf besar, kecil, angka, dan simbol">
           <div className="relative">
             <Input type={showNew ? 'text' : 'password'} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Minimal 12 karakter" className="pr-8" />
-            <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/30">
+            <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/90">
               {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
             </button>
           </div>
@@ -1920,7 +1920,7 @@ function ChangePasswordSection() {
               </div>
               <span className={cn(
                 "text-[10px] md:text-[7px] font-medium uppercase tracking-widest",
-                strength === 'strong' ? 'text-emerald-600' : strength === 'medium' ? 'text-amber-600' : strength === 'weak' ? 'text-red-500' : 'text-ink/20'
+                strength === 'strong' ? 'text-emerald-600' : strength === 'medium' ? 'text-amber-600' : strength === 'weak' ? 'text-red-500' : 'text-ink/80'
               )}>
                 {strength === 'strong' ? 'Kuat' : strength === 'medium' ? 'Sedang' : strength === 'weak' ? 'Lemah' : ''}
               </span>
@@ -1933,7 +1933,7 @@ function ChangePasswordSection() {
             <p className="text-[10px] md:text-[7px] text-red-500 mt-1">Password tidak cocok</p>
           )}
         </Field>
-        <button className="w-full py-2.5 bg-rose text-white text-xs md:text-[10px] uppercase tracking-widest font-medium rounded-sm hover:bg-rose/90 transition-colors">
+        <button className="w-full py-2.5 bg-rose text-white text-[10px] uppercase tracking-widest font-medium rounded-sm hover:bg-rose/90 transition-colors">
           Update Password
         </button>
       </div>
@@ -1964,19 +1964,19 @@ export function SettingsTab() {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col h-full space-y-2">
       {/* Header */}
       <div className="shrink-0">
         <h2 className="text-xl font-medium text-ink tracking-tight">Settings</h2>
-        <p className="text-xs md:text-[10px] uppercase tracking-wider text-ink/40 mt-1">Konfigurasi dan manajemen toko</p>
+        <p className="text-[10px] uppercase tracking-wider text-ink/80 mt-1">Konfigurasi dan manajemen toko</p>
       </div>
 
       {/* Sub-nav + Content layout */}
-      <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+      <div className="flex flex-col lg:flex-row gap-2 flex-1 min-h-0">
         {/* Sub-nav sidebar */}
         <div className="lg:w-52 shrink-0 bg-white rounded-sm border border-ink/10 overflow-hidden">
-          <div className="px-3 py-2.5 border-b border-ink/5 bg-ink/[0.02]">
-            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 font-medium">Configuration</p>
+          <div className="px-1.5 py-1.5 border-b border-ink/5 bg-ink/[0.02]">
+            <p className="text-[9px] uppercase tracking-widest text-ink/80 font-medium">Configuration</p>
           </div>
           <nav className="divide-y divide-ink/5">
             {SETTINGS_ITEMS.map(item => {
@@ -1987,14 +1987,14 @@ export function SettingsTab() {
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
                   className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors",
+                    "w-full flex items-center gap-2.5 px-1.5 py-1.5 text-left transition-colors",
                     isActive
                       ? "bg-rose/5 text-rose"
-                      : "text-ink/50 hover:bg-ink/[0.02] hover:text-ink/70"
+                      : "text-ink/90 hover:bg-ink/[0.02] hover:text-ink/90"
                   )}
                 >
                   <Icon size={12} className={isActive ? 'text-rose' : ''} />
-                  <span className="text-xs md:text-[9px] font-medium tracking-wide leading-none">{item.label}</span>
+                  <span className="text-[9px] font-medium tracking-wide leading-none">{item.label}</span>
                   {isActive && <ChevronRight size={10} className="ml-auto" />}
                 </button>
               );

@@ -38,9 +38,9 @@ function StatCard({
   color?: string; trend?: 'up' | 'down';
 }) {
   return (
-    <div className="bg-white border border-ink/5 p-4 space-y-3">
+    <div className="bg-white border border-ink/5 p-2 space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">{label}</p>
+        <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">{label}</p>
         <div className={cn('w-6 h-6 rounded-sm flex items-center justify-center',
           color === 'rose' ? 'bg-rose/10' : color === 'emerald' ? 'bg-emerald-50' : color === 'amber' ? 'bg-amber-50' : 'bg-blue-50'
         )}>
@@ -55,7 +55,7 @@ function StatCard({
           trend === 'up' ? <TrendingUp size={14} className="text-emerald-500 mb-1" /> : <TrendingDown size={14} className="text-red-500 mb-1" />
         )}
       </div>
-      {sub && <p className="text-[11px] md:text-[8px] text-ink/30">{sub}</p>}
+      {sub && <p className="text-[9px] text-ink/90">{sub}</p>}
     </div>
   );
 }
@@ -67,13 +67,13 @@ function MiniBar({ value, max, color = 'bg-rose' }: { value: number; max: number
       <div className="flex-1 h-1.5 bg-ink/5 rounded-full overflow-hidden">
         <div className={cn('h-full rounded-full transition-all', color)} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-[11px] md:text-[8px] font-medium text-ink/40 w-6 text-right shrink-0">{value}</span>
+      <span className="text-[9px] font-medium text-ink/80 w-6 text-right shrink-0">{value}</span>
     </div>
   );
 }
 
 function SimpleLineChart({ data }: { data: { date: string; count: number }[] }) {
-  if (data.length === 0) return <p className="text-xs md:text-[9px] text-ink/20">No data</p>;
+  if (data.length === 0) return <p className="text-[9px] text-ink/80">No data</p>;
   const max = Math.max(...data.map(d => d.count), 1);
   const H = 60;
   const W = 280;
@@ -135,7 +135,7 @@ function SimplePieChart({ data }: { data: { category: string; count: number; per
   );
 
     return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgb(0,0,0,0.05)" strokeWidth="14" />
         {positioned.map((s, i) => (
@@ -155,8 +155,8 @@ function SimplePieChart({ data }: { data: { category: string; count: number; per
         {data.map((d, i) => (
           <div key={d.category} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-            <span className="text-[11px] md:text-[8px] text-ink/60 capitalize flex-1 truncate">{d.category}</span>
-            <span className="text-[11px] md:text-[8px] font-semibold text-ink/40">{d.percentage}%</span>
+            <span className="text-[9px] text-ink/80 capitalize flex-1 truncate">{d.category}</span>
+            <span className="text-[9px] font-semibold text-ink/80">{d.percentage}%</span>
           </div>
         ))}
       </div>
@@ -193,7 +193,7 @@ export function CRMTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-[13px] font-display italic font-medium uppercase tracking-widest text-ink">Analytics</h2>
-          <p className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest mt-0.5">Support CRM Dashboard</p>
+          <p className="text-[9px] text-ink/90 uppercase tracking-widest mt-0.5">Support CRM Dashboard</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-ink/5 rounded-sm p-0.5">
@@ -202,8 +202,8 @@ export function CRMTab() {
                 key={v}
                 onClick={() => setPeriod(v)}
                 className={cn(
-                  'px-2.5 py-1 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider rounded-sm transition-colors',
-                  period === v ? 'bg-rose text-white' : 'text-ink/30 hover:text-ink/60'
+                  'px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider rounded-sm transition-colors',
+                  period === v ? 'bg-rose text-white' : 'text-ink/90 hover:text-ink/80'
                 )}
               >
                 {label}
@@ -215,7 +215,7 @@ export function CRMTab() {
             onClick={fetchAnalytics}
             className="w-7 h-7 bg-ink/5 flex items-center justify-center rounded-sm hover:bg-rose/10 transition-colors"
           >
-            <RefreshCw size={11} className={cn('text-ink/40', loading && 'animate-spin')} />
+            <RefreshCw size={11} className={cn('text-ink/80', loading && 'animate-spin')} />
           </motion.button>
         </div>
       </div>
@@ -251,10 +251,10 @@ export function CRMTab() {
 
             {/* Ticket Volume Over Time */}
             {data.ticketsOverTime.length > 0 && (
-              <div className="bg-white border border-ink/5 p-4 space-y-3">
+              <div className="bg-white border border-ink/5 p-2 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Ticket Volume</p>
-                  <p className="text-[10px] md:text-[7px] text-ink/20">{data.ticketsOverTime.length} days</p>
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Ticket Volume</p>
+                  <p className="text-[10px] md:text-[7px] text-ink/80">{data.ticketsOverTime.length} days</p>
                 </div>
                 <SimpleLineChart data={data.ticketsOverTime} />
               </div>
@@ -263,8 +263,8 @@ export function CRMTab() {
             <div className="grid grid-cols-2 gap-3">
               {/* Category Distribution */}
               {data.topCategories.length > 0 && (
-                <div className="bg-white border border-ink/5 p-4 space-y-3">
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Top Categories</p>
+                <div className="bg-white border border-ink/5 p-2 space-y-3">
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Top Categories</p>
                   <SimplePieChart data={data.topCategories} />
                   <div className="space-y-1">
                     {data.topCategories.map(cat => (
@@ -275,13 +275,13 @@ export function CRMTab() {
               )}
 
               {/* Messages Breakdown */}
-              <div className="bg-white border border-ink/5 p-4 space-y-3">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Messages</p>
+              <div className="bg-white border border-ink/5 p-2 space-y-3">
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Messages</p>
                 <div className="space-y-2.5">
                   <div>
                     <div className="flex justify-between mb-1">
-                      <span className="text-[11px] md:text-[8px] text-ink/50">Auto-reply</span>
-                      <span className="text-[11px] md:text-[8px] font-semibold text-rose">{data.messages.autoReplyRate}%</span>
+                      <span className="text-[9px] text-ink/90">Auto-reply</span>
+                      <span className="text-[9px] font-semibold text-rose">{data.messages.autoReplyRate}%</span>
                     </div>
                     <div className="h-1.5 bg-ink/5 rounded-full overflow-hidden">
                       <div className="h-full bg-rose rounded-full transition-all" style={{ width: `${data.messages.autoReplyRate}%` }} />
@@ -294,7 +294,7 @@ export function CRMTab() {
                     </div>
                     <div className="bg-ink/5 rounded-sm p-2 space-y-0.5">
                       <p className="text-[14px] font-display italic font-bold text-ink">{data.messages.adminReplyCount}</p>
-                      <p className="text-[10px] md:text-[7px] text-ink/40">Manual replies</p>
+                      <p className="text-[10px] md:text-[7px] text-ink/80">Manual replies</p>
                     </div>
                   </div>
                 </div>
@@ -302,10 +302,10 @@ export function CRMTab() {
             </div>
 
             {/* Retur Stats */}
-            <div className="bg-white border border-ink/5 p-4 space-y-3">
+            <div className="bg-white border border-ink/5 p-2 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Retur Requests</p>
-                <span className="text-[11px] md:text-[8px] font-semibold text-rose">{data.returStats.total} total</span>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Retur Requests</p>
+                <span className="text-[9px] font-semibold text-rose">{data.returStats.total} total</span>
               </div>
               <div className="grid grid-cols-5 gap-1.5">
                 {[
@@ -319,7 +319,7 @@ export function CRMTab() {
                     <div className={cn('w-full h-8 rounded-sm flex items-center justify-center', item.color + '/10')}>
                       <span className={cn('text-[13px] font-display italic font-bold', item.text)}>{item.value}</span>
                     </div>
-                    <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-wider">{item.label}</p>
+                    <p className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-wider">{item.label}</p>
                   </div>
                 ))}
               </div>
@@ -327,19 +327,19 @@ export function CRMTab() {
 
             {/* Priority Breakdown */}
             {Object.keys(data.priorityBreakdown).length > 0 && (
-              <div className="bg-white border border-ink/5 p-4 space-y-3">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Priority Breakdown</p>
+              <div className="bg-white border border-ink/5 p-2 space-y-3">
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Priority Breakdown</p>
                 <div className="space-y-1.5">
                   {Object.entries(data.priorityBreakdown).map(([pri, count]) => {
                     const max = Math.max(...Object.values(data.priorityBreakdown), 1);
                     const color = pri === 'urgent' ? 'bg-red-400' : pri === 'high' ? 'bg-amber-400' : pri === 'normal' ? 'bg-blue-400' : 'bg-gray-300';
                     return (
                       <div key={pri} className="flex items-center gap-2">
-                        <span className="text-[11px] md:text-[8px] text-ink/40 w-10 capitalize shrink-0">{pri}</span>
+                        <span className="text-[9px] text-ink/80 w-10 capitalize shrink-0">{pri}</span>
                         <div className="flex-1 h-1.5 bg-ink/5 rounded-full overflow-hidden">
                           <div className={cn('h-full rounded-full', color)} style={{ width: `${(count / max) * 100}%` }} />
                         </div>
-                        <span className="text-[11px] md:text-[8px] font-medium text-ink/40 w-4 text-right">{count}</span>
+                        <span className="text-[9px] font-medium text-ink/80 w-4 text-right">{count}</span>
                       </div>
                     );
                   })}
@@ -349,12 +349,12 @@ export function CRMTab() {
 
             {/* Top Keywords */}
             {data.topKeywords.length > 0 && (
-              <div className="bg-white border border-ink/5 p-4 space-y-3">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Top Keywords</p>
+              <div className="bg-white border border-ink/5 p-2 space-y-3">
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Top Keywords</p>
                 <div className="flex flex-wrap gap-1.5">
                   {data.topKeywords.map(kw => (
                     <span key={kw.keyword} className="inline-flex items-center gap-1 px-2 py-1 bg-rose/5 border border-rose/10 rounded-sm">
-                      <span className="text-[11px] md:text-[8px] font-semibold text-rose capitalize">{kw.keyword}</span>
+                      <span className="text-[9px] font-semibold text-rose capitalize">{kw.keyword}</span>
                       <span className="text-[10px] md:text-[7px] text-rose/40">{kw.count}x</span>
                     </span>
                   ))}
@@ -366,21 +366,21 @@ export function CRMTab() {
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-white border border-ink/5 p-3 text-center">
                 <p className="text-[16px] font-display italic font-bold text-ink">{s?.resolvedTickets || 0}</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">Resolved</p>
+                <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">Resolved</p>
               </div>
               <div className="bg-white border border-ink/5 p-3 text-center">
                 <p className="text-[16px] font-display italic font-bold text-rose">{s?.flaggedTickets || 0}</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">Flagged</p>
+                <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">Flagged</p>
               </div>
               <div className="bg-white border border-ink/5 p-3 text-center">
                 <p className="text-[16px] font-display italic font-bold text-ink">{s?.avgMessagesPerTicket || 0}</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">Msg/ticket</p>
+                <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">Msg/ticket</p>
               </div>
             </div>
           </>
         ) : (
           <div className="py-12 text-center">
-            <p className="text-xs md:text-[9px] text-ink/30">No analytics data available</p>
+            <p className="text-[9px] text-ink/90">No analytics data available</p>
           </div>
         )}
       </div>

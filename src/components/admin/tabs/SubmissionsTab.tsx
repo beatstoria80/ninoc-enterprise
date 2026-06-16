@@ -76,32 +76,32 @@ export function SubmissionsTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-display font-medium text-ink">Supplier Submissions (Curation)</h2>
-          <p className="text-xs text-ink/60">Review incoming B2B goods, apply NINOC markup, and approve to catalog.</p>
+          <p className="text-xs text-ink/80">Review incoming B2B goods, apply NINOC markup, and approve to catalog.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-2">
         {submissions.map((sub, idx) => (
           <div 
             key={sub.id} 
-            className="stagger-fade-in bg-white border border-ink/5 p-6 rounded-xl shadow-sm flex flex-col md:flex-row gap-6 md:items-center justify-between"
+            className="stagger-fade-in bg-white border border-ink/5 p-3 rounded-xl shadow-sm flex flex-col md:flex-row gap-3 md:items-center justify-between"
             style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
           >
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-3">
                 <h3 className="font-bold text-ink text-lg">{sub.product_name}</h3>
-                <span className="px-2 py-0.5 bg-ink/5 text-xs md:text-[10px] uppercase tracking-widest font-medium rounded text-ink/60">
+                <span className="px-2 py-0.5 bg-ink/5 text-[10px] uppercase tracking-widest font-medium rounded text-ink/80">
                   {sub.categories?.name || 'Uncategorized'}
                 </span>
               </div>
-              <p className="text-sm text-ink/70 max-w-2xl">{sub.description}</p>
+              <p className="text-xs text-ink/90 max-w-2xl">{sub.description}</p>
               
-              <div className="flex items-center gap-6 pt-2">
-                <div className="flex items-center gap-2 text-xs text-ink/60">
+              <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-2 text-xs text-ink/80">
                   <Building size={14} />
                   <span>{sub.suppliers?.name}</span>
                 </div>
@@ -115,13 +115,13 @@ export function SubmissionsTab() {
             <div className="flex items-center gap-3 shrink-0">
               <button 
                 onClick={() => handleAction(sub, 'reject')}
-                className="px-4 py-2 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2"
+                className="px-2 py-1 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2"
               >
                 <X size={14} /> Reject
               </button>
               <button 
                 onClick={() => handleAction(sub, 'approve')}
-                className="px-4 py-2 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm"
+                className="px-2 py-1 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm"
               >
                 <Check size={14} /> Approve & Markup
               </button>
@@ -130,10 +130,10 @@ export function SubmissionsTab() {
         ))}
         
         {!loading && submissions.length === 0 && (
-          <div className="bg-white border border-ink/5 rounded-xl p-12 text-center text-ink/40">
+          <div className="bg-white border border-ink/5 rounded-xl p-12 text-center text-ink/80">
             <PackageSearch className="mx-auto mb-4 opacity-50" size={32} />
             <h3 className="text-ink font-medium mb-1">No Pending Submissions</h3>
-            <p className="text-sm">All factory product submissions have been curated.</p>
+            <p className="text-xs">All factory product submissions have been curated.</p>
           </div>
         )}
       </div>

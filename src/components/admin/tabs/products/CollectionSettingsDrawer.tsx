@@ -239,7 +239,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
             className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col border-l border-gray-100"
           >
             {/* HEADER */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <div className="flex items-center justify-between p-2 border-b border-gray-100">
               <h2 className="font-display font-medium text-ink">
                 {collection ? 'Edit Collection' : 'Create Collection'}
               </h2>
@@ -255,7 +255,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "flex-1 py-1.5 text-xs md:text-[10px] uppercase tracking-wider font-medium rounded transition-colors",
+                    "flex-1 py-1.5 text-[10px] uppercase tracking-wider font-medium rounded transition-colors",
                     activeTab === tab ? "bg-white text-ink shadow-sm" : "text-gray-500 hover:text-ink hover:bg-white/50"
                   )}
                 >
@@ -265,11 +265,11 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
             </div>
 
             {/* CONTENT */}
-            <div className="flex-1 overflow-y-auto minimal-scroll p-6">
+            <div className="flex-1 overflow-y-auto minimal-scroll p-3">
               {activeTab === 'general' ? (
-                <div className="space-y-6">
+                <div className="space-y-3">
                   {/* Basic Info */}
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-ink">Collection Name</label>
                       <input
@@ -277,7 +277,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                         value={formData.name}
                         onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="e.g. Ramadhan Sale 2026"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                        className="w-full px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
                     </div>
                     
@@ -287,7 +287,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                         type="text"
                         value={formData.slug}
                         onChange={e => setFormData(prev => ({ ...prev, slug: e.target.value.toLowerCase() }))}
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                        className="w-full px-1.5 py-1 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
                     </div>
 
@@ -297,7 +297,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                         value={formData.description || ''}
                         onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         rows={3}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all resize-none"
+                        className="w-full px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all resize-none"
                       />
                     </div>
                   </div>
@@ -309,7 +309,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                     <label className="text-xs font-medium text-ink flex items-center gap-2">
                       <ImageIcon size={14} /> Banner Media (Optional)
                     </label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       {formData.banner_url ? (
                         <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 group">
                           {isVideoUrl(formData.banner_url) ? (
@@ -333,12 +333,12 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       ) : (
                         <div className="relative w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col items-center justify-center gap-1">
                           <ImageIcon size={16} className="text-gray-400" />
-                          <span className="text-xs md:text-[9px] text-gray-400 font-medium">No Media</span>
+                          <span className="text-[9px] text-gray-400 font-medium">No Media</span>
                         </div>
                       )}
 
                       <div className="flex-1">
-                        <label className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg text-xs font-medium text-ink cursor-pointer transition-colors disabled:opacity-50 w-full sm:w-auto">
+                        <label className="inline-flex items-center justify-center gap-2 px-2 py-1 bg-white border border-gray-200 hover:border-gray-300 rounded-lg text-xs font-medium text-ink cursor-pointer transition-colors disabled:opacity-50 w-full sm:w-auto">
                           {isUploadingBanner ? (
                             <>
                               <span className="w-3 h-3 border-2 border-ink/20 border-t-ink rounded-full animate-spin" />
@@ -358,7 +358,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                             disabled={isUploadingBanner}
                           />
                         </label>
-                        <p className="text-xs md:text-[10px] text-gray-400 mt-2">
+                        <p className="text-[10px] text-gray-400 mt-2">
                           Recommended format: JPG, PNG, MP4, WEBM. Ratio 16:9 or 3:1.
                         </p>
                       </div>
@@ -368,13 +368,13 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                   <hr className="border-gray-100" />
 
                   {/* Settings */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-ink">Status</label>
                       <select
                         value={formData.status}
                         onChange={e => setFormData(prev => ({ ...prev, status: e.target.value as any }))}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                        className="w-full px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       >
                         <option value="draft">Draft</option>
                         <option value="active">Active</option>
@@ -387,7 +387,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       <select
                         value={formData.collection_type}
                         onChange={e => setFormData(prev => ({ ...prev, collection_type: e.target.value as any }))}
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none cursor-not-allowed"
+                        className="w-full px-1.5 py-1 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none cursor-not-allowed"
                         disabled
                       >
                         <option value="manual">Manual</option>
@@ -401,7 +401,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                         type="date"
                         value={formData.start_date || ''}
                         onChange={e => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                        className="w-full px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
                     </div>
 
@@ -411,13 +411,13 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                         type="date"
                         value={formData.end_date || ''}
                         onChange={e => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                        className="w-full px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                       />
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <div className="relative">
                     <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -425,7 +425,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       placeholder="Search products to add..."
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-rose focus:ring-1 focus:ring-rose outline-none transition-all"
                     />
                   </div>
 
@@ -450,8 +450,8 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-ink line-clamp-2">{product.name}</p>
-                            <p className="text-xs md:text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
+                            <p className="text-xs font-medium text-ink line-clamp-2">{product.name}</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
                           </div>
                           <p className="text-xs font-medium text-ink">
                             Rp {product.price.toLocaleString('id-ID')}
@@ -465,12 +465,12 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
             </div>
 
             {/* FOOTER */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <div className="p-2 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
               {collection ? (
                 <button
                   onClick={handleDelete}
                   disabled={isSaving || isDeleting}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-rose hover:bg-rose/5 rounded-lg transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-rose hover:bg-rose/5 rounded-lg transition-colors disabled:opacity-50"
                 >
                   {isDeleting ? <span className="w-4 h-4 border-2 border-rose/30 border-t-rose rounded-full animate-spin"/> : <Trash2 size={16} />}
                   Delete
@@ -480,14 +480,14 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
               <div className="flex items-center gap-3">
                 <button 
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-ink transition-colors"
+                  className="px-2 py-1 text-xs font-medium text-gray-600 hover:text-ink transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleSave}
                   disabled={isSaving || !formData.name || isDeleting}
-                  className="flex items-center gap-2 px-6 py-2 bg-ink text-white rounded-lg text-sm font-medium hover:bg-ink/90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+                  className="flex items-center gap-2 px-6 py-2 bg-ink text-white rounded-lg text-xs font-medium hover:bg-ink/90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
                 >
                   {isSaving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : <Save size={16} />}
                   Save Collection

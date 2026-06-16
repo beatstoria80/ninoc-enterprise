@@ -99,7 +99,7 @@ export function FlaggedTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-xl font-display italic font-medium uppercase tracking-tight text-ink">Flagged Tickets</h2>
-          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">
+          <p className="text-[10px] text-ink/80 uppercase tracking-widest mt-1">
             Konten yang perlu ditinjau oleh admin
           </p>
         </div>
@@ -117,13 +117,13 @@ export function FlaggedTab() {
 
       {/* Search */}
       <div className="relative mb-3 shrink-0">
-        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
+        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search flagged tickets..."
-          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-xs md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80 rounded-sm"
         />
       </div>
 
@@ -138,8 +138,8 @@ export function FlaggedTab() {
             <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center">
               <CheckCircle size={24} strokeWidth={1} className="text-emerald-400" />
             </div>
-            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40 font-medium">All Clear — No Flagged Tickets</p>
-            <p className="text-[11px] md:text-[8px] text-ink/20 italic">Semua pesan aman dan sesuai pedoman</p>
+            <p className="text-[10px] uppercase tracking-widest text-ink/80 font-medium">All Clear — No Flagged Tickets</p>
+            <p className="text-[9px] text-ink/80 italic">Semua pesan aman dan sesuai pedoman</p>
           </div>
         ) : (
           filtered.map((ticket, idx) => {
@@ -157,11 +157,11 @@ export function FlaggedTab() {
                 {/* Card Header */}
                 <button
                   onClick={() => setExpandedId(expandedId === ticket.id ? null : ticket.id)}
-                  className="w-full p-4 flex items-center gap-3 text-left hover:bg-ink/[0.01] transition-colors"
+                  className="w-full p-2 flex items-center gap-3 text-left hover:bg-ink/[0.01] transition-colors"
                 >
                   <div className={cn(
                     "w-8 h-8 rounded-sm flex items-center justify-center border shrink-0",
-                    cfg?.color || 'bg-ink/5 text-ink/30 border-ink/10'
+                    cfg?.color || 'bg-ink/5 text-ink/90 border-ink/10'
                   )}>
                     <Icon size={13} strokeWidth={1.5} />
                   </div>
@@ -169,21 +169,21 @@ export function FlaggedTab() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className={cn(
                         "px-1.5 py-0.5 text-[6px] font-bold uppercase tracking-widest rounded-sm border",
-                        cfg?.color || 'bg-ink/5 text-ink/30 border-ink/10'
+                        cfg?.color || 'bg-ink/5 text-ink/90 border-ink/10'
                       )}>
                         {cfg?.label || 'FLAGGED'}
                       </span>
-                      <span className="text-[10px] md:text-[7px] text-ink/20 font-mono">#{ticket.id.split('-')[0]}</span>
+                      <span className="text-[10px] md:text-[7px] text-ink/80 font-mono">#{ticket.id.split('-')[0]}</span>
                     </div>
-                    <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
-                    <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
+                    <p className="text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
+                    <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">
                       {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}
                     </p>
                   </div>
                   <motion.div
                     animate={{ rotate: expandedId === ticket.id ? 90 : 0 }}
                     transition={{ duration: 0.15 }}
-                    className="text-ink/20 shrink-0"
+                    className="text-ink/80 shrink-0"
                   >
                     <ChevronDown size={12} />
                   </motion.div>
@@ -199,7 +199,7 @@ export function FlaggedTab() {
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-ink/5">
+                      <div className="px-4 pb-2 pt-0 space-y-3 border-t border-ink/5">
 
                         {/* Reason */}
                         <div className={cn(
@@ -210,14 +210,14 @@ export function FlaggedTab() {
                               ? 'bg-amber-50/50 border-amber-100'
                               : 'bg-ink/[0.01] border-ink/5'
                         )}>
-                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">
+                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1.5">
                             Alasan Flag
                           </p>
-                          <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
+                          <p className="text-[10px] text-ink/90 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
                         </div>
 
                         {/* Timestamp */}
-                        <div className="flex items-center gap-2 text-[11px] md:text-[8px] text-ink/30">
+                        <div className="flex items-center gap-2 text-[9px] text-ink/90">
                           <Clock size={10} />
                           <span>Di-flag: {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}</span>
                           <span>•</span>
@@ -228,7 +228,7 @@ export function FlaggedTab() {
                         <div className="flex items-center gap-2 pt-1">
                           <button
                             onClick={() => clearFlag(ticket.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs md:text-[9px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[9px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
                           >
                             <CheckCircle size={10} />
                             Clear Flag
@@ -238,7 +238,7 @@ export function FlaggedTab() {
                               // Trigger admin notification
                               window.dispatchEvent(new CustomEvent('open-support-chat'));
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white text-[9px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
                           >
                             <MessageSquare size={10} />
                             Open Chat

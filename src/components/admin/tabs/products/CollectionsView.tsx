@@ -78,7 +78,7 @@ export function CollectionsView() {
   const filtered = collections.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col h-full space-y-2">
       <div className="flex items-center justify-between">
         <div className="relative w-64">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -87,7 +87,7 @@ export function CollectionsView() {
             placeholder="Search collections..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-rose/50"
+            className="w-full pl-9 pr-4 py-1.5 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50"
           />
         </div>
         <button 
@@ -95,23 +95,23 @@ export function CollectionsView() {
           className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded hover:bg-ink/90 transition-colors"
         >
           <Plus size={12} />
-          <span className="text-xs md:text-[9px] uppercase tracking-wider">Create Collection</span>
+          <span className="text-[9px] uppercase tracking-wider">Create Collection</span>
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto minimal-scroll pb-4">
+      <div className="flex-1 overflow-y-auto minimal-scroll pb-2">
         {isLoading ? (
-          <div className="flex items-center justify-center h-64 text-sm text-gray-400">Loading collections...</div>
+          <div className="flex items-center justify-center h-64 text-xs text-gray-400">Loading collections...</div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center border-2 border-dashed border-gray-200 rounded-xl">
-            <p className="text-sm font-medium text-ink mb-1">No collections found</p>
+            <p className="text-xs font-medium text-ink mb-1">No collections found</p>
             <p className="text-xs text-gray-400 mb-4">Create your first marketing collection.</p>
             <button onClick={openCreateDrawer} className="text-xs text-rose font-medium hover:underline">
               + Create New
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {filtered.map((collection: any) => (
               <div 
                 key={collection.id} 
@@ -133,7 +133,7 @@ export function CollectionsView() {
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                   <div className="absolute top-3 right-3 flex items-center gap-2">
                     <span className={cn(
-                      "px-2 py-1 text-[11px] md:text-[8px] uppercase tracking-wider rounded-full font-medium backdrop-blur-md",
+                      "px-2 py-1 text-[9px] uppercase tracking-wider rounded-full font-medium backdrop-blur-md",
                       collection.status === 'active' ? "bg-emerald-500/90 text-white" :
                       collection.status === 'scheduled' ? "bg-amber-500/90 text-white" :
                       "bg-white/90 text-gray-600"
@@ -143,7 +143,7 @@ export function CollectionsView() {
                   </div>
                 </div>
                 
-                <div className="p-4 flex-1 flex flex-col">
+                <div className="p-2 flex-1 flex flex-col">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-ink line-clamp-2 pr-2">{collection.name}</h3>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -169,7 +169,7 @@ export function CollectionsView() {
                     </div>
                     
                     {(collection.start_date || collection.end_date) && (
-                      <div className="flex items-center gap-2 text-xs md:text-[10px] text-gray-400">
+                      <div className="flex items-center gap-2 text-[10px] text-gray-400">
                         <Calendar size={12} />
                         <span>
                           {collection.start_date ? new Date(collection.start_date).toLocaleDateString() : 'Now'} - {collection.end_date ? new Date(collection.end_date).toLocaleDateString() : 'Ongoing'}

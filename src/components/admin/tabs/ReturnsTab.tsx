@@ -35,7 +35,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
 function StatusBadge({ status }: { status: ReturnStatus }) {
   const cfg = STATUS_CONFIG[status];
   return (
-    <span className={cn("inline-block px-2 py-0.5 text-[11px] md:text-[8px] font-semibold uppercase tracking-widest rounded-sm", cfg.bg, cfg.text)}>
+    <span className={cn("inline-block px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest rounded-sm", cfg.bg, cfg.text)}>
       {cfg.label}
     </span>
   );
@@ -126,7 +126,7 @@ export function ReturnsTab() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h2 className="text-xl font-medium text-ink uppercase tracking-tight">Retur</h2>
-          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">
+          <p className="text-[10px] text-ink/80 uppercase tracking-widest mt-1">
             {pendingCount > 0 ? `${pendingCount} request pending` : 'Manage product returns and refunds'}
           </p>
         </div>
@@ -139,10 +139,10 @@ export function ReturnsTab() {
             key={tab.id}
             onClick={() => setFilter(tab.id)}
             className={cn(
-              "px-3 py-1.5 text-xs md:text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
+              "px-3 py-1.5 text-[9px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors",
               filter === tab.id
                 ? "bg-ink text-white"
-                : "bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink"
+                : "bg-ink/5 text-ink/90 hover:bg-ink/10 hover:text-ink"
             )}
           >
             {tab.label}
@@ -160,13 +160,13 @@ export function ReturnsTab() {
 
       {/* Search */}
       <div className="relative mb-3 shrink-0">
-        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
+        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by Order ID or Customer name..."
-          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/20 rounded-sm"
+          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 text-xs md:text-[11px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80 rounded-sm"
         />
       </div>
 
@@ -178,20 +178,20 @@ export function ReturnsTab() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
-            <RefreshCw size={24} className="text-ink/20 mx-auto mb-3" />
-            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No return requests</p>
+            <RefreshCw size={24} className="text-ink/80 mx-auto mb-3" />
+            <p className="text-[10px] uppercase tracking-widest text-ink/80">No return requests</p>
           </div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead className="bg-ink/[0.02] sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">ID</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Date</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Customer</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Type</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Status</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 text-right">Amount</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 w-8"></th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">ID</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Date</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Customer</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Type</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Status</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5 text-right">Amount</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5 w-8"></th>
               </tr>
             </thead>
             <tbody>
@@ -209,38 +209,38 @@ export function ReturnsTab() {
                       onClick={() => setExpandedId(isExpanded ? null : ret.id)}
                       className="border-b border-ink/5 hover:bg-ink/[0.02] transition-colors cursor-pointer group"
                     >
-                      <td className="px-4 py-4">
-                        <span className="text-xs md:text-[9px] font-mono bg-ink/5 px-1.5 py-0.5">{ret.id.slice(0, 8)}…</span>
+                      <td className="px-2 py-2">
+                        <span className="text-[9px] font-mono bg-ink/5 px-1.5 py-0.5">{ret.id.slice(0, 8)}…</span>
                       </td>
-                      <td className="px-4 py-4">
-                        <span className="text-xs md:text-[10px] text-ink/60">
+                      <td className="px-2 py-2">
+                        <span className="text-[10px] text-ink/80">
                           {new Date(ret.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
                         </span>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-2 py-2">
                         <div>
-                          <p className="text-xs md:text-[10px] font-medium text-ink">{customerName}</p>
-                          <p className="text-xs md:text-[9px] text-ink/40">{order?.customer?.phone || ''}</p>
+                          <p className="text-[10px] font-medium text-ink">{customerName}</p>
+                          <p className="text-[9px] text-ink/80">{order?.customer?.phone || ''}</p>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <span className={cn("text-xs md:text-[9px] font-semibold uppercase tracking-wider", TYPE_CONFIG[ret.type]?.color || 'text-ink/50')}>
+                      <td className="px-2 py-2">
+                        <span className={cn("text-[9px] font-semibold uppercase tracking-wider", TYPE_CONFIG[ret.type]?.color || 'text-ink/90')}>
                           {TYPE_CONFIG[ret.type]?.label || ret.type}
                         </span>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-2 py-2">
                         <StatusBadge status={ret.status} />
                       </td>
-                      <td className="px-4 py-4 text-right">
-                        <span className="text-xs md:text-[10px] font-medium text-rose">
+                      <td className="px-2 py-2 text-right">
+                        <span className="text-[10px] font-medium text-rose">
                           {orderTotal > 0 ? `IDR ${orderTotal.toLocaleString('id-ID')}` : '-'}
                         </span>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-2 py-2">
                         <motion.div
                           animate={{ rotate: isExpanded ? 90 : 0 }}
                           transition={{ duration: 0.15 }}
-                          className="text-ink/30 group-hover:text-ink"
+                          className="text-ink/90 group-hover:text-ink"
                         >
                           <ChevronDown size={12} />
                         </motion.div>
@@ -258,57 +258,57 @@ export function ReturnsTab() {
                             transition={{ duration: 0.2 }}
                             className="overflow-hidden"
                           >
-                            <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-2 grid grid-cols-1 md:grid-cols-3 gap-2">
 
                               {/* Order Items */}
                               <div className="space-y-2">
-                                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40">Items Returned</p>
+                                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/80">Items Returned</p>
                                 {orderItems.length > 0 ? orderItems.map((item: any) => (
                                   <div key={item.id} className="flex items-center gap-3 p-2 bg-white border border-ink/5">
                                     <div className="w-8 h-8 bg-ink/5 flex items-center justify-center shrink-0">
-                                      <Package size={12} className="text-ink/40" />
+                                      <Package size={12} className="text-ink/80" />
                                     </div>
                                     <div>
-                                      <p className="text-xs md:text-[10px] font-medium text-ink">{item.product_name}</p>
-                                      <p className="text-xs md:text-[9px] text-ink/40">Qty: {item.quantity} · IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                                      <p className="text-[10px] font-medium text-ink">{item.product_name}</p>
+                                      <p className="text-[9px] text-ink/80">Qty: {item.quantity} · IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
                                     </div>
                                   </div>
                                 )) : (
-                                  <p className="text-xs md:text-[9px] text-ink/40 italic">No items</p>
+                                  <p className="text-[9px] text-ink/80 italic">No items</p>
                                 )}
                               </div>
 
                               {/* Reason & Notes */}
                               <div className="space-y-3">
                                 <div>
-                                  <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Reason</p>
-                                  <p className="text-xs md:text-[10px] text-ink leading-relaxed bg-white border border-ink/5 p-2">{ret.reason}</p>
+                                  <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/80 mb-1">Reason</p>
+                                  <p className="text-[10px] text-ink leading-relaxed bg-white border border-ink/5 p-2">{ret.reason}</p>
                                 </div>
                                 {ret.admin_notes && (
                                   <div>
-                                    <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 mb-1">Admin Notes</p>
-                                    <p className="text-xs md:text-[10px] text-ink/70 bg-ink/5 p-2">{ret.admin_notes}</p>
+                                    <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/80 mb-1">Admin Notes</p>
+                                    <p className="text-[10px] text-ink/90 bg-ink/5 p-2">{ret.admin_notes}</p>
                                   </div>
                                 )}
                               </div>
 
                               {/* Actions */}
                               <div className="space-y-2">
-                                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40">Actions</p>
+                                <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/80">Actions</p>
                                 <div className="flex flex-col gap-1.5">
                                   {ret.status === 'requested' && (
                                     <>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'approved'); }}
                                         disabled={isLoadingAction}
-                                        className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                                        className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors disabled:opacity-50"
                                       >
                                         {isLoadingAction ? 'Processing...' : '✓ Approve'}
                                       </button>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); setNotesModal({ id: ret.id, notes: '' }); }}
                                         disabled={isLoadingAction}
-                                        className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-red-50 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-50"
+                                        className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-red-50 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-50"
                                       >
                                         ✗ Reject
                                       </button>
@@ -326,7 +326,7 @@ export function ReturnsTab() {
                                         });
                                       }}
                                       disabled={isLoadingAction}
-                                      className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors disabled:opacity-50"
+                                      className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors disabled:opacity-50"
                                     >
                                       {isLoadingAction ? 'Processing...' : 'Mark Received'}
                                     </button>
@@ -335,18 +335,18 @@ export function ReturnsTab() {
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleStatusUpdate(ret.id, 'completed'); }}
                                       disabled={isLoadingAction}
-                                      className="w-full py-2 text-xs md:text-[9px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50"
+                                      className="w-full py-2 text-[9px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50"
                                     >
                                       {isLoadingAction ? 'Processing...' : '✓ Mark Completed'}
                                     </button>
                                   )}
                                   {(ret.status === 'rejected' || ret.status === 'completed') && (
-                                    <p className="text-xs md:text-[9px] text-ink/40 italic uppercase tracking-wider text-center py-2">
+                                    <p className="text-[9px] text-ink/80 italic uppercase tracking-wider text-center py-2">
                                       {ret.status === 'rejected' ? 'Retur ditolak' : 'Selesai'}
                                     </p>
                                   )}
                                 </div>
-                                <p className="text-[11px] md:text-[8px] text-ink/30 italic">
+                                <p className="text-[9px] text-ink/90 italic">
                                   Order: <span className="font-mono">{ret.order_id.slice(0, 12)}…</span>
                                 </p>
                               </div>
@@ -365,35 +365,35 @@ export function ReturnsTab() {
 
       {/* Reject Notes Modal */}
       {notesModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
           <div className="absolute inset-0 bg-ink/20 backdrop-blur-sm" onClick={() => setNotesModal(null)} />
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative bg-white w-full max-w-sm rounded-sm shadow-2xl overflow-hidden"
           >
-            <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between">
-              <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Reject Return</h3>
-              <button onClick={() => setNotesModal(null)} className="text-ink/30 hover:text-rose"><X size={14} /></button>
+            <div className="px-5 py-2 border-b border-ink/5 flex items-center justify-between">
+              <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink">Reject Return</h3>
+              <button onClick={() => setNotesModal(null)} className="text-ink/90 hover:text-rose"><X size={14} /></button>
             </div>
             <div className="p-5 space-y-3">
               <div>
-                <label className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/40 block mb-1.5">Reason for rejection</label>
+                <label className="text-[9px] font-semibold uppercase tracking-widest text-ink/80 block mb-1.5">Reason for rejection</label>
                 <textarea
                   autoFocus
                   value={notesModal.notes}
                   onChange={e => setNotesModal({ ...notesModal, notes: e.target.value })}
                   rows={3}
                   placeholder="Optional notes..."
-                  className="w-full px-3 py-2 border border-ink/10 text-sm md:text-[11px] focus:outline-none focus:border-rose/40 resize-none"
+                  className="w-full px-1.5 py-1 border border-ink/10 text-xs md:text-[11px] focus:outline-none focus:border-rose/40 resize-none"
                 />
               </div>
             </div>
-            <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2">
-              <button onClick={() => setNotesModal(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink">Cancel</button>
+            <div className="px-5 py-2 border-t border-ink/5 flex items-center justify-end gap-2">
+              <button onClick={() => setNotesModal(null)} className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ink/90 hover:text-ink">Cancel</button>
               <button
                 onClick={() => handleStatusUpdate(notesModal.id, 'rejected', notesModal.notes)}
-                className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600"
+                className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider bg-red-500 text-white hover:bg-red-600"
               >
                 Confirm Reject
               </button>
@@ -404,19 +404,19 @@ export function ReturnsTab() {
 
       {/* Disposition Modal */}
       {dispositionModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
           <div className="absolute inset-0 bg-ink/20 backdrop-blur-sm" onClick={() => setDispositionModal(null)} />
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative bg-white w-full max-w-lg rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
-            <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between shrink-0">
-              <h3 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Kondisi Barang Retur</h3>
-              <button onClick={() => setDispositionModal(null)} className="text-ink/30 hover:text-rose"><X size={14} /></button>
+            <div className="px-5 py-2 border-b border-ink/5 flex items-center justify-between shrink-0">
+              <h3 className="text-xs md:text-[11px] font-semibold uppercase tracking-widest text-ink">Kondisi Barang Retur</h3>
+              <button onClick={() => setDispositionModal(null)} className="text-ink/90 hover:text-rose"><X size={14} /></button>
             </div>
             
-            <div className="p-5 overflow-y-auto minimal-scroll space-y-4">
+            <div className="p-5 overflow-y-auto minimal-scroll space-y-2">
               <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-sm text-xs mb-4">
                 <p className="font-semibold uppercase tracking-widest text-[9px] mb-1">Perhatian</p>
                 <p>Tentukan apakah barang ini masih bisa dijual kembali (Restock) atau masuk ke Gudang Reject (Cacat).</p>
@@ -430,12 +430,12 @@ export function ReturnsTab() {
                   <div key={rItem.id} className="border border-ink/10 p-3 rounded-sm">
                     <div className="flex gap-3 mb-3">
                       <div className="w-10 h-10 bg-ink/5 flex items-center justify-center shrink-0">
-                        <Package size={16} className="text-ink/40" />
+                        <Package size={16} className="text-ink/80" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-ink">{oItem?.product_name || 'Unknown Item'}</p>
-                        <p className="text-xs text-ink/50">Qty Diretur: <strong>{rItem.quantity}</strong></p>
-                        {rItem.reason && <p className="text-[10px] text-ink/40 mt-1 italic">Alasan Konsumen: &quot;{rItem.reason}&quot;</p>}
+                        <p className="text-xs font-medium text-ink">{oItem?.product_name || 'Unknown Item'}</p>
+                        <p className="text-xs text-ink/90">Qty Diretur: <strong>{rItem.quantity}</strong></p>
+                        {rItem.reason && <p className="text-[10px] text-ink/80 mt-1 italic">Alasan Konsumen: &quot;{rItem.reason}&quot;</p>}
                       </div>
                     </div>
                     
@@ -444,7 +444,7 @@ export function ReturnsTab() {
                         onClick={() => setDispositionModal(prev => prev ? { ...prev, dispositions: { ...prev.dispositions, [rItem.id]: 'restock' } } : null)}
                         className={cn(
                           "flex-1 py-2 text-xs font-semibold uppercase tracking-wider border transition-colors rounded-sm",
-                          currentDisp === 'restock' ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-ink/10 text-ink/40 hover:border-emerald-300 hover:bg-emerald-50/50"
+                          currentDisp === 'restock' ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-ink/10 text-ink/80 hover:border-emerald-300 hover:bg-emerald-50/50"
                         )}
                       >
                         ✅ Bagus (Restock)
@@ -453,7 +453,7 @@ export function ReturnsTab() {
                         onClick={() => setDispositionModal(prev => prev ? { ...prev, dispositions: { ...prev.dispositions, [rItem.id]: 'reject_defect' } } : null)}
                         className={cn(
                           "flex-1 py-2 text-xs font-semibold uppercase tracking-wider border transition-colors rounded-sm",
-                          currentDisp === 'reject_defect' ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-ink/10 text-ink/40 hover:border-red-300 hover:bg-red-50/50"
+                          currentDisp === 'reject_defect' ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-ink/10 text-ink/80 hover:border-red-300 hover:bg-red-50/50"
                         )}
                       >
                         ❌ Cacat (Reject)
@@ -464,15 +464,15 @@ export function ReturnsTab() {
               })}
             </div>
 
-            <div className="px-5 py-4 border-t border-ink/5 flex items-center justify-end gap-2 shrink-0 bg-ink/[0.02]">
-              <button onClick={() => setDispositionModal(null)} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50 hover:text-ink">Batal</button>
+            <div className="px-5 py-2 border-t border-ink/5 flex items-center justify-end gap-2 shrink-0 bg-ink/[0.02]">
+              <button onClick={() => setDispositionModal(null)} className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-ink/90 hover:text-ink">Batal</button>
               <button
                 disabled={Object.keys(dispositionModal.dispositions).length !== dispositionModal.items.length || actionLoading === dispositionModal.id}
                 onClick={() => {
                   const arr = Object.entries(dispositionModal.dispositions).map(([k, v]) => ({ return_item_id: k, disposition: v }));
                   handleStatusUpdate(dispositionModal.id, 'received', undefined, arr);
                 }}
-                className="px-4 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider bg-ink text-white hover:bg-rose transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {actionLoading === dispositionModal.id ? 'Memproses...' : 'Konfirmasi Penerimaan'}
               </button>

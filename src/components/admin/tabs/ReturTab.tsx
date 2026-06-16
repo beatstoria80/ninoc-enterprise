@@ -122,38 +122,38 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   return (
     <div className="h-full flex flex-col">
       {/* Panel Header */}
-      <div className="px-4 py-3 border-b border-ink/5 bg-white shrink-0 flex items-center gap-3">
-        <span className={cn('px-2 py-1 text-[11px] md:text-[8px] font-bold uppercase tracking-widest border rounded-sm', cfg.color)}>
+      <div className="px-2 py-1.5 border-b border-ink/5 bg-white shrink-0 flex items-center gap-3">
+        <span className={cn('px-2 py-1 text-[9px] font-bold uppercase tracking-widest border rounded-sm', cfg.color)}>
           {cfg.labelID}
         </span>
         {retur.fraud_suspected && (
-          <span className="px-2 py-1 text-[11px] md:text-[8px] font-bold uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 rounded-sm flex items-center gap-1">
+          <span className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 rounded-sm flex items-center gap-1">
             <AlertCircle size={9} /> Fraud
           </span>
         )}
         {retur.guest_email && (
-          <span className="px-2 py-1 text-[11px] md:text-[8px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 border border-amber-100 rounded-sm flex items-center gap-1">
+          <span className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 border border-amber-100 rounded-sm flex items-center gap-1">
             Guest
           </span>
         )}
         <div className="ml-auto flex items-center gap-2">
           {saved && (
-            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[11px] md:text-[8px] text-emerald-500 font-semibold">
+            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[9px] text-emerald-500 font-semibold">
               Tersimpan!
             </motion.span>
           )}
-          <button onClick={onClose} className="text-[11px] md:text-[8px] text-rose uppercase tracking-wider font-semibold hover:underline">
+          <button onClick={onClose} className="text-[9px] text-rose uppercase tracking-wider font-semibold hover:underline">
             Tutup
           </button>
         </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto minimal-scroll p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto minimal-scroll p-2 space-y-2">
 
         {/* Timeline */}
-        <div className="bg-white border border-ink/5 rounded-sm p-4">
-          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-3">Status Timeline</p>
+        <div className="bg-white border border-ink/5 rounded-sm p-2">
+          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-3">Status Timeline</p>
           <div className="flex items-center gap-0">
             {TIMELINE.map((step, i) => {
               const Icon = step.icon;
@@ -166,12 +166,12 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                       'w-7 h-7 rounded-sm flex items-center justify-center border transition-colors',
                       isDone ? 'bg-emerald-500 border-emerald-500 text-white' :
                       isCurrent ? cfg.color + ' border' :
-                      'bg-ink/5 border-ink/10 text-ink/20'
+                      'bg-ink/5 border-ink/10 text-ink/80'
                     )}>
                       {isDone ? <Check size={11} strokeWidth={2.5} /> : <Icon size={11} strokeWidth={1.5} />}
                     </div>
                     <p className={cn('text-[6px] font-medium uppercase tracking-widest mt-1.5 text-center',
-                      isDone || isCurrent ? 'text-ink/70' : 'text-ink/20'
+                      isDone || isCurrent ? 'text-ink/90' : 'text-ink/80'
                     )}>{step.label}</p>
                   </div>
                   {i < TIMELINE.length - 1 && (
@@ -184,17 +184,17 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         </div>
 
         {/* Customer Info */}
-        <div className="bg-white border border-ink/5 rounded-sm p-4 space-y-2">
-          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Customer</p>
+        <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-2">
+          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Customer</p>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center text-sm md:text-[11px] font-bold shrink-0">
+            <div className="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center text-xs md:text-[11px] font-bold shrink-0">
               {(retur.user?.raw_user_meta_data?.full_name || retur.user?.email || retur.guest_email || 'G')[0].toUpperCase()}
             </div>
             <div>
-              <p className="text-sm md:text-[11px] font-semibold text-ink">
+              <p className="text-xs md:text-[11px] font-semibold text-ink">
                 {retur.user?.raw_user_meta_data?.full_name || retur.guest_email || 'Guest'}
               </p>
-              <p className="text-xs md:text-[9px] text-ink/40">{retur.user?.email || retur.guest_email || 'No email'}</p>
+              <p className="text-[9px] text-ink/80">{retur.user?.email || retur.guest_email || 'No email'}</p>
             </div>
             {retur.guest_email && (
               <span className="ml-auto px-2 py-1 bg-amber-50 text-amber-600 text-[10px] md:text-[7px] font-bold uppercase tracking-widest border border-amber-100 rounded-sm">
@@ -205,29 +205,29 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         </div>
 
         {/* Order & Reason */}
-        <div className="bg-white border border-ink/5 rounded-sm p-4 space-y-3">
-          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Detail</p>
+        <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-3">
+          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Detail</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Order ID</p>
-              <p className="text-sm md:text-[11px] font-semibold text-ink font-mono">{retur.order_id}</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Order ID</p>
+              <p className="text-xs md:text-[11px] font-semibold text-ink font-mono">{retur.order_id}</p>
             </div>
             <div>
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Diajukan</p>
-              <p className="text-xs md:text-[9px] text-ink/60">{formatDate(retur.created_at)}</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Diajukan</p>
+              <p className="text-[9px] text-ink/80">{formatDate(retur.created_at)}</p>
             </div>
           </div>
           <div>
-            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Alasan</p>
+            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Alasan</p>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-rose/10 text-rose text-[11px] md:text-[8px] font-bold uppercase tracking-widest rounded-sm">{retur.reason_label}</span>
-              <span className="text-[10px] md:text-[7px] text-ink/20 font-mono">{retur.reason}</span>
+              <span className="px-2 py-1 bg-rose/10 text-rose text-[9px] font-bold uppercase tracking-widest rounded-sm">{retur.reason_label}</span>
+              <span className="text-[10px] md:text-[7px] text-ink/80 font-mono">{retur.reason}</span>
             </div>
           </div>
           {retur.description && (
             <div>
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Deskripsi</p>
-              <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{retur.description}</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Deskripsi</p>
+              <p className="text-[9px] text-ink/80 leading-relaxed">{retur.description}</p>
             </div>
           )}
         </div>
@@ -237,10 +237,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           <div className="bg-white border border-ink/5 rounded-sm overflow-hidden">
             <div className="px-4 pt-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Video size={12} className="text-ink/30" />
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Bukti Video Unboxing</p>
+                <Video size={12} className="text-ink/90" />
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Bukti Video Unboxing</p>
                 {retur.video_duration_seconds && (
-                  <span className="text-[10px] md:text-[7px] text-ink/20">{retur.video_duration_seconds}s · 1-shot</span>
+                  <span className="text-[10px] md:text-[7px] text-ink/80">{retur.video_duration_seconds}s · 1-shot</span>
                 )}
               </div>
               {retur.fraud_suspected && (
@@ -256,7 +256,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
             {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
               <div className="px-4 pb-3 pt-2 space-y-1">
                 {retur.fraud_reasons.map((r, i) => (
-                  <p key={i} className="text-[11px] md:text-[8px] text-red-400 flex items-start gap-1">
+                  <p key={i} className="text-[9px] text-red-400 flex items-start gap-1">
                     <AlertCircle size={9} className="shrink-0 mt-0.5" />{r}
                   </p>
                 ))}
@@ -266,24 +266,24 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         )}
 
         {/* Admin Notes */}
-        <div className="bg-white border border-ink/5 rounded-sm p-4 space-y-2">
+        <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Catatan Internal</p>
-            {notifyMsg && <span className="text-[11px] md:text-[8px] text-emerald-500 font-semibold">{notifyMsg}</span>}
+            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Catatan Internal</p>
+            {notifyMsg && <span className="text-[9px] text-emerald-500 font-semibold">{notifyMsg}</span>}
           </div>
           <textarea
             value={adminNotes}
             onChange={e => setAdminNotes(e.target.value)}
             rows={3}
             placeholder="Catatan internal — tidak terlihat customer..."
-            className="w-full px-3 py-2 text-xs md:text-[9px] border border-ink/5 rounded-sm outline-none focus:border-rose/40 resize-none placeholder:text-ink/15 bg-ink/[0.01]"
+            className="w-full px-1.5 py-1 text-[9px] border border-ink/5 rounded-sm outline-none focus:border-rose/40 resize-none placeholder:text-ink/15 bg-ink/[0.01]"
           />
           <div className="flex items-center justify-between">
-            <p className="text-[10px] md:text-[7px] text-ink/20 italic">Tidak terlihat oleh customer</p>
+            <p className="text-[10px] md:text-[7px] text-ink/80 italic">Tidak terlihat oleh customer</p>
             <button
               onClick={handleSaveNote}
               disabled={savingNote}
-              className="px-3 py-1.5 bg-ink text-white text-[11px] md:text-[8px] font-semibold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 bg-ink text-white text-[9px] font-semibold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors disabled:opacity-50"
             >
               {savingNote ? 'Menyimpan...' : 'Simpan Catatan'}
             </button>
@@ -292,10 +292,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
         {/* Refund Amount */}
         {['pending', 'reviewed'].includes(status) && (
-          <div className="bg-white border border-ink/5 rounded-sm p-4 space-y-2">
-            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Jumlah Refund</p>
+          <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-2">
+            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Jumlah Refund</p>
             <div className="flex items-center gap-2">
-              <span className="text-xs md:text-[10px] text-ink/40 font-semibold">IDR</span>
+              <span className="text-[10px] text-ink/80 font-semibold">IDR</span>
               <input
                 type="number"
                 value={refundAmount}
@@ -309,7 +309,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
         {/* Approved Refund Display */}
         {status === 'approved' && retur.refund_amount && (
-          <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-4">
+          <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2">
             <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1">Refund Disetujui</p>
             <p className="text-[18px] font-display italic font-bold text-emerald-700">{formatPrice(retur.refund_amount)}</p>
           </div>
@@ -317,34 +317,34 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
         {/* Resolved At */}
         {retur.resolved_at && (
-          <div className="text-[11px] md:text-[8px] text-ink/30 text-center">
+          <div className="text-[9px] text-ink/90 text-center">
             Diselesaikan pada {formatDate(retur.resolved_at)}
           </div>
         )}
       </div>
 
       {/* Action Buttons */}
-      <div className="p-4 border-t border-ink/5 bg-white shrink-0">
+      <div className="p-2 border-t border-ink/5 bg-white shrink-0">
         {['pending', 'reviewed'].includes(status) && (
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleAction('rejected')}
               disabled={saving}
-              className="flex-1 py-2.5 text-xs md:text-[9px] font-semibold uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 rounded-sm hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 text-[9px] font-semibold uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 rounded-sm hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               <X size={11} /> Tolak
             </button>
             <button
               onClick={() => handleAction('reviewed')}
               disabled={saving}
-              className="flex-1 py-2.5 text-xs md:text-[9px] font-semibold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100 rounded-sm hover:bg-blue-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 text-[9px] font-semibold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100 rounded-sm hover:bg-blue-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               <Eye size={11} /> Review
             </button>
             <button
               onClick={() => handleAction('approved')}
               disabled={saving}
-              className="flex-1 py-2.5 text-xs md:text-[9px] font-semibold uppercase tracking-widest bg-emerald-500 text-white rounded-sm hover:bg-emerald-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 text-[9px] font-semibold uppercase tracking-widest bg-emerald-500 text-white rounded-sm hover:bg-emerald-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={11} />}
               Setujui
@@ -355,14 +355,14 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           <button
             onClick={() => handleAction('completed')}
             disabled={saving}
-            className="w-full py-2.5 text-xs md:text-[9px] font-semibold uppercase tracking-widest bg-ink text-white rounded-sm hover:bg-rose transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+            className="w-full py-2.5 text-[9px] font-semibold uppercase tracking-widest bg-ink text-white rounded-sm hover:bg-rose transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
           >
             {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={11} />}
             Tandai Selesai
           </button>
         )}
         {(status === 'rejected' || status === 'completed') && (
-          <p className="text-center text-[11px] md:text-[8px] text-ink/30 uppercase tracking-wider">
+          <p className="text-center text-[9px] text-ink/90 uppercase tracking-wider">
             Retur ini sudah {status === 'rejected' ? 'ditolak' : 'selesai'}
           </p>
         )}
@@ -426,13 +426,13 @@ export function ReturTab() {
                 <RefreshCw size={13} className="text-rose" />
               </div>
               <div>
-                <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">Retur</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">Request Manager</p>
+                <p className="text-[10px] font-semibold text-ink uppercase tracking-wider">Retur</p>
+                <p className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-widest">Request Manager</p>
               </div>
             </div>
             <button
               onClick={fetchReturs}
-              className="w-6 h-6 flex items-center justify-center text-ink/30 hover:text-rose transition-colors"
+              className="w-6 h-6 flex items-center justify-center text-ink/90 hover:text-rose transition-colors"
             >
               <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
             </button>
@@ -454,12 +454,12 @@ export function ReturTab() {
 
           {/* Search */}
           <div className="relative">
-            <Search size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/20" />
+            <Search size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/80" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Order ID / Email / Nama..."
-              className="w-full pl-7 pr-3 py-2 bg-ink/[0.02] border border-ink/5 text-xs md:text-[9px] outline-none focus:border-rose/30 placeholder:text-ink/15 rounded-sm"
+              className="w-full pl-7 pr-3 py-2 bg-ink/[0.02] border border-ink/5 text-[9px] outline-none focus:border-rose/30 placeholder:text-ink/15 rounded-sm"
             />
           </div>
 
@@ -473,7 +473,7 @@ export function ReturTab() {
                   'px-2 py-1 text-[10px] md:text-[7px] font-semibold uppercase tracking-wider rounded-sm transition-colors',
                   statusFilter === s
                     ? 'bg-rose text-white'
-                    : 'bg-ink/5 text-ink/40 hover:bg-ink/10'
+                    : 'bg-ink/5 text-ink/80 hover:bg-ink/10'
                 )}
               >
                 {s}
@@ -491,7 +491,7 @@ export function ReturTab() {
           ) : filtered.length === 0 ? (
             <div className="py-12 text-center">
               <Package size={20} className="text-ink/10 mx-auto mb-2" strokeWidth={1} />
-              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/20">Belum ada request</p>
+              <p className="text-[9px] uppercase tracking-widest text-ink/80">Belum ada request</p>
             </div>
           ) : (
             filtered.map(r => {
@@ -507,13 +507,13 @@ export function ReturTab() {
                 >
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className={cn('w-2 h-2 rounded-sm shrink-0', cfg?.badge || 'bg-gray-300')} />
-                    <span className="text-xs md:text-[9px] font-semibold text-ink uppercase tracking-wider flex-1 truncate font-mono">{r.order_id}</span>
+                    <span className="text-[9px] font-semibold text-ink uppercase tracking-wider flex-1 truncate font-mono">{r.order_id}</span>
                     {r.fraud_suspected && <AlertCircle size={10} className="text-red-500 shrink-0" />}
                     {r.guest_email && <span className="px-1 py-0.5 bg-amber-50 text-amber-600 text-[6px] font-bold uppercase rounded-sm shrink-0">G</span>}
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] md:text-[7px] text-ink/30 truncate">{r.reason_label}</span>
-                    <span className="text-[10px] md:text-[7px] text-ink/20 shrink-0 ml-2">
+                    <span className="text-[10px] md:text-[7px] text-ink/90 truncate">{r.reason_label}</span>
+                    <span className="text-[10px] md:text-[7px] text-ink/80 shrink-0 ml-2">
                       {new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                     </span>
                   </div>
@@ -541,7 +541,7 @@ export function ReturTab() {
               <div className="w-14 h-14 border border-dashed border-ink/10 rounded-full flex items-center justify-center mx-auto">
                 <RefreshCw size={22} className="text-ink/10" strokeWidth={1} />
               </div>
-              <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/20">Pilih request untuk melihat detail</p>
+              <p className="text-[9px] uppercase tracking-widest text-ink/80">Pilih request untuk melihat detail</p>
             </div>
           </div>
         )}

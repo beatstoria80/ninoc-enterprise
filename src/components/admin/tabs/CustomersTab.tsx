@@ -24,13 +24,13 @@ export function CustomersTab({
       key="customers"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col h-full space-y-2 pb-4"
+      className="flex flex-col h-full space-y-2 pb-2"
     >
       {/* Header */}
       <div className="shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">Customers</h2>
-          <span className="text-xs md:text-[9px] text-gray-400">— {customers.length} members</span>
+          <h2 className="text-xs font-medium text-gray-900 uppercase tracking-wide">Customers</h2>
+          <span className="text-[9px] text-gray-400">— {customers.length} members</span>
         </div>
         <button
           onClick={() => {
@@ -56,52 +56,52 @@ export function CustomersTab({
           className="flex items-center gap-1.5 px-3 py-1.5 bg-rose text-white rounded hover:bg-rose/90 transition-colors"
         >
           <Plus size={12} />
-          <span className="text-xs md:text-[9px] uppercase tracking-wider">Add</span>
+          <span className="text-[9px] uppercase tracking-wider">Add</span>
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="shrink-0 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-4 border border-gray-100">
+      <div className="shrink-0 grid grid-cols-1 md:grid-cols-4 gap-2">
+        <div className="bg-white rounded-lg p-2 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-rose/10 rounded-lg flex items-center justify-center">
               <Users size={18} className="text-rose" />
             </div>
             <div>
-              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Members</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Members</p>
               <p className="text-lg font-medium text-gray-900">{customers.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-xl p-2 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
               <Shield size={18} className="text-emerald-600" />
             </div>
             <div>
-              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Verified</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400">Verified</p>
               <p className="text-lg font-medium text-gray-900">{customers.filter(c => c.is_verified).length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-xl p-2 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
               <CreditCard size={18} className="text-amber-600" />
             </div>
             <div>
-              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Spent</p>
               <p className="text-lg font-medium text-gray-900">IDR {(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0)).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-xl p-2 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
               <Star size={18} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-xs md:text-[10px] uppercase tracking-wider text-gray-400">Total Orders</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Orders</p>
               <p className="text-lg font-medium text-gray-900">{customers.reduce((sum, c) => sum + (c.total_orders || 0), 0)}</p>
             </div>
           </div>
@@ -116,7 +116,7 @@ export function CustomersTab({
           placeholder="Search by name, email, or customer number..."
           value={customerSearchQuery}
           onChange={(e) => setCustomerSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose/50"
+          className="w-full pl-10 pr-4 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
         />
       </div>
 
@@ -126,14 +126,14 @@ export function CustomersTab({
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Customer #</th>
-              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Name</th>
-              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Email</th>
-              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Phone</th>
-              <th className="px-6 py-3 text-left text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Location</th>
-              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Status</th>
-              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Orders</th>
-              <th className="px-6 py-3 text-center text-xs md:text-[10px] uppercase tracking-wider text-gray-500">Actions</th>
+              <th className="px-6 py-1.5 text-left text-[10px] uppercase tracking-wider text-gray-500">Customer #</th>
+              <th className="px-6 py-1.5 text-left text-[10px] uppercase tracking-wider text-gray-500">Name</th>
+              <th className="px-6 py-1.5 text-left text-[10px] uppercase tracking-wider text-gray-500">Email</th>
+              <th className="px-6 py-1.5 text-left text-[10px] uppercase tracking-wider text-gray-500">Phone</th>
+              <th className="px-6 py-1.5 text-left text-[10px] uppercase tracking-wider text-gray-500">Location</th>
+              <th className="px-6 py-1.5 text-center text-[10px] uppercase tracking-wider text-gray-500">Status</th>
+              <th className="px-6 py-1.5 text-center text-[10px] uppercase tracking-wider text-gray-500">Orders</th>
+              <th className="px-6 py-1.5 text-center text-[10px] uppercase tracking-wider text-gray-500">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -150,10 +150,10 @@ export function CustomersTab({
               })
               .map((customer) => (
                 <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <span className="font-mono text-sm font-medium text-rose">CST-{String(customer.customer_number).padStart(3, '0')}</span>
+                  <td className="px-1.5 py-1">
+                    <span className="font-mono text-xs font-medium text-rose">CST-{String(customer.customer_number).padStart(3, '0')}</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-1.5 py-1">
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                         {customer.avatar_url ? (
@@ -163,40 +163,40 @@ export function CustomersTab({
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{customer.full_name || `${customer.first_name} ${customer.last_name}`}</p>
-                        <p className="text-xs md:text-[10px] text-gray-400">{customer.membership_tier || 'Member'}</p>
+                        <p className="text-xs font-medium text-gray-900">{customer.full_name || `${customer.first_name} ${customer.last_name}`}</p>
+                        <p className="text-[10px] text-gray-400">{customer.membership_tier || 'Member'}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-1.5 py-1">
                     <div className="flex items-center gap-2">
                       <Mail size={12} className="text-gray-400" />
-                      <span className="text-sm text-gray-700">{customer.email}</span>
+                      <span className="text-xs text-gray-700">{customer.email}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-1.5 py-1">
                     <div className="flex items-center gap-2">
                       <Phone size={12} className="text-gray-400" />
-                      <span className="text-sm text-gray-700">{customer.phone || '-'}</span>
+                      <span className="text-xs text-gray-700">{customer.phone || '-'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-1.5 py-1">
                     <div className="flex items-center gap-2">
                       <MapPin size={12} className="text-gray-400" />
-                      <span className="text-sm text-gray-700">{customer.city || customer.province || '-'}</span>
+                      <span className="text-xs text-gray-700">{customer.city || customer.province || '-'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1.5 py-1 text-center">
                     {customer.is_verified ? (
-                      <span className="text-xs md:text-[9px] uppercase tracking-wider px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full">Verified</span>
+                      <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full">Verified</span>
                     ) : (
-                      <span className="text-xs md:text-[9px] uppercase tracking-wider px-2 py-1 bg-gray-100 text-gray-500 rounded-full">Unverified</span>
+                      <span className="text-[9px] uppercase tracking-wider px-2 py-1 bg-gray-100 text-gray-500 rounded-full">Unverified</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1.5 py-1 text-center">
                     <span className="font-medium text-gray-900">{customer.total_orders || 0}</span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1.5 py-1 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => {
@@ -219,7 +219,7 @@ export function CustomersTab({
                           });
                           setIsCustomerModalOpen(true);
                         }}
-                        className="px-3 py-1.5 text-xs md:text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
+                        className="px-3 py-1.5 text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 rounded hover:bg-rose hover:text-white transition-colors"
                       >
                         Edit
                       </button>
@@ -232,7 +232,7 @@ export function CustomersTab({
         {customers.length === 0 && (
           <div className="p-12 text-center text-gray-400">
             <Users size={32} className="mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No customers registered yet</p>
+            <p className="text-xs">No customers registered yet</p>
           </div>
         )}
         </div>

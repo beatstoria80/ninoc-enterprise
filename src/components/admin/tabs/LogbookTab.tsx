@@ -167,24 +167,24 @@ export function LogbookTab() {
       <div className="flex items-center justify-between mb-6 shrink-0">
         <div>
           <h2 className="text-xl font-display font-medium italic text-ink uppercase tracking-tight">Studio Logbook</h2>
-          <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest mt-1">Manage archival records and process notes</p>
+          <p className="text-[10px] text-ink/80 uppercase tracking-widest mt-1">Manage archival records and process notes</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 bg-ink text-white px-4 py-2 hover:bg-rose transition-colors"
+          className="flex items-center gap-2 bg-ink text-white px-2 py-1 hover:bg-rose transition-colors"
         >
           <Plus size={14} />
-          <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em]">New Entry</span>
+          <span className="text-[9px] font-medium uppercase tracking-[0.2em]">New Entry</span>
         </button>
       </div>
 
       {/* Error State */}
       {error && (
-        <div className="bg-rose/5 border border-rose/20 p-4 mb-6 flex items-start gap-3">
+        <div className="bg-rose/5 border border-rose/20 p-2 mb-6 flex items-start gap-3">
           <AlertTriangle size={16} className="text-rose shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose mb-1">Database Error</h3>
-            <p className="text-sm md:text-[11px] text-ink/60 font-mono leading-relaxed">{error}</p>
+            <h3 className="text-[10px] font-medium uppercase tracking-widest text-rose mb-1">Database Error</h3>
+            <p className="text-xs md:text-[11px] text-ink/80 font-mono leading-relaxed">{error}</p>
           </div>
         </div>
       )}
@@ -197,18 +197,18 @@ export function LogbookTab() {
           </div>
         ) : entries.length === 0 && !error ? (
           <div className="p-12 text-center flex flex-col items-center">
-            <BookOpen size={24} className="text-ink/20 mb-4" />
-            <p className="text-xs md:text-[10px] uppercase tracking-widest text-ink/40">No entries found</p>
+            <BookOpen size={24} className="text-ink/80 mb-4" />
+            <p className="text-[10px] uppercase tracking-widest text-ink/80">No entries found</p>
           </div>
         ) : (
           <table className="w-full text-left border-collapse">
             <thead className="bg-ink/[0.02] sticky top-0 z-10 backdrop-blur-md">
               <tr>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">ID</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Date</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Category</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5">Title</th>
-                <th className="px-4 py-3 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 border-b border-ink/5 text-right">Actions</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">ID</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Date</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Category</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Title</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -219,25 +219,25 @@ export function LogbookTab() {
                   animate={{ opacity: 1 }}
                   className="border-b border-ink/5 hover:bg-ink/[0.02] transition-colors group"
                 >
-                  <td className="px-4 py-4 align-top w-24">
-                    <span className="text-xs md:text-[9px] font-mono tracking-tighter text-ink bg-ink/5 px-1 py-0.5">{entry.entry_id}</span>
+                  <td className="px-2 py-2 align-top w-24">
+                    <span className="text-[9px] font-mono tracking-tighter text-ink bg-ink/5 px-1 py-0.5">{entry.entry_id}</span>
                   </td>
-                  <td className="px-4 py-4 align-top w-32">
-                    <span className="text-xs md:text-[10px] font-medium text-ink/60">{entry.published_date}</span>
+                  <td className="px-2 py-2 align-top w-32">
+                    <span className="text-[10px] font-medium text-ink/80">{entry.published_date}</span>
                   </td>
-                  <td className="px-4 py-4 align-top w-40">
-                    <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-rose">{entry.category}</span>
+                  <td className="px-2 py-2 align-top w-40">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-rose">{entry.category}</span>
                   </td>
-                  <td className="px-4 py-4 align-top">
+                  <td className="px-2 py-2 align-top">
                     <div className="font-display italic font-medium text-ink uppercase mb-1">{entry.title}</div>
-                    <div className="text-xs md:text-[10px] text-ink/50 line-clamp-2 leading-relaxed">{entry.excerpt}</div>
+                    <div className="text-[10px] text-ink/90 line-clamp-2 leading-relaxed">{entry.excerpt}</div>
                   </td>
-                  <td className="px-4 py-4 align-top text-right w-24">
+                  <td className="px-2 py-2 align-top text-right w-24">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEditModal(entry)} className="p-1.5 text-ink/40 hover:text-ink hover:bg-ink/5 transition-colors">
+                      <button onClick={() => openEditModal(entry)} className="p-1.5 text-ink/80 hover:text-ink hover:bg-ink/5 transition-colors">
                         <Edit2 size={12} />
                       </button>
-                      <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors">
+                      <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-ink/80 hover:text-rose hover:bg-rose/5 transition-colors">
                         <Trash2 size={12} />
                       </button>
                     </div>
@@ -251,48 +251,48 @@ export function LogbookTab() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2">
           <div className="absolute inset-0 bg-ink/20 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white w-full max-w-2xl shadow-2xl relative flex flex-col max-h-[90vh]"
           >
-            <div className="p-6 border-b border-ink/5 flex items-center justify-between">
+            <div className="p-3 border-b border-ink/5 flex items-center justify-between">
               <div>
                 <h3 className="font-display font-medium italic text-lg uppercase tracking-tight text-ink">
                   {isEditMode ? 'Edit Entry' : 'New Entry'}
                 </h3>
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 mt-1">Archival Logbook</p>
+                <p className="text-[9px] font-medium uppercase tracking-widest text-ink/80 mt-1">Archival Logbook</p>
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto minimal-scroll space-y-5">
-              <div className="flex gap-4">
+            <div className="p-3 overflow-y-auto minimal-scroll space-y-5">
+              <div className="flex gap-2">
                 <div className="flex-1 space-y-1.5">
-                  <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Entry ID</label>
+                  <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Entry ID</label>
                   <input
                     type="text"
                     value={formData.entry_id}
                     onChange={(e) => setFormData(prev => ({ ...prev, entry_id: e.target.value }))}
-                    className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] font-mono outline-none focus:border-rose/50"
+                    className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] font-mono outline-none focus:border-rose/50"
                   />
                 </div>
                 <div className="flex-1 space-y-1.5">
-                  <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Date</label>
+                  <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Date</label>
                   <input
                     type="date"
                     value={formData.published_date}
                     onChange={(e) => setFormData(prev => ({ ...prev, published_date: e.target.value }))}
-                    className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] outline-none focus:border-rose/50"
+                    className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] outline-none focus:border-rose/50"
                   />
                 </div>
                 <div className="flex-1 space-y-1.5">
-                  <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Category</label>
+                  <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] font-medium outline-none focus:border-rose/50"
+                    className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] font-medium outline-none focus:border-rose/50"
                   >
                     <option value="GARMENT STUDY">Garment Study</option>
                     <option value="BEHIND THE SEAMS">Behind The Seams</option>
@@ -303,89 +303,89 @@ export function LogbookTab() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Title (ID)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Title (ID)</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-[12px] font-medium outline-none focus:border-rose/50"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-[12px] font-medium outline-none focus:border-rose/50"
                   placeholder="The Anatomy of the Perfect Drape"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Title (EN)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Title (EN)</label>
                 <input
                   type="text"
                   value={formData.title_en || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, title_en: e.target.value }))}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-[12px] font-medium outline-none focus:border-rose/50"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-[12px] font-medium outline-none focus:border-rose/50"
                   placeholder="The Anatomy of the Perfect Drape (English)"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Slug</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Slug</label>
                 <input
                   type="text"
                   value={formData.slug}
                   onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                  className="w-full bg-ink/5 border border-transparent px-3 py-2 text-sm md:text-[11px] font-mono text-ink/50 outline-none"
+                  className="w-full bg-ink/5 border border-transparent px-1.5 py-1 text-xs md:text-[11px] font-mono text-ink/90 outline-none"
                   readOnly
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Excerpt (ID)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Excerpt (ID)</label>
                 <textarea
                   value={formData.excerpt}
                   onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                   rows={2}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] leading-relaxed outline-none focus:border-rose/50 resize-none"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] leading-relaxed outline-none focus:border-rose/50 resize-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Excerpt (EN)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Excerpt (EN)</label>
                 <textarea
                   value={formData.excerpt_en || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, excerpt_en: e.target.value }))}
                   rows={2}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] leading-relaxed outline-none focus:border-rose/50 resize-none"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] leading-relaxed outline-none focus:border-rose/50 resize-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Full Content (ID)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Full Content (ID)</label>
                 <textarea
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                   rows={6}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] leading-relaxed outline-none focus:border-rose/50"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] leading-relaxed outline-none focus:border-rose/50"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">Full Content (EN)</label>
+                <label className="text-[9px] font-medium uppercase tracking-widest text-ink/80">Full Content (EN)</label>
                 <textarea
                   value={formData.content_en || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
                   rows={6}
-                  className="w-full bg-white border border-ink/10 px-3 py-2 text-sm md:text-[11px] leading-relaxed outline-none focus:border-rose/50"
+                  className="w-full bg-white border border-ink/10 px-1.5 py-1 text-xs md:text-[11px] leading-relaxed outline-none focus:border-rose/50"
                 />
               </div>
             </div>
 
-            <div className="p-4 border-t border-ink/5 flex items-center justify-end gap-3 bg-ink/[0.02]">
+            <div className="p-2 border-t border-ink/5 flex items-center justify-end gap-3 bg-ink/[0.02]">
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60 hover:text-ink"
+                className="px-2 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ink/80 hover:text-ink"
               >
                 Cancel
               </button>
               <button 
                 onClick={saveEntry}
-                className="bg-ink text-white px-6 py-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] hover:bg-rose transition-colors"
+                className="bg-ink text-white px-6 py-2 text-[10px] font-medium uppercase tracking-[0.2em] hover:bg-rose transition-colors"
               >
                 {isEditMode ? 'Save Changes' : 'Create Entry'}
               </button>
