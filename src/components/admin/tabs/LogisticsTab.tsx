@@ -222,17 +222,17 @@ export function LogisticsTab({
       <div className="shrink-0 flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h2 className="text-xs font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
-          <span className="text-[9px] text-gray-400">— shipment operations center</span>
+          <span className="text-[9px] text-gray-800">— shipment operations center</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-[9px] text-gray-400 font-mono">
+          <div className="text-[9px] text-gray-800 font-mono">
             {formattedDate}
             {' • '}
             <span className="text-rose">{pendingCount + inTransitCount}</span> active
           </div>
           <button
             onClick={() => setIsScannerOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white rounded-sm text-[9px] uppercase tracking-wider font-medium hover:bg-ink/90 transition-colors"
+            className="flex items-center gap-1.5 px-2 py-1 bg-ink text-white rounded-sm text-[9px] uppercase tracking-wider font-medium hover:bg-ink/90 transition-colors"
           >
             <ScanBarcode size={12} />
             Scan to Dispatch
@@ -260,7 +260,7 @@ export function LogisticsTab({
             {logisticsFilter === stat.filterKey && (
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose" />
             )}
-            <p className="text-[9px] uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+            <p className="text-[9px] uppercase tracking-[0.2em] text-gray-800 mb-1">{stat.label}</p>
             <p className={cn("text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
           </button>
         ))}
@@ -291,7 +291,7 @@ export function LogisticsTab({
                 </button>
               ))}
             </div>
-            <span className="text-[9px] font-mono text-gray-400">{logisticsOrders.length} results</span>
+            <span className="text-[9px] font-mono text-gray-800">{logisticsOrders.length} results</span>
           </div>
 
           {/* Dense table */}
@@ -299,13 +299,13 @@ export function LogisticsTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                 <tr>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[90px]">Order</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400">Status</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400">Destination</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400">Courier</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400 w-[60px]">Resi</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[80px]">Value</th>
-                  <th className="px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-400 text-right w-[40px]">Age</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[140px]">Order</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Status</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Destination</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Courier</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[60px]">Resi</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[80px]">Value</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[40px]">Age</th>
                 </tr>
               </thead>
               <tbody>
@@ -320,10 +320,10 @@ export function LogisticsTab({
                         : idx % 2 === 0 ? "bg-white hover:bg-gray-50" : "bg-gray-50/30 hover:bg-gray-50"
                     )}
                   >
-                    <td className="px-3 py-1.5">
-                      <span className="font-mono text-[10px] text-gray-900">#{order.id.toUpperCase()}</span>
+                    <td className="px-2 py-1">
+                      <span className="font-mono text-[10px] text-gray-900 whitespace-nowrap">#{order.id.toUpperCase()}</span>
                     </td>
-                    <td className="px-3 py-1.5">
+                    <td className="px-2 py-1">
                       <span className={cn(
                         "text-[9px] uppercase tracking-[0.1em] px-1.5 py-0.5 inline-block",
                         order.status === 'paid' && "bg-amber-100 text-amber-700",
@@ -334,34 +334,34 @@ export function LogisticsTab({
                         {order.status === 'paid' ? 'SIAP KIRIM' : order.status.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-3 py-1.5">
+                    <td className="px-2 py-1">
                       <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
-                      <div className="text-[9px] text-gray-400 truncate max-w-[120px]">{order.shipping_address?.city}</div>
+                      <div className="text-[9px] text-gray-800 truncate max-w-[120px]">{order.shipping_address?.city}</div>
                     </td>
-                    <td className="px-3 py-1.5">
+                    <td className="px-2 py-1">
                       <div className="flex items-center gap-1.5">
                         <CourierLogo courier={order.courier || ''} className="h-3.5" />
-                        <span className="text-[9px] text-gray-600 uppercase">{order.courier || '—'}</span>
+                        <span className="text-[9px] text-gray-800 uppercase">{order.courier || '—'}</span>
                       </div>
                     </td>
-                    <td className="px-3 py-1.5">
+                    <td className="px-2 py-1">
                       {order.tracking_id ? (
                         <span className="font-mono text-[9px] bg-gray-100 text-gray-800 px-1 py-0.5">{order.tracking_id.slice(-8)}</span>
                       ) : (
-                        <span className="text-[9px] text-gray-300">—</span>
+                        <span className="text-[9px] text-gray-500">—</span>
                       )}
                     </td>
-                    <td className="px-3 py-1.5 text-right">
-                      <span className="font-mono text-[9px] text-gray-700">{(order.total_price / 1000).toFixed(0)}K</span>
+                    <td className="px-2 py-1 text-right">
+                      <span className="font-mono text-[9px] text-gray-900">{(order.total_price / 1000).toFixed(0)}K</span>
                     </td>
-                    <td className="px-3 py-1.5 text-right">
-                      <span className="text-[9px] text-gray-400 font-mono">{getTimeAgo(order.created_at)}</span>
+                    <td className="px-2 py-1 text-right">
+                      <span className="text-[9px] text-gray-800 font-mono">{getTimeAgo(order.created_at)}</span>
                     </td>
                   </tr>
                 ))}
                 {logisticsOrders.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-3 py-12 text-center text-[10px] text-gray-300 uppercase tracking-[0.3em]">
+                    <td colSpan={7} className="px-3 py-12 text-center text-[10px] text-gray-500 uppercase tracking-[0.3em]">
                       No orders in this category
                     </td>
                   </tr>
@@ -387,11 +387,11 @@ export function LogisticsTab({
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-200">
                       {logisticsSelectedOrder.shipping_address?.name ? (
-                        <span className="text-[14px] font-medium text-gray-600">
+                        <span className="text-[14px] font-medium text-gray-800">
                           {logisticsSelectedOrder.shipping_address.name.charAt(0).toUpperCase()}
                         </span>
                       ) : (
-                        <User size={16} className="text-gray-400" />
+                        <User size={16} className="text-gray-800" />
                       )}
                     </div>
                     <div>
@@ -419,17 +419,17 @@ export function LogisticsTab({
                 {/* 2. Order Details Grid */}
                 <div className="grid grid-cols-4 gap-3 pt-3 border-t border-gray-100">
                   <div>
-                    <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
+                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Order ID</p>
                     <p className="text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.toUpperCase()}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-1">Shipping Address</p>
+                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Shipping Address</p>
                     <p className="text-[10px] text-gray-900 leading-tight">
                       {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.city}, {logisticsSelectedOrder.shipping_address?.postal_code}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-1">Shipped</p>
+                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Shipped</p>
                     <p className="text-[10px] text-gray-900 leading-tight">
                       {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID')}<br/>
                       <span className="text-gray-500">{new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -446,7 +446,7 @@ export function LogisticsTab({
                       {logisticsSelectedOrder.order_items?.map((item, idx) => (
                         <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
                           <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
-                            <Package size={16} className="text-gray-300" />
+                            <Package size={16} className="text-gray-500" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[10px] text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
@@ -476,7 +476,7 @@ export function LogisticsTab({
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
-                      <span className="text-[9px] text-gray-400">Updated 5 mins ago</span>
+                      <span className="text-[9px] text-gray-800">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
@@ -484,9 +484,9 @@ export function LogisticsTab({
                           onClick={() => handleRequestPickup(logisticsSelectedOrder)}
                           disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
                           className={cn(
-                            "px-3 py-1.5 text-[9px] font-medium rounded border transition-all flex items-center gap-1.5",
+                            "px-2 py-1 text-[9px] font-medium rounded border transition-all flex items-center gap-1.5",
                             (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
-                              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-50"
+                              ? "bg-gray-100 text-gray-800 border-gray-200 cursor-not-allowed opacity-50"
                               : logisticsSelectedOrder.status === 'shipped'
                                 ? "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
                                 : "bg-ink text-white border-ink hover:bg-ink/90"
@@ -510,7 +510,7 @@ export function LogisticsTab({
                           )}
                         </button>
                       )}
-                      <button className="px-3 py-1.5 bg-gray-50 text-[9px] font-medium text-gray-600 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                      <button className="px-2 py-1 bg-gray-50 text-[9px] font-medium text-gray-800 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
                         Refresh
                       </button>
                     </div>
