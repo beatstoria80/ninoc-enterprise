@@ -58,15 +58,15 @@ function CustomDropdown({
         onClick={() => { if (!disabled) setOpen(o => !o); setSearch(''); }}
         className={cn(
           "w-full flex items-center justify-between bg-white border rounded-lg py-3 px-4 text-sm font-semibold transition-colors shadow-sm",
-          open ? "border-rose ring-2 ring-rose/10" : "border-ink/10 hover:border-ink/20",
+          open ? "border-rose ring-2 ring-rose/10" : "border-slate-300 hover:border-slate-400",
           disabled && "opacity-50 cursor-not-allowed",
-          !selected && "text-ink/30"
+          !selected && "text-slate-500"
         )}
       >
-        <span className={cn(selected ? "text-ink font-medium" : "text-ink/30")}>
+        <span className={cn(selected ? "text-slate-800 font-medium" : "text-slate-500")}>
           {selected ? selected.name : placeholder}
         </span>
-        <ChevronDown size={13} className={cn("text-ink/20 shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown size={13} className={cn("text-slate-400 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
 
       <AnimatePresence>
@@ -76,25 +76,25 @@ function CustomDropdown({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white border border-ink/10 rounded-lg shadow-xl z-50 overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 overflow-hidden"
           >
             {searchable && (
-              <div className="p-2 border-b border-ink/5">
+              <div className="p-2 border-b border-slate-100">
                 <div className="relative">
-                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/20" />
+                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     autoFocus
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     placeholder="Ketik untuk cari..."
-                    className="w-full pl-8 pr-3 py-2.5 text-sm border border-ink/20 rounded-md outline-none focus:border-rose/40 placeholder:text-ink/30 font-medium"
+                    className="w-full pl-8 pr-3 py-2.5 text-sm border border-slate-300 rounded-md outline-none focus:border-rose/40 placeholder:text-slate-400 font-medium"
                   />
                 </div>
               </div>
             )}
             <div className="max-h-40 overflow-y-auto minimal-scroll">
               {filtered.length === 0 ? (
-                <div className="px-4 py-4 text-center"><p className="text-sm font-medium text-ink/40">Tidak ditemukan</p></div>
+                <div className="px-4 py-4 text-center"><p className="text-sm font-medium text-slate-500">Tidak ditemukan</p></div>
               ) : (
                 filtered.map(opt => (
                   <button
@@ -106,7 +106,7 @@ function CustomDropdown({
                       opt.id === value && "bg-rose/5"
                     )}
                   >
-                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-ink")}>{opt.name}</span>
+                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-slate-800")}>{opt.name}</span>
                     {opt.id === value && <Check size={12} className="text-rose shrink-0" />}
                   </button>
                 ))
@@ -121,11 +121,11 @@ function CustomDropdown({
 
 // ─── Field Label ───────────────────────────────────────────────────────────
 function FL({ children }: { children: React.ReactNode }) {
-  return <label className="text-xs font-bold uppercase tracking-wider text-ink/70 mb-2 block">{children}</label>;
+  return <label className="text-sm font-semibold tracking-normal text-slate-700 mb-2 block">{children}</label>;
 }
 
 // ─── Input ────────────────────────────────────────────────────────────────
-const ip = "w-full bg-white border border-ink/20 focus:border-rose rounded-xl py-3 px-4 text-sm font-semibold text-ink outline-none placeholder:text-ink/30 transition-colors shadow-sm";
+const ip = "w-full bg-white border border-slate-300 focus:border-rose rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 transition-colors shadow-sm";
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col items-center justify-start pt-6 md:pt-12 px-4 pb-12",
+      "min-h-screen bg-cr selection:bg-slate-800 selection:text-white flex flex-col items-center justify-start pt-6 md:pt-12 px-4 pb-12",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* Header */}
@@ -289,11 +289,11 @@ export default function OnboardingPage() {
             <Package size={20} className="text-rose" />
           </div>
           <div>
-            <p className="text-base font-bold text-ink uppercase tracking-wider">Lengkapi Data</p>
-            <p className="text-xs text-ink/50 uppercase tracking-widest font-semibold mt-0.5">Step {activeStep} of 2</p>
+            <p className="text-lg font-bold text-slate-800 tracking-normal">Lengkapi Data</p>
+            <p className="text-sm text-slate-500 tracking-normal font-semibold mt-0.5">Langkah {activeStep} dari 2</p>
           </div>
         </div>
-        <button onClick={logout} className="text-sm font-semibold text-ink/40 hover:text-rose uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+        <button onClick={logout} className="text-sm font-semibold text-slate-500 hover:text-rose tracking-normal flex items-center gap-1.5 transition-colors">
           <LogOut size={16} />Batal
         </button>
       </div>
@@ -319,11 +319,11 @@ export default function OnboardingPage() {
                 >
                   {isCompleted ? <Check size={13} strokeWidth={2.5} /> : <Icon size={13} strokeWidth={1.5} />}
                 </motion.div>
-                <span className={cn("text-xs font-bold uppercase tracking-wider", isActive || isCompleted ? "text-rose" : "text-ink/40")}>
+                <span className={cn("text-sm font-bold tracking-normal", isActive || isCompleted ? "text-rose" : "text-slate-400")}>
                   {step.label}
                 </span>
                 {i < steps.length - 1 && (
-                  <div className={cn("flex-1 h-px max-w-[28px]", isCompleted ? "bg-rose" : "bg-ink/10")} />
+                  <div className={cn("flex-1 h-px max-w-[28px]", isCompleted ? "bg-rose" : "bg-slate-200")} />
                 )}
               </React.Fragment>
             );
@@ -344,7 +344,7 @@ export default function OnboardingPage() {
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden"
+          className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
         >
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Identitas ── */}
@@ -355,12 +355,12 @@ export default function OnboardingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 12 }}
                 transition={{ duration: 0.15 }}
-                className="p-4"
+                className="p-6 md:p-8"
               >
                 {/* Section label */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold text-rose bg-rose/10 px-2 py-1 rounded uppercase tracking-widest">01</span>
-                  <span className="text-sm font-bold uppercase tracking-widest text-ink">Identitas Diri</span>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-sm font-bold text-rose bg-rose/10 px-2.5 py-1 rounded tracking-normal">01</span>
+                  <span className="text-base font-bold tracking-normal text-slate-800">Identitas Diri</span>
                 </div>
 
                 {/* 3-column grid */}
@@ -395,14 +395,14 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-end border-t border-ink/5 pt-6 mt-2">
+                <div className="flex justify-end border-t border-slate-100 pt-6 mt-2">
                   <button
                     type="button"
                     onClick={goToStep2}
-                    className="w-full md:w-auto bg-ink text-white py-4 px-10 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors shadow-sm"
+                    className="w-full md:w-auto bg-slate-800 text-white py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-rose transition-colors shadow-sm"
                   >
                     <span>Lanjut ke Alamat</span>
-                    <ArrowRight size={14} />
+                    <ArrowRight size={16} />
                   </button>
                 </div>
               </motion.div>
@@ -416,27 +416,27 @@ export default function OnboardingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -12 }}
                 transition={{ duration: 0.15 }}
-                className="p-4"
+                className="p-6 md:p-8"
               >
                 {/* Section label */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-2 mb-3 gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-rose bg-rose/10 px-2 py-1 rounded uppercase tracking-widest">02</span>
-                    <span className="text-sm font-bold uppercase tracking-widest text-ink">Alamat Lengkap</span>
+                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-rose bg-rose/10 px-2.5 py-1 rounded tracking-normal">02</span>
+                    <span className="text-base font-bold tracking-normal text-slate-800">Alamat Lengkap</span>
                   </div>
                   {/* Address Type Selector */}
-                  <div className="flex bg-ink/5 p-1">
+                  <div className="flex bg-slate-100 p-1 rounded-lg">
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
-                      className={cn("px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors rounded-md", f.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}
+                      className={cn("px-4 py-2 text-sm font-bold tracking-normal transition-colors rounded-md", f.address_type === 'Home' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
                     >
                       Rumah / Home
                     </button>
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
-                      className={cn("px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors rounded-md", f.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}
+                      className={cn("px-4 py-2 text-sm font-bold tracking-normal transition-colors rounded-md", f.address_type === 'Office' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
                     >
                       Kantor / Office
                     </button>
@@ -497,11 +497,11 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end gap-3 border-t border-ink/5 pt-6 mt-2">
+                <div className="flex justify-end gap-3 border-t border-slate-100 pt-6 mt-2">
                   <button
                     type="button"
                     onClick={() => setActiveStep(1)}
-                    className="w-full md:w-auto bg-ink/5 text-ink py-4 px-10 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
+                    className="w-full md:w-auto bg-slate-100 text-slate-600 py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors"
                   >
                     Kembali
                   </button>
@@ -509,12 +509,12 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={submit}
                     disabled={isSaving}
-                    className="w-full md:w-auto bg-ink text-white py-4 px-10 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors shadow-sm"
+                    className="w-full md:w-auto bg-slate-800 text-white py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors shadow-sm"
                   >
                     {isSaving ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <><span>Simpan & Selesai</span><ArrowRight size={14} /></>
+                      <><span>Simpan & Selesai</span><ArrowRight size={16} /></>
                     )}
                   </button>
                 </div>
@@ -524,18 +524,18 @@ export default function OnboardingPage() {
         </motion.div>
 
         {/* Trust Badges */}
-        <div className="flex justify-center gap-5 mt-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
-              <Shield size={9} strokeWidth={1.5} className="text-rose/60" />
+        <div className="flex justify-center gap-5 mt-4 mb-10">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+              <Shield size={12} strokeWidth={2} className="text-rose/80" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Aman</span>
+            <span className="text-sm font-bold tracking-normal text-slate-600">Aman</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-white border border-ink/10 flex items-center justify-center shadow-sm">
+            <div className="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
               <Lock size={12} strokeWidth={2} className="text-rose/80" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Enkripsi</span>
+            <span className="text-sm font-bold tracking-normal text-slate-600">Enkripsi</span>
           </div>
         </div>
       </div>
@@ -560,18 +560,18 @@ export default function OnboardingPage() {
               <div className="w-11 h-11 bg-rose/10 rounded-full flex items-center justify-center mx-auto mb-3">
                 <AlertTriangle size={18} className="text-rose" />
               </div>
-              <h3 className="text-sm font-semibold text-center mb-1 text-ink">Data Belum Lengkap</h3>
-              <p className="text-xs text-ink/60 text-center mb-4 font-medium">Pastikan semua field terisi</p>
-              <ul className="space-y-2 mb-6">
+              <h3 className="text-base font-semibold text-center mb-1 text-slate-800">Data Belum Lengkap</h3>
+              <p className="text-sm text-slate-500 text-center mb-4 font-medium">Pastikan semua field terisi</p>
+              <ul className="space-y-2 mb-6 bg-slate-50 p-4 rounded-lg">
                 {errors.map(e => (
-                  <li key={e} className="text-sm text-ink/80 font-medium flex items-center gap-2">
+                  <li key={e} className="text-sm text-slate-700 font-medium flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-rose rounded-full shrink-0" />{e}
                   </li>
                 ))}
               </ul>
               <button
                 onClick={() => setShowError(false)}
-                className="w-full py-3 bg-ink text-white rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-rose transition-colors shadow-sm"
+                className="w-full py-3 bg-slate-800 text-white rounded-lg text-sm font-bold tracking-normal hover:bg-rose transition-colors shadow-sm"
               >
                 Mengerti
               </button>
