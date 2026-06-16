@@ -582,60 +582,40 @@ export default function GlobalHeader() {
 
       <AnimatePresence>
         {isCartOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: DURATION.normal }}
-            className="fixed inset-0 z-[300] bg-cr noise flex items-center justify-center overflow-auto">
-            {/* Cart Content — centered max-width container */}
-            <div className="w-full max-w-[1200px] h-full flex flex-col">
+          <>
+            {/* Backdrop */}
             <motion.div
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
-              transition={{ duration: DURATION.medium, ease: EASING.out }}
-              className="px-4 md:px-10 py-3 md:py-6 flex items-center justify-between border-b border-ink/5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: DURATION.normal }}
+              onClick={() => setIsCartOpen(false)}
+              className="fixed inset-0 bg-ink/30 backdrop-blur-sm z-[300]"
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 w-full sm:max-w-md md:max-w-lg bg-cr noise z-[310] shadow-2xl flex flex-col border-l border-ink/5"
             >
-              <div className="flex items-center gap-4 md:gap-8">
-                <motion.div
-                  className="font-display font-medium text-3xl italic tracking-tighter text-rose uppercase"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1, duration: DURATION.medium }}
-                >
-                  Active Selection
-                </motion.div>
-                <motion.div
-                  className="h-8 w-[1px] bg-ink/10 hidden md:block"
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  transition={{ delay: 0.2, duration: DURATION.medium }}
-                />
-                <motion.div
-                  className="hidden md:flex flex-col leading-none"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3, duration: DURATION.medium }}
-                >
-                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.4em] text-ink/30">Origin Studio</span>
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
-                </motion.div>
+              {/* Header */}
+              <div className="px-6 py-6 flex items-center justify-between border-b border-ink/5">
+                <div className="flex items-center gap-4">
+                  <span className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">
+                    Active Selection
+                  </span>
+                  <span className="h-4 w-[1px] bg-ink/10" />
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
+                </div>
+                <PressScale onClick={() => setIsCartOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
+                  <X size={14} />
+                </PressScale>
               </div>
-              <PressScale onClick={() => setIsCartOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
-                <X size={14} />
-              </PressScale>
-            </motion.div>
 
-            <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-full">
-
-              {/* SECTOR 1: PRODUCT LIST */}
-              <motion.div
-                className="md:col-span-7 overflow-y-auto no-scrollbar border-r border-ink/5 px-3 md:px-6 py-3 md:py-6 space-y-3 md:space-y-4"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
-              >
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto no-scrollbar py-6 px-6 space-y-4">
                 {items.length > 0 ? (
                   <AnimatePresence mode="popLayout">
                     {items.map((item, index) => (
@@ -650,111 +630,64 @@ export default function GlobalHeader() {
                     ))}
                   </AnimatePresence>
                 ) : (
-                  <motion.div
-                    className="h-full flex flex-col items-center justify-center text-center space-y-4"
-                  >
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-auto py-12">
                     <div className="text-ink/20">
-                      <ShoppingCart size={36} />
+                      <ShoppingCart size={48} strokeWidth={1.5} />
                     </div>
-                    <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
-                  </motion.div>
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
+                      <p className="text-[10px] text-ink/40 tracking-wider">Your cart is currently empty.</p>
+                    </div>
+                    <button
+                      onClick={() => setIsCartOpen(false)}
+                      className="px-6 py-2.5 border border-ink/10 text-[10px] font-medium uppercase tracking-widest hover:bg-ink hover:text-white transition-colors cursor-pointer"
+                    >
+                      Shop Now
+                    </button>
+                  </div>
                 )}
-              </motion.div>
+              </div>
 
-              {/* SECTOR 2: SUMMARY & CHECKOUT */}
-              <motion.div
-                className="md:col-span-5 px-3 md:px-6 py-3 md:py-6 bg-white flex flex-col"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
-              >
-                {items.length > 0 && (
-                  <motion.div
-                    className="space-y-6 h-full flex flex-col"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: DURATION.medium }}
-                  >
-                    <div className="space-y-4">
-                      <motion.p
-                        className="text-xs md:text-[9px] font-medium uppercase tracking-[0.5em] text-ink/40"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                      >
-                        Total Summary
-                      </motion.p>
-                      <motion.div
-                        className="space-y-3 border-b border-ink/5 pb-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <div className="flex justify-between text-sm md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
-                          <span>Raw Value</span>
-                          <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                        </div>
-                        <div className="flex justify-between text-sm md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
-                          <span>Handling Fee</span>
-                          <span className="text-emerald-600 italic">Complimentary</span>
-                        </div>
-                      </motion.div>
+              {/* Footer (only if items > 0) */}
+              {items.length > 0 && (
+                <div className="px-6 py-6 border-t border-ink/5 bg-white space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                      <span>Raw Value</span>
+                      <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                     </div>
-
-                    <div className="flex flex-col items-center space-y-5 flex-1 justify-center">
-                      <motion.div
-                        className="text-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, duration: DURATION.medium, ease: EASING.out }}
-                      >
-                        <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.6em] text-ink/30 block mb-2">Total</span>
-                        <motion.span
-                          className="text-2xl md:text-3xl font-display font-medium italic text-rose leading-none"
-                          key={totalPrice()}
-                          initial={{ scale: 1.1, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: DURATION.fast }}
-                        >
-                          IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                        </motion.span>
-                      </motion.div>
-
-                      <motion.div
-                        className="w-full space-y-3"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7, duration: DURATION.medium }}
-                      >
-
-                        <Link
-                          href="/checkout"
-                          onClick={() => setIsCartOpen(false)}
-                          className="w-full bg-ink text-white py-3.5 font-medium text-xs md:text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
-                        >
-                          <motion.span
-                            whileHover={{ x: 4 }}
-                            transition={{ duration: DURATION.fast }}
-                            className="flex items-center gap-3"
-                          >
-                            <span>Guest Checkout</span>
-                          </motion.span>
-                        </Link>
-                        <div
-                          className="flex items-center justify-center gap-2 opacity-30 grayscale"
-                        >
-                          <ShieldCheck size={12} />
-                          <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
-                        </div>
-                      </motion.div>
+                    <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
+                      <span>Handling Fee</span>
+                      <span className="text-emerald-600 italic">Complimentary</span>
                     </div>
-                  </motion.div>
-                )}
-              </motion.div>
+                    <div className="h-[1px] bg-ink/5 my-2" />
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40">Total</span>
+                      <span className="text-xl font-display font-medium italic text-rose">
+                        IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                  </div>
 
-            </div>
-            </div>
-          </motion.div>
+                  <div className="space-y-3">
+                    <Link
+                      href="/checkout"
+                      onClick={() => setIsCartOpen(false)}
+                      className="w-full bg-ink text-white py-3.5 font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+                    >
+                      <span className="flex items-center gap-3">
+                        <span>Guest Checkout</span>
+                      </span>
+                    </Link>
+                    <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
+                      <ShieldCheck size={12} />
+                      <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
