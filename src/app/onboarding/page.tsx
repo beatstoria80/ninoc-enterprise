@@ -279,322 +279,264 @@ export default function OnboardingPage() {
 
   return (
     <main className={cn(
-      "min-h-[100dvh] w-full bg-cr selection:bg-ink selection:text-white flex flex-col lg:grid lg:grid-cols-3 lg:h-[100dvh] lg:overflow-hidden",
-      isIPhone && "pt-[env(safe-area-inset-top)] lg:pt-0"
+      "min-h-screen bg-cr selection:bg-ink selection:text-white flex flex-col items-center justify-start pt-6 md:pt-12 px-4 pb-12",
+      isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
-      
-      {/* ─── LEFT COLUMN: Branding & Welcome (Desktop Only) ─── */}
-      <div className="hidden lg:flex flex-col justify-between bg-ink text-white p-12 relative overflow-hidden">
-        {/* Abstract Background Element */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
-          <div className="absolute -top-[20%] -left-[20%] w-[70%] h-[70%] rounded-full bg-rose blur-[120px]" />
-        </div>
-        
-        <div className="relative z-10">
-          <div className="font-display font-medium text-3xl italic tracking-tighter text-white mb-8">NINOC.</div>
-          <h1 className="text-4xl font-semibold tracking-tight leading-tight mb-4">
-            Bergabung dengan<br />Eksklusivitas.
-          </h1>
-          <p className="text-white/60 text-sm max-w-sm leading-relaxed">
-            Lengkapi profil Anda untuk mendapatkan akses penuh ke koleksi terbaru, penawaran khusus anggota, dan pengalaman berbelanja yang personal.
-          </p>
-        </div>
-
-        <div className="relative z-10 flex items-center gap-4">
-          <div className="flex -space-x-2">
-            {[1,2,3].map(i => (
-              <div key={i} className="w-8 h-8 rounded-full border-2 border-ink bg-white/10" />
-            ))}
+      {/* Header */}
+      <div className="w-full max-w-4xl flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-rose/10 rounded-xl flex items-center justify-center">
+            <Package size={18} className="text-rose" />
           </div>
-          <p className="text-xs text-white/40 uppercase tracking-widest font-medium">10K+ Member Bergabung</p>
+          <div>
+            <p className="text-sm md:text-xs font-bold text-ink uppercase tracking-wider">Lengkapi Data</p>
+            <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest font-medium">Step {activeStep} of 2</p>
+          </div>
         </div>
+        <button onClick={logout} className="text-xs font-medium text-ink/30 hover:text-rose uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+          <LogOut size={14} />Batal
+        </button>
       </div>
 
-      {/* ─── CENTER COLUMN: The Form ─── */}
-      <div className="flex-1 flex flex-col h-full overflow-y-auto minimal-scroll relative">
-        <div className="w-full max-w-lg mx-auto my-auto p-4 md:p-8 flex flex-col min-h-full lg:min-h-0 justify-center">
-          
-          {/* Mobile Only Header (Logo) */}
-          <div className="lg:hidden flex items-center justify-center mb-8 mt-4">
-            <div className="font-display font-medium text-2xl italic tracking-tighter text-ink">NINOC.</div>
-          </div>
-
-          {/* Form Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-rose/10 rounded-xl flex items-center justify-center shrink-0">
-                <Package size={18} className="text-rose" />
-              </div>
-              <div>
-                <h2 className="text-lg md:text-xl font-semibold text-ink tracking-tight">Lengkapi Data</h2>
-                <p className="text-xs text-ink/40 uppercase tracking-widest font-medium mt-0.5">Step {activeStep} of 2</p>
-              </div>
-            </div>
-            <button onClick={logout} className="text-[10px] md:text-[9px] font-semibold text-ink/30 hover:text-rose uppercase tracking-widest flex items-center gap-1.5 transition-colors bg-white/50 px-3 py-1.5 rounded-full border border-ink/5">
-              <LogOut size={12} /> Batal
-            </button>
-          </div>
-
-          {/* Progress Steps */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            {steps.map((step, i) => {
-              const Icon = step.icon;
-              const isActive = activeStep === step.id;
-              const isCompleted = completedSteps.includes(step.id);
-              return (
-                <React.Fragment key={step.id}>
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      backgroundColor: isActive || isCompleted ? '#e11c28' : 'white',
-                      borderColor: isActive || isCompleted ? '#e11c28' : '#e5e7eb',
-                      color: isActive || isCompleted ? 'white' : '#9ca3af'
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className="w-8 h-8 rounded-xl border-2 flex items-center justify-center shrink-0"
-                  >
-                    {isCompleted ? <Check size={14} strokeWidth={2.5} /> : <Icon size={14} strokeWidth={1.5} />}
-                  </motion.div>
-                  <span className={cn("text-[10px] md:text-[9px] font-bold uppercase tracking-widest hidden sm:block", isActive || isCompleted ? "text-rose" : "text-ink/30")}>
-                    {step.label}
-                  </span>
-                  {i < steps.length - 1 && (
-                    <div className={cn("flex-1 h-px max-w-[40px]", isCompleted ? "bg-rose" : "bg-ink/10")} />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          {/* Email Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2.5 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 mb-5"
-          >
-            <CheckCircle size={15} className="text-emerald-500 shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600/70 mb-0.5">Terverifikasi</span>
-              <span className="text-xs md:text-[11px] font-medium text-emerald-800 truncate">{userEmail}</span>
-            </div>
-          </motion.div>
-
-          {/* Form Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl border border-ink/5 shadow-sm overflow-hidden"
-          >
-            <AnimatePresence mode="wait">
-              {/* ── STEP 1: Identitas ── */}
-              {activeStep === 1 && (
+      <div className="w-full max-w-4xl">
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            const isActive = activeStep === step.id;
+            const isCompleted = completedSteps.includes(step.id);
+            return (
+              <React.Fragment key={step.id}>
                 <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 12 }}
-                  transition={{ duration: 0.15 }}
-                  className="p-5 md:p-6"
+                  initial={false}
+                  animate={{
+                    backgroundColor: isActive || isCompleted ? '#e11c28' : 'white',
+                    borderColor: isActive || isCompleted ? '#e11c28' : '#e5e7eb',
+                    color: isActive || isCompleted ? 'white' : '#9ca3af'
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className="w-7 h-7 rounded-lg border-2 flex items-center justify-center"
                 >
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="text-[10px] font-bold text-rose bg-rose/10 px-2 py-0.5 rounded uppercase tracking-widest">01</span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-ink">Identitas Diri</span>
-                  </div>
+                  {isCompleted ? <Check size={13} strokeWidth={2.5} /> : <Icon size={13} strokeWidth={1.5} />}
+                </motion.div>
+                <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-wider", isActive || isCompleted ? "text-rose" : "text-ink/30")}>
+                  {step.label}
+                </span>
+                {i < steps.length - 1 && (
+                  <div className={cn("flex-1 h-px max-w-[28px]", isCompleted ? "bg-rose" : "bg-ink/10")} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <FL>Nama Depan</FL>
-                      <input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="John" />
-                    </div>
-                    <div>
-                      <FL>Nama Belakang</FL>
-                      <input value={f.ln} onChange={e => set('ln', e.target.value)} className={ip} placeholder="Doe" />
-                    </div>
-                  </div>
+        {/* Email Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mb-3"
+        >
+          <CheckCircle size={13} className="text-emerald-500 shrink-0" />
+          <span className="text-xs md:text-[10px] font-medium text-emerald-700 truncate">{userEmail}</span>
+        </motion.div>
 
-                  <div className="mb-4">
+        {/* Form Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl border border-ink/5 shadow-sm overflow-hidden"
+        >
+          <AnimatePresence mode="wait">
+            {/* ── STEP 1: Identitas ── */}
+            {activeStep === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ duration: 0.15 }}
+                className="p-4"
+              >
+                {/* Section label */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[11px] md:text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">01</span>
+                  <span className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink">Identitas Diri</span>
+                </div>
+
+                {/* 3-column grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <FL>Nama Depan</FL>
+                    <input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="John" />
+                  </div>
+                  <div>
+                    <FL>Nama Belakang</FL>
+                    <input value={f.ln} onChange={e => set('ln', e.target.value)} className={ip} placeholder="Doe" />
+                  </div>
+                  <div>
                     <FL>Nomor Telepon</FL>
                     <input type="tel" value={f.phone} onChange={e => set('phone', e.target.value)} className={ip} placeholder="0812..." />
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <FL>Tanggal Lahir</FL>
-                      <input type="date" value={f.birth_date} onChange={e => set('birth_date', e.target.value)} className={ip} />
-                    </div>
-                    <div>
-                      <FL>Jenis Kelamin</FL>
-                      <select value={f.gender} onChange={e => set('gender', e.target.value)} className={ip}>
-                        <option value="">Pilih</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                      </select>
-                    </div>
+                {/* 3-column grid: Tanggal Lahir + Jenis Kelamin */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  <div>
+                    <FL>Tanggal Lahir</FL>
+                    <input type="date" value={f.birth_date} onChange={e => set('birth_date', e.target.value)} className={ip} />
                   </div>
+                  <div>
+                    <FL>Jenis Kelamin</FL>
+                    <select value={f.gender} onChange={e => set('gender', e.target.value)} className={ip}>
+                      <option value="">Pilih</option>
+                      <option value="Laki-laki">Laki-laki</option>
+                      <option value="Perempuan">Perempuan</option>
+                    </select>
+                  </div>
+                </div>
 
+                <div className="flex justify-end border-t border-ink/5 pt-6 mt-2">
                   <button
                     type="button"
                     onClick={goToStep2}
-                    className="w-full bg-ink text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors"
+                    className="w-full md:w-auto bg-ink text-white py-3.5 px-8 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-colors shadow-sm"
                   >
                     <span>Lanjut ke Alamat</span>
                     <ArrowRight size={14} />
                   </button>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
+            )}
 
-              {/* ── STEP 2: Alamat ── */}
-              {activeStep === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ duration: 0.15 }}
-                  className="p-5 md:p-6"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-ink/5 pb-4 mb-5 gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-rose bg-rose/10 px-2 py-0.5 rounded uppercase tracking-widest">02</span>
-                      <span className="text-xs font-bold uppercase tracking-widest text-ink">Alamat Pengiriman</span>
-                    </div>
-                    <div className="flex bg-ink/5 p-1 rounded-lg">
-                      <button 
-                        type="button"
-                        onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
-                        className={cn("px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-all rounded-md", f.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
-                      >
-                        Rumah
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
-                        className={cn("px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-all rounded-md", f.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
-                      >
-                        Kantor
-                      </button>
-                    </div>
+            {/* ── STEP 2: Alamat ── */}
+            {activeStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.15 }}
+                className="p-4"
+              >
+                {/* Section label */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-2 mb-3 gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] md:text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">02</span>
+                    <span className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                    <div className="sm:col-span-2">
-                      <FL>Nama Jalan</FL>
-                      <input value={f.street} onChange={e => set('street', e.target.value)} className={ip} placeholder="Jl. Asia Afrika" />
-                    </div>
-                    <div>
-                      <FL>No. Rumah</FL>
-                      <input value={f.house_number} onChange={e => set('house_number', e.target.value)} className={ip} placeholder="No. 22" />
-                    </div>
+                  {/* Address Type Selector */}
+                  <div className="flex bg-ink/5 p-1">
+                    <button 
+                      type="button"
+                      onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
+                      className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", f.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    >
+                      Rumah / Home
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
+                      className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", f.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    >
+                      Kantor / Office
+                    </button>
                   </div>
+                </div>
 
-                  <div className="mb-4">
+                {/* 3-column grid for address fields */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <FL>Nama Jalan</FL>
+                    <input value={f.street} onChange={e => set('street', e.target.value)} className={ip} placeholder="Jl. Asia Afrika" />
+                  </div>
+                  <div>
+                    <FL>No. Rumah</FL>
+                    <input value={f.house_number} onChange={e => set('house_number', e.target.value)} className={ip} placeholder="No. 22" />
+                  </div>
+                  <div>
                     <FL>Provinsi</FL>
                     <CustomDropdown value={f.prov} options={provinces} onChange={(id) => set('prov', id)} placeholder="Pilih Provinsi" searchable />
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <FL>Kota / Kabupaten</FL>
-                      <CustomDropdown value={f.city} options={regencies} onChange={(id) => set('city', id)} placeholder="Pilih Kota" disabled={!f.prov} searchable />
-                    </div>
-                    <div>
-                      <FL>Kecamatan</FL>
-                      <CustomDropdown value={f.dist} options={districts} onChange={(id) => set('dist', id)} placeholder="Pilih Kecamatan" disabled={!f.city} searchable />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <FL>Kota / Kabupaten</FL>
+                    <CustomDropdown value={f.city} options={regencies} onChange={(id) => set('city', id)} placeholder="Pilih Kota" disabled={!f.prov} searchable />
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <FL>Kel / Desa</FL>
-                      <CustomDropdown
-                        value={f.villId}
-                        options={villages}
-                        onChange={(id, name) => { set('villId', id); }}
-                        placeholder={f.dist ? "Pilih Kel/Desa" : "Pilih Kecamatan dulu"}
-                        disabled={!f.dist}
-                        searchable
-                      />
-                    </div>
-                    <div>
-                      <FL>Kode Pos</FL>
-                      <input value={f.postal} onChange={e => setF(p => ({ ...p, postal: e.target.value }))} className={ip} placeholder="40111" />
-                    </div>
+                  <div>
+                    <FL>Kecamatan</FL>
+                    <CustomDropdown value={f.dist} options={districts} onChange={(id) => set('dist', id)} placeholder="Pilih Kecamatan" disabled={!f.city} searchable />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <FL>RT</FL>
-                      <input value={f.rt} onChange={e => set('rt', e.target.value)} className={ip} placeholder="001" />
-                    </div>
-                    <div>
-                      <FL>RW</FL>
-                      <input value={f.rw} onChange={e => set('rw', e.target.value)} className={ip} placeholder="005" />
-                    </div>
+                  <div>
+                    <FL>Kel / Desa</FL>
+                    <CustomDropdown
+                      value={f.villId}
+                      options={villages}
+                      onChange={(id, name) => { set('villId', id); }}
+                      placeholder={f.dist ? "Pilih Kel/Desa" : "Pilih Kecamatan dulu"}
+                      disabled={!f.dist}
+                      searchable
+                    />
                   </div>
+                </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setActiveStep(1)}
-                      className="w-full sm:w-1/3 bg-ink/5 text-ink py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
-                    >
-                      Kembali
-                    </button>
-                    <button
-                      type="button"
-                      onClick={submit}
-                      disabled={isSaving}
-                      className="w-full sm:w-2/3 bg-ink text-white py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors"
-                    >
-                      {isSaving ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <><span>Simpan & Selesai</span><ArrowRight size={14} /></>
-                      )}
-                    </button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  <div>
+                    <FL>Kode Pos</FL>
+                    <input value={f.postal} onChange={e => setF(p => ({ ...p, postal: e.target.value }))} className={ip} placeholder="40111" />
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+                  <div>
+                    <FL>RT</FL>
+                    <input value={f.rt} onChange={e => set('rt', e.target.value)} className={ip} placeholder="001" />
+                  </div>
+                  <div>
+                    <FL>RW</FL>
+                    <input value={f.rw} onChange={e => set('rw', e.target.value)} className={ip} placeholder="005" />
+                  </div>
+                </div>
 
-          <div className="lg:hidden flex justify-center gap-6 mt-6">
-            <div className="flex items-center gap-2">
-              <Shield size={12} className="text-rose/60" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-ink/50">Aman</span>
+                {/* Actions */}
+                <div className="flex justify-end gap-3 border-t border-ink/5 pt-6 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStep(1)}
+                    className="w-full md:w-auto bg-ink/5 text-ink py-3.5 px-8 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-colors"
+                  >
+                    Kembali
+                  </button>
+                  <button
+                    type="button"
+                    onClick={submit}
+                    disabled={isSaving}
+                    className="w-full md:w-auto bg-ink text-white py-3.5 px-8 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors shadow-sm"
+                  >
+                    {isSaving ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <><span>Simpan & Selesai</span><ArrowRight size={14} /></>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Trust Badges */}
+        <div className="flex justify-center gap-5 mt-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Shield size={9} strokeWidth={1.5} className="text-rose/60" />
             </div>
-            <div className="flex items-center gap-2">
-              <Lock size={12} className="text-rose/60" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-ink/50">Enkripsi</span>
-            </div>
+            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink">Aman</span>
           </div>
-        </div>
-      </div>
-
-      {/* ─── RIGHT COLUMN: Benefits & Trust (Desktop Only) ─── */}
-      <div className="hidden lg:flex flex-col justify-center items-center bg-rose/5 p-12 border-l border-ink/5">
-        <div className="max-w-xs text-center space-y-12">
-          
-          <div className="space-y-4">
-            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto text-rose">
-              <Shield size={24} strokeWidth={1.5} />
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm">
+              <Lock size={9} strokeWidth={1.5} className="text-rose/60" />
             </div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-ink">Privasi Terjamin</h3>
-            <p className="text-xs text-ink/50 leading-relaxed">
-              Data Anda dienkripsi dengan standar keamanan industri tingkat tinggi dan tidak akan dibagikan ke pihak manapun.
-            </p>
+            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink">Enkripsi</span>
           </div>
-
-          <div className="space-y-4">
-            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto text-rose">
-              <Package size={24} strokeWidth={1.5} />
-            </div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-ink">Pengiriman Cepat</h3>
-            <p className="text-xs text-ink/50 leading-relaxed">
-              Alamat yang akurat memastikan pesanan Anda tiba tepat waktu tanpa kendala di jalan.
-            </p>
-          </div>
-          
         </div>
       </div>
 
