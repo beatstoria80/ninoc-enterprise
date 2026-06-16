@@ -187,6 +187,11 @@ export function ShippingLabel({ order }: { order: Order }) {
             <div><span style={{ fontWeight: 'bold' }}>Penerima :</span> {receiverName}</div>
             <div>{receiverPhone}</div>
           </div>
+          {order.shipping_address?.address_type && (
+            <div style={{ display: 'inline-block', border: '1px solid black', padding: '1px 4px', fontSize: '8px', fontWeight: 'bold', marginTop: '2px', marginBottom: '2px' }}>
+              {order.shipping_address.address_type === 'Home' ? 'Home / Rumah' : 'Office / Kantor'}
+            </div>
+          )}
           <div style={{ fontSize: '9px', textTransform: 'uppercase', marginBottom: '2px' }}>
             {receiverLocation}
           </div>

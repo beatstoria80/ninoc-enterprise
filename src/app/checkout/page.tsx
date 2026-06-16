@@ -75,6 +75,7 @@ interface CheckoutFormData {
   province: string;
   postal_code: string;
   referral_code: string;
+  address_type: string;
 }
 
 export default function CheckoutPage() {
@@ -165,7 +166,8 @@ export default function CheckoutPage() {
       kecamatan: '',
       city: '',
       province: '',
-      referral_code: ''
+      referral_code: '',
+      address_type: 'Home'
     };
   });
 
@@ -361,7 +363,8 @@ export default function CheckoutPage() {
             city: profile.city || '',
             province: profile.province || '',
             postal_code: profile.postal_code || '',
-            referral_code: ''
+            referral_code: '',
+            address_type: profile.address_type || 'Home'
           };
           setFormData(newData);
           
@@ -761,10 +764,27 @@ export default function CheckoutPage() {
 
             {/* 02: ADDRESS */}
             <section className="space-y-1.5 lg:space-y-3">
-              <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-2 gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/50">02</span>
                   <h2 className="text-xs md:text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.destination}</h2>
+                </div>
+                {/* Address Type Selector */}
+                <div className="flex bg-ink/5 p-1">
+                  <button 
+                    type="button"
+                    onClick={() => setFormData({...formData, address_type: 'Home'})}
+                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                  >
+                    Rumah / Home
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setFormData({...formData, address_type: 'Office'})}
+                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                  >
+                    Kantor / Office
+                  </button>
                 </div>
               </div>
 

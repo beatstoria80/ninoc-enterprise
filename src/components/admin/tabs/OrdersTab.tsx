@@ -652,6 +652,8 @@ export function OrdersTab({
               const receiverPhone = rawPhone.length >= 8 ? rawPhone.slice(0, 4) + 'XXXX' + rawPhone.slice(-4) : rawPhone;
               const receiverAddress = order.shipping_address?.address || '';
               const receiverLocation = (order.shipping_address?.city || '') + ', ' + (order.shipping_address?.province || '');
+              const addressType = order.shipping_address?.address_type;
+              const addressTypeLabel = addressType ? `<div style="display:inline-block; border:1px solid black; padding:1px 4px; font-size:8px; font-weight:bold; margin-top:2px; margin-bottom:2px;">${addressType === 'Home' ? 'Home / Rumah' : 'Office / Kantor'}</div>` : '';
 
               const maxItems = 4;
               const itemsList = order.order_items?.slice(0, maxItems).map(i => 
@@ -694,6 +696,7 @@ export function OrdersTab({
                       <div><span style="font-weight:bold">Penerima :</span> ${receiverName}</div>
                       <div>${receiverPhone}</div>
                     </div>
+                    ${addressTypeLabel}
                     <div class="uppercase-sm">${receiverLocation}</div>
                     <div class="address-bold">${receiverAddress}</div>
                   </div>

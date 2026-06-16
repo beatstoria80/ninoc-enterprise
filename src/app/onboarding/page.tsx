@@ -149,7 +149,8 @@ export default function OnboardingPage() {
     birth_date: '', gender: '',
     street: '', house_number: '',
     prov: '', provName: '', city: '', cityName: '', dist: '', distName: '',
-    villId: '', vill: '', rt: '', rw: '', postal: ''
+    villId: '', vill: '', rt: '', rw: '', postal: '',
+    address_type: 'Home'
   });
 
   useEffect(() => {
@@ -256,6 +257,7 @@ export default function OnboardingPage() {
       rt: f.rt, rw: f.rw,
       kecamatan: f.distName, kelurahan: f.vill,
       birth_date: f.birth_date, gender: f.gender,
+      address_type: f.address_type,
       is_verified: true,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' }).then(({ error }) => {
@@ -415,9 +417,28 @@ export default function OnboardingPage() {
                 className="p-4"
               >
                 {/* Section label */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[11px] md:text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">02</span>
-                  <span className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
+                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-2 mb-3 gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] md:text-[8px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded uppercase tracking-widest">02</span>
+                    <span className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink">Alamat Lengkap</span>
+                  </div>
+                  {/* Address Type Selector */}
+                  <div className="flex bg-ink/5 p-1">
+                    <button 
+                      type="button"
+                      onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
+                      className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", f.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    >
+                      Rumah / Home
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
+                      className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", f.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    >
+                      Kantor / Office
+                    </button>
+                  </div>
                 </div>
 
                 {/* Grid 1: Nama Jalan + No. Rumah (2 col) */}
