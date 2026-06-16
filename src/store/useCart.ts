@@ -26,6 +26,40 @@ interface CartStore {
   totalPrice: () => number;
 }
 
+const smartCartStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    const local = window.localStorage.getItem(name);
+    if (local) return local;
+    return window.sessionStorage.getItem(name);
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    
+    let isMember = false;
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        isMember = true;
+        break;
+      }
+    }
+
+    if (isMember) {
+      window.localStorage.setItem(name, value);
+      window.sessionStorage.removeItem(name);
+    } else {
+      window.sessionStorage.setItem(name, value);
+      window.localStorage.removeItem(name);
+    }
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.removeItem(name);
+    window.sessionStorage.removeItem(name);
+  }
+};
+
 export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -59,6 +93,9 @@ export const useCart = create<CartStore>()(
       clearCart: () => set({ items: [] }),
       totalPrice: () => get().items.reduce((acc, item) => acc + ((item.price + (item.size_surcharge || 0)) * item.quantity), 0),
     }),
-    { name: 'ninoc-cart-storage' }
+    { 
+      name: 'ninoc-cart-storage',
+      storage: typeof window !== 'undefined' ? smartCartStorage : undefined
+    }
   )
 );

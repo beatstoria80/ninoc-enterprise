@@ -567,7 +567,9 @@ export default function CheckoutPage() {
             console.log('Payment pending:', result);
             setIsRedirecting(true);
             setPaymentToken(null);
-            clearCart();
+            if (!userId) {
+              clearCart();
+            }
             sessionStorage.removeItem('ninoc_checkout_form');
             const params = new URLSearchParams({ courier: shippingMethod });
             if (createdOrderId) params.set('order_id', createdOrderId);
@@ -596,7 +598,7 @@ export default function CheckoutPage() {
         }
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, isMobile]);
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, isMobile, userId]);
 
   if (!mounted) return null;
 

@@ -66,7 +66,22 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   React.useEffect(() => {
     if (!isInvalid && order) {
-      clearCart();
+      let isMember = false;
+      if (typeof window !== 'undefined') {
+        for (let i = 0; i < window.localStorage.length; i++) {
+          const key = window.localStorage.key(i);
+          if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+            isMember = true;
+            break;
+          }
+        }
+      }
+
+      // Clear cart for guests, OR for members if payment is successful
+      if (!isMember || order.status === 'paid' || order.status === 'success' || order.payment_status === 'paid' || order.payment_status === 'settlement') {
+        clearCart();
+      }
+
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('ninoc_checkout_form');
       }
