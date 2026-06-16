@@ -779,7 +779,21 @@ export default function AdminDashboard() {
 
   // Order management
   const openOrderDetail = (order: Order) => {
-    setSelectedOrder(order);
+    // Enrich order items with variant data for the label preview
+    const enrichedOrder = {
+      ...order,
+      order_items: order.order_items?.map(item => {
+        const product = products.find(p => p.id === item.product_id);
+        const variant = product?.variants?.find(v => v.id === item.variant_id);
+        return {
+          ...item,
+          color: variant?.color || item.color,
+          size: variant?.size || item.size,
+          sku: variant?.sku || item.sku,
+        };
+      })
+    };
+    setSelectedOrder(enrichedOrder);
     setIsOrderModalOpen(true);
   };
 
@@ -1095,8 +1109,14 @@ export default function AdminDashboard() {
     
     const items = order?.order_items || [];
     const enrichedItems = items.map((item: any) => {
-      const variantSku = products.find((p: any) => p.id === item.product_id)?.variants?.find((v: any) => v.id === item.variant_id)?.sku;
-      return { ...item, sku: variantSku || 'N/A' };
+      const product = products.find((p: any) => p.id === item.product_id);
+      const variant = product?.variants?.find((v: any) => v.id === item.variant_id);
+      return { 
+        ...item, 
+        sku: variant?.sku || item.sku || 'N/A',
+        color: variant?.color || item.color,
+        size: variant?.size || item.size
+      };
     });
     const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
     
@@ -1360,7 +1380,7 @@ export default function AdminDashboard() {
                     <div class="content-box left">
                       <div class="box-title">ISI PAKET / CONTENTS</div>
                       ${enrichedItems?.map((i: any) => `
-                        <div class="item-line">${i.product_name} ${i.size ? `(Sz: ${i.size})` : ''} x${i.quantity}</div>
+                        <div class="item-line">${i.product_name} ${[i.sku, i.color, i.size].filter(Boolean).length > 0 ? `(${[i.sku, i.color, i.size].filter(Boolean).join(' / ')})` : ''} x${i.quantity}</div>
                       `).join('') || '<div class="item-line">No items found</div>'}
                     </div>
                     <div class="content-box">

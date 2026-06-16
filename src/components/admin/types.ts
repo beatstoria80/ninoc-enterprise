@@ -70,6 +70,7 @@ export interface OrderItem {
   variant_id: string | null;
   size?: string;
   color?: string | null;
+  sku?: string | null;
   quantity: number;
   price_at_purchase: number;
 }

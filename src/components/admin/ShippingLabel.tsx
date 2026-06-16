@@ -311,7 +311,7 @@ export function ShippingLabel({ order }: { order: Order }) {
               {order.order_items?.slice(0, 4).map((item, idx) => (
                 <tr key={idx} style={{ verticalAlign: 'top' }}>
                   <td style={{ paddingTop: '2px', paddingRight: '4px' }}>{item.product_name}</td>
-                  <td style={{ paddingTop: '2px' }}>{[item.color, item.size].filter(Boolean).join(' / ') || '-'}</td>
+                  <td style={{ paddingTop: '2px' }}>{[item.sku, item.color, item.size].filter(Boolean).join(' / ') || '-'}</td>
                   <td style={{ paddingTop: '2px', textAlign: 'right' }}>{item.quantity}</td>
                 </tr>
               ))}
