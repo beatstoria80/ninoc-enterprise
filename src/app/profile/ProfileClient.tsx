@@ -112,8 +112,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
 
         {!isMobile && (
         <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Return to Studio Catalog</span>
+          <span className="text-sm font-medium">Kembali ke Katalog</span>
         </Link>
         )}
 
@@ -159,12 +158,12 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
                 <div className="space-y-0.5">
-                  <p className="text-xs text-slate-500">Email Reference</p>
+                  <p className="text-xs text-slate-500">Email Terdaftar</p>
                   <p className="text-sm font-medium text-slate-800">{user?.email}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-xs text-slate-500">Member Status</p>
-                  <p className="text-sm font-medium text-rose">Verified Individual</p>
+                  <p className="text-xs text-slate-500">Status Akun</p>
+                  <p className="text-sm font-medium text-rose">Member Terverifikasi</p>
                 </div>
               </div>
             </div>
@@ -174,7 +173,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
               className="flex items-center gap-2 text-sm font-medium px-5 py-2.5 border border-slate-200 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-slate-600"
             >
               <LogOut size={14} />
-              Studio Exit
+              Keluar Akun
             </button>
           </div>
 
@@ -199,16 +198,16 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
           <div className="space-y-4">
             <div className="flex items-end justify-between border-b border-slate-100 pb-4">
               <div className="space-y-1">
-                <h2 className="text-lg font-bold text-slate-800">Investment Logs</h2>
-                <p className="text-sm text-slate-500">Historical record of all origin specifications acquired.</p>
+                <h2 className="text-lg font-bold text-slate-800">Riwayat Pesanan</h2>
+                <p className="text-sm text-slate-500">Daftar riwayat belanja dan pesanan Anda.</p>
               </div>
-              <p className="text-sm font-medium text-slate-500">{orders.length} Entries Found</p>
+              <p className="text-sm font-medium text-slate-500">{orders.length} Pesanan</p>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
               {orders.length === 0 ? (
                 <div className="py-8 md:py-20 text-center border border-dashed border-slate-200 rounded-[10px]">
-                  <p className="text-sm text-slate-500 italic">No historical records available.</p>
+                  <p className="text-sm text-slate-500 italic">Belum ada riwayat pesanan.</p>
                 </div>
               ) : (
                 orders.map((order) => (
@@ -227,16 +226,16 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
                           {order.status}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500">Registered on {new Date(order.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-500">Dipesan pada {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
 
                     <div className="flex items-center gap-12 text-right">
                       <div className="space-y-0.5">
-                        <p className="text-xs text-slate-500">Total Investment</p>
-                        <p className="text-sm font-semibold text-slate-800">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        <p className="text-xs text-slate-500">Total Belanja</p>
+                        <p className="text-sm font-semibold text-slate-800">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-xs text-slate-500">Logistics</p>
+                        <p className="text-xs text-slate-500">Kurir Pengiriman</p>
                         <p className="text-sm font-medium text-slate-700 uppercase">{order.courier || 'Unassigned'}</p>
                       </div>
                       <ChevronRight size={16} className="text-slate-300 group-hover:text-rose group-hover:translate-x-1 transition-all" />
