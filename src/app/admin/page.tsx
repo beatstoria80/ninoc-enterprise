@@ -2873,13 +2873,19 @@ export default function AdminDashboard() {
                   </div>
                   <div className="divide-y divide-gray-100">
                     {selectedOrder.order_items?.map((item, idx) => {
-                      const variantSku = products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.sku || 'N/A';
+                      const variantSku = item.sku || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.sku || 'N/A';
+                      const variantColor = item.color || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.color;
+                      const variantSize = item.size || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.size || 'OS';
+                      
                       return (
                         <div key={idx} className="flex justify-between items-center p-3 text-xs hover:bg-gray-50/50 transition-colors">
                           <div>
                             <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {item.size || 'OS'}</span>
+                              {variantColor && (
+                                <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">CLR: {variantColor}</span>
+                              )}
+                              <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {variantSize}</span>
                               <span className="text-xs md:text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
                               <span className="text-xs md:text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
                             </div>
