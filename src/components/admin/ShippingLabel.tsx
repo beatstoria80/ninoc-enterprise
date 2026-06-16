@@ -97,7 +97,7 @@ export function ShippingLabel({ order }: { order: Order }) {
   const receiverAddress = order.shipping_address?.address || '';
   const receiverLocation = `${order.shipping_address?.city || ''}, ${order.shipping_address?.province || ''}`;
   
-  const routingCode = `NNC-${(order.shipping_address?.postal_code || '10110').slice(0, 5)}`;
+  const routingCode = order.shipping_address?.postal_code ? `NNC-${order.shipping_address.postal_code.slice(0, 5)}` : 'NNC-STD';
   const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
   const isCOD = false; // set to false as our app uses Midtrans/VA mostly
 

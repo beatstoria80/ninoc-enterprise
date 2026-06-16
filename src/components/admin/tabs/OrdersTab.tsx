@@ -641,7 +641,7 @@ export function OrdersTab({
               const totalWeight = (totalItems * 0.150).toFixed(3);
               const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
               
-              const routingCode = 'NNC-' + (order.shipping_address?.postal_code || '10110').slice(0, 5);
+              const routingCode = order.shipping_address?.postal_code ? 'NNC-' + order.shipping_address.postal_code.slice(0, 5) : 'NNC-STD';
               const destinationHub = (order.shipping_address?.city || 'DESTINATION').toUpperCase();
               
               let shortItemsStr = order.order_items?.slice(0, 3).map(i => { const v = [i.color, i.size].filter(Boolean).join(' / '); return i.product_name + ' (' + (v || 'One Size') + ')'; }).join(', ') || '';
