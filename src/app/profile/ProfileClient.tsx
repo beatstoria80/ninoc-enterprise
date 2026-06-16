@@ -150,8 +150,8 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl font-display italic text-ink uppercase tracking-tight">{user?.full_name}</h1>
               {user?.customer_number && (
-                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-xs md:text-[10px] text-blue-600 font-mono tracking-widest">
-                  <CornerDownRight size={12} className="text-blue-500" />
+                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-xs md:text-[10px] text-ink/50 font-mono tracking-widest">
+                  <CornerDownRight size={12} className="text-ink/30" />
                   ID: {user.customer_number}
                 </div>
               )}
