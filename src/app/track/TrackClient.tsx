@@ -282,7 +282,7 @@ export default function TrackClient() {
         <form onSubmit={handleTrack} className="flex flex-col gap-4 mt-2">
           <div className="space-y-1">
             <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Order Number</label>
-            <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value)} onPaste={e => { const pasted = e.clipboardData.getData('text'); if (pasted) { e.preventDefault(); setOrderNumber(pasted.trim()); } }} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 uppercase tracking-wider text-ink" aria-label="Order number" />
+            <input type="text" value={orderNumber} onChange={e => setOrderNumber(e.target.value.toUpperCase())} placeholder="NC-20250604-XXXX" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 tracking-wider text-ink" aria-label="Order number" />
           </div>
           <div className="space-y-1">
             <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
