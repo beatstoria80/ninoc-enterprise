@@ -1070,7 +1070,7 @@ export function OrdersTab({
                           <div className="max-w-[160px]">
                             <p className="text-xs md:text-[10px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
-                              <span className="text-xs md:text-[9px] text-rose font-medium">+{order.order_items.length - 1} more</span>
+                              <span className="text-xs md:text-[9px] text-rose font-medium">+{(order.order_items?.length || 0) - 1} more</span>
                             )}
                           </div>
                         </td>
@@ -1430,7 +1430,7 @@ export function OrdersTab({
                                 {order.shipping_address?.name || 'Guest'} <span className="text-ink/30 mx-1">•</span> <span className="text-ink/70">{order.shipping_address?.city || 'Unknown City'}</span>
                               </p>
                               <p className="text-xs md:text-[10px] text-ink/60 mt-0.5 truncate">
-                                <span className="font-medium text-ink/80">{order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items</span> — {order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${order.order_items.length - 1} more` : ''}
+                                <span className="font-medium text-ink/80">{order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0} items</span> — {order.order_items?.[0]?.product_name || 'Product'} {order.order_items && order.order_items.length > 1 ? `+${(order.order_items?.length || 0) - 1} more` : ''}
                               </p>
                             </div>
                             <div className="flex items-center gap-4">
