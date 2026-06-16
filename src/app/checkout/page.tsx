@@ -549,10 +549,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (paymentToken && snapLoaded) {
 
-      const snapObj = (window as unknown as Window & { snap: { embed: (token: string, options: SnapOptions) => void } }).snap;
-      if (snapObj && typeof snapObj.embed === 'function') {
-        snapObj.embed(paymentToken, {
-          embedId: 'snap-container',
+      const snapObj = (window as unknown as Window & { snap: { embed: (token: string, options: any) => void, pay: (token: string, options: any) => void } }).snap;
+      if (snapObj) {
+        const callbacks = {
           onSuccess: (result: MidtransSnapResult) => {
             console.log('Payment successful:', result);
             setIsRedirecting(true);
@@ -586,10 +585,16 @@ export default function CheckoutPage() {
             isProcessingRef.current = false;
             setIsProcessing(false);
           }
-        });
+        };
+
+        if (isMobile && typeof snapObj.pay === 'function') {
+          snapObj.pay(paymentToken, callbacks);
+        } else if (typeof snapObj.embed === 'function') {
+          snapObj.embed(paymentToken, { embedId: 'snap-container', ...callbacks });
+        }
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart]);
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, isMobile]);
 
   if (!mounted) return null;
 
@@ -1094,7 +1099,7 @@ export default function CheckoutPage() {
       )}
 
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
-      {paymentToken && !isRedirecting && (
+      {paymentToken && !isRedirecting && !isMobile && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
           <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto md:h-auto md:min-h-[600px]">
             <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5 bg-ink/[0.02]">
