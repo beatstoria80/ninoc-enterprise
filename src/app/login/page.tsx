@@ -69,6 +69,7 @@ export default function LoginPage() {
       });
       if (error) throw error;
     } catch (err) {
+      console.error('Google Auth Error:', err);
       setError((err as Error).message || 'Google auth gagal.');
       setIsLoading(false);
     }
