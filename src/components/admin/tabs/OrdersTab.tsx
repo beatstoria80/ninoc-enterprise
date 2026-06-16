@@ -869,22 +869,22 @@ export function OrdersTab({
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col h-full space-y-4"
       >
-        <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-4">
+        <div className="shrink-0 flex items-center justify-between border-b border-ink/5 pb-2">
           <div>
-            <h2 className="text-xl font-medium text-ink tracking-tight">Online Order</h2>
-            <p className="text-xs md:text-[10px] uppercase tracking-wider text-ink/40 mt-1">Transaction History &amp; Management</p>
+            <h2 className="text-lg font-medium text-ink tracking-tight leading-tight">Online Order</h2>
+            <p className="text-[9px] uppercase tracking-wider text-ink/40 mt-0.5">Transaction History &amp; Management</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrintResi}
-              className="flex items-center gap-2 px-4 py-2 border border-ink/10 text-ink/70 text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 border border-ink/10 text-ink/70 text-[9px] uppercase font-medium tracking-wider rounded hover:bg-ink/5 hover:text-ink transition-colors"
             >
-              <Printer size={12} />
+              <Printer size={10} />
               Print Bulk Labels
             </button>
             <button
               onClick={handleExportData}
-              className="flex items-center gap-2 px-4 py-2 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose text-white text-[9px] uppercase font-medium tracking-wider rounded hover:bg-rose/90 transition-colors"
             >
               Export Data
             </button>
@@ -905,7 +905,7 @@ export function OrdersTab({
             key={tab.id}
             onClick={() => setStatusFilter(tab.id)}
             className={cn(
-              "relative px-4 py-3 text-xs md:text-[10px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
+              "relative px-3 py-2 text-[9px] uppercase font-medium tracking-wider whitespace-nowrap transition-colors",
               statusFilter === tab.id ? "text-rose" : "text-ink/40 hover:text-ink/70"
             )}
           >
@@ -1031,15 +1031,15 @@ export function OrdersTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-white">
                 <tr className="bg-ink/[0.03] border-b border-ink/10">
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
-                  <th className="px-3 py-2 text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Order ID</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Date</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Customer</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Product</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Status</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Payment</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap">Courier</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap text-right">Amount</th>
+                  <th className="px-2 py-1.5 text-[9px] uppercase tracking-widest text-ink/40 font-medium whitespace-nowrap w-[1%]"></th>
                 </tr>
               </thead>
               <tbody>
@@ -1054,19 +1054,19 @@ export function OrdersTab({
                         )}
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink/50 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="max-w-[120px]">
                             <p className="text-xs md:text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
                             <p className="text-xs md:text-[9px] text-ink/40 font-mono truncate">{order.shipping_address?.phone || ''}</p>
                           </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="max-w-[160px]">
                             <p className="text-xs md:text-[10px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
@@ -1074,7 +1074,7 @@ export function OrdersTab({
                             )}
                           </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className={cn(
                             "inline-block text-[11px] md:text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
                             order.status === 'pending' ? "bg-amber-50 text-amber-600" :
@@ -1086,7 +1086,7 @@ export function OrdersTab({
                             {order.status === 'pending' ? 'Waiting' : order.status}
                           </span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className={cn(
                             "text-xs md:text-[9px] uppercase tracking-wider font-medium",
                             order.payment_status === 'success' ? "text-emerald-600" :
@@ -1095,13 +1095,13 @@ export function OrdersTab({
                             {order.payment_status}
                           </span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="text-xs md:text-[10px] font-medium text-ink/50 uppercase">{order.courier || '—'}</span>
                         </td>
-                        <td className="px-3 py-2 text-right">
+                        <td className="px-2 py-1.5 text-right">
                           <span className="text-xs md:text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <div className="flex items-center gap-1">
                             {isExpanded ? <ChevronUp size={12} className="text-rose" /> : <ChevronDown size={12} className="text-ink/30 group-hover:text-ink/60 transition-colors" />}
                           </div>
@@ -1532,7 +1532,7 @@ export function OrdersTab({
                     {fraudWarningOrders.map(o => (
                       <tr key={o.id}>
                         <td className="px-3 py-2 font-mono font-medium text-ink">{o.id.slice(0, 8).toUpperCase()}</td>
-                        <td className="px-3 py-2">
+                        <td className="px-2 py-1.5">
                           <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium uppercase text-xs md:text-[9px] rounded">{o.status}</span>
                         </td>
                         <td className="px-3 py-2 text-ink/50 font-mono">
