@@ -82,7 +82,7 @@ export function ShippingLabel({ order }: { order: Order }) {
   const courierInfo = getCourierService(order.courier);
   const trackingId = order.tracking_id || 'JX9689052297'; // default to something so it looks like the reference if empty
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
-  const totalWeight = (totalItems * 0.100).toFixed(3); // mock 100g per item
+
   
   const shipDate = new Date().toLocaleDateString('id-ID', {
     day: '2-digit', month: '2-digit', year: 'numeric'
@@ -204,7 +204,7 @@ export function ShippingLabel({ order }: { order: Order }) {
         {/* WEIGHT & DATE */}
         <div style={{ display: 'flex', fontSize: '9px', borderBottom: '1px solid black' }}>
           <div style={{ flex: 1, padding: '4px 8px', borderRight: '1px solid black' }}>
-            Weight : {totalWeight} KG
+            Weight : {totalItems * 100} Gram
           </div>
           <div style={{ flex: 1, padding: '4px 8px' }}>
             Ship : {shipDate}
