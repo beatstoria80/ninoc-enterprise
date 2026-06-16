@@ -156,6 +156,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     if (destinationCity) {
       targetCoords = getCoordsFromLocation(destinationCity);
       if (targetCoords) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDestCoords(targetCoords);
       }
     }
@@ -180,8 +181,7 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     }
   }, [destinationCity, status, sortedLogs]);
 
-  // Build route path segments from origin -> (known log coordinates) -> current -> destination
-  const buildRoutePath = (): [number, number][] => {
+  const linePositions = React.useMemo(() => {
     const path: [number, number][] = [ORIGIN_COORDS];
     const uniqueCoords = new Set<string>([`${ORIGIN_COORDS[0]},${ORIGIN_COORDS[1]}`]);
 
@@ -208,13 +208,12 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
       }
     }
     return path;
-  };
-
-  const linePositions = React.useMemo(() => buildRoutePath(), [currentCoords, destCoords, sortedLogs]);
+  }, [currentCoords, destCoords, sortedLogs]);
   const [routePolyline, setRoutePolyline] = useState<[number, number][]>([]);
 
   useEffect(() => {
     if (linePositions.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRoutePolyline(linePositions);
       return;
     }
