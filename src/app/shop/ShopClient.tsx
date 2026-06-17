@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingBag, ArrowRight, ImageOff } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, ImageOff, ShoppingCart } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
@@ -145,11 +145,23 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-[11px] md:text-[10px] font-display font-medium italic text-rose">
-                          {product.price_tag === 'REDEEM'
-                            ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
-                            : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-[11px] md:text-[10px] font-display font-medium italic text-rose">
+                            {product.price_tag === 'REDEEM'
+                              ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
+                              : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                            }}
+                            className="w-5 h-5 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+                          >
+                            <ShoppingCart className="w-3 h-3" />
+                          </button>
+                        </div>
 
                         <div className="flex items-center justify-between pt-1 border-t border-ink/5">
                           <div className="flex items-center gap-1 opacity-40">

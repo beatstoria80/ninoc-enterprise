@@ -91,8 +91,13 @@ function ProductCard({ product }: { product: Product }) {
   const handleQuickBuy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
-    router.push('/checkout');
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+    } else {
+      addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+      router.push('/checkout');
+    }
   };
 
   return (

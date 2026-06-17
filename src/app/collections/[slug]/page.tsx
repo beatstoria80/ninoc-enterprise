@@ -44,7 +44,7 @@ export default async function CollectionLandingPage({ params }: { params: Promis
     const productIds = relData.map(r => r.product_id);
     const { data: prodData } = await supabase
       .from('products')
-      .select('*')
+      .select('*, variants(*)')
       .in('id', productIds);
       
     if (prodData) {

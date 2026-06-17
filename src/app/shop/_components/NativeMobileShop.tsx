@@ -41,8 +41,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
   const handleQuickBuy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
-    router.push('/checkout');
+    window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
   };
 
   return (

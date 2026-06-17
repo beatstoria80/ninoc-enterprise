@@ -300,8 +300,13 @@ function ProductCard({ product, index }: ProductCardProps) {
   const handleQuickBuy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
-    router.push('/checkout');
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+    } else {
+      addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
+      router.push('/checkout');
+    }
   };
 
   return (
@@ -546,7 +551,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await supabase.from('products').select('*').limit(8);
+        const { data } = await supabase.from('products').select('*, variants(*)').limit(8);
         setProducts(data || []);
       } catch (error) {
         console.error('Failed to fetch products:', error);

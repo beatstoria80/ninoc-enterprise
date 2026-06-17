@@ -22,7 +22,7 @@ export const revalidate = 60; // Cache for 60 seconds
 
 export default async function CollectionsPage() {
   const [prodRes, colRes] = await Promise.all([
-    supabase.from('products').select('*'),
+    supabase.from('products').select('*, variants(*)'),
     supabase.from('collections').select('*').eq('status', 'active')
   ]);
   

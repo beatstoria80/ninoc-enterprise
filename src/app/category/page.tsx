@@ -21,7 +21,7 @@ import { supabase } from '@/lib/supabase';
 export const revalidate = 60; // Cache for 60 seconds
 
 export default async function CategoryPage() {
-  const { data } = await supabase.from('products').select('*');
+  const { data } = await supabase.from('products').select('*, variants(*)');
   const products = data || [];
 
   return <CategoryClient initialProducts={products} />;
