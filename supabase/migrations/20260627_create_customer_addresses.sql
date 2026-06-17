@@ -60,7 +60,7 @@ INSERT INTO public.customer_addresses (
 )
 SELECT 
     user_id,
-    COALESCE(address_type, 'Home'),
+    'Home',
     first_name,
     last_name,
     phone,
