@@ -15,7 +15,7 @@ export default function QuickBuyModal() {
 
   const availableSizes = (() => {
     if (!quickBuyProduct?.variants?.length) return [];
-    const sizes = Array.from(new Set(quickBuyProduct.variants.map((v: any) => v.size).filter((s: any): s is string => !!s)));
+    const sizes = Array.from(new Set(quickBuyProduct.variants.map((v: any) => v.size).filter((s: any): s is string => !!s))) as string[];
     const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
     sizes.sort((a: any, b: any) => {
       const idxA = SIZE_ORDER.indexOf(a.toUpperCase());
@@ -54,7 +54,7 @@ export default function QuickBuyModal() {
       setQuickBuyProduct(prod);
 
       const sizes = prod.variants
-        ? Array.from(new Set(prod.variants.map((v: any) => v.size).filter((s: any): s is string => !!s)))
+        ? Array.from(new Set(prod.variants.map((v: any) => v.size).filter((s: any): s is string => !!s))) as string[]
         : [];
       const colors = prod.variants
         ? Array.from(new Set(prod.variants.map((v: any) => v.color).filter((c: any): c is string => !!c))) as string[]
