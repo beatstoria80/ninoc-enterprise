@@ -300,13 +300,7 @@ function ProductCard({ product, index }: ProductCardProps) {
   const handleQuickBuy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
-    } else {
-      addItem({ id: product.id, name: product.name, price: product.price, image_url: product.image_url || null, slug: product.slug });
-      router.push('/checkout');
-    }
+    window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
   };
 
   return (

@@ -272,10 +272,17 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         </div>
                       )}
 
-                      <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center z-0 pointer-events-none">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-95 opacity-0 group-hover/card:scale-100 group-hover/card:opacity-100 transition-all duration-200 ease-out shadow-xl">
+                      <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                          }}
+                          className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-95 opacity-0 group-hover/card:scale-100 group-hover/card:opacity-100 transition-all duration-200 ease-out shadow-xl hover:bg-rose hover:text-white"
+                        >
                           <ShoppingBag size={18} />
-                        </div>
+                        </button>
                       </div>
                     </div>
 

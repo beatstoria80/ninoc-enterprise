@@ -10,6 +10,7 @@ import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
+import QuickBuyModal from "@/components/QuickBuyModal";
 
 const inter = {
   variable: "--font-sans",
@@ -287,6 +288,7 @@ export default async function RootLayout({
                 {children}
               </main>
               <Toaster position="top-center" richColors theme="light" />
+              <QuickBuyModal />
             </BrandProvider>
           </ClientPlatformManager>
           <div className="print:hidden">
