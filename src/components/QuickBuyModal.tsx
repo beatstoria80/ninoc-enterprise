@@ -33,14 +33,14 @@ export default function QuickBuyModal() {
     const filtered = selectedSize 
       ? quickBuyProduct.variants.filter((v: any) => v.size?.toUpperCase() === selectedSize.toUpperCase())
       : quickBuyProduct.variants;
-    return Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c)));
+    return Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c))) as string[];
   })();
 
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
     if (quickBuyProduct?.variants?.length) {
       const filtered = quickBuyProduct.variants.filter((v: any) => v.size?.toUpperCase() === size.toUpperCase());
-      const colors = Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c)));
+      const colors = Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c))) as string[];
       if (colors.length > 0 && !colors.includes(selectedColor)) {
         setSelectedColor(colors[0] || '');
       }
@@ -57,7 +57,7 @@ export default function QuickBuyModal() {
         ? Array.from(new Set(prod.variants.map((v: any) => v.size).filter((s: any): s is string => !!s)))
         : [];
       const colors = prod.variants
-        ? Array.from(new Set(prod.variants.map((v: any) => v.color).filter((c: any): c is string => !!c)))
+        ? Array.from(new Set(prod.variants.map((v: any) => v.color).filter((c: any): c is string => !!c))) as string[]
         : [];
 
       const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
