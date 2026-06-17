@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# screenshots
 qa-*.png
+
+# tools
 .gemini/
+.vscode/settings.json
