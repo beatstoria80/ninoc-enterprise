@@ -346,6 +346,7 @@ export default function GlobalHeader() {
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   // Scroll handler with debounce
@@ -371,10 +372,11 @@ export default function GlobalHeader() {
     const fetchProfile = async (userId: string) => {
       const { data } = await supabase
         .from('customer_profiles')
-        .select('avatar_url')
+        .select('avatar_url, full_name')
         .eq('user_id', userId)
         .single();
       if (data?.avatar_url) setProfileAvatar(data.avatar_url);
+      if (data?.full_name) setProfileName(data.full_name);
     };
 
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -385,7 +387,10 @@ export default function GlobalHeader() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
-      else setProfileAvatar(null);
+      else {
+        setProfileAvatar(null);
+        setProfileName(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -522,7 +527,11 @@ export default function GlobalHeader() {
               <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
                 {profileAvatar ? (
                   <div className="relative w-5 h-5">
-                    <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-none border border-ink/5" />
+                    <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
+                  </div>
+                ) : user ? (
+                  <div className="w-5 h-5 rounded-full bg-ink/10 flex items-center justify-center text-[10px] font-bold text-ink">
+                    {profileName ? profileName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 ) : (
                   <User size={20} strokeWidth={1.5} />
