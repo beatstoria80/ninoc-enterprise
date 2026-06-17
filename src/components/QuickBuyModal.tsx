@@ -17,7 +17,7 @@ export default function QuickBuyModal() {
     if (!quickBuyProduct?.variants?.length) return [];
     const sizes = Array.from(new Set(quickBuyProduct.variants.map((v: any) => v.size).filter((s: any): s is string => !!s)));
     const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-    sizes.sort((a, b) => {
+    sizes.sort((a: any, b: any) => {
       const idxA = SIZE_ORDER.indexOf(a.toUpperCase());
       const idxB = SIZE_ORDER.indexOf(b.toUpperCase());
       if (idxA === -1 && idxB === -1) return a.localeCompare(b);
@@ -61,7 +61,7 @@ export default function QuickBuyModal() {
         : [];
 
       const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-      sizes.sort((a, b) => {
+      sizes.sort((a: any, b: any) => {
         const idxA = SIZE_ORDER.indexOf(a.toUpperCase());
         const idxB = SIZE_ORDER.indexOf(b.toUpperCase());
         if (idxA === -1 && idxB === -1) return a.localeCompare(b);
