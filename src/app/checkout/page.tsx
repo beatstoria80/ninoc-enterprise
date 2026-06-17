@@ -181,6 +181,9 @@ export default function CheckoutPage() {
   const [cities, setCities] = useState<LocationItem[]>([]);
   const [districts, setDistricts] = useState<LocationItem[]>([]);
   const [villages, setVillages] = useState<LocationItem[]>([]);
+  
+  // State for multiple saved addresses
+  const [savedAddresses, setSavedAddresses] = useState<CheckoutFormData[]>([]);
 
   const [loadingLoc, setLoadingLoc] = useState({ p: false, c: false, d: false, v: false });
 
@@ -347,8 +350,52 @@ export default function CheckoutPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserId(user.id);
+        
+        // Fetch base profile for name/phone fallback
         const { data: profile } = await supabase.from('customer_profiles').select('*').eq('user_id', user.id).single();
-        if (profile) {
+        
+        // Fetch addresses from customer_addresses
+        const { data: addresses } = await supabase.from('customer_addresses').select('*').eq('user_id', user.id).order('is_default', { ascending: false });
+        
+        if (addresses && addresses.length > 0) {
+          const parsedAddresses = addresses.map((addr: any) => ({
+            first_name: addr.first_name || profile?.first_name || '',
+            last_name: addr.last_name || profile?.last_name || '',
+            email: user.email || '',
+            phone: addr.phone || profile?.phone || '',
+            street: addr.street || '',
+            house_number: addr.house_number || '',
+            rt: addr.rt || '',
+            rw: addr.rw || '',
+            kelurahan: addr.kelurahan || '',
+            kecamatan: addr.kecamatan || '',
+            city: addr.city || '',
+            province: addr.province || '',
+            postal_code: addr.postal_code || '',
+            referral_code: '',
+            address_type: addr.address_type || 'Home'
+          }));
+          
+          setSavedAddresses(parsedAddresses);
+          
+          // Try to set current address to match the formData address_type, or use the default
+          const targetType = formData.address_type || 'Home';
+          const addrToUse = parsedAddresses.find((a: any) => a.address_type === targetType) || parsedAddresses[0];
+          
+          setFormData(prev => ({...prev, ...addrToUse, referral_code: prev.referral_code})); // keep current referral
+          
+          // Trigger cascading fetches sequentially for the selected address
+          if (addrToUse.province) {
+            const loadedCities = await fetchCities(addrToUse.province);
+            if (addrToUse.city && Array.isArray(loadedCities)) {
+              const loadedDistricts = await fetchDistricts(addrToUse.city, loadedCities);
+              if (addrToUse.kecamatan && Array.isArray(loadedDistricts)) {
+                await fetchVillages(addrToUse.kecamatan, loadedDistricts);
+              }
+            }
+          }
+        } else if (profile) {
+          // Fallback to legacy customer_profiles structure if no addresses exist
           const newData = {
             first_name: profile.first_name || '',
             last_name: profile.last_name || '',
@@ -366,9 +413,9 @@ export default function CheckoutPage() {
             referral_code: '',
             address_type: profile.address_type || 'Home'
           };
+          setSavedAddresses([newData]);
           setFormData(newData);
           
-          // Trigger cascading fetches sequentially with proper error handling
           if (newData.province) {
             const loadedCities = await fetchCities(newData.province);
             if (newData.city && Array.isArray(loadedCities)) {
@@ -386,6 +433,44 @@ export default function CheckoutPage() {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provinces]);
+
+  const switchAddressType = async (type: string) => {
+    // If switching to the same type, do nothing
+    if (formData.address_type === type) return;
+
+    const existingAddr = savedAddresses.find(a => a.address_type === type);
+    if (existingAddr) {
+      setFormData(prev => ({ ...prev, ...existingAddr, address_type: type, referral_code: prev.referral_code }));
+      
+      // Load locations for the existing address
+      setCities([]); setDistricts([]); setVillages([]);
+      if (existingAddr.province) {
+        const loadedCities = await fetchCities(existingAddr.province);
+        if (existingAddr.city && Array.isArray(loadedCities)) {
+          const loadedDistricts = await fetchDistricts(existingAddr.city, loadedCities);
+          if (existingAddr.kecamatan && Array.isArray(loadedDistricts)) {
+            await fetchVillages(existingAddr.kecamatan, loadedDistricts);
+          }
+        }
+      }
+    } else {
+      // Clear address fields, but keep identity info
+      setFormData(prev => ({
+        ...prev,
+        address_type: type,
+        street: '',
+        house_number: '',
+        rt: '',
+        rw: '',
+        kelurahan: '',
+        kecamatan: '',
+        city: '',
+        province: '',
+        postal_code: ''
+      }));
+      setCities([]); setDistricts([]); setVillages([]);
+    }
+  };
 
   // Fetch dynamic rates when location is ready
   useEffect(() => {
@@ -782,14 +867,14 @@ export default function CheckoutPage() {
                 <div className="flex bg-ink/5 p-1">
                   <button 
                     type="button"
-                    onClick={() => setFormData({...formData, address_type: 'Home'})}
+                    onClick={() => switchAddressType('Home')}
                     className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
                   >
                     Rumah / Home
                   </button>
                   <button 
                     type="button"
-                    onClick={() => setFormData({...formData, address_type: 'Office'})}
+                    onClick={() => switchAddressType('Office')}
                     className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
                   >
                     Kantor / Office

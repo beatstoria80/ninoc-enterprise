@@ -159,6 +159,52 @@ export async function POST(req: Request) {
     const firstName = customerDetails.first_name || '';
     const lastName = customerDetails.last_name || '';
 
+    // Upsert customer address if user is logged in
+    if (customerDetails.user_id) {
+      const addressType = customerDetails.address_type || 'Home';
+      try {
+        const { data: existingAddrs } = await supabaseAdmin
+          .from('customer_addresses')
+          .select('id')
+          .eq('user_id', customerDetails.user_id)
+          .eq('address_type', addressType)
+          .maybeSingle();
+          
+        const addressPayload = {
+          user_id: customerDetails.user_id,
+          address_type: addressType,
+          first_name: firstName,
+          last_name: lastName,
+          phone: customerDetails.phone || '',
+          street: customerDetails.street || '',
+          house_number: customerDetails.house_number || '',
+          rt: customerDetails.rt || '',
+          rw: customerDetails.rw || '',
+          kelurahan: customerDetails.kelurahan || '',
+          kecamatan: customerDetails.kecamatan || '',
+          city: customerDetails.city || '',
+          province: customerDetails.province || '',
+          postal_code: customerDetails.postal_code || ''
+        };
+
+        if (existingAddrs) {
+          await supabaseAdmin
+            .from('customer_addresses')
+            .update(addressPayload)
+            .eq('id', existingAddrs.id);
+        } else {
+          await supabaseAdmin
+            .from('customer_addresses')
+            .insert({
+              ...addressPayload,
+              is_default: addressType === 'Home'
+            });
+        }
+      } catch (e) {
+        console.error('[Checkout API] Failed to upsert address:', e);
+      }
+    }
+
     // Initialize Midtrans Snap
     const snap = new midtransClient.Snap({
       isProduction: process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true',
