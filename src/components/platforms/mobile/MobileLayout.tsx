@@ -261,13 +261,16 @@ export default function MobileLayout({
     return Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c)));
   })();
 
-  useEffect(() => {
-    if (quickBuyProduct && availableColors.length > 0) {
-      if (!availableColors.includes(selectedColor)) {
-        setSelectedColor(availableColors[0] || '');
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    if (quickBuyProduct?.variants?.length) {
+      const filtered = quickBuyProduct.variants.filter((v: any) => v.size?.toUpperCase() === size.toUpperCase());
+      const colors = Array.from(new Set(filtered.map((v: any) => v.color).filter((c: any): c is string => !!c)));
+      if (colors.length > 0 && !colors.includes(selectedColor)) {
+        setSelectedColor(colors[0] || '');
       }
     }
-  }, [selectedSize, quickBuyProduct]);
+  };
 
   useEffect(() => {
     const handleOpenQuickBuy = (e: Event) => {
@@ -897,7 +900,7 @@ export default function MobileLayout({
                     <div className="relative">
                       <select
                         value={selectedSize}
-                        onChange={(e) => setSelectedSize(e.target.value)}
+                        onChange={(e) => handleSizeChange(e.target.value)}
                         className="w-full bg-ink/5 border border-ink/10 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink focus:outline-none focus:border-ink focus:bg-white transition-all appearance-none rounded-none"
                       >
                         {availableSizes.map(size => {
