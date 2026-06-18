@@ -683,157 +683,151 @@ export default function Home() {
              <div className="mobile-momentum select-none">
 
       {/* HERO SECTION */}
-      <section className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto border-b border-ink/5">
-        <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
+      <section className="relative w-full overflow-hidden">
+        {/* ═══ HERO BANNER — Full-width background with overlay ═══ */}
+        <motion.div
+          initial={{ clipPath: 'inset(0 0 100% 0)' }}
+          animate={{ clipPath: 'inset(0 0 0 0)' }}
+          transition={{ delay: 0.1, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+          className="relative w-full aspect-[16/9] md:aspect-[2.2/1] lg:aspect-[2.4/1] overflow-hidden"
+        >
+          {/* Banner Image */}
+          <motion.div
+            initial={{ scale: 1.08, filter: 'blur(12px)' }}
+            animate={{ scale: 1, filter: 'blur(0px)' }}
+            transition={{ delay: 0.15, duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <Image
+              src="/banner_ninoc_1.png"
+              alt="NINOC Atelier — Wear Your Zone"
+              fill
+              sizes="100vw"
+              className="object-cover object-center"
+              priority
+            />
+          </motion.div>
 
-          {/* Left: Branding */}
-          <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
+          {/* Dark gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/60 via-ink/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-ink/10 z-10" />
+
+          {/* Overlay Content */}
+          <div className="absolute inset-0 z-20 flex flex-col justify-between p-4 md:p-8 lg:p-12">
+
+            {/* Top: Origin badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="flex items-center gap-2 text-rose"
-            >
-              <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.15em] md:tracking-widest whitespace-nowrap">Origin Specification</span>
-            </motion.div>
-
-            <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
-              {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
-                <span key={word + wi} className="block overflow-hidden">
-                  {word.split("").map((char: string, ci: number) => (
-                    <motion.span 
-                      key={ci} 
-                      variants={charVariants} 
-                      initial="hidden" 
-                      animate="visible" 
-                      custom={wi * 8 + ci} 
-                      className="inline-block"
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
-                </span>
-              ))}
-            </h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="text-[11px] md:text-sm font-medium leading-snug md:leading-relaxed text-ink/60 md:text-ink/60 max-w-[260px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
-            >
-              {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, x: -30, filter: 'blur(5px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               transition={{ delay: 0.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              className="flex items-center gap-2 text-white/80"
             >
-              <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
-                {/* Mobile: Simple capsule with icon + text */}
-                <span className="md:hidden inline-flex items-center gap-1.5 bg-ink/5 px-3 py-1.5 border border-ink/10">
-                  <span className="text-xs md:text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
-                  <ArrowRight size={10} className="text-rose group-hover:translate-x-0.5 transition-transform" />
-                </span>
-                {/* Desktop: Full line + text */}
-                <span className="hidden md:inline text-sm md:text-[11px] font-medium uppercase tracking-[0.4em]">Browse Category</span>
-                <div className="hidden md:inline relative w-12 h-[1px] overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-ink/20"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 1, duration: DURATION.slow, ease: EASING.out }}
-                    style={{ originX: 0 }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 bg-rose origin-left"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
-                  />
-                  <motion.span
-                    className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
-                  >
-                    <ChevronRight className="w-3 h-3 text-rose" />
-                  </motion.span>
-                </div>
-              </PressButton>
+              <Paperclip className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
             </motion.div>
 
-            {/* Mobile Metadata - Left aligned, flush, lowercase labels */}
-            <div className="flex items-center gap-4 mt-4 md:hidden">
-              {[
-                { label: 'year', value: '2024' },
-                { label: 'loc', value: 'bdg, id' },
-                { label: 'phil', value: 'simplicity' }
-              ].map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  className="flex flex-col items-start text-left"
-                  initial={{ opacity: 0, y: 20 }}
+            {/* Bottom: Title + CTA */}
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-8">
+              {/* Left: Brand title */}
+              <div className="space-y-2 md:space-y-4">
+                <h1 className="text-white text-3xl md:text-7xl lg:text-8xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-lg">
+                  {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
+                    <span key={word + wi} className="block overflow-hidden">
+                      {word.split("").map((char: string, ci: number) => (
+                        <motion.span
+                          key={ci}
+                          variants={charVariants}
+                          initial="hidden"
+                          animate="visible"
+                          custom={wi * 8 + ci}
+                          className="inline-block"
+                        >
+                          {char}
+                        </motion.span>
+                      ))}
+                    </span>
+                  ))}
+                </h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className="text-[10px] md:text-xs font-medium leading-snug text-white/70 max-w-[220px] md:max-w-sm uppercase tracking-wider"
                 >
-                  <p className="text-[8px] font-normal tracking-[0.15em] text-ink/25 leading-none mb-1 lowercase">{item.label}</p>
-                  <p className="text-[10px] font-medium text-ink/50 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                  {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
+                </motion.p>
 
-          {/* Middle: Portrait Carousel */}
-          <div className="lg:col-span-4 relative mt-0">
-            <PortraitImageCarousel />
-
-            <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
-            >
-              <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
-              <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br />Industrial Grade Fabrics</p>
-            </motion.div>
-          </div>
-
-          {/* Right: Metadata Sidebar */}
-          <div className="col-span-2 lg:col-span-4 lg:pt-20 -mt-10 md:mt-0 lg:mt-0">
-            <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
-              {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
                 <motion.div
-                  key={item.label}
-                  className="space-y-0"
-                  variants={metadataVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.5 }}
-                  custom={i}
+                  initial={{ opacity: 0, x: -30, filter: 'blur(5px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  transition={{ delay: 0.7, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/20">{item.label}</p>
-                  <p className={`text-xs md:text-[10px] font-medium text-ink ${i === 2 ? 'italic leading-tight' : ''}`}>{item.value}</p>
+                  <PressButton href="/category" className="group inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-4 py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
+                      <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
+                      <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </PressButton>
                 </motion.div>
-              ))}
+              </div>
 
+              {/* Right: Metadata (desktop) */}
               <motion.div
-                className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8"
-                initial={{ opacity: 0, y: 60, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                className="hidden md:flex items-end gap-8"
               >
-                <div className="flex items-center gap-3">
-                  <div className="text-rose">
-                    <ShieldCheck size={18} />
-                  </div>
-                  <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
-                </div>
-                <div className="text-sm md:text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</div>
+                {[
+                  { label: 'Year', value: 'Est. 2024' },
+                  { label: 'Location', value: 'Bandung, ID' },
+                  { label: 'Philosophy', value: 'Simplicity' }
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    className="text-right"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.0 + i * 0.1, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  >
+                    <p className="text-[7px] font-medium uppercase tracking-widest text-white/40 mb-0.5">{item.label}</p>
+                    <p className="text-[10px] font-medium text-white/80 uppercase tracking-wide">{item.value}</p>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
           </div>
+
+          {/* SPEC label */}
+          <motion.div
+            className="absolute top-3 right-3 md:top-4 md:right-4 bg-ink/80 backdrop-blur-sm text-white px-2 py-1 text-[9px] uppercase font-mono tracking-tighter z-20"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8, duration: DURATION.normal }}
+          >
+            SPEC-001
+          </motion.div>
+        </motion.div>
+
+        {/* Mobile Metadata Row — Below Banner */}
+        <div className="flex items-center justify-center gap-6 py-3 px-4 bg-ink md:hidden">
+          {[
+            { label: 'year', value: '2024' },
+            { label: 'loc', value: 'bdg, id' },
+            { label: 'phil', value: 'simplicity' }
+          ].map((item, i) => (
+            <motion.div
+              key={item.label}
+              className="flex flex-col items-center text-center"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+            >
+              <p className="text-[7px] font-normal tracking-[0.15em] text-white/30 leading-none mb-1 lowercase">{item.label}</p>
+              <p className="text-[9px] font-medium text-white/60 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
