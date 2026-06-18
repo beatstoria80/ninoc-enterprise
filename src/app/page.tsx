@@ -682,18 +682,18 @@ export default function Home() {
              {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
              <div className="mobile-momentum select-none">
 
-      {/* HERO SECTION */}
+      {/* HERO BANNER — Full-width with overlay */}
       <section className="relative w-full overflow-hidden">
-        {/* ═══ HERO BANNER — Full-width background with overlay ═══ */}
         <motion.div
           initial={{ clipPath: 'inset(0 0 100% 0)' }}
           animate={{ clipPath: 'inset(0 0 0 0)' }}
           transition={{ delay: 0.1, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-          className="relative w-full aspect-[16/9] md:aspect-[2.2/1] lg:aspect-[2.4/1] overflow-hidden"
+          className="relative w-full"
+          style={{ height: 'clamp(320px, 56vw, 680px)' }}
         >
           {/* Banner Image */}
           <motion.div
-            initial={{ scale: 1.08, filter: 'blur(12px)' }}
+            initial={{ scale: 1.05, filter: 'blur(8px)' }}
             animate={{ scale: 1, filter: 'blur(0px)' }}
             transition={{ delay: 0.15, duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
             className="absolute inset-0 w-full h-full"
@@ -708,29 +708,36 @@ export default function Home() {
             />
           </motion.div>
 
-          {/* Dark gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-ink/60 via-ink/20 to-transparent z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-ink/10 z-10" />
+          {/* Subtle gradient — only at bottom for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent z-10" />
 
-          {/* Overlay Content */}
-          <div className="absolute inset-0 z-20 flex flex-col justify-between p-4 md:p-8 lg:p-12">
+          {/* SPEC label — top right */}
+          <motion.div
+            className="absolute top-3 left-3 md:top-5 md:left-5 bg-ink/70 backdrop-blur-sm text-white px-2 py-1 text-[9px] uppercase font-mono tracking-tighter z-20"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+          >
+            SPEC-001
+          </motion.div>
 
-            {/* Top: Origin badge */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="flex items-center gap-2 text-white/80"
-            >
-              <Paperclip className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="text-[8px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
-            </motion.div>
+          {/* Bottom overlay content — properly spaced, no overlap */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8 lg:p-12">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto">
 
-            {/* Bottom: Title + CTA */}
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-8">
-              {/* Left: Brand title */}
-              <div className="space-y-2 md:space-y-4">
-                <h1 className="text-white text-3xl md:text-7xl lg:text-8xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-lg">
+              {/* Left: Title + Subtitle + CTA */}
+              <div className="space-y-2 md:space-y-3">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className="flex items-center gap-2 text-white/70"
+                >
+                  <Paperclip className="w-3 h-3" />
+                  <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
+                </motion.div>
+
+                <h1 className="text-white text-2xl md:text-5xl lg:text-6xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-md">
                   {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
                     <span key={word + wi} className="block overflow-hidden">
                       {word.split("").map((char: string, ci: number) => (
@@ -750,34 +757,34 @@ export default function Home() {
                 </h1>
 
                 <motion.p
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className="text-[10px] md:text-xs font-medium leading-snug text-white/70 max-w-[220px] md:max-w-sm uppercase tracking-wider"
+                  className="text-[9px] md:text-[11px] font-medium text-white/60 max-w-[200px] md:max-w-xs uppercase tracking-wider leading-relaxed"
                 >
-                  {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
+                  {dict.home.heroSubtitle}
                 </motion.p>
 
                 <motion.div
-                  initial={{ opacity: 0, x: -30, filter: 'blur(5px)' }}
-                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                 >
                   <PressButton href="/category" className="group inline-flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-4 py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
-                      <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
-                      <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
+                      <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
+                      <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </PressButton>
                 </motion.div>
               </div>
 
-              {/* Right: Metadata (desktop) */}
+              {/* Right: Metadata — desktop only */}
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                className="hidden md:flex items-end gap-8"
+                className="hidden md:flex items-end gap-6 lg:gap-8"
               >
                 {[
                   { label: 'Year', value: 'Est. 2024' },
@@ -787,31 +794,21 @@ export default function Home() {
                   <motion.div
                     key={item.label}
                     className="text-right"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.0 + i * 0.1, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                   >
-                    <p className="text-[7px] font-medium uppercase tracking-widest text-white/40 mb-0.5">{item.label}</p>
-                    <p className="text-[10px] font-medium text-white/80 uppercase tracking-wide">{item.value}</p>
+                    <p className="text-[7px] font-medium uppercase tracking-widest text-white/35 mb-0.5">{item.label}</p>
+                    <p className="text-[9px] font-medium text-white/70 uppercase tracking-wide">{item.value}</p>
                   </motion.div>
                 ))}
               </motion.div>
             </div>
           </div>
-
-          {/* SPEC label */}
-          <motion.div
-            className="absolute top-3 right-3 md:top-4 md:right-4 bg-ink/80 backdrop-blur-sm text-white px-2 py-1 text-[9px] uppercase font-mono tracking-tighter z-20"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8, duration: DURATION.normal }}
-          >
-            SPEC-001
-          </motion.div>
         </motion.div>
 
-        {/* Mobile Metadata Row — Below Banner */}
-        <div className="flex items-center justify-center gap-6 py-3 px-4 bg-ink md:hidden">
+        {/* Mobile Metadata — below banner, clean row */}
+        <div className="flex items-center justify-center gap-6 py-2.5 px-4 bg-white border-b border-ink/5 md:hidden">
           {[
             { label: 'year', value: '2024' },
             { label: 'loc', value: 'bdg, id' },
@@ -820,12 +817,12 @@ export default function Home() {
             <motion.div
               key={item.label}
               className="flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
             >
-              <p className="text-[7px] font-normal tracking-[0.15em] text-white/30 leading-none mb-1 lowercase">{item.label}</p>
-              <p className="text-[9px] font-medium text-white/60 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
+              <p className="text-[7px] font-normal tracking-[0.15em] text-ink/25 leading-none mb-0.5 lowercase">{item.label}</p>
+              <p className="text-[9px] font-medium text-ink/50 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
             </motion.div>
           ))}
         </div>
