@@ -554,7 +554,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 </motion.div>
 
                 <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
-                  {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
+                  {"NINOC ATELIER".split(" ").map((word: string, wi: number) => (
                     <span key={word + wi} className="block overflow-hidden">
                       {word.split("").map((char: string, ci: number) => (
                         <motion.span key={ci} variants={charVariants} initial="hidden" animate="visible" custom={wi * 8 + ci} className="inline-block">
