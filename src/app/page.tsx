@@ -538,9 +538,10 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
             key="intro"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: EASING.inOut }}
-            className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto absolute inset-0 w-full"
+            className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto"
           >
             <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
+
               {/* Left: Branding */}
               <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
                 <motion.div
@@ -573,23 +574,114 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 >
                   {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
                 </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -30, filter: 'blur(5px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  transition={{ delay: 0.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
+                    <span className="md:hidden inline-flex items-center gap-1.5 bg-ink/5 px-3 py-1.5 border border-ink/10">
+                      <span className="text-xs md:text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
+                      <ArrowRight size={10} className="text-rose group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                    <span className="hidden md:inline text-sm md:text-[11px] font-medium uppercase tracking-[0.4em]">Browse Category</span>
+                    <div className="hidden md:inline relative w-12 h-[1px] overflow-hidden">
+                      <motion.div
+                        className="absolute inset-0 bg-ink/20"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ delay: 1, duration: DURATION.slow, ease: EASING.out }}
+                        style={{ originX: 0 }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 bg-rose origin-left"
+                        initial={{ scaleX: 0 }}
+                        whileHover={{ scaleX: 1 }}
+                        transition={{ duration: DURATION.fast, ease: EASING.out }}
+                      />
+                      <motion.span
+                        className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        whileHover={{ x: 4 }}
+                        transition={{ duration: DURATION.fast, ease: EASING.out }}
+                      >
+                        <ChevronRight className="w-3 h-3 text-rose" />
+                      </motion.span>
+                    </div>
+                  </PressButton>
+                </motion.div>
+
+                {/* Mobile Metadata */}
+                <div className="flex items-center gap-4 mt-4 md:hidden">
+                  {[
+                    { label: 'year', value: '2024' },
+                    { label: 'loc', value: 'bdg, id' },
+                    { label: 'phil', value: 'simplicity' }
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.label}
+                      className="flex flex-col items-start text-left"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                    >
+                      <p className="text-[8px] font-normal tracking-[0.15em] text-ink/25 leading-none mb-1 lowercase">{item.label}</p>
+                      <p className="text-[10px] font-medium text-ink/50 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
 
-              {/* Middle: Portrait Morphing Source */}
+              {/* Middle: Portrait with BLITZ blink animation */}
               <div className="lg:col-span-4 relative mt-0 z-50">
                 <motion.div
                   layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                  className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5"
+                  className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
+                  {/* Blitz/Blink effect — repeating flash */}
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [1, 0.7, 1, 0.9, 1], filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)', 'brightness(1.1)', 'brightness(1)'] }}
-                    transition={{ duration: 3, ease: "easeInOut" }}
+                    initial={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
+                    animate={{
+                      opacity: [0, 1, 0.6, 1, 0.8, 1, 0.9, 1],
+                      scale: [1.05, 1, 1.02, 1, 1.01, 1],
+                      filter: [
+                        'blur(10px) brightness(1)',
+                        'blur(0px) brightness(1.3)',
+                        'blur(0px) brightness(0.9)',
+                        'blur(0px) brightness(1.2)',
+                        'blur(0px) brightness(1)',
+                        'blur(0px) brightness(1.1)',
+                        'blur(0px) brightness(1)',
+                        'blur(0px) brightness(1)'
+                      ]
+                    }}
+                    transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 1 }}
                     className="absolute inset-0 w-full h-full"
                   >
                     <Image src="/banner_ninoc_1.png" alt="NINOC Intro" fill sizes="100vw" className="object-cover" priority />
                   </motion.div>
+
+                  {/* SPEC label */}
+                  <motion.div
+                    className="absolute top-2 left-1 bg-ink text-white px-1.5 py-0.5 text-[10px] uppercase font-mono tracking-tighter z-20"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5, duration: DURATION.normal }}
+                  >
+                    SPEC-001
+                  </motion.div>
+                </motion.div>
+
+                {/* Technical Detail card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
+                >
+                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-2">Technical Detail</p>
+                  <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br />Industrial Grade Fabrics</p>
                 </motion.div>
               </div>
 
@@ -602,6 +694,22 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                       <p className={`text-xs md:text-[10px] font-medium text-ink ${i === 2 ? 'italic leading-tight' : ''}`}>{item.value}</p>
                     </motion.div>
                   ))}
+
+                  {/* Origin Verified card */}
+                  <motion.div
+                    className="bg-ink text-white p-8 rounded-none space-y-6 hidden lg:block mt-8"
+                    initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-rose">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
+                    </div>
+                    <div className="text-sm md:text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</div>
+                  </motion.div>
                 </div>
               </div>
             </div>
