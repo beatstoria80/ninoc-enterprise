@@ -512,6 +512,172 @@ interface Product {
   id: string; name: string; price: number; image_url?: string; slug: string; category?: CategoryType; price_tag?: string | null;
 }
 
+
+
+// ═══════════════════════════════════════════════════════════════
+// HERO SEQUENCE (MORPHING)
+// ═══════════════════════════════════════════════════════════════
+
+function HeroSequence({ dict, isReturningVisitor, scene }: any) {
+  const [heroState, setHeroState] = useState<'intro' | 'expanded'>(isReturningVisitor ? 'expanded' : 'intro');
+
+  useEffect(() => {
+    if (scene === 'archive' && heroState === 'intro') {
+      const timer = setTimeout(() => {
+        setHeroState('expanded');
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [scene, heroState]);
+
+  return (
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(320px, 56vw, 680px)' }}>
+      <AnimatePresence>
+        {heroState === 'intro' ? (
+          <motion.section 
+            key="intro"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: EASING.inOut }}
+            className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto absolute inset-0 w-full"
+          >
+            <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
+              {/* Left: Branding */}
+              <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className="flex items-center gap-2 text-rose"
+                >
+                  <Paperclip className="w-3 h-3 md:w-[18px] md:h-[18px]" />
+                  <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.15em] md:tracking-widest whitespace-nowrap">Origin Specification</span>
+                </motion.div>
+
+                <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
+                  {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
+                    <span key={word + wi} className="block overflow-hidden">
+                      {word.split("").map((char: string, ci: number) => (
+                        <motion.span key={ci} variants={charVariants} initial="hidden" animate="visible" custom={wi * 8 + ci} className="inline-block">
+                          {char}
+                        </motion.span>
+                      ))}
+                    </span>
+                  ))}
+                </h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className="text-[11px] md:text-sm font-medium leading-snug md:leading-relaxed text-ink/60 md:text-ink/60 max-w-[260px] md:max-w-sm uppercase tracking-tight md:tracking-wider"
+                >
+                  {dict.home.heroSubtitle} <span className="hidden md:inline">{dict.home.craftDesc}</span>
+                </motion.p>
+              </div>
+
+              {/* Middle: Portrait Morphing Source */}
+              <div className="lg:col-span-4 relative mt-0 z-50">
+                <motion.div
+                  layoutId="main-hero-banner"
+                  transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+                  className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5"
+                >
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [1, 0.7, 1, 0.9, 1], filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)', 'brightness(1.1)', 'brightness(1)'] }}
+                    transition={{ duration: 3, ease: "easeInOut" }}
+                    className="absolute inset-0 w-full h-full"
+                  >
+                    <Image src="/banner_ninoc_1.png" alt="NINOC Intro" fill sizes="100vw" className="object-cover" priority />
+                  </motion.div>
+                </motion.div>
+              </div>
+
+              {/* Right: Metadata Sidebar */}
+              <div className="col-span-2 lg:col-span-4 lg:pt-20 -mt-10 md:mt-0 lg:mt-0">
+                <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
+                  {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
+                    <motion.div key={item.label} className="space-y-0" variants={metadataVariants} initial="hidden" animate="visible" custom={i}>
+                      <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/20">{item.label}</p>
+                      <p className={`text-xs md:text-[10px] font-medium text-ink ${i === 2 ? 'italic leading-tight' : ''}`}>{item.value}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        ) : (
+          <motion.section 
+            key="expanded"
+            className="absolute inset-0 w-full overflow-hidden"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Banner Image Target */}
+            <motion.div
+              layoutId="main-hero-banner"
+              transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <Image src="/banner_ninoc_1.png" alt="NINOC Atelier" fill sizes="100vw" className="object-cover object-center" priority />
+            </motion.div>
+
+            {/* Subtle gradient */}
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
+              className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent z-10" 
+            />
+
+            {/* Overlay Text */}
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.6 }}
+              className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8 lg:p-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto">
+                <div className="space-y-2 md:space-y-3">
+                  <div className="flex items-center gap-2 text-white/70">
+                    <Paperclip className="w-3 h-3" />
+                    <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
+                  </div>
+                  <h1 className="text-white text-2xl md:text-5xl lg:text-6xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-md">
+                    NINOC ATELIER
+                  </h1>
+                  <p className="text-[9px] md:text-[11px] font-medium text-white/60 max-w-[200px] md:max-w-xs uppercase tracking-wider leading-relaxed">
+                    {dict.home.heroSubtitle}
+                  </p>
+                  <div>
+                    <PressButton href="/category" className="group inline-flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
+                        <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
+                        <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
+                      </span>
+                    </PressButton>
+                  </div>
+                </div>
+                
+                {/* Right Metadata Desktop Only */}
+                <div className="hidden md:flex items-end gap-6 lg:gap-8">
+                  {[
+                    { label: 'Year', value: 'Est. 2024' },
+                    { label: 'Location', value: 'Bandung, ID' },
+                    { label: 'Philosophy', value: 'Simplicity' }
+                  ].map((item, i) => (
+                    <div key={item.label} className="text-right">
+                      <p className="text-[7px] font-medium uppercase tracking-widest text-white/35 mb-0.5">{item.label}</p>
+                      <p className="text-[9px] font-medium text-white/70 uppercase tracking-wide">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </motion.section>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Home() {
   const pathname = usePathname();
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
@@ -682,151 +848,7 @@ export default function Home() {
              {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
              <div className="mobile-momentum select-none">
 
-      {/* HERO BANNER — Full-width with overlay */}
-      <section className="relative w-full overflow-hidden">
-        <motion.div
-          initial={{ clipPath: 'inset(0 0 100% 0)' }}
-          animate={{ clipPath: 'inset(0 0 0 0)' }}
-          transition={{ delay: 0.1, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-          className="relative w-full"
-          style={{ height: 'clamp(320px, 56vw, 680px)' }}
-        >
-          {/* Banner Image */}
-          <motion.div
-            initial={{ scale: 1.05, filter: 'blur(8px)' }}
-            animate={{ scale: 1, filter: 'blur(0px)' }}
-            transition={{ delay: 0.15, duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
-            className="absolute inset-0 w-full h-full"
-          >
-            <Image
-              src="/banner_ninoc_1.png"
-              alt="NINOC Atelier — Wear Your Zone"
-              fill
-              sizes="100vw"
-              className="object-cover object-center"
-              priority
-            />
-          </motion.div>
-
-          {/* Subtle gradient — only at bottom for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent z-10" />
-
-          {/* SPEC label — top right */}
-          <motion.div
-            className="absolute top-3 left-3 md:top-5 md:left-5 bg-ink/70 backdrop-blur-sm text-white px-2 py-1 text-[9px] uppercase font-mono tracking-tighter z-20"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-          >
-            SPEC-001
-          </motion.div>
-
-          {/* Bottom overlay content — properly spaced, no overlap */}
-          <div className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8 lg:p-12">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto">
-
-              {/* Left: Title + Subtitle + CTA */}
-              <div className="space-y-2 md:space-y-3">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className="flex items-center gap-2 text-white/70"
-                >
-                  <Paperclip className="w-3 h-3" />
-                  <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
-                </motion.div>
-
-                <h1 className="text-white text-2xl md:text-5xl lg:text-6xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-md">
-                  {dict.home.heroTitle.split(" ").map((word: string, wi: number) => (
-                    <span key={word + wi} className="block overflow-hidden">
-                      {word.split("").map((char: string, ci: number) => (
-                        <motion.span
-                          key={ci}
-                          variants={charVariants}
-                          initial="hidden"
-                          animate="visible"
-                          custom={wi * 8 + ci}
-                          className="inline-block"
-                        >
-                          {char}
-                        </motion.span>
-                      ))}
-                    </span>
-                  ))}
-                </h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className="text-[9px] md:text-[11px] font-medium text-white/60 max-w-[200px] md:max-w-xs uppercase tracking-wider leading-relaxed"
-                >
-                  {dict.home.heroSubtitle}
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                >
-                  <PressButton href="/category" className="group inline-flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
-                      <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
-                      <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
-                    </span>
-                  </PressButton>
-                </motion.div>
-              </div>
-
-              {/* Right: Metadata — desktop only */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                className="hidden md:flex items-end gap-6 lg:gap-8"
-              >
-                {[
-                  { label: 'Year', value: 'Est. 2024' },
-                  { label: 'Location', value: 'Bandung, ID' },
-                  { label: 'Philosophy', value: 'Simplicity' }
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    className="text-right"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.0 + i * 0.1, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                  >
-                    <p className="text-[7px] font-medium uppercase tracking-widest text-white/35 mb-0.5">{item.label}</p>
-                    <p className="text-[9px] font-medium text-white/70 uppercase tracking-wide">{item.value}</p>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Mobile Metadata — below banner, clean row */}
-        <div className="flex items-center justify-center gap-6 py-2.5 px-4 bg-white border-b border-ink/5 md:hidden">
-          {[
-            { label: 'year', value: '2024' },
-            { label: 'loc', value: 'bdg, id' },
-            { label: 'phil', value: 'simplicity' }
-          ].map((item, i) => (
-            <motion.div
-              key={item.label}
-              className="flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 + i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-            >
-              <p className="text-[7px] font-normal tracking-[0.15em] text-ink/25 leading-none mb-0.5 lowercase">{item.label}</p>
-              <p className="text-[9px] font-medium text-ink/50 lowercase leading-none tracking-wide whitespace-nowrap">{item.value}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
       {/* CATEGORY INDEX — QUICK ACCESS - Desktop Only */}
       <section className="hidden md:block px-12 max-w-[1800px] mx-auto mt-16 mb-8">
