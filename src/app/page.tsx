@@ -162,11 +162,7 @@ function PressButton({ children, className = '', onClick, href, whileHover, whil
 // ═══════════════════════════════════════════════════════════════
 
 const PORTRAIT_IMAGES = [
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1000&auto=format&fit=crop",
+  "/banner_ninoc_1.png",
 ];
 const CAROUSEL_INTERVAL = 150;
 
@@ -185,6 +181,7 @@ function PortraitImageCarousel() {
   };
 
   const startCycle = () => {
+    if (PORTRAIT_IMAGES.length <= 1) return;
     setIsHovered(true);
     setCurrentIndex(0);
     if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
@@ -206,14 +203,14 @@ function PortraitImageCarousel() {
     <motion.div
       initial={{ clipPath: 'inset(0 0 100% 0)' }}
       animate={{ clipPath: 'inset(0 0 0 0)' }}
-      transition={{ delay: 0.2, duration: 1.0, ease: [0.77, 0, 0.175, 1] }}
+      transition={{ delay: 0.2, duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
       onMouseEnter={startCycle}
       onMouseLeave={stopCycle}
       className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden border border-ink/5 relative shadow-2xl shadow-ink/5"
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: PORTRAIT_IMAGES.length > 1 ? 'pointer' : 'default' }}
     >
       <motion.div 
-        initial={{ scale: 1.2, filter: 'blur(10px)' }} 
+        initial={{ scale: 1.05, filter: 'blur(10px)' }} 
         animate={{ scale: 1, filter: 'blur(0px)' }} 
         transition={{ delay: 0.2, duration: 1.2, ease: [0.23, 1, 0.32, 1] }} 
         className="absolute inset-0 w-full h-full"
