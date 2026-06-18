@@ -437,7 +437,7 @@ export default function GlobalHeader() {
             {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
-            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-rose")}
+            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}
           >
             <MoreVertical size={24} strokeWidth={1.5} />
           </PressScale>
@@ -464,7 +464,7 @@ export default function GlobalHeader() {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: DURATION.medium, ease: EASING.out }}
               >
-                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white/60 hover:text-white" : "text-ink/40 hover:text-rose")}>
+                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
                   <motion.span animate={{ x: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: EASING.inOut }}>
                     <ArrowLeft size={10} />
                   </motion.span>
@@ -496,25 +496,25 @@ export default function GlobalHeader() {
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
             className="flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em]"
           >
-            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-ink"))}>
               ID
             </a>
             <span className={isDarkBg ? "text-white/30" : "text-ink/10"}>|</span>
-            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/50 hover:text-white" : "text-ink/20 hover:text-ink/60"))}>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-ink"))}>
               EN
             </a>
           </motion.div>
 
           {/* Search Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }}>
-            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
+            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
               <Search size={20} strokeWidth={1.5} />
             </PressScale>
           </motion.div>
 
           {/* Tracking Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
+            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
               <Link prefetch={false} href="/track" className="flex items-center">
                 <Truck size={20} strokeWidth={1.5} />
               </Link>
@@ -523,7 +523,7 @@ export default function GlobalHeader() {
 
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white/80 hover:text-white" : "text-ink/40 hover:text-rose")}>
+            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
               <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
                 {profileAvatar ? (
                   <div className="relative w-5 h-5">
@@ -543,7 +543,7 @@ export default function GlobalHeader() {
           {/* Cart Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }}>
             <PressScale onClick={() => setIsCartOpen(true)} className="relative group flex items-center p-2 -m-2">
-              <div className={cn("transition-colors", isDarkBg ? "text-white/80 group-hover:text-white" : "text-ink/40 group-hover:text-rose")}>
+              <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink group-hover:text-rose")}>
                 <ShoppingCart size={20} strokeWidth={1.5} />
               </div>
               <AnimatePresence>
@@ -731,7 +731,7 @@ export default function GlobalHeader() {
                     animate={{ scale: isSearching ? 1.1 : 1 }}
                     transition={{ duration: DURATION.fast }}
                   >
-                    <Search size={16} className="text-ink/30" />
+                    <Search size={16} className="text-ink/50" />
                   </motion.div>
                   <input
                     autoFocus

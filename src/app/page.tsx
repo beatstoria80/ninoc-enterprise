@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ShieldCheck, Paperclip, ChevronRight, Grid3X3, ArrowRight, ShoppingCart } from 'lucide-react';
+import { ShieldCheck, Paperclip, ChevronRight, ChevronDown, Grid3X3, ArrowRight, ShoppingCart } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { useCart } from '@/store/useCart';
 import Image from 'next/image';
@@ -742,27 +742,19 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.6 }}
               className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-8 lg:p-12"
             >
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto">
-                <div className="space-y-2 md:space-y-3">
-                  <div className="flex items-center gap-2 text-white/70">
-                    <Paperclip className="w-3 h-3" />
-                    <span className="text-[8px] md:text-[9px] font-medium uppercase tracking-[0.2em]">Origin Specification</span>
-                  </div>
-                  <h1 className="text-white text-2xl md:text-5xl lg:text-6xl font-display font-medium italic tracking-tighter leading-[0.9] uppercase drop-shadow-md">
-                    NINOC ATELIER
-                  </h1>
-                  <p className="text-[9px] md:text-[11px] font-medium text-white/60 max-w-[200px] md:max-w-xs uppercase tracking-wider leading-relaxed">
-                    {dict.home.heroSubtitle}
-                  </p>
-                  <div>
-                    <PressButton href="/category" className="group inline-flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
-                        <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.2em]">Browse Catalog</span>
-                        <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
-                      </span>
-                    </PressButton>
-                  </div>
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto h-full relative">
+                {/* Centered Browse Catalog Button */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-auto">
+                  <PressButton href="/category" className="group inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-6 py-3 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
+                      <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.3em]">Browse Catalog</span>
+                      <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </PressButton>
                 </div>
+
+                {/* Empty left space placeholder to push metadata to the right */}
+                <div className="flex-1"></div>
                 
                 {/* Right Metadata Desktop Only */}
                 <div className="hidden md:flex items-end gap-6 lg:gap-8">
@@ -794,6 +786,8 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const router = useRouter();
+
   // SCENE ORCHESTRATION
   const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
     if (typeof window !== 'undefined') {
@@ -801,6 +795,8 @@ export default function Home() {
     }
     return 'hero';
   });
+
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
   const [isReturningVisitor] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -958,39 +954,60 @@ export default function Home() {
 
       <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
-      {/* CATEGORY INDEX — QUICK ACCESS - Desktop Only */}
-      <section className="hidden md:block px-12 max-w-[1800px] mx-auto mt-16 mb-8">
+      {/* CATALOG & CATEGORY DROPDOWN */}
+      <section id="archive-catalog" className="mt-12 md:mt-24 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-          className="flex items-end justify-between mb-6"
-        >
-          <div className="flex items-center gap-2">
-            <div className="text-rose">
-              <Grid3X3 size={12} />
-            </div>
-            <span className="text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">Category Index</span>
-          </div>
-          <PressButton href="/category" className="text-[10px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose leading-none">
-            View All
-          </PressButton>
-        </motion.div>
-        <CategoryQuickAccess />
-      </section>
-
-      {/* CATALOG */}
-      <section id="archive-catalog" className="mt-0 md:mt-2 px-4 md:px-12 max-w-[1800px] mx-auto">
-        <motion.div
-          className="flex items-end justify-between border-b border-ink/5 pb-1 md:pb-4 mb-0.5 md:mb-6"
+          className="flex flex-col md:flex-row md:items-end justify-between border-b border-ink/5 pb-4 md:pb-6 mb-6 md:mb-12 gap-6"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: DURATION.medium, ease: EASING.out }}
         >
-          <h2 className="text-sm md:text-lg font-display font-medium italic tracking-tighter uppercase text-ink leading-none translate-y-[1.5px] md:translate-y-0">{dict.home.newArrival}</h2>
-          <PressButton href="/shop" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none">
+          <div className="flex items-center gap-6">
+            <h2 className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none">{dict.home.newArrival}</h2>
+            
+            {/* Custom Category Dropdown */}
+            <div className="relative z-50">
+              <button 
+                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                className="flex items-center gap-2 text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-ink/60 hover:text-ink transition-colors bg-ink/5 px-4 py-2"
+              >
+                Category Index
+                <ChevronDown size={12} className={cn("transition-transform duration-300", isCategoryDropdownOpen ? "rotate-180" : "")} />
+              </button>
+              
+              <AnimatePresence>
+                {isCategoryDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white border border-ink/5 shadow-2xl overflow-hidden"
+                  >
+                    {[
+                      { id: 'apparel', label: 'Pakaian / Apparel' },
+                      { id: 'functional', label: 'Utilities / Functional' },
+                      { id: 'accents', label: 'Aksesoris / Accents' }
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setIsCategoryDropdownOpen(false);
+                          router.push(`/category?cat=${cat.id}`);
+                        }}
+                        className="w-full text-left px-4 py-3 text-[10px] font-medium uppercase tracking-widest text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors border-b border-ink/5 last:border-0"
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <PressButton href="/shop" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none hidden md:block">
             {dict.home.viewAll}
           </PressButton>
         </motion.div>
