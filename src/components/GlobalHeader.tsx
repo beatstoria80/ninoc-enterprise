@@ -349,6 +349,8 @@ export default function GlobalHeader() {
   const [profileName, setProfileName] = useState<string | null>(null);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
   // Scroll handler with debounce
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
@@ -428,9 +430,11 @@ export default function GlobalHeader() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: DURATION.slow, ease: EASING.out }}
+          onMouseEnter={() => setIsHeaderHovered(true)}
+          onMouseLeave={() => setIsHeaderHovered(false)}
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] pl-2 pr-4 md:px-12 py-3 md:py-8 flex items-center justify-between transition-all duration-700",
-            isScrolled ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-transparent"
+            "fixed top-0 inset-x-0 z-[150] pl-2 pr-4 md:px-12 flex items-center justify-between transition-all duration-700",
+            (isScrolled || isHeaderHovered) ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-gradient-to-b from-white/90 via-white/50 to-transparent py-3 md:py-8"
           )}
         >
           <div className="flex items-center gap-1.5 md:gap-6">

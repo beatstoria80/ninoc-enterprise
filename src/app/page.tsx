@@ -788,22 +788,10 @@ export default function Home() {
 
   const router = useRouter();
 
-  // SCENE ORCHESTRATION
-  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('ninoc_intro_played') ? 'archive' : 'hero';
-    }
-    return 'hero';
-  });
-
+  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
-  const [isReturningVisitor] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !!sessionStorage.getItem('ninoc_intro_played');
-    }
-    return false;
-  });
+  const [isReturningVisitor] = useState(false);
   
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
