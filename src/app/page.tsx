@@ -313,7 +313,7 @@ function ProductCard({ product, index }: ProductCardProps) {
       <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
-          className="aspect-[3/4] overflow-hidden mb-1 md:mb-3 relative bg-white border border-ink/5"
+          className="aspect-[4/5] overflow-hidden mb-2 md:mb-4 relative bg-ink/5 border border-ink/5"
           animate={{ scale: isHovered ? 1.02 : 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
@@ -322,7 +322,7 @@ function ProductCard({ product, index }: ProductCardProps) {
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-contain transition-all duration-700"
+              className="object-cover object-top transition-all duration-700"
               style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
           ) : (
@@ -929,62 +929,7 @@ export default function Home() {
       <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
       {/* CATALOG & CATEGORY DROPDOWN */}
-      <section id="archive-catalog" className="mt-12 md:mt-24 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
-        <motion.div
-          className="flex flex-col md:flex-row md:items-end justify-between border-b border-ink/5 pb-4 md:pb-6 mb-6 md:mb-12 gap-6"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-        >
-          <div className="flex items-center gap-6">
-            <h2 className="text-xl md:text-2xl font-display font-medium italic tracking-tighter uppercase text-ink leading-none">{dict.home.newArrival}</h2>
-            
-            {/* Custom Category Dropdown */}
-            <div className="relative z-50">
-              <button 
-                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                className="flex items-center gap-2 text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-ink/60 hover:text-ink transition-colors bg-ink/5 px-4 py-2"
-              >
-                Category Index
-                <ChevronDown size={12} className={cn("transition-transform duration-300", isCategoryDropdownOpen ? "rotate-180" : "")} />
-              </button>
-              
-              <AnimatePresence>
-                {isCategoryDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
-                    className="absolute top-full left-0 mt-2 w-48 bg-white border border-ink/5 shadow-2xl overflow-hidden"
-                  >
-                    {[
-                      { id: 'apparel', label: 'Pakaian / Apparel' },
-                      { id: 'functional', label: 'Utilities / Functional' },
-                      { id: 'accents', label: 'Aksesoris / Accents' }
-                    ].map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setIsCategoryDropdownOpen(false);
-                          router.push(`/category?cat=${cat.id}`);
-                        }}
-                        className="w-full text-left px-4 py-3 text-[10px] font-medium uppercase tracking-widest text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors border-b border-ink/5 last:border-0"
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          <PressButton href="/shop" className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose leading-none hidden md:block">
-            {dict.home.viewAll}
-          </PressButton>
-        </motion.div>
+      <section id="archive-catalog" className="mt-4 md:mt-8 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
 
         <div className="relative -mx-4 md:mx-0">
           <DragSlider className="flex gap-px w-full">

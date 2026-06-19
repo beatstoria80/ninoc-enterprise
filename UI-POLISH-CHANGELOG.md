@@ -154,6 +154,13 @@
 | Search overlay backdrop | 2px | ✅ |
 | Mobile sticky header | blur-sm | ✅ |
 
+### Layout & Spacing
+| Check | Status |
+|-------|--------|
+| Removed negative space on catalog header | ✅ |
+| Product cards flush with hero banner | ✅ |
+| Product images aspect-[4/5] object-cover (no cut off/internal gaps) | ✅ |
+
 ---
 
 ## 6. Pre-Delivery Checklist
