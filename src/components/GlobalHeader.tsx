@@ -535,15 +535,15 @@ export default function GlobalHeader() {
           </motion.div>
 
           {/* User Profile */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
-              <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }} className="flex items-center">
+            <PressScale className={cn("transition-colors p-2 -m-2 flex items-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+              <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center justify-center">
                 {profileAvatar ? (
-                  <div className="relative w-[22px] h-[22px]">
-                    <Image src={profileAvatar} alt="Profile" fill className={cn("object-cover rounded-full border-[1.5px] shadow-sm", isDarkBg ? "border-white/30" : "border-rose/20")} />
+                  <div className={cn("relative w-[20px] h-[20px] rounded-full overflow-hidden shadow-sm ring-1 ring-offset-1", isDarkBg ? "ring-white/20 ring-offset-transparent" : "ring-ink/10 ring-offset-white")}>
+                    <Image src={profileAvatar} alt="Profile" fill className="object-cover" />
                   </div>
                 ) : user ? (
-                  <div className={cn("w-[22px] h-[22px] rounded-full flex items-center justify-center text-[9px] font-bold border-[1.5px]", isDarkBg ? "bg-white/15 text-white border-white/20" : "bg-rose/8 text-rose border-rose/15")}>
+                  <div className={cn("w-[20px] h-[20px] rounded-full flex items-center justify-center text-[9px] font-bold ring-1 ring-offset-1", isDarkBg ? "bg-white/10 text-white ring-white/20 ring-offset-transparent" : "bg-ink/5 text-ink ring-ink/10 ring-offset-white")}>
                     {profileName ? profileName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 ) : (
@@ -554,25 +554,27 @@ export default function GlobalHeader() {
           </motion.div>
 
           {/* Cart Button */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }}>
-            <PressScale onClick={() => setIsCartOpen(true)} className="relative group flex items-center p-2 -m-2">
-              <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
-                <ShoppingCart size={18} strokeWidth={1.5} />
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }} className="flex items-center">
+            <PressScale onClick={() => setIsCartOpen(true)} className="group p-2 -m-2 flex items-center">
+              <div className="relative flex items-center justify-center">
+                <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
+                  <ShoppingCart size={18} strokeWidth={1.5} />
+                </div>
+                <AnimatePresence>
+                  {items.length > 0 && (
+                    <motion.div
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.9, opacity: 0 }}
+                      transition={{ duration: DURATION.micro, ease: EASING.out }}
+                      key={items.length}
+                      className="absolute -top-1.5 -right-1.5 w-[14px] h-[14px] bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full shadow-sm"
+                    >
+                      {items.length}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <AnimatePresence>
-                {items.length > 0 && (
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    transition={{ duration: DURATION.micro, ease: EASING.out }}
-                    key={items.length}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[8px] font-semibold flex items-center justify-center rounded-full shadow-sm"
-                  >
-                    {items.length}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </PressScale>
           </motion.div>
         </motion.div>
