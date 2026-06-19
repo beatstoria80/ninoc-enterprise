@@ -437,13 +437,13 @@ export default function GlobalHeader() {
             (isScrolled || isHeaderHovered) ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-gradient-to-b from-white/90 via-white/50 to-transparent py-3 md:py-8"
           )}
         >
-          <div className="flex items-center gap-1.5 md:gap-6">
+          <div className="flex items-center gap-2 md:gap-6">
             {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
-            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}
+            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
           >
-            <MoreVertical size={24} strokeWidth={1.5} />
+            <MoreVertical size={20} strokeWidth={1.5} />
           </PressScale>
 
           {/* Logo */}
@@ -493,7 +493,7 @@ export default function GlobalHeader() {
 
         {/* Action Icons */}
         <motion.div
-          className="flex items-center gap-6 md:gap-8"
+          className="flex items-center gap-5 md:gap-7"
         >
           {/* Language Toggle */}
           <motion.div 
@@ -511,34 +511,34 @@ export default function GlobalHeader() {
 
           {/* Search Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }}>
-            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
-              <Search size={20} strokeWidth={1.5} />
+            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+              <Search size={18} strokeWidth={1.5} />
             </PressScale>
           </motion.div>
 
           {/* Tracking Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
+            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Link prefetch={false} href="/track" className="flex items-center">
-                <Truck size={20} strokeWidth={1.5} />
+                <Truck size={18} strokeWidth={1.5} />
               </Link>
             </PressScale>
           </motion.div>
 
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
+            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center">
                 {profileAvatar ? (
-                  <div className="relative w-5 h-5">
-                    <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border border-ink/5" />
+                  <div className="relative w-[22px] h-[22px]">
+                    <Image src={profileAvatar} alt="Profile" fill className={cn("object-cover rounded-full border-[1.5px] shadow-sm", isDarkBg ? "border-white/30" : "border-rose/20")} />
                   </div>
                 ) : user ? (
-                  <div className="w-5 h-5 rounded-full bg-ink/10 flex items-center justify-center text-[10px] font-bold text-ink">
+                  <div className={cn("w-[22px] h-[22px] rounded-full flex items-center justify-center text-[9px] font-bold border-[1.5px]", isDarkBg ? "bg-white/15 text-white border-white/20" : "bg-rose/8 text-rose border-rose/15")}>
                     {profileName ? profileName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 ) : (
-                  <User size={20} strokeWidth={1.5} />
+                  <User size={18} strokeWidth={1.5} />
                 )}
               </Link>
             </PressScale>
@@ -547,17 +547,18 @@ export default function GlobalHeader() {
           {/* Cart Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }}>
             <PressScale onClick={() => setIsCartOpen(true)} className="relative group flex items-center p-2 -m-2">
-              <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink group-hover:text-rose")}>
-                <ShoppingCart size={20} strokeWidth={1.5} />
+              <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
+                <ShoppingCart size={18} strokeWidth={1.5} />
               </div>
               <AnimatePresence>
                 {items.length > 0 && (
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    transition={{ duration: DURATION.micro, ease: EASING.out }}
                     key={items.length}
-                    className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-rose text-white text-[10px] md:text-[7px] font-medium flex items-center justify-center rounded-none border border-white shadow-sm"
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[8px] font-semibold flex items-center justify-center rounded-full shadow-sm"
                   >
                     {items.length}
                   </motion.div>
