@@ -392,18 +392,17 @@ function ProductCard({ product, index }: ProductCardProps) {
                 >
                   <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
                 </motion.button>
-                <motion.div
-                  className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center"
-                  animate={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
-                  transition={{ duration: DURATION.fast }}
+                <div
+                  className="w-5 h-5 md:w-7 md:h-7 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200"
+                  style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
                 >
-                  <motion.div
-                    animate={{ x: isHovered ? 4 : 0, color: isHovered ? '#ffffff' : '#141414' }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  <div
+                    style={{ transform: isHovered ? 'translateX(4px)' : 'translateX(0px)', color: isHovered ? '#ffffff' : '#141414' }}
+                    className="transition-all duration-200"
                   >
                     <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -418,8 +417,6 @@ function ProductCard({ product, index }: ProductCardProps) {
 // ═══════════════════════════════════════════════════════════════
 
 function CategoryQuickAccess() {
-  const brandColor = useBrandColor();
-
   return (
     <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2">
       {CATEGORIES.map((cat, i) => {
@@ -434,48 +431,38 @@ function CategoryQuickAccess() {
           >
             <PressButton
               href={cat.href}
-              className="flex items-center gap-4 bg-white border border-ink/10 px-6 py-4 group whitespace-nowrap rounded-none"
-              whileHover={{ borderColor: brandColor.color, backgroundColor: brandColor.color }}
+              className="flex items-center gap-4 bg-white border border-ink/10 px-6 py-4 group whitespace-nowrap rounded-none hover:border-rose hover:bg-rose transition-all duration-200"
+              whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
             >
-              <motion.div
-                className="w-10 h-10 flex items-center justify-center bg-ink/5 rounded-none"
-                animate={{ backgroundColor: brandColor.color }}
-                transition={{ duration: DURATION.fast }}
+              <div
+                className="w-10 h-10 flex items-center justify-center bg-ink/5 rounded-none group-hover:bg-white/20 transition-colors duration-200"
               >
-                <motion.div
-                  animate={{ color: '#ffffff' }}
-                  transition={{ duration: DURATION.fast }}
-                  className="text-rose"
+                <div
+                  className="text-ink group-hover:text-white transition-colors duration-200"
                 >
                   <Icon />
-                </motion.div>
-              </motion.div>
-
-              <div className="flex flex-col leading-none gap-0.5">
-                <motion.span
-                  className="text-base font-display font-medium italic uppercase tracking-tight"
-                  animate={{ color: '#141414' }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  {cat.label}
-                </motion.span>
-                <motion.span
-                  className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50"
-                  animate={{ color: 'rgba(20,20,20,0.5)' }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  {cat.sublabel}
-                </motion.span>
+                </div>
               </div>
 
-              <motion.div
-                className="ml-2"
-                animate={{ x: 0, opacity: 0.4 }}
-                transition={{ duration: DURATION.fast }}
+              <div className="flex flex-col leading-none gap-0.5">
+                <span
+                  className="text-base font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-white transition-colors duration-200"
+                >
+                  {cat.label}
+                </span>
+                <span
+                  className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50 group-hover:text-white/70 transition-colors duration-200"
+                >
+                  {cat.sublabel}
+                </span>
+              </div>
+
+              <div
+                className="ml-2 opacity-40 group-hover:opacity-90 group-hover:text-white group-hover:translate-x-1 transition-all duration-200"
               >
                 <ArrowRight size={14} />
-              </motion.div>
+              </div>
             </PressButton>
           </motion.div>
         );
@@ -632,31 +619,30 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 </div>
               </div>
 
-              {/* Middle: Portrait with BLITZ blink animation */}
+              {/* Middle: Portrait — cinematic one-shot reveal (Emil: no infinite decorative animations) */}
               <div className="lg:col-span-4 relative mt-0 z-50">
                 <motion.div
                   layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
                   className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
-                  {/* Blitz/Blink effect — repeating flash */}
+                  {/* Cinematic reveal: clip-path wipe from bottom + scale + blur — one-shot only */}
                   <motion.div
-                    initial={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-                    animate={{
-                      opacity: [0, 1, 0.6, 1, 0.8, 1, 0.9, 1],
-                      scale: [1.05, 1, 1.02, 1, 1.01, 1],
-                      filter: [
-                        'blur(10px) brightness(1)',
-                        'blur(0px) brightness(1.3)',
-                        'blur(0px) brightness(0.9)',
-                        'blur(0px) brightness(1.2)',
-                        'blur(0px) brightness(1)',
-                        'blur(0px) brightness(1.1)',
-                        'blur(0px) brightness(1)',
-                        'blur(0px) brightness(1)'
-                      ]
+                    initial={{ 
+                      clipPath: 'inset(0 0 100% 0)',
+                      scale: 1.08,
+                      filter: 'blur(8px)'
                     }}
-                    transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 1 }}
+                    animate={{ 
+                      clipPath: 'inset(0 0 0% 0)',
+                      scale: 1,
+                      filter: 'blur(0px)'
+                    }}
+                    transition={{ 
+                      duration: 1.4, 
+                      ease: [0.23, 1, 0.32, 1],
+                      delay: 0.15
+                    }}
                     className="absolute inset-0 w-full h-full"
                   >
                     <Image src="/banner_ninoc_1.png" alt="NINOC Intro" fill sizes="100vw" className="object-cover object-top" priority />

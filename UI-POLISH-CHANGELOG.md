@@ -186,9 +186,10 @@
 | File | Changes |
 |------|---------|
 | `src/app/layout.tsx` | Skip-to-content, main id, prefers-reduced-motion script, suppressHydrationWarning |
-| `src/app/globals.css` | Focus ring utilities, skip-to-content, interactive class, reduced motion media query |
-| `src/app/page.tsx` | Removed infinite animations, fixed PressButton, added cursor-pointer, cn() import |
-| `src/components/GlobalHeader.tsx` | Removed empty cart bounce, removed secure badge pulse, added focus states to checkout |
+| `src/app/globals.css` | Focus ring utilities, skip-to-content, interactive class, reduced motion media query, slideRight and stagger animations |
+| `src/app/page.tsx` | Removed infinite animations, fixed PressButton, added cursor-pointer, one-shot cinematic reveal on hero, fixed CategoryQuickAccess hover states |
+| `src/app/checkout/page.tsx` | Added Framer motion staggered section reveals, animated empty cart state, animated desktop sidebar |
+| `src/components/GlobalHeader.tsx` | Removed empty cart bounce, removed secure badge pulse, removed infinite bounce on back arrow, added focus states to checkout |
 | `src/components/Footer.tsx` | Added focus rings and cursor-pointer to all links |
 | `src/app/login/page.tsx` | Added focus rings, aria-labels, cursor-pointer to all buttons/inputs |
 | `src/app/track/page.tsx` | Added focus rings, aria-labels, cursor-pointer to all buttons/inputs |

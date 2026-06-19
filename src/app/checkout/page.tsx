@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User } from 'lucide-react';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
@@ -19,6 +20,23 @@ import { useRef } from 'react';
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+// ═══════════════════════════════════════════════════════════════
+// EMIL KOWALSKI ANIMATION ENGINE — CHECKOUT
+// ═══════════════════════════════════════════════════════════════
+
+const EASING = {
+  out: [0.23, 1, 0.32, 1] as const,
+  inOut: [0.77, 0, 0.175, 1] as const,
+};
+
+const DURATION = {
+  micro: 0.1,
+  fast: 0.15,
+  normal: 0.2,
+  medium: 0.3,
+  slow: 0.5,
+};
 
 interface LocationItem {
   id: string;
@@ -689,10 +707,28 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h2 className="text-2xl font-display font-medium italic uppercase">{dict.checkout.empty}</h2>
-        <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest" onClick={() => router.replace('/shop')}>{dict.checkout.backToShop}</Link>
-      </div>
+      <motion.div 
+        className="min-h-screen bg-cr flex flex-col items-center justify-center p-6 text-center space-y-6"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: DURATION.medium, ease: EASING.out }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
+        >
+          <ShoppingBag size={48} strokeWidth={1} className="text-ink/15 mx-auto mb-4" />
+          <h2 className="text-2xl font-display font-medium italic uppercase">{dict.checkout.empty}</h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
+        >
+          <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest hover:bg-rose transition-colors active:scale-[0.97]" onClick={() => router.replace('/shop')}>{dict.checkout.backToShop}</Link>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -706,10 +742,15 @@ export default function CheckoutPage() {
       isIPhone && "ios-mobile-layout"
     )}>
       {/* STUDIO EXIT NAV - iOS safe area aware */}
-      <nav className={cn(
-        "fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between glass border-b border-ink/10",
-        isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
-      )}>
+      <motion.nav 
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: DURATION.slow, ease: EASING.out }}
+        className={cn(
+          "fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between glass border-b border-ink/10",
+          isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
+        )}
+      >
         <button 
           onClick={() => {
             if (items.length > 0 && items[0].slug) {
@@ -736,7 +777,7 @@ export default function CheckoutPage() {
            </div>
            <ShieldCheck size={18} className="text-emerald-500" />
         </div>
-      </nav>
+      </motion.nav>
 
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
@@ -814,7 +855,12 @@ export default function CheckoutPage() {
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4 lg:space-y-6 relative z-10">
             
             {/* 01: IDENTITY */}
-            <section className="space-y-1.5 lg:space-y-3">
+            <motion.section 
+              className="space-y-1.5 lg:space-y-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: DURATION.medium, ease: EASING.out }}
+            >
               <div className="flex items-center justify-between border-b border-ink/10 pb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/50">01</span>
@@ -866,10 +912,15 @@ export default function CheckoutPage() {
                   {promoApplied && <p className="text-xs md:text-[9px] text-emerald-600 mt-1.5 font-medium">{promoApplied.message}</p>}
                 </div>
               </div>
-            </section>
+            </motion.section>
 
             {/* 02: ADDRESS */}
-            <section className="space-y-1.5 lg:space-y-3">
+            <motion.section 
+              className="space-y-1.5 lg:space-y-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: DURATION.medium, ease: EASING.out }}
+            >
               <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-2 gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/50">02</span>
@@ -945,10 +996,15 @@ export default function CheckoutPage() {
                   </select>
                 </div>
               </div>
-            </section>
+            </motion.section>
 
             {/* 03: SHIPPING */}
-            <section className="space-y-1.5 lg:space-y-3">
+            <motion.section 
+              className="space-y-1.5 lg:space-y-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: DURATION.medium, ease: EASING.out }}
+            >
               <div className="flex items-center gap-2 border-b border-ink/10 pb-0.5">
                 <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/50">03</span>
                 <h2 className="text-xs md:text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.logisticsSelection}</h2>
@@ -1050,11 +1106,16 @@ export default function CheckoutPage() {
                   </React.Fragment>
                 )})}
               </div>
-            </section>
+            </motion.section>
           </form>
         </div>        {/* ORDER SUMMARY - Sidebar on desktop only */}
         {!isMobile && (
-          <div className="lg:col-span-4 lg:pl-12">
+          <motion.div 
+            className="lg:col-span-4 lg:pl-12"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
+          >
             <div className="sticky top-20 space-y-4">
               <div className="flex items-center gap-2 border-b border-ink/20 pb-0.5">
                 <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/60">00</span>
@@ -1184,7 +1245,7 @@ export default function CheckoutPage() {
                  </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 

@@ -198,6 +198,16 @@ button:active, a:active, [role="button"]:active {
   }
 }
 
+/* Checkout redirecting progress bar */
+@keyframes slideRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
 /* Stagger Row Animation */
 .stagger-fade-in {
   opacity: 0;

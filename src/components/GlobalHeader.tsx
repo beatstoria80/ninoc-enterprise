@@ -469,7 +469,13 @@ export default function GlobalHeader() {
                 transition={{ duration: DURATION.medium, ease: EASING.out }}
               >
                 <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
-                  <motion.span animate={{ x: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: EASING.inOut }}>
+                  {/* Static arrow — hover-only slide per Emil principle: no infinite decorative animations */}
+                  <motion.span
+                    className="inline-block"
+                    animate={{ x: 0 }}
+                    whileHover={{ x: -2 }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
+                  >
                     <ArrowLeft size={10} />
                   </motion.span>
                   <span>RETURN TO CATALOG</span>
