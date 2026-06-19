@@ -433,11 +433,11 @@ export default function GlobalHeader() {
           onMouseEnter={() => setIsHeaderHovered(true)}
           onMouseLeave={() => setIsHeaderHovered(false)}
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] pl-2 pr-4 md:px-12 flex items-center justify-between transition-all duration-700",
+            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 flex items-center justify-between transition-all duration-700",
             (isScrolled || isHeaderHovered) ? "glass border-b border-ink/5 py-3 md:py-5" : "bg-gradient-to-b from-white/90 via-white/50 to-transparent py-3 md:py-8"
           )}
         >
-          <div className="flex items-center gap-2 md:gap-6">
+          <div className="flex items-center gap-1 md:gap-5">
             {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
@@ -450,7 +450,7 @@ export default function GlobalHeader() {
           <motion.div className="relative flex flex-col">
             <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
               <motion.div
-                className={cn("font-display font-medium text-3xl md:text-4xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
+                className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
                 transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
@@ -498,16 +498,19 @@ export default function GlobalHeader() {
           {/* Language Toggle */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
-            className="flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em]"
+            className={cn("flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] px-2.5 py-1.5 rounded-full border transition-colors", isDarkBg ? "border-white/15" : "border-ink/10")}
           >
-            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-ink"))}>
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/30 hover:text-ink"))}>
               ID
             </a>
-            <span className={isDarkBg ? "text-white/30" : "text-ink/10"}>|</span>
-            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/80 hover:text-white" : "text-ink/60 hover:text-ink"))}>
+            <span className={isDarkBg ? "text-white/20" : "text-ink/10"}>·</span>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/30 hover:text-ink"))}>
               EN
             </a>
           </motion.div>
+
+          {/* Separator */}
+          <div className={cn("w-px h-4 hidden md:block", isDarkBg ? "bg-white/15" : "bg-ink/10")} />
 
           {/* Search Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }}>
@@ -575,15 +578,15 @@ export default function GlobalHeader() {
               onClick={() => setIsMenuOpen(true)} 
               className="text-ink/60 hover:text-rose transition-colors cursor-pointer block p-1"
             >
-              <MoreVertical size={24} strokeWidth={1.5} />
+              <MoreVertical size={20} strokeWidth={1.5} />
             </PressScale>
           </div>
-          <div className="pointer-events-auto flex items-center gap-1.5 text-[11px] md:text-[8px] font-medium tracking-[0.2em] text-ink/60 mt-1">
-            <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
+          <div className="pointer-events-auto flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] text-ink/60 mt-1 px-2.5 py-1.5 rounded-full border border-ink/10">
+            <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "text-ink/30")}>
               ID
             </a>
-            <span className="text-ink/20">|</span>
-            <a href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "")}>
+            <span className="text-ink/10">·</span>
+            <a href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "text-ink/30")}>
               EN
             </a>
           </div>
