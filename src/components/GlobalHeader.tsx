@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -689,7 +689,7 @@ export default function GlobalHeader() {
                       className="w-full bg-ink text-white py-3.5 font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
                     >
                       <span className="flex items-center gap-3">
-                        <span>Guest Checkout</span>
+                        <span>{user ? 'Proceed to Checkout' : 'Guest Checkout'}</span>
                       </span>
                     </Link>
                     <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
@@ -845,6 +845,34 @@ export default function GlobalHeader() {
               </div>
 
               <div className="overflow-y-auto px-6 md:px-10 py-8 flex flex-col gap-6">
+                {/* Member Info Section */}
+                {user && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: DURATION.medium, ease: EASING.out }}
+                    className="flex items-center gap-3 pb-5 border-b border-ink/10"
+                  >
+                    {profileAvatar ? (
+                      <div className="relative w-10 h-10 shrink-0">
+                        <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border-2 border-rose/20" />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center text-sm font-bold text-rose shrink-0">
+                        {profileName ? profileName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                    )}
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm md:text-xs font-bold uppercase tracking-wider text-ink truncate">
+                        {profileName || 'Member'}
+                      </span>
+                      <span className="text-[11px] md:text-[8px] font-medium text-ink/40 truncate">
+                        {user.email}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
                 {[
                   { label: dict.header.shop, href: '/shop' },
                   { label: dict.header.collections, href: '/collections' },
@@ -870,6 +898,28 @@ export default function GlobalHeader() {
                     </Link>
                   </motion.div>
                 ))}
+
+                {/* Logout Button for Members */}
+                {user && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.55, duration: DURATION.medium, ease: EASING.out }}
+                    className="pt-4 border-t border-ink/10"
+                  >
+                    <button
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        setIsMenuOpen(false);
+                        window.location.href = '/';
+                      }}
+                      className="flex items-center gap-2 text-sm md:text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-rose/70 hover:text-rose transition-colors cursor-pointer"
+                    >
+                      <LogOut size={14} strokeWidth={2} />
+                      <span>Keluar / Logout</span>
+                    </button>
+                  </motion.div>
+                )}
               </div>
 
               <div className="px-6 md:px-10 py-6 border-t border-ink/5 bg-white">
