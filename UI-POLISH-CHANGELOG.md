@@ -158,8 +158,10 @@
 | Check | Status |
 |-------|--------|
 | Removed negative space on catalog header | ✅ |
-| Product cards flush with hero banner | ✅ |
+| Reduced Hero Banner top padding & height (moved up) | ✅ |
+| Product cards sized down for above-the-fold visibility (no scroll needed) | ✅ |
 | Product images aspect-[4/5] object-cover (no cut off/internal gaps) | ✅ |
+| GlobalHeader icons perfectly aligned vertically via flex-center | ✅ |
 
 ---
 

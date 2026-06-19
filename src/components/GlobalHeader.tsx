@@ -519,15 +519,15 @@ export default function GlobalHeader() {
           <div className={cn("w-px h-4 hidden md:block", isDarkBg ? "bg-white/15" : "bg-ink/10")} />
 
           {/* Search Button */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }}>
-            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }} className="flex items-center">
+            <PressScale onClick={() => setIsSearchOpen(true)} className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Search size={18} strokeWidth={1.5} />
             </PressScale>
           </motion.div>
 
           {/* Tracking Button */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }}>
-            <PressScale className={cn("transition-colors p-2 -m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }} className="flex items-center">
+            <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Link prefetch={false} href="/track" className="flex items-center">
                 <Truck size={18} strokeWidth={1.5} />
               </Link>
@@ -536,7 +536,7 @@ export default function GlobalHeader() {
 
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }} className="flex items-center">
-            <PressScale className={cn("transition-colors p-2 -m-2 flex items-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+            <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center justify-center">
                 {profileAvatar ? (
                   <div className={cn("relative w-[20px] h-[20px] rounded-full overflow-hidden shadow-sm ring-1 ring-offset-1", isDarkBg ? "ring-white/20 ring-offset-transparent" : "ring-ink/10 ring-offset-white")}>
@@ -555,7 +555,7 @@ export default function GlobalHeader() {
 
           {/* Cart Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }} className="flex items-center">
-            <PressScale onClick={() => setIsCartOpen(true)} className="group p-2 -m-2 flex items-center">
+            <PressScale onClick={() => setIsCartOpen(true)} className="group p-2 -m-2 flex items-center justify-center">
               <div className="relative flex items-center justify-center">
                 <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
                   <ShoppingCart size={18} strokeWidth={1.5} />
