@@ -733,8 +733,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2.5 px-3 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
-  const selectClass = "w-full bg-white py-2 px-2.5 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
+  const inputClass = "w-full bg-white py-1.5 px-2 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
+  const selectClass = "w-full bg-white py-1 px-2 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
   const labelClass = "text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/50 mb-1.5 block";
 
   return (
@@ -881,27 +881,27 @@ export default function CheckoutPage() {
               </div>
               
               <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
-                <div className={cn("bg-white", isMobile ? "p-2.5" : "p-4")}>
+                <div className={cn("bg-white", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="first_name" className={labelClass}>{dict.checkout.firstName}</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="John" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="John" />
                 </div>
-                <div className={cn("bg-white border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
+                <div className={cn("bg-white border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Doe" />
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
+                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="email" className={labelClass}>{userId ? 'Email (Akun Member)' : 'Email (Opsional)'}</label>
-                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-sm md:text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none pt-1", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-sm md:text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
                   {!userId && emailCheckStatus === 'checking' && <p className="text-[9px] md:text-[10px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
                   {!userId && emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
                   {!userId && emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
                   {userId && <p className="text-[9px] text-emerald-600 font-medium mt-1 flex items-center gap-1"><CheckCircle size={9} /> Data terisi otomatis dari akun Anda</p>}
                 </div>
-                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
+                <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="0812 3456 7890" />
                 </div>
-                <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "p-2.5" : "p-4")}>
+                <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
                   <div className="flex gap-2 items-center mt-1">
                     <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-sm md:text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
@@ -947,56 +947,56 @@ export default function CheckoutPage() {
               </div>
 
               <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>
-                <div className={cn("bg-white", isMobile ? "col-span-1 p-2.5" : "col-span-6 p-3")}>
+                <div className={cn("bg-white", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-6 p-2.5")}>
                   <label htmlFor="street" className={labelClass}>{dict.checkout.street}</label>
                   <input id="street" required type="text" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} className={inputClass} placeholder="Jl. Sudirman No. 1" />
                 </div>
 
                 {/* Combined No, RT, RW into 1 row */}
                 <div className={cn("grid bg-white border-t border-ink/5", isMobile ? "col-span-1 grid-cols-3" : "col-span-6 grid-cols-6")}>
-                  <div className={cn(isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                  <div className={cn(isMobile ? "col-span-1 px-2 py-1.5" : "col-span-2 p-2.5")}>
                     <label htmlFor="house_number" className={labelClass}>No</label>
                     <input id="house_number" required type="text" value={formData.house_number} onChange={(e) => setFormData({...formData, house_number: e.target.value})} className={inputClass} placeholder="10" />
                   </div>
-                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-2 p-2.5")}>
                     <label htmlFor="rt" className={labelClass}>RT</label>
                     <input id="rt" required type="text" value={formData.rt} onChange={(e) => setFormData({...formData, rt: e.target.value})} className={inputClass} placeholder="001" />
                   </div>
-                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3")}>
+                  <div className={cn("border-l border-ink/5", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-2 p-2.5")}>
                     <label htmlFor="rw" className={labelClass}>RW</label>
                     <input id="rw" required type="text" value={formData.rw} onChange={(e) => setFormData({...formData, rw: e.target.value})} className={inputClass} placeholder="005" />
                   </div>
                 </div>
 
-                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-3 p-2.5")}>
                   <label htmlFor="province" className={labelClass}>{dict.checkout.province} {loadingLoc.p && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="province" required value={formData.province} onChange={(e) => handleProvinceChange(e.target.value)} className={selectClass} disabled={loadingLoc.p}>
                     <option value="">SELECT PROVINCE</option>
                     {provinces.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3 border-l border-ink/5")}>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-3 p-2.5 border-l border-ink/5")}>
                   <label htmlFor="city" className={labelClass}>{dict.checkout.city} {loadingLoc.c && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="city" required value={formData.city} onChange={(e) => handleCityChange(e.target.value)} className={selectClass} disabled={!formData.province || loadingLoc.c}>
                     <option value="">SELECT CITY</option>
                     {cities.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3")}>
+                <div className={cn("bg-white border-t border-ink/5", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-3 p-2.5")}>
                   <label htmlFor="kecamatan" className={labelClass}>Kecamatan {loadingLoc.d && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="kecamatan" required value={formData.kecamatan} onChange={(e) => handleDistrictChange(e.target.value)} className={selectClass} disabled={!formData.city || loadingLoc.d}>
                     <option value="">SELECT KECAMATAN</option>
                     {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t relative z-20", isMobile ? "col-span-1 p-2.5" : "col-span-3 p-3 border-l border-ink/5")}>
+                <div className={cn("bg-white border-t relative z-20", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-3 p-2.5 border-l border-ink/5")}>
                   <label htmlFor="kelurahan" className={labelClass}>Kelurahan {loadingLoc.v && <span className="animate-pulse text-rose">...</span>}</label>
                   <select id="kelurahan" required value={formData.kelurahan} onChange={(e) => setFormData({...formData, kelurahan: e.target.value})} className={cn(selectClass, "relative z-20")} disabled={!formData.kecamatan || loadingLoc.v}>
                     <option value="">SELECT KELURAHAN</option>
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
                 </div>
-                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3 border-l border-ink/5")}>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-2 p-2.5 border-l border-ink/5")}>
                   <label htmlFor="postal_code" className={labelClass}>Kode Pos / Postal Code</label>
                   <input id="postal_code" required type="text" value={formData.postal_code} onChange={(e) => setFormData({...formData, postal_code: e.target.value.replace(/[^0-9]/g, '')})} className={inputClass} placeholder="12345" maxLength={5} />
                 </div>
