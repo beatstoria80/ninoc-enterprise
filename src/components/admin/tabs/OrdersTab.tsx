@@ -1280,14 +1280,14 @@ export function OrdersTab({
                                               </a>
                                             )}
                                             {order.status === 'paid' && (
-                                              <div className="mt-2.5 p-2 border border-ink/10 rounded-sm bg-ink/[0.02] inline-block">
-                                                <p className="text-[8px] uppercase tracking-widest text-ink/60 mb-1">Batas Pengiriman</p>
+                                              <div className="mt-2.5 p-2 border border-rose/20 rounded-sm bg-rose/5 inline-block">
+                                                <p className="text-[9px] uppercase tracking-widest text-rose font-semibold mb-1">Batas Tanggal Dikirim</p>
                                                 <div className="flex items-center gap-1.5">
                                                   <span className={cn("text-[8px] font-bold px-1 py-0.5 rounded-sm border uppercase tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
                                                     {getShippingSLA(order.created_at, order.courier).label}
                                                   </span>
-                                                  <span className="text-[9px] font-medium text-ink/90">
-                                                    {getShippingSLA(order.created_at, order.courier).deadlineDate?.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                  <span className="text-[10px] font-bold text-rose">
+                                                    {getShippingSLA(order.created_at, order.courier).deadlineDate?.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                   </span>
                                                 </div>
                                               </div>
