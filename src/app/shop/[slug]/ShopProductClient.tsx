@@ -399,7 +399,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
                   )}
                 >
-                  <SafeImage src={img} alt={product.name} className="object-contain p-1.5" sizes="100px" />
+                  <SafeImage src={img} alt={product.image_alt || product.name} className="object-contain p-1.5" sizes="100px" />
                 </motion.button>
               ))}
             </div>
@@ -437,7 +437,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       positionClass
                     )}
                   >
-                    <SafeImage src={img} alt={`${product.name} ${idx}`} className="object-contain p-4" sizes="(max-width: 768px) 65vw, 30vw" />
+                    <SafeImage src={img} alt={`${product.image_alt || product.name} ${idx}`} className="object-contain p-4" sizes="(max-width: 768px) 65vw, 30vw" />
                   </div>
                 );
               })}
@@ -452,7 +452,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               >
                 <SafeImage
                   src={images[activeImageIndex]}
-                  alt={product.name}
+                  alt={product.image_alt || product.name}
                   priority
                 />
               </motion.div>
@@ -976,7 +976,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <Link prefetch={false} href={`/shop/${p.slug}`} className="group block space-y-1">
                     <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                       <div className="absolute inset-3">
-                        <SafeImage src={p.image_url} alt={p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
+                        <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
                       </div>
                       <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     </div>

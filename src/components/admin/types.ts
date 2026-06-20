@@ -15,6 +15,7 @@ export interface Product {
   price: number;
   category: string;
   image_url: string | null;
+  image_alt?: string | null;
   perspective1?: string | null;
   perspective2?: string | null;
   perspective3?: string | null;

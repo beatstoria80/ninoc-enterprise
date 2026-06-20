@@ -213,6 +213,7 @@ export default function AdminDashboard() {
     price: '',
     category: 'pakaian',
     image_url: '',
+    image_alt: '',
     perspective1: '',
     perspective2: '',
     perspective3: '',
@@ -375,6 +376,7 @@ export default function AdminDashboard() {
         price: product.price.toString(),
         category: product.category,
         image_url: product.image_url || '',
+        image_alt: product.image_alt || '',
         perspective1: product.perspective1 || '',
         perspective2: product.perspective2 || '',
         perspective3: product.perspective3 || '',
@@ -405,6 +407,7 @@ export default function AdminDashboard() {
         price: '',
         category: 'pakaian',
         image_url: '',
+        image_alt: '',
         perspective1: '',
         perspective2: '',
         perspective3: '',
@@ -467,6 +470,7 @@ export default function AdminDashboard() {
     try {
       const hasColors = productForm.variants.some(v => v.color);
       let finalImageUrl = productForm.image_url || null;
+      let finalImageAlt = productForm.image_alt || null;
       let finalP1 = productForm.perspective1 || null;
       let finalP2 = productForm.perspective2 || null;
       let finalP3 = productForm.perspective3 || null;
@@ -505,6 +509,7 @@ export default function AdminDashboard() {
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
         image_url: finalImageUrl,
+        image_alt: finalImageAlt,
         perspective1: finalP1,
         perspective2: finalP2,
         perspective3: finalP3,
@@ -2294,6 +2299,14 @@ export default function AdminDashboard() {
                             onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
                             placeholder="https://..."
                             className="flex-1 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                          />
+                          <input
+                            type="text"
+                            value={productForm.image_alt || ''}
+                            onChange={(e) => setProductForm({ ...productForm, image_alt: e.target.value })}
+                            placeholder="Alt text (SEO)"
+                            title="Teks Alternatif Gambar untuk SEO (contoh: Kaos Pria Hitam)"
+                            className="w-1/3 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
                           />
                           <label className="relative flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
                             {isUploadingProductImage ? (
