@@ -171,7 +171,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
-  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !/^Color(Image|P1|P2|P3|P4):/.test(s.label));
+  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !/^Color(Image|P1|P2|P3|P4|P5):/.test(s.label) && s.label !== 'GlobalP5');
   const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
   let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
@@ -284,10 +284,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
 
-  const colorGalleryMap: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string }> = {};
+  const colorGalleryMap: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string }> = {};
   if (product?.specifications) {
     product.specifications.forEach(spec => {
-      const match = spec.label.match(/^Color(Image|P1|P2|P3|P4):(.+)$/);
+      const match = spec.label.match(/^Color(Image|P1|P2|P3|P4|P5):(.+)$/);
       if (match) {
         const type = match[1];
         const colorName = match[2];
@@ -297,6 +297,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         if (type === 'P2') colorGalleryMap[colorName].p2 = spec.value;
         if (type === 'P3') colorGalleryMap[colorName].p3 = spec.value;
         if (type === 'P4') colorGalleryMap[colorName].p4 = spec.value;
+        if (type === 'P5') colorGalleryMap[colorName].p5 = spec.value;
       }
     });
   }
@@ -313,15 +314,18 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       activeGallery.p1,
       activeGallery.p2,
       activeGallery.p3,
-      activeGallery.p4
+      activeGallery.p4,
+      activeGallery.p5
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
   } else {
+    const globalP5 = product?.specifications?.find(s => s.label === 'GlobalP5')?.value;
     rawImages = [
       product.image_url,
       product.perspective1,
       product.perspective2,
       product.perspective3,
-      product.perspective4
+      product.perspective4,
+      globalP5
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
   }
 

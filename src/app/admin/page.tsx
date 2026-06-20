@@ -472,14 +472,25 @@ export default function AdminDashboard() {
       let finalP3 = productForm.perspective3 || null;
       let finalP4 = productForm.perspective4 || null;
 
-      if (hasColors && productForm.specifications) {
+      let finalSpecs = [...(productForm.specifications || [])];
+
+      if (hasColors && finalSpecs) {
         const firstColor = productForm.variants.find(v => v.color)?.color;
         if (firstColor) {
-           finalImageUrl = productForm.specifications.find(s => s.label === `ColorImage:${firstColor}`)?.value || null;
-           finalP1 = productForm.specifications.find(s => s.label === `ColorP1:${firstColor}`)?.value || null;
-           finalP2 = productForm.specifications.find(s => s.label === `ColorP2:${firstColor}`)?.value || null;
-           finalP3 = productForm.specifications.find(s => s.label === `ColorP3:${firstColor}`)?.value || null;
-           finalP4 = productForm.specifications.find(s => s.label === `ColorP4:${firstColor}`)?.value || null;
+           finalImageUrl = finalSpecs.find(s => s.label === `ColorImage:${firstColor}`)?.value || null;
+           finalP1 = finalSpecs.find(s => s.label === `ColorP1:${firstColor}`)?.value || null;
+           finalP2 = finalSpecs.find(s => s.label === `ColorP2:${firstColor}`)?.value || null;
+           finalP3 = finalSpecs.find(s => s.label === `ColorP3:${firstColor}`)?.value || null;
+           finalP4 = finalSpecs.find(s => s.label === `ColorP4:${firstColor}`)?.value || null;
+           
+           const firstP5 = finalSpecs.find(s => s.label === `ColorP5:${firstColor}`)?.value;
+           const existingGlobalP5Idx = finalSpecs.findIndex(s => s.label === 'GlobalP5');
+           if (firstP5) {
+             if (existingGlobalP5Idx >= 0) finalSpecs[existingGlobalP5Idx].value = firstP5;
+             else finalSpecs.push({ label: 'GlobalP5', value: firstP5 });
+           } else if (existingGlobalP5Idx >= 0) {
+             finalSpecs.splice(existingGlobalP5Idx, 1);
+           }
         }
       }
 
@@ -488,7 +499,7 @@ export default function AdminDashboard() {
         slug: productForm.slug,
         description: productForm.description,
         description_en: productForm.description_en || null,
-        specifications: productForm.specifications,
+        specifications: finalSpecs,
         measurements: productForm.measurements.length > 0 ? productForm.measurements : null,
         model_info: productForm.model_info || null,
         price: cleanAndParsePrice(productForm.price),
@@ -2297,13 +2308,26 @@ export default function AdminDashboard() {
                       {/* Additional Images — for product gallery navigation */}
                       <div className="space-y-3">
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
-                        {(['perspective1','perspective2','perspective3','perspective4'] as const).map((field, idx) => (
+                        {(['perspective1','perspective2','perspective3','perspective4', 'GlobalP5'] as const).map((field, idx) => {
+                          const isP5 = field === 'GlobalP5';
+                          const val = isP5 ? productForm.specifications?.find(s => s.label === 'GlobalP5')?.value || '' : (productForm as any)[field] || '';
+                          return (
                           <div key={field} className="flex items-center gap-2">
                             <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
                             <input
                               type="url"
-                              value={productForm[field]}
-                              onChange={(e) => setProductForm({ ...productForm, [field]: e.target.value })}
+                              value={val}
+                              onChange={(e) => {
+                                if (isP5) {
+                                  const newSpecs = [...(productForm.specifications || [])];
+                                  const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                  if (specIdx >= 0) newSpecs[specIdx].value = e.target.value;
+                                  else newSpecs.push({ label: 'GlobalP5', value: e.target.value });
+                                  setProductForm({ ...productForm, specifications: newSpecs });
+                                } else {
+                                  setProductForm({ ...productForm, [field]: e.target.value });
+                                }
+                              }}
                               placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
                               className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
                             />
@@ -2331,7 +2355,15 @@ export default function AdminDashboard() {
                                     if (!res.ok || data.error || !data.results?.[0]?.url) {
                                       throw new Error(data.error || 'Upload failed');
                                     }
-                                    setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
+                                    if (isP5) {
+                                      const newSpecs = [...(productForm.specifications || [])];
+                                      const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                      if (specIdx >= 0) newSpecs[specIdx].value = data.results[0].url;
+                                      else newSpecs.push({ label: 'GlobalP5', value: data.results[0].url });
+                                      setProductForm({ ...productForm, specifications: newSpecs });
+                                    } else {
+                                      setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
+                                    }
                                   } catch (err) {
                                     alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
                                   } finally {
@@ -2342,7 +2374,7 @@ export default function AdminDashboard() {
                               />
                             </label>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </>
                   )}
@@ -2467,7 +2499,7 @@ export default function AdminDashboard() {
                                 </button>
 
                                 <div className="mt-2 space-y-2">
-                                  {['Image', 'P1', 'P2', 'P3', 'P4'].map((imgType) => {
+                                  {['Image', 'P1', 'P2', 'P3', 'P4', 'P5'].map((imgType) => {
                                     const colorSpecLabel = `Color${imgType}:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s => s.label === colorSpecLabel);
                                     const colorImage = colorSpec?.value;
