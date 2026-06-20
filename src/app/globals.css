@@ -161,6 +161,8 @@ input::placeholder {
 /* Button click effect */
 button, a, [role="button"] {
   transition: transform 0.1s ease-out, opacity 0.15s ease-out, background-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:active, a:active, [role="button"]:active {

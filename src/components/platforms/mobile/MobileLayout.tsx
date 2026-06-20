@@ -756,6 +756,7 @@ export default function MobileLayout({
         .ios-native-layout a,
         .ios-native-layout [role="button"] {
           -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
 
         .ios-native-layout button:active,
