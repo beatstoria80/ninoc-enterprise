@@ -113,7 +113,6 @@ export default function QuickBuyModal() {
         setColorImages(map);
       }
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setColorImages({});
     }
   }, [quickBuyProduct]);
