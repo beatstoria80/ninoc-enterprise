@@ -15,18 +15,27 @@ export default function FinanceDashboard() {
 
   const fetchFinanceMetrics = async () => {
     try {
-      // 1. Get all completed orders (paid, shipped, delivered)
+      // Get current month start and end dates for efficient querying
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+
+      // 1. Get all completed orders (paid, shipped, delivered) for this month
       const { data: orders } = await supabase
         .from('orders')
-        .select('id, total_amount, status')
-        .in('status', ['paid', 'shipped', 'delivered']);
+        .select('id, total_price, status')
+        .in('status', ['paid', 'shipped', 'delivered'])
+        .gte('created_at', firstDay)
+        .lte('created_at', lastDay);
         
-      const grossRevenue = orders?.reduce((sum, o) => sum + Number(o.total_amount || 0), 0) || 0;
+      const grossRevenue = orders?.reduce((sum, o) => sum + Number(o.total_price || 0), 0) || 0;
 
       // 2. Get Supplier Ledgers (HPP)
       const { data: ledgers } = await supabase
         .from('supplier_ledgers')
-        .select('hpp_amount, status');
+        .select('hpp_amount, status')
+        .gte('created_at', firstDay)
+        .lte('created_at', lastDay);
       
       let totalHpp = 0;
       let pendingSupplierPayments = 0;
@@ -41,14 +50,18 @@ export default function FinanceDashboard() {
       // 3. Get Affiliate Commissions
       const { data: commissions } = await supabase
         .from('affiliate_commissions')
-        .select('amount');
+        .select('amount')
+        .gte('created_at', firstDay)
+        .lte('created_at', lastDay);
         
       const totalAffiliateCommissions = commissions?.reduce((sum, c) => sum + Number(c.amount || 0), 0) || 0;
 
       // 4. Get OPEX (Operational Expenses)
       const { data: opex } = await supabase
         .from('operational_expenses')
-        .select('amount');
+        .select('amount')
+        .gte('expense_date', firstDay)
+        .lte('expense_date', lastDay);
         
       const totalOpex = opex?.reduce((sum, o) => sum + Number(o.amount || 0), 0) || 0;
 
@@ -80,7 +93,7 @@ export default function FinanceDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold text-ink">Finance & P&L Dashboard</h2>
+        <h2 className="text-lg font-bold text-ink">Finance & P&L Dashboard (Current Month)</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

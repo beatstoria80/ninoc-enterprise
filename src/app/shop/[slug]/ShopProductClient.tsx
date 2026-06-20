@@ -655,7 +655,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       >
                         {colorImg && (
                           <div className="w-4 h-4 md:w-3 md:h-3 lg:w-4 lg:h-4 rounded-full overflow-hidden shrink-0 border border-current">
-                            <img src={colorImg} alt={color} className="w-full h-full object-cover" />
+                            <Image src={colorImg} alt={color} width={16} height={16} className="w-full h-full object-cover" unoptimized />
                           </div>
                         )}
                         <span>{color}</span>

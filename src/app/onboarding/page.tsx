@@ -193,7 +193,7 @@ export default function OnboardingPage() {
       setIsLoading(false);
     };
     check();
-  }, [router]);
+  }, [router, supabase]);
 
   const logout = () => { supabase.auth.signOut(); router.push('/shop'); };
 
