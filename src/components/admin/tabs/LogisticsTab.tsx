@@ -255,17 +255,17 @@ export function LogisticsTab({
       <div className="shrink-0 flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h2 className="text-xs font-medium text-gray-900 uppercase tracking-wide">Logistics Command</h2>
-          <span className="text-[9px] text-gray-800">— shipment operations center</span>
+          <span className="text-[11px] text-gray-800">— shipment operations center</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-[9px] text-gray-800 font-mono">
+          <div className="text-[11px] text-gray-800 font-mono">
             {formattedDate}
             {' • '}
             <span className="text-rose">{pendingCount + inTransitCount}</span> active
           </div>
           <button
             onClick={() => setIsScannerOpen(true)}
-            className="flex items-center gap-1.5 px-2 py-1 bg-ink text-white rounded-sm text-[9px] uppercase tracking-wider font-medium hover:bg-ink/90 transition-colors"
+            className="flex items-center gap-1.5 px-2 py-1 bg-ink text-white rounded-sm text-[11px] uppercase tracking-wider font-medium hover:bg-ink/90 transition-colors"
           >
             <ScanBarcode size={12} />
             Scan to Dispatch
@@ -293,7 +293,7 @@ export function LogisticsTab({
             {logisticsFilter === stat.filterKey && (
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose" />
             )}
-            <p className="text-[9px] uppercase tracking-[0.2em] text-gray-800 mb-1">{stat.label}</p>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-gray-800 mb-1">{stat.label}</p>
             <p className={cn("text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
           </button>
         ))}
@@ -314,7 +314,7 @@ export function LogisticsTab({
                   key={f}
                   onClick={() => setLogisticsFilter(f)}
                   className={cn(
-                    "px-2 py-1 text-[9px] uppercase tracking-[0.15em] transition-colors",
+                    "px-2 py-1 text-[11px] uppercase tracking-[0.15em] transition-colors",
                     logisticsFilter === f
                       ? "bg-ink text-white"
                       : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
@@ -324,7 +324,7 @@ export function LogisticsTab({
                 </button>
               ))}
             </div>
-            <span className="text-[9px] font-mono text-gray-800">{logisticsOrders.length} results</span>
+            <span className="text-[11px] font-mono text-gray-800">{logisticsOrders.length} results</span>
           </div>
 
           {/* Dense table */}
@@ -332,13 +332,13 @@ export function LogisticsTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                 <tr>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[90px]">Order</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[100px]">Status</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Destination</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Courier</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Resi</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Value</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Age</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[90px]">Order</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[100px]">Status</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Destination</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Courier</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Resi</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Value</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Age</th>
                 </tr>
               </thead>
               <tbody>
@@ -354,11 +354,11 @@ export function LogisticsTab({
                     )}
                   >
                     <td className="px-2 py-1">
-                      <span className="font-mono text-[10px] text-gray-900 whitespace-nowrap">#{order.id.toUpperCase()}</span>
+                      <span className="font-mono text-xs text-gray-900 whitespace-nowrap">#{order.id.toUpperCase()}</span>
                     </td>
                     <td className="px-2 py-1">
                       <span className={cn(
-                        "text-[9px] uppercase tracking-[0.1em] px-1.5 py-0.5 inline-block",
+                        "text-[11px] uppercase tracking-[0.1em] px-1.5 py-0.5 inline-block",
                         order.status === 'paid' && "bg-amber-100 text-amber-700",
                         order.status === 'shipped' && "bg-blue-100 text-blue-700",
                         order.status === 'delivered' && "bg-emerald-100 text-emerald-700",
@@ -367,40 +367,40 @@ export function LogisticsTab({
                         {order.status === 'paid' ? 'SIAP KIRIM' : order.status.toUpperCase()}
                       </span>
                       {order.status === 'paid' && (
-                        <span className={cn("block mt-1 text-[8px] font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
+                        <span className={cn("block mt-1 text-xs font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
                           {getShippingSLA(order.created_at, order.courier).label}
                         </span>
                       )}
-                      <div className="text-[8px] text-gray-500 mt-1 uppercase tracking-wider">{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                      <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                     </td>
                     <td className="px-2 py-1">
-                      <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
-                      <div className="text-[9px] text-gray-800 truncate max-w-[120px]">{order.shipping_address?.city}</div>
+                      <div className="text-xs text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
+                      <div className="text-[11px] text-gray-800 truncate max-w-[120px]">{order.shipping_address?.city}</div>
                     </td>
                     <td className="px-2 py-1">
                       <div className="flex items-center gap-1.5">
                         <CourierLogo courier={order.courier || ''} className="h-3.5" />
-                        <span className="text-[9px] text-gray-800 uppercase">{order.courier || '—'}</span>
+                        <span className="text-[11px] text-gray-800 uppercase">{order.courier || '—'}</span>
                       </div>
                     </td>
                     <td className="px-2 py-1">
                       {order.tracking_id ? (
-                        <span className="font-mono text-[9px] bg-gray-100 text-gray-800 px-1 py-0.5">{order.tracking_id.slice(-8)}</span>
+                        <span className="font-mono text-[11px] bg-gray-100 text-gray-800 px-1 py-0.5">{order.tracking_id.slice(-8)}</span>
                       ) : (
-                        <span className="text-[9px] text-gray-500">—</span>
+                        <span className="text-[11px] text-gray-500">—</span>
                       )}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      <span className="font-mono text-[9px] text-gray-900">{(order.total_price / 1000).toFixed(0)}K</span>
+                      <span className="font-mono text-[11px] text-gray-900">{(order.total_price / 1000).toFixed(0)}K</span>
                     </td>
                     <td className="px-2 py-1 text-right">
-                      <span className="text-[9px] text-gray-800 font-mono">{getTimeAgo(order.created_at)}</span>
+                      <span className="text-[11px] text-gray-800 font-mono">{getTimeAgo(order.created_at)}</span>
                     </td>
                   </tr>
                 ))}
                 {logisticsOrders.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-3 py-12 text-center text-[10px] text-gray-500 uppercase tracking-[0.3em]">
+                    <td colSpan={7} className="px-3 py-12 text-center text-xs text-gray-500 uppercase tracking-[0.3em]">
                       No orders in this category
                     </td>
                   </tr>
@@ -435,7 +435,7 @@ export function LogisticsTab({
                     </div>
                     <div>
                       <p className="text-xs md:text-[11px] font-medium text-gray-900 leading-tight">{logisticsSelectedOrder.shipping_address?.name}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5 font-mono">Client ID: {logisticsSelectedOrder.user_id?.slice(0, 8) || 'GUEST'}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5 font-mono">Client ID: {logisticsSelectedOrder.user_id?.slice(0, 8) || 'GUEST'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -458,20 +458,20 @@ export function LogisticsTab({
                 {/* 2. Order Details Grid */}
                 <div className="grid grid-cols-4 gap-3 pt-3 border-t border-gray-100">
                   <div>
-                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Order ID</p>
-                    <p className="text-[10px] font-medium text-gray-900">{logisticsSelectedOrder.id.toUpperCase()}</p>
+                    <p className="text-[11px] uppercase tracking-wider text-gray-800 mb-1">Order ID</p>
+                    <p className="text-xs font-medium text-gray-900">{logisticsSelectedOrder.id.toUpperCase()}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Shipping Address</p>
-                    <p className="text-[10px] text-gray-900 leading-tight">
+                    <p className="text-[11px] uppercase tracking-wider text-gray-800 mb-1">Shipping Address</p>
+                    <p className="text-xs text-gray-900 leading-tight">
                       {logisticsSelectedOrder.shipping_address?.address}
                       {!(logisticsSelectedOrder.shipping_address?.address || '').toUpperCase().includes((logisticsSelectedOrder.shipping_address?.city || '').toUpperCase()) && logisticsSelectedOrder.shipping_address?.city ? `, ${logisticsSelectedOrder.shipping_address.city}` : ''}
                       {logisticsSelectedOrder.shipping_address?.postal_code && !(logisticsSelectedOrder.shipping_address?.address || '').includes(logisticsSelectedOrder.shipping_address.postal_code) ? `, ${logisticsSelectedOrder.shipping_address.postal_code}` : ''}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Shipped</p>
-                    <p className="text-[10px] text-gray-900 leading-tight">
+                    <p className="text-[11px] uppercase tracking-wider text-gray-800 mb-1">Shipped</p>
+                    <p className="text-xs text-gray-900 leading-tight">
                       {new Date(logisticsSelectedOrder.created_at).toLocaleDateString('id-ID')}<br/>
                       <span className="text-gray-500">{new Date(logisticsSelectedOrder.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
                     </p>
@@ -482,7 +482,7 @@ export function LogisticsTab({
                 <div className="grid grid-cols-[1.2fr_1fr] gap-2 pt-1 mt-2">
                   {/* Left Side: Ordered Products */}
                   <div className="flex flex-col">
-                    <p className="text-[9px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                    <p className="text-[11px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
                     <div className="flex flex-col gap-2 overflow-y-auto max-h-[160px] custom-scrollbar pr-2">
                       {logisticsSelectedOrder.order_items?.map((item, idx) => (
                         <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -490,9 +490,9 @@ export function LogisticsTab({
                             <Package size={16} className="text-gray-500" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
-                            <p className="text-[9px] text-gray-500 mt-0.5">{item.quantity} item • {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ') || 'OS'}</p>
-                            <p className="text-[10px] font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                            <p className="text-xs text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
+                            <p className="text-[11px] text-gray-500 mt-0.5">{item.quantity} item • {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ') || 'OS'}</p>
+                            <p className="text-xs font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
                           </div>
                         </div>
                       ))}
@@ -501,7 +501,7 @@ export function LogisticsTab({
 
                   {/* Right Side: Map Visualization */}
                   <div className="flex flex-col">
-                    <p className="text-[9px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
+                    <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
                     <div className="relative w-full h-[160px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
                       <MapTracker 
                         destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
@@ -516,14 +516,14 @@ export function LogisticsTab({
                 <div className="mt-0 pt-2 flex-1">
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
-                      <span className="text-[9px] text-gray-800">Updated 5 mins ago</span>
+                      <span className="text-xs font-medium text-gray-900 uppercase tracking-wider">Timeline</span>
+                      <span className="text-[11px] text-gray-800">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {['pending', 'paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
                           onClick={() => handleCancelOrder(logisticsSelectedOrder)}
-                          className="px-2 py-1 text-[9px] font-medium rounded border transition-all flex items-center gap-1.5 bg-white text-rose border-rose hover:bg-rose hover:text-white"
+                          className="px-2 py-1 text-[11px] font-medium rounded border transition-all flex items-center gap-1.5 bg-white text-rose border-rose hover:bg-rose hover:text-white"
                         >
                           <X size={10} /> Cancel Order
                         </button>
@@ -533,7 +533,7 @@ export function LogisticsTab({
                           onClick={() => handleRequestPickup(logisticsSelectedOrder)}
                           disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
                           className={cn(
-                            "px-2 py-1 text-[9px] font-medium rounded border transition-all flex items-center gap-1.5",
+                            "px-2 py-1 text-[11px] font-medium rounded border transition-all flex items-center gap-1.5",
                             (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
                               ? "bg-gray-100 text-gray-800 border-gray-200 cursor-not-allowed opacity-50"
                               : logisticsSelectedOrder.status === 'shipped'
@@ -559,7 +559,7 @@ export function LogisticsTab({
                           )}
                         </button>
                       )}
-                      <button className="px-2 py-1 bg-gray-50 text-[9px] font-medium text-gray-800 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                      <button className="px-2 py-1 bg-gray-50 text-[11px] font-medium text-gray-800 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
                         Refresh
                       </button>
                     </div>
@@ -625,22 +625,22 @@ export function LogisticsTab({
                             {/* Timeline Content */}
                             <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
                               <div className="w-24 shrink-0 pt-0.5">
-                                <span className={`text-[11px] md:text-[9px] font-semibold tracking-widest uppercase ${step.isActive ? 'text-rose' : 'text-ink/80'}`}>
+                                <span className={`text-[11px] md:text-[11px] font-semibold tracking-widest uppercase ${step.isActive ? 'text-rose' : 'text-ink/80'}`}>
                                   {step.time ? step.time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : '---'}
                                 </span>
-                                <div className="text-[10px] md:text-[8px] text-ink/80 mt-0.5 font-medium">
+                                <div className="text-xs md:text-xs text-ink/80 mt-0.5 font-medium">
                                   {step.time ? step.time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
                                 </div>
                               </div>
                               <div className="flex-1 mt-1 sm:mt-0 bg-ink/[0.01] sm:bg-transparent p-3 sm:p-0 rounded-sm border sm:border-none border-ink/5">
-                                <p className={`text-[12px] md:text-[10px] font-bold uppercase tracking-wider mb-1 ${step.isActive ? 'text-ink' : step.isReached ? 'text-ink/90' : 'text-ink/80'}`}>
+                                <p className={`text-[12px] md:text-xs font-bold uppercase tracking-wider mb-1 ${step.isActive ? 'text-ink' : step.isReached ? 'text-ink/90' : 'text-ink/80'}`}>
                                   {step.title}
                                 </p>
-                                <p className={`text-[11px] md:text-[9px] leading-relaxed mb-2 ${step.isActive ? 'text-ink/80 font-medium' : 'text-ink/90'}`}>
+                                <p className={`text-[11px] md:text-[11px] leading-relaxed mb-2 ${step.isActive ? 'text-ink/80 font-medium' : 'text-ink/90'}`}>
                                   {step.desc}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
-                                  <p className={`text-[10px] md:text-[8px] uppercase tracking-widest flex items-center gap-1.5 ${step.isActive ? 'text-ink/80' : 'text-ink/90'}`}>
+                                  <p className={`text-xs md:text-xs uppercase tracking-widest flex items-center gap-1.5 ${step.isActive ? 'text-ink/80' : 'text-ink/90'}`}>
                                     {React.cloneElement(step.icon as React.ReactElement<{ className?: string }>, { className: step.isActive ? "text-rose/50" : "text-ink/90" })} {step.location}
                                   </p>
                                 </div>
@@ -681,7 +681,7 @@ export function LogisticsTab({
                   <ScanBarcode size={16} className="text-ink" />
                   <div>
                     <h3 className="text-xs font-medium text-ink uppercase tracking-wide">Dispatch Verification</h3>
-                    <p className="text-[9px] text-ink/90 uppercase tracking-widest mt-0.5">Barcode Scanner Input</p>
+                    <p className="text-[11px] text-ink/90 uppercase tracking-widest mt-0.5">Barcode Scanner Input</p>
                   </div>
                 </div>
                 <button 
@@ -711,32 +711,32 @@ export function LogisticsTab({
                   {scanStatus === 'idle' && (
                     <div className="flex flex-col items-center text-ink/80">
                       <ScanBarcode size={24} className="mb-2 opacity-30 animate-pulse" />
-                      <p className="text-[9px] uppercase tracking-widest font-medium">Ready to scan next label</p>
+                      <p className="text-[11px] uppercase tracking-widest font-medium">Ready to scan next label</p>
                     </div>
                   )}
                   {scanStatus === 'loading' && (
                     <div className="flex flex-col items-center text-ink">
                       <div className="w-5 h-5 border-2 border-ink/20 border-t-ink rounded-full animate-spin mb-2" />
-                      <p className="text-[9px] uppercase tracking-widest font-medium animate-pulse">{scanMessage}</p>
+                      <p className="text-[11px] uppercase tracking-widest font-medium animate-pulse">{scanMessage}</p>
                     </div>
                   )}
                   {scanStatus === 'success' && (
                     <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-emerald-600">
                       <CheckCircle size={28} className="mb-2" />
-                      <p className="text-[10px] uppercase tracking-widest font-medium">{scanMessage}</p>
+                      <p className="text-xs uppercase tracking-widest font-medium">{scanMessage}</p>
                     </motion.div>
                   )}
                   {scanStatus === 'error' && (
                     <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-rose">
                       <AlertCircle size={28} className="mb-2" />
-                      <p className="text-[10px] uppercase tracking-widest font-medium">{scanMessage}</p>
+                      <p className="text-xs uppercase tracking-widest font-medium">{scanMessage}</p>
                     </motion.div>
                   )}
                 </div>
               </div>
 
               <div className="px-1.5 py-1 border-t border-ink/10 bg-ink/[0.02] text-center">
-                <p className="text-[9px] uppercase tracking-widest text-ink/80">Physical barcode scanner will automatically submit upon successful read.</p>
+                <p className="text-[11px] uppercase tracking-widest text-ink/80">Physical barcode scanner will automatically submit upon successful read.</p>
               </div>
             </motion.div>
           </div>
@@ -745,3 +745,4 @@ export function LogisticsTab({
     </motion.div>
   );
 }
+
