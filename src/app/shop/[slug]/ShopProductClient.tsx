@@ -622,7 +622,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         key={color}
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        onClick={() => { setSelectedColor(color); setQuantity(1); }}
+                        onClick={() => { setSelectedColor(color); setQuantity(1); setActiveImageIndex(0); }}
                         className={cn(
                           "flex items-center gap-2 px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-xs font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
