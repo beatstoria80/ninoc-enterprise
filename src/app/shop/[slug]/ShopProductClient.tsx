@@ -171,7 +171,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
-  const displaySpecs = product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS;
+  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !s.label.startsWith('ColorImage:'));
   const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
   let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
@@ -284,8 +284,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
 
+  const colorImagesMap: Record<string, string> = {};
+  if (product?.specifications) {
+    product.specifications.forEach(spec => {
+      if (spec.label.startsWith('ColorImage:')) {
+        const colorName = spec.label.replace('ColorImage:', '');
+        colorImagesMap[colorName] = spec.value;
+      }
+    });
+  }
+
+  const effectiveMainImage = (effectiveColor && colorImagesMap[effectiveColor]) || product.image_url;
+
   const rawImages = [
-    product.image_url,
+    effectiveMainImage,
     product.perspective1,
     product.perspective2,
     product.perspective3,
@@ -293,7 +305,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
   while (rawImages.length < 4) {
-    rawImages.push(product.image_url);
+    rawImages.push(effectiveMainImage);
   }
   const images = rawImages;
 
@@ -318,8 +330,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (product) {
       if (availableStock === 0) return;
       const surcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
+      const effectiveMainImage = (effectiveColor && colorImagesMap[effectiveColor]) || product.image_url;
+      const productToAdd = { ...product, image_url: effectiveMainImage };
       for (let i = 0; i < displayQuantity; i++) {
-        addItem(product, effectiveSize, effectiveColor, surcharge);
+        addItem(productToAdd, effectiveSize, effectiveColor, surcharge);
       }
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
@@ -600,7 +614,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
                   <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
-                    {availableColors.map((color) => (
+                    {availableColors.map((color) => {
+                      const colorImg = colorImagesMap[color];
+                      return (
                       <motion.button
                         variants={textVariants}
                         key={color}
@@ -608,15 +624,21 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedColor(color); setQuantity(1); }}
                         className={cn(
-                          "px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-xs font-medium uppercase tracking-wider border transition-all",
+                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-xs font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
                             ? "bg-ink text-white border-ink"
                             : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
                         )}
                       >
-                        {color}
+                        {colorImg && (
+                          <div className="w-4 h-4 md:w-3 md:h-3 lg:w-4 lg:h-4 rounded-full overflow-hidden shrink-0 border border-current">
+                            <img src={colorImg} alt={color} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <span>{color}</span>
                       </motion.button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

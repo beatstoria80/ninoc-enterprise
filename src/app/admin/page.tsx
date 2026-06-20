@@ -2002,7 +2002,9 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                     <div className="space-y-2">
-                      {productForm.specifications?.map((spec, idx) => (
+                      {productForm.specifications?.map((spec, idx) => {
+                        if (spec.label.startsWith('ColorImage:')) return null;
+                        return (
                         <div key={idx} className="flex gap-2 items-start">
                           <input
                             type="text"
@@ -2037,7 +2039,8 @@ export default function AdminDashboard() {
                             <Trash2 size={16} />
                           </button>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         <button
@@ -2440,6 +2443,77 @@ export default function AdminDashboard() {
                                 >
                                   Remove Color
                                 </button>
+
+                                <div className="mt-2 flex items-center gap-2">
+                                  {(() => {
+                                    const colorSpecLabel = `ColorImage:${group.color}`;
+                                    const colorSpec = productForm.specifications?.find(s => s.label === colorSpecLabel);
+                                    const colorImage = colorSpec?.value;
+                                    
+                                    return (
+                                      <div className="flex items-center gap-3 w-full bg-white px-2 py-1.5 border border-gray-200 rounded text-xs">
+                                        <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color Image:</span>
+                                        {colorImage && (
+                                          <img src={colorImage} alt={group.color} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" />
+                                        )}
+                                        <label className="relative flex items-center justify-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap ml-auto">
+                                          <span>Upload Image</span>
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                              const file = e.target.files?.[0];
+                                              if (!file) return;
+                                              setIsUploadingProductImage(true);
+                                              try {
+                                                const compressedFile = await compressImage(file);
+                                                const formData = new FormData();
+                                                formData.append('files', compressedFile);
+                                                formData.append('bucket', 'products');
+                                                const res = await fetch('/api/admin/upload-images', {
+                                                  method: 'POST',
+                                                  body: formData
+                                                });
+                                                const data = await res.json();
+                                                if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                                  throw new Error(data.error || 'Upload failed');
+                                                }
+                                                
+                                                const newSpecs = [...(productForm.specifications || [])];
+                                                const specIdx = newSpecs.findIndex(s => s.label === colorSpecLabel);
+                                                if (specIdx >= 0) {
+                                                  newSpecs[specIdx].value = data.results[0].url;
+                                                } else {
+                                                  newSpecs.push({ label: colorSpecLabel, value: data.results[0].url });
+                                                }
+                                                setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                              } catch (err) {
+                                                alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                              } finally {
+                                                setIsUploadingProductImage(false);
+                                              }
+                                            }}
+                                            disabled={isUploadingProductImage}
+                                          />
+                                        </label>
+                                        {colorImage && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const newSpecs = productForm.specifications?.filter(s => s.label !== colorSpecLabel) || [];
+                                              setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                            }}
+                                            className="p-1 text-gray-400 hover:text-rose transition-colors"
+                                            title="Remove color image"
+                                          >
+                                            <X size={14} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
 
                               <div className="pt-1">
                                 <div className="flex flex-wrap items-center gap-2">
