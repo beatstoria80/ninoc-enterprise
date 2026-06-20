@@ -303,20 +303,22 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   }
 
   const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor] : undefined;
-  const effectiveMainImage = (activeGallery && activeGallery.main) || product.image_url;
 
   let rawImages: string[] = [];
 
-  if (activeGallery) {
-    const mainImg = activeGallery.main || product.image_url;
-    rawImages = [
-      mainImg,
-      activeGallery.p1,
-      activeGallery.p2,
-      activeGallery.p3,
-      activeGallery.p4,
-      activeGallery.p5
-    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+  if (effectiveColor) {
+    if (activeGallery) {
+      rawImages = [
+        activeGallery.main || '',
+        activeGallery.p1,
+        activeGallery.p2,
+        activeGallery.p3,
+        activeGallery.p4,
+        activeGallery.p5
+      ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+    } else {
+      rawImages = [];
+    }
   } else {
     const globalP5 = product?.specifications?.find(s => s.label === 'GlobalP5')?.value;
     rawImages = [
@@ -329,7 +331,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
   }
 
-  const images = rawImages;
+  const images = rawImages.length > 0 ? rawImages : [''];
 
   const localizedDescription = dict.locale === 'EN' && product.description_en ? product.description_en : product.description;
 
@@ -994,12 +996,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           </motion.div>
         )}
       </div>
-
-      <ImageLightbox
-        isOpen={!!fullscreenImage}
-        imageUrl={fullscreenImage}
-        onClose={() => setFullscreenImage(null)}
-      />
 
     </main>
   );
