@@ -650,8 +650,30 @@ export function OrdersTab({
               const receiverName = order.shipping_address?.name || 'Customer';
               const rawPhone = order.shipping_address?.phone || '+628000000000';
               const receiverPhone = rawPhone.length >= 8 ? rawPhone.slice(0, 4) + 'XXXX' + rawPhone.slice(-4) : rawPhone;
-              const receiverAddress = order.shipping_address?.address || '';
-              const receiverLocation = (order.shipping_address?.city || '') + ', ' + (order.shipping_address?.province || '');
+              let rawAddress = order.shipping_address?.address || '';
+              if (rawAddress) {
+                // Normalize terms to catch duplicates like "Kecamatan Subang" vs "Kec. Subang"
+                let normalized = rawAddress.replace(/KECAMATAN /gi, 'KEC. ').replace(/KABUPATEN /gi, 'KAB. ').replace(/KELURAHAN /gi, 'KEL. ');
+                const chunks = normalized.split(',').map(c => c.trim());
+                const uniqueChunks = Array.from(new Set(chunks.map(c => c.toUpperCase())))
+                  .map(upperC => chunks.find(c => c.toUpperCase() === upperC));
+                rawAddress = uniqueChunks.filter(Boolean).join(', ');
+              }
+              const receiverAddress = rawAddress;
+              
+              const cCity = order.shipping_address?.city || '';
+              const cProv = order.shipping_address?.province || '';
+              let receiverLocation = [cCity, cProv].filter(Boolean).join(', ');
+              
+              // Prevent printing Location at the bottom if it's already in the main address
+              if (receiverAddress.toUpperCase().includes(cCity.toUpperCase()) && receiverAddress.toUpperCase().includes(cProv.toUpperCase())) {
+                receiverLocation = '';
+              } else if (receiverAddress.toUpperCase().includes(cCity.toUpperCase())) {
+                receiverLocation = cProv;
+              } else if (receiverAddress.toUpperCase().includes(cProv.toUpperCase())) {
+                receiverLocation = cCity;
+              }
+              
               const addressType = order.shipping_address?.address_type;
               const addressTypeLabel = addressType ? `<div style="display:inline-block; border:1px solid black; padding:1px 4px; font-size:8px; font-weight:bold; margin-top:2px; margin-bottom:2px;">${addressType === 'Home' ? 'Home / Rumah' : 'Office / Kantor'}</div>` : '';
 
