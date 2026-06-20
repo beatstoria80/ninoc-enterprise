@@ -389,7 +389,7 @@ export function LogisticsTab({
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
               className="border-l border-gray-200 flex flex-col overflow-hidden bg-white shadow-xl z-20 relative"
             >
-              <div className="w-full h-full flex flex-col overflow-y-auto p-2 gap-3 custom-scrollbar">
+              <div className="w-full h-full flex flex-col overflow-y-auto p-2 gap-2 custom-scrollbar">
                 {/* 1. Header / Client Info */}
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
@@ -452,7 +452,7 @@ export function LogisticsTab({
                   {/* Left Side: Ordered Products */}
                   <div className="flex flex-col">
                     <p className="text-[11px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
-                    <div className="flex flex-col gap-2 overflow-y-auto max-h-[160px] custom-scrollbar pr-2">
+                    <div className="flex flex-col gap-2 overflow-y-auto max-h-[120px] custom-scrollbar pr-2">
                       {logisticsSelectedOrder.order_items?.map((item, idx) => (
                         <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
                           <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
@@ -471,7 +471,7 @@ export function LogisticsTab({
                   {/* Right Side: Map Visualization */}
                   <div className="flex flex-col">
                     <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
-                    <div className="relative w-full h-[160px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
+                    <div className="relative w-full h-[120px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
                       <MapTracker 
                         destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
                         status={logisticsSelectedOrder.status} 
@@ -585,7 +585,7 @@ export function LogisticsTab({
                             </div>
                             
                             {/* Timeline Content */}
-                            <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+                            <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2">
                               <div className="w-24 shrink-0 pt-0.5">
                                 <span className={`text-[11px] md:text-[11px] font-semibold tracking-widest uppercase ${step.isActive ? 'text-rose' : 'text-ink/80'}`}>
                                   {step.time ? step.time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : '---'}
@@ -598,10 +598,10 @@ export function LogisticsTab({
                                 <p className={`text-[12px] md:text-xs font-bold uppercase tracking-wider mb-1 ${step.isActive ? 'text-ink' : step.isReached ? 'text-ink/90' : 'text-ink/80'}`}>
                                   {step.title}
                                 </p>
-                                <p className={`text-[11px] md:text-[11px] leading-relaxed mb-2 ${step.isActive ? 'text-ink/80 font-medium' : 'text-ink/90'}`}>
+                                <p className={`text-[11px] md:text-[11px] leading-snug mb-1.5 ${step.isActive ? 'text-ink/80 font-medium' : 'text-ink/90'}`}>
                                   {step.desc}
                                 </p>
-                                <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-ink/5">
+                                <div className="flex flex-wrap items-center gap-2 mt-1 pt-1.5 border-t border-ink/5">
                                   <p className={`text-xs md:text-xs uppercase tracking-widest flex items-center gap-1.5 ${step.isActive ? 'text-ink/80' : 'text-ink/90'}`}>
                                     {React.cloneElement(step.icon as React.ReactElement<{ className?: string }>, { className: step.isActive ? "text-rose/50" : "text-ink/90" })} {step.location}
                                   </p>
