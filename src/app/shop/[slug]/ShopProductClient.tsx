@@ -173,7 +173,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
   const displaySpecs = product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS;
   const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
-  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
+  let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
   const displayModelInfo = product?.model_info || fallbackModelInfo;
 
@@ -259,6 +259,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
     return sizes;
   })();
+
+  if (hasSizes && availableSizes.length > 0) {
+    displayMeasurements = displayMeasurements.filter(m => availableSizes.some(s => s.toUpperCase() === m.size.toUpperCase()));
+  }
 
   const effectiveSize = (() => {
     if (!hasSizes) return '';
