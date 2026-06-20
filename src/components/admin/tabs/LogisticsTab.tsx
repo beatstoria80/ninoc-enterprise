@@ -391,10 +391,10 @@ export function LogisticsTab({
                       )}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      <span className="font-mono text-[11px] text-gray-900">{(order.total_price / 1000).toFixed(0)}K</span>
+                      <span className="font-mono text-sm font-medium text-gray-900">{(order.total_price / 1000).toFixed(0)}K</span>
                     </td>
                     <td className="px-2 py-1 text-right">
-                      <span className="text-[11px] text-gray-800 font-mono">{getTimeAgo(order.created_at)}</span>
+                      <span className="text-sm font-bold text-gray-900 font-mono">{getTimeAgo(order.created_at)}</span>
                     </td>
                   </tr>
                 ))}
