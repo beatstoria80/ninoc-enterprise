@@ -111,7 +111,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
       <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-6 md:pt-8")}>
 
         {!isMobile && (
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
+        <Link href="/shop" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
           <span className="text-sm font-medium">Kembali ke Katalog</span>
         </Link>
         )}
