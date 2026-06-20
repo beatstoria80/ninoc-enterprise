@@ -332,13 +332,13 @@ export function LogisticsTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                 <tr>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[90px]">Order</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[100px]">Status</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Destination</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Courier</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Resi</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Value</th>
-                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Age</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[15%]">Order</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[15%]">Status</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[25%]">Destination</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[15%]">Courier</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[10%]">Resi</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[10%]">Value</th>
+                  <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[10%]">Age</th>
                 </tr>
               </thead>
               <tbody>
