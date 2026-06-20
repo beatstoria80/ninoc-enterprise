@@ -80,7 +80,10 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
   return (
     <div className="bg-cr min-h-screen">
-      <div className="sticky top-14 z-40 bg-white/95 backdrop-blur-sm border-b border-ink/5">
+      <div 
+        className="fixed left-0 right-0 z-[350] bg-white/95 backdrop-blur-sm border-b border-ink/5"
+        style={{ top: 'calc(56px + env(safe-area-inset-top))' }}
+      >
         <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
           {displayCategories.map((cat) => (
             <button
@@ -98,6 +101,9 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
           ))}
         </div>
       </div>
+      
+      {/* Spacer for fixed category bar */}
+      <div className="h-[56px]" />
 
       <div className="px-3 pt-3 space-y-4 pb-10">
         {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
