@@ -303,24 +303,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   }
 
   const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor] : undefined;
+  const globalP5 = product?.specifications?.find(s => s.label === 'GlobalP5')?.value;
 
   let rawImages: string[] = [];
 
-  if (effectiveColor) {
-    if (activeGallery) {
-      rawImages = [
-        activeGallery.main || '',
-        activeGallery.p1,
-        activeGallery.p2,
-        activeGallery.p3,
-        activeGallery.p4,
-        activeGallery.p5
-      ].filter((img): img is string => typeof img === 'string' && img.length > 0);
-    } else {
-      rawImages = [];
-    }
+  if (activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
+    rawImages = [
+      activeGallery.main || '',
+      activeGallery.p1,
+      activeGallery.p2,
+      activeGallery.p3,
+      activeGallery.p4,
+      activeGallery.p5
+    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
   } else {
-    const globalP5 = product?.specifications?.find(s => s.label === 'GlobalP5')?.value;
     rawImages = [
       product.image_url,
       product.perspective1,
