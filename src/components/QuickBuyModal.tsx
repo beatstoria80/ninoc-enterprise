@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { supabase } from '@/lib/supabase';
 
 export default function QuickBuyModal() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function QuickBuyModal() {
   const [quickBuyProduct, setQuickBuyProduct] = useState<any | null>(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [colorImages, setColorImages] = useState<Record<string, string>>({});
 
   const availableSizes = (() => {
     if (!quickBuyProduct?.variants?.length) return [];
@@ -78,6 +80,44 @@ export default function QuickBuyModal() {
     return () => window.removeEventListener('open-quick-buy', handleOpenQuickBuy);
   }, []);
 
+  useEffect(() => {
+    if (quickBuyProduct?.id) {
+      const fetchSpecs = async () => {
+        const { data } = await supabase
+          .from('specifications')
+          .select('label, value')
+          .eq('product_id', quickBuyProduct.id);
+        
+        if (data) {
+          const map: Record<string, string> = {};
+          data.forEach(spec => {
+            const match = spec.label.match(/^ColorImage:(.+)$/);
+            if (match) {
+              map[match[1].toUpperCase()] = spec.value;
+            }
+          });
+          setColorImages(map);
+        }
+      };
+      if (!quickBuyProduct.specifications) {
+        fetchSpecs();
+      } else {
+        const map: Record<string, string> = {};
+        quickBuyProduct.specifications.forEach((spec: any) => {
+          const match = spec.label.match(/^ColorImage:(.+)$/);
+          if (match) {
+            map[match[1].toUpperCase()] = spec.value;
+          }
+        });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setColorImages(map);
+      }
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setColorImages({});
+    }
+  }, [quickBuyProduct]);
+
   const handleConfirmQuickBuy = () => {
     if (!quickBuyProduct) return;
     const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s.toUpperCase() === size.toUpperCase());
@@ -88,7 +128,7 @@ export default function QuickBuyModal() {
         id: quickBuyProduct.id,
         name: quickBuyProduct.name,
         price: quickBuyProduct.price,
-        image_url: quickBuyProduct.image_url || null,
+        image_url: (selectedColor && colorImages[selectedColor.toUpperCase()]) || quickBuyProduct.image_url || null,
         slug: quickBuyProduct.slug,
       },
       selectedSize || undefined,
@@ -144,9 +184,9 @@ export default function QuickBuyModal() {
               {/* Product Info Row */}
               <div className="flex gap-4 mb-6 pb-4 border-b border-ink/5">
                 <div className="w-16 h-20 bg-ink/[0.02] border border-ink/5 overflow-hidden relative flex-shrink-0">
-                  {quickBuyProduct.image_url && (
+                  {((selectedColor && colorImages[selectedColor.toUpperCase()]) || quickBuyProduct.image_url) && (
                     <Image
-                      src={quickBuyProduct.image_url}
+                      src={(selectedColor && colorImages[selectedColor.toUpperCase()]) || quickBuyProduct.image_url}
                       alt={quickBuyProduct.name}
                       fill
                       className="object-cover"
