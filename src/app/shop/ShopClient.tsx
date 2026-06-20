@@ -80,7 +80,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
   return (
     <div className="bg-cr min-h-screen">
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-ink/5">
+      <div className="sticky top-14 z-40 bg-white/95 backdrop-blur-sm border-b border-ink/5">
         <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
           {displayCategories.map((cat) => (
             <button
