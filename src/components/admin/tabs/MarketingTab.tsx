@@ -50,10 +50,14 @@ export function MarketingTab() {
       const { data: costingsData } = await supabase.from('product_costings').select('*');
       
       const mergedCostings = productsData?.map(p => {
-        const c = costingsData?.find((cc: any) => cc.product_id === p.id) || {
-          supplier_cost: 0, packaging_cost: 0, operational_pct: 0, target_margin_pct: 40, target_roas: 300
+        const c = costingsData?.find((cc: any) => cc.product_id === p.id) || {};
+        const safeRoas = c.target_roas ? (c.target_roas > 50 ? c.target_roas / 100 : c.target_roas) : 3;
+        return { 
+          supplier_cost: 0, packaging_cost: 0, operational_pct: 0, target_margin_pct: 40,
+          ...c, 
+          ...p,
+          target_roas: safeRoas
         };
-        return { ...p, ...c };
       }) || [];
       
       setCostings(mergedCostings);
@@ -122,7 +126,7 @@ export function MarketingTab() {
           ...v,
           grossProfit,
           netProfit,
-          roas: v.discount > 0 ? (grossProfit / v.discount) * 100 : (grossProfit > 0 ? 9999 : 0)
+          roas: v.discount > 0 ? (v.revenue / v.discount) : (v.revenue > 0 ? 9999 : 0)
         };
       }).sort((a, b) => b.netProfit - a.netProfit).slice(0, 5);
 
@@ -166,7 +170,7 @@ export function MarketingTab() {
           ...a,
           grossProfit,
           netProfit,
-          roas: a.commission > 0 ? (grossProfit / a.commission) * 100 : (grossProfit > 0 ? 9999 : 0),
+          roas: a.commission > 0 ? (a.revenue / a.commission) : (a.revenue > 0 ? 9999 : 0),
           cvr: a.clicks > 0 ? (a.orders / a.clicks) * 100 : 0
         };
       }).sort((a, b) => b.netProfit - a.netProfit).slice(0, 5);
@@ -183,13 +187,13 @@ export function MarketingTab() {
         grossProfit: totalGrossProfit,
         marketingSpend: totalMarketingCost,
         netProfit: totalNetProfit,
-        roas: totalMarketingCost > 0 ? (totalGrossProfit / totalMarketingCost) * 100 : (totalGrossProfit > 0 ? 9999 : 0),
+        roas: totalMarketingCost > 0 ? (totalRev / totalMarketingCost) : (totalRev > 0 ? 9999 : 0),
         vouchers: {
           totalUsages: vUsages,
           totalDiscountGiven: vDiscount,
           totalRevenue: vRevenue,
           netProfit: (vRevenue - vCogs) - vDiscount,
-          roas: vDiscount > 0 ? ((vRevenue - vCogs) / vDiscount) * 100 : (vRevenue - vCogs > 0 ? 9999 : 0)
+          roas: vDiscount > 0 ? (vRevenue / vDiscount) : (vRevenue > 0 ? 9999 : 0)
         },
         affiliates: {
           totalClicks: aClicks,
@@ -197,7 +201,7 @@ export function MarketingTab() {
           totalCommission: aCommission,
           totalRevenue: aRevenue,
           netProfit: (aRevenue - aCogs) - aCommission,
-          roas: aCommission > 0 ? ((aRevenue - aCogs) / aCommission) * 100 : (aRevenue - aCogs > 0 ? 9999 : 0)
+          roas: aCommission > 0 ? (aRevenue / aCommission) : (aRevenue > 0 ? 9999 : 0)
         }
       });
 
@@ -277,9 +281,9 @@ export function MarketingTab() {
         <div className="bg-white border border-ink/10 rounded-sm p-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-2 opacity-5"><TrendingUp size={64} /></div>
           <p className="text-[9px] font-semibold text-ink/90 uppercase tracking-widest mb-1">Real ROAS</p>
-          <p className="text-2xl font-mono tracking-tight text-ink">{metrics.roas.toFixed(1)}%</p>
+          <p className="text-2xl font-mono tracking-tight text-ink">{metrics.roas.toFixed(1)}x</p>
           <div className="flex items-center gap-1 mt-2 text-[10px]">
-            {metrics.roas >= 100 ? (
+            {metrics.netProfit >= 0 ? (
               <span className="text-emerald-600 flex items-center gap-1"><ArrowUpRight size={12}/> Profitable</span>
             ) : (
               <span className="text-rose flex items-center gap-1"><ArrowDownRight size={12}/> Boncos</span>
@@ -340,9 +344,9 @@ export function MarketingTab() {
                       <td className="px-2 py-1.5 text-right">
                         <span className={cn(
                           "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
-                          v.roas >= 100 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
+                          v.netProfit >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
-                          {v.roas.toFixed(0)}%
+                          {v.roas.toFixed(1)}x
                         </span>
                       </td>
                     </tr>
@@ -390,9 +394,9 @@ export function MarketingTab() {
                       <td className="px-2 py-1.5 text-right">
                         <span className={cn(
                           "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
-                          a.roas >= 100 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
+                          a.netProfit >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
-                          {a.roas.toFixed(0)}%
+                          {a.roas.toFixed(1)}x
                         </span>
                       </td>
                     </tr>
@@ -431,7 +435,7 @@ export function MarketingTab() {
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Packaging (IDR)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Operational (%)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Target Margin (%)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest border-r border-ink/10">Target ROAS (%)</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest border-r border-ink/10">Target ROAS (x)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Total COGS</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Max CPA (Ad Spend)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Est. Net Profit</th>
@@ -447,11 +451,11 @@ export function MarketingTab() {
                 const pkg = Number(currentData.packaging_cost) || 0;
                 const opsPct = Number(currentData.operational_pct) || 0;
                 const marginPct = Number(currentData.target_margin_pct) || 40;
-                const roasPct = Number(currentData.target_roas) || 300;
+                const roasPct = Number(currentData.target_roas) || 3;
 
                 const opsCost = (opsPct / 100) * sp;
                 const totalCogs = hpp + pkg + opsCost;
-                const maxCpa = roasPct > 0 ? sp / (roasPct / 100) : 0;
+                const maxCpa = roasPct > 0 ? sp / roasPct : 0;
                 const estNetProfit = sp - totalCogs - maxCpa;
                 const targetNetProfit = (marginPct / 100) * sp;
                 const isUnderTarget = estNetProfit < targetNetProfit;
@@ -517,13 +521,14 @@ export function MarketingTab() {
                       <div className="relative w-20">
                         <input 
                           type="number"
+                          step="0.1"
                           min="0"
                           className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                           value={currentData.target_roas ?? ''}
                           onChange={(e) => handleCostingChange(p.id, 'target_roas', e.target.value)}
-                          placeholder="300"
+                          placeholder="3"
                         />
-                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
+                        <span className="absolute right-2 top-2 text-[10px] text-ink/50 font-bold">x</span>
                       </div>
                     </td>
                     <td className="px-2 py-1.5 bg-ink/[0.01]">
