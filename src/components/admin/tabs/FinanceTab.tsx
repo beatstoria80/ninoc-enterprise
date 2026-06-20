@@ -101,20 +101,20 @@ export function FinanceTab({
         {financeTab === 'overview' && (
           <div className="space-y-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-ink/10">
-              <div className="p-3 bg-white border-b md:border-b-0 md:border-r border-ink/10">
-                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-1">Total Revenue</p>
-                <p className="text-2xl font-mono text-ink">IDR {grossRevenue.toLocaleString('id-ID')}</p>
-                <p className="text-[9px] text-ink/80 mt-4 uppercase tracking-wider">{finance.completedOrders} completed transactions</p>
+              <div className="p-2 bg-white border-b md:border-b-0 md:border-r border-ink/10">
+                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-0.5">Total Revenue</p>
+                <p className="text-sm md:text-[13px] font-mono font-medium text-ink">IDR {grossRevenue.toLocaleString('id-ID')}</p>
+                <p className="text-[8px] text-ink/60 mt-1 uppercase tracking-wider">{finance.completedOrders} completed transactions</p>
               </div>
-              <div className="p-3 bg-white border-b md:border-b-0 md:border-r border-ink/10">
-                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-1">Net Income (Est)</p>
-                <p className="text-2xl font-mono text-ink">IDR {netIncomeAfterTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</p>
-                <p className="text-[9px] text-ink/80 mt-4 uppercase tracking-wider">After Opex & Tax</p>
+              <div className="p-2 bg-white border-b md:border-b-0 md:border-r border-ink/10">
+                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-0.5">Net Income (Est)</p>
+                <p className="text-sm md:text-[13px] font-mono font-medium text-ink">IDR {netIncomeAfterTax.toLocaleString('id-ID', {maximumFractionDigits:0})}</p>
+                <p className="text-[8px] text-ink/60 mt-1 uppercase tracking-wider">After Opex & Tax</p>
               </div>
-              <div className="p-3 bg-white">
-                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-1">Pending Receivables</p>
-                <p className="text-2xl font-mono text-ink">{finance.pendingPayments}</p>
-                <p className="text-[9px] text-ink/80 mt-4 uppercase tracking-wider">Awaiting settlement</p>
+              <div className="p-2 bg-white">
+                <p className="text-[9px] uppercase tracking-widest text-ink/80 mb-0.5">Pending Receivables</p>
+                <p className="text-sm md:text-[13px] font-mono font-medium text-ink">{finance.pendingPayments}</p>
+                <p className="text-[8px] text-ink/60 mt-1 uppercase tracking-wider">Awaiting settlement</p>
               </div>
             </div>
 
