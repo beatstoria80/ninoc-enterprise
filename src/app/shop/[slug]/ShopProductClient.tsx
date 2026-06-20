@@ -597,7 +597,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {hasSizes && (
                 <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
                   <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                     {availableSizes.map((size) => (
                       <motion.button
@@ -607,7 +607,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedSize(size); setQuantity(1); }}
                         className={cn(
-                          "h-10 lg:h-10 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-sm md:text-xs lg:text-xs font-medium transition-all border relative",
+                          "h-9 lg:h-10 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs lg:text-xs font-medium transition-all border relative",
                           effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                         )}
                       >
@@ -636,7 +636,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               {availableColors.length > 0 && (
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
                       const colorGallery = colorGalleryMap[color];
@@ -649,7 +649,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedColor(color); setQuantity(1); setActiveImageIndex(0); }}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
+                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-xs md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
                             ? "bg-ink text-white border-ink"
                             : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
@@ -670,7 +670,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
-                  <h4 className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
+                  <h4 className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
                     <span className="text-xs md:text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
                       {availableStock} {dict.product.inStock}
@@ -683,7 +683,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
                   <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
-                  <span className="text-base md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
+                  <span className="text-sm md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
                   <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </motion.div>
               </div>
@@ -697,7 +697,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-3 lg:py-2.5 rounded-none font-medium text-base md:text-sm lg:text-[11px] uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >

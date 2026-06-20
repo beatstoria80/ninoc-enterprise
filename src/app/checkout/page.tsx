@@ -733,8 +733,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-1.5 px-2 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
-  const selectClass = "w-full bg-white py-1 px-2 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
+  const inputClass = "w-full bg-white py-1.5 px-2 text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
+  const selectClass = "w-full bg-white py-1 px-2 text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
   const labelClass = "text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/50 mb-1.5 block";
 
   return (
@@ -814,7 +814,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">{dict.checkout.totalInvestment}</span>
-                  <span className="text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="text-lg md:text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
                 <button 
                   type="button"
@@ -883,15 +883,15 @@ export default function CheckoutPage() {
               <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
                 <div className={cn("bg-white", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="first_name" className={labelClass}>{dict.checkout.firstName}</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="John" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="John" />
                 </div>
                 <div className={cn("bg-white border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="email" className={labelClass}>{userId ? 'Email (Akun Member)' : 'Email (Opsional)'}</label>
-                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-sm md:text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
                   {!userId && emailCheckStatus === 'checking' && <p className="text-[9px] md:text-[10px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
                   {!userId && emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
                   {!userId && emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
@@ -899,12 +899,12 @@ export default function CheckoutPage() {
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="0812 3456 7890" />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="0812 3456 7890" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
                   <div className="flex gap-2 items-center mt-1">
-                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-sm md:text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
+                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
                     <button type="button" onClick={applyPromo} disabled={promoLoading || !formData.referral_code} className="px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] uppercase tracking-wider disabled:opacity-50 rounded-sm">
                       {promoLoading ? '...' : 'Apply'}
                     </button>
@@ -1196,7 +1196,7 @@ export default function CheckoutPage() {
 
                 <div className="pt-6 flex flex-col items-center border-t border-ink/20">
                   <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">{dict.checkout.totalInvestment}</span>
-                  <span className="text-3xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="text-xl md:text-3xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
 
                 {/* CATALOG */}
@@ -1205,7 +1205,7 @@ export default function CheckoutPage() {
                     form="checkout-form"
                     disabled={isProcessing || !shippingMethod || !snapLoaded}
                     className={cn(
-                      "w-full py-4 rounded-none text-sm md:text-[11px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
+                      "w-full py-4 rounded-none text-xs md:text-[11px] font-medium uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3",
                       isProcessing || !shippingMethod || !snapLoaded
                         ? "bg-ink/5 text-ink/20 cursor-not-allowed border border-ink/10"
                         : "bg-ink text-white hover:bg-rose active:scale-[0.98] shadow-lg shadow-ink/5"

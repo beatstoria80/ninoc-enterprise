@@ -158,16 +158,16 @@ export default function QuickBuyModal() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '100%', opacity: 1 }}
               transition={{ type: 'spring', damping: 30, stiffness: 250 }}
-              className="w-full md:max-w-md bg-white border-t md:border border-ink/10 rounded-t-2xl md:rounded-none shadow-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-6 pointer-events-auto flex flex-col max-h-[85vh] md:max-h-none overflow-y-auto md:overflow-visible"
+              className="w-full md:max-w-md bg-white border-t md:border border-ink/10 rounded-t-2xl md:rounded-none shadow-2xl p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-6 pointer-events-auto flex flex-col max-h-[85vh] md:max-h-none overflow-y-auto md:overflow-visible"
             >
               {/* Handlebar (Mobile only) */}
               <div className="w-12 h-1 bg-ink/10 rounded-full mx-auto mb-4 md:hidden" />
 
               {/* Header */}
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-widest text-ink">Add to Cart</h3>
-                  <p className="text-xs text-ink/40 mt-1 uppercase tracking-wider">Select Size & Color</p>
+                  <h3 className="text-xs font-semibold uppercase tracking-widest text-ink">Add to Cart</h3>
+                  <p className="text-[10px] text-ink/40 mt-1 uppercase tracking-wider">Select Size & Color</p>
                 </div>
                 <button
                   onClick={() => setQuickBuyProduct(null)}
@@ -181,7 +181,7 @@ export default function QuickBuyModal() {
               </div>
 
               {/* Product Info Row */}
-              <div className="flex gap-4 mb-6 pb-4 border-b border-ink/5">
+              <div className="flex gap-4 mb-5 pb-4 border-b border-ink/5">
                 <div className="w-16 h-20 bg-ink/[0.02] border border-ink/5 overflow-hidden relative flex-shrink-0">
                   {((selectedColor && colorImages[selectedColor.toUpperCase()]) || quickBuyProduct.image_url) && (
                     <Image
@@ -200,7 +200,7 @@ export default function QuickBuyModal() {
                     </h4>
                   </div>
                   <div>
-                    <p className="text-sm font-display font-medium italic text-rose">
+                    <p className="text-xs font-display font-medium italic text-rose">
                       IDR {quickBuyProduct.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
                     </p>
                   </div>
@@ -208,7 +208,7 @@ export default function QuickBuyModal() {
               </div>
 
               {/* Select Options */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 mb-5">
                 {/* Size Selection */}
                 {availableSizes.length > 0 && (
                   <div className="space-y-1.5">
@@ -219,7 +219,7 @@ export default function QuickBuyModal() {
                       <select
                         value={selectedSize}
                         onChange={(e) => handleSizeChange(e.target.value)}
-                        className="w-full bg-ink/5 border border-ink/10 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink focus:outline-none focus:border-ink focus:bg-white transition-all appearance-none rounded-none"
+                        className="w-full bg-ink/5 border border-ink/10 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-ink focus:outline-none focus:border-ink focus:bg-white transition-all appearance-none rounded-none"
                       >
                         {availableSizes.map(size => {
                           const isSurcharge = SURCHARGE_SIZES.some(s => s.toUpperCase() === size.toUpperCase());
@@ -249,7 +249,7 @@ export default function QuickBuyModal() {
                       <select
                         value={selectedColor}
                         onChange={(e) => setSelectedColor(e.target.value)}
-                        className="w-full bg-ink/5 border border-ink/10 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink focus:outline-none focus:border-ink focus:bg-white transition-all appearance-none rounded-none"
+                        className="w-full bg-ink/5 border border-ink/10 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-ink focus:outline-none focus:border-ink focus:bg-white transition-all appearance-none rounded-none"
                       >
                         {availableColors.map(color => (
                           <option key={color} value={color}>
@@ -270,7 +270,7 @@ export default function QuickBuyModal() {
               {/* Action Button */}
               <button
                 onClick={handleConfirmQuickBuy}
-                className="w-full bg-ink text-white py-4 text-xs font-medium uppercase tracking-[0.3em] active:scale-95 transition-all text-center hover:bg-rose"
+                className="w-full py-2.5 bg-ink text-white text-[10px] font-medium uppercase tracking-[0.3em] hover:bg-rose transition-colors flex items-center justify-center gap-2"
               >
                 Direct to Checkout
               </button>
