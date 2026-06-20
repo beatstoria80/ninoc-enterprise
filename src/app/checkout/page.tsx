@@ -748,7 +748,7 @@ export default function CheckoutPage() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: DURATION.slow, ease: EASING.out }}
         className={cn(
-          "sticky top-0 inset-x-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between bg-white border-b border-ink/10",
+          "fixed top-0 left-0 right-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between bg-white border-b border-ink/10",
           isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
         )}
       >
@@ -782,8 +782,8 @@ export default function CheckoutPage() {
 
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
-        // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-6 pb-24 space-y-3" : "pt-8 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        // Mobile: stacked layout with bottom padding for CTA. Increased pt- to compensate for fixed header.
+        isMobile ? "pt-24 pb-24 space-y-3" : "pt-28 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
