@@ -748,7 +748,7 @@ export default function CheckoutPage() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: DURATION.slow, ease: EASING.out }}
         className={cn(
-          "relative z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between bg-white border-b border-ink/10",
+          "sticky top-0 inset-x-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between bg-white border-b border-ink/10",
           isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
         )}
       >
