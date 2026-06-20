@@ -6,8 +6,8 @@ import { Lock, User, ShieldAlert, ChevronRight, Eye, EyeOff } from 'lucide-react
 import Image from 'next/image';
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('adm');
+  const [password, setPassword] = useState('adminninoc123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
