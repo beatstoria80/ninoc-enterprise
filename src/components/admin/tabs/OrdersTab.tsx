@@ -1082,15 +1082,15 @@ export function OrdersTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-white">
                 <tr className="bg-ink/[0.03] border-b border-ink/10">
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Order ID</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Date</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Customer</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Product</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Status</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Payment</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Courier</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap text-right">Amount</th>
-                  <th className="px-1.5 py-1 text-[9px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap w-[1%]"></th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Order ID</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Date</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Customer</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Product</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Status</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Payment</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Courier</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap text-right">Amount</th>
+                  <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap w-[1%]"></th>
                 </tr>
               </thead>
               <tbody>
@@ -1106,13 +1106,13 @@ export function OrdersTab({
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                       >
                         <td className="px-1.5 py-1">
-                          <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
+                          <span className="text-[11px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
                         </td>
                         <td className="px-1.5 py-1">
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] font-medium text-ink/90 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                            <span className="text-[11px] font-medium text-ink/90 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                             {order.status === 'paid' && (
-                              <span className={cn("text-[8px] font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
+                              <span className={cn("text-[9px] font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
                                 {getShippingSLA(order.created_at, order.courier).label}
                               </span>
                             )}
@@ -1120,21 +1120,21 @@ export function OrdersTab({
                         </td>
                         <td className="px-1.5 py-1">
                           <div className="max-w-[120px]">
-                            <p className="text-[10px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
-                            <p className="text-[9px] text-ink/80 font-mono truncate">{order.shipping_address?.phone || ''}</p>
+                            <p className="text-[11px] font-medium text-ink truncate">{order.shipping_address?.name || '—'}</p>
+                            <p className="text-[10px] text-ink/80 font-mono truncate">{order.shipping_address?.phone || ''}</p>
                           </div>
                         </td>
                         <td className="px-1.5 py-1">
                           <div className="max-w-[160px]">
-                            <p className="text-[10px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
+                            <p className="text-[11px] font-medium text-ink line-clamp-2">{order.order_items?.[0]?.product_name || '—'}</p>
                             {order.order_items && order.order_items.length > 1 && (
-                              <span className="text-[9px] text-rose font-medium">+{(order.order_items?.length || 0) - 1} more</span>
+                              <span className="text-[10px] text-rose font-medium">+{(order.order_items?.length || 0) - 1} more</span>
                             )}
                           </div>
                         </td>
                         <td className="px-1.5 py-1">
                           <span className={cn(
-                            "inline-block text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
+                            "inline-block text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap",
                             order.status === 'pending' ? "bg-amber-50 text-amber-600" :
                             order.status === 'paid' ? "bg-emerald-50 text-emerald-600" :
                             order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
@@ -1146,7 +1146,7 @@ export function OrdersTab({
                         </td>
                         <td className="px-1.5 py-1">
                           <span className={cn(
-                            "text-[9px] uppercase tracking-wider font-medium",
+                            "text-[10px] uppercase tracking-wider font-medium",
                             order.payment_status === 'success' ? "text-emerald-600" :
                             order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
                           )}>
@@ -1154,10 +1154,10 @@ export function OrdersTab({
                           </span>
                         </td>
                         <td className="px-1.5 py-1">
-                          <span className="text-[10px] font-medium text-ink/90 uppercase">{order.courier || '—'}</span>
+                          <span className="text-[11px] font-medium text-ink/90 uppercase">{order.courier || '—'}</span>
                         </td>
                         <td className="px-1.5 py-1 text-right">
-                          <span className="text-[10px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
+                          <span className="text-[11px] font-medium text-ink whitespace-nowrap">{order.total_price.toLocaleString('id-ID')}</span>
                         </td>
                         <td className="px-1.5 py-1">
                           <div className="flex items-center gap-1">
