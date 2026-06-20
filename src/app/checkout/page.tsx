@@ -748,7 +748,7 @@ export default function CheckoutPage() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: DURATION.slow, ease: EASING.out }}
         className={cn(
-          "fixed top-0 inset-x-0 z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between glass border-b border-ink/10",
+          "relative z-[150] px-6 md:px-12 py-4 md:py-5 flex items-center justify-between bg-white border-b border-ink/10",
           isIPhone && "pt-[calc(env(safe-area-inset-top,0px)+16px)]"
         )}
       >
@@ -783,7 +783,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-16 pb-24 space-y-3" : "pt-16 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-6 pb-24 space-y-3" : "pt-8 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
@@ -838,7 +838,7 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
+                        <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
                         {(item.size_surcharge || 0) > 0 && (
                           <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                         )}
@@ -1145,7 +1145,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm md:text-[11px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
                         <div className="flex items-center gap-1">
-                          <p className="text-xs md:text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} / ` : ''}Size {item.size} â€¢ Qty {item.quantity}</p>
+                          <p className="text-xs md:text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
                           {(item.size_surcharge || 0) > 0 && (
                             <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                           )}
