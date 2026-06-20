@@ -46,7 +46,7 @@ export function MarketingTab() {
     try {
       setLoading(true);
       // 1. Fetch Products & Costings
-      const { data: productsData } = await supabase.from('products').select('id, name, price');
+      const { data: productsData } = await supabase.from('products').select('id, name, price, variants(sku)');
       const { data: costingsData } = await supabase.from('product_costings').select('*');
       
       const mergedCostings = productsData?.map(p => {
@@ -442,7 +442,10 @@ export function MarketingTab() {
                 return (
                   <tr key={p.id} className="hover:bg-ink/[0.01] transition-colors">
                     <td className="px-2 py-1.5 sticky left-0 bg-white group-hover:bg-ink/[0.01]">
-                      <p className="text-[10px] font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
+                      <div className="flex flex-col gap-0.5">
+                        <p className="text-[10px] font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
+                        <p className="text-[8px] font-mono text-ink/50 uppercase tracking-widest">{p.variants?.[0]?.sku || 'NO-SKU'}</p>
+                      </div>
                     </td>
                     <td className="px-2 py-1.5">
                       <p className="text-[10px] font-mono text-ink">IDR {fIDR(p.price)}</p>

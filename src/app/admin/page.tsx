@@ -189,7 +189,7 @@ export default function AdminDashboard() {
 
   // Fetch financial data
   const fetchFinancialData = useCallback(async () => {
-    const { data: costData } = await supabase.from('product_costing').select('*');
+    const { data: costData } = await supabase.from('product_costings').select('*');
     if (costData) {
       const map: Record<string, ProductCosting> = {};
       costData.forEach((c: ProductCosting) => { map[c.product_id] = c; });
@@ -587,7 +587,14 @@ export default function AdminDashboard() {
       }
 
       setIsProductModalOpen(false);
-      showToast('Success: Product saved successfully!', 'success');
+      
+      const { data: costingCheck } = await supabase.from('product_costings').select('supplier_cost').eq('product_id', productId).single();
+      if (!costingCheck || Number(costingCheck.supplier_cost) === 0) {
+        showToast('Success: Product saved! ⚠️ PEMBERITAHUAN: Jangan lupa isi HPP/Costing untuk SKU ini di menu Marketing & ROAS agar data Finance akurat.', 'error');
+      } else {
+        showToast('Success: Product saved successfully!', 'success');
+      }
+      
       fetchData();
 
       // Background Ping to Google Indexing API
