@@ -518,19 +518,19 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(320px, 56vw, 680px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(300px, 40vw, 450px)' }}>
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
             key="intro"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: EASING.inOut }}
-            className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto"
+            className="relative md:pt-16 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto"
           >
             <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
               {/* Left: Branding */}
-              <div className="lg:col-span-4 space-y-2.5 md:space-y-6 lg:pt-40">
+              <div className="lg:col-span-4 space-y-2.5 md:space-y-4 lg:pt-24">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -929,7 +929,7 @@ export default function Home() {
       <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
       {/* CATALOG & CATEGORY DROPDOWN */}
-      <section id="archive-catalog" className="mt-4 md:mt-8 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
+      <section id="archive-catalog" className="mt-2 md:mt-4 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
 
         <div className="relative -mx-4 md:mx-0">
           <DragSlider className="flex gap-px w-full">
@@ -940,12 +940,12 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="w-[28vw] md:w-[180px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
+                  className="w-[28vw] md:w-[150px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
                 />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[28vw] md:w-[180px] flex-shrink-0">
+                <div key={product.id} className="w-[28vw] md:w-[150px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
