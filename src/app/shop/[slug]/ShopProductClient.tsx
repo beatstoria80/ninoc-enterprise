@@ -485,12 +485,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 mb-0.5 lg:mb-1">
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-ink text-white rounded-none w-fit shadow-md">
-                    <span className="text-[8px] md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.3em]">
+                    <span className="text-[8px] md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.3em]">
                       {product.badge_text || 'STUDIO EDITION'}
                     </span>
                   </div>
                 </motion.div>
-                <motion.h1 variants={textVariants} className="text-base md:text-base lg:text-xl font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
+                <motion.h1 variants={textVariants} className="text-base md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
                 {reviews.length > 0 && (
                   <motion.div variants={textVariants} className="flex items-center gap-1.5 mb-1.5 mt-0.5">
                     <div className="flex text-amber-500">
@@ -502,16 +502,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </motion.div>
                 )}
                 {product.price_tag && (
-                  <motion.div variants={textVariants} className="text-[11px] md:text-[8px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
+                  <motion.div variants={textVariants} className="text-[11px] md:text-[8px] lg:text-[8px] font-medium uppercase tracking-[0.2em] text-rose bg-rose/5 border border-rose/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-sm w-fit mt-0.5">
                     {product.price_tag}
                   </motion.div>
                 )}
-                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-lg font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</motion.p>
+                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-base font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</motion.p>
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
-                <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
-                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-base leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
+                <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
+                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
                   {isExpanded || (localizedDescription || '').length <= 200
                     ? localizedDescription || 'Premium quality apparel from NINOC.'
                     : (localizedDescription || '').slice(0, 200) + '…'}
@@ -520,7 +520,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <motion.button
                     variants={textVariants}
                     onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
-                    className="text-xs md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
+                    className="text-xs md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
                     {isExpanded ? 'Less' : 'More'}
                   </motion.button>
@@ -531,7 +531,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 <motion.div variants={textVariants} className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab('specs')}
-                    className={`text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] transition-colors ${
+                    className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
@@ -540,7 +540,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <span className="text-ink/10">|</span>
                   <button
                     onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
-                    className={`text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
+                    className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
                     }`}
                   >
@@ -595,7 +595,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {hasSizes && (
                 <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
                   <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                     {availableSizes.map((size) => (
                       <motion.button
@@ -605,7 +605,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedSize(size); setQuantity(1); }}
                         className={cn(
-                          "h-10 lg:h-11 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-sm md:text-xs lg:text-sm font-medium transition-all border relative",
+                          "h-10 lg:h-10 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-sm md:text-xs lg:text-xs font-medium transition-all border relative",
                           effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                         )}
                       >
@@ -634,7 +634,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               {availableColors.length > 0 && (
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
                       const colorGallery = colorGalleryMap[color];
@@ -647,7 +647,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedColor(color); setQuantity(1); setActiveImageIndex(0); }}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-xs font-medium uppercase tracking-wider border transition-all",
+                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-sm md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
                             ? "bg-ink text-white border-ink"
                             : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
@@ -668,7 +668,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
-                  <h4 className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
+                  <h4 className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
                     <span className="text-xs md:text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
                       {availableStock} {dict.product.inStock}
@@ -681,7 +681,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
                   <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
-                  <span className="text-base md:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
+                  <span className="text-base md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
                   <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </motion.div>
               </div>
@@ -695,7 +695,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-3 lg:py-3 rounded-none font-medium text-base md:text-sm lg:text-sm uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-3 lg:py-2.5 rounded-none font-medium text-base md:text-sm lg:text-[11px] uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
