@@ -733,7 +733,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-auto">
                   <PressButton href="/category" className="group inline-flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-6 py-3 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
-                      <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.3em]">Browse Catalog</span>
+                      <span className="text-[8px] md:text-xs font-medium uppercase tracking-[0.3em]">catalog</span>
                       <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </PressButton>
@@ -1037,8 +1037,8 @@ export default function Home() {
                 <Link href="/about" className="px-5 py-2.5 bg-rose text-white text-sm md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">
                   About NINOC
                 </Link>
-                <Link href="/shop" className="px-5 py-2.5 border border-ink/10 text-ink/50 text-sm md:text-[9px] font-semibold uppercase tracking-widest hover:border-ink/20 hover:text-ink transition-colors">
-                  Browse Catalog
+                <Link href="/shop" className="px-5 py-2.5 border border-ink/10 text-ink/50 text-[10px] md:text-[9px] font-semibold uppercase tracking-widest hover:border-ink/20 hover:text-ink transition-colors">
+                  catalog
                 </Link>
               </div>
             </div>
