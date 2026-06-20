@@ -377,7 +377,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
             <div className="flex items-center justify-between mt-0.5">
               <motion.p
-                className="text-xs md:text-[11px] font-display font-medium italic text-ink"
+                className="text-xs md:text-[11px] font-display font-medium italic text-ink whitespace-nowrap"
                 animate={{ scale: isHovered ? 1.02 : 1 }}
                 transition={{ duration: DURATION.fast }}
               >
@@ -518,7 +518,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(280px, 35vw, 400px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(350px, 45vw, 550px)' }}>
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
@@ -541,7 +541,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                   <span className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.15em] md:tracking-widest whitespace-nowrap">Origin Specification</span>
                 </motion.div>
 
-                <h1 className="text-3xl md:text-8xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
+                <h1 className="text-3xl md:text-5xl lg:text-7xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
                   {"NINOC ATELIER".split(" ").map((word: string, wi: number) => (
                     <span key={word + wi} className="block overflow-hidden">
                       {word.split("").map((char: string, ci: number) => (
@@ -940,12 +940,12 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="w-[28vw] md:w-[130px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
+                  className="w-[28vw] md:w-[160px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
                 />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[28vw] md:w-[130px] flex-shrink-0">
+                <div key={product.id} className="w-[28vw] md:w-[160px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
