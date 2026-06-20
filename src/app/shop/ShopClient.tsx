@@ -136,17 +136,17 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                     </div>
                     <div className="p-1.5 space-y-1.5 flex flex-col justify-between flex-grow">
                       <div>
-                        <h3 className="text-[11px] md:text-[9px] font-medium uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+                        <h3 className="text-xs md:text-[10px] font-semibold uppercase tracking-tight text-ink line-clamp-2 leading-snug">
                           {product.name}
                         </h3>
-                        <p className="text-[9px] md:text-[7px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[9px] md:text-[7px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
                           {product.category}
                         </p>
                       </div>
 
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <p className="text-[11px] md:text-[10px] font-display font-medium italic text-rose">
+                          <p className="text-xs md:text-[11px] font-display font-medium italic text-rose">
                             {product.price_tag === 'REDEEM'
                               ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                               : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -157,9 +157,9 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                               e.stopPropagation();
                               window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
                             }}
-                            className="w-5 h-5 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+                            className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
                           >
-                            <ShoppingCart className="w-3 h-3" />
+                            <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5" />
                           </button>
                         </div>
 
