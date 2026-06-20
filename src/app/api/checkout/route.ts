@@ -156,8 +156,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid total price' }, { status: 400 });
     }
 
-    const firstName = customerDetails.first_name || '';
-    const lastName = customerDetails.last_name || '';
+    const firstName = (customerDetails.first_name || '').toUpperCase();
+    const lastName = (customerDetails.last_name || '').toUpperCase();
 
     // Upsert customer address if user is logged in
     if (customerDetails.user_id) {
@@ -176,14 +176,14 @@ export async function POST(req: Request) {
           first_name: firstName,
           last_name: lastName,
           phone: customerDetails.phone || '',
-          street: customerDetails.street || '',
-          house_number: customerDetails.house_number || '',
+          street: (customerDetails.street || '').toUpperCase(),
+          house_number: (customerDetails.house_number || '').toUpperCase(),
           rt: customerDetails.rt || '',
           rw: customerDetails.rw || '',
-          kelurahan: customerDetails.kelurahan || '',
-          kecamatan: customerDetails.kecamatan || '',
-          city: customerDetails.city || '',
-          province: customerDetails.province || '',
+          kelurahan: (customerDetails.kelurahan || '').toUpperCase(),
+          kecamatan: (customerDetails.kecamatan || '').toUpperCase(),
+          city: (customerDetails.city || '').toUpperCase(),
+          province: (customerDetails.province || '').toUpperCase(),
           postal_code: customerDetails.postal_code || ''
         };
 
@@ -231,8 +231,8 @@ export async function POST(req: Request) {
         billing_address: {
           first_name: firstName,
           last_name: lastName,
-          address: customerDetails.address || '',
-          city: customerDetails.city || '',
+          address: (customerDetails.address || '').toUpperCase(),
+          city: (customerDetails.city || '').toUpperCase(),
           postal_code: customerDetails.postal_code || ''
         },
         shipping_address: {
@@ -240,8 +240,8 @@ export async function POST(req: Request) {
           last_name: lastName,
           ...(customerDetails.email ? { email: customerDetails.email } : {}),
           phone: customerDetails.phone || '',
-          address: customerDetails.address || '',
-          city: customerDetails.city || '',
+          address: (customerDetails.address || '').toUpperCase(),
+          city: (customerDetails.city || '').toUpperCase(),
           postal_code: customerDetails.postal_code || ''
         }
       },
@@ -270,6 +270,10 @@ export async function POST(req: Request) {
         courier: shippingDetails.method,
         shipping_address: {
           ...customerDetails,
+          first_name: firstName,
+          last_name: lastName,
+          address: (customerDetails.address || '').toUpperCase(),
+          city: (customerDetails.city || '').toUpperCase(),
           shipping_method: shippingDetails.method,
           shipping_cost: shippingDetails.cost
         }

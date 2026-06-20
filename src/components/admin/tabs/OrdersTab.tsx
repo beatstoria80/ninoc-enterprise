@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Box, X, Calendar, Printer, MapPin, Phone, Package, CreditCard, Truck, Clock, User, Hash, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import CourierLogo from '@/components/CourierLogo';
-import { cn } from '@/lib/utils';
+import { cn, getShippingSLA } from '@/lib/utils';
 import { Order, Product } from '../types';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -1059,7 +1059,14 @@ export function OrdersTab({
                           <span className="text-[10px] font-medium text-ink font-mono tracking-wider">#{order.id.toUpperCase()}</span>
                         </td>
                         <td className="px-1.5 py-1">
-                          <span className="text-[10px] font-medium text-ink/90 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[10px] font-medium text-ink/90 whitespace-nowrap">{new Date(order.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                            {order.status === 'paid' && (
+                              <span className={cn("text-[8px] font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
+                                {getShippingSLA(order.created_at, order.courier).label}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-1.5 py-1">
                           <div className="max-w-[120px]">

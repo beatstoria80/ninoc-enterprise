@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getShippingSLA } from '@/lib/utils';
 import { format } from 'date-fns';
 import CourierLogo from '@/components/CourierLogo';
 import { Order } from '../types';
@@ -333,6 +333,11 @@ export function LogisticsTab({
                       )}>
                         {order.status === 'paid' ? 'SIAP KIRIM' : order.status.toUpperCase()}
                       </span>
+                      {order.status === 'paid' && (
+                        <span className={cn("block mt-1 text-[8px] font-bold px-1 py-0.5 rounded-sm border uppercase w-fit tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
+                          {getShippingSLA(order.created_at, order.courier).label}
+                        </span>
+                      )}
                     </td>
                     <td className="px-2 py-1">
                       <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>

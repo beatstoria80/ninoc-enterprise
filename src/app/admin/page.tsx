@@ -1417,7 +1417,7 @@ export default function AdminDashboard() {
                       ${order.shipping_address?.address_type ? `<div style="display:inline-block; border:1px solid black; padding:1px 4px; font-size:8px; font-weight:bold; margin-top:2px; margin-bottom:2px;">${order.shipping_address.address_type === 'Home' ? 'Home / Rumah' : 'Office / Kantor'}</div>` : ''}
                       <div class="person-address">
                         ${order.shipping_address?.address || '-'}<br/>
-                        ${order.shipping_address?.city || '-'}
+                        ${order.shipping_address?.address?.toUpperCase().includes((order.shipping_address?.city || '').toUpperCase()) ? '' : (order.shipping_address?.city || '-')}
                       </div>
                     </div>
                     <div class="address-box">
