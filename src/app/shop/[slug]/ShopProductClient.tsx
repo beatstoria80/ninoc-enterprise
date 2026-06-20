@@ -304,17 +304,27 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor] : undefined;
   const effectiveMainImage = (activeGallery && activeGallery.main) || product.image_url;
 
-  const rawImages = [
-    effectiveMainImage,
-    (activeGallery && activeGallery.p1) || product.perspective1,
-    (activeGallery && activeGallery.p2) || product.perspective2,
-    (activeGallery && activeGallery.p3) || product.perspective3,
-    (activeGallery && activeGallery.p4) || product.perspective4
-  ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+  let rawImages: string[] = [];
 
-  while (rawImages.length < 4) {
-    rawImages.push(effectiveMainImage);
+  if (activeGallery) {
+    const mainImg = activeGallery.main || product.image_url;
+    rawImages = [
+      mainImg,
+      activeGallery.p1,
+      activeGallery.p2,
+      activeGallery.p3,
+      activeGallery.p4
+    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+  } else {
+    rawImages = [
+      product.image_url,
+      product.perspective1,
+      product.perspective2,
+      product.perspective3,
+      product.perspective4
+    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
   }
+
   const images = rawImages;
 
   const localizedDescription = dict.locale === 'EN' && product.description_en ? product.description_en : product.description;
