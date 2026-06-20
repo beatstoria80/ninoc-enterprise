@@ -465,6 +465,24 @@ export default function AdminDashboard() {
 
   const saveProduct = async () => {
     try {
+      const hasColors = productForm.variants.some(v => v.color);
+      let finalImageUrl = productForm.image_url || null;
+      let finalP1 = productForm.perspective1 || null;
+      let finalP2 = productForm.perspective2 || null;
+      let finalP3 = productForm.perspective3 || null;
+      let finalP4 = productForm.perspective4 || null;
+
+      if (hasColors && productForm.specifications) {
+        const firstColor = productForm.variants.find(v => v.color)?.color;
+        if (firstColor) {
+           finalImageUrl = productForm.specifications.find(s => s.label === `ColorImage:${firstColor}`)?.value || null;
+           finalP1 = productForm.specifications.find(s => s.label === `ColorP1:${firstColor}`)?.value || null;
+           finalP2 = productForm.specifications.find(s => s.label === `ColorP2:${firstColor}`)?.value || null;
+           finalP3 = productForm.specifications.find(s => s.label === `ColorP3:${firstColor}`)?.value || null;
+           finalP4 = productForm.specifications.find(s => s.label === `ColorP4:${firstColor}`)?.value || null;
+        }
+      }
+
       const productData = {
         name: productForm.name,
         slug: productForm.slug,
@@ -475,11 +493,11 @@ export default function AdminDashboard() {
         model_info: productForm.model_info || null,
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
-        image_url: productForm.image_url || null,
-        perspective1: productForm.perspective1 || null,
-        perspective2: productForm.perspective2 || null,
-        perspective3: productForm.perspective3 || null,
-        perspective4: productForm.perspective4 || null,
+        image_url: finalImageUrl,
+        perspective1: finalP1,
+        perspective2: finalP2,
+        perspective3: finalP3,
+        perspective4: finalP4,
         is_featured: productForm.is_featured,
         affiliate_eligible: productForm.affiliate_eligible,
         price_tag: productForm.price_tag || null,
@@ -2247,83 +2265,87 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="url"
-                        value={productForm.image_url}
-                        onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                        placeholder="https://..."
-                        className="flex-1 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
-                      />
-                      <label className="relative flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
-                        {isUploadingProductImage ? (
-                          <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <span>Upload File</span>
-                        )}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleProductImageUpload}
-                          disabled={isUploadingProductImage}
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Additional Images — for product gallery navigation */}
-                  <div className="space-y-3">
-                    <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
-                    {(['perspective1','perspective2','perspective3','perspective4'] as const).map((field, idx) => (
-                      <div key={field} className="flex items-center gap-2">
-                        <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
-                        <input
-                          type="url"
-                          value={productForm[field]}
-                          onChange={(e) => setProductForm({ ...productForm, [field]: e.target.value })}
-                          placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
-                          className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
-                        />
-                        <label className="relative flex items-center justify-center px-1.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
-                          <span>Upload</span>
+                  {!productForm.variants.some(v => v.color) && (
+                    <>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
+                        <div className="flex items-center gap-3">
                           <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setIsUploadingProductImage(true);
-                              try {
-                                const compressedFile = await compressImage(file);
-                                // Use API route (server-side with service role key)
-                                const formData = new FormData();
-                                formData.append('files', compressedFile);
-                                formData.append('bucket', 'products');
-                                const res = await fetch('/api/admin/upload-images', {
-                                  method: 'POST',
-                                  body: formData
-                                });
-                                const data = await res.json();
-                                if (!res.ok || data.error || !data.results?.[0]?.url) {
-                                  throw new Error(data.error || 'Upload failed');
-                                }
-                                setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
-                              } catch (err) {
-                                alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
-                              } finally {
-                                setIsUploadingProductImage(false);
-                              }
-                            }}
-                            disabled={isUploadingProductImage}
+                            type="url"
+                            value={productForm.image_url}
+                            onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                            placeholder="https://..."
+                            className="flex-1 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
                           />
-                        </label>
+                          <label className="relative flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg cursor-pointer transition-colors whitespace-nowrap">
+                            {isUploadingProductImage ? (
+                              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <span>Upload File</span>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleProductImageUpload}
+                              disabled={isUploadingProductImage}
+                            />
+                          </label>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+
+                      {/* Additional Images — for product gallery navigation */}
+                      <div className="space-y-3">
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
+                        {(['perspective1','perspective2','perspective3','perspective4'] as const).map((field, idx) => (
+                          <div key={field} className="flex items-center gap-2">
+                            <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
+                            <input
+                              type="url"
+                              value={productForm[field]}
+                              onChange={(e) => setProductForm({ ...productForm, [field]: e.target.value })}
+                              placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
+                              className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
+                            />
+                            <label className="relative flex items-center justify-center px-1.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                              <span>Upload</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  setIsUploadingProductImage(true);
+                                  try {
+                                    const compressedFile = await compressImage(file);
+                                    // Use API route (server-side with service role key)
+                                    const formData = new FormData();
+                                    formData.append('files', compressedFile);
+                                    formData.append('bucket', 'products');
+                                    const res = await fetch('/api/admin/upload-images', {
+                                      method: 'POST',
+                                      body: formData
+                                    });
+                                    const data = await res.json();
+                                    if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                      throw new Error(data.error || 'Upload failed');
+                                    }
+                                    setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
+                                  } catch (err) {
+                                    alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                  } finally {
+                                    setIsUploadingProductImage(false);
+                                  }
+                                }}
+                                disabled={isUploadingProductImage}
+                              />
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
