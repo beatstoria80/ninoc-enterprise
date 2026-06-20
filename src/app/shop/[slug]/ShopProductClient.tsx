@@ -307,15 +307,19 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
   let rawImages: string[] = [];
 
-  if (activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
-    rawImages = [
-      activeGallery.main || '',
-      activeGallery.p1,
-      activeGallery.p2,
-      activeGallery.p3,
-      activeGallery.p4,
-      activeGallery.p5
-    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+  if (effectiveColor) {
+    if (activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
+      rawImages = [
+        activeGallery.main || '',
+        activeGallery.p1,
+        activeGallery.p2,
+        activeGallery.p3,
+        activeGallery.p4,
+        activeGallery.p5
+      ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+    } else {
+      rawImages = []; // No fallback if specific color has no images
+    }
   } else {
     rawImages = [
       product.image_url,
@@ -350,7 +354,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (product) {
       if (availableStock === 0) return;
       const surcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
-      const effectiveMainImage = (effectiveColor && colorGalleryMap[effectiveColor]?.main) || product.image_url;
+      const effectiveMainImage = effectiveColor ? (colorGalleryMap[effectiveColor]?.main || null) : product.image_url;
       const productToAdd = { ...product, image_url: effectiveMainImage };
       for (let i = 0; i < displayQuantity; i++) {
         addItem(productToAdd, effectiveSize, effectiveColor, surcharge);

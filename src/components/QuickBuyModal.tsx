@@ -128,7 +128,7 @@ export default function QuickBuyModal() {
         id: quickBuyProduct.id,
         name: quickBuyProduct.name,
         price: quickBuyProduct.price,
-        image_url: (selectedColor && colorImages[selectedColor.toUpperCase()]) || quickBuyProduct.image_url || null,
+        image_url: selectedColor ? (colorImages[selectedColor.toUpperCase()] || null) : (quickBuyProduct.image_url || null),
         slug: quickBuyProduct.slug,
       },
       selectedSize || undefined,
