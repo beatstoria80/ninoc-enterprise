@@ -171,7 +171,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
-  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !s.label.startsWith('ColorImage:'));
+  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !/^Color(Image|P1|P2|P3|P4):/.test(s.label));
   const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
   let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
@@ -284,24 +284,32 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
 
-  const colorImagesMap: Record<string, string> = {};
+  const colorGalleryMap: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string }> = {};
   if (product?.specifications) {
     product.specifications.forEach(spec => {
-      if (spec.label.startsWith('ColorImage:')) {
-        const colorName = spec.label.replace('ColorImage:', '');
-        colorImagesMap[colorName] = spec.value;
+      const match = spec.label.match(/^Color(Image|P1|P2|P3|P4):(.+)$/);
+      if (match) {
+        const type = match[1];
+        const colorName = match[2];
+        if (!colorGalleryMap[colorName]) colorGalleryMap[colorName] = {};
+        if (type === 'Image') colorGalleryMap[colorName].main = spec.value;
+        if (type === 'P1') colorGalleryMap[colorName].p1 = spec.value;
+        if (type === 'P2') colorGalleryMap[colorName].p2 = spec.value;
+        if (type === 'P3') colorGalleryMap[colorName].p3 = spec.value;
+        if (type === 'P4') colorGalleryMap[colorName].p4 = spec.value;
       }
     });
   }
 
-  const effectiveMainImage = (effectiveColor && colorImagesMap[effectiveColor]) || product.image_url;
+  const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor] : undefined;
+  const effectiveMainImage = (activeGallery && activeGallery.main) || product.image_url;
 
   const rawImages = [
     effectiveMainImage,
-    product.perspective1,
-    product.perspective2,
-    product.perspective3,
-    product.perspective4
+    (activeGallery && activeGallery.p1) || product.perspective1,
+    (activeGallery && activeGallery.p2) || product.perspective2,
+    (activeGallery && activeGallery.p3) || product.perspective3,
+    (activeGallery && activeGallery.p4) || product.perspective4
   ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
   while (rawImages.length < 4) {
@@ -330,7 +338,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (product) {
       if (availableStock === 0) return;
       const surcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
-      const effectiveMainImage = (effectiveColor && colorImagesMap[effectiveColor]) || product.image_url;
+      const effectiveMainImage = (effectiveColor && colorGalleryMap[effectiveColor]?.main) || product.image_url;
       const productToAdd = { ...product, image_url: effectiveMainImage };
       for (let i = 0; i < displayQuantity; i++) {
         addItem(productToAdd, effectiveSize, effectiveColor, surcharge);
@@ -615,7 +623,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-xs font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
-                      const colorImg = colorImagesMap[color];
+                      const colorGallery = colorGalleryMap[color];
+                      const colorImg = colorGallery?.main;
                       return (
                       <motion.button
                         variants={textVariants}

@@ -2444,20 +2444,21 @@ export default function AdminDashboard() {
                                   Remove Color
                                 </button>
 
-                                <div className="mt-2 flex items-center gap-2">
-                                  {(() => {
-                                    const colorSpecLabel = `ColorImage:${group.color}`;
+                                <div className="mt-2 space-y-2">
+                                  {['Image', 'P1', 'P2', 'P3', 'P4'].map((imgType) => {
+                                    const colorSpecLabel = `Color${imgType}:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s => s.label === colorSpecLabel);
                                     const colorImage = colorSpec?.value;
+                                    const labelDisplay = imgType === 'Image' ? 'Main Image' : `Gallery ${imgType}`;
                                     
                                     return (
-                                      <div className="flex items-center gap-3 w-full bg-white px-2 py-1.5 border border-gray-200 rounded text-xs">
-                                        <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Color Image:</span>
+                                      <div key={imgType} className="flex items-center gap-3 w-full bg-white px-2 py-1.5 border border-gray-200 rounded text-xs">
+                                        <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium w-20">{labelDisplay}:</span>
                                         {colorImage && (
-                                          <img src={colorImage} alt={group.color} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" />
+                                          <img src={colorImage} alt={`${group.color} ${imgType}`} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" />
                                         )}
                                         <label className="relative flex items-center justify-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap ml-auto">
-                                          <span>Upload Image</span>
+                                          <span>Upload</span>
                                           <input
                                             type="file"
                                             accept="image/*"
@@ -2505,14 +2506,14 @@ export default function AdminDashboard() {
                                               setProductForm(prev => ({ ...prev, specifications: newSpecs }));
                                             }}
                                             className="p-1 text-gray-400 hover:text-rose transition-colors"
-                                            title="Remove color image"
+                                            title="Remove image"
                                           >
                                             <X size={14} />
                                           </button>
                                         )}
                                       </div>
                                     );
-                                  })()}
+                                  })}
                                 </div>
 
                               <div className="pt-1">
