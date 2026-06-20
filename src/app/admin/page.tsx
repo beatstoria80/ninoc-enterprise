@@ -1110,7 +1110,7 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'report', icon: BarChart3, label: 'Report', activeKeys: ['finance', 'accounting', 'opex'],
+      id: 'report', icon: BarChart3, label: 'Finance', activeKeys: ['finance', 'accounting', 'opex'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'finance', label: 'Finance Dashboard' },
@@ -1592,7 +1592,7 @@ export default function AdminDashboard() {
               {['products', 'upload'].includes(activeTab) ? 'Product / ' :
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Inventory / ' :
-               ['finance'].includes(activeTab) ? 'Report / ' :
+               ['finance', 'accounting', 'opex'].includes(activeTab) ? 'Finance / ' :
                ['messages', 'placeholders', 'wabroadcast', 'email_broadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
