@@ -80,6 +80,7 @@ interface Product {
   description_en?: string;
   price: number;
   image_url: string;
+  image_alt?: string | null;
   category: string;
   perspective1?: string;
   perspective2?: string;
