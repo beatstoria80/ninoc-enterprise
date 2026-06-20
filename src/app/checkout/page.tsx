@@ -184,6 +184,7 @@ export default function CheckoutPage() {
       kecamatan: '',
       city: '',
       province: '',
+      postal_code: '',
       referral_code: '',
       address_type: 'Home'
     };
@@ -602,7 +603,7 @@ export default function CheckoutPage() {
     isProcessingRef.current = true;
     setIsProcessing(true);
 
-    const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}`;
+    const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}, ${formData.postal_code}`.trim().replace(/,\s*$/, '');
     const fullName = `${formData.first_name} ${formData.last_name}`.trim();
 
     try {
@@ -994,6 +995,10 @@ export default function CheckoutPage() {
                     <option value="">SELECT KELURAHAN</option>
                     {villages.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
                   </select>
+                </div>
+                <div className={cn("bg-white border-t", isMobile ? "col-span-1 p-2.5" : "col-span-2 p-3 border-l border-ink/5")}>
+                  <label htmlFor="postal_code" className={labelClass}>Kode Pos / Postal Code</label>
+                  <input id="postal_code" required type="text" value={formData.postal_code} onChange={(e) => setFormData({...formData, postal_code: e.target.value.replace(/[^0-9]/g, '')})} className={inputClass} placeholder="12345" maxLength={5} />
                 </div>
               </div>
             </motion.section>

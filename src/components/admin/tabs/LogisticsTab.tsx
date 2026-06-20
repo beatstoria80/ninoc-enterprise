@@ -430,7 +430,9 @@ export function LogisticsTab({
                   <div className="col-span-2">
                     <p className="text-[9px] uppercase tracking-wider text-gray-800 mb-1">Shipping Address</p>
                     <p className="text-[10px] text-gray-900 leading-tight">
-                      {logisticsSelectedOrder.shipping_address?.address}, {logisticsSelectedOrder.shipping_address?.city}, {logisticsSelectedOrder.shipping_address?.postal_code}
+                      {logisticsSelectedOrder.shipping_address?.address}
+                      {!(logisticsSelectedOrder.shipping_address?.address || '').toUpperCase().includes((logisticsSelectedOrder.shipping_address?.city || '').toUpperCase()) && logisticsSelectedOrder.shipping_address?.city ? `, ${logisticsSelectedOrder.shipping_address.city}` : ''}
+                      {logisticsSelectedOrder.shipping_address?.postal_code && !(logisticsSelectedOrder.shipping_address?.address || '').includes(logisticsSelectedOrder.shipping_address.postal_code) ? `, ${logisticsSelectedOrder.shipping_address.postal_code}` : ''}
                     </p>
                   </div>
                   <div>

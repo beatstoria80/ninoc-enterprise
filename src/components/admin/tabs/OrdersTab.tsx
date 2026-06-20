@@ -1222,10 +1222,14 @@ export function OrdersTab({
                                           <MapPin size={10} className="text-ink/90 mt-0.5 shrink-0" />
                                           <div>
                                             <p className="text-[10px] text-ink/90 leading-relaxed">{order.shipping_address?.address || '—'}</p>
-                                            <p className="text-[10px] font-medium text-ink mt-0.5">
-                                              {order.shipping_address?.city}, {order.shipping_address?.province || ''}
-                                            </p>
-                                            <p className="text-[10px] font-medium text-ink">{order.shipping_address?.postal_code}</p>
+                                            {!(order.shipping_address?.address || '').toUpperCase().includes((order.shipping_address?.city || '').toUpperCase()) && (
+                                              <p className="text-[10px] font-medium text-ink mt-0.5">
+                                                {order.shipping_address?.city}{order.shipping_address?.province ? `, ${order.shipping_address.province}` : ''}
+                                              </p>
+                                            )}
+                                            {order.shipping_address?.postal_code && !(order.shipping_address?.address || '').includes(order.shipping_address.postal_code) && (
+                                              <p className="text-[10px] font-medium text-ink">{order.shipping_address.postal_code}</p>
+                                            )}
                                           </div>
                                         </div>
                                         <div className="h-px bg-ink/5" />
