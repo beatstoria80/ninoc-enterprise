@@ -222,11 +222,11 @@ export function MarketingTab() {
     try {
       const updates = Object.keys(editingCostings).map(id => ({
         product_id: id,
-        supplier_cost: Number(editingCostings[id].supplier_cost || costings.find(c => c.id === id).supplier_cost),
-        packaging_cost: Number(editingCostings[id].packaging_cost || costings.find(c => c.id === id).packaging_cost),
-        operational_pct: Number(editingCostings[id].operational_pct || costings.find(c => c.id === id).operational_pct),
-        target_margin_pct: Number(editingCostings[id].target_margin_pct || costings.find(c => c.id === id).target_margin_pct),
-        target_roas: Number(editingCostings[id].target_roas || costings.find(c => c.id === id).target_roas),
+        supplier_cost: Number(editingCostings[id].supplier_cost !== undefined ? editingCostings[id].supplier_cost : costings.find(c => c.id === id).supplier_cost),
+        packaging_cost: Number(editingCostings[id].packaging_cost !== undefined ? editingCostings[id].packaging_cost : costings.find(c => c.id === id).packaging_cost),
+        operational_pct: Number(editingCostings[id].operational_pct !== undefined ? editingCostings[id].operational_pct : costings.find(c => c.id === id).operational_pct),
+        target_margin_pct: Number(editingCostings[id].target_margin_pct !== undefined ? editingCostings[id].target_margin_pct : costings.find(c => c.id === id).target_margin_pct),
+        target_roas: Number(editingCostings[id].target_roas !== undefined ? editingCostings[id].target_roas : costings.find(c => c.id === id).target_roas),
       }));
 
       for (const update of updates) {
@@ -450,50 +450,60 @@ export function MarketingTab() {
                     <td className="px-2 py-1">
                       <input 
                         type="number"
-                        className="w-24 text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
-                        value={currentData.supplier_cost}
+                        min="0"
+                        className="w-28 text-[10px] font-mono px-2 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                        value={currentData.supplier_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'supplier_cost', e.target.value)}
+                        placeholder="0"
                       />
                     </td>
                     <td className="px-2 py-1">
                       <input 
                         type="number"
-                        className="w-20 text-[10px] font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
-                        value={currentData.packaging_cost}
+                        min="0"
+                        className="w-24 text-[10px] font-mono px-2 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                        value={currentData.packaging_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'packaging_cost', e.target.value)}
+                        placeholder="0"
                       />
                     </td>
                     <td className="px-2 py-1">
-                      <div className="relative w-16">
+                      <div className="relative w-20">
                         <input 
                           type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
-                          value={currentData.operational_pct}
+                          min="0"
+                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          value={currentData.operational_pct ?? ''}
                           onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
+                          placeholder="0"
                         />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/80">%</span>
-                      </div>
-                    </td>
-                    <td className="px-2 py-1">
-                      <div className="relative w-16">
-                        <input 
-                          type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
-                          value={currentData.target_margin_pct}
-                          onChange={(e) => handleCostingChange(p.id, 'target_margin_pct', e.target.value)}
-                        />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/80">%</span>
+                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
                       </div>
                     </td>
                     <td className="px-2 py-1">
                       <div className="relative w-20">
                         <input 
                           type="number"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/30"
-                          value={currentData.target_roas}
-                          onChange={(e) => handleCostingChange(p.id, 'target_roas', e.target.value)}
+                          min="0"
+                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          value={currentData.target_margin_pct ?? ''}
+                          onChange={(e) => handleCostingChange(p.id, 'target_margin_pct', e.target.value)}
+                          placeholder="40"
                         />
-                        <span className="absolute right-2 top-1.5 text-[10px] text-ink/80">%</span>
+                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
+                      </div>
+                    </td>
+                    <td className="px-2 py-1">
+                      <div className="relative w-20">
+                        <input 
+                          type="number"
+                          min="0"
+                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          value={currentData.target_roas ?? ''}
+                          onChange={(e) => handleCostingChange(p.id, 'target_roas', e.target.value)}
+                          placeholder="300"
+                        />
+                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
                       </div>
                     </td>
                   </tr>
