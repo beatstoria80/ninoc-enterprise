@@ -879,6 +879,34 @@ export function OrdersTab({
     printWindow.document.close();
   };
 
+  const handleCancelOrder = async (order: Order) => {
+    if (!order) return;
+    
+    // Warning prompt
+    const confirmCancel = window.confirm(`DANGER ZONE: Anda yakin ingin membatalkan order #${order.id.toUpperCase()}?\n\nPERINGATAN FINANCE:\nJika pesanan sudah terbayar, biaya MDR Midtrans mungkin HANGUS. Jika user memakai Transfer Bank/VA, Anda harus Refund Manual!\n\nLanjutkan Pembatalan?`);
+    
+    if (!confirmCancel) return;
+    
+    const reason = window.prompt("Alasan pembatalan (opsional):", "Dibatalkan sepihak oleh Admin");
+    if (reason === null) return;
+
+    try {
+      const res = await fetch('/api/admin/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: order.id, reason })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to cancel order');
+      
+      alert(`Sukses membatalkan pesanan.\nStatus Refund: ${data.refund_status}`);
+      window.location.reload();
+    } catch (err: any) {
+      alert(`Gagal membatalkan pesanan: ${err.message}`);
+    }
+  };
+
   const handlePrintSingleLabel = (order: Order) => {
     setSelectedPrintOrders([order.id]);
     setIsPrintModalOpen(true);
@@ -1324,6 +1352,15 @@ export function OrdersTab({
                                           <Printer size={12} />
                                           Print Shipping Label
                                         </button>
+                                        {['pending', 'paid', 'shipped'].includes(order.status) && (
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); handleCancelOrder(order); }}
+                                            className="w-full mt-2 flex justify-center items-center gap-2 bg-white text-rose border border-rose py-2 rounded-sm hover:bg-rose hover:text-white transition-all text-[10px] font-medium uppercase tracking-widest"
+                                          >
+                                            <X size={12} />
+                                            Cancel Order
+                                          </button>
+                                        )}
                                       </div>
                                     </div>
 

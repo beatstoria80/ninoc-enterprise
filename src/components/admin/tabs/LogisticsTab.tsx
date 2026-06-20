@@ -201,6 +201,39 @@ export function LogisticsTab({
     }
   };
 
+  const handleCancelOrder = async (order: Order) => {
+    if (!order) return;
+    
+    // Warning prompt
+    const confirmCancel = window.confirm(`DANGER ZONE: Anda yakin ingin membatalkan order #${order.id.toUpperCase()}?\n\nPERINGATAN FINANCE:\nJika pesanan sudah terbayar, biaya MDR Midtrans mungkin HANGUS. Jika user memakai Transfer Bank/VA, Anda harus Refund Manual!\n\nLanjutkan Pembatalan?`);
+    
+    if (!confirmCancel) return;
+    
+    const reason = window.prompt("Alasan pembatalan (opsional):", "Dibatalkan sepihak oleh Admin");
+    if (reason === null) return; // User cancelled the prompt
+
+    try {
+      const res = await fetch('/api/admin/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: order.id, reason })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to cancel order');
+      
+      alert(`Sukses membatalkan pesanan.\nStatus Refund: ${data.refund_status}`);
+      
+      // Optimistic Update
+      const updatedOrder = { ...order, status: 'cancelled' as const };
+      setLogisticsSelectedOrder(updatedOrder);
+      if (onOrderUpdated) onOrderUpdated(updatedOrder);
+      
+    } catch (err: any) {
+      alert(`Gagal membatalkan pesanan: ${err.message}`);
+    }
+  };
+
   const getTimeAgo = (dateStr: string) => {
     if (!now) return '-';
     const diff = now - new Date(dateStr).getTime();
@@ -299,13 +332,13 @@ export function LogisticsTab({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                 <tr>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[140px]">Order</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Status</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[90px]">Order</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[100px]">Status</th>
                   <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Destination</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap">Courier</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[60px]">Resi</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[80px]">Value</th>
-                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[40px]">Age</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Courier</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[80px]">Resi</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Value</th>
+                  <th className="px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap text-right w-[60px]">Age</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,6 +371,7 @@ export function LogisticsTab({
                           {getShippingSLA(order.created_at, order.courier).label}
                         </span>
                       )}
+                      <div className="text-[8px] text-gray-500 mt-1 uppercase tracking-wider">{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                     </td>
                     <td className="px-2 py-1">
                       <div className="text-[10px] text-gray-900 truncate max-w-[120px]">{order.shipping_address?.name}</div>
@@ -486,6 +520,14 @@ export function LogisticsTab({
                       <span className="text-[9px] text-gray-800">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
+                      {['pending', 'paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
+                        <button 
+                          onClick={() => handleCancelOrder(logisticsSelectedOrder)}
+                          className="px-2 py-1 text-[9px] font-medium rounded border transition-all flex items-center gap-1.5 bg-white text-rose border-rose hover:bg-rose hover:text-white"
+                        >
+                          <X size={10} /> Cancel Order
+                        </button>
+                      )}
                       {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
                           onClick={() => handleRequestPickup(logisticsSelectedOrder)}
