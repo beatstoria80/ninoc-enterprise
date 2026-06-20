@@ -253,7 +253,7 @@ export function MarketingTab() {
   const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   return (
-    <div className="space-y-8 max-w-6xl pb-20">
+    <div className="space-y-8 w-full pb-20">
       <div className="mb-8">
         <h1 className="text-xl font-medium tracking-tight text-ink flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
@@ -431,13 +431,30 @@ export function MarketingTab() {
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Packaging (IDR)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Operational (%)</th>
                 <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Target Margin (%)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Target ROAS (%)</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest border-r border-ink/10">Target ROAS (%)</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Total COGS</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Max CPA (Ad Spend)</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Est. Net Profit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
               {costings.map((p) => {
                 const isEditing = !!editingCostings[p.id];
                 const currentData = isEditing ? { ...p, ...editingCostings[p.id] } : p;
+                
+                const sp = Number(p.price) || 0;
+                const hpp = Number(currentData.supplier_cost) || 0;
+                const pkg = Number(currentData.packaging_cost) || 0;
+                const opsPct = Number(currentData.operational_pct) || 0;
+                const marginPct = Number(currentData.target_margin_pct) || 40;
+                const roasPct = Number(currentData.target_roas) || 300;
+
+                const opsCost = (opsPct / 100) * sp;
+                const totalCogs = hpp + pkg + opsCost;
+                const maxCpa = roasPct > 0 ? sp / (roasPct / 100) : 0;
+                const estNetProfit = sp - totalCogs - maxCpa;
+                const targetNetProfit = (marginPct / 100) * sp;
+                const isUnderTarget = estNetProfit < targetNetProfit;
                 
                 return (
                   <tr key={p.id} className="hover:bg-ink/[0.01] transition-colors">
@@ -496,7 +513,7 @@ export function MarketingTab() {
                         <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
                       </div>
                     </td>
-                    <td className="px-2 py-1">
+                    <td className="px-2 py-1 border-r border-ink/10">
                       <div className="relative w-20">
                         <input 
                           type="number"
@@ -507,6 +524,23 @@ export function MarketingTab() {
                           placeholder="300"
                         />
                         <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
+                      </div>
+                    </td>
+                    <td className="px-2 py-1.5 bg-ink/[0.01]">
+                      <p className="text-[10px] font-mono text-ink">IDR {fIDR(totalCogs)}</p>
+                    </td>
+                    <td className="px-2 py-1.5 bg-ink/[0.01]">
+                      <p className="text-[10px] font-mono text-rose">IDR {fIDR(maxCpa)}</p>
+                      <p className="text-[8px] text-ink/50 mt-0.5">Maks biaya Iklan/Affiliate</p>
+                    </td>
+                    <td className="px-2 py-1.5 bg-ink/[0.01]">
+                      <div className="flex flex-col gap-0.5">
+                        <p className={cn("text-[10px] font-mono font-bold", estNetProfit >= 0 ? (isUnderTarget ? "text-amber-500" : "text-emerald-600") : "text-rose")}>
+                          IDR {fIDR(estNetProfit)}
+                        </p>
+                        <p className="text-[8px] text-ink/50">
+                          Target Margin: <span className="text-ink/80 font-mono">IDR {fIDR(targetNetProfit)}</span>
+                        </p>
                       </div>
                     </td>
                   </tr>
