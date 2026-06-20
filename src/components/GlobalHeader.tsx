@@ -459,30 +459,7 @@ export default function GlobalHeader() {
               </motion.div>
             </Link>
 
-          {/* Back navigation on inner pages */}
-          <AnimatePresence>
-            {((pathname.startsWith('/shop/') && pathname !== '/shop') || pathname === '/checkout') && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: DURATION.medium, ease: EASING.out }}
-              >
-                <Link prefetch={false} href="/shop" className={cn("absolute top-full left-0 mt-8 hidden md:flex items-center gap-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] whitespace-nowrap group transition-colors", isDarkBg ? "text-white hover:text-white/80" : "text-ink hover:text-rose")}>
-                  {/* Static arrow — hover-only slide per Emil principle: no infinite decorative animations */}
-                  <motion.span
-                    className="inline-block"
-                    animate={{ x: 0 }}
-                    whileHover={{ x: -2 }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
-                  >
-                    <ArrowLeft size={10} />
-                  </motion.span>
-                  <span>RETURN TO CATALOG</span>
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Back navigation on inner pages removed as requested */}
         </motion.div>
         </div>
 

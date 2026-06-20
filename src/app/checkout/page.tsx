@@ -782,7 +782,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA
-        isMobile ? "pt-16 pb-24 space-y-3" : "pt-20 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-16 pb-24 space-y-3" : "pt-12 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (

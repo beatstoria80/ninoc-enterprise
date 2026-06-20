@@ -334,7 +334,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   return (
     <main className={cn("min-h-screen bg-cr noise", isIPhone && "ios-mobile-layout")}>
       <div className={cn(
-        "pt-0 md:pt-24 lg:pt-32 px-4 md:px-10 relative",
+        "pt-0 md:pt-12 lg:pt-16 px-4 md:px-10 relative",
         isMobile && "pb-24"
       )}>
 

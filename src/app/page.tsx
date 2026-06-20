@@ -518,14 +518,14 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: heroState === 'intro' ? 'auto' : 'clamp(280px, 40vw, 480px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(320px, 56vw, 680px)' }}>
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
             key="intro"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: EASING.inOut }}
-            className="relative md:pt-8 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto"
+            className="relative md:pt-24 pt-2 pb-0 px-4 md:px-12 max-w-[1800px] mx-auto"
           >
             <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
@@ -624,7 +624,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 <motion.div
                   layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                  className="aspect-square md:aspect-[21/9] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
+                  className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
                   {/* Cinematic reveal: clip-path wipe from bottom + scale + blur — one-shot only */}
                   <motion.div
@@ -703,7 +703,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
         ) : (
           <motion.section 
             key="expanded"
-            className="absolute inset-0 w-full h-full overflow-hidden"
+            className="absolute inset-0 w-full overflow-hidden"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -940,12 +940,12 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="w-[35vw] md:w-[220px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
+                  className="w-[28vw] md:w-[180px] aspect-[4/5] bg-white animate-pulse flex-shrink-0"
                 />
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[35vw] md:w-[220px] flex-shrink-0">
+                <div key={product.id} className="w-[28vw] md:w-[180px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
