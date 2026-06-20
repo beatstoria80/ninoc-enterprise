@@ -733,8 +733,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-2.5 px-3 text-base md:text-sm font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
-  const selectClass = "w-full bg-white py-2 px-2.5 text-base md:text-sm font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
+  const inputClass = "w-full bg-white py-2.5 px-3 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
+  const selectClass = "w-full bg-white py-2 px-2.5 text-sm md:text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
   const labelClass = "text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/50 mb-1.5 block";
 
   return (
@@ -883,15 +883,15 @@ export default function CheckoutPage() {
               <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
                 <div className={cn("bg-white", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="first_name" className={labelClass}>{dict.checkout.firstName}</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-base md:text-sm font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="John" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="John" />
                 </div>
                 <div className={cn("bg-white border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-base md:text-sm font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="email" className={labelClass}>{userId ? 'Email (Akun Member)' : 'Email (Opsional)'}</label>
-                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-base md:text-sm font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none pt-1", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-sm md:text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none pt-1", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
                   {!userId && emailCheckStatus === 'checking' && <p className="text-[9px] md:text-[10px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
                   {!userId && emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
                   {!userId && emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
@@ -899,12 +899,12 @@ export default function CheckoutPage() {
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-base md:text-sm font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-sm md:text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none pt-1" placeholder="0812 3456 7890" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "p-2.5" : "p-4")}>
                   <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
                   <div className="flex gap-2 items-center mt-1">
-                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-base md:text-sm font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
+                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-sm md:text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
                     <button type="button" onClick={applyPromo} disabled={promoLoading || !formData.referral_code} className="px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] uppercase tracking-wider disabled:opacity-50 rounded-sm">
                       {promoLoading ? '...' : 'Apply'}
                     </button>
