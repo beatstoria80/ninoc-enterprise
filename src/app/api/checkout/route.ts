@@ -45,9 +45,21 @@ export async function POST(req: Request) {
 
     // --- SPAM & FRAUD PREVENTION ---
     const phone = customerDetails.phone || '';
-    if (phone.length < 9 || phone.length > 15 || /(.)\1{6,}/.test(phone) || /^0+$/.test(phone)) {
-      console.warn(`[Security] Blocked spam phone pattern: ${phone}`);
-      return NextResponse.json({ error: 'Nomor telepon tidak valid (terdeteksi spam).' }, { status: 400 });
+    const email = customerDetails.email || '';
+    
+    // Strict Indonesian Phone Number Validation
+    // Must start with 08 or 628 or +628, length 9-15
+    const phoneRegex = /^(08|628|\+628)[0-9]{7,13}$/;
+    if (!phoneRegex.test(phone) || /(.)\1{6,}/.test(phone) || /^0+$/.test(phone)) {
+      console.warn(`[Security] Blocked spam/invalid phone pattern: ${phone}`);
+      return NextResponse.json({ error: 'Nomor telepon tidak valid. Pastikan memakai format 08x atau 628x yang benar.' }, { status: 400 });
+    }
+
+    // Strict Email Validation (Prevent obvious fakes)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && (!emailRegex.test(email) || email.endsWith('.xyz') || email.endsWith('.site') || email.includes('mailinator'))) {
+      console.warn(`[Security] Blocked suspicious email: ${email}`);
+      return NextResponse.json({ error: 'Alamat email tidak valid atau terdeteksi berisiko (spam).' }, { status: 400 });
     }
 
     const fullName = `${customerDetails.first_name || ''} ${customerDetails.last_name || ''}`.trim();

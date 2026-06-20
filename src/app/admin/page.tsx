@@ -154,7 +154,7 @@ export default function AdminDashboard() {
   }, []);
 
   // Financial system states
-  const [financeTab, setFinanceTab] = useState<'overview' | 'ledger' | 'pl' | 'balance' | 'tax'>('overview');
+  const [financeTab, setFinanceTab] = useState<'overview' | 'ledger' | 'pl' | 'balance' | 'tax' | 'refunds'>('overview');
   const [productCostings, setProductCostings] = useState<Record<string, ProductCosting>>({});
   const [supplierLogs, setSupplierLogs] = useState<SupplierCostLog[]>([]);
   const [activePromos, setActivePromos] = useState<PromoImpact[]>([]);

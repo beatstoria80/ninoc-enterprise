@@ -60,6 +60,7 @@ export interface Order {
   print_count?: number;
   last_printed_by?: string;
   last_printed_at?: string;
+  notes?: string | null;
   updated_at?: string;
 }
 

@@ -32,6 +32,7 @@ export interface Order {
   payment_url: string | null;
   snap_token: string | null;
   shipping_address: Record<string, unknown> | null;
+  notes?: string | null;
   created_at: string;
   updated_at: string;
 }

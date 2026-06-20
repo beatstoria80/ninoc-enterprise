@@ -17,8 +17,8 @@ export function FinanceTab({
   finance: FinanceSummary;
   products: Product[];
   orders: Order[];
-  financeTab: 'overview' | 'ledger' | 'pl' | 'balance' | 'tax';
-  setFinanceTab: (t: 'overview' | 'ledger' | 'pl' | 'balance' | 'tax') => void;
+  financeTab: 'overview' | 'ledger' | 'pl' | 'balance' | 'tax' | 'refunds';
+  setFinanceTab: (t: 'overview' | 'ledger' | 'pl' | 'balance' | 'tax' | 'refunds') => void;
   productCostings: Record<string, ProductCosting>;
   setSelectedProductForCosting: (p: Product) => void;
   setCostingForm: (f: any) => void;
@@ -79,7 +79,8 @@ export function FinanceTab({
             { id: 'ledger', label: 'Ledger' },
             { id: 'pl', label: 'Income Statement' },
             { id: 'balance', label: 'Balance Sheet' },
-            { id: 'tax', label: 'Corporate Tax (PT)' }
+            { id: 'tax', label: 'Corporate Tax (PT)' },
+            { id: 'refunds', label: 'Manual Refunds' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -440,6 +441,93 @@ export function FinanceTab({
                 <button className="px-2 py-1 bg-ink text-white text-[10px] uppercase font-medium tracking-wider hover:bg-ink/90">
                   Generate e-Billing
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MANUAL REFUNDS */}
+        {financeTab === 'refunds' && (
+          <div className="border border-ink/10 bg-white">
+            <div className="p-3 border-b border-ink/10 bg-ink/[0.02]">
+              <h3 className="text-xs md:text-[11px] font-medium uppercase tracking-widest text-ink">Manual Refund Operations</h3>
+              <p className="text-[9px] font-mono text-ink/80 mt-1">Manage VA/Bank Transfer refunds that cannot be auto-refunded by Midtrans</p>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-12 gap-0 border-b border-ink/10 bg-ink/[0.02] min-w-[900px]">
+                <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-r border-ink/5">Order ID</div>
+                <div className="col-span-3 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-r border-ink/5">Customer</div>
+                <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-r border-ink/5 text-right">Amount</div>
+                <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-r border-ink/5 text-center">Status</div>
+                <div className="col-span-3 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 text-right">Actions</div>
+              </div>
+              <div className="min-w-[900px]">
+                {orders
+                  .filter(o => o.status === 'cancelled' && o.notes && (o.notes.includes('Manual Refund Required') || o.notes.includes('Manual Refund Completed')))
+                  .map(order => {
+                    const isCompleted = order.notes?.includes('Manual Refund Completed');
+                    const customerName = (order.shipping_address as any)?.name || (order.shipping_address as any)?.first_name || 'Guest';
+                    const customerPhone = (order.shipping_address as any)?.phone || '-';
+                    
+                    return (
+                      <div key={order.id} className="grid grid-cols-12 gap-0 border-b border-ink/5 hover:bg-ink/[0.01]">
+                        <div className="col-span-2 p-3 border-r border-ink/5">
+                          <p className="text-[10px] font-mono font-medium text-ink">#{order.id.toUpperCase()}</p>
+                          <p className="text-[9px] text-ink/80 mt-1">{new Date(order.created_at).toLocaleDateString('id-ID')}</p>
+                        </div>
+                        <div className="col-span-3 p-3 border-r border-ink/5">
+                          <p className="text-[10px] font-medium text-ink">{customerName}</p>
+                          <p className="text-[9px] text-ink/80 font-mono mt-1">{customerPhone}</p>
+                        </div>
+                        <div className="col-span-2 p-3 text-[10px] font-mono font-medium text-ink border-r border-ink/5 text-right">
+                          {order.total_price.toLocaleString('id-ID')}
+                        </div>
+                        <div className="col-span-2 p-3 border-r border-ink/5 text-center">
+                          {isCompleted ? (
+                            <span className="inline-block px-2 py-0.5 border border-emerald-200 bg-emerald-50 text-emerald-700 text-[9px] uppercase tracking-wider">Refunded</span>
+                          ) : (
+                            <span className="inline-block px-2 py-0.5 border border-amber-200 bg-amber-50 text-amber-700 text-[9px] uppercase tracking-wider">Waiting</span>
+                          )}
+                        </div>
+                        <div className="col-span-3 p-3 flex items-center justify-end gap-2">
+                          {!isCompleted && (
+                            <>
+                              <button 
+                                onClick={() => {
+                                  const phone = customerPhone.replace(/\D/g, '');
+                                  const waPhone = phone.startsWith('0') ? '62' + phone.substring(1) : phone;
+                                  const msg = `Halo Kak, kami dari Ninoc Store.\n\nPesanan Anda #${order.id.toUpperCase()} batal. Krn pembayaran menggunakan VA/Transfer Bank, kami butuh nomor rekening Kakak untuk proses Refund.\n\nNama Bank:\nNo Rekening:\nAtas Nama:\n\nTerima kasih!`;
+                                  window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                                }}
+                                className="px-2 py-1 text-[9px] uppercase tracking-wider border border-ink/10 hover:border-ink/30 transition-colors"
+                              >
+                                WA Minta Rekening
+                              </button>
+                              <button 
+                                onClick={async () => {
+                                  if (!window.confirm(`Mark order #${order.id.toUpperCase()} as Refunded?`)) return;
+                                  try {
+                                    const res = await fetch('/api/admin/finance/refund', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ order_id: order.id, action: 'mark_completed' })
+                                    });
+                                    if (!res.ok) throw new Error(await res.text());
+                                    alert('Berhasil!');
+                                    window.location.reload();
+                                  } catch (e: any) { alert(e.message); }
+                                }}
+                                className="px-2 py-1 text-[9px] uppercase tracking-wider bg-ink text-white hover:bg-ink/90 transition-colors"
+                              >
+                                Mark Refunded
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                })}
               </div>
             </div>
           </div>
