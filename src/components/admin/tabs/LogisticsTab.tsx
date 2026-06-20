@@ -201,38 +201,7 @@ export function LogisticsTab({
     }
   };
 
-  const handleCancelOrder = async (order: Order) => {
-    if (!order) return;
-    
-    // Warning prompt
-    const confirmCancel = window.confirm(`PEMBATALAN ORDER #${order.id.toUpperCase()}\n\nPERINGATAN FINANCE:\nMidtrans akan mengembalikan dana penuh ke Customer. Biaya admin (MDR) akan DITANGGUNG oleh Ninoc.\nJika Customer membayar via Transfer Bank/VA, Anda wajib melakukan REFUND MANUAL!\n\nLanjutkan Pembatalan?`);
-    
-    if (!confirmCancel) return;
-    
-    const reason = window.prompt("Alasan pembatalan (opsional):", "Dibatalkan sepihak oleh Admin");
-    if (reason === null) return; // User cancelled the prompt
-
-    try {
-      const res = await fetch('/api/admin/orders/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: order.id, reason })
-      });
-      
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to cancel order');
-      
-      alert(`Sukses membatalkan pesanan.\nStatus Refund: ${data.refund_status}`);
-      
-      // Optimistic Update
-      const updatedOrder = { ...order, status: 'cancelled' as const };
-      setLogisticsSelectedOrder(updatedOrder);
-      if (onOrderUpdated) onOrderUpdated(updatedOrder);
-      
-    } catch (err: any) {
-      alert(`Gagal membatalkan pesanan: ${err.message}`);
-    }
-  };
+  // Cancel order function moved to OrdersTab.tsx to prevent internal fraud from Logistics dashboard
 
   const getTimeAgo = (dateStr: string) => {
     if (!now) return '-';
@@ -520,14 +489,7 @@ export function LogisticsTab({
                       <span className="text-[11px] text-gray-800">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {['pending', 'paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
-                        <button 
-                          onClick={() => handleCancelOrder(logisticsSelectedOrder)}
-                          className="px-2 py-1 text-[11px] font-medium rounded border transition-all flex items-center gap-1.5 bg-white text-rose border-rose hover:bg-rose hover:text-white"
-                        >
-                          <X size={10} /> Cancel Order
-                        </button>
-                      )}
+
                       {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
                         <button 
                           onClick={() => handleRequestPickup(logisticsSelectedOrder)}
