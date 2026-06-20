@@ -30,8 +30,8 @@ export async function POST(req: Request) {
     const forwardedFor = req.headers.get('x-forwarded-for');
     const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
     
-    // Limit to 5 checkout requests per 1 minute per IP
-    const { isAllowed, headers } = rateLimit(`checkout_${ip}`, 5, 60 * 1000);
+    // Limit to 3 checkout requests per 5 minutes per IP (Strict anti-spam)
+    const { isAllowed, headers } = rateLimit(`checkout_${ip}`, 3, 5 * 60 * 1000);
     if (!isAllowed) {
       console.warn(`[Security] Rate limit exceeded for IP: ${ip} at checkout`);
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429, headers });
@@ -39,9 +39,23 @@ export async function POST(req: Request) {
 
     const { items, customerDetails, shippingDetails, promo } = await req.json();
 
-    if (!items || !items.length) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Keranjang belanja kosong' }, { status: 400 });
     }
+
+    // --- SPAM & FRAUD PREVENTION ---
+    const phone = customerDetails.phone || '';
+    if (phone.length < 9 || phone.length > 15 || /(.)\1{6,}/.test(phone) || /^0+$/.test(phone)) {
+      console.warn(`[Security] Blocked spam phone pattern: ${phone}`);
+      return NextResponse.json({ error: 'Nomor telepon tidak valid (terdeteksi spam).' }, { status: 400 });
+    }
+
+    const fullName = `${customerDetails.first_name || ''} ${customerDetails.last_name || ''}`.trim();
+    if (fullName.length < 3 || /(.)\1{4,}/.test(fullName) || fullName.toLowerCase() === 'a d') {
+      console.warn(`[Security] Blocked spam name pattern: ${fullName}`);
+      return NextResponse.json({ error: 'Nama penerima tidak valid (terdeteksi spam).' }, { status: 400 });
+    }
+    // -------------------------------
 
     // --- SECURITY FIX: Enforce Quantity Cap ---
     const MAX_QTY_PER_ITEM = 10;

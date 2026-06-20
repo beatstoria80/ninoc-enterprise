@@ -883,7 +883,7 @@ export function OrdersTab({
     if (!order) return;
     
     // Warning prompt
-    const confirmCancel = window.confirm(`DANGER ZONE: Anda yakin ingin membatalkan order #${order.id.toUpperCase()}?\n\nPERINGATAN FINANCE:\nJika pesanan sudah terbayar, biaya MDR Midtrans mungkin HANGUS. Jika user memakai Transfer Bank/VA, Anda harus Refund Manual!\n\nLanjutkan Pembatalan?`);
+    const confirmCancel = window.confirm(`PEMBATALAN ORDER #${order.id.toUpperCase()}\n\nPERINGATAN FINANCE:\nMidtrans akan mengembalikan dana penuh ke Customer. Biaya admin (MDR) akan DITANGGUNG oleh Ninoc.\nJika Customer membayar via Transfer Bank/VA, Anda wajib melakukan REFUND MANUAL!\n\nLanjutkan Pembatalan?`);
     
     if (!confirmCancel) return;
     
