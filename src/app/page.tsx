@@ -776,7 +776,16 @@ export default function Home() {
   const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
-  const [isReturningVisitor] = useState(false);
+  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
+      setTimeout(() => {
+        setScene('archive');
+        setIsReturningVisitor(true);
+      }, 0);
+    }
+  }, []);
   
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
