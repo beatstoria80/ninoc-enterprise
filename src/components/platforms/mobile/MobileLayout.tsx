@@ -312,7 +312,7 @@ export default function MobileLayout({
     { href: '/', label: 'Home' },
     { href: '/shop', label: 'Catalog' },
     { href: '/collections', label: 'Collections' },
-    { href: '/category', label: 'Category' },
+    { href: '/shop', label: 'Category' },
     { href: '/logbook', label: 'Logbook' },
     { href: '/track', label: 'Lacak Pesanan' },
     { href: '/supplier/apply', label: 'Supplier' },

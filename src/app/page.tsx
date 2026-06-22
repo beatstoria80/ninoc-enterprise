@@ -581,7 +581,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                   animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                   transition={{ delay: 0.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <PressButton href="/category" className="group inline-flex items-center gap-2 text-ink">
+                  <PressButton href="/shop" className="group inline-flex items-center gap-2 text-ink">
                     <span className="md:hidden inline-flex items-center gap-1.5 bg-ink/5 px-3 py-1.5 border border-ink/10">
                       <span className="text-xs md:text-[7px] font-medium uppercase tracking-[0.2em]">Catalog</span>
                       <ArrowRight size={10} className="text-rose group-hover:translate-x-0.5 transition-transform" />
@@ -745,7 +745,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
               <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6 max-w-[1800px] mx-auto h-full relative">
                 {/* Centered Browse Catalog Button */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-auto">
-                  <PressButton href="/category" className="group inline-flex items-center gap-2">
+                  <PressButton href="/shop" className="group inline-flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-6 py-3 border border-white/20 text-white hover:bg-white hover:text-ink transition-all duration-300">
                       <span className="text-[8px] md:text-xs font-medium uppercase tracking-[0.3em]">catalog</span>
                       <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />

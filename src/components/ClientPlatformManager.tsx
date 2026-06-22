@@ -60,9 +60,9 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     );
   }
 
-  const isCategoryPage = pathname === '/category';
+  const isShopPage = pathname === '/shop';
   const isCollectionsPage = pathname?.startsWith('/collections');
-  const showGlobalFooter = showGlobalHeader && !isCategoryPage && !isCollectionsPage;
+  const showGlobalFooter = showGlobalHeader && !isShopPage && !isCollectionsPage;
 
   return (
     <div className={`min-h-screen flex flex-col ${pathname === '/' ? 'bg-ink' : 'bg-cr'}`}>
