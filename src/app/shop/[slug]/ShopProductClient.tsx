@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X, ImageOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -124,6 +124,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
   const { isMobile, isIPhone } = useDevice();
   const [isWidescreen, setIsWidescreen] = useState(false);
+  const photoRef = useRef<HTMLDivElement>(null);
+  const [photoHeight, setPhotoHeight] = useState(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -133,6 +135,17 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!photoRef.current) return;
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        setPhotoHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(photoRef.current);
+    return () => observer.disconnect();
   }, []);
 
   // Default fallbacks if admin does not provide data
@@ -460,7 +473,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               })}
             </div>
 
-            <motion.div variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
+            <motion.div ref={photoRef} variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
               <motion.div 
                 initial={{ scale: 1.1, filter: 'blur(10px)' }}
                 animate={{ scale: 1, filter: 'blur(0px)' }}
@@ -500,7 +513,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           </motion.div>
 
           {/* Combined Product Info & Options Column */}
-          <div className="col-span-1 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 w-full">
+          <div
+            className={cn("col-span-1 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 w-full", !isMobile && photoHeight > 0 && "lg:overflow-y-auto minimal-scroll")}
+            style={!isMobile && photoHeight > 0 ? { maxHeight: photoHeight } : undefined}
+          >
             {/* Column 3: Product Info */}
             <motion.div variants={columnVariants} className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
