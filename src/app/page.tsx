@@ -332,13 +332,19 @@ function ProductCard({ product, index }: ProductCardProps) {
             </div>
           )}
 
-          <motion.div
-            className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] uppercase tracking-tighter z-10"
-            animate={{ opacity: isHovered ? 0.5 : 1 }}
-            transition={{ duration: DURATION.fast }}
-          >
-            NINOC {(index + 101).toString()}
-          </motion.div>
+          {/* Dynamic Badge (NEW / SALE) */}
+          {(product.price_tag || index < 3) && (
+            <motion.div
+              className={cn(
+                "absolute top-0 left-0 text-white px-2 py-1 text-[10px] uppercase tracking-widest z-10 font-bold",
+                product.price_tag ? "bg-rose" : "bg-ink"
+              )}
+              animate={{ opacity: isHovered ? 0.9 : 1 }}
+              transition={{ duration: DURATION.fast }}
+            >
+              {product.price_tag ? 'SALE' : 'NEW'}
+            </motion.div>
+          )}
         </motion.div>
 
         <motion.div variants={cardContentVariants} className="flex flex-col flex-grow">
