@@ -378,13 +378,24 @@ function ProductCard({ product, index }: ProductCardProps) {
           </div>
 
           <div className="mt-auto flex items-center justify-between pt-1 border-t border-ink/5">
-            <motion.p
-              className="text-xs md:text-[12px] font-display font-medium italic text-ink whitespace-nowrap leading-none"
-              animate={{ scale: isHovered ? 1.02 : 1 }}
-              transition={{ duration: DURATION.fast }}
-            >
-              IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-            </motion.p>
+            <div className="flex items-center gap-1.5">
+              <motion.p
+                className="text-xs md:text-[12px] font-display font-medium italic text-ink whitespace-nowrap leading-none"
+                animate={{ scale: isHovered ? 1.02 : 1 }}
+                transition={{ duration: DURATION.fast }}
+              >
+                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </motion.p>
+              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02]">
+                <span className="text-[6px] md:text-[7px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
+                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  PROMO
+                </span>
+              </div>
+            </div>
 
             <div className="flex gap-1.5 relative z-10">
               <motion.div
