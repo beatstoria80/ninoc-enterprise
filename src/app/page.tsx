@@ -536,7 +536,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5 min-h-[340px] md:min-h-[30vw] lg:min-h-[28vw] 2xl:min-h-[520px]">
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5 min-h-[260px] md:min-h-[30vw] lg:min-h-[28vw] 2xl:min-h-[520px]">
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
@@ -642,7 +642,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 <motion.div
                   layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                  className="aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
+                  className="aspect-[4/4] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
                   {/* Cinematic reveal: clip-path wipe from bottom + scale + blur — one-shot only */}
                   <motion.div
@@ -992,7 +992,10 @@ export default function Home() {
               ))
             )}
           </DragSlider>
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block z-10" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-12 bg-white/90 backdrop-blur-sm border-y border-l border-ink/10 flex items-center justify-center pointer-events-none z-10 md:hidden rounded-l-lg shadow-[0_0_15px_rgba(0,0,0,0.05)]">
+            <ChevronRight className="w-4 h-4 text-ink/50 animate-[pulse_2s_ease-in-out_infinite]" />
+          </div>
         </div>
       </section>
 

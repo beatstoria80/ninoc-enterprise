@@ -19,13 +19,13 @@ function cn(...inputs: ClassValue[]) {
 // ═══════════════════════════════════════════════════════════════
 
 const HomeIcon = ({ active }: { active: boolean }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const CartIcon = ({ active }: { active: boolean }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 4H5L6.5 15H18.5L20 6H5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M6.5 15L5.5 9H3" strokeLinecap="round" strokeLinejoin="round" />
     <circle cx="9" cy="20" r="1" />
@@ -36,14 +36,14 @@ const CartIcon = ({ active }: { active: boolean }) => (
 
 // SUPPORT — headphones icon (familiar customer service symbol)
 const HeadphonesIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 14V6C3 3.79086 4.79086 2 7 2H17C19.2091 2 21 3.79086 21 6V14" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M3 14C3 14 4 14 5 14C6 14 7 16 7 18V19C7 20.1046 7.89543 21 9 21H10C11.1046 21 12 20.1046 12 19V18C12 16 13 14 14 14C15 14 16 16 16 18V19C16 20.1046 16.8954 21 18 21H19C20.1046 21 21 20.1046 21 19V18C21 16 21 14 21 14" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const UserIcon = ({ active }: { active: boolean }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="8" r="4" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M4 21C4 17.134 7.58172 14 12 14C16.4183 14 20 17.134 20 21" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
@@ -647,7 +647,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)] pt-1.5">
+          <div className="h-[calc(44px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
             <button
@@ -674,7 +674,7 @@ export default function MobileLayout({
               >
                 <HomeIcon active={isActive('/')} />
               </motion.div>
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-white/50")}>
+              <span className={cn("text-[9px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-white/50")}>
                 Home
               </span>
               {isActive('/') && (
@@ -703,7 +703,7 @@ export default function MobileLayout({
                   {cartCount}
                 </motion.span>
               )}
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-white/50")}>
+              <span className={cn("text-[9px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-white/50")}>
                 Cart
               </span>
             </Link>
@@ -725,7 +725,7 @@ export default function MobileLayout({
                   </motion.span>
                 )}
               </div>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">Support</span>
+              <span className="text-[9px] font-medium uppercase tracking-wider text-white/50">Support</span>
             </PressScale>
 
             {/* Profile */}
@@ -736,7 +736,7 @@ export default function MobileLayout({
               >
                 <UserIcon active={isActive('/profile')} />
               </motion.div>
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-white/50")}>
+              <span className={cn("text-[9px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-white/50")}>
                 Profile
               </span>
             </Link>
