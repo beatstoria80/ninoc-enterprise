@@ -993,8 +993,15 @@ export default function Home() {
             )}
           </DragSlider>
           <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block z-10" />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10 md:hidden">
-            <ChevronRight className="w-6 h-6 text-ink/60 drop-shadow-md animate-[pulse_1.5s_ease-in-out_infinite]" />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10 md:hidden drop-shadow-sm">
+            <motion.div
+              animate={{ x: [0, -6, 0] }}
+              transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity }}
+              className="flex items-center gap-0.5"
+            >
+              <span className="text-[8px] font-semibold uppercase tracking-[0.2em] text-ink/70 bg-white/40 backdrop-blur-[2px] px-1 py-0.5 rounded">Swipe</span>
+              <ChevronRight className="w-5 h-5 text-ink/70 drop-shadow-md" />
+            </motion.div>
           </div>
         </div>
       </section>
