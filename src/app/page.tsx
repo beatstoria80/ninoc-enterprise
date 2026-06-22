@@ -788,19 +788,20 @@ export default function Home() {
 
   const router = useRouter();
 
-  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
+  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
+      return 'archive';
+    }
+    return 'hero';
+  });
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
-  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
-
-  useEffect(() => {
+  const [isReturningVisitor, setIsReturningVisitor] = useState(() => {
     if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
-      setTimeout(() => {
-        setScene('archive');
-        setIsReturningVisitor(true);
-      }, 0);
+      return true;
     }
-  }, []);
+    return false;
+  });
   
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
