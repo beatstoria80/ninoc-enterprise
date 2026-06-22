@@ -13,8 +13,8 @@ import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 
-function SafeImage({ src, alt, className, sizes, priority = false }: {
-  src: string; alt: string; className?: string; sizes?: string; priority?: boolean;
+function SafeImage({ src, alt, className, sizes, priority = false, draggable }: {
+  src: string; alt: string; className?: string; sizes?: string; priority?: boolean; draggable?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   if (failed || !src) {
@@ -30,6 +30,7 @@ function SafeImage({ src, alt, className, sizes, priority = false }: {
       src={src}
       alt={alt}
       fill
+      draggable={draggable}
       className={cn("object-cover", className)}
       sizes={sizes || "(max-width: 768px) 50vw, 25vw"}
       priority={priority}
