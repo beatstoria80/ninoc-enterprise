@@ -385,7 +385,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,2fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
         >
 
           <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
@@ -570,11 +570,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-sm md:text-[11px]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-sm md:text-[11px]">
                       {displaySpecs.map((spec, idx) => (
-                        <motion.div variants={textVariants} key={idx} className="flex flex-col border-b border-ink/5 pb-0.5">
+                        <motion.div variants={textVariants} key={idx} className="flex justify-between items-center border-b border-ink/5 py-1">
                           <span className="text-ink/40 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
-                          <span className="font-semibold">{spec.value}</span>
+                          <span className="font-semibold text-right">{spec.value}</span>
                         </motion.div>
                       ))}
                     </div>
@@ -765,9 +765,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           <motion.div 
             variants={columnVariants}
             className={cn(
-            "col-span-2 lg:col-span-1 flex flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
-            isMobile && items.length === 0 ? "hidden lg:flex" : "flex"
-          )}>
+              "col-span-2 xl:col-span-1 flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
+              isMobile 
+                ? (items.length === 0 ? "hidden" : "flex") 
+                : "hidden xl:flex"
+            )}
+          >
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
                 <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40">{dict.product.yourCart}</span>
