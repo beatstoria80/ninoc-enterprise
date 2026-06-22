@@ -575,16 +575,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     return desc.slice(0, charLimit) + '…';
                   })()}
                 </motion.p>
-                {(localizedDescription || '').length > 200 && (activeInfoTab !== 'measurement' || isWidescreen) && (
+                {(localizedDescription || '').length > 200 && (
                   <motion.button
                     variants={textVariants}
                     onClick={() => { 
-                      setIsExpanded(!isExpanded); 
-                      if (!isWidescreen && activeInfoTab === 'measurement') setActiveInfoTab('specs'); 
+                      if (!isWidescreen && activeInfoTab === 'measurement') {
+                        setIsExpanded(true);
+                        setActiveInfoTab('specs');
+                      } else {
+                        setIsExpanded(!isExpanded);
+                      }
                     }}
                     className="text-xs md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
-                    {isExpanded ? 'Less' : 'More'}
+                    {isExpanded && (activeInfoTab !== 'measurement' || isWidescreen) ? 'Less' : 'More'}
                   </motion.button>
                 )}
               </div>
