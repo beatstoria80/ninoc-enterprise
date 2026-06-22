@@ -323,7 +323,8 @@ function ProductCard({ product, index }: ProductCardProps) {
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-cover object-top transition-all duration-700"
+              draggable={false}
+              className="object-cover object-top transition-all duration-700 select-none pointer-events-none"
               style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
           ) : (
@@ -385,17 +386,25 @@ function ProductCard({ product, index }: ProductCardProps) {
               IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </motion.p>
 
-            <div className="flex gap-1.5">
-              <motion.button
+            <div className="flex gap-1.5 relative z-10">
+              <motion.div
+                role="button"
+                tabIndex={0}
                 onClick={handleQuickBuy}
-                className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
+                className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200 cursor-pointer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: DURATION.fast, ease: EASING.out }}
               >
                 <ShoppingCart className="w-4 h-4" />
-              </motion.button>
+              </motion.div>
               <motion.div
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  // Allow the link click to happen since it's wrapped in PressButton (a)
+                  // but we might want to prevent drag issues
+                }}
                 className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
                 style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
                 whileHover={{ scale: 1.1 }}
