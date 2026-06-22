@@ -523,17 +523,6 @@ export default function TrackClient() {
         ) : (
           <div className="max-w-[500px] w-full mx-auto mt-0 lg:mt-10 px-4 sm:px-0 pb-32 lg:pb-0">
             {renderForm()}
-            {!loading && !searched && (
-              <div className="flex flex-col items-center py-16 gap-4 text-ink/20 mt-8 border border-ink/5 bg-ink/[0.01]">
-                <div className="w-12 h-12 border border-ink/10 flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1"/><path d="M10 6v5M10 14v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                </div>
-                <div className="text-center px-4">
-                  <p className="text-xs md:text-[9px] uppercase tracking-widest font-semibold mb-2">Input Required</p>
-                  <p className="text-[11px] md:text-[9px] text-ink/40 max-w-xs leading-relaxed">Masukkan nomor pesanan dan nomor WhatsApp yang digunakan saat checkout untuk melacak pesanan Anda.</p>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
