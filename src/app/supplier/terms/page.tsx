@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from '@/components/LocalizedLink';
 import NextLink from 'next/link';
-import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -124,7 +124,13 @@ export default function SupplierTermsPage() {
 
         {/* Right Column - Terms Content (3 Grids) */}
         <div className="lg:col-span-9 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
-          <div className="flex-1 overflow-y-auto no-scrollbar pr-4">
+          
+          {/* Close Button UI/UX */}
+          <Link href="/supplier/apply" className="absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 bg-ink/5 hover:bg-ink hover:text-white rounded-full flex items-center justify-center transition-all duration-300 z-50 group">
+            <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+          </Link>
+
+          <div className="flex-1 overflow-y-auto no-scrollbar pr-4 pt-4 md:pt-0">
             
             <div className="columns-1 md:columns-2 lg:columns-3 gap-8 md:gap-12 space-y-8">
               
