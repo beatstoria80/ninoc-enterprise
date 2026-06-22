@@ -133,9 +133,11 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                         src={product.image_url}
                         alt={product.name}
                         sizes="(max-width: 768px) 50vw, 25vw"
+                        draggable={false}
+                        className="select-none pointer-events-none"
                       />
                       {product.price_tag && (
-                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
+                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
                           {product.price_tag}
                         </div>
                       )}
@@ -157,16 +159,18 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                               ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                               : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
                           </p>
-                          <button
+                          <div
+                            role="button"
+                            tabIndex={0}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
                             }}
-                            className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+                            className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
                           >
-                            <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5" />
-                          </button>
+                            <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-1 border-t border-ink/5">
@@ -264,11 +268,12 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                       <SafeImage
                         src={product.image_url}
                         alt={product.name}
-                        className="transition-transform duration-700 group-hover/card:scale-105"
+                        className="transition-transform duration-700 group-hover/card:scale-105 select-none pointer-events-none"
                         sizes="(max-width: 1280px) 25vw, 20vw"
+                        draggable={false}
                       />
 
-                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm">
+                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm pointer-events-none">
                         {product.badge_text || 'STUDIO EDITION'}
                       </div>
 
@@ -302,16 +307,18 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                               IDR {(product.price ?? 0).toLocaleString('id-ID')}
                             </div>
                           )}
-                          <button
+                          <div
+                            role="button"
+                            tabIndex={0}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
                             }}
-                            className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200"
+                            className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
                           >
-                            <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />
-                          </button>
+                            <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
