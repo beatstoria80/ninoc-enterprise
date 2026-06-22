@@ -309,8 +309,9 @@ function ProductCard({ product, index }: ProductCardProps) {
       custom={index}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className="h-full"
     >
-      <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-3 group relative overflow-hidden block border border-transparent hover:border-ink/5">
+      <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-3 group relative overflow-hidden flex flex-col h-full border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
           className="aspect-[4/5] overflow-hidden mb-1.5 md:mb-2 relative bg-ink/5 border border-ink/5"
@@ -340,34 +341,36 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={cardContentVariants} className="space-y-0.5">
-          <motion.p
-            className="text-[9px] md:text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/50 leading-none"
-            animate={{ opacity: isHovered ? 1 : 0.7 }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {categoryInfo?.label || 'Garment Origin'}
-          </motion.p>
-
-          <motion.h3
-            className="text-[11px] md:text-xs font-display font-medium italic uppercase tracking-tighter line-clamp-2 leading-snug"
-            animate={isHovered ? brandColor : darkColor}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.name}
-          </motion.h3>
-
-          {product.price_tag && (
+        <motion.div variants={cardContentVariants} className="flex flex-col flex-grow">
+          <div className="space-y-0.5">
             <motion.p
-              className="text-[9px] font-bold uppercase tracking-[0.15em] text-rose leading-none"
-              animate={{ scale: isHovered ? 1.05 : 1 }}
+              className="text-[9px] md:text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/50 leading-none"
+              animate={{ opacity: isHovered ? 1 : 0.7 }}
               transition={{ duration: DURATION.fast }}
             >
-              {product.price_tag}
+              {categoryInfo?.label || 'Garment Origin'}
             </motion.p>
-          )}
 
-          <div className="flex items-center justify-between pt-1 border-t border-ink/5 mt-1">
+            <motion.h3
+              className="text-[11px] md:text-xs font-display font-medium italic uppercase tracking-tighter line-clamp-2 leading-snug"
+              animate={isHovered ? brandColor : darkColor}
+              transition={{ duration: DURATION.fast }}
+            >
+              {product.name}
+            </motion.h3>
+
+            {product.price_tag && (
+              <motion.p
+                className="text-[9px] font-bold uppercase tracking-[0.15em] text-rose leading-none"
+                animate={{ scale: isHovered ? 1.05 : 1 }}
+                transition={{ duration: DURATION.fast }}
+              >
+                {product.price_tag}
+              </motion.p>
+            )}
+          </div>
+
+          <div className="mt-auto flex items-center justify-between pt-1 border-t border-ink/5">
             <motion.p
               className="text-xs md:text-[12px] font-display font-medium italic text-ink whitespace-nowrap leading-none"
               animate={{ scale: isHovered ? 1.02 : 1 }}
