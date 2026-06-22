@@ -536,7 +536,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(340px, 42vw, 520px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5 min-h-[340px] md:min-h-[30vw] lg:min-h-[28vw] 2xl:min-h-[520px]">
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
@@ -642,7 +642,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 <motion.div
                   layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                  className="aspect-[4/5] md:aspect-[3/4] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
+                  className="aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
                   {/* Cinematic reveal: clip-path wipe from bottom + scale + blur — one-shot only */}
                   <motion.div
@@ -970,7 +970,7 @@ export default function Home() {
       <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
       {/* CATALOG & CATEGORY DROPDOWN */}
-      <section id="archive-catalog" className="mt-2 md:mt-4 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
+      <section id="archive-catalog" className="mt-1 md:mt-2 lg:mt-1 px-4 md:px-12 max-w-[1800px] mx-auto min-h-screen">
 
         <div className="relative -mx-4 md:mx-0">
           <DragSlider className="flex gap-px w-full">
@@ -986,7 +986,7 @@ export default function Home() {
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[45vw] md:w-[220px] flex-shrink-0">
+                <div key={product.id} className="w-[45vw] md:w-[180px] lg:w-[170px] xl:w-[190px] 2xl:w-[220px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
