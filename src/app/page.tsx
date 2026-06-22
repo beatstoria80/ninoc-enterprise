@@ -313,7 +313,7 @@ function ProductCard({ product, index }: ProductCardProps) {
       <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
-          className="aspect-[4/5] overflow-hidden mb-2 md:mb-4 relative bg-ink/5 border border-ink/5"
+          className="aspect-square overflow-hidden mb-2 md:mb-3 relative bg-ink/5 border border-ink/5"
           animate={{ scale: isHovered ? 1.02 : 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
@@ -340,7 +340,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={cardContentVariants} className="space-y-1.5 md:space-y-2">
+        <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
           <motion.p
             className="text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60"
             animate={{ opacity: isHovered ? 1 : 0.8 }}
@@ -350,7 +350,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.p>
 
           <motion.h3
-            className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tighter line-clamp-1"
+            className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tighter line-clamp-2 leading-tight"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -358,22 +358,19 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.h3>
 
           <motion.div
-            className="flex flex-col justify-between pt-1.5 md:pt-2 border-t border-ink/5 mt-1.5 md:mt-2 gap-1.5 md:gap-2"
+            className="flex flex-col justify-between pt-1.5 md:pt-2 border-t border-ink/5 mt-1 md:mt-1.5 gap-1"
             animate={{ opacity: isHovered ? 1 : 0.8 }}
             transition={{ duration: DURATION.fast }}
           >
-            <div className="space-y-0.5">
-              <p className="text-[10px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-ink/50 leading-none">Archival Issue</p>
-              {product.price_tag && (
-                <motion.p
-                  className="text-[10px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-rose leading-none"
-                  animate={{ scale: isHovered ? 1.05 : 1 }}
-                  transition={{ duration: DURATION.fast }}
-                >
-                  {product.price_tag}
-                </motion.p>
-              )}
-            </div>
+            {product.price_tag && (
+              <motion.p
+                className="text-[10px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-rose leading-none"
+                animate={{ scale: isHovered ? 1.05 : 1 }}
+                transition={{ duration: DURATION.fast }}
+              >
+                {product.price_tag}
+              </motion.p>
+            )}
 
             <div className="flex items-center justify-between mt-0.5">
               <motion.p
@@ -523,7 +520,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(300px, 38vw, 480px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(340px, 42vw, 520px)' }}>
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
