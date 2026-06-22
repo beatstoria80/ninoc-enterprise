@@ -962,7 +962,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
-              <Link prefetch={false} href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
+              <Link  href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 {dict.product.viewFullCollection} <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
@@ -974,7 +974,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   key={p.id}
                   className="flex-shrink-0 w-[110px] md:w-[130px]"
                 >
-                  <Link prefetch={false} href={`/shop/${p.slug}`} className="group block space-y-1">
+                  <Link  href={`/shop/${p.slug}`} className="group block space-y-1">
                     <div className="aspect-square rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                       <div className="absolute inset-3">
                         <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />

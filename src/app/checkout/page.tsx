@@ -727,7 +727,7 @@ export default function CheckoutPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: DURATION.medium, ease: EASING.out }}
         >
-          <Link prefetch={false} href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest hover:bg-rose transition-colors active:scale-[0.97]" onClick={() => router.replace('/shop')}>{dict.checkout.backToShop}</Link>
+          <Link  href="/shop" className="bg-ink text-white px-8 py-3 rounded-lg text-xs tracking-widest hover:bg-rose transition-colors active:scale-[0.97]" onClick={() => router.replace('/shop')}>{dict.checkout.backToShop}</Link>
         </motion.div>
       </motion.div>
     );

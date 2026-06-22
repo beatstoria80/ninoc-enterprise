@@ -210,8 +210,8 @@ export default function SupplierApplicationPage() {
           
           {/* Language Switcher */}
           <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center text-[10px] font-medium uppercase tracking-widest bg-ink/5 border border-ink/10 rounded-full p-1 z-20 hover:bg-ink/10 transition-colors">
-            <NextLink prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'ID' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>ID</NextLink>
-            <NextLink prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'EN' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>EN</NextLink>
+            <NextLink  href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'ID' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>ID</NextLink>
+            <NextLink  href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors relative z-10", lang === 'EN' ? "bg-white text-ink shadow-sm" : "text-ink/50 hover:text-ink")}>EN</NextLink>
           </div>
 
           <div className="flex items-center gap-3 md:block pt-6 md:pt-0">

@@ -58,7 +58,7 @@ export default function RegisterPage() {
       {isMobile ? (
         /* MOBILE: Full width card */
         <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
+          <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
             <ArrowLeft size={14} />
             <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
           </Link>
@@ -98,7 +98,7 @@ export default function RegisterPage() {
             <div className="pt-6 border-t border-ink/5">
               <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/40">
                 Sudah punya akun?{' '}
-                <Link prefetch={false} href="/login" className="text-rose font-bold hover:text-ink transition-colors">
+                <Link  href="/login" className="text-rose font-bold hover:text-ink transition-colors">
                   Masuk di sini
                 </Link>
               </p>
@@ -114,7 +114,7 @@ export default function RegisterPage() {
         >
           <div className="w-full md:w-[500px] lg:w-[560px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
+            <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
@@ -155,7 +155,7 @@ export default function RegisterPage() {
               <div className="pt-6 border-t border-ink/5">
                 <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/50">
                   Sudah punya akun?{' '}
-                  <Link prefetch={false} href="/login" className="text-rose font-bold hover:text-ink transition-colors">
+                  <Link  href="/login" className="text-rose font-bold hover:text-ink transition-colors">
                     Masuk di sini
                   </Link>
                 </p>

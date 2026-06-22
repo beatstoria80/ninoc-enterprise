@@ -149,7 +149,7 @@ function PressButton({ children, className = '', onClick, href, whileHover, whil
     </motion.div>
   );
 
-  if (href) return <Link prefetch={false} href={href}>{inner}</Link>;
+  if (href) return <Link  href={href}>{inner}</Link>;
   return (
     <button onClick={onClick} type="button" className="w-auto bg-transparent border-none p-0 m-0">
       {inner}

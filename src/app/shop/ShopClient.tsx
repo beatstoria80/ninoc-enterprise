@@ -125,7 +125,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Link prefetch={false} href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
+                  <Link  href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
                     <div
                       className="aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative"
                     >
@@ -257,7 +257,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                 transition={{ duration: 0.5, delay: index * 0.05 }}
                 className="group"
               >
-                <Link prefetch={false} href={`/shop/${product.slug}`} className="block h-full">
+                <Link  href={`/shop/${product.slug}`} className="block h-full">
                   <div className="bg-white border border-ink/5 shadow-sm hover:shadow-xl hover:border-ink/15 transition-all duration-300 h-full flex flex-col group/card relative overflow-hidden">
 
                     <div className="relative aspect-square w-full overflow-hidden bg-ink/[0.02]">

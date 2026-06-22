@@ -345,7 +345,7 @@ export default function MobileLayout({
                   <BackIcon />
                 </PressScale>
               ) : pathname === '/' ? (
-                <Link prefetch={false} href="/" className="flex items-center">
+                <Link  href="/" className="flex items-center">
                   <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
                 </Link>
               ) : pathname === '/shop' ? (
@@ -353,7 +353,7 @@ export default function MobileLayout({
                   <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">Catalog</span>
                 </div>
               ) : (
-                <Link prefetch={false} href="/shop" className="group flex items-center gap-2 text-ink">
+                <Link  href="/shop" className="group flex items-center gap-2 text-ink">
                   <PressScale className="flex items-center gap-2">
                     <motion.div
                       className="w-6 h-6 border border-ink/10 flex items-center justify-center bg-white"
@@ -587,9 +587,9 @@ export default function MobileLayout({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">Information</h4>
-                    <Link prefetch={false} href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Terms & Privacy</Link>
-                    <Link prefetch={false} href="/supplier/apply" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
-                    <Link prefetch={false} href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Affiliate</Link>
+                    <Link  href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Terms & Privacy</Link>
+                    <Link  href="/supplier/apply" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
+                    <Link  href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Affiliate</Link>
                   </div>
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
@@ -673,7 +673,7 @@ export default function MobileLayout({
             </button>
 
             {/* Cart */}
-            <Link prefetch={false} href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
+            <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
               <motion.div
                 animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
                 className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-ink/30")}
@@ -716,7 +716,7 @@ export default function MobileLayout({
             </PressScale>
 
             {/* Profile */}
-            <Link prefetch={false} href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
+            <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
                 className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-ink/30")}

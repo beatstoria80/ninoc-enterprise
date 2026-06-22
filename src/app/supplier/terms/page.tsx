@@ -102,8 +102,8 @@ export default function SupplierTermsPage() {
                 
                 {/* Language Switcher */}
                 <div className="flex items-center text-xs md:text-[10px] font-medium uppercase tracking-widest bg-white/5 border border-white/10 rounded-full p-1">
-                  <NextLink prefetch={false} href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>ID</NextLink>
-                  <NextLink prefetch={false} href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>EN</NextLink>
+                  <NextLink  href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>ID</NextLink>
+                  <NextLink  href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>EN</NextLink>
                 </div>
               </div>
               <h1 className="text-4xl md:text-5xl font-display italic font-medium mb-6 leading-tight">{dict.title}</h1>

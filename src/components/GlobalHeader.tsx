@@ -112,7 +112,7 @@ function NavLink({ href, children, isDark, index = 0 }: { href: string; children
       transition={{ delay: 0.2 + (index * 0.05), duration: DURATION.medium, ease: EASING.out }}
     >
       <Link
-        prefetch={false}
+        
         href={href}
         className={cn(
           "text-sm md:text-[11px] font-medium uppercase tracking-[0.3em] relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
@@ -442,7 +442,7 @@ export default function GlobalHeader() {
 
           {/* Logo */}
           <motion.div className="relative flex flex-col">
-            <Link prefetch={false} href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
+            <Link  href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
               <motion.div
                 className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}
@@ -499,7 +499,7 @@ export default function GlobalHeader() {
           {/* Tracking Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: DURATION.fast }} className="flex items-center">
             <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
-              <Link prefetch={false} href="/track" className="flex items-center">
+              <Link  href="/track" className="flex items-center">
                 <Truck size={18} strokeWidth={1.5} />
               </Link>
             </PressScale>
@@ -508,7 +508,7 @@ export default function GlobalHeader() {
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }} className="flex items-center">
             <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
-              <Link prefetch={false} href={user ? "/profile" : "/login"} className="flex items-center justify-center">
+              <Link  href={user ? "/profile" : "/login"} className="flex items-center justify-center">
                 {profileAvatar ? (
                   <div className={cn("relative w-[20px] h-[20px] rounded-full overflow-hidden shadow-sm ring-1 ring-offset-1", isDarkBg ? "ring-white/20 ring-offset-transparent" : "ring-ink/10 ring-offset-white")}>
                     <Image src={profileAvatar} alt="Profile" fill className="object-cover" />

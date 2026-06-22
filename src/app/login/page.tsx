@@ -97,7 +97,7 @@ export default function LoginPage() {
       {isMobile ? (
         /* MOBILE: Full width card */
         <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
+          <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
             <ArrowLeft size={14} />
             <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
           </Link>
@@ -185,11 +185,11 @@ export default function LoginPage() {
             <div className="pt-6 border-t border-ink/5 flex flex-col gap-4">
               <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/40">
                 Belum punya akun?{' '}
-                <Link prefetch={false} href="/register" className="text-rose font-bold hover:text-ink transition-colors">
+                <Link  href="/register" className="text-rose font-bold hover:text-ink transition-colors">
                   Daftar di sini
                 </Link>
               </p>
-              <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
+              <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
                 <span>Lanjut sebagai Tamu (Checkout)</span>
                 <ArrowRight size={12} />
               </Link>
@@ -205,7 +205,7 @@ export default function LoginPage() {
         >
           <div className="w-full md:w-[500px] lg:w-[560px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link prefetch={false} href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
+            <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
@@ -294,11 +294,11 @@ export default function LoginPage() {
               <div className="pt-6 border-t border-ink/5 flex flex-col gap-4">
                 <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/50">
                   Belum punya akun?{' '}
-                  <Link prefetch={false} href="/register" className="text-rose font-bold hover:text-ink transition-colors">
+                  <Link  href="/register" className="text-rose font-bold hover:text-ink transition-colors">
                     Daftar di sini
                   </Link>
                 </p>
-                <Link prefetch={false} href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
+                <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
                   <span>Lanjut sebagai Tamu (Checkout)</span>
                   <ArrowRight size={12} />
                 </Link>
