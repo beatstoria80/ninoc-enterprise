@@ -570,15 +570,18 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   {(() => {
                     const desc = localizedDescription || 'Premium quality apparel from NINOC.';
                     const charLimit = (activeInfoTab === 'measurement' && !isWidescreen) ? 80 : 200;
-                    if (isExpanded && activeInfoTab !== 'measurement') return desc;
+                    if (isExpanded && (activeInfoTab !== 'measurement' || isWidescreen)) return desc;
                     if (desc.length <= charLimit) return desc;
                     return desc.slice(0, charLimit) + '…';
                   })()}
                 </motion.p>
-                {(localizedDescription || '').length > 200 && activeInfoTab !== 'measurement' && (
+                {(localizedDescription || '').length > 200 && (activeInfoTab !== 'measurement' || isWidescreen) && (
                   <motion.button
                     variants={textVariants}
-                    onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
+                    onClick={() => { 
+                      setIsExpanded(!isExpanded); 
+                      if (!isWidescreen && activeInfoTab === 'measurement') setActiveInfoTab('specs'); 
+                    }}
                     className="text-xs md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
                     {isExpanded ? 'Less' : 'More'}
