@@ -72,9 +72,9 @@ const DURATION = {
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: PakaianIcon, href: '/category?cat=pakaian', spec: 'GARMENT-001' },
-  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: UtilitiesIcon, href: '/category?cat=utilities', spec: 'UTIL-002' },
-  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: AksesorisIcon, href: '/category?cat=aksesoris', spec: 'ACCS-003' },
+  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: PakaianIcon, href: '/shop?filter=Fashion', spec: 'GARMENT-001' },
+  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: UtilitiesIcon, href: '/shop?filter=Utilities', spec: 'UTIL-002' },
+  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: AksesorisIcon, href: '/shop?filter=Accessories', spec: 'ACCS-003' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
