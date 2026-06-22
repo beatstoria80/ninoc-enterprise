@@ -385,7 +385,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,2fr)_minmax(0,1fr)] xl:grid-cols-[85px_minmax(0,1.25fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
         >
 
           <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
@@ -483,7 +483,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             )}
           </motion.div>
 
-          <motion.div variants={columnVariants} className="col-span-1 flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:h-full">
+          {/* Combined Product Info & Options Column */}
+          <div className="col-span-1 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 w-full">
+            {/* Column 3: Product Info */}
+            <motion.div variants={columnVariants} className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="space-y-0.5 lg:space-y-1 shrink-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 mb-0.5 lg:mb-1">
@@ -607,7 +610,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             </div>
           </motion.div>
 
-          <motion.div variants={columnVariants} className="col-span-1 flex flex-col py-0 lg:py-1 lg:pl-0">
+          {/* Column 4: Options / Purchase Details */}
+          <motion.div variants={columnVariants} className="flex flex-col py-0 lg:py-1 lg:pl-0">
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {hasSizes && (
                 <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
@@ -756,6 +760,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               )}
             </div>
           </motion.div>
+          </div>
 
           <motion.div 
             variants={columnVariants}
