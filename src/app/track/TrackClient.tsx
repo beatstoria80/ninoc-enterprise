@@ -341,7 +341,7 @@ export default function TrackClient() {
         <div className="h-[90px] lg:hidden w-full shrink-0" />
 
         {!loading && searched && order ? (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6 items-stretch flex-1 lg:h-[calc(100vh-180px)] pb-10 lg:pb-0 px-4 sm:px-0 lg:mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6 items-stretch flex-1 lg:h-[calc(100vh-180px)] pb-32 lg:pb-0 px-4 sm:px-0 lg:mt-4">
             {/* GRID 1: Form & Overview */}
             <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
               {renderForm()}
@@ -521,7 +521,7 @@ export default function TrackClient() {
             </div>
           </div>
         ) : (
-          <div className="max-w-[500px] w-full mx-auto mt-4 lg:mt-10 px-4 sm:px-0">
+          <div className="max-w-[500px] w-full mx-auto mt-0 lg:mt-10 px-4 sm:px-0 pb-32 lg:pb-0">
             {renderForm()}
             {!loading && !searched && (
               <div className="flex flex-col items-center py-16 gap-4 text-ink/20 mt-8 border border-ink/5 bg-ink/[0.01]">
