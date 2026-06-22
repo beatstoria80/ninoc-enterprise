@@ -645,9 +645,9 @@ export default function MobileLayout({
           initial={{ y: 0 }}
           animate={{ y: isNavVisible ? 0 : 120 }}
           transition={{ duration: DURATION.medium, ease: EASING.out }}
-          className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none"
+          className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
+          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)] pt-1.5">
 
             {/* Home */}
             <button
@@ -669,12 +669,12 @@ export default function MobileLayout({
                 transition={{ duration: DURATION.fast }}
                 className={cn(
                   "transition-colors",
-                  isActive('/') ? "text-rose" : "text-ink/30"
+                  isActive('/') ? "text-rose" : "text-white/40"
                 )}
               >
                 <HomeIcon active={isActive('/')} />
               </motion.div>
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-white/50")}>
                 Home
               </span>
               {isActive('/') && (
@@ -689,7 +689,7 @@ export default function MobileLayout({
             <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
               <motion.div
                 animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
-                className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-ink/30")}
+                className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/40")}
               >
                 <CartIcon active={isActive('/checkout')} />
               </motion.div>
@@ -703,7 +703,7 @@ export default function MobileLayout({
                   {cartCount}
                 </motion.span>
               )}
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-white/50")}>
                 Cart
               </span>
             </Link>
@@ -711,7 +711,7 @@ export default function MobileLayout({
             {/* Support */}
             <PressScale
               onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))}
-              className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] text-ink/30"
+              className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] text-white/40"
             >
               <div className="relative">
                 <HeadphonesIcon />
@@ -725,18 +725,18 @@ export default function MobileLayout({
                   </motion.span>
                 )}
               </div>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-ink/40">Support</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">Support</span>
             </PressScale>
 
             {/* Profile */}
             <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
-                className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-ink/30")}
+                className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-white/40")}
               >
                 <UserIcon active={isActive('/profile')} />
               </motion.div>
-              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-ink/40")}>
+              <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-white/50")}>
                 Profile
               </span>
             </Link>
