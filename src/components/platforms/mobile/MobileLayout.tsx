@@ -631,7 +631,7 @@ export default function MobileLayout({
       <main className={cn(
         "flex-1 overflow-y-auto",
         !hideHeader && "pt-14",
-        !hideTabBar && "pb-[calc(80px+env(safe-area-inset-bottom))]",
+        !hideTabBar && "pb-[calc(68px+env(safe-area-inset-bottom))]",
         "ios-momentum-scroll"
       )}>
         {children}
@@ -647,7 +647,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-t border-ink/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(64px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
+          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
             <button

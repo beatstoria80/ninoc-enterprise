@@ -811,25 +811,15 @@ export default function CheckoutPage() {
                 </div>
               </div>
               
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center border-b border-ink/10 pb-3">
                 <div className="flex flex-col">
                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">{dict.checkout.totalInvestment}</span>
                   <span className="text-lg md:text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
-                <button 
-                  type="button"
-                  onClick={() => {
-                    const el = document.getElementById('mobile-item-list');
-                    if (el) el.classList.toggle('hidden');
-                  }}
-                  className="px-3 py-1.5 border border-ink/10 rounded-none text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors"
-                >
-                  {dict.checkout.viewDetails}
-                </button>
               </div>
 
-              {/* Collapsible Item List for Mobile */}
-              <div id="mobile-item-list" className="hidden pt-4 space-y-3 border-t border-ink/5">
+              {/* Always Visible Item List for Mobile */}
+              <div id="mobile-item-list" className="pt-2 space-y-3">
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center">
                     <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
