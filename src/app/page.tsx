@@ -376,18 +376,18 @@ function ProductCard({ product, index }: ProductCardProps) {
               IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </motion.p>
 
-            <div className="flex gap-1">
+            <div className="flex gap-1.5">
               <motion.button
                 onClick={handleQuickBuy}
-                className="w-6 h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
+                className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: DURATION.fast, ease: EASING.out }}
               >
-                <ShoppingCart className="w-3 h-3" />
+                <ShoppingCart className="w-4 h-4" />
               </motion.button>
               <motion.div
-                className="w-6 h-6 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
                 style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -397,7 +397,7 @@ function ProductCard({ product, index }: ProductCardProps) {
                   animate={{ x: isHovered ? 2 : 0, color: isHovered ? '#ffffff' : '#141414' }}
                   transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <ChevronRight className="w-3 h-3" />
+                  <ChevronRight className="w-4 h-4" />
                 </motion.div>
               </motion.div>
             </div>
