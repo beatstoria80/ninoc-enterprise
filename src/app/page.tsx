@@ -310,10 +310,10 @@ function ProductCard({ product, index }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-4 group relative overflow-hidden block border border-transparent hover:border-ink/5">
+      <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-3 group relative overflow-hidden block border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
-          className="aspect-square overflow-hidden mb-2 md:mb-3 relative bg-ink/5 border border-ink/5"
+          className="aspect-[4/5] overflow-hidden mb-1.5 md:mb-2 relative bg-ink/5 border border-ink/5"
           animate={{ scale: isHovered ? 1.02 : 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
@@ -340,74 +340,68 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1.5">
+        <motion.div variants={cardContentVariants} className="space-y-0.5">
           <motion.p
-            className="text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60"
-            animate={{ opacity: isHovered ? 1 : 0.8 }}
+            className="text-[9px] md:text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/50 leading-none"
+            animate={{ opacity: isHovered ? 1 : 0.7 }}
             transition={{ duration: DURATION.fast }}
           >
             {categoryInfo?.label || 'Garment Origin'}
           </motion.p>
 
           <motion.h3
-            className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tighter line-clamp-2 leading-tight"
+            className="text-[11px] md:text-xs font-display font-medium italic uppercase tracking-tighter line-clamp-2 leading-snug"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
             {product.name}
           </motion.h3>
 
-          <motion.div
-            className="flex flex-col justify-between pt-1.5 md:pt-2 border-t border-ink/5 mt-1 md:mt-1.5 gap-1"
-            animate={{ opacity: isHovered ? 1 : 0.8 }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.price_tag && (
-              <motion.p
-                className="text-[10px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-rose leading-none"
-                animate={{ scale: isHovered ? 1.05 : 1 }}
-                transition={{ duration: DURATION.fast }}
-              >
-                {product.price_tag}
-              </motion.p>
-            )}
+          {product.price_tag && (
+            <motion.p
+              className="text-[9px] font-bold uppercase tracking-[0.15em] text-rose leading-none"
+              animate={{ scale: isHovered ? 1.05 : 1 }}
+              transition={{ duration: DURATION.fast }}
+            >
+              {product.price_tag}
+            </motion.p>
+          )}
 
-            <div className="flex items-center justify-between mt-0.5">
-              <motion.p
-                className="text-sm md:text-sm font-display font-medium italic text-ink whitespace-nowrap"
-                animate={{ scale: isHovered ? 1.02 : 1 }}
-                transition={{ duration: DURATION.fast }}
-              >
-                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </motion.p>
+          <div className="flex items-center justify-between pt-1 border-t border-ink/5 mt-1">
+            <motion.p
+              className="text-xs md:text-[12px] font-display font-medium italic text-ink whitespace-nowrap leading-none"
+              animate={{ scale: isHovered ? 1.02 : 1 }}
+              transition={{ duration: DURATION.fast }}
+            >
+              IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </motion.p>
 
-              <div className="flex gap-1.5">
-                <motion.button
-                  onClick={handleQuickBuy}
-                  className="w-8 h-8 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: DURATION.fast, ease: EASING.out }}
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                </motion.button>
+            <div className="flex gap-1">
+              <motion.button
+                onClick={handleQuickBuy}
+                className="w-6 h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: DURATION.fast, ease: EASING.out }}
+              >
+                <ShoppingCart className="w-3 h-3" />
+              </motion.button>
+              <motion.div
+                className="w-6 h-6 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: DURATION.fast, ease: EASING.out }}
+              >
                 <motion.div
-                  className="w-8 h-8 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
-                  style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
+                  animate={{ x: isHovered ? 2 : 0, color: isHovered ? '#ffffff' : '#141414' }}
                   transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <motion.div
-                    animate={{ x: isHovered ? 3 : 0, color: isHovered ? '#ffffff' : '#141414' }}
-                    transition={{ duration: DURATION.fast, ease: EASING.out }}
-                  >
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </motion.div>
+                  <ChevronRight className="w-3 h-3" />
                 </motion.div>
-              </div>
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </PressButton>
     </motion.div>
