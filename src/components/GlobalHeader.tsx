@@ -442,7 +442,18 @@ export default function GlobalHeader() {
 
           {/* Logo */}
           <motion.div className="relative flex flex-col">
-            <Link  href="/" className="cursor-pointer group flex flex-col focus:outline-none rounded-sm">
+            <Link
+              href="/"
+              className="cursor-pointer group flex flex-col focus:outline-none rounded-sm"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  sessionStorage.setItem('ninoc_intro_played', 'true');
+                  if (window.location.pathname === '/' || window.location.pathname === '/en') {
+                    window.dispatchEvent(new CustomEvent('skip-intro'));
+                  }
+                }
+              }}
+            >
               <motion.div
                 className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}

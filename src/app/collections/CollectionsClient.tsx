@@ -288,30 +288,32 @@ function ProductCard({ product }: { product: Product }) {
             {product.name}
           </motion.h3>
 
-          <motion.div
-            className="flex items-center justify-between"
-            animate={{ opacity: isHovered ? 1 : 0.6 }}
-            transition={{ duration: DURATION.fast }}
-          >
-            <div className="flex items-center gap-1.5">
+          <div className="space-y-1 mt-auto pt-1 border-t border-ink/5">
+            {product.price_tag && (
+              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
+                <span className="text-[6px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
+                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  {product.price_tag}
+                </span>
+              </div>
+            )}
+            <motion.div
+              className="flex items-center justify-between"
+              animate={{ opacity: isHovered ? 1 : 0.6 }}
+              transition={{ duration: DURATION.fast }}
+            >
               <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50 block">
                 IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </span>
-              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02]">
-                <span className="text-[6px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
-                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  PROMO
-                </span>
-              </div>
-            </div>
-            <motion.button
-              onClick={handleQuickBuy}
-              className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
-              animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
-            >
-              <ShoppingCart className="w-3 h-3" />
-            </motion.button>
-          </motion.div>
+              <motion.button
+                onClick={handleQuickBuy}
+                className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
+                animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+              >
+                <ShoppingCart className="w-3 h-3" />
+              </motion.button>
+            </motion.div>
+          </div>
         </div>
       </Link>
     </motion.div>

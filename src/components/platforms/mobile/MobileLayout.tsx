@@ -345,7 +345,16 @@ export default function MobileLayout({
                   <BackIcon />
                 </PressScale>
               ) : pathname === '/' ? (
-                <Link  href="/" className="flex items-center">
+                <Link
+                  href="/"
+                  className="flex items-center"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      sessionStorage.setItem('ninoc_intro_played', 'true');
+                      window.dispatchEvent(new CustomEvent('skip-intro'));
+                    }
+                  }}
+                >
                   <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
                 </Link>
               ) : pathname === '/shop' ? (
@@ -643,10 +652,14 @@ export default function MobileLayout({
             {/* Home */}
             <button
               onClick={() => {
-                if (pathname === '/') {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                  router.push('/');
+                if (typeof window !== 'undefined') {
+                  sessionStorage.setItem('ninoc_intro_played', 'true');
+                  if (pathname === '/' || pathname === '/en') {
+                    window.dispatchEvent(new CustomEvent('skip-intro'));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    router.push('/');
+                  }
                 }
               }}
               className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]"
