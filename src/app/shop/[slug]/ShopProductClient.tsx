@@ -123,6 +123,17 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
 
   const { isMobile, isIPhone } = useDevice();
+  const [isWidescreen, setIsWidescreen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => {
+      setIsWidescreen(window.innerWidth >= 1536);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Default fallbacks if admin does not provide data
   const DEFAULT_SPECS = [
@@ -361,7 +372,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         addItem(productToAdd, effectiveSize, effectiveColor, surcharge);
       }
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
+      
+      if (!isWidescreen) {
+        router.push('/checkout');
+      } else {
+        setTimeout(() => setAddedToCart(false), 2000);
+      }
     }
   };
 
@@ -385,7 +401,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 mt-0 lg:mt-2"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] 2xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 2xl:gap-6 mt-0 lg:mt-2"
         >
 
           <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
@@ -737,7 +753,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                               </motion.div>
                             )}
                           </div>
-                          <span>ADD TO CART</span>
+                          <span>
+                            {isWidescreen ? dict.product.addToCart : dict.product.checkout.toUpperCase()}
+                          </span>
                         </div>
                       )}
                   </motion.button>
@@ -765,10 +783,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           <motion.div 
             variants={columnVariants}
             className={cn(
-              "col-span-2 xl:col-span-1 flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
+              "col-span-2 2xl:col-span-1 flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
               isMobile 
                 ? (items.length === 0 ? "hidden" : "flex") 
-                : "hidden xl:flex"
+                : "hidden 2xl:flex"
             )}
           >
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
