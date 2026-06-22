@@ -523,7 +523,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(350px, 45vw, 550px)' }}>
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5" style={{ minHeight: 'clamp(300px, 38vw, 480px)' }}>
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
