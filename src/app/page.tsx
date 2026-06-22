@@ -993,8 +993,8 @@ export default function Home() {
             )}
           </DragSlider>
           <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block z-10" />
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-12 bg-white/90 backdrop-blur-sm border-y border-l border-ink/10 flex items-center justify-center pointer-events-none z-10 md:hidden rounded-l-lg shadow-[0_0_15px_rgba(0,0,0,0.05)]">
-            <ChevronRight className="w-4 h-4 text-ink/50 animate-[pulse_2s_ease-in-out_infinite]" />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10 md:hidden">
+            <ChevronRight className="w-6 h-6 text-ink/60 drop-shadow-md animate-[pulse_1.5s_ease-in-out_infinite]" />
           </div>
         </div>
       </section>
