@@ -278,18 +278,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         </div>
                       )}
 
-                      <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
-                          }}
-                          className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-ink scale-95 opacity-0 group-hover/card:scale-100 group-hover/card:opacity-100 transition-all duration-200 ease-out shadow-xl hover:bg-rose hover:text-white"
-                        >
-                          <ShoppingBag size={18} />
-                        </button>
-                      </div>
+
                     </div>
 
                     <div className="p-2.5 flex flex-col flex-grow justify-between gap-2">
@@ -302,16 +291,28 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         </p>
                       </div>
 
-                      <div className="space-y-2">
-                        {product.price_tag === 'REDEEM' ? (
-                          <div className="text-xs md:text-[10px] md:text-xs font-display font-medium italic text-rose">
-                            {(product.price ?? 0).toLocaleString('id-ID')} POINTS
-                          </div>
-                        ) : (
-                          <div className="text-xs md:text-[10px] md:text-xs font-display font-medium italic text-rose">
-                            IDR {(product.price ?? 0).toLocaleString('id-ID')}
-                          </div>
-                        )}
+                      <div className="space-y-2 mt-auto">
+                        <div className="flex items-center justify-between">
+                          {product.price_tag === 'REDEEM' ? (
+                            <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                              {(product.price ?? 0).toLocaleString('id-ID')} PTS
+                            </div>
+                          ) : (
+                            <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                              IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                            </div>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                            }}
+                            className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200"
+                          >
+                            <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />
+                          </button>
+                        </div>
 
                         <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                           <div className="flex items-center gap-1.5 opacity-40">
