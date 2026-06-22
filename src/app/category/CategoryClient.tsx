@@ -182,16 +182,7 @@ export default function CategoryClient({ initialProducts = [] }: { initialProduc
           </AnimatePresence>
         </div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: DURATION.medium }} className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5">
-          <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 md:py-4 flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Units</p><p className="text-lg font-display font-medium italic text-ink">{products.length}</p></motion.div>
-              <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
-              <motion.div className="space-y-0.5" whileHover={{ scale: 1.05 }} transition={{ duration: DURATION.fast }}><p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Active Categories</p><p className="text-lg font-display font-medium italic text-ink">{CATEGORIES.length}</p></motion.div>
-            </div>
-            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose"><span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span><ChevronRight size={14} /></PressButton>
-          </div>
-        </motion.div>
+
       </div>
     </main>
   );
