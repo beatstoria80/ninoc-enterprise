@@ -340,9 +340,9 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={cardContentVariants} className="space-y-1 md:space-y-1">
+        <motion.div variants={cardContentVariants} className="space-y-1.5 md:space-y-2">
           <motion.p
-            className="text-[10px] md:text-[7px] font-semibold uppercase tracking-[0.2em] text-ink/60"
+            className="text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60"
             animate={{ opacity: isHovered ? 1 : 0.8 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -350,7 +350,7 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.p>
 
           <motion.h3
-            className="text-xs md:text-xs font-display font-medium italic uppercase tracking-tighter line-clamp-1"
+            className="text-xs md:text-sm font-display font-medium italic uppercase tracking-tighter line-clamp-1"
             animate={isHovered ? brandColor : darkColor}
             transition={{ duration: DURATION.fast }}
           >
@@ -358,15 +358,15 @@ function ProductCard({ product, index }: ProductCardProps) {
           </motion.h3>
 
           <motion.div
-            className="flex flex-col justify-between pt-1 md:pt-1.5 border-t border-ink/5 mt-1 md:mt-1.5 gap-1 md:gap-1.5"
+            className="flex flex-col justify-between pt-1.5 md:pt-2 border-t border-ink/5 mt-1.5 md:mt-2 gap-1.5 md:gap-2"
             animate={{ opacity: isHovered ? 1 : 0.8 }}
             transition={{ duration: DURATION.fast }}
           >
             <div className="space-y-0.5">
-              <p className="text-[10px] md:text-[6px] font-semibold uppercase tracking-[0.25em] text-ink/50 leading-none">Archival Issue</p>
+              <p className="text-[10px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-ink/50 leading-none">Archival Issue</p>
               {product.price_tag && (
                 <motion.p
-                  className="text-[10px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-rose leading-none"
+                  className="text-[10px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-rose leading-none"
                   animate={{ scale: isHovered ? 1.05 : 1 }}
                   transition={{ duration: DURATION.fast }}
                 >
@@ -377,7 +377,7 @@ function ProductCard({ product, index }: ProductCardProps) {
 
             <div className="flex items-center justify-between mt-0.5">
               <motion.p
-                className="text-sm md:text-[11px] font-display font-medium italic text-ink whitespace-nowrap"
+                className="text-sm md:text-sm font-display font-medium italic text-ink whitespace-nowrap"
                 animate={{ scale: isHovered ? 1.02 : 1 }}
                 transition={{ duration: DURATION.fast }}
               >
@@ -387,22 +387,27 @@ function ProductCard({ product, index }: ProductCardProps) {
               <div className="flex gap-1.5">
                 <motion.button
                   onClick={handleQuickBuy}
-                  className="w-8 h-8 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
-                  animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+                  className="w-8 h-8 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-all duration-200"
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5" />
+                  <ShoppingCart className="w-4 h-4" />
                 </motion.button>
-                <div
-                  className="w-8 h-8 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200"
+                <motion.div
+                  className="w-8 h-8 md:w-8 md:h-8 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
                   style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <div
-                    style={{ transform: isHovered ? 'translateX(4px)' : 'translateX(0px)', color: isHovered ? '#ffffff' : '#141414' }}
-                    className="transition-all duration-200"
+                  <motion.div
+                    animate={{ x: isHovered ? 3 : 0, color: isHovered ? '#ffffff' : '#141414' }}
+                    transition={{ duration: DURATION.fast, ease: EASING.out }}
                   >
-                    <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                  </div>
-                </div>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
           </motion.div>
@@ -945,7 +950,7 @@ export default function Home() {
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[45vw] md:w-[160px] flex-shrink-0">
+                <div key={product.id} className="w-[45vw] md:w-[220px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))
