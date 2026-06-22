@@ -321,9 +321,10 @@ export default function TrackClient() {
   );
 
   return (
-    <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
-      <div className="flex-1 pt-0 lg:pt-20 max-w-[1600px] w-full mx-auto px-4 sm:px-6 flex flex-col">
-        <div className="border-b border-ink/5 pb-3 mb-4 flex justify-between items-start shrink-0 sticky top-0 lg:static bg-white z-30 pt-[max(env(safe-area-inset-top),16px)] lg:pt-4 lg:-mt-4">
+    <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white relative">
+      <div className="flex-1 pt-0 lg:pt-20 max-w-[1600px] w-full mx-auto px-0 sm:px-6 flex flex-col">
+        {/* Mobile Fixed Header / Desktop Static Header */}
+        <div className="border-b border-ink/5 pb-3 flex justify-between items-start shrink-0 fixed top-0 left-0 right-0 lg:static bg-white z-40 px-4 sm:px-0 pt-[max(env(safe-area-inset-top),16px)] lg:pt-4 lg:-mt-4">
           <div>
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
@@ -336,8 +337,11 @@ export default function TrackClient() {
           </Link>
         </div>
 
+        {/* Spacer for mobile fixed header */}
+        <div className="h-[90px] lg:hidden w-full shrink-0" />
+
         {!loading && searched && order ? (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6 items-stretch flex-1 lg:h-[calc(100vh-180px)] pb-10 lg:pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6 items-stretch flex-1 lg:h-[calc(100vh-180px)] pb-10 lg:pb-0 px-4 sm:px-0 lg:mt-4">
             {/* GRID 1: Form & Overview */}
             <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
               {renderForm()}
@@ -517,7 +521,7 @@ export default function TrackClient() {
             </div>
           </div>
         ) : (
-          <div className="max-w-[500px] w-full mx-auto mt-10">
+          <div className="max-w-[500px] w-full mx-auto mt-4 lg:mt-10 px-4 sm:px-0">
             {renderForm()}
             {!loading && !searched && (
               <div className="flex flex-col items-center py-16 gap-4 text-ink/20 mt-8 border border-ink/5 bg-ink/[0.01]">
