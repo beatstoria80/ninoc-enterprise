@@ -509,7 +509,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     {product.price_tag}
                   </motion.div>
                 )}
-                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-base font-display font-medium italic text-rose mt-0.5">IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</motion.p>
+                <motion.div variants={textVariants} className="flex items-center gap-3 mt-0.5">
+                  <p className="text-base md:text-sm lg:text-base font-display font-medium italic text-rose">
+                    IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </p>
+                  <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] cursor-pointer hover:bg-rose/5 transition-colors group">
+                    <span className="text-[10px] md:text-[8px] font-medium text-rose uppercase tracking-[0.2em] flex items-center gap-1">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose group-hover:scale-110 transition-transform">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      {product.price_tag === 'SALE' ? 'Redeem Promo' : 'Available Promo'}
+                    </span>
+                  </div>
+                </motion.div>
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
