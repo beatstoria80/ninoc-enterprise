@@ -322,8 +322,8 @@ export default function TrackClient() {
 
   return (
     <main className="min-h-screen flex flex-col bg-white text-ink font-medium selection:bg-ink selection:text-white">
-      <div className="flex-1 pt-20 max-w-[1600px] w-full mx-auto px-4 sm:px-6 flex flex-col">
-        <div className="border-b border-ink/5 pb-4 mb-6 flex justify-between items-start shrink-0 sticky top-14 lg:static bg-white z-30 pt-4 -mt-4">
+      <div className="flex-1 pt-0 lg:pt-20 max-w-[1600px] w-full mx-auto px-4 sm:px-6 flex flex-col">
+        <div className="border-b border-ink/5 pb-3 mb-4 flex justify-between items-start shrink-0 sticky top-0 lg:static bg-white z-30 pt-[max(env(safe-area-inset-top),16px)] lg:pt-4 lg:-mt-4">
           <div>
             <div className="flex items-baseline gap-4">
               <h1 className="font-display font-medium italic text-2xl tracking-tighter uppercase text-ink">Track Order</h1>
@@ -331,7 +331,7 @@ export default function TrackClient() {
             </div>
             <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Sistem Pelacakan Real-Time</p>
           </div>
-          <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0" title="Kembali ke Beranda">
+          <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0 mt-1" title="Kembali ke Beranda">
             <X size={14} strokeWidth={1.5} />
           </Link>
         </div>
