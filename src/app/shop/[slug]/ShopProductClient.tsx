@@ -546,12 +546,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
-                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {isExpanded || (localizedDescription || '').length <= 200
-                    ? localizedDescription || 'Premium quality apparel from NINOC.'
-                    : (localizedDescription || '').slice(0, 200) + '…'}
+                <motion.p 
+                  variants={textVariants} 
+                  className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap transition-all duration-300"
+                  animate={{ opacity: activeInfoTab === 'measurement' && !isWidescreen ? 0.6 : 1 }}
+                >
+                  {(() => {
+                    const desc = localizedDescription || 'Premium quality apparel from NINOC.';
+                    const charLimit = (activeInfoTab === 'measurement' && !isWidescreen) ? 80 : 200;
+                    if (isExpanded && activeInfoTab !== 'measurement') return desc;
+                    if (desc.length <= charLimit) return desc;
+                    return desc.slice(0, charLimit) + '…';
+                  })()}
                 </motion.p>
-                {(localizedDescription || '').length > 200 && (
+                {(localizedDescription || '').length > 200 && activeInfoTab !== 'measurement' && (
                   <motion.button
                     variants={textVariants}
                     onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
