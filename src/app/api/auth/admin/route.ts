@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const correctUsername = process.env.ADMIN_USERNAME || 'superadmin';
     const correctPassword = process.env.ADMIN_SECRET_PASSWORD || 'Hitamputih#100';
 
-    const isAuthorized = username === correctUsername && password === correctPassword;
+    const isAuthorized = username?.toLowerCase() === correctUsername.toLowerCase() && password === correctPassword;
 
     if (isAuthorized) {
       // Set HttpOnly cookie

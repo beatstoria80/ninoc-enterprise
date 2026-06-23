@@ -31,6 +31,20 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      // Admin Portal Seamless Login
+      if (!email.includes('@') && email !== 'adm') {
+        const res = await fetch('/api/auth/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: email, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          router.push('/admin');
+          return;
+        }
+      }
+
       let loginEmail = email;
       let loginPassword = password;
 
