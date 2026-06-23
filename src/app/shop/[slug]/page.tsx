@@ -6,7 +6,7 @@ import { getDictionary } from '@/lib/i18n-server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
 interface Props {
   params: Promise<{ slug: string }>;

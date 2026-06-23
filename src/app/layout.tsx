@@ -22,7 +22,7 @@ const poppins = {
   variable: "--font-display",
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
 export async function generateMetadata(): Promise<Metadata> {
   const { headers } = await import('next/headers');

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import ShopClient from './ShopClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
 export const metadata: Metadata = {
   title: 'Shop — Premium Archival Garment Studio',

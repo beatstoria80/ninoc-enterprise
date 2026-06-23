@@ -195,7 +195,7 @@ export async function POST(req: Request) {
             maximumFractionDigits: 0,
           })}`;
 
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+          const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
           const trackId = order.order_number || order.id;
           const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 

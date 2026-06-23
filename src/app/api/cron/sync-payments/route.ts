@@ -108,7 +108,7 @@ export async function GET() {
 
               if (formattedPhone) {
                 const formattedPrice = `Rp ${Number(fullOrder.total_price).toLocaleString('id-ID')}`;
-                const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+                const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
                 const trackId = fullOrder.order_number || fullOrder.id;
                 const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 

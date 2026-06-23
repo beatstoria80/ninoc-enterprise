@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import TrackClient from './TrackClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
 export const metadata: Metadata = {
   title: 'Lacak Pesanan — Track Order',

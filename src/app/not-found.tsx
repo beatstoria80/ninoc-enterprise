@@ -1,7 +1,7 @@
 import Link from '@/components/LocalizedLink';
 import { Metadata } from 'next';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
 export const metadata: Metadata = {
   title: '404 — Halaman Tidak Ditemukan',

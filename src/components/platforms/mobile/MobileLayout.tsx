@@ -271,10 +271,15 @@ export default function MobileLayout({
     }
     setIsSearching(true);
     try {
+      const queryClean = query.trim();
+      const queryFlexible = queryClean.replace(/\s+/g, '%');
+      const queryNoSpace = queryClean.replace(/\s+/g, '');
+      const searchCondition = `name.ilike.%${queryClean}%,name.ilike.%${queryFlexible}%,name.ilike.%${queryNoSpace}%`;
+
       const { data } = await supabase
         .from('products')
         .select('*')
-        .ilike('name', `%${query}%`)
+        .or(searchCondition)
         .limit(10);
       setSearchResults(data || []);
     } catch (e) {

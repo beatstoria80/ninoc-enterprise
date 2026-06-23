@@ -405,10 +405,15 @@ export default function GlobalHeader() {
         return;
       }
       setIsSearching(true);
+      const queryClean = searchQuery.trim();
+      const queryFlexible = queryClean.replace(/\s+/g, '%');
+      const queryNoSpace = queryClean.replace(/\s+/g, '');
+      const searchCondition = `name.ilike.%${queryClean}%,name.ilike.%${queryFlexible}%,name.ilike.%${queryNoSpace}%`;
+
       const { data } = await supabase
         .from('products')
         .select('*')
-        .ilike('name', `%${searchQuery}%`)
+        .or(searchCondition)
         .limit(5);
       setSearchResults(data || []);
       setIsSearching(false);
