@@ -96,6 +96,55 @@ interface CheckoutFormData {
   address_type: string;
 }
 
+function getEstimatedDeliveryDate(durationStr: string, isLateForInstant: boolean, courierName: string): string {
+  if (!durationStr) return '';
+  const lower = durationStr.toLowerCase();
+  const cName = courierName.toLowerCase();
+  
+  const today = new Date();
+  
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+  };
+  
+  const addDays = (date: Date, days: number) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
+  const isInstantSameday = lower.includes('hour') || lower.includes('same day') || lower.includes('instant') || cName.includes('gosend') || cName.includes('grab');
+
+  if (isInstantSameday) {
+    if (isLateForInstant) {
+      return `Diterima Besok (${formatDate(addDays(today, 1))})`;
+    }
+    return `Diterima Hari Ini (${formatDate(today)})`;
+  }
+  
+  const rangeMatch = durationStr.match(/(\d+)\s*-\s*(\d+)/);
+  if (rangeMatch) {
+    const minDays = parseInt(rangeMatch[1]);
+    const maxDays = parseInt(rangeMatch[2]);
+    const minDate = addDays(today, minDays);
+    const maxDate = addDays(today, maxDays);
+    if (minDate.getMonth() === maxDate.getMonth()) {
+        return `Diterima ${minDate.getDate()} - ${formatDate(maxDate)}`;
+    }
+    return `Diterima ${formatDate(minDate)} - ${formatDate(maxDate)}`;
+  }
+  
+  const singleMatch = durationStr.match(/(\d+)/);
+  if (singleMatch) {
+    const days = parseInt(singleMatch[1]);
+    if (days === 1) return `Diterima Besok (${formatDate(addDays(today, 1))})`;
+    const estDate = addDays(today, days);
+    return `Diterima ${formatDate(estDate)}`;
+  }
+  
+  return durationStr;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart, removeItem } = useCart();
@@ -1057,7 +1106,7 @@ export default function CheckoutPage() {
                             <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
                             <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
                           </div>
-                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} â€¢ {option.duration}</span>
+                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={cn("text-sm md:text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
@@ -1090,7 +1139,7 @@ export default function CheckoutPage() {
                             <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose">{option.courier_name}</span>
                             <span className="text-[10px] md:text-[7px] border border-white/20 px-1 py-0.5 text-white/80 uppercase tracking-widest">{option.courier_service_name}</span>
                           </div>
-                          <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-white/60">EST: <span className="text-white">{option.duration}</span></span>
+                          <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-white/60"><span className="text-white">{getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span></span>
                           <span className="text-[11px] md:text-[8px] font-medium tracking-[0.02em] text-white/50 leading-relaxed">{option.description}</span>
                           
                           {/* Triangle Arrow */}
