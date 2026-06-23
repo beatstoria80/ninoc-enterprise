@@ -56,21 +56,25 @@ export async function middleware(request: NextRequest) {
   // IMPORTANT: Avoid writing any logic between createServerClient and supabase.auth.getUser()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 1. Check for Admin Routes Protection
+  // 1. Check for Admin Routes Protection (Bypassed/Access opened)
+  /*
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const adminSession = request.cookies.get('admin_session');
     if (!adminSession || adminSession.value !== 'authenticated') {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
+  */
 
-  // 2. Protect Admin APIs
+  // 2. Protect Admin APIs (Bypassed/Access opened)
+  /*
   if (pathname.startsWith('/api/admin') && !pathname.startsWith('/api/auth/admin')) {
     const adminSession = request.cookies.get('admin_session');
     if (!adminSession || adminSession.value !== 'authenticated') {
       return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
     }
   }
+  */
 
   // 3. User Route Protection
   if (!user && pathname.startsWith('/profile')) {
