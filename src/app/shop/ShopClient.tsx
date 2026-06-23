@@ -257,8 +257,8 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
 
       <div className="pt-40 md:pt-48" />
 
-      <section className="mt-12 px-6 md:px-12 max-w-[1800px] mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8 lg:gap-12">
+      <section className="mt-12 px-6 md:px-12 max-w-[1800px] 2xl:max-w-[2400px] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-8 lg:gap-12">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => (
               <motion.div

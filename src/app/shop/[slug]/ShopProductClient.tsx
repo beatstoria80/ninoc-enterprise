@@ -414,7 +414,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] 2xl:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 2xl:gap-6 mt-0 lg:mt-2"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.3fr)_minmax(0,2.7fr)] 2xl:grid-cols-[85px_minmax(0,1fr)_minmax(0,2.6fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 2xl:gap-6 mt-0 lg:mt-2"
         >
 
           <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
