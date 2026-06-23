@@ -480,9 +480,8 @@ export default function GlobalHeader() {
         >
           <NavLink index={0} isDark={isDarkBg} href="/shop">{dict.header.shop}</NavLink>
           <NavLink index={1} isDark={isDarkBg} href="/collections">{dict.header.collections}</NavLink>
-          <NavLink index={2} isDark={isDarkBg} href="/shop">{dict.header.category}</NavLink>
-          <NavLink index={3} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
-          <NavLink index={4} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
+          <NavLink index={2} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
+          <NavLink index={3} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
         </motion.div>
 
         {/* Action Icons */}
@@ -876,7 +875,6 @@ export default function GlobalHeader() {
                 {[
                   { label: dict.header.shop, href: '/shop' },
                   { label: dict.header.collections, href: '/collections' },
-                  { label: dict.header.category, href: '/shop' },
                   { label: dict.header.affiliate, href: '/affiliate' },
                   { label: dict.header.logbook, href: '/logbook' },
                   { label: 'Supplier', href: '/supplier/apply' },
