@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2 } from 'lucide-react';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -98,7 +98,8 @@ interface CheckoutFormData {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, removeItem } = useCart();
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string; size?: string; color?: string } | null>(null);
   const dict = useDictionary();
   const [isProcessing, setIsProcessing] = useState(false);
   const isProcessingRef = useRef(false);
@@ -821,19 +822,28 @@ export default function CheckoutPage() {
               {/* Always Visible Item List for Mobile */}
               <div id="mobile-item-list" className="pt-2 space-y-3">
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center">
-                    <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
-                      {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
-                      <div className="flex items-center gap-1">
-                        <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
-                        {(item.size_surcharge || 0) > 0 && (
-                          <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
-                        )}
+                  <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center justify-between">
+                    <div className="flex gap-3 items-center flex-1 min-w-0">
+                      <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
+                        {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-1 text-ink">{item.name}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
+                          {(item.size_surcharge || 0) > 0 && (
+                            <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
+                          )}
+                        </div>
                       </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setItemToDelete({ id: item.id, name: item.name, size: item.size, color: item.color })}
+                      className="p-1.5 text-ink/30 hover:text-rose transition-colors flex-shrink-0"
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -1141,11 +1151,21 @@ export default function CheckoutPage() {
                           )}
                         </div>
                       </div>
-                      <div className="flex flex-col items-end">
-                        <p className="text-sm font-display font-medium italic text-ink/80">IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                        {(item.size_surcharge || 0) > 0 && (
-                          <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge</span>
-                        )}
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col items-end">
+                          <p className="text-sm font-display font-medium italic text-ink/80">IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                          {(item.size_surcharge || 0) > 0 && (
+                            <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge</span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setItemToDelete({ id: item.id, name: item.name, size: item.size, color: item.color })}
+                          className="p-1.5 text-ink/20 hover:text-rose hover:bg-rose/5 rounded-sm transition-all flex-shrink-0"
+                          title="Remove from cart"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -1302,6 +1322,61 @@ export default function CheckoutPage() {
           </div>
         </div>
       )}
+
+      {/* CONFIRM DELETE MODAL */}
+      <AnimatePresence>
+        {itemToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] bg-ink/50 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setItemToDelete(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="bg-white border border-ink/10 p-6 max-w-sm w-full shadow-2xl space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center text-rose flex-shrink-0">
+                  <AlertTriangle size={18} />
+                </div>
+                <div className="space-y-1 text-left">
+                  <h3 className="text-xs md:text-[10px] font-display font-medium italic uppercase tracking-wider text-ink">Hapus Produk?</h3>
+                  <p className="text-[11px] md:text-[9px] text-ink/60 uppercase tracking-widest leading-relaxed">
+                    Apakah Anda yakin ingin menghapus <span className="font-semibold text-ink">{itemToDelete.name}</span> {itemToDelete.size ? `(Ukuran: ${itemToDelete.size})` : ''} dari keranjang belanja Anda?
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setItemToDelete(null)}
+                  className="flex-1 py-2.5 bg-white border border-ink/10 text-ink text-[10px] font-semibold uppercase tracking-widest hover:bg-ink/5 transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    removeItem(itemToDelete.id, itemToDelete.size, itemToDelete.color);
+                    setItemToDelete(null);
+                    toast.success('Produk berhasil dihapus.');
+                  }}
+                  className="flex-1 py-2.5 bg-rose text-white text-[10px] font-semibold uppercase tracking-widest hover:bg-ink transition-colors cursor-pointer"
+                >
+                  Hapus
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
