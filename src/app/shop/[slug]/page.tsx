@@ -38,8 +38,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${product.name} | NINOC STORE`,
       description,
-      images: product.image_url ? [{ url: product.image_url, alt: product.name }] : [],
+      images: product.image_url ? [{ 
+        url: product.image_url, 
+        width: 1080,
+        height: 1080,
+        alt: product.name 
+      }] : [],
       type: 'website',
+      siteName: 'NINOC STORE',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | NINOC STORE`,
+      description,
+      images: product.image_url ? [product.image_url] : [],
     },
     alternates: {
       canonical: `${BASE_URL}/shop/${slug}`,
