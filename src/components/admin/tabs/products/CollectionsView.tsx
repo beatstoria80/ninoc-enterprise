@@ -121,7 +121,7 @@ export function CollectionsView() {
                 <div className="h-32 bg-gray-50 relative">
                   {collection.banner_url ? (
                     isVideoUrl(collection.banner_url) ? (
-                      <video src={collection.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                      <video src={collection.banner_url} poster="/og-image.png" className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     ) : (
                       <Image src={collection.banner_url} alt={collection.name} fill className="object-cover" />
                     )

@@ -313,7 +313,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                       {formData.banner_url ? (
                         <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 group">
                           {isVideoUrl(formData.banner_url) ? (
-                            <video src={formData.banner_url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                            <video src={formData.banner_url} poster="/og-image.png" className="w-full h-full object-cover" autoPlay muted loop playsInline />
                           ) : (
                             <Image src={formData.banner_url} alt="Banner Preview" fill className="object-cover" />
                           )}
