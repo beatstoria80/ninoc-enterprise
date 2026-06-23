@@ -259,13 +259,8 @@ export async function cancelBiteshipOrder(orderId: string, reason: string): Prom
 
 export const COURIER_LIST = [
   { id: 'jne', name: 'JNE', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_JNE.png' },
-  { id: 'jnt', name: 'J&T Express', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Logo_J%26T_Express.png' },
-  { id: 'sicepat', name: 'SiCepat', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/54/Logo-SiCepat.png' },
-  { id: 'tiki', name: 'TIKI', logo: '' },
-  { id: 'pos', name: 'POS Indonesia', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/98/Pos_Indonesia_logo.png' },
-  { id: 'anteraja', name: 'AnterAja', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Anteraja.png' },
-  { id: 'ninja', name: 'Ninja Van', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Ninja_Van_Logo.png' },
-  { id: 'lion', name: 'Lion Parcel', logo: '' },
+  { id: 'grab', name: 'GrabExpress', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Grab_logo.svg/1024px-Grab_logo.svg.png' },
+  { id: 'gojek', name: 'GoSend', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Gojek_logo_2019.svg/1024px-Gojek_logo_2019.svg.png' },
 ];
 
 export const COURIER_SERVICES: Record<string, { code: string; name: string }[]> = {
@@ -273,31 +268,14 @@ export const COURIER_SERVICES: Record<string, { code: string; name: string }[]> 
     { code: 'reg', name: 'REGULER (2-3 Days)' },
     { code: 'yes', name: 'YES (1 Day)' },
     { code: 'oke', name: 'OKE (3-5 Days)' },
+    { code: 'trucking', name: 'JTR (Cargo)' },
   ],
-  jnt: [
-    { code: 'ez', name: 'EZ (1-2 Days)' },
-    { code: 'reg', name: 'REGULER (2-3 Days)' },
+  grab: [
+    { code: 'instant', name: 'Instant (1-3 Hours)' },
+    { code: 'sameday', name: 'Same Day (6-8 Hours)' },
   ],
-  sicepat: [
-    { code: 'best', name: 'BEST (1 Day)' },
-    { code: 'siunt', name: 'SIUNT (1-2 Days)' },
-    { code: 'reg', name: 'REGULER (2-3 Days)' },
-  ],
-  tiki: [
-    { code: 'reg', name: 'REGULER' },
-    { code: 'ods', name: 'OVERNIGHT' },
-    { code: 'eco', name: 'ECO' },
-  ],
-  pos: [
-    { code: 'paket', name: 'PAKET POS' },
-    { code: 'pos', name: 'POS REGULER' },
-  ],
-  anteraja: [
-    { code: 'reg', name: 'REGULER' },
-    { code: 'same', name: 'SAME DAY' },
-  ],
-  ninja: [
-    { code: 'dlv', name: 'DELIVERY' },
-    { code: 'ndl', name: 'NEXT DAY' },
-  ],
+  gojek: [
+    { code: 'instant', name: 'Instant (1-3 Hours)' },
+    { code: 'sameday', name: 'Same Day (6-8 Hours)' },
+  ]
 };

@@ -514,7 +514,7 @@ export default function CheckoutPage() {
               destination_area_name: `${formData.city} ${formData.kecamatan}`,
               destination_area_id: formData.kecamatan,
               items: biteshipItems,
-              couriers: 'jne,jnt,sicepat,anteraja,ninja',
+              couriers: 'jne,grab,gojek',
             })
           });
           const data = await res.json();
