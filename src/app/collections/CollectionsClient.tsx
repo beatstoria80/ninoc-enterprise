@@ -217,102 +217,76 @@ function CollectionCard({ col, index }: {
 // ═══════════════════════════════════════════════════════════════
 
 function ProductCard({ product }: { product: Product }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const brandColor = useBrandColor();
-  const darkColor = { color: '#141414' };
-  const { addItem } = useCart();
   const router = useRouter();
-
-  const handleQuickBuy = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
-  };
 
   return (
     <motion.div
       variants={productCardVariants}
       whileHover="hover"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="h-full"
     >
-      <Link
-        href={`/shop/${product.slug}`}
-        className="block bg-white p-2 md:p-3 group relative overflow-hidden border border-transparent hover:border-ink/5"
-      >
-        <div className="relative mb-2 md:mb-3 overflow-hidden aspect-[4/5] bg-white flex items-center justify-center border border-ink/5">
+      <Link href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
+        <div className="aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative">
           {product.image_url ? (
-            <div className="absolute inset-3 z-10 mix-blend-multiply">
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                className="object-contain transition-transform duration-700"
-                sizes="(max-width: 768px) 30vw, 15vw"
-                style={{
-                  filter: isHovered ? 'grayscale(0%)' : 'grayscale(100%)',
-                  transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                }}
-              />
-            </div>
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              draggable={false}
+              className="select-none pointer-events-none object-cover"
+            />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-ink/10">
               <Package size={24} />
             </div>
           )}
-
-          {product.is_featured && (
-            <motion.div
-              className="absolute top-1 left-1 md:top-2 md:left-2 text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em] bg-ink text-white px-1 py-0.5"
-              animate={{ backgroundColor: isHovered ? brandColor.color : '#141414' }}
-              transition={{ duration: DURATION.fast }}
-            >
-              New
-            </motion.div>
+          {product.price_tag && (
+            <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
+              {product.price_tag}
+            </div>
           )}
         </div>
+        <div className="p-1.5 space-y-1.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 className="text-xs md:text-[10px] font-semibold uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+              {product.name}
+            </h3>
+            <p className="text-[9px] md:text-[7px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
+              {product.category}
+            </p>
+          </div>
 
-        <div className="space-y-0.5">
-          <motion.span
-            className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/25 block"
-            animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.25)' }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.category}
-          </motion.span>
-          <motion.h3
-            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight"
-            animate={isHovered ? brandColor : darkColor}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.name}
-          </motion.h3>
-
-          <div className="space-y-1 mt-auto pt-1 border-t border-ink/5">
-            {product.price_tag && (
-              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
-                <span className="text-[6px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
-                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  {product.price_tag}
-                </span>
-              </div>
-            )}
-            <motion.div
-              className="flex items-center justify-between"
-              animate={{ opacity: isHovered ? 1 : 0.6 }}
-              transition={{ duration: DURATION.fast }}
-            >
-              <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50 block">
-                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </span>
-              <motion.button
-                onClick={handleQuickBuy}
-                className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
-                animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <p className="text-xs md:text-[11px] font-display font-medium italic text-rose">
+                {product.price_tag === 'REDEEM'
+                  ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
+                  : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+              </p>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                }}
+                className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
               >
-                <ShoppingCart className="w-3 h-3" />
-              </motion.button>
-            </motion.div>
+                <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-ink/5">
+              <div className="flex items-center gap-1 opacity-40">
+                <ChevronRight size={7} />
+                <span className="text-[6px] font-medium uppercase tracking-[0.2em]">VIEW SPEC</span>
+              </div>
+              <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                AVAILABLE
+              </span>
+            </div>
           </div>
         </div>
       </Link>
@@ -332,11 +306,11 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
   // useEffect fetch removed since we use server-side initial data
 
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-4 md:px-12 pb-[120px]">
+    <main className="min-h-screen bg-cr noise pt-2 md:pt-4 px-2 md:px-4 pb-[80px]">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-8 md:mb-12">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -354,7 +328,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
         </div>
 
         {/* COLLECTION INDEX */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-8">
           {collections.map((col, index) => (
             <CollectionCard
               key={col.id}
@@ -379,7 +353,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
               animate="visible"
               exit={{ opacity: 0 }}
               transition={{ duration: DURATION.normal }}
-              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-px bg-ink/5 border border-ink/5"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1.5 bg-transparent"
             >
               {isLoading ? (
                 Array(10).fill(0).map((_, i) => (
@@ -415,9 +389,9 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: DURATION.medium }}
-          className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5"
+          className="fixed bottom-[calc(70px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5"
         >
-          <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 md:py-4 flex items-center justify-between">
+          <div className="max-w-[1800px] mx-auto px-4 py-2 flex items-center justify-between">
             <div className="flex items-center gap-8">
               <motion.div
                 className="space-y-0.5"
