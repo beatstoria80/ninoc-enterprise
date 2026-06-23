@@ -883,6 +883,17 @@ export function hasKeyword(text: string, keyword: string): boolean {
   return text.toLowerCase().includes(keyword.toLowerCase());
 }
 
+export function stripGreeting(text: string): string {
+  const lines = text.split('\n\n');
+  if (lines.length > 1) {
+    const firstParagraph = lines[0].toLowerCase();
+    if (firstParagraph.includes('halo!') || firstParagraph.includes('terima kasih') || firstParagraph.includes('senang bisa bertemu')) {
+      return lines.slice(1).join('\n\n');
+    }
+  }
+  return text;
+}
+
 export function classifyMessage(message: string): {
   category: string;
   matchedKeywords: string[];
@@ -925,9 +936,9 @@ export function classifyMessage(message: string): {
   };
 }
 
-export function getResponse(category: string, message: string): string {
+export function getResponse(category: string, message: string, isFirstReply: boolean = true): string {
   const config = AUTO_REPLY_CONFIG[category];
-  if (!config) return AUTO_REPLY_CONFIG.general.defaultResponse;
+  if (!config) return isFirstReply ? AUTO_REPLY_CONFIG.general.defaultResponse : stripGreeting(AUTO_REPLY_CONFIG.general.defaultResponse);
 
   const sortedResponses = [...config.responses].sort((a, b) => a.priority - b.priority);
 
@@ -935,10 +946,10 @@ export function getResponse(category: string, message: string): string {
     const triggers = resp.trigger.split('|');
     for (const trigger of triggers) {
       if (hasKeyword(message, trigger.trim())) {
-        return resp.content;
+        return isFirstReply ? resp.content : stripGreeting(resp.content);
       }
     }
   }
 
-  return config.defaultResponse;
+  return isFirstReply ? config.defaultResponse : stripGreeting(config.defaultResponse);
 }

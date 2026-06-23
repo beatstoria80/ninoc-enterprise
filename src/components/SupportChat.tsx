@@ -267,9 +267,12 @@ export default function SupportChat() {
       return next;
     });
 
+    // Check if this is the first reply in the current session/ticket
+    const isFirstReply = !chatMessages.some(m => m.is_auto_reply);
+
     // Classify message
     const { category: matchedCategory } = classifyMessage(msgText);
-    const responseText = getResponse(matchedCategory, msgText);
+    const responseText = getResponse(matchedCategory, msgText, isFirstReply);
 
     // Show typing indicator
     setIsTyping(true);
