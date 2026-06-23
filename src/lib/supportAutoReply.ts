@@ -31,6 +31,8 @@ export const AUTO_REPLY_CONFIG: Record<string, ReplyCategory> = {
       'dalam perjalanan', 'sedang dikirim', 'proses kirim',
       'status kirim', 'posisi barang', 'lokasi paket', 'barang saya',
       'paket', 'package', 'package delivery',
+      'stuck', 'macet', 'terlambat', 'lambat', 'delay', 'overdue',
+      'diterima', 'belum', 'pending', 'menunggu'
     ],
     responses: [
       {
@@ -80,7 +82,7 @@ Jika sudah melebihi estimasi, tolong kirimkan nomor pesanan dan tim kami akan se
       },
       {
         priority: 3,
-        trigger: 'stuck|macet|terlambat|lambat|delay|overdue|batal|delay',
+        trigger: 'stuck|macet|terlambat|lambat|delay|overdue',
         content: `Kami memahami kekhawatiran Anda atas keterlambatan pengiriman. Kami ikut prihatin dan akan bantu semaksimal mungkin. 🙏
 
 📋 **Langkah yang Bisa Kami Lakukan:**
@@ -129,6 +131,7 @@ Jika ada masalah (paket tidak sampai, rusak, stuck), tolong berikan nomor resi d
       'rusak', 'komplain', 'keluhan barang', 'barang bermasalah',
       'tidak sesuai', 'beda dari foto', 'beda sama foto', 'beda sama deskripsi',
       'produk tidak sesuai', 'size tidak cocok', 'warna tidak sesuai',
+      'salah', 'keliru', 'pecah', 'sobek'
     ],
     responses: [
       {
@@ -453,6 +456,7 @@ Tim NINOC Enterprise`,
       'bukti', 'struk', 'receipt',
       'metode bayar', 'payment method', 'cara bayar',
       'overpaid', 'kelebihan', 'lebih bayar', 'lebih transfer',
+      'timeout', 'pending', 'struck', 'cod', 'cash', 'tunai'
     ],
     responses: [
       {
@@ -620,6 +624,7 @@ Tim NINOC Enterprise`,
       'tidak ada', 'tidak bisa', 'gagal', 'error',
       'disappointed', 'bad', 'poor', 'terrible', 'worst',
       'not good', 'not satisfied', 'complaint', 'complain',
+      'batal', 'missing', 'cancel order'
     ],
     responses: [
       {
