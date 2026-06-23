@@ -32,7 +32,7 @@ export function Invoice({ order }: InvoiceProps) {
   const orderNumber = order.id.toUpperCase();
 
   return (
-    <div className="w-full max-w-[320px] mx-auto bg-white text-ink border border-ink/5 p-3 flex flex-col gap-2 shadow-sm select-none print:hidden">
+    <div className="w-full max-w-[320px] mx-auto bg-white text-ink p-3 flex flex-col gap-2 select-none print:hidden">
       
       {/* GRID 1: TOP SECTION (COMPACT QR & ID ROW) */}
       <div className="flex flex-col items-center text-center pb-1.5 border-b border-ink/5 gap-1.5">
@@ -42,7 +42,7 @@ export function Invoice({ order }: InvoiceProps) {
           size={1080}
           level="H"
           includeMargin={true}
-          bgColor="#ffffff"
+          bgColor="transparent"
           fgColor="#141414"
           style={{ width: '100%', height: 'auto', maxWidth: '130px', aspectRatio: '1/1' }}
           className="mx-auto block"
@@ -202,7 +202,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               size={1080}
               level="H"
               includeMargin={true}
-              bgColor="#ffffff"
+              bgColor="transparent"
               fgColor="#141414"
               style={{ width: '110px', height: '110px', display: 'block', margin: '0 auto' }}
             />
