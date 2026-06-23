@@ -42,12 +42,12 @@ export function Invoice({ order }: InvoiceProps) {
         </div>
 
         {/* GIANT QR CODE */}
-        <div className="p-1.5 bg-white border border-ink/5 shadow-sm inline-block rounded-none">
+        <div className="p-2 bg-white border border-ink/5 shadow-sm inline-block rounded-none">
           <QRCodeCanvas
             value={order.id.toUpperCase()}
-            size={120}
+            size={180}
             level="H"
-            includeMargin={false}
+            includeMargin={true}
             bgColor="#ffffff"
             fgColor="#141414"
           />
@@ -210,7 +210,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             <div style={{ padding: '6px', background: 'white', border: '1px solid #f3f4f6', display: 'inline-block' }}>
               <QRCodeCanvas
                 value={order.id.toUpperCase()}
-                size={140}
+                size={180}
                 level="H"
                 includeMargin={true}
                 bgColor="#ffffff"
