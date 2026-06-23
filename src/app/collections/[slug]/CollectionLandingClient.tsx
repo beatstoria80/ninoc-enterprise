@@ -47,98 +47,90 @@ const productGridVariants: Variants = {
 // ═══════════════════════════════════════════════════════════════
 
 function ProductCard({ product }: { product: Product }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const brandColor = useBrandColor();
-  const darkColor = { color: '#141414' };
-  const { addItem } = useCart();
   const router = useRouter();
-
-  const handleQuickBuy = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
-  };
 
   return (
     <motion.div
       variants={productCardVariants}
-      whileHover="hover"
-      whileTap="tap"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="h-full flex flex-col w-[140px] md:w-[180px] flex-shrink-0"
+      className="group h-full"
     >
-      <Link
-        href={`/shop/${product.slug}`}
-        className="block group relative h-full flex flex-col"
-      >
-        <div className="relative w-full aspect-[4/5] bg-ink/5 mb-2 md:mb-3 overflow-hidden">
-          {product.image_url ? (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 140px, 180px"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-ink/10">
-              <Package size={24} />
-            </div>
-          )}
-
-          {product.is_featured && (
-            <motion.div
-              className="absolute top-0 left-0 text-[5px] md:text-[6px] font-medium uppercase tracking-[0.2em] bg-ink text-white px-1 py-0.5 z-10"
-              animate={{ backgroundColor: isHovered ? brandColor.color : '#141414' }}
-              transition={{ duration: DURATION.fast }}
-            >
-              New
-            </motion.div>
-          )}
-        </div>
-
-        <div className="space-y-0.5">
-          <motion.span
-            className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30 block"
-            animate={{ color: isHovered ? brandColor.color : 'rgba(20,20,20,0.3)' }}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.category}
-          </motion.span>
-          <motion.h3
-            className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic uppercase tracking-tight line-clamp-2"
-            animate={isHovered ? brandColor : darkColor}
-            transition={{ duration: DURATION.fast }}
-          >
-            {product.name}
-          </motion.h3>
-
-          <div className="space-y-1 mt-auto pt-1 border-t border-ink/5">
-            {product.price_tag && (
-              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
-                <span className="text-[6px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
-                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  {product.price_tag}
-                </span>
+      <Link href={`/shop/${product.slug}`} className="block h-full">
+        <div className="bg-white border border-ink/5 shadow-sm hover:shadow-xl hover:border-ink/15 transition-all duration-300 h-full flex flex-col group/card relative overflow-hidden">
+          <div className="relative aspect-square w-full overflow-hidden bg-ink/[0.02]">
+            {product.image_url ? (
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                fill
+                className="object-cover transition-transform duration-700 group-hover/card:scale-105 select-none pointer-events-none"
+                sizes="(max-width: 1280px) 25vw, 20vw"
+                draggable={false}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-ink/10">
+                <Package size={24} />
               </div>
             )}
-            <motion.div
-              className="flex items-center justify-between"
-              animate={{ opacity: isHovered ? 1 : 0.6 }}
-              transition={{ duration: DURATION.fast }}
-            >
-              <span className="text-[11px] md:text-[8px] md:text-[9px] font-medium text-ink/50 block">
-                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </span>
-              <motion.button
-                onClick={handleQuickBuy}
-                className="w-5 h-5 md:w-6 md:h-6 rounded-none bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors"
-                animate={{ backgroundColor: isHovered ? 'rgba(20,20,20,0.1)' : 'rgba(20,20,20,0.05)' }}
-              >
-                <ShoppingCart className="w-3 h-3" />
-              </motion.button>
-            </motion.div>
+
+            <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm pointer-events-none">
+              STUDIO EDITION
+            </div>
+
+            {product.price_tag && (
+              <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
+                {product.price_tag}
+              </div>
+            )}
+          </div>
+
+          <div className="p-2.5 flex flex-col flex-grow justify-between gap-2">
+            <div>
+              <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
+                {product.name}
+              </h3>
+              <p className="text-xs md:text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
+                {product.category}
+              </p>
+            </div>
+
+            <div className="space-y-2 mt-auto">
+              {product.price_tag && (
+                <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
+                  <span className="text-[7px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
+                    <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    {product.price_tag}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                    {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                  </div>
+                </div>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                  }}
+                  className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
+                >
+                  <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+                <div className="flex items-center gap-1.5 opacity-40">
+                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em]">VIEW DETAILS</span>
+                </div>
+                <span className="text-[11px] md:text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                  AVAILABLE
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </Link>
@@ -174,10 +166,10 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
   };
 
   return (
-    <main className="h-[100dvh] w-full bg-cr noise flex flex-col overflow-hidden">
+    <main className="min-h-screen w-full bg-cr noise flex flex-col">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full flex-1 min-h-0 bg-ink">
+      <section className="relative w-full h-[50vh] md:h-[60vh] bg-ink shrink-0">
         {collection.banner_url ? (
           isVideoUrl(collection.banner_url) ? (
             <video 
@@ -275,23 +267,23 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
       </div>
 
       {/* 3. PRODUCT GRID */}
-      <section className="shrink-0 bg-white z-10 relative">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-4 md:py-6 h-auto">
+      <section className="flex-1 bg-cr noise z-10 relative">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-8 md:py-12 h-auto">
           <AnimatePresence mode="wait">
             <motion.div
               variants={productGridVariants}
               initial="hidden"
               animate="visible"
-              className="flex items-start gap-4 md:gap-8 overflow-x-auto no-scrollbar pb-2"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8 lg:gap-12"
             >
               {products.length > 0 ? (
                 products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
               ) : (
-                <div className="w-full py-8 md:py-12 flex flex-col items-center text-center">
+                <div className="col-span-full py-24 flex flex-col items-center text-center">
                   <Package size={24} className="mx-auto mb-3 text-ink/20" />
-                  <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40">
+                  <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">
                     No items curated yet
                   </p>
                 </div>
