@@ -166,10 +166,10 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
   };
 
   return (
-    <main className="min-h-screen w-full bg-cr noise flex flex-col">
+    <main className="h-[100dvh] w-full bg-cr noise flex flex-col overflow-hidden">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full h-[50vh] md:h-[60vh] bg-ink shrink-0">
+      <section className="relative w-full flex-1 min-h-0 bg-ink">
         {collection.banner_url ? (
           isVideoUrl(collection.banner_url) ? (
             <video 
@@ -267,21 +267,23 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
       </div>
 
       {/* 3. PRODUCT GRID */}
-      <section className="flex-1 bg-cr noise z-10 relative">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-8 md:py-12 h-auto">
+      <section className="shrink-0 bg-white z-10 relative h-[45vh] md:h-[50vh] max-h-[400px] min-h-[300px]">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-4 h-full flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               variants={productGridVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8 lg:gap-12"
+              className="flex-1 flex items-start gap-3 md:gap-6 overflow-x-auto no-scrollbar pb-2"
             >
               {products.length > 0 ? (
                 products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <div key={product.id} className="h-full w-[160px] md:w-[200px] shrink-0">
+                    <ProductCard product={product} />
+                  </div>
                 ))
               ) : (
-                <div className="col-span-full py-24 flex flex-col items-center text-center">
+                <div className="w-full h-full flex flex-col items-center justify-center text-center">
                   <Package size={24} className="mx-auto mb-3 text-ink/20" />
                   <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">
                     No items curated yet
