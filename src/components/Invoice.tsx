@@ -41,17 +41,17 @@ export function Invoice({ order }: InvoiceProps) {
           <span className="text-[8px] uppercase tracking-[0.3em] text-ink/40">Invoice & Receipt</span>
         </div>
 
-        {/* GIANT QR CODE */}
-        <div className="p-2 bg-white border border-ink/5 shadow-sm inline-block rounded-none">
-          <QRCodeCanvas
-            value={order.id.toUpperCase()}
-            size={180}
-            level="H"
-            includeMargin={true}
-            bgColor="#ffffff"
-            fgColor="#141414"
-          />
-        </div>
+        {/* GIANT QR CODE (1080px Resolution, CSS Scaled) */}
+        <QRCodeCanvas
+          value={order.id.toUpperCase()}
+          size={1080}
+          level="H"
+          includeMargin={true}
+          bgColor="#ffffff"
+          fgColor="#141414"
+          style={{ width: '100%', height: 'auto', maxWidth: '240px', aspectRatio: '1/1' }}
+          className="mx-auto block"
+        />
 
         <div className="flex flex-col gap-0.5">
           <span className="text-[8px] font-mono tracking-widest text-ink/30 uppercase">Nomor Pesanan</span>
@@ -206,17 +206,16 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(20,20,20,0.4)' }}>Invoice & Receipt</div>
             </div>
 
-            {/* QR Code Container */}
-            <div style={{ padding: '6px', background: 'white', border: '1px solid #f3f4f6', display: 'inline-block' }}>
-              <QRCodeCanvas
-                value={order.id.toUpperCase()}
-                size={180}
-                level="H"
-                includeMargin={true}
-                bgColor="#ffffff"
-                fgColor="#141414"
-              />
-            </div>
+            {/* GIANT QR CODE (1080px Resolution, CSS Scaled) */}
+            <QRCodeCanvas
+              value={order.id.toUpperCase()}
+              size={1080}
+              level="H"
+              includeMargin={true}
+              bgColor="#ffffff"
+              fgColor="#141414"
+              style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.4)' }}>Nomor Pesanan</div>
