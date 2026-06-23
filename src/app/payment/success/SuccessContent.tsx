@@ -176,7 +176,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-24 md:pt-28 pb-8 md:py-12 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-6 md:pt-16 pb-8 md:pb-12 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
