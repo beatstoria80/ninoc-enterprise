@@ -6,10 +6,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { username, password } = body;
 
-    const correctPassword = process.env.ADMIN_SECRET_PASSWORD || 'adminninoc123';
+    const correctUsername = process.env.ADMIN_USERNAME || 'superadmin';
+    const correctPassword = process.env.ADMIN_SECRET_PASSWORD || 'Hitamputih#100';
 
-    // Allow new custom access (username: adm, password: 123) OR fallback to the default global admin password
-    const isAuthorized = (username === 'adm' && password === '123') || (password === correctPassword);
+    const isAuthorized = username === correctUsername && password === correctPassword;
 
     if (isAuthorized) {
       // Set HttpOnly cookie
