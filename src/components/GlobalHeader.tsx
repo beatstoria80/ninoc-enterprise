@@ -455,12 +455,13 @@ export default function GlobalHeader() {
               }}
             >
               <motion.div
-                className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500", isDarkBg ? "text-white" : "text-rose")}
+                className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500 flex items-start gap-1.5", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
                 transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
               >
-                ninoc
+                <span>ninoc</span>
+                <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50 translate-y-0.5">BETA</span>
               </motion.div>
             </Link>
 
