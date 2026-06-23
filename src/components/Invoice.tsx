@@ -19,7 +19,7 @@ function formatDate(dateStr: string): string {
   });
 }
 
-// ─── STYLISH MINIMALIST VERTICAL INVOICE (COMPACT VERSION) ───────────────
+// ─── STYLISH MINIMALIST VERTICAL INVOICE (ULTRA COMPACT) ───────────────
 
 export function Invoice({ order }: InvoiceProps) {
   const subtotal = order.order_items?.reduce((s, i) => s + i.price_at_purchase * i.quantity, 0) || 0;
@@ -32,16 +32,11 @@ export function Invoice({ order }: InvoiceProps) {
   const orderNumber = order.id.toUpperCase();
 
   return (
-    <div className="w-full max-w-[360px] mx-auto bg-white text-ink border border-ink/5 p-4 flex flex-col gap-3 shadow-sm select-none print:hidden">
+    <div className="w-full max-w-[320px] mx-auto bg-white text-ink border border-ink/5 p-3 flex flex-col gap-2 shadow-sm select-none print:hidden">
       
-      {/* GRID 1: TOP SECTION (QR & LOGO) */}
-      <div className="flex flex-col items-center text-center pb-3 border-b border-ink/5 gap-2">
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="font-display font-medium text-xl italic tracking-tighter uppercase text-rose leading-none">ninoc</span>
-          <span className="text-[8px] uppercase tracking-[0.3em] text-ink/40">Invoice & Receipt</span>
-        </div>
-
-        {/* GIANT QR CODE (1080px Resolution, CSS Scaled) */}
+      {/* GRID 1: TOP SECTION (COMPACT QR & ID ROW) */}
+      <div className="flex flex-col items-center text-center pb-1.5 border-b border-ink/5 gap-1.5">
+        {/* GIANT QR CODE (1080px Resolution, CSS Scaled down to 130px visually) */}
         <QRCodeCanvas
           value={order.id.toUpperCase()}
           size={1080}
@@ -49,29 +44,29 @@ export function Invoice({ order }: InvoiceProps) {
           includeMargin={true}
           bgColor="#ffffff"
           fgColor="#141414"
-          style={{ width: '100%', height: 'auto', maxWidth: '240px', aspectRatio: '1/1' }}
+          style={{ width: '100%', height: 'auto', maxWidth: '130px', aspectRatio: '1/1' }}
           className="mx-auto block"
         />
 
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[8px] font-mono tracking-widest text-ink/30 uppercase">Nomor Pesanan</span>
-          <span className="font-mono font-bold text-xs tracking-wide text-ink">#{orderNumber}</span>
-          <span className="text-[8px] text-ink/30 uppercase tracking-[0.1em] mt-0.5 italic">Unggah invoice untuk melacak otomatis</span>
+        <div className="flex items-baseline justify-center gap-1.5 leading-none pt-0.5">
+          <span className="font-display font-medium text-sm italic tracking-tighter uppercase text-rose">ninoc</span>
+          <span className="text-ink/15 text-[8px] select-none">|</span>
+          <span className="font-mono font-bold text-[10px] tracking-wide text-ink">#{orderNumber}</span>
         </div>
       </div>
 
       {/* GRID 2: BOTTOM SECTION (DETAILS) */}
-      <div className="flex flex-col gap-3.5 text-[11px] text-ink/70">
+      <div className="flex flex-col gap-2 text-[10px] text-ink/70">
         
         {/* Metadata grid */}
-        <div className="grid grid-cols-2 gap-4 pb-2.5 border-b border-ink/5">
+        <div className="grid grid-cols-2 gap-2 pb-1.5 border-b border-ink/5">
           <div className="flex flex-col gap-0.5 text-left">
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-bold">Tanggal</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Tanggal</span>
             <span className="font-medium text-ink">{formatDate(order.created_at)}</span>
           </div>
           <div className="flex flex-col gap-0.5 text-right">
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-bold">Status</span>
-            <span className={`font-semibold inline-block px-1.5 py-0.5 self-end text-[8px] tracking-wider uppercase ${
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Status</span>
+            <span className={`font-semibold inline-block px-1 py-0.5 self-end text-[7.5px] tracking-wider uppercase ${
               order.payment_status === 'success' ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
             }`}>
               {order.payment_status === 'success' ? 'Lunas' : 'Menunggu'}
@@ -80,36 +75,36 @@ export function Invoice({ order }: InvoiceProps) {
         </div>
 
         {/* Customer & Shipping info */}
-        <div className="grid grid-cols-2 gap-4 pb-2.5 border-b border-ink/5 text-left">
+        <div className="grid grid-cols-2 gap-2 pb-1.5 border-b border-ink/5 text-left">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-bold">Tagihan Ke</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Tagihan Ke</span>
             <span className="font-medium text-ink">{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
-            <span className="text-ink/50 text-[9px] block mt-0.5">{order.shipping_address?.phone || '-'}</span>
+            <span className="text-ink/50 text-[8.5px] block mt-0.5">{order.shipping_address?.phone || '-'}</span>
           </div>
           <div className="flex flex-col gap-0.5 text-right">
-            <span className="text-[8px] uppercase tracking-widest text-ink/30 font-bold">Kirim Ke</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Kirim Ke</span>
             <span className="font-medium text-ink break-words leading-tight block">{order.shipping_address?.address?.toUpperCase() || '-'}</span>
-            <span className="text-ink/50 text-[9px] block mt-0.5">
+            <span className="text-ink/50 text-[8.5px] block mt-0.5">
               {order.shipping_address?.city?.toUpperCase() || ''}, {order.shipping_address?.province?.toUpperCase() || ''}
             </span>
           </div>
         </div>
 
         {/* Order Items */}
-        <div className="flex flex-col gap-2 pb-2.5 border-b border-ink/5 text-left">
-          <span className="text-[8px] uppercase tracking-widest text-ink/30 font-bold">Daftar Pembelian</span>
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1 pb-1.5 border-b border-ink/5 text-left">
+          <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Daftar Pembelian</span>
+          <div className="flex flex-col gap-1.5">
             {order.order_items?.map((item) => (
               <div key={item.id} className="flex justify-between items-start leading-snug">
                 <div className="flex flex-col max-w-[70%]">
-                  <span className="font-medium text-ink">{item.product_name}</span>
-                  <span className="text-[9px] text-ink/40 mt-0.5">
+                  <span className="font-medium text-ink text-[9.5px]">{item.product_name}</span>
+                  <span className="text-[8px] text-ink/40 mt-0.5">
                     {item.size ? `Ukuran: ${item.size}` : 'All Size'} • Qty: {item.quantity}
                   </span>
                 </div>
                 <div className="text-right flex flex-col shrink-0">
-                  <span className="font-semibold text-ink">{formatCurrency(item.price_at_purchase * item.quantity)}</span>
-                  <span className="text-[8px] text-ink/30 mt-0.5">{formatCurrency(item.price_at_purchase)}/item</span>
+                  <span className="font-semibold text-ink text-[9.5px]">{formatCurrency(item.price_at_purchase * item.quantity)}</span>
+                  <span className="text-[8.5px] text-ink/30 mt-0.5">{formatCurrency(item.price_at_purchase)}/item</span>
                 </div>
               </div>
             ))}
@@ -117,7 +112,7 @@ export function Invoice({ order }: InvoiceProps) {
         </div>
 
         {/* Pricing Summary */}
-        <div className="flex flex-col gap-1.5 pb-2.5 border-b border-ink/5">
+        <div className="flex flex-col gap-1 pb-1.5 border-b border-ink/5">
           <div className="flex justify-between">
             <span className="text-ink/50">Subtotal</span>
             <span className="font-medium text-ink">{formatCurrency(subtotal)}</span>
@@ -132,22 +127,22 @@ export function Invoice({ order }: InvoiceProps) {
               <span className="font-medium text-rose">-{formatCurrency(discount)}</span>
             </div>
           )}
-          <div className="flex justify-between items-baseline pt-1.5 mt-0.5 border-t border-ink/5">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-ink">Total Bayar</span>
-            <span className="text-xs font-bold text-rose">{formatCurrency(total)}</span>
+          <div className="flex justify-between items-baseline pt-1 mt-0.5 border-t border-ink/5">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-ink">Total Bayar</span>
+            <span className="text-[11px] font-bold text-rose">{formatCurrency(total)}</span>
           </div>
         </div>
 
         {/* Payment Metadata */}
-        <div className="grid grid-cols-2 gap-2 text-[9px] text-ink/40 text-left">
-          <div className="flex flex-col gap-0.5">
+        <div className="grid grid-cols-2 gap-2 text-[8px] text-ink/40 text-left">
+          <div className="flex flex-col">
             <span>Metode Pembayaran:</span>
             <span className="font-medium text-ink/60">{order.payment_status === 'success' ? 'Virtual Account' : 'Midtrans'}</span>
           </div>
           {order.midtrans_id && (
-            <div className="flex flex-col gap-0.5 text-right items-end">
+            <div className="flex flex-col text-right items-end">
               <span>Referensi ID:</span>
-              <span className="font-mono text-[8px] text-ink/60 break-all">{order.midtrans_id}</span>
+              <span className="font-mono text-[7.5px] text-ink/60 break-all">{order.midtrans_id}</span>
             </div>
           )}
         </div>
@@ -192,21 +187,16 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             color: '#141414',
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             boxSizing: 'border-box',
-            padding: '12mm',
+            padding: '8mm',
             position: 'relative',
-            fontSize: '11px',
-            lineHeight: '1.4',
-            gap: '16px'
+            fontSize: '10px',
+            lineHeight: '1.3',
+            gap: '10px'
           }}
         >
-          {/* GRID 1: TOP SECTION (QR & LOGO) */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', borderBottom: '1px solid #f3f4f6', paddingBottom: '16px', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-              <div style={{ fontSize: '18px', fontWeight: 600, fontStyle: 'italic', letterSpacing: '-0.5px', textTransform: 'uppercase', color: '#e8527a' }}>ninoc</div>
-              <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(20,20,20,0.4)' }}>Invoice & Receipt</div>
-            </div>
-
-            {/* GIANT QR CODE (1080px Resolution, CSS Scaled) */}
+          {/* GRID 1: TOP SECTION (COMPACT QR & ID ROW) */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', borderBottom: '1px solid #f3f4f6', paddingBottom: '6px', gap: '4px' }}>
+            {/* GIANT QR CODE (1080px Resolution, CSS Scaled to 110px visually) */}
             <QRCodeCanvas
               value={order.id.toUpperCase()}
               size={1080}
@@ -214,28 +204,29 @@ export function PrintableInvoice({ order }: InvoiceProps) {
               includeMargin={true}
               bgColor="#ffffff"
               fgColor="#141414"
-              style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }}
+              style={{ width: '110px', height: '110px', display: 'block', margin: '0 auto' }}
             />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.4)' }}>Nomor Pesanan</div>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', fontFamily: 'monospace', color: '#141414' }}>#{orderNumber}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px', lineHeight: '1' }}>
+              <span style={{ fontSize: '12px', fontWeight: 600, fontStyle: 'italic', textTransform: 'uppercase', color: '#e8527a' }}>ninoc</span>
+              <span style={{ color: 'rgba(20,20,20,0.15)', fontSize: '8px' }}>|</span>
+              <span style={{ fontSize: '9px', fontWeight: 'bold', fontFamily: 'monospace', color: '#141414' }}>#{orderNumber}</span>
             </div>
           </div>
 
           {/* GRID 2: BOTTOM SECTION */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             
             {/* Metadata row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
-                <span style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Tanggal</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6', paddingBottom: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', textAlign: 'left' }}>
+                <span style={{ fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Tanggal</span>
                 <span style={{ fontWeight: 500 }}>{formatDate(order.created_at)}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end' }}>
-                <span style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Status</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end' }}>
+                <span style={{ fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Status</span>
                 <span style={{
-                  fontSize: '8px', fontWeight: 'bold', padding: '2px 6px', background: order.payment_status === 'success' ? '#ecfdf5' : '#fffbeb', color: order.payment_status === 'success' ? '#047857' : '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px'
+                  fontSize: '7.5px', fontWeight: 'bold', padding: '1px 4px', background: order.payment_status === 'success' ? '#ecfdf5' : '#fffbeb', color: order.payment_status === 'success' ? '#047857' : '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px'
                 }}>
                   {order.payment_status === 'success' ? 'Lunas' : 'Menunggu'}
                 </span>
@@ -243,36 +234,36 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             </div>
 
             {/* Customer & Shipping Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, textAlign: 'left' }}>
-                <span style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Tagihan Ke</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6', paddingBottom: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', flex: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Tagihan Ke</span>
                 <span style={{ fontWeight: 500 }}>{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
-                <span style={{ color: 'rgba(20,20,20,0.5)', fontSize: '9px' }}>{order.shipping_address?.phone || '-'}</span>
+                <span style={{ color: 'rgba(20,20,20,0.5)', fontSize: '8px' }}>{order.shipping_address?.phone || '-'}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, alignItems: 'flex-end', textAlign: 'right' }}>
-                <span style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Kirim Ke</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', flex: 1, alignItems: 'flex-end', textAlign: 'right' }}>
+                <span style={{ fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Kirim Ke</span>
                 <span style={{ fontWeight: 500 }}>{order.shipping_address?.address?.toUpperCase() || '-'}</span>
-                <span style={{ color: 'rgba(20,20,20,0.5)', fontSize: '8px', marginTop: '2px' }}>
+                <span style={{ color: 'rgba(20,20,20,0.5)', fontSize: '7.5px', marginTop: '1px' }}>
                   {order.shipping_address?.city?.toUpperCase() || ''}, {order.shipping_address?.province?.toUpperCase() || ''}
                 </span>
               </div>
             </div>
 
             {/* Items */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px', textAlign: 'left' }}>
-              <span style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Daftar Pembelian</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderBottom: '1px solid #f3f4f6', paddingBottom: '6px', textAlign: 'left' }}>
+              <span style={{ fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(20,20,20,0.3)', fontWeight: 'bold' }}>Daftar Pembelian</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {order.order_items?.map((item) => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', fontSize: '10px' }}>
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', fontSize: '9px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '70%' }}>
                       <span style={{ fontWeight: 500 }}>{item.product_name}</span>
-                      <span style={{ fontSize: '8px', color: 'rgba(20,20,20,0.4)', marginTop: '2px' }}>
+                      <span style={{ fontSize: '7.5px', color: 'rgba(20,20,20,0.4)', marginTop: '1px' }}>
                         {item.size ? `Ukuran: ${item.size}` : 'All Size'} • Qty: {item.quantity}
                       </span>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '1px' }}>
                       <span style={{ fontWeight: 600 }}>{formatCurrency(item.price_at_purchase * item.quantity)}</span>
-                      <span style={{ fontSize: '8px', color: 'rgba(20,20,20,0.3)' }}>{formatCurrency(item.price_at_purchase)}/item</span>
+                      <span style={{ fontSize: '7.5px', color: 'rgba(20,20,20,0.3)' }}>{formatCurrency(item.price_at_purchase)}/item</span>
                     </div>
                   </div>
                 ))}
@@ -280,37 +271,37 @@ export function PrintableInvoice({ order }: InvoiceProps) {
             </div>
 
             {/* Summary */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'rgba(20,20,20,0.6)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', borderBottom: '1px solid #f3f4f6', paddingBottom: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'rgba(20,20,20,0.6)' }}>
                 <span>Subtotal</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'rgba(20,20,20,0.6)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'rgba(20,20,20,0.6)' }}>
                 <span>Biaya Pengiriman</span>
                 <span>{formatCurrency(shippingCost)}</span>
               </div>
               {discount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#e8527a' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: '#e8527a' }}>
                   <span>Diskon</span>
                   <span>-{formatCurrency(discount)}</span>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '6px', marginTop: '2px', borderTop: '1px solid #f3f4f6' }}>
-                <span style={{ fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Bayar</span>
-                <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#e8527a' }}>{formatCurrency(total)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '4px', marginTop: '1px', borderTop: '1px solid #f3f4f6' }}>
+                <span style={{ fontSize: '8px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Bayar</span>
+                <span style={{ fontSize: '10.5px', fontWeight: 'bold', color: '#e8527a' }}>{formatCurrency(total)}</span>
               </div>
             </div>
 
             {/* Footer details */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8px', color: 'rgba(20,20,20,0.4)', textAlign: 'left' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7.5px', color: 'rgba(20,20,20,0.4)', textAlign: 'left' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 <span>Metode Pembayaran:</span>
                 <span style={{ fontWeight: 500, color: 'rgba(20,20,20,0.6)' }}>{order.payment_status === 'success' ? 'Virtual Account' : 'Midtrans'}</span>
               </div>
               {order.midtrans_id && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-end', textAlign: 'right', maxWidth: '60%' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end', textAlign: 'right', maxWidth: '60%' }}>
                   <span>Referensi ID:</span>
-                  <span style={{ fontFamily: 'monospace', fontSize: '7px', color: 'rgba(20,20,20,0.6)', wordBreak: 'break-all' }}>{order.midtrans_id}</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: '6.5px', color: 'rgba(20,20,20,0.6)', wordBreak: 'break-all' }}>{order.midtrans_id}</span>
                 </div>
               )}
             </div>
