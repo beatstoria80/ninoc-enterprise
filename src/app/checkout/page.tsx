@@ -833,7 +833,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA. Increased pt- to compensate for fixed header.
-        isMobile ? "pt-24 pb-24 space-y-3" : "pt-28 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-20 pb-36 space-y-3" : "pt-28 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
@@ -1065,8 +1065,8 @@ export default function CheckoutPage() {
               </div>
 
               <div className={cn(
-                "gap-[1px] bg-ink/5 border border-ink/5 rounded-none relative",
-                isMobile ? "flex flex-col max-h-[40vh] overflow-y-auto no-scrollbar" : "grid grid-cols-3"
+                "border border-ink/20 bg-ink/5 mt-1 relative overflow-visible",
+                isMobile ? "flex flex-col" : "grid grid-cols-3"
               )}>
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
