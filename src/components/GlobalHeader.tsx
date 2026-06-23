@@ -440,7 +440,7 @@ export default function GlobalHeader() {
             {/* Drawer Menu Toggle (3 Dots) */}
           <PressScale 
             onClick={() => setIsMenuOpen(true)} 
-            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
+            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2 lg:hidden", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
           >
             <MoreVertical size={20} strokeWidth={1.5} />
           </PressScale>
