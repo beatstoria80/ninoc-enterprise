@@ -25,33 +25,29 @@ interface CheckoutItem {
 
 export async function POST(req: Request) {
   try {
-    // --- RATE LIMITING ---
-    // Extract IP for rate limiting. In Next.js App Router, req.headers.get('x-forwarded-for') is common
-    const forwardedFor = req.headers.get('x-forwarded-for');
-    const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
-    
-    // Limit to 3 checkout requests per 5 minutes per IP (Strict anti-spam)
-    const { isAllowed, headers } = rateLimit(`checkout_${ip}`, 3, 5 * 60 * 1000);
-    if (!isAllowed) {
-      console.warn(`[Security] Rate limit exceeded for IP: ${ip} at checkout`);
-      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429, headers });
-    }
-
     const { items, customerDetails, shippingDetails, promo } = await req.json();
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Keranjang belanja kosong' }, { status: 400 });
     }
 
-    // --- SPAM & FRAUD PREVENTION ---
-    const phone = customerDetails.phone || '';
+    // --- INPUT VALIDATION (runs BEFORE rate limiter so bad inputs don't burn quota) ---
+    const rawPhone = customerDetails.phone || '';
     const email = customerDetails.email || '';
     
+    // Sanitize phone: strip all non-digit characters (spaces, dashes, parens, +)
+    // Keep leading '+' for international format detection before stripping
+    const hasPlus = rawPhone.startsWith('+');
+    const phoneDigits = rawPhone.replace(/\D/g, '');
+    const phone = hasPlus ? `+${phoneDigits}` : phoneDigits;
+    // Write sanitized phone back so downstream code uses the clean version
+    customerDetails.phone = phone;
+    
     // Strict Indonesian Phone Number Validation
-    // Must start with 08 or 628 or +628, length 9-15
+    // Must start with 08 or 628 or +628, length 10-15 digits
     const phoneRegex = /^(08|628|\+628)[0-9]{7,13}$/;
-    if (!phoneRegex.test(phone) || /(.)\1{6,}/.test(phone) || /^0+$/.test(phone)) {
-      console.warn(`[Security] Blocked spam/invalid phone pattern: ${phone}`);
+    if (!phoneRegex.test(phone) || /(.)\1{6,}/.test(phoneDigits) || /^0+$/.test(phoneDigits)) {
+      console.warn(`[Security] Blocked spam/invalid phone pattern: ${rawPhone} -> ${phone}`);
       return NextResponse.json({ error: 'Nomor telepon tidak valid. Pastikan memakai format 08x atau 628x yang benar.' }, { status: 400 });
     }
 
@@ -66,6 +62,17 @@ export async function POST(req: Request) {
     if (fullName.length < 3 || /(.)\1{4,}/.test(fullName) || fullName.toLowerCase() === 'a d') {
       console.warn(`[Security] Blocked spam name pattern: ${fullName}`);
       return NextResponse.json({ error: 'Nama penerima tidak valid (terdeteksi spam).' }, { status: 400 });
+    }
+
+    // --- RATE LIMITING (only reached after input validation passes) ---
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
+    
+    // Limit to 6 checkout requests per 5 minutes per IP
+    const { isAllowed, headers } = rateLimit(`checkout_${ip}`, 6, 5 * 60 * 1000);
+    if (!isAllowed) {
+      console.warn(`[Security] Rate limit exceeded for IP: ${ip} at checkout`);
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429, headers });
     }
     // -------------------------------
 
