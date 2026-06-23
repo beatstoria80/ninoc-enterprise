@@ -414,7 +414,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.6fr)_minmax(0,2.4fr)] xl:grid-cols-[85px_minmax(0,1.45fr)_minmax(0,2.55fr)] 2xl:grid-cols-[85px_minmax(0,1.35fr)_minmax(0,2.25fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-4 xl:gap-5 2xl:gap-6 mt-0 lg:mt-2"
+          className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.4fr)_minmax(0,2.6fr)] xl:grid-cols-[85px_minmax(0,1.3fr)_minmax(0,2.7fr)] 2xl:grid-cols-[85px_minmax(0,1.2fr)_minmax(0,2.4fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-6 xl:gap-8 mt-0 lg:mt-2"
         >
 
           <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
@@ -435,7 +435,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             </div>
           </motion.div>
 
-          <motion.div variants={columnVariants} className="col-span-1 relative flex items-center lg:pr-6 xl:pr-8 lg:pl-0 xl:pl-2 w-full lg:self-start">
+          <motion.div variants={columnVariants} className="col-span-1 relative flex items-center lg:px-0 w-full lg:self-start">
 
             <div
               className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
@@ -495,7 +495,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
                   }}
-                  className="absolute left-0 lg:left-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute left-0 lg:-left-6 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
                 >
                   <ChevronLeft size={24} strokeWidth={2} />
                 </button>
@@ -504,7 +504,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
                   }}
-                  className="absolute right-0 lg:right-1 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute right-0 lg:-right-6 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
                 >
                   <ChevronRight size={24} strokeWidth={2} />
                 </button>
