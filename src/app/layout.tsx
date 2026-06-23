@@ -4,13 +4,11 @@ import "./globals.css";
 import Script from "next/script";
 import ClientPlatformManager from "@/components/ClientPlatformManager";
 import BrandProvider from "@/components/BrandProvider";
-import SupportChat from "@/components/SupportChat";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
-import { Toaster } from "sonner";
-import QuickBuyModal from "@/components/QuickBuyModal";
+import ClientOverlays from "@/components/ClientOverlays";
 
 const inter = {
   variable: "--font-sans",
@@ -287,13 +285,9 @@ export default async function RootLayout({
               <main id="main-content">
                 {children}
               </main>
-              <Toaster position="top-center" richColors theme="light" />
-              <QuickBuyModal />
             </BrandProvider>
           </ClientPlatformManager>
-          <div className="print:hidden">
-            <SupportChat />
-          </div>
+          <ClientOverlays />
         </SmoothScrollProvider>
       </body>
     </html>
