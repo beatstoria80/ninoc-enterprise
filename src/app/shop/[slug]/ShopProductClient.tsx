@@ -385,12 +385,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         addItem(productToAdd, effectiveSize, effectiveColor, surcharge);
       }
       setAddedToCart(true);
-      
-      if (!isWidescreen) {
-        router.push('/checkout');
-      } else {
-        setTimeout(() => setAddedToCart(false), 2000);
-      }
+      setTimeout(() => setAddedToCart(false), 2000);
     }
   };
 
@@ -770,7 +765,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                             )}
                           </div>
                           <span>
-                            {isWidescreen ? dict.product.addToCart : dict.product.checkout.toUpperCase()}
+                            {dict.product.addToCart}
                           </span>
                         </div>
                       )}
