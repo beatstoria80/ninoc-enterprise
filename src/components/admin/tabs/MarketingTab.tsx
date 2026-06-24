@@ -13,6 +13,7 @@ export function MarketingTab() {
     totalCOGS: 0,
     grossProfit: 0,
     marketingSpend: 0,
+    googleAdsSpend: 0,
     netProfit: 0,
     roas: 0,
     vouchers: {
@@ -192,6 +193,7 @@ export function MarketingTab() {
         totalCOGS: totalCogs,
         grossProfit: totalGrossProfit,
         marketingSpend: totalMarketingCost,
+        googleAdsSpend: googleAdsSpend,
         netProfit: totalNetProfit,
         roas: totalMarketingCost > 0 ? (totalRev / totalMarketingCost) : (totalRev > 0 ? 9999 : 0),
         vouchers: {
@@ -301,7 +303,11 @@ export function MarketingTab() {
         <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
           <p className="text-xs font-semibold text-ink/90 uppercase tracking-wide mb-1">Total Marketing Spend</p>
           <p className="text-2xl font-mono tracking-tight text-rose">IDR {fIDR(metrics.marketingSpend)}</p>
-          <p className="text-[11px] text-ink/60 mt-1">Total Biaya Marketing (Diskon Voucher + Komisi Affiliate + Google Ads Spend)</p>
+          <div className="text-[11px] text-ink/70 mt-2 space-y-1">
+            <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Internal Vouchers:</span> <span>IDR {fIDR(metrics.vouchers.totalDiscountGiven)}</span></p>
+            <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Affiliate Comm:</span> <span>IDR {fIDR(metrics.affiliates.totalCommission)}</span></p>
+            <p className="flex justify-between font-semibold text-rose/90"><span>Google Ads Spend:</span> <span>IDR {fIDR(metrics.googleAdsSpend)}</span></p>
+          </div>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
