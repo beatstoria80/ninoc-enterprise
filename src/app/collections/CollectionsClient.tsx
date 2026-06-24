@@ -391,29 +391,29 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
           transition={{ delay: 0.3, duration: DURATION.medium }}
           className="fixed bottom-[calc(70px+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-[40] bg-cr/95 backdrop-blur-md border-t border-ink/5"
         >
-          <div className="max-w-[1800px] mx-auto px-4 py-2 flex items-center justify-between">
-            <div className="flex items-center gap-8">
+          <div className="max-w-[1800px] mx-auto px-4 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-6 md:gap-8">
               <motion.div
-                className="space-y-0.5"
+                className="flex flex-col items-start"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Total Items</p>
-                <p className="text-lg font-display font-medium italic text-ink">{products.length}</p>
+                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-0.5">Total Items</p>
+                <p className="text-sm md:text-base font-display font-medium italic text-ink leading-none">{products.length}</p>
               </motion.div>
-              <div className="h-8 w-[1px] bg-ink/10 hidden md:block" />
+              <div className="h-6 w-[1px] bg-ink/10" />
               <motion.div
-                className="space-y-0.5"
+                className="flex flex-col items-start"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.4em] text-ink/20">Collections</p>
-                <p className="text-lg font-display font-medium italic text-ink">{collections.length}</p>
+                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-0.5">Collections</p>
+                <p className="text-sm md:text-base font-display font-medium italic text-ink leading-none">{collections.length}</p>
               </motion.div>
             </div>
-            <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
-              <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
-              <ChevronRight size={14} />
+            <PressButton href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-rose transition-colors">
+              <span className="text-[8px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
+              <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
             </PressButton>
           </div>
         </motion.div>
