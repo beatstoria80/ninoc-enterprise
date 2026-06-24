@@ -2,19 +2,35 @@
 
 import { GoogleAdsApi } from 'google-ads-api';
 
-// This function fetches the total ad spend for today or the current month.
-// You must provide the credentials in your .env.local file.
-export async function getAdSpend(): Promise<number> {
+export interface GoogleAdsCampaign {
+  id: string;
+  name: string;
+  spend: number;
+  clicks: number;
+  impressions: number;
+  conversions: number;
+}
+
+export interface GoogleAdsData {
+  totalSpend: number;
+  totalClicks: number;
+  totalImpressions: number;
+  totalConversions: number;
+  campaigns: GoogleAdsCampaign[];
+}
+
+export async function getGoogleAdsData(): Promise<GoogleAdsData> {
+  const fallback: GoogleAdsData = { totalSpend: 0, totalClicks: 0, totalImpressions: 0, totalConversions: 0, campaigns: [] };
+  
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
   const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
   const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
-  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID; // The client customer ID you want to query
+  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
 
-  // Check if any credential is missing
   if (!clientId || !clientSecret || !developerToken || !refreshToken || !customerId) {
-    console.warn('Google Ads credentials are not fully set. Returning 0 for Ad Spend.');
-    return 0;
+    console.warn('Google Ads credentials are not fully set. Returning empty data.');
+    return fallback;
   }
 
   try {
@@ -29,29 +45,60 @@ export async function getAdSpend(): Promise<number> {
       refresh_token: refreshToken,
     });
 
-    // Query to get the total cost in the last 30 days or this month.
-    // Cost is returned in micros (1 unit = 1,000,000 micros).
+    // Query campaign level performance
     const query = `
-      SELECT metrics.cost_micros
-      FROM customer
-      WHERE segments.date DURING THIS_MONTH
+      SELECT 
+        campaign.id, 
+        campaign.name, 
+        metrics.cost_micros, 
+        metrics.clicks, 
+        metrics.impressions, 
+        metrics.conversions 
+      FROM campaign 
+      WHERE segments.date DURING THIS_MONTH 
+        AND metrics.cost_micros > 0
     `;
 
     const response = await customer.query(query);
     
-    let totalCostMicros = 0;
-    if (response && response.length > 0 && response[0].metrics?.cost_micros) {
-        totalCostMicros = Number(response[0].metrics.cost_micros);
+    let totalSpend = 0;
+    let totalClicks = 0;
+    let totalImpressions = 0;
+    let totalConversions = 0;
+    const campaigns: GoogleAdsCampaign[] = [];
+
+    if (response && response.length > 0) {
+      response.forEach((row: any) => {
+        const spendIdr = Number(row.metrics?.cost_micros || 0) / 1000000;
+        const clicks = Number(row.metrics?.clicks || 0);
+        const impressions = Number(row.metrics?.impressions || 0);
+        const conversions = Number(row.metrics?.conversions || 0);
+
+        totalSpend += spendIdr;
+        totalClicks += clicks;
+        totalImpressions += impressions;
+        totalConversions += conversions;
+
+        campaigns.push({
+          id: row.campaign?.id?.toString() || 'unknown',
+          name: row.campaign?.name || 'Unnamed Campaign',
+          spend: spendIdr,
+          clicks,
+          impressions,
+          conversions
+        });
+      });
     }
 
-    // Convert micros to actual currency amount (e.g. IDR)
-    // 1 IDR = 1,000,000 micros
-    const totalCost = totalCostMicros / 1000000;
-
-    return totalCost;
+    return {
+      totalSpend,
+      totalClicks,
+      totalImpressions,
+      totalConversions,
+      campaigns
+    };
   } catch (error) {
     console.error('Failed to fetch Ad Spend from Google Ads API:', error);
-    // Return 0 so it doesn't break the dashboard
-    return 0;
+    return fallback;
   }
 }

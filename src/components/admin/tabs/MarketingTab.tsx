@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { TrendingUp, Ticket, Shield, Users, ArrowUpRight, ArrowDownRight, PackageOpen, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getAdSpend } from '@/actions/googleAds';
+import { getGoogleAdsData, type GoogleAdsData } from '@/actions/googleAds';
 
 export function MarketingTab() {
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ export function MarketingTab() {
     totalCOGS: 0,
     grossProfit: 0,
     marketingSpend: 0,
-    googleAdsSpend: 0,
+    googleAds: { totalSpend: 0, totalClicks: 0, totalImpressions: 0, totalConversions: 0, campaigns: [] } as GoogleAdsData,
     netProfit: 0,
     roas: 0,
     vouchers: {
@@ -181,11 +181,11 @@ export function MarketingTab() {
       const totalCogs = vCogs + aCogs;
       const totalGrossProfit = totalRev - totalCogs;
       
-      // Fetch Google Ads Spend via Server Action
-      const googleAdsSpend = await getAdSpend();
+      // Fetch Google Ads Data via Server Action
+      const googleAds = await getGoogleAdsData();
       
       // Total marketing cost now includes Google Ads spend!
-      const totalMarketingCost = vDiscount + aCommission + googleAdsSpend;
+      const totalMarketingCost = vDiscount + aCommission + googleAds.totalSpend;
       const totalNetProfit = totalGrossProfit - totalMarketingCost;
 
       setMetrics({
@@ -193,7 +193,7 @@ export function MarketingTab() {
         totalCOGS: totalCogs,
         grossProfit: totalGrossProfit,
         marketingSpend: totalMarketingCost,
-        googleAdsSpend: googleAdsSpend,
+        googleAds: googleAds,
         netProfit: totalNetProfit,
         roas: totalMarketingCost > 0 ? (totalRev / totalMarketingCost) : (totalRev > 0 ? 9999 : 0),
         vouchers: {
@@ -306,7 +306,7 @@ export function MarketingTab() {
           <div className="text-[11px] text-ink/70 mt-2 space-y-1">
             <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Internal Vouchers:</span> <span>IDR {fIDR(metrics.vouchers.totalDiscountGiven)}</span></p>
             <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Affiliate Comm:</span> <span>IDR {fIDR(metrics.affiliates.totalCommission)}</span></p>
-            <p className="flex justify-between font-semibold text-rose/90"><span>Google Ads Spend:</span> <span>IDR {fIDR(metrics.googleAdsSpend)}</span></p>
+            <p className="flex justify-between font-semibold text-rose/90"><span>Google Ads Spend:</span> <span>IDR {fIDR(metrics.googleAds.totalSpend)}</span></p>
           </div>
         </div>
 
@@ -317,8 +317,8 @@ export function MarketingTab() {
         </div>
       </div>
 
-      {/* TWO COLUMNS: VOUCHERS vs AFFILIATES */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-4">
+      {/* ANALYTICS SECTION: VOUCHERS, AFFILIATES, GOOGLE ADS */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-4">
         
         {/* VOUCHER ANALYTICS */}
         <div className="space-y-1">
@@ -418,6 +418,59 @@ export function MarketingTab() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* GOOGLE ADS ANALYTICS */}
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink flex items-center justify-between border-b border-ink/10 pb-1.5">
+            <span className="flex items-center gap-2"><TrendingUp className="w-4 h-4 text-ink/80" /> Google Ads</span>
+            <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-sm font-mono tracking-tight">Active API</span>
+          </h2>
+
+          <div className="bg-white border border-ink/10 rounded-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-ink/5 bg-ink/[0.015]">
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide">Campaign</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Spend</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-center">Traffic</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Conv.</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/5">
+                {metrics.googleAds.campaigns.length === 0 ? (
+                  <tr><td colSpan={4} className="px-2 py-4 text-center text-xs text-ink/80">Belum ada data iklan berjalan</td></tr>
+                ) : (
+                  metrics.googleAds.campaigns.sort((a, b) => b.spend - a.spend).slice(0, 5).map((c, i) => (
+                    <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
+                      <td className="px-1.5 py-1">
+                        <p className="text-xs font-semibold text-ink truncate max-w-[120px]" title={c.name}>{c.name}</p>
+                        <p className="text-[10px] text-ink/80 uppercase">ID: {c.id.slice(-6)}</p>
+                      </td>
+                      <td className="px-1.5 py-1 text-right">
+                        <p className="text-xs font-mono text-rose">IDR {fIDR(c.spend)}</p>
+                        <p className="text-[10px] text-ink/60">{(c.spend/c.clicks || 0).toLocaleString('id-ID', {style:'currency', currency:'IDR', maximumFractionDigits:0})}/clk</p>
+                      </td>
+                      <td className="px-1.5 py-1 text-center">
+                        <p className="text-xs font-mono text-ink">{c.clicks}</p>
+                        <p className="text-[10px] text-ink/60">{c.impressions} imp</p>
+                      </td>
+                      <td className="px-1.5 py-1 text-right">
+                        <span className="px-1.5 py-0.5 rounded-sm text-xs font-mono font-medium bg-emerald-50 text-emerald-700">
+                          {c.conversions}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          {metrics.googleAds.campaigns.length > 0 && (
+            <p className="text-[10px] text-ink/50 text-right pt-1">
+              Menampilkan {Math.min(5, metrics.googleAds.campaigns.length)} kampanye dengan pengeluaran tertinggi bulan ini.
+            </p>
+          )}
         </div>
       </div>
 
