@@ -306,7 +306,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
   // useEffect fetch removed since we use server-side initial data
 
   return (
-    <main className="min-h-screen bg-cr noise pt-16 md:pt-20 px-2 md:px-4 pb-[80px]">
+    <main className="min-h-screen bg-cr noise pt-4 md:pt-20 px-2 md:px-4 pb-[80px]">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
