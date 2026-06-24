@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Google Merchant Center ID: 5814201453
+
+
 // Use Service Role Key to bypass RLS since this is a secure server route generating a public feed
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
