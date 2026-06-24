@@ -257,50 +257,51 @@ export function MarketingTab() {
   const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   return (
-    <div className="space-y-8 w-full pb-20">
-      <div className="mb-8">
+    <div className="space-y-3 w-full pb-20">
+      <div className="mb-4">
         <h1 className="text-xl font-medium tracking-tight text-ink flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
           Marketing & Real ROAS
         </h1>
-        <p className="text-xs md:text-[11px] text-ink/90 mt-1 uppercase tracking-widest">
-          Analisis Margin Kotor, Laba Bersih, dan Return on Ad Spend berstandar e-Commerce.
+        <p className="text-xs md:text-sm text-ink/90 mt-1">
+          Analisis Keuntungan Bersih dan Efisiensi Iklan (ROAS) untuk seluruh produk.
         </p>
       </div>
 
       {/* OVERALL ROAS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-        <div className="bg-ink text-white rounded-sm p-5 relative overflow-hidden">
-          <p className="text-[9px] font-semibold text-white/50 uppercase tracking-widest mb-1">True Net Profit</p>
+        <div className="bg-ink text-white rounded-md p-3 relative overflow-hidden flex flex-col justify-between">
+          <p className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-1">True Net Profit</p>
           <p className={cn("text-2xl font-mono tracking-tight", metrics.netProfit >= 0 ? "text-emerald-400" : "text-rose")}>
             IDR {fIDR(metrics.netProfit)}
           </p>
-          <p className="text-[9px] text-white/40 mt-2">Gross Profit - Marketing Spend</p>
+          <p className="text-[11px] text-white/60 mt-1">Keuntungan Bersih (Laba Kotor - Biaya Marketing)</p>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-sm p-5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-2 opacity-5"><TrendingUp size={64} /></div>
-          <p className="text-[9px] font-semibold text-ink/90 uppercase tracking-widest mb-1">Real ROAS</p>
+        <div className="bg-white border border-ink/10 rounded-md p-3 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 p-2 opacity-5"><TrendingUp size={48} /></div>
+          <p className="text-xs font-semibold text-ink/90 uppercase tracking-wide mb-1">Real ROAS</p>
           <p className="text-2xl font-mono tracking-tight text-ink">{metrics.roas.toFixed(1)}x</p>
-          <div className="flex items-center gap-1 mt-2 text-[10px]">
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-[11px] text-ink/60">Pendapatan ÷ Biaya Marketing</p>
             {metrics.netProfit >= 0 ? (
-              <span className="text-emerald-600 flex items-center gap-1"><ArrowUpRight size={12}/> Profitable</span>
+              <span className="text-[11px] text-emerald-600 flex items-center gap-1 font-medium"><ArrowUpRight size={12}/> Profitable</span>
             ) : (
-              <span className="text-rose flex items-center gap-1"><ArrowDownRight size={12}/> Boncos</span>
+              <span className="text-[11px] text-rose flex items-center gap-1 font-medium"><ArrowDownRight size={12}/> Boncos</span>
             )}
           </div>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-sm p-5">
-          <p className="text-[9px] font-semibold text-ink/90 uppercase tracking-widest mb-1">Total Marketing Spend</p>
+        <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
+          <p className="text-xs font-semibold text-ink/90 uppercase tracking-wide mb-1">Total Marketing Spend</p>
           <p className="text-2xl font-mono tracking-tight text-rose">IDR {fIDR(metrics.marketingSpend)}</p>
-          <p className="text-[9px] text-ink/80 mt-2">Diskon + Komisi</p>
+          <p className="text-[11px] text-ink/60 mt-1">Total Biaya Marketing (Diskon Voucher + Komisi Affiliate)</p>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-sm p-5">
-          <p className="text-[9px] font-semibold text-ink/90 uppercase tracking-widest mb-1">Gross Profit</p>
+        <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
+          <p className="text-xs font-semibold text-ink/90 uppercase tracking-wide mb-1">Gross Profit</p>
           <p className="text-2xl font-mono tracking-tight text-emerald-600">IDR {fIDR(metrics.grossProfit)}</p>
-          <p className="text-[9px] text-ink/80 mt-2">Revenue - COGS</p>
+          <p className="text-[11px] text-ink/60 mt-1">Laba Kotor (Total Pendapatan - Modal Barang/HPP)</p>
         </div>
       </div>
 
@@ -308,8 +309,8 @@ export function MarketingTab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-4">
         
         {/* VOUCHER ANALYTICS */}
-        <div className="space-y-2">
-          <h2 className="text-xs md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink flex items-center gap-2 border-b border-ink/10 pb-1.5">
             <Ticket className="w-4 h-4 text-ink/80" /> Internal Vouchers
           </h2>
           
@@ -317,33 +318,33 @@ export function MarketingTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Code</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Net Profit</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Discount Cost</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Real ROAS</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide">Code</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Net Profit</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Discount Cost</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Real ROAS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {topVouchers.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-[10px] text-ink/80">No voucher data yet</td></tr>
+                  <tr><td colSpan={4} className="px-2 py-4 text-center text-xs text-ink/80">No voucher data yet</td></tr>
                 ) : (
                   topVouchers.map((v, i) => (
                     <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
-                      <td className="px-2 py-1.5">
-                        <p className="text-[10px] font-semibold text-ink">{v.code}</p>
-                        <p className="text-[9px] text-ink/80 uppercase tracking-wider">{v.usages} uses</p>
+                      <td className="px-1.5 py-1">
+                        <p className="text-xs font-semibold text-ink">{v.code}</p>
+                        <p className="text-[10px] text-ink/80 uppercase">{v.usages} uses</p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
-                        <p className={cn("text-[10px] font-mono", v.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
+                      <td className="px-1.5 py-1 text-right">
+                        <p className={cn("text-xs font-mono", v.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
                           IDR {fIDR(v.netProfit)}
                         </p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
-                        <p className="text-[10px] font-mono text-rose">IDR {fIDR(v.discount)}</p>
+                      <td className="px-1.5 py-1 text-right">
+                        <p className="text-xs font-mono text-rose">IDR {fIDR(v.discount)}</p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
+                      <td className="px-1.5 py-1 text-right">
                         <span className={cn(
-                          "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
+                          "px-1.5 py-0.5 rounded-sm text-xs font-mono font-medium",
                           v.netProfit >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
                           {v.roas.toFixed(1)}x
@@ -358,8 +359,8 @@ export function MarketingTab() {
         </div>
 
         {/* AFFILIATE ANALYTICS */}
-        <div className="space-y-2">
-          <h2 className="text-xs md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2 border-b border-ink/10 pb-2">
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink flex items-center gap-2 border-b border-ink/10 pb-1.5">
             <Users className="w-4 h-4 text-ink/80" /> Affiliate Program
           </h2>
 
@@ -367,33 +368,33 @@ export function MarketingTab() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Affiliate</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Net Profit</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Comm Cost</th>
-                  <th className="px-2 py-1 text-[9px] font-medium text-ink/80 uppercase tracking-widest text-right">Real ROAS</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide">Affiliate</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Net Profit</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Comm Cost</th>
+                  <th className="px-1.5 py-1 text-xs font-medium text-ink/80 uppercase tracking-wide text-right">Real ROAS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {topAffiliates.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-[10px] text-ink/80">No affiliate data yet</td></tr>
+                  <tr><td colSpan={4} className="px-2 py-4 text-center text-xs text-ink/80">No affiliate data yet</td></tr>
                 ) : (
                   topAffiliates.map((a, i) => (
                     <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
-                      <td className="px-2 py-1.5">
-                        <p className="text-[10px] font-semibold text-ink truncate max-w-[100px]" title={a.name}>{a.name}</p>
-                        <p className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-wider mt-0.5">{a.clicks} clicks • {a.orders} orders</p>
+                      <td className="px-1.5 py-1">
+                        <p className="text-xs font-semibold text-ink truncate max-w-[100px]" title={a.name}>{a.name}</p>
+                        <p className="text-[10px] text-ink/90 uppercase mt-0.5">{a.clicks} clicks • {a.orders} orders</p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
-                        <p className={cn("text-[10px] font-mono", a.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
+                      <td className="px-1.5 py-1 text-right">
+                        <p className={cn("text-xs font-mono", a.netProfit >= 0 ? "text-emerald-600" : "text-rose")}>
                           IDR {fIDR(a.netProfit)}
                         </p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
-                        <p className="text-[10px] font-mono text-rose">IDR {fIDR(a.commission)}</p>
+                      <td className="px-1.5 py-1 text-right">
+                        <p className="text-xs font-mono text-rose">IDR {fIDR(a.commission)}</p>
                       </td>
-                      <td className="px-2 py-1.5 text-right">
+                      <td className="px-1.5 py-1 text-right">
                         <span className={cn(
-                          "px-2 py-0.5 rounded-sm text-[9px] font-mono font-medium",
+                          "px-1.5 py-0.5 rounded-sm text-xs font-mono font-medium",
                           a.netProfit >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose/10 text-rose"
                         )}>
                           {a.roas.toFixed(1)}x
@@ -409,18 +410,18 @@ export function MarketingTab() {
       </div>
 
       {/* COSTING CONFIGURATION GRID */}
-      <div className="pt-10">
-        <div className="flex items-center justify-between mb-4 border-b border-ink/10 pb-2">
-          <h2 className="text-xs md:text-[11px] font-semibold uppercase tracking-[0.1em] text-ink flex items-center gap-2">
+      <div className="pt-6">
+        <div className="flex items-center justify-between mb-3 border-b border-ink/10 pb-1.5">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink flex items-center gap-2">
             <PackageOpen className="w-4 h-4 text-ink/80" /> Product Costing Configuration
           </h2>
           {Object.keys(editingCostings).length > 0 && (
             <button 
               onClick={saveCostings}
               disabled={savingCosting}
-              className="px-4 py-1.5 bg-ink text-white text-[9px] uppercase tracking-widest font-semibold rounded-sm hover:bg-rose transition-colors flex items-center gap-2"
+              className="px-3 py-1.5 bg-ink text-white text-[11px] uppercase tracking-wide font-semibold rounded-sm hover:bg-rose transition-colors flex items-center gap-1.5"
             >
-              {savingCosting ? 'Saving...' : <><Save size={12}/> Save Changes</>}
+              {savingCosting ? 'Saving...' : <><Save size={14}/> Save Changes</>}
             </button>
           )}
         </div>
@@ -429,16 +430,16 @@ export function MarketingTab() {
           <table className="w-full text-left whitespace-nowrap">
             <thead>
               <tr className="border-b border-ink/5 bg-ink/[0.015]">
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest sticky left-0 bg-white">Product</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Selling Price (IDR)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">HPP Pabrik (IDR)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Packaging (IDR)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Operational (%)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest">Target Margin (%)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest border-r border-ink/10">Target ROAS (x)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Total COGS</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Max CPA (Ad Spend)</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium text-ink/80 uppercase tracking-widest bg-ink/[0.02]">Est. Net Profit</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide sticky left-0 bg-white">Product</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Selling Price (IDR)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">HPP Pabrik (IDR)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Packaging (IDR)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Operational (%)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Target Margin (%)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10">Target ROAS (x)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02]">Total COGS</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02]">Max CPA (Ad Spend)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02]">Est. Net Profit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -462,89 +463,89 @@ export function MarketingTab() {
                 
                 return (
                   <tr key={p.id} className="hover:bg-ink/[0.01] transition-colors">
-                    <td className="px-2 py-1.5 sticky left-0 bg-white group-hover:bg-ink/[0.01]">
+                    <td className="px-1.5 py-1 sticky left-0 bg-white group-hover:bg-ink/[0.01]">
                       <div className="flex flex-col gap-0.5">
-                        <p className="text-[10px] font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
-                        <p className="text-[8px] font-mono text-ink/50 uppercase tracking-widest">{p.variants?.[0]?.sku || 'NO-SKU'}</p>
+                        <p className="text-xs font-semibold text-ink truncate max-w-[200px]" title={p.name}>{p.name}</p>
+                        <p className="text-[10px] font-mono text-ink/60 uppercase">{p.variants?.[0]?.sku || 'NO-SKU'}</p>
                       </div>
                     </td>
-                    <td className="px-2 py-1.5">
-                      <p className="text-[10px] font-mono text-ink">IDR {fIDR(p.price)}</p>
+                    <td className="px-1.5 py-1">
+                      <p className="text-xs font-mono text-ink">IDR {fIDR(p.price)}</p>
                     </td>
-                    <td className="px-2 py-1">
+                    <td className="px-1.5 py-1">
                       <input 
                         type="number"
                         min="0"
-                        className="w-28 text-[10px] font-mono px-2 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                        className="w-28 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                         value={currentData.supplier_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'supplier_cost', e.target.value)}
                         placeholder="0"
                       />
                     </td>
-                    <td className="px-2 py-1">
+                    <td className="px-1.5 py-1">
                       <input 
                         type="number"
                         min="0"
-                        className="w-24 text-[10px] font-mono px-2 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                        className="w-24 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                         value={currentData.packaging_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'packaging_cost', e.target.value)}
                         placeholder="0"
                       />
                     </td>
-                    <td className="px-2 py-1">
+                    <td className="px-1.5 py-1">
                       <div className="relative w-20">
                         <input 
                           type="number"
                           min="0"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          className="w-full text-xs font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                           value={currentData.operational_pct ?? ''}
                           onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
                           placeholder="0"
                         />
-                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
+                        <span className="absolute right-2 top-1.5 text-xs text-ink/50">%</span>
                       </div>
                     </td>
-                    <td className="px-2 py-1">
+                    <td className="px-1.5 py-1">
                       <div className="relative w-20">
                         <input 
                           type="number"
                           min="0"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          className="w-full text-xs font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                           value={currentData.target_margin_pct ?? ''}
                           onChange={(e) => handleCostingChange(p.id, 'target_margin_pct', e.target.value)}
                           placeholder="40"
                         />
-                        <span className="absolute right-2 top-2 text-[10px] text-ink/50">%</span>
+                        <span className="absolute right-2 top-1.5 text-xs text-ink/50">%</span>
                       </div>
                     </td>
-                    <td className="px-2 py-1 border-r border-ink/10">
+                    <td className="px-1.5 py-1 border-r border-ink/10">
                       <div className="relative w-20">
                         <input 
                           type="number"
                           step="0.1"
                           min="0"
-                          className="w-full text-[10px] font-mono pl-2 pr-6 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                          className="w-full text-xs font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                           value={currentData.target_roas ?? ''}
                           onChange={(e) => handleCostingChange(p.id, 'target_roas', e.target.value)}
                           placeholder="3"
                         />
-                        <span className="absolute right-2 top-2 text-[10px] text-ink/50 font-bold">x</span>
+                        <span className="absolute right-2 top-1.5 text-xs text-ink/50 font-bold">x</span>
                       </div>
                     </td>
-                    <td className="px-2 py-1.5 bg-ink/[0.01]">
-                      <p className="text-[10px] font-mono text-ink">IDR {fIDR(totalCogs)}</p>
+                    <td className="px-1.5 py-1 bg-ink/[0.01]">
+                      <p className="text-xs font-mono text-ink">IDR {fIDR(totalCogs)}</p>
                     </td>
-                    <td className="px-2 py-1.5 bg-ink/[0.01]">
-                      <p className="text-[10px] font-mono text-rose">IDR {fIDR(maxCpa)}</p>
-                      <p className="text-[8px] text-ink/50 mt-0.5">Maks biaya Iklan/Affiliate</p>
+                    <td className="px-1.5 py-1 bg-ink/[0.01]">
+                      <p className="text-xs font-mono text-rose">IDR {fIDR(maxCpa)}</p>
+                      <p className="text-[9px] text-ink/60 mt-0.5">Maks Iklan/Affiliate</p>
                     </td>
-                    <td className="px-2 py-1.5 bg-ink/[0.01]">
+                    <td className="px-1.5 py-1 bg-ink/[0.01]">
                       <div className="flex flex-col gap-0.5">
-                        <p className={cn("text-[10px] font-mono font-bold", estNetProfit >= 0 ? (isUnderTarget ? "text-amber-500" : "text-emerald-600") : "text-rose")}>
+                        <p className={cn("text-xs font-mono font-bold", estNetProfit >= 0 ? (isUnderTarget ? "text-amber-500" : "text-emerald-600") : "text-rose")}>
                           IDR {fIDR(estNetProfit)}
                         </p>
-                        <p className="text-[8px] text-ink/50">
-                          Target Margin: <span className="text-ink/80 font-mono">IDR {fIDR(targetNetProfit)}</span>
+                        <p className="text-[10px] text-ink/60">
+                          Target: <span className="text-ink/80 font-mono">IDR {fIDR(targetNetProfit)}</span>
                         </p>
                       </div>
                     </td>
@@ -554,8 +555,8 @@ export function MarketingTab() {
             </tbody>
           </table>
         </div>
-        <p className="text-[9px] text-ink/80 mt-3 italic">
-          * Mengubah parameter HPP akan langsung mengubah kalkulasi Real ROAS dan Profit pada seluruh riwayat penjualan.
+        <p className="text-xs text-ink/80 mt-2 italic bg-amber-50 p-2 rounded border border-amber-100">
+          * Mengubah HPP akan langsung memperbarui kalkulasi Real ROAS dan Profit pada seluruh riwayat penjualan secara otomatis.
         </p>
       </div>
 
