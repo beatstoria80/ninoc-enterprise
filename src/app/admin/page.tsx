@@ -40,6 +40,7 @@ import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
 import { EmailBroadcastTab } from '@/components/admin/tabs/EmailBroadcastTab';
 import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
+import { GoogleAdsTab } from '@/components/admin/tabs/GoogleAdsTab';
 import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
 import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
 import { POTab } from '@/components/admin/tabs/POTab';
@@ -1103,6 +1104,7 @@ export default function AdminDashboard() {
     { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length, roles: ['super_admin'] },
     { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'], roles: ['super_admin', 'finance'] },
     { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'], roles: ['super_admin'] },
+    { id: 'google_ads', icon: TrendingUp, label: 'Google Ads Manager', activeKeys: ['google_ads'], roles: ['super_admin', 'finance'] },
     { 
       id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger', 'stock_opname'],
       roles: ['super_admin', 'finance', 'inbound_warehouse'],
@@ -1611,6 +1613,7 @@ export default function AdminDashboard() {
                activeTab === 'suppliers' ? 'Supplier Review' :
                activeTab === 'warehouse' ? 'Warehouse Hub' :
                activeTab === 'customers' ? 'Membership' :
+               activeTab === 'google_ads' ? 'Google Ads Manager' :
                activeTab === 'inventory' ? 'Stock Management' :
                activeTab === 'po' ? 'Purchase Orders' :
                activeTab === 'do' ? 'Inbound Receiving' :
@@ -1788,6 +1791,10 @@ export default function AdminDashboard() {
               sendMessage={sendMessage}
               fetchChatSessions={fetchChatSessions}
             />
+          )}
+
+          {activeTab === 'google_ads' && (
+            <GoogleAdsTab />
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
