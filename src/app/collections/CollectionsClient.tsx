@@ -148,9 +148,9 @@ function CollectionCard({ col, index }: {
           <>
             <div className="absolute inset-0 z-0">
               {isVideoUrl(col.banner_url) ? (
-                <video src={col.banner_url!} poster="/og-image.png" className="w-full h-full object-cover transition-transform duration-700" style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} autoPlay muted loop playsInline />
+                <video src={col.banner_url!} poster="/og-image.png" className="w-full h-full object-cover transition-transform duration-700 scale-[1.15] md:scale-100 group-hover:scale-[1.2] md:group-hover:scale-105" autoPlay muted loop playsInline />
               ) : (
-                <Image src={col.banner_url!} alt={col.name} fill className="object-cover transition-transform duration-700" style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }} />
+                <Image src={col.banner_url!} alt={col.name} fill className="object-cover transition-transform duration-700 scale-100 group-hover:scale-105" />
               )}
             </div>
             {/* Overlay */}
