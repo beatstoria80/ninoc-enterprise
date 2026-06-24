@@ -1,0 +1,48 @@
+======================================================================
+                  SIMULASI ROAS & PROFIT (STUDI KASUS)
+======================================================================
+
+----------------------------------------------------------------------
+1. DETAIL PRODUK (1 Pcs Kaos Oversize)
+----------------------------------------------------------------------
+Harga Jual (Selling Price) : Rp 150.000
+HPP Pabrik (Jahit & Kain)  : Rp  50.000
+Packaging (Plastik & Box)  : Rp   5.000
+Operasional (Asumsi 10%)   : Rp  15.000
+-----------------------------------------
+TOTAL MODAL (COGS)         : Rp  70.000  (Total Modal per 1 Kaos)
+
+----------------------------------------------------------------------
+2. SKENARIO PENJUALAN (Asumsi Terjual 10 Pcs)
+----------------------------------------------------------------------
+Total Terjual              : 10 Pcs
+Total Pendapatan (Revenue) : Rp 1.500.000 (10 x Rp 150.000)
+Total Modal Keseluruhan    : Rp   700.000 (10 x Rp 70.000)
+-----------------------------------------
+LABA KOTOR (Gross Profit)  : Rp   800.000 (Pendapatan - Modal Keseluruhan)
+
+----------------------------------------------------------------------
+3. SKENARIO PEMASARAN
+----------------------------------------------------------------------
+Total Marketing Spend      : Rp 500.000 (Total uang dibakar untuk Iklan & Komisi)
+-----------------------------------------
+REAL ROAS                  : 3x (Total Pendapatan / Total Marketing Spend)
+                             *Artinya: Setiap Rp 1 dibakar untuk iklan,
+                              menghasilkan pendapatan Rp 3.
+
+----------------------------------------------------------------------
+4. HASIL AKHIR (PROFIT BERSIH)
+----------------------------------------------------------------------
+Laba Kotor                 : Rp 800.000
+Total Marketing Spend      : Rp 500.000
+-----------------------------------------
+TRUE NET PROFIT            : Rp 300.000 (Laba Kotor - Marketing Spend)
+                             *Ini adalah uang tunai bersih yang masuk kantong perusahaan.
+
+======================================================================
+CATATAN TAMBAHAN: MAX CPA
+======================================================================
+Max CPA (Ad Spend)         : Rp 50.000 per Kaos
+Keterangan                 : Jika Anda mentargetkan untung Rp 30.000 per kaos, 
+                             maka biaya diskon/iklan per 1 kaos tidak boleh 
+                             melebihi Rp 50.000 agar perusahaan tidak boncos.

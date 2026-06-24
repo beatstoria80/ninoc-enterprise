@@ -1,0 +1,14 @@
+Kategori,Metrik,Nilai,Keterangan
+1. Detail Produk,Harga Jual (Selling Price),150000,Harga untuk 1 Kaos Oversize
+1. Detail Produk,HPP Pabrik,50000,Biaya Jahit & Kain
+1. Detail Produk,Packaging,5000,Plastik & Box
+1. Detail Produk,Operasional (10%),15000,Asumsi biaya Listrik & Karyawan
+1. Detail Produk,Total Modal (COGS),70000,Total Modal per 1 Kaos
+2. Skenario Penjualan,Total Terjual,10,Asumsi terjual 10 pcs
+2. Skenario Penjualan,Total Pendapatan (Revenue),1500000,10 x Rp 150.000
+2. Skenario Penjualan,Total Modal Keseluruhan,700000,10 x Rp 70.000
+2. Skenario Penjualan,Laba Kotor (Gross Profit),800000,Pendapatan - Total Modal Keseluruhan
+3. Skenario Pemasaran,Total Marketing Spend,500000,Total uang dibakar untuk Iklan & Komisi
+3. Skenario Pemasaran,Real ROAS,3x,Total Pendapatan / Total Marketing Spend
+4. Hasil Akhir (Profit),True Net Profit,300000,Laba Kotor - Total Marketing Spend
+4. Hasil Akhir (Profit),Max CPA (Ad Spend),50000,Batas maksimal biaya pemasaran per 1 Kaos agar tidak rugi

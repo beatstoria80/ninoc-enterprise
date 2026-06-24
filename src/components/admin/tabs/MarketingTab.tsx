@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { TrendingUp, Ticket, Shield, Users, ArrowUpRight, ArrowDownRight, PackageOpen, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getAdSpend } from '@/actions/googleAds';
 
 export function MarketingTab() {
   const [loading, setLoading] = useState(true);
@@ -178,7 +179,12 @@ export function MarketingTab() {
       const totalRev = vRevenue + aRevenue;
       const totalCogs = vCogs + aCogs;
       const totalGrossProfit = totalRev - totalCogs;
-      const totalMarketingCost = vDiscount + aCommission;
+      
+      // Fetch Google Ads Spend via Server Action
+      const googleAdsSpend = await getAdSpend();
+      
+      // Total marketing cost now includes Google Ads spend!
+      const totalMarketingCost = vDiscount + aCommission + googleAdsSpend;
       const totalNetProfit = totalGrossProfit - totalMarketingCost;
 
       setMetrics({
@@ -295,7 +301,7 @@ export function MarketingTab() {
         <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
           <p className="text-xs font-semibold text-ink/90 uppercase tracking-wide mb-1">Total Marketing Spend</p>
           <p className="text-2xl font-mono tracking-tight text-rose">IDR {fIDR(metrics.marketingSpend)}</p>
-          <p className="text-[11px] text-ink/60 mt-1">Total Biaya Marketing (Diskon Voucher + Komisi Affiliate)</p>
+          <p className="text-[11px] text-ink/60 mt-1">Total Biaya Marketing (Diskon Voucher + Komisi Affiliate + Google Ads Spend)</p>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between">
