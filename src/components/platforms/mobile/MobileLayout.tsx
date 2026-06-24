@@ -653,7 +653,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(60px+env(safe-area-inset-bottom))] px-2 flex items-start justify-around pt-3.5 pb-[env(safe-area-inset-bottom)]">
+          <div className="h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start justify-around pt-2 pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
             <button
