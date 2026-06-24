@@ -19,21 +19,21 @@ export default function AssetsPage() {
       id: 'summer-sale',
       title: 'Summer Eclipse 2026',
       type: 'Collection',
-      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
+      image: '',
       copywrite: "Tampil stand out di musim panas ini dengan koleksi 'Summer Eclipse' dari NINOC. Desain avant-garde yang ringan dan tetap mempertahankan estetika gelap yang misterius. Cek link di bio untuk diskon eksklusif! 🖤✨ #Ninoc #SummerEclipse #DarkAesthetic"
     },
     {
       id: 'obsidian-tee',
       title: 'Oversized Obsidian T-Shirt',
       type: 'Product',
-      image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1974&auto=format&fit=crop',
+      image: '',
       copywrite: "Kaos andalan buat gaya effortless. 'Oversized Obsidian T-Shirt' dari NINOC ini bahannya super premium dan jatuhnya pas banget di badan. Wajib punya buat daily wear kalian! Dapatkan potongan harga dengan klik link di bio. 🛒👕"
     },
     {
       id: 'midnight-jacket',
       title: 'Midnight Bomber Jacket',
       type: 'Product',
-      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=1935&auto=format&fit=crop',
+      image: '',
       copywrite: "Layering season is here! Sempurnakan outfit kalian dengan 'Midnight Bomber Jacket' yang super sleek ini. Jahitan rapi, detail premium. Klik link di bio buat order sekarang sebelum kehabisan! 🔥 #NinocBomber #Streetwear"
     }
   ];
@@ -57,13 +57,15 @@ export default function AssetsPage() {
           >
             {/* IMAGE PREVIEW */}
             <div className="relative aspect-[4/5] bg-ink/5 group overflow-hidden">
-              <Image 
-                src={asset.image} 
-                alt={asset.title} 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              />
+              {asset.image && (
+                <Image 
+                  src={asset.image} 
+                  alt={asset.title} 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                 <button className="w-full bg-white text-ink py-3 rounded-lg text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose hover:text-white transition-colors">
                   <Download size={14} /> Download HD (Tanpa Watermark)
