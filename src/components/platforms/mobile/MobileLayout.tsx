@@ -653,7 +653,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
+          <div className="h-[calc(60px+env(safe-area-inset-bottom))] px-2 flex items-start justify-around pt-3.5 pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
             <button
@@ -675,7 +675,7 @@ export default function MobileLayout({
                 transition={{ duration: DURATION.fast }}
                 className={cn(
                   "transition-colors",
-                  isActive('/') ? "text-rose" : "text-white/40"
+                  isActive('/') ? "text-rose" : "text-white/80"
                 )}
               >
                 <HomeIcon active={isActive('/')} />
@@ -696,7 +696,7 @@ export default function MobileLayout({
               <div className="relative">
                 <motion.div
                   animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
-                  className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/40")}
+                  className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/80")}
                 >
                   <CartIcon active={isActive('/checkout')} />
                 </motion.div>
@@ -719,7 +719,7 @@ export default function MobileLayout({
             {/* Support */}
             <PressScale
               onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))}
-              className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px] text-white/40"
+              className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px] text-white/80"
             >
               <div className="relative">
                 <HeadphonesIcon />
@@ -740,7 +740,7 @@ export default function MobileLayout({
             <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
-                className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-white/40")}
+                className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-white/80")}
               >
                 <UserIcon active={isActive('/profile')} />
               </motion.div>
