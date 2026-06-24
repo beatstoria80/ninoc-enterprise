@@ -226,7 +226,7 @@ function ProductCard({ product }: { product: Product }) {
       className="h-full"
     >
       <Link href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
-        <div className="aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative">
+        <div className="aspect-[4/5] bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative">
           {product.image_url ? (
             <Image
               src={product.image_url}

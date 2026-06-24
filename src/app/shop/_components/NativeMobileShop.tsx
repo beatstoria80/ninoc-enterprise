@@ -53,7 +53,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
       onClick={onTap}
     >
       {/* Image Container - Square ratio */}
-      <div className="relative aspect-square rounded-none overflow-hidden bg-ink/5 border border-ink/5 group">
+      <div className="relative aspect-[4/5] rounded-none overflow-hidden bg-ink/5 border border-ink/5 group">
         {product.image_url ? (
           <Image
             src={product.image_url}
