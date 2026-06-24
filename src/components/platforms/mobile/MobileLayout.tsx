@@ -9,6 +9,7 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import Image from 'next/image';
+import { getDictionaryByLocale } from '@/lib/i18n';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -221,6 +222,7 @@ export default function MobileLayout({
   const pathname = usePathname();
   const router = useRouter();
   const lang = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const dict = getDictionaryByLocale(lang);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -315,14 +317,13 @@ export default function MobileLayout({
   // Menu items
   const menuItems = [
     { href: '/', label: 'Home' },
-    { href: '/shop', label: 'Catalog' },
-    { href: '/collections', label: 'Collections' },
-    { href: '/shop', label: 'Category' },
-    { href: '/logbook', label: 'Logbook' },
-    { href: '/track', label: 'Lacak Pesanan' },
+    { href: '/shop', label: dict.header.shop },
+    { href: '/collections', label: dict.header.collections },
+    { href: '/logbook', label: dict.header.logbook },
+    { href: '/track', label: dict.header.track },
     { href: '/supplier/apply', label: 'Supplier' },
-    { href: '/affiliate', label: 'Afiliasi' },
-    { href: '/about', label: 'About' },
+    { href: '/affiliate', label: dict.header.affiliate },
+    { href: '/about', label: dict.header.about },
     { href: '/retur', label: 'Retur & Refund', highlight: true },
   ];
 
@@ -364,7 +365,7 @@ export default function MobileLayout({
                 </Link>
               ) : pathname === '/shop' ? (
                 <div className="flex items-center leading-none px-1">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">Catalog</span>
+                  <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">{dict.header.shop}</span>
                 </div>
               ) : (
                 <Link  href="/shop" className="group flex items-center gap-2 text-ink">
@@ -434,7 +435,7 @@ export default function MobileLayout({
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="SEARCH CATALOG..."
+                      placeholder={`SEARCH ${dict.header.shop.toUpperCase()}...`}
                       autoFocus
                       className="w-full bg-transparent py-1 text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
                     />

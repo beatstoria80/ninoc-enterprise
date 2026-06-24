@@ -36,7 +36,6 @@ export default function GlobalFooter() {
             {[
               { label: dict.header.shop, href: '/shop' },
               { label: dict.header.collections, href: '/collections' },
-              { label: dict.header.category, href: '/shop' },
               { label: dict.header.affiliate, href: '/affiliate' },
               { label: dict.header.logbook, href: '/logbook' },
               { label: 'Become a Partner', href: '/supplier/apply' },
