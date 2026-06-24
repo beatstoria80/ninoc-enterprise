@@ -637,7 +637,7 @@ export default function MobileLayout({
       <main className={cn(
         "flex-1 overflow-y-auto",
         !hideHeader && "pt-14",
-        !hideTabBar && "pb-[calc(68px+env(safe-area-inset-bottom))]",
+        !hideTabBar && "pb-[calc(50px+env(safe-area-inset-bottom))]",
         "ios-momentum-scroll"
       )}>
         {children}
