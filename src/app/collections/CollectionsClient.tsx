@@ -306,11 +306,11 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
   // useEffect fetch removed since we use server-side initial data
 
   return (
-    <main className="min-h-screen bg-cr noise pt-20 md:pt-28 px-2 md:px-4 pb-[80px]">
+    <main className="min-h-screen bg-cr noise pt-16 md:pt-20 px-2 md:px-4 pb-[80px]">
       <div className="max-w-[1800px] mx-auto">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-4 md:mb-6">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -328,7 +328,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
         </div>
 
         {/* COLLECTION INDEX */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-4 md:mb-6">
           {collections.map((col, index) => (
             <CollectionCard
               key={col.id}
