@@ -771,7 +771,7 @@ Tim NINOC Enterprise`,
 • [Email Studio] — untuk pertanyaan formal / komplain resmi
 
 📸 **Instagram:**
-• @ninoc.official — info promo, produk terbaru, dan gallery
+• @ninoc.co — info promo, produk terbaru, dan gallery
 
 🌐 **Website:**
 • www.ninoc.store — katalog produk lengkap dan info terbaru
@@ -807,7 +807,7 @@ Tim NINOC Enterprise`,
 
 📍 **Lokasi:**
 • Website: www.ninoc.store
-• Instagram: @ninoc.official
+• Instagram: @ninoc.co
 • WhatsApp: [Nomor WA]
 
 ⚠️ **Catatan:**
@@ -843,7 +843,7 @@ NINOC Enterprise adalah brand fashion lokal Indonesia yang menghadirkan produk b
 
 🌐 **Temui Kami:**
 • Website: www.ninoc.store
-• Instagram: @ninoc.official
+• Instagram: @ninoc.co
 • WhatsApp: [Nomor WA]
 
 Terima kasih sudah mengenal NINOC! 🙏

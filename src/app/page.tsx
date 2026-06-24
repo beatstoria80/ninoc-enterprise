@@ -1004,7 +1004,7 @@ export default function Home() {
 
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/ninoc.store/"
+                href="https://www.instagram.com/ninoc.co/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all"
