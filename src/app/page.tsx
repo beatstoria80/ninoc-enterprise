@@ -640,7 +640,6 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
               {/* Middle: Portrait — cinematic one-shot reveal (Emil: no infinite decorative animations) */}
               <div className="lg:col-span-4 relative mt-0 z-50">
                 <motion.div
-                  layoutId="main-hero-banner"
                   transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
                   className="aspect-[4/4] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden relative shadow-2xl shadow-ink/5 border border-ink/5"
                 >
@@ -728,7 +727,6 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
           >
             {/* Banner Image Target */}
             <motion.div
-              layoutId="main-hero-banner"
               transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
               className="absolute inset-0 w-full h-full"
             >
