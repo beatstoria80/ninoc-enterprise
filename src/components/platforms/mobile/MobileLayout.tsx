@@ -653,7 +653,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(44px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)] pt-2">
+          <div className="h-[calc(52px+env(safe-area-inset-bottom))] px-2 flex items-center justify-around pb-[env(safe-area-inset-bottom)]">
 
             {/* Home */}
             <button
@@ -668,7 +668,7 @@ export default function MobileLayout({
                   }
                 }
               }}
-              className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]"
+              className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]"
             >
               <motion.div
                 animate={{ scale: isActive('/') ? 1.1 : 1 }}
@@ -692,23 +692,25 @@ export default function MobileLayout({
             </button>
 
             {/* Cart */}
-            <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] relative">
-              <motion.div
-                animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
-                className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/40")}
-              >
-                <CartIcon active={isActive('/checkout')} />
-              </motion.div>
-              {cartCount > 0 && (
-                <motion.span
-                  key={cartCount}
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="absolute top-0 right-2 w-4 h-4 bg-rose text-white text-[10px] font-medium rounded-full flex items-center justify-center"
+            <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
+              <div className="relative">
+                <motion.div
+                  animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
+                  className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/40")}
                 >
-                  {cartCount}
-                </motion.span>
-              )}
+                  <CartIcon active={isActive('/checkout')} />
+                </motion.div>
+                {cartCount > 0 && (
+                  <motion.span
+                    key={cartCount}
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="absolute -top-1.5 -right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-medium rounded-full flex items-center justify-center"
+                  >
+                    {cartCount}
+                  </motion.span>
+                )}
+              </div>
               <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-white/50")}>
                 Cart
               </span>
@@ -717,7 +719,7 @@ export default function MobileLayout({
             {/* Support */}
             <PressScale
               onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))}
-              className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px] text-white/40"
+              className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px] text-white/40"
             >
               <div className="relative">
                 <HeadphonesIcon />
@@ -725,7 +727,7 @@ export default function MobileLayout({
                   <motion.span
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-rose text-white text-[10px] font-medium rounded-full flex items-center justify-center"
+                    className="absolute -top-1.5 -right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-medium rounded-full flex items-center justify-center"
                   >
                     {supportUnreadCount}
                   </motion.span>
@@ -735,7 +737,7 @@ export default function MobileLayout({
             </PressScale>
 
             {/* Profile */}
-            <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-2 px-4 min-w-[60px]">
+            <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
               <motion.div
                 animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
                 className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-white/40")}
