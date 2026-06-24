@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 import "./globals.css";
 import Script from "next/script";
@@ -263,6 +264,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col minimal-scroll">
+        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {/* Skip to main content — Accessibility */}
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <script dangerouslySetInnerHTML={{ __html: `try{var m=window.matchMedia('(prefers-reduced-motion: reduce)');document.body.dataset.reducedMotion=m.matches?'true':'false';m.addEventListener('change',function(e){document.body.dataset.reducedMotion=e.matches?'true':'false'});}catch(e){}` }} />
