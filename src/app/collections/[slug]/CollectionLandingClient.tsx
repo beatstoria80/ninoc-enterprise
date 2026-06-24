@@ -21,10 +21,10 @@ const EASING = {
 };
 
 const DURATION = {
-  fast: 0.15,
-  normal: 0.2,
-  medium: 0.3,
-  slow: 0.5,
+  fast: 0.08,
+  normal: 0.12,
+  medium: 0.18,
+  slow: 0.3,
 };
 
 const productCardVariants: Variants = {

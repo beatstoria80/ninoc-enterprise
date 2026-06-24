@@ -9,7 +9,7 @@ import { useBrandColor } from '@/components/BrandProvider';
 import { useDictionary } from '@/hooks/useDictionary';
 
 const EASING = { out: [0.23, 1, 0.32, 1] as const };
-const DURATION = { micro: 0.1, fast: 0.15, normal: 0.2, medium: 0.3, slow: 0.5 };
+const DURATION = { micro: 0.05, fast: 0.08, normal: 0.12, medium: 0.18, slow: 0.3, };
 
 const pageVariants: Variants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: DURATION.normal, ease: EASING.out, staggerChildren: 0.05 } } };
 const itemVariants: Variants = { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: DURATION.normal, ease: EASING.out } } };

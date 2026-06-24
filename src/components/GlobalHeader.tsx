@@ -34,11 +34,11 @@ const EASING = {
 };
 
 const DURATION = {
-  micro: 0.1,    // 100ms - button press feedback
-  fast: 0.15,    // 150ms - small hover
-  normal: 0.2,   // 200ms - standard transitions
-  medium: 0.3,   // 300ms - modals, drawers
-  slow: 0.5,     // 500ms - page transitions
+  micro: 0.05,    // 100ms - button press feedback
+  fast: 0.08,    // 150ms - small hover
+  normal: 0.12,   // 200ms - standard transitions
+  medium: 0.18,   // 300ms - modals, drawers
+  slow: 0.3,     // 500ms - page transitions
 };
 
 interface Product {

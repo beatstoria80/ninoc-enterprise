@@ -29,7 +29,7 @@ const CATEGORIES = [
 ];
 
 const EASING = { out: [0.23, 1, 0.32, 1] } as const;
-const DURATION = { fast: 0.15, normal: 0.2, medium: 0.3 } as const;
+const DURATION = { fast: 0.08, normal: 0.12, medium: 0.18, } as const;
 
 const categoryColorMap: Record<string, string> = {
   greeting: 'bg-emerald-50 text-emerald-600 border-emerald-100',

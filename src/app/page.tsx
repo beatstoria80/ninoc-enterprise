@@ -59,12 +59,12 @@ const EASING = {
 };
 
 const DURATION = {
-  micro: 0.1,
-  fast: 0.15,
-  normal: 0.2,
-  medium: 0.3,
-  slow: 0.5,
-  hero: 0.8,
+  micro: 0.05,
+  fast: 0.08,
+  normal: 0.12,
+  medium: 0.18,
+  slow: 0.3,
+  hero: 0.5,
 };
 
 // ═══════════════════════════════════════════════════════════════
