@@ -148,15 +148,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return () => observer.disconnect();
   }, []);
 
-  const [skipAnimation, setSkipAnimation] = useState(false);
-  
-  React.useLayoutEffect(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('skip_product_animation') === 'true') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSkipAnimation(true);
-      sessionStorage.removeItem('skip_product_animation');
+  const [skipAnimation] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const skip = sessionStorage.getItem('skip_product_animation') === 'true';
+      if (skip) {
+        sessionStorage.removeItem('skip_product_animation');
+        return true;
+      }
     }
-  }, []);
+    return false;
+  });
 
   // Default fallbacks if admin does not provide data
   const DEFAULT_SPECS = [
