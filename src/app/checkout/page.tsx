@@ -908,7 +908,7 @@ export default function CheckoutPage() {
         )}
 
         {/* FORM AREA */}
-        <div className={cn(isMobile ? "space-y-3" : "lg:col-span-6 space-y-6")}>
+        <div className={cn(isMobile ? "space-y-3" : "lg:col-span-7 space-y-6")}>
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4 lg:space-y-6 relative z-10">
             
             {/* 01: IDENTITY */}
@@ -1169,10 +1169,11 @@ export default function CheckoutPage() {
               </div>
             </motion.section>
           </form>
-        </div>        {/* ORDER SUMMARY - Sidebar on desktop only */}
+        </div>
+        {/* ORDER SUMMARY - Sidebar on desktop only */}
         {!isMobile && (
           <motion.div 
-            className="lg:col-span-4 lg:pl-12"
+            className="lg:col-span-5 lg:pl-6"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
@@ -1305,10 +1306,10 @@ export default function CheckoutPage() {
 
               {/* SECURITY SPECS */}
               <div className="flex flex-col items-center gap-4 opacity-70">
-                 <div className="flex items-center justify-center gap-10 grayscale brightness-90">
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Visa_2021.svg" alt="Visa" width={40} height={14} className="h-3.5 w-auto object-contain" unoptimized />
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={40} height={22} className="h-4.5 w-auto object-contain" unoptimized />
-                    <Image src="https://midtrans.com/assets/img/midtrans-logo.svg" alt="Midtrans" width={60} height={20} className="h-3.5 w-auto object-contain" unoptimized />
+                 <div className="flex items-center justify-center gap-8 grayscale brightness-90">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/svg/visa.svg" alt="Visa" className="h-6 w-auto object-contain opacity-80" />
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/svg/mastercard.svg" alt="Mastercard" className="h-6 w-auto object-contain opacity-80" />
+                    <ShieldCheck size={28} className="text-ink/60 opacity-80" />
                  </div>
                  <div className="flex flex-col items-center gap-1">
                     <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
