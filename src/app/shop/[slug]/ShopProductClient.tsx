@@ -152,6 +152,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   
   React.useLayoutEffect(() => {
     if (typeof window !== 'undefined' && sessionStorage.getItem('skip_product_animation') === 'true') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSkipAnimation(true);
       sessionStorage.removeItem('skip_product_animation');
     }
