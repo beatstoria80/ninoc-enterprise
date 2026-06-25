@@ -23,6 +23,7 @@ export function WebAnalyticsTab() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, []);
 
@@ -47,7 +48,7 @@ export function WebAnalyticsTab() {
         </p>
         <div className="bg-ink/5 p-4 rounded-md w-full max-w-2xl text-left font-mono text-[11px] text-ink/80 space-y-1">
           <p>GOOGLE_SERVICE_ACCOUNT_EMAIL=namarobot@project-id.iam.gserviceaccount.com</p>
-          <p>GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEv...-----END PRIVATE KEY-----\n"</p>
+          <p>GOOGLE_PRIVATE_KEY=&quot;-----BEGIN PRIVATE KEY-----\nMIIEv...-----END PRIVATE KEY-----\n&quot;</p>
           <p>GA4_PROPERTY_ID=123456789</p>
           <p>GSC_SITE_URL=https://ninoc.store/</p>
         </div>
