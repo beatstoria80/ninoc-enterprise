@@ -131,5 +131,37 @@ Karena ini aplikasi skala Enterprise (*White-label*), arsitektur tampilan tidak 
 
 ---
 
+## Tahap 5: Integrasi Web Analytics (GA4 & Google Search Console)
+
+Selain Google Ads, *dashboard* operasional juga perlu menyedot data analitik pengunjung organik dan performa SEO secara *real-time*. Berbeda dengan Google Ads yang menggunakan sistem OAuth (Client ID & Secret), GA4 dan GSC menggunakan sistem keamanan **Google Service Account** (Sistem Robot).
+
+### A. Membuat "Email Robot" (Service Account)
+1. Buka [Google Cloud Console](https://console.cloud.google.com/).
+2. Pastikan Anda berada di proyek yang sama. Cari dan aktifkan dua API ini:
+   - **Google Analytics Data API**
+   - **Google Search Console API**
+3. Masuk ke menu **IAM & Admin > Service Accounts**.
+4. Buat *Service Account* baru (misal: `ninoc-robot`). Abaikan bagian *roles*, lalu simpan.
+5. Anda akan mendapatkan email robot yang berakhiran `@...gserviceaccount.com`. Ini adalah variabel `GOOGLE_SERVICE_ACCOUNT_EMAIL`.
+
+### B. Mengambil Kunci Rahasia
+1. Pada halaman *Service Accounts*, klik tiga titik di sebelah email robot tersebut, lalu pilih **Manage keys**.
+2. Klik **Add Key > Create new key > JSON**.
+3. File JSON akan terunduh. Buka dengan Notepad, lalu salin seluruh teks panjang di dalam `"private_key"` (termasuk `-----BEGIN PRIVATE KEY-----` dan `\n`). Ini adalah variabel `GOOGLE_PRIVATE_KEY`.
+
+### C. Mengundang Robot ke Rumah Data
+Robot tidak akan bisa membaca data jika tidak diundang sebagai tamu di dasbor utama Anda.
+1. **Google Analytics:** Masuk ke *Admin > Property Access Management*, lalu tambahkan email robot tadi sebagai **Viewer**. Di bagian *Property Details*, catat **Property ID** Anda (angka murni 9-10 digit, bukan yang berawalan "G-"). Ini adalah variabel `GA4_PROPERTY_ID`.
+2. **Search Console:** Masuk ke *Settings > Users and permissions*, tambahkan email robot dengan izin **Restricted** atau **Full**. Catat URL *property* Anda (contoh: `https://ninoc.store/`). Ini adalah variabel `GSC_SITE_URL`.
+
+> [!IMPORTANT]
+> Masukkan 4 variabel Web Analytics ini ke dalam Vercel klien Anda (diikuti dengan *Redeploy*) agar *Tab* Web Analytics menyala:
+> 1. `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+> 2. `GOOGLE_PRIVATE_KEY` (Bisa di-paste utuh beserta tanda kutipnya `"..."`)
+> 3. `GA4_PROPERTY_ID`
+> 4. `GSC_SITE_URL`
+
+---
+
 ### Penutup
-Infrastruktur 4 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi Tahap 1 & 2 untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
+Infrastruktur 5 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi langkah persiapan di atas untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
