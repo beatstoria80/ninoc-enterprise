@@ -1821,35 +1821,38 @@ export default function AdminDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center p-0 lg:p-3"
+            className="fixed inset-0 z-[200] bg-ink/40 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
             onClick={() => setIsProductModalOpen(false)}
           >
-            <div className="flex lg:items-stretch justify-center gap-0 lg:gap-3 w-full max-w-[1400px] h-[95dvh] lg:h-full max-h-none lg:max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
+            <div className="flex items-stretch justify-center gap-4 w-full max-w-[1200px] h-auto max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
               
               {/* MAIN PRODUCT MODAL */}
               <motion.div
                 layout
-                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                initial={{ scale: 0.95, opacity: 0, y: 10 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                className="w-full lg:max-w-3xl flex flex-col bg-white rounded-t-2xl lg:rounded-xl shadow-2xl relative overflow-hidden flex-shrink-0"
+                exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                className="w-full lg:max-w-3xl flex flex-col bg-white rounded-2xl shadow-2xl ring-1 ring-ink/5 relative overflow-hidden flex-shrink-0"
               >
-                <div className="bg-white px-1.5 py-1 border-b border-gray-100 flex items-center justify-between z-10 flex-shrink-0">
-                  <h2 className="text-xl font-medium text-gray-900">
-                    {isEditMode ? 'Edit Product' : 'Add New Product'}
-                  </h2>
-                  <div className="flex items-center gap-2">
+                <div className="bg-white px-5 py-4 border-b border-ink/5 flex items-center justify-between z-10 flex-shrink-0">
+                  <div className="flex flex-col">
+                    <h2 className="text-lg font-semibold text-ink tracking-tight">
+                      {isEditMode ? 'Edit Product' : 'Add New Product'}
+                    </h2>
+                    <p className="text-[10px] text-ink/50 uppercase tracking-wider mt-0.5">Manage your product catalog</p>
+                  </div>
+                  <div className="flex items-center gap-3">
                     {!isSeoPanelOpen && (
                       <button 
                         onClick={() => setIsSeoPanelOpen(true)}
-                        className="px-3 py-1.5 text-rose bg-rose/5 hover:bg-rose/10 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
+                        className="px-3 py-1.5 text-rose bg-rose/5 hover:bg-rose/10 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition-colors"
                       >
                         <Search size={14} />
                         SEO Helper
                       </button>
                     )}
-                    <button onClick={() => setIsProductModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                      <X size={20} />
+                    <button onClick={() => setIsProductModalOpen(false)} className="p-2 text-ink/50 hover:text-ink hover:bg-ink/5 rounded-full transition-colors">
+                      <X size={18} />
                     </button>
                   </div>
                 </div>
@@ -2725,14 +2728,17 @@ export default function AdminDashboard() {
                     exit={{ width: 0, opacity: 0, x: 20 }}
                     transition={{ type: "spring", bounce: 0, duration: 0.4 }}
                     style={{ maxWidth: '100%' }}
-                    className="absolute lg:static inset-0 z-[60] lg:z-auto flex flex-col bg-gray-50 lg:border border-gray-200 rounded-t-2xl lg:rounded-xl shadow-2xl lg:shadow-none overflow-hidden flex-shrink-0"
+                    className="absolute lg:static inset-0 z-[60] lg:z-auto flex flex-col bg-gray-50 rounded-2xl shadow-xl ring-1 ring-ink/5 overflow-hidden flex-shrink-0 lg:ml-2"
                   >
-                     <div className="p-2 border-b border-gray-200 bg-white flex items-center justify-between flex-shrink-0">
-                       <h3 className="text-xs font-medium text-gray-900 flex items-center gap-2">
-                         <Search size={16} className="text-rose" />
-                         SEO & Discovery
-                       </h3>
-                       <button onClick={() => setIsSeoPanelOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors">
+                     <div className="bg-white px-5 py-4 border-b border-ink/5 flex items-center justify-between z-10 flex-shrink-0">
+                       <div className="flex flex-col">
+                         <h3 className="text-sm font-semibold text-ink tracking-tight flex items-center gap-2">
+                           <Search size={14} className="text-rose" />
+                           SEO & Discovery
+                         </h3>
+                         <p className="text-[10px] text-ink/50 uppercase tracking-wider mt-0.5">Optimize search ranking</p>
+                       </div>
+                       <button onClick={() => setIsSeoPanelOpen(false)} className="p-2 text-ink/50 hover:text-ink hover:bg-ink/5 rounded-full transition-colors">
                          <PanelRightClose size={16} />
                        </button>
                      </div>
