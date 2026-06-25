@@ -648,11 +648,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       <motion.button
                         variants={textVariants}
                         key={size}
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedSize(size); setQuantity(1); }}
                         className={cn(
-                          "h-9 lg:h-10 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs lg:text-xs font-medium transition-all border relative",
+                          "active:scale-[0.97] h-9 lg:h-10 min-w-[2.5rem] lg:min-w-[3rem] px-2 rounded-none flex items-center justify-center text-xs lg:text-xs font-medium transition-all border relative",
                           effectiveSize === size ? "bg-ink text-white border-ink shadow-md" : "bg-white text-ink border-ink/5 hover:border-ink/20"
                         )}
                       >
@@ -690,11 +688,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       <motion.button
                         variants={textVariants}
                         key={color}
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => { setSelectedColor(color); setQuantity(1); setActiveImageIndex(0); }}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 rounded-none text-xs md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
+                          "active:scale-[0.97] flex items-center gap-2 px-3 py-1.5 rounded-none text-xs md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
                             ? "bg-ink text-white border-ink"
                             : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
@@ -737,8 +733,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 <div className="mt-4 w-full">
                   <motion.button
                     variants={textVariants}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => {
                       handleAddToCart();
                       if (!isMobile && window.innerWidth < 1536) {
@@ -747,7 +741,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     }}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "active:scale-[0.97] w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
@@ -950,17 +944,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     <div className="flex flex-col gap-2">
                       <motion.button
                         variants={textVariants}
-                        whileTap={{ scale: 0.97 }}
                         onClick={() => router.push('/checkout')}
-                        className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-colors text-center shadow-md shadow-rose/20"
+                        className="active:scale-[0.97] w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-all text-center shadow-md shadow-rose/20"
                       >
                         {dict.product.checkout}
                       </motion.button>
                       <motion.button
                         variants={textVariants}
-                        whileTap={{ scale: 0.97 }}
                         onClick={() => clearCart()}
-                        className="w-full py-2.5 bg-transparent text-ink/40 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-colors text-center border border-ink/5 flex items-center justify-center gap-1.5"
+                        className="active:scale-[0.97] w-full py-2.5 bg-transparent text-ink/40 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-all text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
                         <Trash2 size={12} />
                         {dict.product.clearCart}

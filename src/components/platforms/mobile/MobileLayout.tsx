@@ -116,12 +116,10 @@ function PressScale({ children, className = '', onClick, disabled = false }: {
 }) {
   return (
     <motion.button
-      whileTap={{ scale: disabled ? 1 : 0.97 }}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
-      transition={{ duration: DURATION.micro, ease: EASING.out }}
       onClick={onClick}
       disabled={disabled}
-      className={className}
+      className={cn(className, !disabled && "active:scale-[0.97] transition-transform duration-150 ease-out")}
     >
       {children}
     </motion.button>

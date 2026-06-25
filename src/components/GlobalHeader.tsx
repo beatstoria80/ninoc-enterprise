@@ -62,11 +62,9 @@ function PressScale({ children, className = '', onClick, disabled }: {
   return (
     <motion.button
       whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.97 }}
-      transition={{ duration: DURATION.micro, ease: EASING.out }}
       onClick={onClick}
       disabled={disabled}
-      className={className}
+      className={cn(className, !disabled && "active:scale-[0.97] transition-transform duration-150 ease-out")}
     >
       {children}
     </motion.button>
@@ -82,11 +80,9 @@ function PressButton({ children, className = '', onClick, disabled }: {
   return (
     <motion.button
       whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.97 }}
-      transition={{ duration: DURATION.micro, ease: EASING.out }}
       onClick={onClick}
       disabled={disabled}
-      className={cn(className, "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md")}
+      className={cn(className, "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md", !disabled && "active:scale-[0.97] transition-transform duration-150 ease-out")}
     >
       {children}
     </motion.button>
@@ -121,7 +117,7 @@ function NavLink({ href, children, isDark, index = 0 }: { href: string; children
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <motion.span whileTap={{ scale: 0.97 }} className="inline-block transition-transform duration-100 ease-out">{children}</motion.span>
+        <span className="inline-block transition-transform duration-150 ease-out active:scale-[0.97]">{children}</span>
         <motion.span
           className={cn("absolute -bottom-2 left-0 right-0 h-[1px] origin-left", isDark ? "bg-white" : "bg-rose")}
           style={{ scaleX }}
@@ -460,10 +456,8 @@ export default function GlobalHeader() {
               }}
             >
               <motion.div
-                className={cn("font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none transition-colors duration-500 flex items-start gap-1.5", isDarkBg ? "text-white" : "text-rose")}
+                className={cn("active:scale-[0.97] active:blur-[2px] active:opacity-70 transition-all duration-200 ease-out font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none flex items-start gap-1.5", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97, filter: "blur(2px)", opacity: 0.7 }}
-                transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
               >
                 <span>ninoc</span>
                 <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50 translate-y-0.5">BETA</span>
