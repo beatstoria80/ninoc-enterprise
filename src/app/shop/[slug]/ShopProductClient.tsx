@@ -734,7 +734,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               </div>
 
               {availableStock > 0 && (
-                <div className="mt-4 w-full">
+                <div className="mt-4 w-full flex flex-col gap-2.5">
                   <motion.button
                     variants={textVariants}
                     whileTap={{ scale: 0.97 }}
@@ -742,7 +742,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     onClick={handleAddToCart}
                     disabled={addedToCart}
                     className={cn(
-                      "w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                      "w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
                       addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
                     )}
                   >
@@ -765,10 +765,23 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                             )}
                           </div>
                           <span>
-                            {dict.product.addToCart}
+                            Add to Cart
                           </span>
                         </div>
                       )}
+                  </motion.button>
+
+                  <motion.button
+                    variants={textVariants}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    onClick={() => {
+                      handleAddToCart();
+                      router.push('/checkout');
+                    }}
+                    className="w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group border border-ink/20 bg-white text-ink hover:bg-ink hover:text-white"
+                  >
+                    Checkout
                   </motion.button>
                 </div>
               )}
