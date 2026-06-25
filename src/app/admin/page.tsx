@@ -41,6 +41,7 @@ import { EmailBroadcastTab } from '@/components/admin/tabs/EmailBroadcastTab';
 import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
 import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
 import { GoogleAdsTab } from '@/components/admin/tabs/GoogleAdsTab';
+import { WebAnalyticsTab } from '@/components/admin/tabs/WebAnalyticsTab';
 import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
 import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
 import { POTab } from '@/components/admin/tabs/POTab';
@@ -1105,6 +1106,7 @@ export default function AdminDashboard() {
     { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'], roles: ['super_admin', 'finance'] },
     { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'], roles: ['super_admin'] },
     { id: 'google_ads', icon: TrendingUp, label: 'Google Ads Manager', activeKeys: ['google_ads'], roles: ['super_admin', 'finance'] },
+    { id: 'web_analytics', icon: TrendingUp, label: 'Web Analytics (GA4/GSC)', activeKeys: ['web_analytics'], roles: ['super_admin', 'finance'] },
     { 
       id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger', 'stock_opname'],
       roles: ['super_admin', 'finance', 'inbound_warehouse'],
@@ -1795,6 +1797,10 @@ export default function AdminDashboard() {
 
           {activeTab === 'google_ads' && (
             <GoogleAdsTab />
+          )}
+
+          {activeTab === 'web_analytics' && (
+            <WebAnalyticsTab />
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
