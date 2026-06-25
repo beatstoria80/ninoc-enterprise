@@ -528,80 +528,36 @@ export default function AdminDashboard() {
         updated_at: new Date().toISOString()
       };
 
-      let productId: string;
-
-      if (isEditMode && editingProduct) {
-        // Update existing product
-        const { data, error } = await supabase
-          .from('products')
-          .update(productData)
-          .eq('id', editingProduct.id)
-          .select()
-          .single();
-        if (error) throw error;
-        productId = data.id;
-      } else {
-        // Create new product
-        const { data, error } = await supabase
-          .from('products')
-          .insert({ ...productData, created_at: new Date().toISOString() })
-          .select()
-          .single();
-        if (error) throw error;
-        productId = data.id;
-      }
-
-      // Prepare variants to upsert/insert
-      const allVariants = productForm.variants.flatMap(v => {
-        const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
-        
-        return colors.map((color, index) => {
-          const variantObj: any = {
-            product_id: productId,
-            size: v.size || null,
-            color: color,
-            sku: v.sku || null,
-            stock_quantity: parseInt(String(v.stock_quantity)) || 0
-          };
-          
-          if (v.id && index === 0) {
-            variantObj.id = v.id;
-          }
-          
-          return variantObj;
-        });
+      // Use server API to bypass RLS and save securely
+      const res = await fetch('/api/admin/products/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isEditMode,
+          editingProductId: editingProduct?.id,
+          productData,
+          allVariants: productForm.variants.flatMap(v => {
+            const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
+            return colors.map((color, index) => {
+              const variantObj: any = {
+                size: v.size || null,
+                color: color,
+                sku: v.sku || null,
+                stock_quantity: parseInt(String(v.stock_quantity)) || 0
+              };
+              if (v.id && index === 0) variantObj.id = v.id;
+              return variantObj;
+            });
+          })
+        })
       });
 
-      // Try to safely delete variants that are no longer in the list
-      const { data: existingVariants } = await supabase.from('variants').select('id').eq('product_id', productId);
-      const newVariantIds = allVariants.map(v => v.id).filter(Boolean);
-      const variantsToDelete = existingVariants?.filter(ev => !newVariantIds.includes(ev.id)) || [];
-
-      for (const ev of variantsToDelete) {
-        // Try deleting, if it fails due to FK (e.g. order history), soft-delete by setting stock to 0
-        const { error: delErr } = await supabase.from('variants').delete().eq('id', ev.id);
-        if (delErr) {
-          await supabase.from('variants').update({ stock_quantity: 0 }).eq('id', ev.id);
-        }
-      }
-
-      const variantsToUpdate = allVariants.filter(v => v.id);
-      const variantsToInsert = allVariants.filter(v => !v.id).map(v => ({ ...v, created_at: new Date().toISOString() }));
-
-      if (variantsToUpdate.length > 0) {
-        const { error: updateErr } = await supabase.from('variants').upsert(variantsToUpdate);
-        if (updateErr) throw updateErr;
-      }
-      
-      if (variantsToInsert.length > 0) {
-        const { error: insertErr } = await supabase.from('variants').insert(variantsToInsert);
-        if (insertErr) throw insertErr;
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save product via API');
 
       setIsProductModalOpen(false);
       
-      const { data: costingCheck } = await supabase.from('product_costings').select('supplier_cost').eq('product_id', productId).single();
-      if (!costingCheck || Number(costingCheck.supplier_cost) === 0) {
+      if (data.costingMissing) {
         showToast('Success: Product saved! ⚠️ PEMBERITAHUAN: Jangan lupa isi HPP/Costing untuk SKU ini di menu Marketing & ROAS agar data Finance akurat.', 'error');
       } else {
         showToast('Success: Product saved successfully!', 'success');
