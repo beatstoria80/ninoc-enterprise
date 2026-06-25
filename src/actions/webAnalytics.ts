@@ -31,7 +31,11 @@ const isConfigured = () => {
 
 // Gets a valid access token using the already installed google-auth-library
 async function getAccessToken(): Promise<string> {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  let privateKey = process.env.GOOGLE_PRIVATE_KEY || '';
+  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    privateKey = privateKey.slice(1, -1);
+  }
+  privateKey = privateKey.replace(/\\n/g, '\n');
   const auth = new GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
