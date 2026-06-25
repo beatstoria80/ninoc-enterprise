@@ -22,6 +22,8 @@ interface SeoHelperProps {
   onApplyTitle: (title: string) => void;
   onApplySlug: (slug: string) => void;
   onApplyDescription: (desc: string) => void;
+  seoKeywords?: string[];
+  seoTitleTemplate?: string;
 }
 
 // ===== SEO KEYWORD DATABASE =====
@@ -63,7 +65,7 @@ const TITLE_TEMPLATES: Record<string, { label: string; template: (name: string) 
 };
 
 // ===== SEO SCORING ENGINE =====
-function calculateSeoScore(name: string, slug: string, description: string, category: string) {
+function calculateSeoScore(name: string, slug: string, description: string, category: string, dynamicKeywords?: string[]) {
   const checks: { label: string; passed: boolean; tip: string; weight: number }[] = [];
 
   // 1. Title Length (50-65 chars ideal for Google)
@@ -80,7 +82,7 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
   });
 
   // 2. Title contains keywords
-  const keywords = CATEGORY_KEYWORDS[category] || [];
+  const keywords = dynamicKeywords && dynamicKeywords.length > 0 ? dynamicKeywords : (CATEGORY_KEYWORDS[category] || []);
   const titleLower = name.toLowerCase();
   const hasKeyword = keywords.some(k => titleLower.includes(k.toLowerCase()));
   checks.push({
@@ -156,18 +158,22 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
 }
 
 // ===== MAIN COMPONENT =====
-export function SeoHelper({ name, slug, description, category, price, imageUrl, onApplyTitle, onApplySlug, onApplyDescription }: SeoHelperProps) {
+export function SeoHelper({ name, slug, description, category, price, imageUrl, seoKeywords, seoTitleTemplate, onApplyTitle, onApplySlug, onApplyDescription }: SeoHelperProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showKeywords, setShowKeywords] = useState(false);
   const [previewTab, setPreviewTab] = useState<'google' | 'social'>('google');
   const [originalTitle, setOriginalTitle] = useState<string | null>(null);
   const [originalDesc, setOriginalDesc] = useState<string | null>(null);
+  const templates = seoTitleTemplate 
+    ? [{ label: 'Template SEO Kategori', template: (n: string) => seoTitleTemplate.replace('{name}', n) }] 
+    : (TITLE_TEMPLATES[category] || TITLE_TEMPLATES['pakaian']);
+    
+  const keywords = seoKeywords && seoKeywords.length > 0 
+    ? seoKeywords 
+    : (CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS['pakaian']);
 
-  const seo = useMemo(() => calculateSeoScore(name, slug, description, category), [name, slug, description, category]);
-
-  const templates = TITLE_TEMPLATES[category] || TITLE_TEMPLATES['pakaian'];
-  const keywords = CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS['pakaian'];
+  const seo = useMemo(() => calculateSeoScore(name, slug, description, category, keywords), [name, slug, description, category, keywords]);
 
   // Extract core product name (remove brand, separators etc.)
   const coreName = name

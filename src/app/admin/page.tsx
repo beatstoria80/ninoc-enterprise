@@ -204,6 +204,7 @@ export default function AdminDashboard() {
   }, []);
 
   // Form states
+  const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [productForm, setProductForm] = useState({
     name: '',
     slug: '',
@@ -348,6 +349,10 @@ export default function AdminDashboard() {
         .select('*')
         .order('customer_number', { ascending: true });
       if (customerData) setCustomers(customerData);
+
+      // Fetch categories
+      const { data: catData } = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ({ data: [] }));
+      if (catData && Array.isArray(catData)) setDbCategories(catData);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -1938,10 +1943,18 @@ export default function AdminDashboard() {
                         onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                         className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50"
                       >
-                        <option value="pakaian">Kaos / Atasan</option>
-                        <option value="celana">Celana / Bawahan</option>
-                        <option value="utilities">Utilities</option>
-                        <option value="aksesoris">Aksesoris</option>
+                        {dbCategories.length > 0 ? (
+                          dbCategories.map(c => (
+                            <option key={c.id} value={c.slug}>{c.name}</option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="pakaian">Kaos / Atasan</option>
+                            <option value="celana">Celana / Bawahan</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="aksesoris">Aksesoris</option>
+                          </>
+                        )}
                       </select>
                     </div>
                   </div>
@@ -2775,6 +2788,8 @@ export default function AdminDashboard() {
                           category={productForm.category}
                           price={productForm.price}
                           imageUrl={productForm.image_url || ''}
+                          seoKeywords={dbCategories.find(c => c.slug === productForm.category)?.seo_keywords}
+                          seoTitleTemplate={dbCategories.find(c => c.slug === productForm.category)?.seo_title_template}
                           onApplyTitle={(title) => handleProductNameChange(title)}
                           onApplySlug={(s) => setProductForm(prev => ({ ...prev, slug: s }))}
                           onApplyDescription={(desc) => setProductForm(prev => ({ ...prev, description: desc }))}
