@@ -1832,7 +1832,7 @@ export default function AdminDashboard() {
                 initial={{ scale: 0.95, opacity: 0, y: 10 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                className="w-full lg:max-w-3xl flex flex-col bg-white rounded-2xl shadow-2xl ring-1 ring-ink/5 relative overflow-hidden flex-shrink-0"
+                className="w-full lg:max-w-3xl flex flex-col bg-white rounded-2xl shadow-2xl ring-1 ring-ink/5 relative overflow-hidden flex-shrink-0 max-h-[90vh]"
               >
                 <div className="bg-white px-5 py-4 border-b border-ink/5 flex items-center justify-between z-10 flex-shrink-0">
                   <div className="flex flex-col">
@@ -2728,7 +2728,7 @@ export default function AdminDashboard() {
                     exit={{ width: 0, opacity: 0, x: 20 }}
                     transition={{ type: "spring", bounce: 0, duration: 0.4 }}
                     style={{ maxWidth: '100%' }}
-                    className="absolute lg:static inset-0 z-[60] lg:z-auto flex flex-col bg-gray-50 rounded-2xl shadow-xl ring-1 ring-ink/5 overflow-hidden flex-shrink-0 lg:ml-2"
+                    className="absolute lg:static inset-0 z-[60] lg:z-auto flex flex-col bg-gray-50 rounded-2xl shadow-xl ring-1 ring-ink/5 overflow-hidden flex-shrink-0 lg:ml-2 max-h-[90vh]"
                   >
                      <div className="bg-white px-5 py-4 border-b border-ink/5 flex items-center justify-between z-10 flex-shrink-0">
                        <div className="flex flex-col">
