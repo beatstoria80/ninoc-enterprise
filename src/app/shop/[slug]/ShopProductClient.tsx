@@ -148,6 +148,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return () => observer.disconnect();
   }, []);
 
+  const [skipAnimation, setSkipAnimation] = useState(false);
+  
+  React.useLayoutEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('skip_product_animation') === 'true') {
+      setSkipAnimation(true);
+      sessionStorage.removeItem('skip_product_animation');
+    }
+  }, []);
+
   // Default fallbacks if admin does not provide data
   const DEFAULT_SPECS = [
     { label: 'Jenis Atasan', value: 'Kaos' },
@@ -407,7 +416,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
         <motion.div 
           variants={staggerContainer}
-          initial="hidden"
+          initial={skipAnimation ? false : "hidden"}
           animate="visible"
           className="flex flex-col lg:grid lg:grid-cols-[85px_minmax(0,1.4fr)_minmax(0,2.6fr)] xl:grid-cols-[85px_minmax(0,1.3fr)_minmax(0,2.7fr)] 2xl:grid-cols-[85px_minmax(0,1.2fr)_minmax(0,2.4fr)_minmax(0,0.9fr)] lg:items-start lg:align-items-start gap-1.5 lg:gap-6 xl:gap-8 mt-0 lg:mt-2"
         >
@@ -966,7 +975,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         </motion.div>
 
         {reviews.length > 0 && (
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-8 lg:mt-12 border-t border-ink/5 pt-6 lg:pt-8">
+          <motion.div variants={staggerContainer} initial={skipAnimation ? false : "hidden"} animate="visible" className="mt-8 lg:mt-12 border-t border-ink/5 pt-6 lg:pt-8">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-2 lg:pb-3 mb-4 lg:mb-6">
               <h2 className="text-xs md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Customer Reviews</h2>
               <div className="flex items-center gap-2">

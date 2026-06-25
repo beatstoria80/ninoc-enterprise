@@ -246,6 +246,13 @@ export default function CheckoutPage() {
     }
   }, [formData]);
 
+  // Set flag to skip entrance animation on product page when going back
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('skip_product_animation', 'true');
+    }
+  }, []);
+
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
   const [cities, setCities] = useState<LocationItem[]>([]);
   const [districts, setDistricts] = useState<LocationItem[]>([]);
