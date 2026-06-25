@@ -840,7 +840,7 @@ export default function CheckoutPage() {
       <div className={cn(
         "px-3 md:px-12 w-full max-w-[1600px] mx-auto",
         // Mobile: stacked layout with bottom padding for CTA. Increased pt- to compensate for fixed header.
-        isMobile ? "pt-16 pb-36 space-y-3" : "pt-20 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        isMobile ? "pt-16 pb-36 space-y-3" : "pt-20 pb-12 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-16 items-start"
       )}>
         {/* ORDER SUMMARY - Top on mobile for transparency */}
         {isMobile && (
@@ -908,7 +908,7 @@ export default function CheckoutPage() {
         )}
 
         {/* FORM AREA */}
-        <div className={cn(isMobile ? "space-y-3" : "lg:col-span-7 space-y-6")}>
+        <div className={cn(isMobile ? "space-y-3" : "space-y-6 w-full")}>
           <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4 lg:space-y-6 relative z-10">
             
             {/* 01: IDENTITY */}
@@ -1173,7 +1173,7 @@ export default function CheckoutPage() {
         {/* ORDER SUMMARY - Sidebar on desktop only */}
         {!isMobile && (
           <motion.div 
-            className="lg:col-span-5 lg:pl-6"
+            className="w-full"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: DURATION.medium, ease: EASING.out }}
@@ -1306,10 +1306,15 @@ export default function CheckoutPage() {
 
               {/* SECURITY SPECS */}
               <div className="flex flex-col items-center gap-4 opacity-70">
-                 <div className="flex items-center justify-center gap-8 grayscale brightness-90">
-                    <img src="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/svg/visa.svg" alt="Visa" className="h-6 w-auto object-contain opacity-80" />
-                    <img src="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/svg/mastercard.svg" alt="Mastercard" className="h-6 w-auto object-contain opacity-80" />
-                    <ShieldCheck size={28} className="text-ink/60 opacity-80" />
+                 <div className="flex items-center justify-center gap-6">
+                    <svg viewBox="0 0 38 12" className="h-5 w-auto text-ink/80" fill="currentColor">
+                      <path d="M14.6 0l-2.3 11.6h-3.8L10.8 0h3.8zm11.7 11.4c-.6.3-2 .6-3.8.6-4.1 0-7.1-2.2-7.1-5.4 0-2.4 2-3.7 3.1-4.2 1.1-.5 1.5-.9 1.5-1.4 0-.7-.8-1.1-1.6-1.1-1.3 0-2 .3-2.6.5l-.4.2-.5-3.3c.7-.3 2.1-.6 3.7-.6 4.3 0 7 2.1 7 5.2 0 2.2-1.5 3.5-3 4.2-1.1.6-1.5 1-1.5 1.6 0 .6.7 1.1 1.8 1.1 1.1 0 1.9-.2 2.5-.5l.3-.1.6 3.2zm6.3-11.4l-3 8-1-5.4c-.2-.9-.8-1.5-1.7-2l-3.3-1.4v-.1h5.5c.7 0 1.3.5 1.4 1.2l1.1 5.4 1.7-8.7h3.3zm-27.1 0L3 8.3.5 1.3C.4.8 0 .5-.5.5H-4v.1l5.2 11h4l3.6-11.6H5.5z"/>
+                    </svg>
+                    <svg viewBox="0 0 44 32" className="h-6 w-auto text-ink/80" fill="currentColor">
+                      <circle cx="16" cy="16" r="16" fillOpacity="0.6"/>
+                      <circle cx="28" cy="16" r="16" fillOpacity="0.8"/>
+                    </svg>
+                    <ShieldCheck size={28} className="text-ink/60" />
                  </div>
                  <div className="flex flex-col items-center gap-1">
                     <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
