@@ -314,7 +314,7 @@ function ProductCard({ product, index }: ProductCardProps) {
       <PressButton href={`/shop/${product.slug}`} className="bg-white p-2 md:p-3 group relative overflow-hidden flex flex-col h-full border border-transparent hover:border-ink/5">
         <motion.div
           variants={cardImageVariants}
-          className="aspect-[4/5] overflow-hidden mb-3.5 md:mb-4 relative bg-ink/5 border border-ink/5"
+          className="aspect-[4/5] md:aspect-square overflow-hidden mb-3.5 md:mb-4 relative bg-ink/5 border border-ink/5"
           animate={{ scale: isHovered ? 1.02 : 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >

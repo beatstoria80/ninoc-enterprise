@@ -226,7 +226,7 @@ function ProductCard({ product }: { product: Product }) {
       className="h-full"
     >
       <Link href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
-        <div className="aspect-[4/5] bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative">
+        <div className="aspect-[4/5] md:aspect-square bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative">
           {product.image_url ? (
             <Image
               src={product.image_url}
@@ -353,7 +353,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
               animate="visible"
               exit={{ opacity: 0 }}
               transition={{ duration: DURATION.normal }}
-              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1.5 bg-transparent"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-1.5 bg-transparent"
             >
               {isLoading ? (
                 Array(10).fill(0).map((_, i) => (

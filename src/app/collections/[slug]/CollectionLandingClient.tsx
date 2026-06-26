@@ -56,7 +56,7 @@ function ProductCard({ product }: { product: Product }) {
     >
       <Link href={`/shop/${product.slug}`} className="block h-full">
         <div className="bg-white border border-ink/5 shadow-sm hover:shadow-xl hover:border-ink/15 transition-all duration-300 h-full flex flex-col group/card relative overflow-hidden">
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02]">
+          <div className="relative aspect-[4/5] md:aspect-square w-full overflow-hidden bg-ink/[0.02]">
             {product.image_url ? (
               <Image
                 src={product.image_url}
