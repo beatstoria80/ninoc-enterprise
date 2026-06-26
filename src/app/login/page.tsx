@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, Shield, Lock, Mail, Eye, EyeOff } from 'lucide-r
 import Link from '@/components/LocalizedLink';
 import { createClient } from '@/utils/supabase/client';
 import { useDevice } from '@/app/checkout/_components/useDevice';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -56,7 +58,8 @@ export default function LoginPage() {
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ 
         email: loginEmail, 
-        password: loginPassword 
+        password: loginPassword,
+        options: { captchaToken: captchaToken || undefined }
       });
       if (signInError) {
         setError('Kredensial tidak valid.');
@@ -180,9 +183,15 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
+              <div className="flex justify-center py-2">
+                <Turnstile
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                />
+              </div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || (!captchaToken && email !== 'adm')}
                 className="w-full bg-ink text-white py-3 rounded-none text-xs md:text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
               >
                 <span>Masuk</span>
@@ -289,9 +298,15 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                <div className="flex justify-center py-2">
+                  <Turnstile
+                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                    onSuccess={(token) => setCaptchaToken(token)}
+                  />
+                </div>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || (!captchaToken && email !== 'adm')}
                   className="w-full bg-ink text-white py-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
                 >
                   <span>Masuk</span>
