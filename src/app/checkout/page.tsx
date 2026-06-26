@@ -838,7 +838,7 @@ export default function CheckoutPage() {
       </motion.nav>
 
       <div className={cn(
-        "px-3 md:px-12 xl:px-16 w-full max-w-[1920px] mx-auto",
+        "px-3 md:px-12 lg:px-16 w-full max-w-7xl mx-auto",
         // Mobile: stacked layout with bottom padding for CTA. Increased pt- to compensate for fixed header.
         isMobile ? "pt-16 pb-36 space-y-3" : "pt-20 pb-12 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-16 items-start"
       )}>
