@@ -240,12 +240,6 @@ export default function MobileLayout({
   const brandColor = useBrandColor();
 
   useEffect(() => {
-    if (pathname === '/') {
-      if (typeof window !== 'undefined' && window.sessionStorage.getItem('ninoc_intro_played') === 'true') {
-        setIsOpeningSequence(false);
-        setIsNavVisible(true);
-      }
-    }
 
     const handleHide = () => {
       setIsOpeningSequence(true);
