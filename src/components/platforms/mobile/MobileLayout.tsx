@@ -43,6 +43,12 @@ const HeadphonesIcon = () => (
   </svg>
 );
 
+const MessageIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+  </svg>
+);
+
 const UserIcon = ({ active }: { active: boolean }) => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="8" r="4" strokeLinecap="round" strokeLinejoin="round" />
@@ -660,43 +666,7 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start justify-around pt-2 pb-[env(safe-area-inset-bottom)]">
-
-            {/* Home */}
-            <button
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  sessionStorage.setItem('ninoc_intro_played', 'true');
-                  if (pathname === '/' || pathname === '/en') {
-                    window.dispatchEvent(new CustomEvent('skip-intro'));
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  } else {
-                    router.push('/');
-                  }
-                }
-              }}
-              className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]"
-            >
-              <motion.div
-                animate={{ scale: isActive('/') ? 1.1 : 1 }}
-                transition={{ duration: DURATION.fast }}
-                className={cn(
-                  "transition-colors",
-                  isActive('/') ? "text-rose" : "text-white/80"
-                )}
-              >
-                <HomeIcon active={isActive('/')} />
-              </motion.div>
-              <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/') ? "text-rose" : "text-white/50")}>
-                Home
-              </span>
-              {isActive('/') && (
-                <motion.div
-                  className="absolute -bottom-1 w-1 h-1 bg-rose rounded-full"
-                  layoutId="activeIndicator"
-                />
-              )}
-            </button>
+          <div className="h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start justify-center gap-16 pt-2 pb-[env(safe-area-inset-bottom)]">
 
             {/* Cart */}
             <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
@@ -723,13 +693,13 @@ export default function MobileLayout({
               </span>
             </Link>
 
-            {/* Support */}
+            {/* Message */}
             <PressScale
               onClick={() => window.dispatchEvent(new CustomEvent('open-support-chat'))}
               className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px] text-white/80"
             >
               <div className="relative">
-                <HeadphonesIcon />
+                <MessageIcon />
                 {supportUnreadCount > 0 && (
                   <motion.span
                     initial={{ scale: 0.95, opacity: 0 }}
@@ -740,7 +710,7 @@ export default function MobileLayout({
                   </motion.span>
                 )}
               </div>
-              <span className="text-[7.5px] font-medium uppercase tracking-wider text-white/50">Support</span>
+              <span className="text-[7.5px] font-medium uppercase tracking-wider text-white/50">Message</span>
             </PressScale>
 
             {/* Profile */}
