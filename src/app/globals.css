@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rose: #E8527A;
-  --color-fcs: #C9184A;
+  --color-rose: #171717; /* Dark slate/charcoal instead of pink */
+  --color-fcs: #262626; /* Slightly lighter dark for focus/hover */
   --color-lav: #C8B8E8;
   --color-mnt: #B5EAD7;
   --color-pk: #FFB5A7;
   --color-but: #FFEAA7;
-  --color-ink: #141414;
-  --color-ink-faint: #F5F5F5;
+  --color-ink: #0A0A0A; /* Very dark gray, not pure black #000000 */
+  --color-ink-faint: #F0F0F0;
   --color-cr: #FFFFFF;
-  --color-muted-text: #333333;
+  --color-muted-text: #525252; /* Neutral gray for muted text */
 
   --font-display: "var(--font-display)", sans-serif;
   --font-sans: "var(--font-sans)", sans-serif;
@@ -30,7 +30,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #141414;
+  --foreground: #0A0A0A;
 }
 
 body {
