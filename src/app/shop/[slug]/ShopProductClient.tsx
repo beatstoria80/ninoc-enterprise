@@ -551,7 +551,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </motion.div>
                 )}
                 <motion.div variants={textVariants} className="flex items-center gap-3 mt-0.5">
-                  <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-rose">
+                  <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-emerald-700">
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
                   <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] ml-auto">

@@ -871,7 +871,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center border-b border-ink/10 pb-3">
                 <div className="flex flex-col">
                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 leading-none mb-1">{dict.checkout.totalInvestment}</span>
-                  <span className="text-lg md:text-xl font-display font-semibold italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="text-lg md:text-xl font-display font-semibold italic text-emerald-700 leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
               </div>
 

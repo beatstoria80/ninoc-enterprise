@@ -200,7 +200,7 @@ export default function QuickBuyModal() {
                     </h4>
                   </div>
                   <div>
-                    <p className="text-xs font-display font-semibold italic text-rose">
+                    <p className="text-xs font-display font-semibold italic text-emerald-700">
                       IDR {quickBuyProduct.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
                     </p>
                   </div>

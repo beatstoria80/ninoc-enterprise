@@ -669,7 +669,7 @@ export default function GlobalHeader() {
                     <div className="h-[1px] bg-ink/5 my-2" />
                     <div className="flex justify-between items-baseline">
                       <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
-                      <span className="text-xl font-display font-semibold italic text-rose">
+                      <span className="text-xl font-display font-semibold italic text-emerald-700">
                         IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </span>
                     </div>
