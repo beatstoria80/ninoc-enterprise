@@ -549,7 +549,7 @@ export default function GlobalHeader() {
                       exit={{ scale: 0.9, opacity: 0 }}
                       transition={{ duration: DURATION.micro, ease: EASING.out }}
                       key={items.length}
-                      className="absolute -top-1.5 -right-1.5 w-[14px] h-[14px] bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full shadow-sm"
+                      className="absolute -top-1.5 -right-1.5 w-[14px] h-[14px] bg-emerald-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full shadow-sm"
                     >
                       {items.length}
                     </motion.div>
