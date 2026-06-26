@@ -554,11 +554,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-rose">
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
-                  <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] cursor-pointer hover:bg-rose/5 transition-colors group">
+                  <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] ml-auto">
                     <span className="text-[10px] md:text-[8px] font-medium text-rose uppercase tracking-[0.2em] flex items-center gap-1">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose group-hover:scale-110 transition-transform">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
                       </svg>
                       {product.price_tag === 'SALE' ? 'Redeem Promo' : 'Available Promo'}
                     </span>
