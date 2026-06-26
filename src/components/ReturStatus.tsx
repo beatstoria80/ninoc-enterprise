@@ -193,7 +193,7 @@ export function ReturStatus() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider truncate">{r.order_id}</p>
+                      <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider break-words">{r.order_id}</p>
                       <span className={cn('px-1.5 py-0.5 text-[10px] md:text-[7px] font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
                         <Tag size={7} className="inline mr-0.5" />{cfg.label}
                       </span>

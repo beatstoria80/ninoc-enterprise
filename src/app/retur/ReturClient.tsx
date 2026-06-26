@@ -38,7 +38,7 @@ export default function ReturClient() {
 
   return (
     <div className="min-h-screen bg-white no-scrollbar overflow-x-hidden">
-      <div className="pt-4 md:pt-24 px-6 md:px-12 max-w-[1400px] mx-auto">
+      <div className="pt-4 md:pt-24 px-4 md:px-12 max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
           <Link href="/" className="flex items-center gap-2 text-ink/50 hover:text-rose transition-colors group">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="group-hover:-translate-x-0.5 transition-transform">
@@ -50,7 +50,7 @@ export default function ReturClient() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-6 pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-12 pt-6 pb-20">
         <div className="lg:grid lg:grid-cols-[1fr_340px] gap-6">
 
           <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">

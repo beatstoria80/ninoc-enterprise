@@ -231,7 +231,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   if (submitted) {
     return (
       <div className={cn('bg-white', className)}>
-        <div className="flex flex-col items-center justify-center text-center py-12 px-6 space-y-5">
+        <div className="flex flex-col items-center justify-center text-center py-12 px-4 md:px-6 space-y-5">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -278,7 +278,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   return (
     <div className={cn('bg-white', className)}>
       {/* Header */}
-      <div className="px-5 py-4 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
+      <div className="px-4 md:px-5 py-4 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 bg-rose/10 rounded-sm flex items-center justify-center">
             <RefreshCw size={12} className="text-rose" />
@@ -296,7 +296,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
       </div>
 
       {/* Step Indicator */}
-      <div className="px-5 pt-4 pb-2">
+      <div className="px-4 md:px-5 pt-4 pb-2">
         <div className="flex items-center gap-1.5">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-0">
@@ -326,7 +326,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 12 }}
             transition={{ duration: 0.2 }}
-            className="px-5 pb-5 space-y-4"
+            className="px-4 md:px-5 pb-4 md:pb-5 space-y-4"
           >
             {/* Order ID */}
             <div>
@@ -424,7 +424,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 12 }}
             transition={{ duration: 0.2 }}
-            className="px-5 pb-5 space-y-4"
+            className="px-4 md:px-5 pb-4 md:pb-5 space-y-4"
           >
             {/* Reason Summary */}
             <div className="flex items-center gap-2 p-2.5 bg-rose/[0.04] border border-rose/10 rounded-sm">
