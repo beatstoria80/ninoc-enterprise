@@ -330,8 +330,8 @@ export default function MobileLayout({
     { href: '/track', label: dict.header.track },
     { href: '/supplier/apply', label: 'Supplier' },
     { href: '/affiliate', label: dict.header.affiliate },
+    { href: '/retur', label: 'Return & Refund', highlight: true },
     { href: '/about', label: dict.header.about },
-    { href: '/retur', label: 'Retur & Refund', highlight: true },
   ];
 
   return (
