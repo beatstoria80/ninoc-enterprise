@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rose: #171717; /* Dark slate/charcoal instead of pink */
-  --color-fcs: #262626; /* Slightly lighter dark for focus/hover */
+  --color-rose: #94A3B8; /* Steel Silver for accent/highlight */
+  --color-fcs: #64748B; /* Darker steel for hover states */
   --color-lav: #C8B8E8;
   --color-mnt: #B5EAD7;
   --color-pk: #FFB5A7;
