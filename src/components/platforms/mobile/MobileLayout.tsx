@@ -666,7 +666,34 @@ export default function MobileLayout({
           transition={{ duration: DURATION.medium, ease: EASING.out }}
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
         >
-          <div className="h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start justify-center gap-16 pt-2 pb-[env(safe-area-inset-bottom)]">
+          <div className={cn(
+            "h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start pt-2 pb-[env(safe-area-inset-bottom)]",
+            isActive('/') ? "justify-center gap-16" : "justify-around"
+          )}>
+
+            {/* Home — only show on pages OTHER than Home */}
+            {!isActive('/') && (
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.setItem('ninoc_intro_played', 'true');
+                    router.push('/');
+                  }
+                }}
+                className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]"
+              >
+                <motion.div
+                  animate={{ scale: 1 }}
+                  transition={{ duration: DURATION.fast }}
+                  className="text-white/80"
+                >
+                  <HomeIcon active={false} />
+                </motion.div>
+                <span className="text-[7.5px] font-medium uppercase tracking-[0.1em] text-white/50">
+                  Home
+                </span>
+              </button>
+            )}
 
             {/* Cart */}
             <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
