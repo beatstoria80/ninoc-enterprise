@@ -624,7 +624,7 @@ export default function SupportChat() {
                   </div>
 
                   {/* Bottom Input */}
-                  <div className="relative z-10 p-3 bg-white border-t border-ink/5 shrink-0">
+                  <div className="relative z-10 p-4 bg-white border-t border-ink/5 shrink-0">
                     <textarea
                       ref={textareaRef}
                       rows={1}
@@ -632,7 +632,7 @@ export default function SupportChat() {
                       onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
                       placeholder="Ketik pertanyaan Anda di sini..."
-                      className="w-full bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-[5px] text-sm md:text-[11px] font-medium outline-none placeholder:text-ink/20 border border-ink/[0.08] transition-all focus:border-rose/30 focus:bg-white resize-none min-h-[40px]"
+                      className="w-full bg-ink/[0.02] text-ink py-3 px-4 rounded-xl text-sm md:text-xs font-medium outline-none placeholder:text-ink/30 border border-ink/[0.08] transition-all focus:border-ink/30 focus:bg-white resize-none min-h-[48px] focus:shadow-sm"
                     />
                     <div className="flex items-end gap-1 mt-1.5">
                       <p className="flex-1 text-[9px] text-ink/30 uppercase tracking-widest font-semibold">
@@ -680,15 +680,15 @@ export default function SupportChat() {
               {activeTab === 'chat' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full overflow-hidden">
                   {/* Chat Header */}
-                  <div className="p-2.5 border-b border-ink/5 flex items-center justify-between bg-white flex-shrink-0">
-                    <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.9 }} onClick={() => setActiveTab('home')} className="text-rose cursor-pointer">
-                      <ArrowLeft size={14} strokeWidth={2} />
+                  <div className="p-3 md:p-4 border-b border-ink/5 flex items-center justify-between bg-white flex-shrink-0">
+                    <motion.button whileHover={{ x: -2 }} whileTap={{ scale: 0.9 }} onClick={() => setActiveTab('home')} className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink hover:bg-ink hover:text-white transition-colors cursor-pointer">
+                      <ArrowLeft size={16} strokeWidth={2} />
                     </motion.button>
-                    <div className="text-center">
-                      <p className="text-xs md:text-[10px] font-bold text-ink uppercase truncate max-w-[140px]">{activeTicket?.subject === 'General Inquiry' ? 'Pertanyaan Umum' : activeTicket?.subject}</p>
-                      <p className="text-[9px] font-medium text-ink/30 uppercase tracking-widest">#{activeTicket?.id.split('-')[0]}</p>
+                    <div className="text-center px-4">
+                      <p className="text-sm md:text-xs font-bold text-ink uppercase truncate max-w-[160px] md:max-w-[180px]">{activeTicket?.subject === 'General Inquiry' ? 'Pertanyaan Umum' : activeTicket?.subject}</p>
+                      <p className="text-[10px] md:text-[9px] font-semibold text-ink/40 uppercase tracking-widest mt-0.5">ID: #{activeTicket?.id.split('-')[0]}</p>
                     </div>
-                    <div className="w-4" />
+                    <div className="w-8" />
                   </div>
 
                   {/* Messages */}
@@ -701,8 +701,8 @@ export default function SupportChat() {
                         transition={{ duration: 0.2 }}
                         className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className="max-w-[80%]">
-                          <div className={`px-3 py-2 rounded-xl text-sm md:text-xs leading-relaxed ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-rose/10 border border-rose/20 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
+                        <div className="max-w-[85%]">
+                          <div className={`px-4 py-3 rounded-xl text-sm md:text-xs leading-relaxed whitespace-pre-wrap ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-ink/5 border border-ink/10 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
                             {m.message}
                           </div>
                           {(m.sender_role === 'admin' || m.is_auto_reply) && (
@@ -741,7 +741,7 @@ export default function SupportChat() {
 
                   {/* Input Area */}
                   <div className="p-3 bg-white border-t border-ink/5 space-y-1.5 flex-shrink-0">
-                    <div className="flex items-end gap-1.5">
+                    <div className="flex items-end gap-2">
                       <textarea
                         ref={textareaRef}
                         rows={1}
@@ -749,10 +749,10 @@ export default function SupportChat() {
                         onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                         placeholder="Ketik pesan Anda..."
-                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-[5px] py-2.5 px-3.5 text-sm md:text-xs font-medium outline-none placeholder:text-ink/20 focus:bg-white focus:border-rose/30 transition-all resize-none min-h-[40px] focus:shadow-md"
+                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-xl py-3 px-4 text-sm md:text-xs font-medium outline-none placeholder:text-ink/30 focus:bg-white focus:border-ink/30 transition-all resize-none min-h-[44px] focus:shadow-md"
                       />
-                      <button onClick={() => sendMessage()} className="w-8 h-10 flex items-center justify-center text-ink/20 hover:text-rose transition-all duration-300 flex-shrink-0 active:scale-90 cursor-pointer" aria-label="Kirim pesan">
-                        <Send size={14} strokeWidth={2} />
+                      <button onClick={() => sendMessage()} className="w-11 h-11 bg-ink text-white rounded-xl flex items-center justify-center hover:bg-rose transition-all duration-300 flex-shrink-0 active:scale-90 cursor-pointer shadow-sm" aria-label="Kirim pesan">
+                        <Send size={16} strokeWidth={2} />
                       </button>
                     </div>
                     <div className="flex justify-end px-0.5">
