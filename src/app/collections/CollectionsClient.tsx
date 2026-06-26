@@ -242,24 +242,24 @@ function ProductCard({ product }: { product: Product }) {
             </div>
           )}
           {product.price_tag && (
-            <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
+            <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] md:text-[5px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
               {product.price_tag}
             </div>
           )}
         </div>
-        <div className="p-1.5 space-y-1.5 flex flex-col justify-between flex-grow">
+        <div className="p-1.5 md:p-2 space-y-1.5 md:space-y-1.5 flex flex-col justify-between flex-grow">
           <div>
-            <h3 className="text-xs md:text-[10px] font-semibold uppercase tracking-tight text-ink line-clamp-2 leading-snug">
+            <h3 className="text-xs md:text-[8px] lg:text-[9px] font-semibold uppercase tracking-tight text-ink line-clamp-2 leading-snug">
               {product.name}
             </h3>
-            <p className="text-[9px] md:text-[7px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
+            <p className="text-[9px] md:text-[6px] lg:text-[6.5px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
               {product.category}
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 md:space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-xs md:text-[11px] font-display font-semibold italic text-rose">
+              <p className="text-xs md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose">
                 {product.price_tag === 'REDEEM'
                   ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                   : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -280,10 +280,10 @@ function ProductCard({ product }: { product: Product }) {
 
             <div className="flex items-center justify-between pt-1 border-t border-ink/5">
               <div className="flex items-center gap-1 opacity-40">
-                <ChevronRight size={7} />
-                <span className="text-[6px] font-medium uppercase tracking-[0.2em]">VIEW SPEC</span>
+                <ChevronRight size={6} />
+                <span className="text-[6px] md:text-[5px] font-medium uppercase tracking-[0.2em]">VIEW SPEC</span>
               </div>
-              <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+              <span className="text-[6px] md:text-[5px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
                 AVAILABLE
               </span>
             </div>

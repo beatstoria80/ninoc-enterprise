@@ -83,20 +83,20 @@ function ProductCard({ product }: { product: Product }) {
             )}
           </div>
 
-          <div className="p-2.5 flex flex-col flex-grow justify-between gap-2">
+          <div className="p-2.5 md:p-2 flex flex-col flex-grow justify-between gap-2 md:gap-1.5">
             <div>
-              <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
+              <h3 className="text-xs md:text-[8px] lg:text-[9px] font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
                 {product.name}
               </h3>
-              <p className="text-xs md:text-[9px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1">
+              <p className="text-xs md:text-[6px] lg:text-[6.5px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1 md:mt-0.5">
                 {product.category}
               </p>
             </div>
 
-            <div className="space-y-2 mt-auto">
+            <div className="space-y-2 md:space-y-1.5 mt-auto">
               {product.price_tag && (
                 <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
-                  <span className="text-[7px] md:text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
+                  <span className="text-[7px] md:text-[5px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
                     <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                     {product.price_tag}
                   </span>
@@ -104,7 +104,7 @@ function ProductCard({ product }: { product: Product }) {
               )}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <div className="text-sm md:text-xs font-display font-semibold italic text-rose">
+                  <div className="text-sm md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose">
                     {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
                   </div>
                 </div>
@@ -116,17 +116,17 @@ function ProductCard({ product }: { product: Product }) {
                     e.stopPropagation();
                     window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
                   }}
-                  className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
+                  className="w-8 h-8 md:w-8 md:h-8 lg:w-6 lg:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
                 >
-                  <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
+                  <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 lg:w-3.5 lg:h-3.5 pointer-events-none" />
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                 <div className="flex items-center gap-1.5 opacity-40">
-                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em]">VIEW DETAILS</span>
+                  <span className="text-[11px] md:text-[5px] font-medium uppercase tracking-[0.2em]">VIEW DETAILS</span>
                 </div>
-                <span className="text-[11px] md:text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
+                <span className="text-[11px] md:text-[5px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
                   AVAILABLE
                 </span>
               </div>
