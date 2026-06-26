@@ -118,7 +118,7 @@ export default function AffiliateDashboardOverview() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-ink/30" size={32} />
+        <Loader2 className="animate-spin text-ink/50" size={32} />
       </div>
     );
   }
@@ -213,7 +213,7 @@ export default function AffiliateDashboardOverview() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mb-1">Total Komisi</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mb-1">Total Komisi</p>
             <p className="text-2xl font-display font-medium text-ink">Rp {totalCommission.toLocaleString('id-ID')}</p>
           </div>
         </motion.div>
@@ -229,7 +229,7 @@ export default function AffiliateDashboardOverview() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mb-1">Total Klik Link</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mb-1">Total Klik Link</p>
             <p className="text-2xl font-display font-medium text-ink">{totalClicks.toLocaleString('id-ID')}</p>
           </div>
         </motion.div>
@@ -245,7 +245,7 @@ export default function AffiliateDashboardOverview() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mb-1">Konversi Penjualan</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mb-1">Konversi Penjualan</p>
             <p className="text-2xl font-display font-medium text-ink">{conversionRate}%</p>
           </div>
         </motion.div>
@@ -261,7 +261,7 @@ export default function AffiliateDashboardOverview() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mb-1">Saldo Tersedia</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mb-1">Saldo Tersedia</p>
             <p className="text-2xl font-display font-medium text-ink">Rp {(profile?.balance || 0).toLocaleString('id-ID')}</p>
           </div>
         </motion.div>
@@ -286,7 +286,7 @@ export default function AffiliateDashboardOverview() {
               <tbody className="divide-y divide-ink/5">
                 {recentActivity.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-ink/40 uppercase tracking-wider">
+                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-ink/60 uppercase tracking-wider">
                       Belum ada transaksi afiliasi.
                     </td>
                   </tr>
@@ -324,7 +324,7 @@ export default function AffiliateDashboardOverview() {
                 </p>
                 <button
                   onClick={() => handleCopy(`https://ninoc.store${topLink.destination_url}?ref=${profile?.code}`)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/60 hover:text-ink transition-colors"
                 >
                   {isCopied ? <span className="text-emerald-500 text-xs font-bold">✓</span> : <Copy size={16} />}
                 </button>
@@ -347,7 +347,7 @@ export default function AffiliateDashboardOverview() {
             </>
           ) : (
             <div className="text-center py-8">
-              <p className="text-xs text-ink/40 uppercase tracking-wider mb-3">Belum ada link aktif</p>
+              <p className="text-xs text-ink/60 uppercase tracking-wider mb-3">Belum ada link aktif</p>
               <Link href="/affiliate/dashboard/links" className="text-xs font-medium text-rose hover:underline uppercase tracking-wider">
                 Buat Link Pertama →
               </Link>

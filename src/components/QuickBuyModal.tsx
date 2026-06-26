@@ -167,11 +167,11 @@ export default function QuickBuyModal() {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-widest text-ink">Add to Cart</h3>
-                  <p className="text-[10px] text-ink/40 mt-1 uppercase tracking-wider">Select Size & Color</p>
+                  <p className="text-[10px] text-ink/60 mt-1 uppercase tracking-wider">Select Size & Color</p>
                 </div>
                 <button
                   onClick={() => setQuickBuyProduct(null)}
-                  className="p-1.5 rounded-full bg-ink/5 text-ink/40 active:scale-95 transition-all hover:bg-ink hover:text-white"
+                  className="p-1.5 rounded-full bg-ink/5 text-ink/60 active:scale-95 transition-all hover:bg-ink hover:text-white"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -200,7 +200,7 @@ export default function QuickBuyModal() {
                     </h4>
                   </div>
                   <div>
-                    <p className="text-xs font-display font-medium italic text-rose">
+                    <p className="text-xs font-display font-semibold italic text-rose">
                       IDR {quickBuyProduct.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}
                     </p>
                   </div>
@@ -212,7 +212,7 @@ export default function QuickBuyModal() {
                 {/* Size Selection */}
                 {availableSizes.length > 0 && (
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-ink/40">
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-ink/60">
                       Size Selection
                     </label>
                     <div className="relative">
@@ -230,7 +230,7 @@ export default function QuickBuyModal() {
                           );
                         })}
                       </select>
-                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-ink/40">
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-ink/60">
                         <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <polyline points="1 1 5 5 9 1" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -242,7 +242,7 @@ export default function QuickBuyModal() {
                 {/* Color Selection */}
                 {availableColors.length > 0 && (
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-semibold uppercase tracking-widest text-ink/40">
+                    <label className="text-[10px] font-semibold uppercase tracking-widest text-ink/60">
                       Color Selection
                     </label>
                     <div className="relative">
@@ -257,7 +257,7 @@ export default function QuickBuyModal() {
                           </option>
                         ))}
                       </select>
-                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-ink/40">
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-ink/60">
                         <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <polyline points="1 1 5 5 9 1" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>

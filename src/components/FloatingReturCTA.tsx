@@ -40,13 +40,13 @@ export function FloatingReturCTA({ excludePaths = [], className = '' }: Floating
               <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider leading-tight">
                 Retur & Refund
               </p>
-              <p className="text-xs md:text-[9px] text-ink/40 mt-0.5 leading-relaxed">
+              <p className="text-xs md:text-[9px] text-ink/60 mt-0.5 leading-relaxed">
                 Klaim 2x24 jam · Guest bisa ajukan
               </p>
             </div>
             <button
               onClick={() => setDismissed(true)}
-              className="text-ink/20 hover:text-ink/40 transition-colors -mt-0.5"
+              className="text-ink/20 hover:text-ink/60 transition-colors -mt-0.5"
             >
               <X size={14} />
             </button>

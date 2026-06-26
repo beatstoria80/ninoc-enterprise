@@ -15,7 +15,7 @@ export default function AboutClient() {
           <div>
             <p className="text-[11px] md:text-[8px] md:text-[9px] font-bold uppercase tracking-[0.4em] text-rose mb-1 md:mb-1.5">{t.label}</p>
             <h1 className="font-display font-medium italic text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase text-ink leading-[0.85]">{t.title}</h1>
-            <p className="text-[11px] md:text-[8px] md:text-[10px] font-medium text-ink/40 uppercase tracking-[0.25em] mt-1 md:mt-2">{t.tagline}</p>
+            <p className="text-[11px] md:text-[8px] md:text-[10px] font-medium text-ink/60 uppercase tracking-[0.25em] mt-1 md:mt-2">{t.tagline}</p>
           </div>
         </div>
 
@@ -42,22 +42,22 @@ export default function AboutClient() {
           <div className="md:col-span-6 lg:col-span-7 flex flex-col gap-3 md:gap-4">
             {/* Image placeholder */}
             <div className="w-full h-24 md:h-32 lg:h-48 bg-ink/[0.02] rounded-xl lg:rounded-[16px] border border-ink/5 flex items-center justify-center transition-colors duration-500 hover:bg-ink/[0.04]">
-              <span className="text-[11px] md:text-[8px] md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/30">{t.image}</span>
+              <span className="text-[11px] md:text-[8px] md:text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50">{t.image}</span>
             </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-2 md:gap-3">
               <div className="bg-white border border-ink/5 p-2 md:p-3 lg:p-4 rounded-xl transition-all duration-300 hover:shadow-sm hover:border-ink/10 flex flex-col justify-center">
-                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/40">{t.stats.est.label}</p>
+                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/60">{t.stats.est.label}</p>
                 <p className="text-xs md:text-sm lg:text-base font-display font-medium italic text-ink mt-1 md:mt-1.5">{t.stats.est.value}</p>
               </div>
               <div className="bg-white border border-ink/5 p-2 md:p-3 lg:p-4 rounded-xl transition-all duration-300 hover:shadow-sm hover:border-ink/10 flex flex-col justify-center">
-                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/40">{t.stats.location.label}</p>
+                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/60">{t.stats.location.label}</p>
                 <p className="text-xs md:text-sm lg:text-base font-display font-medium italic text-ink mt-1 md:mt-1.5">{t.stats.location.value}</p>
               </div>
               <div className="bg-white border border-ink/5 p-2 md:p-3 lg:p-4 rounded-xl transition-all duration-300 hover:shadow-sm hover:border-ink/10 flex flex-col justify-center">
-                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/40">{t.stats.contact.label}</p>
-                <p className="text-[10px] md:text-[7px] md:text-[8px] lg:text-[9px] font-display font-medium italic text-rose mt-1 md:mt-1.5 break-all">{t.stats.contact.value}</p>
+                <p className="text-[6px] md:text-[7px] font-bold uppercase tracking-[0.2em] text-ink/60">{t.stats.contact.label}</p>
+                <p className="text-[10px] md:text-[7px] md:text-[8px] lg:text-[9px] font-display font-semibold italic text-rose mt-1 md:mt-1.5 break-all">{t.stats.contact.value}</p>
               </div>
             </div>
 

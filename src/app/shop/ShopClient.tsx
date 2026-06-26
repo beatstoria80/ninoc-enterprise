@@ -94,7 +94,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                 "px-4 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-wider whitespace-nowrap transition-all",
                 selectedCategory === cat
                   ? "bg-rose text-white"
-                  : "bg-ink/5 text-ink/40"
+                  : "bg-ink/5 text-ink/60"
               )}
             >
               {cat}
@@ -113,7 +113,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
               <h2 className="text-sm md:text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">
                 {category}
               </h2>
-              <span className="text-[10px] md:text-[9px] text-ink/30 uppercase tracking-wider">
+              <span className="text-[10px] md:text-[9px] text-ink/50 uppercase tracking-wider">
                 {categoryProducts.length} {dict.shop.pieces}
               </span>
             </div>
@@ -163,7 +163,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                           </div>
                         )}
                         <div className="flex items-center justify-between">
-                          <p className="text-xs md:text-[11px] font-display font-medium italic text-rose">
+                          <p className="text-xs md:text-[11px] font-display font-semibold italic text-rose">
                             {product.price_tag === 'REDEEM'
                               ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                               : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -202,7 +202,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
         {filteredProducts.length === 0 && (
           <div className="py-6 text-center">
-            <p className="text-xs md:text-[11px] text-ink/30 uppercase tracking-wider">{dict.shop.notFound}</p>
+            <p className="text-xs md:text-[11px] text-ink/50 uppercase tracking-wider">{dict.shop.notFound}</p>
           </div>
         )}
       </div>
@@ -244,7 +244,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                     "px-6 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-widest transition-all whitespace-nowrap",
                     selectedCategory === cat
                       ? "bg-ink text-white shadow-xl shadow-ink/20"
-                      : "text-ink/40 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
+                      : "text-ink/60 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
                   )}
                 >
                   {cat}
@@ -300,7 +300,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
                           {product.name}
                         </h3>
-                        <p className="text-xs md:text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
+                        <p className="text-xs md:text-[9px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1">
                           {product.category}
                         </p>
                       </div>
@@ -317,11 +317,11 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
                             {product.price_tag === 'REDEEM' ? (
-                              <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                              <div className="text-sm md:text-xs font-display font-semibold italic text-rose">
                                 {(product.price ?? 0).toLocaleString('id-ID')} PTS
                               </div>
                             ) : (
-                              <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                              <div className="text-sm md:text-xs font-display font-semibold italic text-rose">
                                 IDR {(product.price ?? 0).toLocaleString('id-ID')}
                               </div>
                             )}
@@ -401,7 +401,7 @@ export default function ShopClient({ initialProducts = [] }: { initialProducts?:
       <div className="min-h-screen bg-cr flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-rose/20 border-t-rose rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-xs md:text-[10px] text-ink/30 uppercase tracking-widest">Loading...</p>
+          <p className="text-xs md:text-[10px] text-ink/50 uppercase tracking-widest">Loading...</p>
         </div>
       </div>
     }>

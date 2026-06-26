@@ -20,7 +20,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
-            <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">
+            <p className="text-xs md:text-[9px] text-ink/60 mt-0.5">
               Klaim 2x24 jam · Video 1-shot tanpa edit · Guest bisa ajukan
             </p>
           </div>
@@ -89,7 +89,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
           </div>
           <div>
             <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider">Kebijakan Retur & Refund</p>
-            <p className="text-xs md:text-[9px] text-ink/40 mt-0.5">Klaim mudah, proses cepat, tanpa ribet</p>
+            <p className="text-xs md:text-[9px] text-ink/60 mt-0.5">Klaim mudah, proses cepat, tanpa ribet</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                     <Icon size={14} className="text-rose" strokeWidth={1.5} />
                   </div>
                   <span className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
-                  <span className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">{item.desc}</span>
+                  <span className="text-[10px] md:text-[7px] text-ink/50 uppercase tracking-widest">{item.desc}</span>
                 </div>
               );
             })}

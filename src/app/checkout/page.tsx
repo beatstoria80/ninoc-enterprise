@@ -790,7 +790,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const inputClass = "w-full bg-white py-1.5 px-2 text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/30 focus:border-rose/40";
+  const inputClass = "w-full bg-white py-1.5 px-2 text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all border border-ink/20 rounded-none placeholder:text-ink/50 focus:border-rose/40";
   const selectClass = "w-full bg-white py-1 px-2 text-xs font-medium uppercase tracking-widest text-ink outline-none transition-all cursor-pointer border border-ink/20 rounded-none disabled:opacity-50 disabled:cursor-not-allowed focus:border-rose/40 appearance-none";
   const labelClass = "text-[10px] md:text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/50 mb-1.5 block";
 
@@ -823,7 +823,7 @@ export default function CheckoutPage() {
             <ArrowLeft size={14} />
           </div>
           <div className="flex flex-col items-start leading-none">
-            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.checkout.returnTo}</span>
+            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">{dict.checkout.returnTo}</span>
             <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.1em] text-ink group-hover:text-rose transition-colors">{dict.checkout.product}</span>
           </div>
         </button>
@@ -870,8 +870,8 @@ export default function CheckoutPage() {
               
               <div className="flex justify-between items-center border-b border-ink/10 pb-3">
                 <div className="flex flex-col">
-                  <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 leading-none mb-1">{dict.checkout.totalInvestment}</span>
-                  <span className="text-lg md:text-xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 leading-none mb-1">{dict.checkout.totalInvestment}</span>
+                  <span className="text-lg md:text-xl font-display font-semibold italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
               </div>
 
@@ -886,7 +886,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-1 text-ink">{item.name}</p>
                         <div className="flex items-center gap-1">
-                          <p className="text-[10px] md:text-[7px] font-medium text-ink/30 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
+                          <p className="text-[10px] md:text-[7px] font-medium text-ink/50 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
                           {(item.size_surcharge || 0) > 0 && (
                             <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                           )}
@@ -896,7 +896,7 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setItemToDelete({ id: item.id, name: item.name, size: item.size, color: item.color })}
-                      className="p-1.5 text-ink/30 hover:text-rose transition-colors flex-shrink-0"
+                      className="p-1.5 text-ink/50 hover:text-rose transition-colors flex-shrink-0"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -930,8 +930,8 @@ export default function CheckoutPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5 bg-ink/5 border border-ink/10 px-2.5 py-1 rounded-sm">
-                    <User size={10} className="text-ink/40" />
-                    <span className="text-[9px] md:text-[8px] font-semibold uppercase tracking-widest text-ink/40">Guest</span>
+                    <User size={10} className="text-ink/60" />
+                    <span className="text-[9px] md:text-[8px] font-semibold uppercase tracking-widest text-ink/60">Guest</span>
                   </div>
                 )}
               </div>
@@ -939,15 +939,15 @@ export default function CheckoutPage() {
               <div className={cn("grid gap-[1px] bg-ink/40 border border-ink/40 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-2")}>
                 <div className={cn("bg-white", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="first_name" className={labelClass}>{dict.checkout.firstName}</label>
-                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="John" />
+                  <input id="first_name" required type="text" value={formData.first_name} onChange={(e) => setFormData({...formData, first_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="John" />
                 </div>
                 <div className={cn("bg-white border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="last_name" className={labelClass}>{dict.checkout.lastName}</label>
-                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Doe" />
+                  <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="email" className={labelClass}>{userId ? 'Email (Akun Member)' : 'Email (Opsional)'}</label>
-                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-xs font-semibold tracking-wider text-ink placeholder:text-ink/30 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-xs font-semibold tracking-wider text-ink placeholder:text-ink/50 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
                   {!userId && emailCheckStatus === 'checking' && <p className="text-[9px] md:text-[10px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
                   {!userId && emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
                   {!userId && emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
@@ -955,12 +955,12 @@ export default function CheckoutPage() {
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
-                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="0812 3456 7890" />
+                  <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="0812 3456 7890" />
                 </div>
                 <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
                   <div className="flex gap-2 items-center mt-1">
-                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/30 outline-none" placeholder="Misal: NINOCPAYDAY" />
+                    <input id="referral_code" type="text" value={formData.referral_code || ''} onChange={(e) => { setFormData({...formData, referral_code: e.target.value}); setPromoError(''); }} className="w-full bg-transparent text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="Misal: NINOCPAYDAY" />
                     <button type="button" onClick={applyPromo} disabled={promoLoading || !formData.referral_code} className="px-3 py-1.5 bg-ink text-white text-xs md:text-[9px] uppercase tracking-wider disabled:opacity-50 rounded-sm">
                       {promoLoading ? '...' : 'Apply'}
                     </button>
@@ -988,14 +988,14 @@ export default function CheckoutPage() {
                   <button 
                     type="button"
                     onClick={() => switchAddressType('Home')}
-                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Home' ? "bg-white text-ink shadow-sm" : "text-ink/60 hover:text-ink")}
                   >
                     Rumah / Home
                   </button>
                   <button 
                     type="button"
                     onClick={() => switchAddressType('Office')}
-                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/40 hover:text-ink")}
+                    className={cn("px-4 py-1 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest transition-colors", formData.address_type === 'Office' ? "bg-white text-ink shadow-sm" : "text-ink/60 hover:text-ink")}
                   >
                     Kantor / Office
                   </button>
@@ -1083,9 +1083,9 @@ export default function CheckoutPage() {
                 {displayOptions.length === 0 && !loadingShipping && formData.kecamatan && (
                   <div className="col-span-3 py-10 flex flex-col items-center justify-center gap-2">
                     <div className="w-6 h-6 border border-ink/20 rounded-full flex items-center justify-center mb-1">
-                      <span className="text-ink/30 text-xs md:text-[10px]">!</span>
+                      <span className="text-ink/50 text-xs md:text-[10px]">!</span>
                     </div>
-                    <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40 text-center px-4">{dict.checkout.completeLocation}</span>
+                    <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60 text-center px-4">{dict.checkout.completeLocation}</span>
                   </div>
                 )}
                 {displayOptions.map((option) => {
@@ -1113,7 +1113,7 @@ export default function CheckoutPage() {
                             <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
                             <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
                           </div>
-                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/30")}>{option.courier_service_name} • {getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span>
+                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/50")}>{option.courier_service_name} • {getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={cn("text-sm md:text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
@@ -1132,7 +1132,7 @@ export default function CheckoutPage() {
                         <div className="flex items-center gap-1.5 mb-1">
                           <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
                           <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
-                          <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/30 hover:text-ink")}>
+                          <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/50 hover:text-ink")}>
                             <Info size={10} />
                           </div>
                         </div>
@@ -1187,7 +1187,7 @@ export default function CheckoutPage() {
               <div className="bg-white border border-ink/20 rounded-none p-6 space-y-6 shadow-sm">
                 <div className="flex justify-between items-center border-b border-ink/20 pb-2">
                   <div className="flex items-center gap-3">
-                     <ShoppingBag size={12} className="text-ink/40" />
+                     <ShoppingBag size={12} className="text-ink/60" />
                      <h3 className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">{dict.checkout.finalSelection}</h3>
                   </div>
                   <span className="text-[11px] md:text-[8px] font-medium text-ink/50 italic">{items.length} {dict.checkout.pieces}</span>
@@ -1202,7 +1202,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm md:text-[11px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
                         <div className="flex items-center gap-1">
-                          <p className="text-xs md:text-[9px] font-medium text-ink/40 uppercase tracking-tight">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
+                          <p className="text-xs md:text-[9px] font-medium text-ink/60 uppercase tracking-tight">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
                           {(item.size_surcharge || 0) > 0 && (
                             <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
                           )}
@@ -1212,7 +1212,7 @@ export default function CheckoutPage() {
                         <div className="flex flex-col items-end">
                           <p className="text-sm font-display font-medium italic text-ink/80">IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                           {(item.size_surcharge || 0) > 0 && (
-                            <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge</span>
+                            <span className="text-[10px] md:text-[7px] text-ink/50 font-medium">incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge</span>
                           )}
                         </div>
                         <button
@@ -1262,8 +1262,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="pt-6 flex flex-col items-center border-t border-ink/20">
-                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.5em] text-ink/40 mb-1">{dict.checkout.totalInvestment}</span>
-                  <span className="text-xl md:text-3xl font-display font-medium italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.5em] text-ink/60 mb-1">{dict.checkout.totalInvestment}</span>
+                  <span className="text-xl md:text-3xl font-display font-semibold italic text-rose leading-none">IDR {finalTotal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                 </div>
 
                 {/* CATALOG */}
@@ -1317,7 +1317,7 @@ export default function CheckoutPage() {
                  </div>
                  <div className="flex flex-col items-center gap-1">
                     <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.25em] text-center text-ink/50 leading-relaxed">Secured by 256-bit SSL Encryption</p>
-                    <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/30">Official NINOC Merchant Partner</p>
+                    <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-center text-ink/50">Official NINOC Merchant Partner</p>
                  </div>
               </div>
             </div>
@@ -1345,7 +1345,7 @@ export default function CheckoutPage() {
                 <ShieldCheck size={18} className="text-emerald-500" />
                 <div className="flex flex-col">
                   <span className="text-sm md:text-[11px] font-medium uppercase tracking-widest text-ink">Payment Authorization</span>
-                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Secured by Midtrans</span>
+                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Secured by Midtrans</span>
                 </div>
               </div>
               <div className="flex gap-2">

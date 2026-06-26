@@ -138,7 +138,7 @@ export default function SupplierSubmissionsPage() {
             ))}
             {!loading && submissions.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-12 text-center text-ink/40">
+                <td colSpan={5} className="p-12 text-center text-ink/60">
                   <PackageOpen className="mx-auto mb-3 opacity-50" size={32} />
                   <p>You haven&apos;t submitted any products yet.</p>
                 </td>
@@ -154,7 +154,7 @@ export default function SupplierSubmissionsPage() {
           <div className="bg-white rounded-xl shadow-2xl border border-ink/10 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-ink/5 flex justify-between items-center bg-cr noise">
               <h3 className="font-display font-medium text-ink">Submit New Product</h3>
-              <button onClick={() => setShowModal(false)} className="text-ink/40 hover:text-rose transition-colors">
+              <button onClick={() => setShowModal(false)} className="text-ink/60 hover:text-rose transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -179,7 +179,7 @@ export default function SupplierSubmissionsPage() {
                 <div>
                   <label className="block text-xs md:text-[10px] uppercase tracking-wider font-medium text-ink/60 mb-1.5">Base Factory Price (HPP)</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40 text-sm">Rp</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/60 text-sm">Rp</span>
                     <input required name="hpp" type="number" min="0" className="w-full border border-ink/10 rounded pl-8 pr-3 py-2 text-sm focus:border-rose outline-none transition-all" placeholder="50000" />
                   </div>
                 </div>

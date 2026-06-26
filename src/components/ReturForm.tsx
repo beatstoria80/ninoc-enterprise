@@ -243,13 +243,13 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
           <div className="space-y-1.5">
             <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Retur Diajukan!</p>
             <h3 className="text-[13px] font-display italic font-medium text-ink">Pengajuan Retur Berhasil</h3>
-            <p className="text-xs md:text-[9px] text-ink/40 leading-relaxed max-w-[260px]">
+            <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed max-w-[260px]">
               Retur untuk pesanan <span className="font-semibold text-ink">{orderId}</span> telah kami terima.
               Tim kami akan meninjaunya dalam 1x24 jam kerja.
             </p>
           </div>
           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 space-y-1.5 w-full text-left">
-            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Langkah Selanjutnya</p>
+            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Langkah Selanjutnya</p>
             {[
               'Tim kami akan review dalam 1x24 jam kerja',
               'Anda akan mendapat notifikasi via chat',
@@ -257,7 +257,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             ].map((s, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="w-4 h-4 bg-ink/5 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-[10px] md:text-[7px] font-bold text-ink/40">{i + 1}</span>
+                  <span className="text-[10px] md:text-[7px] font-bold text-ink/60">{i + 1}</span>
                 </span>
                 <p className="text-xs md:text-[9px] text-ink/50 leading-relaxed">{s}</p>
               </div>
@@ -285,11 +285,11 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
           </div>
           <div>
             <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Ajukan Retur</p>
-            <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-0.5">Return & Refund</p>
+            <p className="text-[10px] md:text-[7px] text-ink/50 uppercase tracking-widest mt-0.5">Return & Refund</p>
           </div>
         </div>
         {onClose && (
-          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm">
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center text-ink/50 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm">
             <X size={14} />
           </button>
         )}
@@ -303,7 +303,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
               {s > 1 ? <div className={cn('h-px flex-1 transition-colors', step >= s ? 'bg-rose' : 'bg-ink/5')} /> : null}
               <div className={cn(
                 'w-5 h-5 rounded-full flex items-center justify-center text-[11px] md:text-[8px] font-bold transition-colors shrink-0',
-                step >= s ? 'bg-rose text-white' : 'bg-ink/5 text-ink/30'
+                step >= s ? 'bg-rose text-white' : 'bg-ink/5 text-ink/50'
               )}>
                 {step > s ? <Check size={9} strokeWidth={3} /> : s}
               </div>
@@ -312,7 +312,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
         </div>
         <div className="flex justify-between mt-1">
           {['Order ID', 'Alasan', 'Syarat'].map((label, i) => (
-            <p key={label} className={cn('text-[11px] md:text-[8px] mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/30')}>{label}</p>
+            <p key={label} className={cn('text-[11px] md:text-[8px] mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/50')}>{label}</p>
           ))}
         </div>
       </div>
@@ -378,12 +378,12 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                           : 'border-ink/5 hover:border-ink/15 hover:bg-ink/[0.01]'
                       )}
                     >
-                      <div className={cn('w-7 h-7 rounded-sm flex items-center justify-center shrink-0 transition-colors', selected ? 'bg-rose text-white' : 'bg-ink/5 text-ink/30')}>
+                      <div className={cn('w-7 h-7 rounded-sm flex items-center justify-center shrink-0 transition-colors', selected ? 'bg-rose text-white' : 'bg-ink/5 text-ink/50')}>
                         {r.icon}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={cn('text-xs md:text-[10px] font-semibold uppercase tracking-wider', selected ? 'text-rose' : 'text-ink')}>{r.label}</p>
-                        <p className="text-[11px] md:text-[8px] text-ink/30 mt-0.5 leading-relaxed">{r.desc}</p>
+                        <p className="text-[11px] md:text-[8px] text-ink/50 mt-0.5 leading-relaxed">{r.desc}</p>
                       </div>
                       {selected && <Check size={12} className="text-rose shrink-0" strokeWidth={2.5} />}
                     </motion.button>
@@ -408,7 +408,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
               onClick={() => { if (canProceedStep1) setStep(2); else setError('Lengkapi Order ID dan alasan retur'); }}
               className={cn(
                 'w-full py-2.5 text-xs md:text-[10px] font-semibold uppercase tracking-widest text-white rounded-sm transition-colors flex items-center justify-center gap-2',
-                canProceedStep1 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/30 cursor-not-allowed'
+                canProceedStep1 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed'
               )}
             >
               Lanjut <ChevronRight size={12} />
@@ -430,7 +430,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             <div className="flex items-center gap-2 p-2.5 bg-rose/[0.04] border border-rose/10 rounded-sm">
               <RefreshCw size={11} className="text-rose shrink-0" />
               <p className="text-xs md:text-[9px] font-semibold text-rose uppercase tracking-wider">{reasonLabel}</p>
-              <p className="text-[10px] md:text-[7px] text-ink/30 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
+              <p className="text-[10px] md:text-[7px] text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
             </div>
 
             {/* Description */}
@@ -466,10 +466,10 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   className="border-2 border-dashed border-ink/10 rounded-sm p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-rose/30 hover:bg-rose/[0.02] transition-all duration-200"
                 >
                   <div className="w-10 h-10 bg-ink/5 rounded-full flex items-center justify-center mb-3">
-                    <Upload size={18} className="text-ink/30" />
+                    <Upload size={18} className="text-ink/50" />
                   </div>
                   <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">Upload Video</p>
-                  <p className="text-[11px] md:text-[8px] text-ink/30 mt-1">MP4 / WebM, maks 50MB</p>
+                  <p className="text-[11px] md:text-[8px] text-ink/50 mt-1">MP4 / WebM, maks 50MB</p>
                   <p className="text-[10px] md:text-[7px] text-rose/60 mt-2 font-medium">⚠️ WAJIB — Tanpa video, retur tidak bisa diproses</p>
                 </div>
               ) : (
@@ -506,7 +506,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                       </button>
                       <div className="flex-1">
                         <p className="text-xs md:text-[9px] font-medium text-ink truncate">{videoFile.name}</p>
-                        <p className="text-[10px] md:text-[7px] text-ink/30">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
+                        <p className="text-[10px] md:text-[7px] text-ink/50">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
                       </div>
                       {fraudWarning && (
                         <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-sm">
@@ -521,7 +521,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                           setVideoDuration(0);
                           setFraudWarning(false);
                         }}
-                        className="w-7 h-7 flex items-center justify-center text-ink/30 hover:text-red-500 hover:bg-red-50 transition-colors rounded-sm"
+                        className="w-7 h-7 flex items-center justify-center text-ink/50 hover:text-red-500 hover:bg-red-50 transition-colors rounded-sm"
                       >
                         <X size={12} />
                       </button>
@@ -584,7 +584,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 >
                   {termsAccepted && <Check size={10} className="text-white" strokeWidth={3} />}
                 </div>
-                <p className={cn('text-[11px] md:text-[8px]', termsAccepted ? 'text-ink/60' : 'text-ink/30')}>
+                <p className={cn('text-[11px] md:text-[8px]', termsAccepted ? 'text-ink/60' : 'text-ink/50')}>
                   Saya telah membaca dan menyetujui syarat & ketentuan di atas
                 </p>
               </label>
@@ -608,7 +608,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(1)}
-                className="px-4 py-2.5 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/40 hover:text-ink hover:bg-ink/5 transition-colors rounded-sm flex items-center gap-1"
+                className="px-4 py-2.5 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors rounded-sm flex items-center gap-1"
               >
                 <ChevronLeft size={12} /> Back
               </motion.button>
@@ -620,7 +620,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   'flex-1 py-2.5 text-xs md:text-[10px] font-semibold uppercase tracking-widest text-white rounded-sm transition-colors flex items-center justify-center gap-2',
                   canProceedStep2 && !isSubmitting
                     ? 'bg-rose hover:bg-rose/90'
-                    : 'bg-ink/20 text-ink/30 cursor-not-allowed'
+                    : 'bg-ink/20 text-ink/50 cursor-not-allowed'
                 )}
               >
                 {isSubmitting ? (

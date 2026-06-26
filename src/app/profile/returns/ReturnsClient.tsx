@@ -87,12 +87,12 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
       <div className="max-w-[800px] mx-auto px-6 pt-24 md:pt-40 pb-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <Link href="/profile" className="flex items-center gap-2 text-ink/30 hover:text-ink transition-colors group">
+          <Link href="/profile" className="flex items-center gap-2 text-ink/50 hover:text-ink transition-colors group">
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">Exit to Profile</span>
           </Link>
           <div className="text-right">
-            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-1">Return & Refund</p>
+            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 mb-1">Return & Refund</p>
             <h1 className="text-xl font-display italic font-medium uppercase tracking-tight">Return Tracker</h1>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
         <div className="flex items-center gap-3 mb-6 overflow-x-auto no-scrollbar shrink-0">
           <button
             onClick={handleRefresh}
-            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/30 hover:text-rose hover:border-rose/30 transition-colors shrink-0"
+            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/50 hover:text-rose hover:border-rose/30 transition-colors shrink-0"
           >
             <RefreshCw size={10} className={cn('transition-transform', refreshing && 'animate-spin')} />
           </button>
@@ -139,7 +139,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
               <RefreshCw size={24} strokeWidth={1} className="text-ink/20" />
             </div>
             <div>
-              <p className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink/40">No Returns Found</p>
+              <p className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink/60">No Returns Found</p>
               <p className="text-xs md:text-[9px] text-ink/20 mt-1 italic">Return history will appear here</p>
             </div>
             <Link href="/profile" className="text-xs md:text-[9px] text-rose hover:underline uppercase tracking-widest">
@@ -181,7 +181,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] md:text-[7px] text-ink/30 mt-0.5">
+                      <p className="text-[10px] md:text-[7px] text-ink/50 mt-0.5">
                         {REASON_LABELS[ret.reason] || ret.reason_label || ret.reason} · {formatDate(ret.created_at)}
                       </p>
                     </div>
@@ -190,7 +190,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                         <p className="text-sm md:text-[11px] font-display italic font-medium text-emerald-600">
                           IDR {ret.refund_amount.toLocaleString('id-ID')}
                         </p>
-                        <p className="text-[10px] md:text-[7px] text-ink/30">Refund</p>
+                        <p className="text-[10px] md:text-[7px] text-ink/50">Refund</p>
                       </div>
                     )}
                     <motion.div
@@ -216,7 +216,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
 
                           {/* Timeline — accurate for all statuses */}
                           <div className="pt-4">
-                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-3">Status Timeline</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-3">Status Timeline</p>
                             <div className="flex items-center gap-0">
                               {STATUS_FLOW.map((step, i) => {
                                 const Icon = step.icon;
@@ -258,7 +258,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                           {/* Description */}
                           {ret.description && (
                             <div className="bg-ink/[0.01] border border-ink/5 p-3 rounded-sm">
-                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1.5">Deskripsi</p>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-1.5">Deskripsi</p>
                               <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">{ret.description}</p>
                             </div>
                           )}
@@ -268,7 +268,7 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                             <div className="border border-ink/5 rounded-sm overflow-hidden">
                               <div className="px-3 pt-3 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Bukti Video Unboxing</p>
+                                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Bukti Video Unboxing</p>
                                   {ret.video_duration_seconds && (
                                     <span className="text-[10px] md:text-[7px] text-ink/20">{ret.video_duration_seconds}s · 1-shot</span>
                                   )}
@@ -320,15 +320,15 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                           {!['completed', 'rejected', 'cancelled'].includes(ret.status) && (
                             <div className="bg-rose/[0.02] border border-rose/10 p-3 rounded-sm space-y-1">
                               <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-rose/60 mb-1.5">Info Proses</p>
-                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[11px] md:text-[8px] text-ink/60 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Pengajuan maksimal 2x24 jam setelah barang diterima
                               </p>
-                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[11px] md:text-[8px] text-ink/60 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Bukti video 1-shot tanpa edit WAJIB
                               </p>
-                              <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-1.5">
+                              <p className="text-[11px] md:text-[8px] text-ink/60 leading-relaxed flex items-start gap-1.5">
                                 <span className="text-rose/40 font-bold shrink-0">•</span>
                                 Refund diproses 3–7 hari kerja setelah persetujuan
                               </p>

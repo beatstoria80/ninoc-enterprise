@@ -209,7 +209,7 @@ function CartItem({
               {item.name}
             </motion.h3>
           </div>
-          <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30 italic">Ref: #{item.id.slice(0, 8)}</p>
+          <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/50 italic">Ref: #{item.id.slice(0, 8)}</p>
         </div>
 
         <div className="flex items-end justify-between">
@@ -238,10 +238,10 @@ function CartItem({
                 <Plus size={12} strokeWidth={2} />
               </PressScale>
             </motion.div>
-            <div className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40">Size {item.size || 'N/A'}</div>
+            <div className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size || 'N/A'}</div>
           </div>
           <motion.div
-            className="text-sm font-display font-medium italic text-rose"
+            className="text-sm font-display font-semibold italic text-rose"
             animate={{ scale: isHovered ? 1.05 : 1 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -303,7 +303,7 @@ function SearchResultItem({ product, index, onClick }: {
             {product.name}
           </motion.h3>
           <motion.p
-            className="text-xs md:text-[9px] font-medium text-ink/30 mt-0.5 italic"
+            className="text-xs md:text-[9px] font-medium text-ink/50 mt-0.5 italic"
             animate={{ opacity: isHovered ? 1 : 0.7 }}
             transition={{ duration: DURATION.fast }}
           >
@@ -487,11 +487,11 @@ export default function GlobalHeader() {
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
             className={cn("flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] px-2.5 py-1.5 rounded-full border transition-colors", isDarkBg ? "border-white/15" : "border-ink/10")}
           >
-            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/30 hover:text-ink"))}>
+            <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/50 hover:text-ink"))}>
               ID
             </a>
             <span className={isDarkBg ? "text-white/20" : "text-ink/10"}>·</span>
-            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/30 hover:text-ink"))}>
+            <a href={lang === 'EN' ? pathname : `/en${pathname === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer", lang === 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/50 hover:text-ink"))}>
               EN
             </a>
           </motion.div>
@@ -571,11 +571,11 @@ export default function GlobalHeader() {
             </PressScale>
           </div>
           <div className="pointer-events-auto flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] text-ink/60 mt-1 px-2.5 py-1.5 rounded-full border border-ink/10">
-            <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "text-ink/30")}>
+            <a href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "text-ink/50")}>
               ID
             </a>
             <span className="text-ink/10">·</span>
-            <a href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "text-ink/30")}>
+            <a href={lang === 'EN' ? pathname : `/en${(pathname as string) === '/' ? '' : pathname}`} className={cn("transition-colors cursor-pointer hover:text-ink", lang === 'EN' ? "text-ink font-bold" : "text-ink/50")}>
               EN
             </a>
           </div>
@@ -642,7 +642,7 @@ export default function GlobalHeader() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-[11px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
-                      <p className="text-[10px] text-ink/40 tracking-wider">Your cart is currently empty.</p>
+                      <p className="text-[10px] text-ink/60 tracking-wider">Your cart is currently empty.</p>
                     </div>
                     <button
                       onClick={() => setIsCartOpen(false)}
@@ -668,8 +668,8 @@ export default function GlobalHeader() {
                     </div>
                     <div className="h-[1px] bg-ink/5 my-2" />
                     <div className="flex justify-between items-baseline">
-                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/40">Total</span>
-                      <span className="text-xl font-display font-medium italic text-rose">
+                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
+                      <span className="text-xl font-display font-semibold italic text-rose">
                         IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </span>
                     </div>
@@ -752,7 +752,7 @@ export default function GlobalHeader() {
                     )}
                   </AnimatePresence>
                 </div>
-                <PressScale onClick={() => setIsSearchOpen(false)} className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/40 hover:text-rose flex items-center gap-2">
+                <PressScale onClick={() => setIsSearchOpen(false)} className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/60 hover:text-rose flex items-center gap-2">
                   Close
                 </PressScale>
               </div>
@@ -859,7 +859,7 @@ export default function GlobalHeader() {
                       <span className="text-sm md:text-xs font-bold uppercase tracking-wider text-ink truncate">
                         {profileName || 'Member'}
                       </span>
-                      <span className="text-[11px] md:text-[8px] font-medium text-ink/40 truncate">
+                      <span className="text-[11px] md:text-[8px] font-medium text-ink/60 truncate">
                         {user.email}
                       </span>
                     </div>
@@ -916,7 +916,7 @@ export default function GlobalHeader() {
               </div>
 
               <div className="px-6 md:px-10 py-6 border-t border-ink/5 bg-white">
-                <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/30 mb-3">Language</p>
+                <p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-3">Language</p>
                 <div className="flex items-center gap-1.5 text-xs md:text-[10px] font-medium tracking-[0.2em] text-ink/60">
                   <a onClick={() => setIsMenuOpen(false)} href={lang === 'EN' ? ((pathname as string).replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer hover:text-ink", lang !== 'EN' ? "text-ink font-bold" : "")}>
                     ID

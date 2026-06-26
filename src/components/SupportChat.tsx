@@ -568,7 +568,7 @@ export default function SupportChat() {
                   <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
                     {/* Quick Action Grid */}
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/40 mb-3">Pilih Kategori Bantuan</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/60 mb-3">Pilih Kategori Bantuan</p>
                       <div className="grid grid-cols-2 gap-2 mt-4 px-1">
                         {QUICK_ACTIONS.map((action) => (
                           <motion.button
@@ -593,7 +593,7 @@ export default function SupportChat() {
 
                     {/* Active Conversations */}
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/30 mb-2">Riwayat Percakapan</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 mb-2">Riwayat Percakapan</p>
                       {tickets.length > 0 ? (
                         <div className="space-y-1">
                           {tickets.slice(0, 5).map((t, i) => (
@@ -608,7 +608,7 @@ export default function SupportChat() {
                             >
                               <div className="min-w-0 flex-1">
                                 <p className="text-[13px] md:text-[11px] font-medium text-ink uppercase truncate">{t.subject === 'General Inquiry' ? 'Pertanyaan Umum' : t.subject}</p>
-                                <p className="text-[9px] font-medium text-ink/30 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
+                                <p className="text-[9px] font-medium text-ink/50 uppercase tracking-widest mt-0.5">#{t.id.split('-')[0]} · {t.status}</p>
                               </div>
                               <ChevronRight size={12} className="text-ink/10 group-hover:text-rose transition-colors duration-200 ml-2 flex-shrink-0" />
                             </motion.button>
@@ -617,7 +617,7 @@ export default function SupportChat() {
                       ) : (
                         <div className="py-8 flex flex-col items-center justify-center text-center space-y-2 opacity-25">
                           <MessageSquare size={18} strokeWidth={1} />
-                          <p className="text-xs md:text-[10px] italic text-ink/40 uppercase tracking-widest">Belum ada riwayat percakapan</p>
+                          <p className="text-xs md:text-[10px] italic text-ink/60 uppercase tracking-widest">Belum ada riwayat percakapan</p>
                         </div>
                       )}
                     </div>
@@ -632,16 +632,16 @@ export default function SupportChat() {
                       onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startGeneralChat(); } }}
                       placeholder="Ketik pertanyaan Anda di sini..."
-                      className="w-full bg-ink/[0.02] text-ink py-3 px-4 rounded-xl text-sm md:text-xs font-medium outline-none placeholder:text-ink/30 border border-ink/[0.08] transition-all focus:border-ink/30 focus:bg-white resize-none min-h-[48px] focus:shadow-sm"
+                      className="w-full bg-ink/[0.02] text-ink py-3 px-4 rounded-xl text-sm md:text-xs font-medium outline-none placeholder:text-ink/50 border border-ink/[0.08] transition-all focus:border-ink/30 focus:bg-white resize-none min-h-[48px] focus:shadow-sm"
                     />
                     <div className="flex items-end gap-1 mt-1.5">
-                      <p className="flex-1 text-[9px] text-ink/30 uppercase tracking-widest font-semibold">
+                      <p className="flex-1 text-[9px] text-ink/50 uppercase tracking-widest font-semibold">
                         {user ? 'HUBUNGI STUDIO' : 'MODE TAMU — CHAT AKTIF'}
                       </p>
-                      <button onClick={startGeneralChat} className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-ink/40 hover:text-rose transition-colors font-semibold cursor-pointer">
+                      <button onClick={startGeneralChat} className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-ink/60 hover:text-rose transition-colors font-semibold cursor-pointer">
                         Kirim <Send size={12} />
                       </button>
-                      <span className={cn('text-[9px] font-semibold tracking-widest', message.length > 450 ? 'text-rose' : 'text-ink/30')}>
+                      <span className={cn('text-[9px] font-semibold tracking-widest', message.length > 450 ? 'text-rose' : 'text-ink/50')}>
                         {message.length}/500
                       </span>
                     </div>
@@ -661,7 +661,7 @@ export default function SupportChat() {
                     <ArrowLeft size={12} /> Kembali
                   </motion.button>
                   <div className="text-center space-y-1 mb-4 pt-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-ink/40">Kategori Terpilih</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-ink/60">Kategori Terpilih</p>
                     <h4 className="text-sm md:text-xs font-bold uppercase tracking-wider text-ink">{subject === 'General Inquiry' ? 'Pertanyaan Umum' : subject}</h4>
                   </div>
                   <div className="space-y-3 bg-ink/[0.02] p-4 rounded-xl border border-ink/5">
@@ -686,7 +686,7 @@ export default function SupportChat() {
                     </motion.button>
                     <div className="text-center px-4">
                       <p className="text-sm md:text-xs font-bold text-ink uppercase truncate max-w-[160px] md:max-w-[180px]">{activeTicket?.subject === 'General Inquiry' ? 'Pertanyaan Umum' : activeTicket?.subject}</p>
-                      <p className="text-[10px] md:text-[9px] font-semibold text-ink/40 uppercase tracking-widest mt-0.5">ID: #{activeTicket?.id.split('-')[0]}</p>
+                      <p className="text-[10px] md:text-[9px] font-semibold text-ink/60 uppercase tracking-widest mt-0.5">ID: #{activeTicket?.id.split('-')[0]}</p>
                     </div>
                     <div className="w-8" />
                   </div>
@@ -712,7 +712,7 @@ export default function SupportChat() {
                                   <Zap size={8} strokeWidth={2.5} /> Auto-reply
                                 </span>
                               ) : (
-                                <span className="text-[9px] text-ink/30 uppercase tracking-widest font-semibold">Studio</span>
+                                <span className="text-[9px] text-ink/50 uppercase tracking-widest font-semibold">Studio</span>
                               )}
                             </div>
                           )}
@@ -727,7 +727,7 @@ export default function SupportChat() {
                         animate={{ opacity: 1 }}
                         className="flex justify-start"
                       >
-                        <div className="px-3 py-2 rounded-xl text-sm md:text-xs bg-ink/5 text-ink/40 rounded-bl-none flex items-center gap-1.5">
+                        <div className="px-3 py-2 rounded-xl text-sm md:text-xs bg-ink/5 text-ink/60 rounded-bl-none flex items-center gap-1.5">
                           <span className="flex gap-0.5">
                             <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                             <span className="w-1.5 h-1.5 bg-ink/20 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -749,14 +749,14 @@ export default function SupportChat() {
                         onChange={e => { if (e.target.value.length <= 500) setMessage(e.target.value); }}
                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                         placeholder="Ketik pesan Anda..."
-                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-xl py-3 px-4 text-sm md:text-xs font-medium outline-none placeholder:text-ink/30 focus:bg-white focus:border-ink/30 transition-all resize-none min-h-[44px] focus:shadow-md"
+                        className="flex-1 bg-ink/[0.02] border border-ink/[0.08] rounded-xl py-3 px-4 text-sm md:text-xs font-medium outline-none placeholder:text-ink/50 focus:bg-white focus:border-ink/30 transition-all resize-none min-h-[44px] focus:shadow-md"
                       />
                       <button onClick={() => sendMessage()} className="w-11 h-11 bg-ink text-white rounded-xl flex items-center justify-center hover:bg-rose transition-all duration-300 flex-shrink-0 active:scale-90 cursor-pointer shadow-sm" aria-label="Kirim pesan">
                         <Send size={16} strokeWidth={2} />
                       </button>
                     </div>
                     <div className="flex justify-end px-0.5">
-                      <p className={cn('text-[9px] font-semibold tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/30')}>
+                      <p className={cn('text-[9px] font-semibold tracking-widest uppercase', message.length > 450 ? 'text-rose' : 'text-ink/50')}>
                         {message.length}/500
                       </p>
                     </div>

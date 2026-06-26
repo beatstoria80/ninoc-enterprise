@@ -19,7 +19,7 @@ export default function AnimatedShippingMap({ currentStepIndex }: AnimatedShippi
 
   return (
     <div className="w-full bg-ink/[0.01] border border-ink/5 rounded-[4px] p-6 mb-8 overflow-hidden relative h-[180px]">
-      <h3 className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 mb-6 absolute top-6 left-6 z-10">Live Logistics Tracer</h3>
+      <h3 className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 mb-6 absolute top-6 left-6 z-10">Live Logistics Tracer</h3>
       
       <div className="absolute inset-0 flex items-center justify-center px-12 md:px-24">
         {/* Background Track */}
@@ -50,20 +50,20 @@ export default function AnimatedShippingMap({ currentStepIndex }: AnimatedShippi
 
           {/* Node 1: Origin */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white border border-ink/10 w-8 h-8 rounded flex items-center justify-center z-10 shadow-sm">
-            <Box size={14} className="text-ink/40" />
-            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 whitespace-nowrap">Studio</div>
+            <Box size={14} className="text-ink/60" />
+            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/60 whitespace-nowrap">Studio</div>
           </div>
 
           {/* Node 2: Transit */}
           <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white border border-ink/10 w-8 h-8 rounded flex items-center justify-center z-10 shadow-sm">
             <MapPin size={14} className={progress >= 50 ? "text-ink" : "text-ink/20"} />
-            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 whitespace-nowrap">Transit Hub</div>
+            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/60 whitespace-nowrap">Transit Hub</div>
           </div>
 
           {/* Node 3: Destination */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white border border-ink/10 w-8 h-8 rounded flex items-center justify-center z-10 shadow-sm">
             <Home size={14} className={progress >= 100 ? "text-rose" : "text-ink/20"} />
-            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/40 whitespace-nowrap">Consignee</div>
+            <div className="absolute -bottom-6 text-[11px] md:text-[8px] uppercase tracking-widest text-ink/60 whitespace-nowrap">Consignee</div>
           </div>
         </div>
       </div>

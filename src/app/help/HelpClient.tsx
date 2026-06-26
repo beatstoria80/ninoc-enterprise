@@ -259,7 +259,7 @@ export default function HelpClient({ initialSettings = [] }: { initialSettings?:
       {/* Exit Navigation */}
       <div className="shrink-0 bg-white border-b border-ink/5 z-50">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex items-center justify-between h-11">
-          <Link href="/" className="flex items-center gap-2.5 text-ink/40 hover:text-ink transition-colors group">
+          <Link href="/" className="flex items-center gap-2.5 text-ink/60 hover:text-ink transition-colors group">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:-translate-x-0.5">
               <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -286,9 +286,9 @@ export default function HelpClient({ initialSettings = [] }: { initialSettings?:
                     <button
                       key={section.key}
                       onClick={() => setActiveSection(section.key)}
-                      className={`shrink-0 flex items-center gap-2 px-3 py-2 lg:px-3 lg:py-2 border-b lg:border-b lg:border-r lg:border-l lg:border-t transition-all text-left w-full ${isActive ? 'bg-rose text-white border-rose lg:border-rose' : 'text-ink/40 hover:text-ink hover:bg-ink/[0.02] border-transparent'}`}
+                      className={`shrink-0 flex items-center gap-2 px-3 py-2 lg:px-3 lg:py-2 border-b lg:border-b lg:border-r lg:border-l lg:border-t transition-all text-left w-full ${isActive ? 'bg-rose text-white border-rose lg:border-rose' : 'text-ink/60 hover:text-ink hover:bg-ink/[0.02] border-transparent'}`}
                     >
-                      <span className={`w-6 h-6 rounded-sm flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/30'}`}>
+                      <span className={`w-6 h-6 rounded-sm flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/50'}`}>
                         {section.icon}
                       </span>
                       <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.08em]">{section.label}</span>
@@ -303,7 +303,7 @@ export default function HelpClient({ initialSettings = [] }: { initialSettings?:
                 <>
                   <div className="flex items-center gap-2 mb-3 pb-2 border-b border-ink/5">
                     <div className="w-7 h-7 border border-ink/8 flex items-center justify-center bg-ink/[0.015] shrink-0">
-                      <span className="text-ink/30">{activeMeta?.icon}</span>
+                      <span className="text-ink/50">{activeMeta?.icon}</span>
                     </div>
                     <div className="flex-1">
                       <h2 className="text-[13px] font-medium uppercase tracking-[0.15em] text-ink">{activeMeta?.label}</h2>

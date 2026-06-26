@@ -86,7 +86,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
             {product.price_tag}
           </p>
         )}
-        <p className="text-xs md:text-[10px] font-display font-medium italic text-rose pt-0.5">
+        <p className="text-xs md:text-[10px] font-display font-semibold italic text-rose pt-0.5">
           IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </p>
       </div>
@@ -258,7 +258,7 @@ export default function CategoryGrid({
           <div key={category} className="border-b border-ink/5 pb-6">
             {/* Category Header */}
             <div className="px-4 mb-3 flex items-center justify-between">
-              <h2 className="text-xs md:text-[10px] font-display font-medium italic text-ink/40 uppercase tracking-[0.2em]">
+              <h2 className="text-xs md:text-[10px] font-display font-medium italic text-ink/60 uppercase tracking-[0.2em]">
                 {category}
               </h2>
               <span className="text-[11px] md:text-[8px] font-medium text-rose/40 uppercase tracking-widest">

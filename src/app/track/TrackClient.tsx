@@ -13,7 +13,7 @@ import jsQR from 'jsqr';
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/40 font-semibold border border-ink/10">
+    <div className="w-full h-full min-h-[400px] bg-ink/5 animate-pulse flex items-center justify-center text-xs md:text-[9px] uppercase tracking-widest text-ink/60 font-semibold border border-ink/10">
       Initializing Live Map...
     </div>
   )
@@ -266,13 +266,13 @@ export default function TrackClient() {
       <div className="flex border-b border-ink/10">
         <button 
           onClick={() => setMode('manual')}
-          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'manual' ? 'text-rose border-b-2 border-rose' : 'text-ink/40 hover:text-ink/70'}`}
+          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'manual' ? 'text-rose border-b-2 border-rose' : 'text-ink/60 hover:text-ink/70'}`}
         >
           Manual Input
         </button>
         <button 
           onClick={() => setMode('qr')}
-          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'qr' ? 'text-rose border-b-2 border-rose' : 'text-ink/40 hover:text-ink/70'}`}
+          className={`flex-1 pb-2 text-xs md:text-[10px] uppercase tracking-widest font-semibold transition-colors ${mode === 'qr' ? 'text-rose border-b-2 border-rose' : 'text-ink/60 hover:text-ink/70'}`}
         >
           Upload Invoice (QR)
         </button>
@@ -287,7 +287,7 @@ export default function TrackClient() {
           <div className="space-y-1">
             <label className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink">Nomor WhatsApp</label>
             <input ref={phoneInputRef} type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
-            <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-widest mt-1 italic">*Wajib diisi demi keamanan data pengiriman.</p>
+            <p className="text-[10px] md:text-[8px] text-ink/60 uppercase tracking-widest mt-1 italic">*Wajib diisi demi keamanan data pengiriman.</p>
           </div>
           {error && <div className="px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
           <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 mt-2">
@@ -300,7 +300,7 @@ export default function TrackClient() {
           
           <label className="border-2 border-dashed border-ink/20 bg-white p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-rose/50 hover:bg-rose/5 transition-colors group">
             <input type="file" accept="image/png, image/jpeg, image/jpg" className="hidden" onChange={handleFileUpload} />
-            <div className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center group-hover:bg-rose/10 group-hover:text-rose text-ink/40 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center group-hover:bg-rose/10 group-hover:text-rose text-ink/60 transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             </div>
             <span className="text-xs md:text-[10px] uppercase tracking-widest font-semibold text-ink/60 group-hover:text-rose">Pilih Gambar Invoice (PNG/JPG)</span>
@@ -332,7 +332,7 @@ export default function TrackClient() {
             </div>
             <p className="text-sm md:text-[11px] text-ink mt-2 uppercase tracking-widest">Sistem Pelacakan Real-Time</p>
           </div>
-          <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/40 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0 mt-1" title="Kembali ke Beranda">
+          <Link href="/" className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink/60 hover:bg-rose/10 hover:text-rose transition-colors flex-shrink-0 mt-1" title="Kembali ke Beranda">
             <X size={14} strokeWidth={1.5} />
           </Link>
         </div>
@@ -357,24 +357,24 @@ export default function TrackClient() {
 
                 {order.shipping_address && (
                   <div>
-                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Alamat Pengiriman</p>
+                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-2">Alamat Pengiriman</p>
                     <p className="text-xs md:text-[10px] font-semibold uppercase">{order.shipping_address.name}</p>
                     <p className="text-xs md:text-[9px] text-ink/50 mt-1 leading-relaxed uppercase">{order.shipping_address.address}</p>
-                    <p className="text-xs md:text-[9px] text-ink/40 mt-0.5 uppercase">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
+                    <p className="text-xs md:text-[9px] text-ink/60 mt-0.5 uppercase">{order.shipping_address.city} {order.shipping_address.postal_code}</p>
                   </div>
                 )}
 
                 {order.tracking_id && (
                   <div className="pt-4 border-t border-ink/5 mt-2">
-                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-2">Nomor Resi</p>
+                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-2">Nomor Resi</p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-sm md:text-[11px] font-semibold uppercase tracking-wider">{order.tracking_id}</span>
                         {order.courier && (
                           <div className="flex items-center gap-1.5 ml-1">
-                            <span className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest">via</span>
+                            <span className="text-[11px] md:text-[8px] text-ink/50 uppercase tracking-widest">via</span>
                             <CourierLogo courier={order.courier} className="h-3" />
-                            <span className="text-[11px] md:text-[8px] text-ink/30 uppercase tracking-widest">{order.courier}</span>
+                            <span className="text-[11px] md:text-[8px] text-ink/50 uppercase tracking-widest">{order.courier}</span>
                           </div>
                         )}
                       </div>
@@ -398,7 +398,7 @@ export default function TrackClient() {
             {/* GRID 2: Status & Items */}
             <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
               <div className="bg-ink/[0.01] border border-ink/5 p-5">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Status Pengiriman</p>
+                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-6">Status Pengiriman</p>
                 <div className="flex flex-col gap-0">
                   {STATUS_STEPS.filter(s => s.key !== 'cancelled').map((step, idx) => {
                     const done = currentStep > idx;
@@ -414,8 +414,8 @@ export default function TrackClient() {
                           {!isLast && <div className={`w-px flex-1 my-1 min-h-[20px] ${done ? 'bg-rose' : 'bg-ink/10'}`} />}
                         </div>
                         <div className={`pb-6 pt-0.5`}>
-                           <p className={`text-[11px] md:text-[9px] font-bold uppercase tracking-wider ${active ? 'text-rose' : done ? 'text-ink/80' : 'text-ink/30'}`}>{step.label}</p>
-                           <p className={`text-[10px] md:text-[8px] mt-1 ${active ? 'text-ink/60' : done ? 'text-ink/40' : 'text-ink/20'}`}>{step.sub}</p>
+                           <p className={`text-[11px] md:text-[9px] font-bold uppercase tracking-wider ${active ? 'text-rose' : done ? 'text-ink/80' : 'text-ink/50'}`}>{step.label}</p>
+                           <p className={`text-[10px] md:text-[8px] mt-1 ${active ? 'text-ink/60' : done ? 'text-ink/60' : 'text-ink/20'}`}>{step.sub}</p>
                         </div>
                       </div>
                     );
@@ -425,7 +425,7 @@ export default function TrackClient() {
 
               {order.items.length > 0 && (
                 <div className="bg-ink/[0.01] border border-ink/5 p-5 flex-1">
-                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-5">Item Pesanan</p>
+                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-5">Item Pesanan</p>
                   <div className="space-y-4">
                     {order.items.map((item) => (
                       <div key={item.id} className="flex flex-col gap-1 pb-4 border-b border-ink/5 last:border-0 last:pb-0">
@@ -433,12 +433,12 @@ export default function TrackClient() {
                           <p className="text-[11px] md:text-[10px] font-semibold text-ink leading-tight">{item.product_name}</p>
                           <span className="text-[11px] md:text-[9px] font-semibold text-ink/70 shrink-0">{formatPrice(item.price_at_purchase)}</span>
                         </div>
-                        <p className="text-[10px] md:text-[8px] text-ink/40 uppercase tracking-wider">{item.size ? `Size ${item.size} · ` : ''}Qty {item.quantity}</p>
+                        <p className="text-[10px] md:text-[8px] text-ink/60 uppercase tracking-wider">{item.size ? `Size ${item.size} · ` : ''}Qty {item.quantity}</p>
                       </div>
                     ))}
                   </div>
                   <div className="flex items-center justify-between pt-4 mt-4 border-t border-ink/10">
-                    <span className="text-xs md:text-[9px] uppercase tracking-widest font-semibold text-ink/40">Total Tagihan</span>
+                    <span className="text-xs md:text-[9px] uppercase tracking-widest font-semibold text-ink/60">Total Tagihan</span>
                     <span className="text-[14px] font-bold text-ink">{formatPrice(order.total_price)}</span>
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export default function TrackClient() {
 
             {/* GRID 3: History */}
             <div className={`bg-ink/[0.01] border border-ink/5 p-5 lg:overflow-y-auto pr-2 ${scrollbarStyles}`}>
-              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/30 font-semibold mb-6">Logistics History</p>
+              <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-6">Logistics History</p>
               {order.logs.length > 0 ? (
                 <div className="relative pl-5 border-l border-ink/10 space-y-7 ml-2 pb-4">
                   {order.logs.map((log, idx) => {
@@ -459,7 +459,7 @@ export default function TrackClient() {
                         </div>
                         <div className="flex flex-col gap-1.5">
                           <div>
-                            <span className={`text-[10px] md:text-[8px] font-bold tracking-widest uppercase ${isLatest ? 'text-rose' : 'text-ink/40'}`}>
+                            <span className={`text-[10px] md:text-[8px] font-bold tracking-widest uppercase ${isLatest ? 'text-rose' : 'text-ink/60'}`}>
                               {formatDate(log.created_at)}
                             </span>
                           </div>
@@ -475,14 +475,14 @@ export default function TrackClient() {
                             {(log.location || log.courier_company) && (
                               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-ink/5">
                                 {log.location && (
-                                  <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                                    <MapPin size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> {log.location}
+                                  <p className="text-[9px] md:text-[7.5px] text-ink/60 uppercase tracking-widest flex items-center gap-1.5">
+                                    <MapPin size={10} className={isLatest ? "text-rose/50" : "text-ink/50"} /> {log.location}
                                   </p>
                                 )}
                                 {log.courier_company && (
                                   <div className="flex items-center gap-1.5">
-                                    <p className="text-[9px] md:text-[7.5px] text-ink/40 uppercase tracking-widest flex items-center gap-1.5">
-                                      <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/30"} /> 
+                                    <p className="text-[9px] md:text-[7.5px] text-ink/60 uppercase tracking-widest flex items-center gap-1.5">
+                                      <Truck size={10} className={isLatest ? "text-rose/50" : "text-ink/50"} /> 
                                       <CourierLogo courier={log.courier_company} className="h-2.5" />
                                       {log.courier_company}{log.courier_driver_name ? ` — ${log.courier_driver_name}` : ''}
                                     </p>
@@ -499,7 +499,7 @@ export default function TrackClient() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 opacity-50">
                    <p className="text-[10px] md:text-[8px] uppercase tracking-widest font-semibold">Menunggu Update</p>
-                   <p className="text-[10px] md:text-[8px] text-ink/40 text-center mt-2">Belum ada history perjalanan dari kurir.</p>
+                   <p className="text-[10px] md:text-[8px] text-ink/60 text-center mt-2">Belum ada history perjalanan dari kurir.</p>
                 </div>
               )}
             </div>

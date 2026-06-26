@@ -54,7 +54,7 @@ export default function AffiliateTermsPage() {
               {/* 1. KETENTUAN UMUM */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">01</span>
+                  <span className="text-ink/60">01</span>
                   Ketentuan Umum & Definisi
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -67,7 +67,7 @@ export default function AffiliateTermsPage() {
               {/* 2. SYARAT PENDAFTARAN & KELAYAKAN */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">02</span>
+                  <span className="text-ink/60">02</span>
                   Syarat Pendaftaran
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -80,7 +80,7 @@ export default function AffiliateTermsPage() {
               {/* 3. KOMISI DAN KEPATUHAN PAJAK */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">03</span>
+                  <span className="text-ink/60">03</span>
                   Komisi & Pajak (PPh 21)
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -114,7 +114,7 @@ export default function AffiliateTermsPage() {
               {/* 5. HAK KEKAYAAN INTELEKTUAL */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">05</span>
+                  <span className="text-ink/60">05</span>
                   Hak Kekayaan Intelektual
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -126,7 +126,7 @@ export default function AffiliateTermsPage() {
               {/* 6. PENYELESAIAN SENGKETA */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">06</span>
+                  <span className="text-ink/60">06</span>
                   Penyelesaian Sengketa
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">

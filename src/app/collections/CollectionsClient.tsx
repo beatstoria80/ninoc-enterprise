@@ -259,7 +259,7 @@ function ProductCard({ product }: { product: Product }) {
 
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-xs md:text-[11px] font-display font-medium italic text-rose">
+              <p className="text-xs md:text-[11px] font-display font-semibold italic text-rose">
                 {product.price_tag === 'REDEEM'
                   ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                   : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -315,13 +315,13 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DURATION.normal, ease: EASING.out }}
-            className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 flex items-center gap-2"
+            className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/60 flex items-center gap-2"
           >
             <Layers size={10} className="text-rose" />
             Curated Campaigns
           </motion.h1>
 
-          <PressButton href="/shop" className="flex items-center gap-2 text-ink/40 hover:text-rose">
+          <PressButton href="/shop" className="flex items-center gap-2 text-ink/60 hover:text-rose">
             <ArrowLeft size={10} className="rotate-180" />
             <span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">Exit</span>
           </PressButton>
@@ -338,14 +338,14 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
           ))}
           {collections.length === 0 && !isLoading && (
             <div className="col-span-full py-24 text-center border border-dashed border-ink/10 rounded-xl">
-              <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-widest">No active campaigns</p>
+              <p className="text-xs md:text-[10px] text-ink/60 uppercase tracking-widest">No active campaigns</p>
             </div>
           )}
         </div>
 
         {/* ALL PRODUCTS GRID */}
         <div className="pt-2 md:pt-4">
-          <h2 className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/40 mb-4">All Products Archive</h2>
+          <h2 className="text-xs md:text-[9px] md:text-[10px] font-medium uppercase tracking-[0.4em] text-ink/60 mb-4">All Products Archive</h2>
           <AnimatePresence mode="wait">
             <motion.div
               variants={productGridVariants}
@@ -398,7 +398,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-0.5">Total Items</p>
+                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-0.5">Total Items</p>
                 <p className="text-sm md:text-base font-display font-medium italic text-ink leading-none">{products.length}</p>
               </motion.div>
               <div className="h-6 w-[1px] bg-ink/10" />
@@ -407,11 +407,11 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: DURATION.fast }}
               >
-                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 mb-0.5">Collections</p>
+                <p className="text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-0.5">Collections</p>
                 <p className="text-sm md:text-base font-display font-medium italic text-ink leading-none">{collections.length}</p>
               </motion.div>
             </div>
-            <PressButton href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-rose transition-colors">
+            <PressButton href="/shop" className="group flex items-center gap-1.5 text-ink/60 hover:text-rose transition-colors">
               <span className="text-[8px] font-medium uppercase tracking-[0.3em]">Full Catalog</span>
               <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
             </PressButton>

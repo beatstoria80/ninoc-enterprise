@@ -99,7 +99,7 @@ export default function ScrollCapsule() {
                 animate={{ rotate: scrollDirection === 'down' ? 0 : 180 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <ArrowDown size={14} className="text-ink/40 group-hover:text-rose transition-colors" />
+                <ArrowDown size={14} className="text-ink/60 group-hover:text-rose transition-colors" />
               </motion.div>
             </motion.button>
 

@@ -59,15 +59,15 @@ export default function LogbookClient({ initialEntries = [] }: { initialEntries?
             <BookOpen size={12} className="text-rose" />
             <div className="flex flex-col">
               <h1 className="text-xs md:text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] text-ink">{dict.logbook.title}</h1>
-              <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">{dict.logbook.subtitle}</span>
+              <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/60">{dict.logbook.subtitle}</span>
             </div>
           </div>
-          <Link href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">{dict.logbook.home}</span></Link>
+          <Link href="/" className="flex items-center gap-2 text-ink/60 hover:text-rose transition-colors"><ArrowLeft size={10} /><span className="text-[10px] md:text-[7px] md:text-[8px] font-medium uppercase tracking-[0.3em]">{dict.logbook.home}</span></Link>
         </div>
 
         <motion.div variants={pageVariants} initial="hidden" animate="visible" className="flex flex-col">
           {entries.length === 0 ? (
-            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/40">{dict.logbook.empty}</p><p className="text-[10px] md:text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
+            <div className="py-20 text-center"><BookOpen size={24} className="text-ink/20 mx-auto mb-4" /><p className="text-xs md:text-[9px] font-medium uppercase tracking-[0.4em] text-ink/60">{dict.logbook.empty}</p><p className="text-[10px] md:text-[7px] text-ink/25 mt-2 tracking-wider">{dict.logbook.emptyDesc}</p></div>
           ) : (
             entries.map((entry, index) => <LogbookCard key={entry.id} entry={entry} index={index} />)
           )}

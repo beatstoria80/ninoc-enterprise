@@ -88,7 +88,7 @@ function ProductCard({ product }: { product: Product }) {
               <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic tracking-tight text-ink uppercase leading-snug line-clamp-2 group-hover/card:text-rose transition-colors">
                 {product.name}
               </h3>
-              <p className="text-xs md:text-[9px] font-medium text-ink/30 uppercase tracking-[0.2em] mt-1">
+              <p className="text-xs md:text-[9px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1">
                 {product.category}
               </p>
             </div>
@@ -104,7 +104,7 @@ function ProductCard({ product }: { product: Product }) {
               )}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <div className="text-sm md:text-xs font-display font-medium italic text-rose">
+                  <div className="text-sm md:text-xs font-display font-semibold italic text-rose">
                     {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
       <div className="bg-white border-b border-ink/5 shrink-0 z-20 shadow-sm relative">
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-6">
-            <Link href="/shop" className="group flex items-center gap-1.5 text-ink/40 hover:text-ink transition-colors">
+            <Link href="/shop" className="group flex items-center gap-1.5 text-ink/60 hover:text-ink transition-colors">
               <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
               <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] hidden md:inline">Back to Catalog</span>
               <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] md:hidden">Catalog</span>
@@ -260,7 +260,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
               <span className="text-[11px] md:text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items</span>
             </div>
           </div>
-          <div className="text-[11px] md:text-[8px] font-mono tracking-tighter text-ink/30 uppercase">
+          <div className="text-[11px] md:text-[8px] font-mono tracking-tighter text-ink/50 uppercase">
             NINOC-COL-{collection.id.substring(0, 6)}
           </div>
         </div>
@@ -285,7 +285,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-center">
                   <Package size={24} className="mx-auto mb-3 text-ink/20" />
-                  <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">
+                  <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">
                     No items curated yet
                   </p>
                 </div>

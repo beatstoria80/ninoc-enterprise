@@ -501,7 +501,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
                   }}
-                  className="absolute left-0 lg:-left-6 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute left-0 lg:-left-6 top-1/2 -translate-y-1/2 text-ink/50 hover:text-rose transition-colors z-10"
                 >
                   <ChevronLeft size={24} strokeWidth={2} />
                 </button>
@@ -510,7 +510,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     e.stopPropagation();
                     setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
                   }}
-                  className="absolute right-0 lg:-right-6 top-1/2 -translate-y-1/2 text-ink/30 hover:text-rose transition-colors z-10"
+                  className="absolute right-0 lg:-right-6 top-1/2 -translate-y-1/2 text-ink/50 hover:text-rose transition-colors z-10"
                 >
                   <ChevronRight size={24} strokeWidth={2} />
                 </button>
@@ -542,7 +542,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         <Star key={i} size={10} fill={i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
                       ))}
                     </div>
-                    <span className="text-[10px] md:text-[8px] font-bold text-ink/40 uppercase tracking-widest">{reviews.length} Reviews</span>
+                    <span className="text-[10px] md:text-[8px] font-bold text-ink/60 uppercase tracking-widest">{reviews.length} Reviews</span>
                   </motion.div>
                 )}
                 {product.price_tag && (
@@ -551,7 +551,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </motion.div>
                 )}
                 <motion.div variants={textVariants} className="flex items-center gap-3 mt-0.5">
-                  <p className="text-base md:text-sm lg:text-base font-display font-medium italic text-rose">
+                  <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-rose">
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
                   <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] cursor-pointer hover:bg-rose/5 transition-colors group">
@@ -567,7 +567,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               </div>
 
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
-                <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.description}</motion.h4>
+                <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
                   {isExpanded || (localizedDescription || '').length <= 200
                     ? localizedDescription || 'Premium quality apparel from NINOC.'
@@ -589,7 +589,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <button
                     onClick={() => setActiveInfoTab('specs')}
                     className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
-                      activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
+                      activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                     }`}
                   >
                     {dict.product.specs}
@@ -598,7 +598,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <button
                     onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
                     className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
-                      activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/30 hover:text-ink/50'
+                      activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                     }`}
                   >
                     <Ruler size={9} className="text-rose" />
@@ -611,7 +611,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-sm md:text-[11px]">
                       {displaySpecs.map((spec, idx) => (
                         <motion.div variants={textVariants} key={idx} className="flex justify-between items-center border-b border-ink/5 py-1">
-                          <span className="text-ink/40 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
+                          <span className="text-ink/60 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
                           <span className="font-semibold text-right">{spec.value}</span>
                         </motion.div>
                       ))}
@@ -639,7 +639,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         );
                       })}
                       {displayModelInfo && (
-                        <p className="text-[11px] md:text-[8px] text-ink/40 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
+                        <p className="text-[11px] md:text-[8px] text-ink/60 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
                       )}
                     </div>
                   )}
@@ -653,7 +653,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             <div className="space-y-2 lg:space-y-6 flex flex-col h-full">
               {hasSizes && (
                 <div className="space-y-1.5 lg:space-y-3 mt-1 lg:mt-0 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectSize}</motion.h4>
                   <div className="flex gap-1.5 lg:gap-3 flex-wrap pr-2">
                     {availableSizes.map((size) => (
                       <motion.button
@@ -690,7 +690,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               {availableColors.length > 0 && (
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
                       const colorGallery = colorGalleryMap[color];
@@ -722,7 +722,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               <div className="space-y-1.5 lg:space-y-2 mt-2 lg:mt-0">
                 <motion.div variants={textVariants} className="flex items-center gap-2 border-b border-ink/5 pb-1 lg:pb-2">
-                  <h4 className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/40">{dict.product.quantity}</h4>
+                  <h4 className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
                     <span className="text-xs md:text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
                       {availableStock} {dict.product.inStock}
@@ -734,9 +734,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   )}
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
-                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
                   <span className="text-sm md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/40 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </motion.div>
               </div>
 
@@ -812,7 +812,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           >
             <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
               <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/40">{dict.product.yourCart}</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{dict.product.yourCart}</span>
                 <span className="text-xs md:text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
               </motion.div>
 
@@ -820,7 +820,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-4 md:py-10 px-4">
                   <ShoppingCart size={28} className="mb-3 text-ink" />
                   <span className="text-xs md:text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
-                  <span className="text-[11px] md:text-[8px] text-ink/40 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
+                  <span className="text-[11px] md:text-[8px] text-ink/60 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
                 </motion.div>
               ) : (
                 <>
@@ -918,14 +918,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                                       updateQuantity(item.id, item.quantity - 1, item.size, item.color);
                                     }
                                   }}
-                                  className="w-6 h-6 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
+                                  className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
                                 >
                                   <Minus size={12} />
                                 </button>
                                 <span className="text-sm md:text-[11px] font-medium w-5 text-center">{item.quantity}</span>
                                 <button
                                   onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
-                                  className="w-6 h-6 flex items-center justify-center text-ink/40 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
+                                  className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
                                 >
                                   <Plus size={12} />
                                 </button>
@@ -935,7 +935,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                                   IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID')}
                                 </span>
                                 {(item.size_surcharge || 0) > 0 && (
-                                  <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">
+                                  <span className="text-[10px] md:text-[7px] text-ink/50 font-medium">
                                     incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge
                                   </span>
                                 )}
@@ -948,7 +948,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                   <motion.div variants={textVariants} className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40">{dict.product.total}</span>
+                      <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/60">{dict.product.total}</span>
                       <span className="text-sm md:text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
                     </div>
 
@@ -963,7 +963,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       <motion.button
                         variants={textVariants}
                         onClick={() => clearCart()}
-                        className="active:scale-[0.97] w-full py-2.5 bg-transparent text-ink/40 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-all text-center border border-ink/5 flex items-center justify-center gap-1.5"
+                        className="active:scale-[0.97] w-full py-2.5 bg-transparent text-ink/60 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-all text-center border border-ink/5 flex items-center justify-center gap-1.5"
                       >
                         <Trash2 size={12} />
                         {dict.product.clearCart}
@@ -982,7 +982,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               <h2 className="text-xs md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Customer Reviews</h2>
               <div className="flex items-center gap-2">
                 <span className="text-xs md:text-[10px] font-bold text-ink">{reviews.length}</span>
-                <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/40">Verified Ratings</span>
+                <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/60">Verified Ratings</span>
               </div>
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1009,7 +1009,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     </div>
                   </div>
                   <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed italic">&quot;{r.review_text}&quot;</p>
-                  <span className="text-[9px] md:text-[7px] font-medium uppercase tracking-widest text-ink/30 mt-auto pt-2">{new Date(r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  <span className="text-[9px] md:text-[7px] font-medium uppercase tracking-widest text-ink/50 mt-auto pt-2">{new Date(r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 </motion.div>
               ))}
             </div>
@@ -1020,7 +1020,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
-              <Link  href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/30 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
+              <Link  href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
                 {dict.product.viewFullCollection} <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>

@@ -58,7 +58,7 @@ export default function RegisterPage() {
       {isMobile ? (
         /* MOBILE: Full width card */
         <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
+          <Link  href="/" className="flex items-center gap-2 text-ink/60 hover:text-rose py-4 border-b border-ink/5">
             <ArrowLeft size={14} />
             <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
           </Link>
@@ -68,7 +68,7 @@ export default function RegisterPage() {
               <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
                 Daftar Akun <span className="text-rose">Baru</span>
               </h1>
-              <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mt-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mt-1">
                 Jadilah bagian dari NINOC
               </p>
             </div>
@@ -96,7 +96,7 @@ export default function RegisterPage() {
 
             {/* Link to Login */}
             <div className="pt-6 border-t border-ink/5">
-              <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/40">
+              <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/60">
                 Sudah punya akun?{' '}
                 <Link  href="/login" className="text-rose font-bold hover:text-ink transition-colors">
                   Masuk di sini
@@ -114,7 +114,7 @@ export default function RegisterPage() {
         >
           <div className="w-full md:w-[500px] lg:w-[560px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
+            <Link  href="/" className="flex items-center gap-2 text-ink/60 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
@@ -125,7 +125,7 @@ export default function RegisterPage() {
                 <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
                   Daftar Akun <span className="text-rose">Baru</span>
                 </h1>
-                <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mt-2">
+                <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mt-2">
                   Jadilah bagian dari NINOC
                 </p>
               </div>

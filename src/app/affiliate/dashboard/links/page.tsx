@@ -119,7 +119,7 @@ export default function LinksPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-ink/30" size={32} />
+        <Loader2 className="animate-spin text-ink/50" size={32} />
       </div>
     );
   }
@@ -158,7 +158,7 @@ export default function LinksPage() {
               </div>
               <div>
                 <h2 className="text-sm font-medium uppercase tracking-wider text-ink">Buat Tracking Link Baru</h2>
-                <p className="text-xs text-ink/40 mt-0.5">Tempel tautan produk atau kategori dari website NINOC.</p>
+                <p className="text-xs text-ink/60 mt-0.5">Tempel tautan produk atau kategori dari website NINOC.</p>
               </div>
             </div>
 
@@ -166,7 +166,7 @@ export default function LinksPage() {
               <div>
                 <label className="text-xs font-medium text-ink/60 block mb-2">Tautan Target (Target URL)</label>
                 <div className="relative">
-                  <LinkIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
+                  <LinkIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/60" />
                   <input 
                     type="text" 
                     value={urlInput}
@@ -229,7 +229,7 @@ export default function LinksPage() {
                 <tbody className="divide-y divide-ink/5">
                   {links.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="px-6 py-8 text-center text-xs text-ink/40 uppercase tracking-wider">
+                      <td colSpan={3} className="px-6 py-8 text-center text-xs text-ink/60 uppercase tracking-wider">
                         Belum ada link yang dibuat.
                       </td>
                     </tr>
@@ -241,7 +241,7 @@ export default function LinksPage() {
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
                             <span className="text-ink font-medium truncate max-w-[200px]">{link.destination_url}</span>
-                            <span className="text-xs md:text-[10px] text-ink/40 mt-1">{fullLink.replace('https://', '')}</span>
+                            <span className="text-xs md:text-[10px] text-ink/60 mt-1">{fullLink.replace('https://', '')}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center font-medium text-ink">{link.clicks.toLocaleString('id-ID')}</td>

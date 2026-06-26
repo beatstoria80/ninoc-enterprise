@@ -61,11 +61,11 @@ export function Invoice({ order }: InvoiceProps) {
         {/* Metadata grid */}
         <div className="grid grid-cols-2 gap-2 pb-1.5 border-b border-ink/5">
           <div className="flex flex-col gap-0.5 text-left">
-            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Tanggal</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/50 font-bold">Tanggal</span>
             <span className="font-medium text-ink">{formatDate(order.created_at)}</span>
           </div>
           <div className="flex flex-col gap-0.5 text-right">
-            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Status</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/50 font-bold">Status</span>
             <span className={`font-semibold inline-block px-1 py-0.5 self-end text-[7.5px] tracking-wider uppercase ${
               order.payment_status === 'success' ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
             }`}>
@@ -77,12 +77,12 @@ export function Invoice({ order }: InvoiceProps) {
         {/* Customer & Shipping info */}
         <div className="grid grid-cols-2 gap-2 pb-1.5 border-b border-ink/5 text-left">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Tagihan Ke</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/50 font-bold">Tagihan Ke</span>
             <span className="font-medium text-ink">{order.shipping_address?.name?.toUpperCase() || 'N/A'}</span>
             <span className="text-ink/50 text-[8.5px] block mt-0.5">{order.shipping_address?.phone || '-'}</span>
           </div>
           <div className="flex flex-col gap-0.5 text-right">
-            <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Kirim Ke</span>
+            <span className="text-[7.5px] uppercase tracking-widest text-ink/50 font-bold">Kirim Ke</span>
             <span className="font-medium text-ink break-words leading-tight block">{order.shipping_address?.address?.toUpperCase() || '-'}</span>
             <span className="text-ink/50 text-[8.5px] block mt-0.5">
               {order.shipping_address?.city?.toUpperCase() || ''}, {order.shipping_address?.province?.toUpperCase() || ''}
@@ -92,19 +92,19 @@ export function Invoice({ order }: InvoiceProps) {
 
         {/* Order Items */}
         <div className="flex flex-col gap-1 pb-1.5 border-b border-ink/5 text-left">
-          <span className="text-[7.5px] uppercase tracking-widest text-ink/30 font-bold">Daftar Pembelian</span>
+          <span className="text-[7.5px] uppercase tracking-widest text-ink/50 font-bold">Daftar Pembelian</span>
           <div className="flex flex-col gap-1.5">
             {order.order_items?.map((item) => (
               <div key={item.id} className="flex justify-between items-start leading-snug">
                 <div className="flex flex-col max-w-[70%]">
                   <span className="font-medium text-ink text-[9.5px]">{item.product_name}</span>
-                  <span className="text-[8px] text-ink/40 mt-0.5">
+                  <span className="text-[8px] text-ink/60 mt-0.5">
                     {item.size ? `Ukuran: ${item.size}` : 'All Size'} • Qty: {item.quantity}
                   </span>
                 </div>
                 <div className="text-right flex flex-col shrink-0">
                   <span className="font-semibold text-ink text-[9.5px]">{formatCurrency(item.price_at_purchase * item.quantity)}</span>
-                  <span className="text-[8.5px] text-ink/30 mt-0.5">{formatCurrency(item.price_at_purchase)}/item</span>
+                  <span className="text-[8.5px] text-ink/50 mt-0.5">{formatCurrency(item.price_at_purchase)}/item</span>
                 </div>
               </div>
             ))}
@@ -134,7 +134,7 @@ export function Invoice({ order }: InvoiceProps) {
         </div>
 
         {/* Payment Metadata */}
-        <div className="grid grid-cols-2 gap-2 text-[8px] text-ink/40 text-left">
+        <div className="grid grid-cols-2 gap-2 text-[8px] text-ink/60 text-left">
           <div className="flex flex-col">
             <span>Metode Pembayaran:</span>
             <span className="font-medium text-ink/60">{order.payment_status === 'success' ? 'Virtual Account' : 'Midtrans'}</span>

@@ -137,7 +137,7 @@ export default function SupplierTermsPage() {
               {/* 1. KETENTUAN UMUM */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">01</span>
+                  <span className="text-ink/60">01</span>
                   {dict.s1_title}
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -150,7 +150,7 @@ export default function SupplierTermsPage() {
               {/* 2. SYARAT PRODUKSI & KUALIFIKASI */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">02</span>
+                  <span className="text-ink/60">02</span>
                   {dict.s2_title}
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -163,7 +163,7 @@ export default function SupplierTermsPage() {
               {/* 3. HAK REBRAND & DISTRIBUSI */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">03</span>
+                  <span className="text-ink/60">03</span>
                   {dict.s3_title}
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -191,7 +191,7 @@ export default function SupplierTermsPage() {
               {/* 5. MEKANISME PENCAIRAN DANA */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">05</span>
+                  <span className="text-ink/60">05</span>
                   {dict.s5_title}
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
@@ -204,7 +204,7 @@ export default function SupplierTermsPage() {
               {/* 6. PENYELESAIAN SENGKETA */}
               <section className="break-inside-avoid space-y-4">
                 <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/40">06</span>
+                  <span className="text-ink/60">06</span>
                   {dict.s6_title}
                 </h2>
                 <div className="space-y-3 text-xs text-ink/70 leading-relaxed">

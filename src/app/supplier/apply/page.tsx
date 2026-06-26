@@ -108,7 +108,7 @@ const FileUploader = ({
   <div className="border border-dashed border-ink/20 p-2.5 md:p-4 rounded bg-white/50 group hover:border-rose/50 transition-colors">
     <label className="flex items-center justify-between cursor-pointer">
       <div className="flex items-center gap-2 md:gap-3">
-        <div className={`w-8 h-8 md:w-10 md:h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/40'}`}>
+        <div className={`w-8 h-8 md:w-10 md:h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/60'}`}>
           {path ? <CheckCircle size={18} /> : <FileText size={18} />}
         </div>
         <div>

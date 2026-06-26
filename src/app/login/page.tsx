@@ -114,7 +114,7 @@ export default function LoginPage() {
       {isMobile ? (
         /* MOBILE: Full width card */
         <div className={cn("w-full", isIPhone && "pt-12")}>
-          <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 border-b border-ink/5">
+          <Link  href="/" className="flex items-center gap-2 text-ink/60 hover:text-rose py-4 border-b border-ink/5">
             <ArrowLeft size={14} />
             <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
           </Link>
@@ -124,7 +124,7 @@ export default function LoginPage() {
               <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
                 Selamat Datang di <span className="text-rose">NINOC</span>
               </h1>
-              <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mt-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mt-1">
                 Lanjutkan untuk berbelanja
               </p>
             </div>
@@ -147,37 +147,37 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-4 py-2">
               <hr className="flex-1 border-ink/5" />
-              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/50">Atau Akses Manual</span>
               <hr className="flex-1 border-ink/5" />
             </div>
 
             {/* Email Form */}
             <form onSubmit={handleEmailAuth} className="space-y-3">
               <div className="relative">
-                <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                 <input
                   type="text"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                   placeholder="EMAIL / USERNAME"
                   required
                 />
               </div>
               <div className="relative">
-                <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                   placeholder="KATA SANDI"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/30 hover:text-ink transition-colors focus:outline-none"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors focus:outline-none"
                   aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                 >
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -206,13 +206,13 @@ export default function LoginPage() {
 
             {/* Guest */}
             <div className="pt-6 border-t border-ink/5 flex flex-col gap-4">
-              <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/40">
+              <p className="text-center text-xs font-medium uppercase tracking-wider text-ink/60">
                 Belum punya akun?{' '}
                 <Link  href="/register" className="text-rose font-bold hover:text-ink transition-colors">
                   Daftar di sini
                 </Link>
               </p>
-              <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
+              <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors">
                 <span>Lanjut sebagai Tamu (Checkout)</span>
                 <ArrowRight size={12} />
               </Link>
@@ -228,7 +228,7 @@ export default function LoginPage() {
         >
           <div className="w-full md:w-[500px] lg:w-[560px] max-w-[95vw] bg-white rounded-xl border border-ink/5 shadow-dashboard">
             {/* Header */}
-            <Link  href="/" className="flex items-center gap-2 text-ink/40 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
+            <Link  href="/" className="flex items-center gap-2 text-ink/60 hover:text-rose py-4 px-6 lg:px-12 border-b border-ink/5 transition-colors">
               <ArrowLeft size={14} />
               <span className="text-xs font-medium uppercase tracking-wider">Kembali</span>
             </Link>
@@ -239,7 +239,7 @@ export default function LoginPage() {
                 <h1 className="text-2xl font-display font-medium italic uppercase text-ink">
                   Selamat Datang di <span className="text-rose">NINOC</span>
                 </h1>
-                <p className="text-xs font-medium uppercase tracking-wider text-ink/40 mt-2">
+                <p className="text-xs font-medium uppercase tracking-wider text-ink/60 mt-2">
                   Silakan masuk untuk melanjutkan berbelanja
                 </p>
               </div>
@@ -262,37 +262,37 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-4 py-2">
                 <hr className="flex-1 border-ink/5" />
-                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/30">Atau Akses Manual</span>
+                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/50">Atau Akses Manual</span>
                 <hr className="flex-1 border-ink/5" />
               </div>
 
               {/* Email Form */}
               <form onSubmit={handleEmailAuth} className="space-y-4">
                 <div className="relative">
-                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                   <input
                     type="text"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                     placeholder="Email atau Username"
                     required
                   />
                 </div>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30" />
+                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/30 transition-all"
+                    className="w-full bg-white border border-ink/10 focus:border-rose rounded-lg py-3 px-10 text-sm font-medium text-ink outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                     placeholder="Kata Sandi"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/30 hover:text-ink transition-colors focus:outline-none"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors focus:outline-none"
                     aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -327,7 +327,7 @@ export default function LoginPage() {
                     Daftar di sini
                   </Link>
                 </p>
-                <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/30 hover:text-rose transition-colors">
+                <Link  href="/checkout" className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-ink/50 hover:text-rose transition-colors">
                   <span>Lanjut sebagai Tamu (Checkout)</span>
                   <ArrowRight size={12} />
                 </Link>

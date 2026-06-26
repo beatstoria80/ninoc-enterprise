@@ -135,7 +135,7 @@ export default function PayoutsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-ink/30" size={32} />
+        <Loader2 className="animate-spin text-ink/50" size={32} />
       </div>
     );
   }
@@ -173,14 +173,14 @@ export default function PayoutsPage() {
             </div>
             <div className="divide-y divide-ink/5">
               {history.length === 0 ? (
-                <div className="p-8 text-center text-xs text-ink/40 uppercase tracking-wider">
+                <div className="p-8 text-center text-xs text-ink/60 uppercase tracking-wider">
                   Belum ada riwayat penarikan
                 </div>
               ) : history.map((item) => (
                 <div key={item.id} className="p-5 flex justify-between items-center hover:bg-ink/[0.02] transition-colors">
                   <div>
                     <p className="font-medium text-sm text-ink">Rp {item.amount.toLocaleString('id-ID')}</p>
-                    <p className="text-xs text-ink/40 mt-1">{new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                    <p className="text-xs text-ink/60 mt-1">{new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                   </div>
                   <span className={`text-xs md:text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm ${
                     item.status === 'completed' ? 'text-emerald-600 bg-emerald-50' :
@@ -224,7 +224,7 @@ export default function PayoutsPage() {
                 </div>
                 <div>
                   <h2 className="text-sm font-medium uppercase tracking-wider text-ink">Verifikasi Identitas</h2>
-                  <p className="text-xs text-ink/40 mt-0.5">Wajib untuk mencegah penipuan / pencucian uang</p>
+                  <p className="text-xs text-ink/60 mt-0.5">Wajib untuk mencegah penipuan / pencucian uang</p>
                 </div>
               </div>
               {!idUploaded ? (
@@ -256,7 +256,7 @@ export default function PayoutsPage() {
                       {docUploading ? <Loader2 size={18} className="animate-spin text-ink/60" /> : <Upload size={18} className="text-ink/60" />}
                     </div>
                     <h3 className="text-sm font-medium text-ink mb-1">Upload KTP & Mutasi</h3>
-                    <p className="text-xs md:text-[10px] text-ink/40 uppercase tracking-wider">Klik untuk simulasi</p>
+                    <p className="text-xs md:text-[10px] text-ink/60 uppercase tracking-wider">Klik untuk simulasi</p>
                   </div>
                 </div>
               </>
@@ -274,7 +274,7 @@ export default function PayoutsPage() {
               </div>
               <div>
                 <h2 className="text-sm font-medium uppercase tracking-wider text-ink">Formulir Penarikan</h2>
-                <p className="text-xs text-ink/40 mt-0.5">Komisi akan ditransfer ke rekening ini</p>
+                <p className="text-xs text-ink/60 mt-0.5">Komisi akan ditransfer ke rekening ini</p>
               </div>
             </div>
 

@@ -194,7 +194,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
             <div>
               <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Pengajuan Terkirim!</p>
               <h3 className="text-[13px] font-display italic font-medium text-ink mt-1">Retur Diajukan</h3>
-              <p className="text-xs md:text-[9px] text-ink/40 mt-1 max-w-[240px]">
+              <p className="text-xs md:text-[9px] text-ink/60 mt-1 max-w-[240px]">
                 Pengajuan retur untuk order <span className="font-semibold text-ink">{orderId}</span> telah kami terima.
                 Tim akan meninjaunya dalam 1–2 hari kerja.
               </p>
@@ -230,12 +230,12 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
             </div>
             <div>
               <h2 className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Ajukan Retur</h2>
-              <p className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest mt-0.5">Return & Refund</p>
+              <p className="text-[10px] md:text-[7px] text-ink/50 uppercase tracking-widest mt-0.5">Return & Refund</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center text-ink/30 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
+            className="w-7 h-7 flex items-center justify-center text-ink/50 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
           >
             <X size={14} strokeWidth={1.5} />
           </button>
@@ -249,7 +249,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                 {s > 1 ? <div className={cn('h-px flex-1 transition-colors', step >= s ? 'bg-rose' : 'bg-ink/5')} /> : null}
                 <div className={cn(
                   'w-5 h-5 rounded-full flex items-center justify-center text-[11px] md:text-[8px] font-bold transition-colors shrink-0',
-                  step >= s ? 'bg-rose text-white' : 'bg-ink/5 text-ink/30'
+                  step >= s ? 'bg-rose text-white' : 'bg-ink/5 text-ink/50'
                 )}>
                   {step > s ? <Check size={9} strokeWidth={3} /> : s}
                 </div>
@@ -276,7 +276,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
             >
               {/* Return Type */}
               <div>
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Tipe Retur</p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-2">Tipe Retur</p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'refund' as const, label: 'Refund', desc: 'Dana kembali ke pembayaran asli' },
@@ -292,7 +292,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                       )}
                     >
                       <p className={cn('text-xs md:text-[10px] font-bold uppercase tracking-wider mb-1', returnType === opt.id ? 'text-rose' : 'text-ink/50')}>{opt.label}</p>
-                      <p className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed">{opt.desc}</p>
+                      <p className="text-[11px] md:text-[8px] text-ink/60 leading-relaxed">{opt.desc}</p>
                     </motion.button>
                   ))}
                 </div>
@@ -301,8 +301,8 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               {/* Select Items */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Pilih Item</p>
-                  <span className={cn("px-2 py-0.5 text-[10px] md:text-[7px] font-bold rounded-sm", selectedCount > 0 ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/30")}>
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Pilih Item</p>
+                  <span className={cn("px-2 py-0.5 text-[10px] md:text-[7px] font-bold rounded-sm", selectedCount > 0 ? "bg-rose/10 text-rose" : "bg-ink/5 text-ink/50")}>
                     {selectedCount} dipilih
                   </span>
                 </div>
@@ -324,8 +324,8 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                         <div className="flex-1 min-w-0">
                           <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">{item.product_name}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="px-1.5 py-0.5 bg-ink/5 text-[10px] md:text-[7px] text-ink/40 font-medium rounded-sm">SZ {item.size || 'N/A'}</span>
-                            <span className="text-[10px] md:text-[7px] text-ink/30 font-medium">×{item.quantity}</span>
+                            <span className="px-1.5 py-0.5 bg-ink/5 text-[10px] md:text-[7px] text-ink/60 font-medium rounded-sm">SZ {item.size || 'N/A'}</span>
+                            <span className="text-[10px] md:text-[7px] text-ink/50 font-medium">×{item.quantity}</span>
                           </div>
                         </div>
                         <p className="text-xs md:text-[9px] font-mono font-medium text-ink shrink-0">
@@ -341,7 +341,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               {selectedCount > 0 && (
                 <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3">
                   <div className="flex justify-between items-center">
-                    <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Subtotal</p>
+                    <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Subtotal</p>
                     <p className="text-[13px] font-display italic font-bold text-rose">
                       IDR {selectedTotal.toLocaleString('id-ID')}
                     </p>
@@ -365,12 +365,12 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               <div className="flex items-center gap-2 p-2.5 bg-rose/[0.04] border border-rose/10 rounded-sm">
                 <RefreshCw size={11} className="text-rose shrink-0" />
                 <p className="text-xs md:text-[9px] font-semibold text-rose uppercase tracking-wider">{selectedCount} Item dipilih</p>
-                <p className="text-[10px] md:text-[7px] text-ink/30 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
+                <p className="text-[10px] md:text-[7px] text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
               </div>
 
               {/* Reason Selection */}
               <div>
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Alasan Retur <span className="text-rose">*</span></p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-2">Alasan Retur <span className="text-rose">*</span></p>
                 <div className="space-y-1">
                   {RETURN_REASONS.map(r => (
                     <motion.button
@@ -389,7 +389,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                       </div>
                       <div>
                         <p className={cn('text-xs md:text-[9px] font-semibold uppercase tracking-wider', reasonValue === r.value ? 'text-rose' : 'text-ink')}>{r.label}</p>
-                        <p className="text-[10px] md:text-[7px] text-ink/30">{r.desc}</p>
+                        <p className="text-[10px] md:text-[7px] text-ink/50">{r.desc}</p>
                       </div>
                     </motion.button>
                   ))}
@@ -399,7 +399,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               {/* Description */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Deskripsi Masalah <span className="text-rose">*</span></label>
+                  <label className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Deskripsi Masalah <span className="text-rose">*</span></label>
                   <span className={cn('text-[10px] md:text-[7px]', description.length < 10 ? 'text-ink/20' : 'text-emerald-500')}>{description.length}/500</span>
                 </div>
                 <textarea
@@ -416,7 +416,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
 
               {/* Video Upload */}
               <div>
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/40 mb-2">
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/60 mb-2">
                   Bukti Video <span className="text-rose">*</span>
                 </p>
                 {!videoFile ? (
@@ -425,10 +425,10 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                     className="border-2 border-dashed border-ink/10 rounded-sm p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-rose/30 hover:bg-rose/[0.02] transition-all duration-200"
                   >
                     <div className="w-9 h-9 bg-ink/5 rounded-full flex items-center justify-center mb-2">
-                      <Upload size={16} className="text-ink/30" />
+                      <Upload size={16} className="text-ink/50" />
                     </div>
                     <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">Upload Video</p>
-                    <p className="text-[11px] md:text-[8px] text-ink/30 mt-1">MP4 / WebM, maks 50MB</p>
+                    <p className="text-[11px] md:text-[8px] text-ink/50 mt-1">MP4 / WebM, maks 50MB</p>
                     <p className="text-[10px] md:text-[7px] text-rose/60 mt-2 font-medium">WAJIB — tanpa video, retur tidak bisa diproses</p>
                   </div>
                 ) : (
@@ -441,10 +441,10 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                     />
                     <div className="p-2.5 bg-ink/[0.01] border-t border-ink/5 flex items-center gap-2">
                       <p className="text-xs md:text-[9px] font-medium text-ink truncate flex-1">{videoFile.name}</p>
-                      <p className="text-[10px] md:text-[7px] text-ink/30">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
+                      <p className="text-[10px] md:text-[7px] text-ink/50">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
                       <button
                         onClick={() => { setVideoFile(null); setVideoUrl(null); setVideoDuration(0); }}
-                        className="w-6 h-6 flex items-center justify-center text-ink/30 hover:text-red-500 hover:bg-red-50 transition-colors rounded-sm"
+                        className="w-6 h-6 flex items-center justify-center text-ink/50 hover:text-red-500 hover:bg-red-50 transition-colors rounded-sm"
                       >
                         <X size={11} />
                       </button>
@@ -485,7 +485,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
             >
               {/* Summary */}
               <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 space-y-1.5">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Ringkasan</p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Ringkasan</p>
                 {Object.entries(selectedItems).filter(([, qty]) => qty > 0).map(([itemId, qty]) => {
                   const item = items.find(i => i.id === itemId);
                   if (!item) return null;
@@ -497,7 +497,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                   );
                 })}
                 <div className="border-t border-ink/5 pt-1.5 flex justify-between items-center">
-                  <span className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30">Total</span>
+                  <span className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Total</span>
                   <span className="text-[12px] font-display italic font-bold text-rose">IDR {selectedTotal.toLocaleString('id-ID')}</span>
                 </div>
               </div>
@@ -506,7 +506,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               <div className="bg-rose/[0.03] border border-rose/10 rounded-sm p-3 space-y-1.5">
                 <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-rose/60">Kebijakan Retur</p>
                 {TERMS.map((t, i) => (
-                  <p key={i} className="text-[11px] md:text-[8px] text-ink/40 leading-relaxed flex items-start gap-2">
+                  <p key={i} className="text-[11px] md:text-[8px] text-ink/60 leading-relaxed flex items-start gap-2">
                     <span className="text-rose/40 font-bold shrink-0 mt-0.5">•</span>{t}
                   </p>
                 ))}
@@ -514,7 +514,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
 
               {/* Terms scroll to accept */}
               <div>
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-2">Syarat & Ketentuan <span className="text-rose">*</span></p>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-2">Syarat & Ketentuan <span className="text-rose">*</span></p>
                 <div
                   ref={termsRef}
                   onScroll={handleTermsScroll}
@@ -534,7 +534,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                   >
                     {termsAccepted && <Check size={10} className="text-white" strokeWidth={3} />}
                   </div>
-                  <p className={cn('text-[11px] md:text-[8px]', termsAccepted ? 'text-ink/60' : 'text-ink/30')}>
+                  <p className={cn('text-[11px] md:text-[8px]', termsAccepted ? 'text-ink/60' : 'text-ink/50')}>
                     Saya telah membaca dan menyetujui syarat & ketentuan retur
                   </p>
                 </label>
@@ -571,13 +571,13 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
             )}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={onClose} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/40 hover:text-ink hover:bg-ink/5 transition-colors rounded-sm">Batal</button>
+            <button onClick={onClose} className="px-4 py-2 text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors rounded-sm">Batal</button>
             {step === 1 ? (
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(2)}
                 disabled={!canProceedStep1}
-                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', canProceedStep1 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/30 cursor-not-allowed')}
+                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', canProceedStep1 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed')}
               >
                 Lanjut <ChevronRight size={12} />
               </motion.button>
@@ -586,7 +586,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(3)}
                 disabled={!canProceedStep2}
-                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', canProceedStep2 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/30 cursor-not-allowed')}
+                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', canProceedStep2 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed')}
               >
                 Lanjut <ChevronRight size={12} />
               </motion.button>
@@ -595,7 +595,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                 whileTap={{ scale: 0.97 }}
                 onClick={handleSubmit}
                 disabled={!canProceedStep2 || isSubmitting}
-                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', !isSubmitting && canProceedStep2 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/30 cursor-not-allowed')}
+                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', !isSubmitting && canProceedStep2 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed')}
               >
                 {isSubmitting ? (
                   <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Mengirim...</>

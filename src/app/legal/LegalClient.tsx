@@ -79,7 +79,7 @@ export default function LegalClient() {
   return (
     <main className="min-h-screen bg-cr noise flex flex-col">
       <nav className="fixed top-0 inset-x-0 z-[200] px-6 md:px-12 py-4 flex items-center justify-between glass border-b border-ink/5">
-        <Link href="/" className="flex items-center gap-3 text-ink/40 hover:text-rose transition-all group">
+        <Link href="/" className="flex items-center gap-3 text-ink/60 hover:text-rose transition-all group">
           <ArrowLeft size={12} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           <div className="flex flex-col leading-none">
             <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
@@ -161,7 +161,7 @@ export default function LegalClient() {
              <div className="pt-6 border-t border-ink/5 space-y-2 pb-12">
                 <div className="flex items-center gap-3">
                    <Shield size={10} className="text-rose/40" />
-                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/30">Security Protocol / UU No. 8 Tahun 1999</span>
+                   <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/50">Security Protocol / UU No. 8 Tahun 1999</span>
                 </div>
                 <p className="text-[11px] md:text-[8px] text-ink/20 uppercase tracking-[0.1em] leading-tight max-w-sm">
                    THIS DOCUMENT IS LEGALLY BINDING. PROTECTING BRAND INTEGRITY AND CONSUMER RIGHTS IN ACCORDANCE WITH THE LAWS OF THE REPUBLIC OF INDONESIA.

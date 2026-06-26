@@ -118,7 +118,7 @@ const FileUploader = ({
   <div className="border border-dashed border-ink/20 p-4 rounded bg-white/50 group hover:border-rose/50 transition-colors">
     <label className="flex items-center justify-between cursor-pointer">
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/40'}`}>
+        <div className={`w-10 h-10 rounded flex items-center justify-center ${path ? 'bg-emerald-50 text-emerald-600' : 'bg-ink/5 text-ink/60'}`}>
           {path ? <CheckCircle size={18} /> : <FileText size={18} />}
         </div>
         <div>
@@ -410,7 +410,7 @@ export default function AffiliateApplicationPage() {
                     <FileUploader label={dict.fb_insight_label} type="fb_insight" path={fbInsightUploaded} uploading={uploading} onUpload={handleFileUpload} dict={dict} />
                   )}
                   {!formData.instagramLink && !formData.tiktokLink && !formData.youtubeLink && !formData.facebookLink && (
-                    <div className="p-4 border border-dashed border-ink/10 rounded bg-cr noise text-center text-xs md:text-[10px] text-ink/40 font-medium">
+                    <div className="p-4 border border-dashed border-ink/10 rounded bg-cr noise text-center text-xs md:text-[10px] text-ink/60 font-medium">
                       Fill platform URLs to upload insights
                     </div>
                   )}

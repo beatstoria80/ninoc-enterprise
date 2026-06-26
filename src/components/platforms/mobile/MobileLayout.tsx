@@ -393,7 +393,7 @@ export default function MobileLayout({
 
             {/* Right: Search & Burger Menu */}
             <div className="flex items-center gap-1">
-              <PressScale onClick={() => setIsSearchOpen(true)} className="p-2 text-ink/30">
+              <PressScale onClick={() => setIsSearchOpen(true)} className="p-2 text-ink/50">
                 <SearchIcon />
               </PressScale>
               <PressScale onClick={() => setIsMenuOpen(true)} className="p-2 text-ink/60">
@@ -457,7 +457,7 @@ export default function MobileLayout({
                       </motion.button>
                     )}
                   </motion.div>
-                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-xs font-medium uppercase tracking-widest text-ink/30">
+                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-xs font-medium uppercase tracking-widest text-ink/50">
                     CLOSE
                   </PressScale>
                 </div>
@@ -555,7 +555,7 @@ export default function MobileLayout({
                     </a>
                   </div>
                 </div>
-                <PressScale onClick={() => setIsMenuOpen(false)} className="p-1 text-ink/30">
+                <PressScale onClick={() => setIsMenuOpen(false)} className="p-1 text-ink/50">
                   <CloseIcon />
                 </PressScale>
               </div>
@@ -609,9 +609,9 @@ export default function MobileLayout({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">Information</h4>
-                    <Link  href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Terms & Privacy</Link>
-                    <Link  href="/supplier/apply" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Supplier</Link>
-                    <Link  href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/40">Affiliate</Link>
+                    <Link  href="/legal" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/60">Terms & Privacy</Link>
+                    <Link  href="/supplier/apply" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/60">Supplier</Link>
+                    <Link  href="/affiliate" onClick={() => setIsMenuOpen(false)} className="block text-xs font-medium uppercase tracking-widest text-ink/60">Affiliate</Link>
                   </div>
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/20">Support</h4>
@@ -620,7 +620,7 @@ export default function MobileLayout({
                 </div>
 
                 <div className="pt-3 border-t border-ink/[0.05] flex items-center justify-between">
-                  <p className="text-[10px] font-medium uppercase tracking-widest text-ink/30">
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-ink/50">
                     Bandung, ID
                   </p>
                   <div className="flex items-center gap-2 opacity-30">

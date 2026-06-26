@@ -124,7 +124,7 @@ export function ReturStatus() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">Retur Saya</h2>
-          <p className="text-xs md:text-[10px] text-ink/40 mt-0.5">Riwayat pengajuan retur</p>
+          <p className="text-xs md:text-[10px] text-ink/60 mt-0.5">Riwayat pengajuan retur</p>
         </div>
         <div className="flex items-center gap-2">
           {pendingCount > 0 && (
@@ -135,7 +135,7 @@ export function ReturStatus() {
           )}
           <button
             onClick={handleRefresh}
-            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/30 hover:text-rose hover:border-rose/30 transition-colors"
+            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/50 hover:text-rose hover:border-rose/30 transition-colors"
           >
             <RefreshCw size={10} className={cn('transition-transform', refreshing && 'animate-spin')} />
           </button>
@@ -150,7 +150,7 @@ export function ReturStatus() {
             onClick={() => setFilter(f)}
             className={cn(
               'px-2.5 py-1 text-[11px] md:text-[8px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors',
-              filter === f ? 'bg-rose text-white' : 'bg-ink/5 text-ink/40 hover:bg-ink/10'
+              filter === f ? 'bg-rose text-white' : 'bg-ink/5 text-ink/60 hover:bg-ink/10'
             )}
           >
             {f}
@@ -166,7 +166,7 @@ export function ReturStatus() {
       ) : filtered.length === 0 ? (
         <div className="py-12 flex flex-col items-center justify-center text-center space-y-2">
           <RefreshCw size={20} className="text-ink/10" strokeWidth={1} />
-          <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/30">Belum ada pengajuan retur</p>
+          <p className="text-xs md:text-[9px] uppercase tracking-widest text-ink/50">Belum ada pengajuan retur</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -203,7 +203,7 @@ export function ReturStatus() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] md:text-[8px] text-ink/30 mt-0.5">
+                    <p className="text-[11px] md:text-[8px] text-ink/50 mt-0.5">
                       {REASON_LABELS[r.reason] || r.reason_label} &middot; {formatDate(r.created_at)}
                     </p>
                   </div>
@@ -226,7 +226,7 @@ export function ReturStatus() {
                         {/* Description */}
                         {r.description && (
                           <div>
-                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Deskripsi</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Deskripsi</p>
                             <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{r.description}</p>
                           </div>
                         )}
@@ -234,7 +234,7 @@ export function ReturStatus() {
                         {/* Video Preview */}
                         {r.video_url && (
                           <div>
-                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Bukti Video</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Bukti Video</p>
                             <div className="border border-ink/5 rounded-sm overflow-hidden bg-black">
                               <video
                                 ref={el => { videoRefs.current[r.id] = el; }}
@@ -264,14 +264,14 @@ export function ReturStatus() {
                         {/* Admin notes */}
                         {r.admin_notes && r.status !== 'approved' && (
                           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5">
-                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Catatan Admin</p>
+                            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Catatan Admin</p>
                             <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed">{r.admin_notes}</p>
                           </div>
                         )}
 
                         {/* Timeline */}
                         <div>
-                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/30 mb-1">Timeline</p>
+                          <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Timeline</p>
                           <div className="flex items-center gap-0">
                             {STATUS_FLOW.map((step, idx) => {
                               const stepIdx = STATUS_FLOW.findIndex(s => s.key === r.status);

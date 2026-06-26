@@ -70,25 +70,25 @@ export default function BottomCTA({
           {totalPrice !== undefined ? (
             <div className="flex justify-between items-end mb-3 px-1">
               <div className="flex flex-col">
-                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/40 mb-0.5">Total</span>
-                <span className="text-xl font-display font-medium italic text-rose leading-none">
+                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60 mb-0.5">Total</span>
+                <span className="text-xl font-display font-semibold italic text-rose leading-none">
                   IDR {totalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </span>
               </div>
               <div className="flex items-center gap-1.5 pb-0.5">
                 <Shield size={10} className="text-rose/50" />
-                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">Secured</span>
+                <span className="text-[10px] md:text-[8px] font-medium uppercase tracking-wider text-ink/50">Secured</span>
               </div>
             </div>
           ) : (
             <div className="flex justify-center gap-6 mb-3">
               <div className="flex items-center gap-1.5">
                 <Shield size={10} className="text-rose/50" />
-                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.secure}</span>
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/50">{dict.checkout.secure}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Lock size={10} className="text-rose/50" />
-                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/30">{dict.checkout.encrypted}</span>
+                <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-wider text-ink/50">{dict.checkout.encrypted}</span>
               </div>
             </div>
           )}

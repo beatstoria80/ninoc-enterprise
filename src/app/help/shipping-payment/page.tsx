@@ -185,7 +185,7 @@ export default function ShippingPaymentTermsPage() {
         <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tighter text-ink mb-1 md:mb-2 uppercase leading-tight">
           {dict.title}
         </h1>
-        <p className="text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/40">
+        <p className="text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">
           {dict.subtitle}
         </p>
       </div>
@@ -222,7 +222,7 @@ export default function ShippingPaymentTermsPage() {
                     <CheckCircle size={10} className="text-ink/50" />
                   </div>
                   <div>
-                    <h3 className="text-[10px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40 mb-1 md:mb-1.5">{spec.label}</h3>
+                    <h3 className="text-[10px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-ink/60 mb-1 md:mb-1.5">{spec.label}</h3>
                     <p className="text-xs md:text-[12px] text-ink/80 leading-relaxed font-medium">{spec.value}</p>
                   </div>
                 </div>

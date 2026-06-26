@@ -40,7 +40,7 @@ export default function ReturClient() {
     <div className="min-h-screen bg-white no-scrollbar overflow-x-hidden">
       <div className="pt-4 md:pt-24 px-6 md:px-12 max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
-          <Link href="/" className="flex items-center gap-2 text-ink/30 hover:text-rose transition-colors group">
+          <Link href="/" className="flex items-center gap-2 text-ink/50 hover:text-rose transition-colors group">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="group-hover:-translate-x-0.5 transition-transform">
               <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -60,11 +60,11 @@ export default function ReturClient() {
               </div>
               <div>
                 <p className="text-sm md:text-[11px] font-semibold text-ink uppercase tracking-wider">Pengajuan Retur</p>
-                <p className="text-[11px] md:text-[8px] text-ink/30 mt-0.5 uppercase tracking-widest">Form submission</p>
+                <p className="text-[11px] md:text-[8px] text-ink/50 mt-0.5 uppercase tracking-widest">Form submission</p>
               </div>
               <div className="ml-auto flex gap-0">
                 {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status' }]).map(tab => (
-                  <button key={tab.id} onClick={() => setView(tab.id)} className={cn('pb-2.5 px-3 text-xs md:text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/30 hover:text-ink/60')}>
+                  <button key={tab.id} onClick={() => setView(tab.id)} className={cn('pb-2.5 px-3 text-xs md:text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/50 hover:text-ink/60')}>
                     {tab.label}
                   </button>
                 ))}
@@ -95,7 +95,7 @@ export default function ReturClient() {
                           <RefreshCw size={22} className="text-ink/20" strokeWidth={1} />
                         </div>
                         <div>
-                          <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink/40">Login untuk Melihat Status</p>
+                          <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink/60">Login untuk Melihat Status</p>
                           <p className="text-xs md:text-[9px] text-ink/20 mt-1">Cek status pengajuan retur yang pernah Anda ajukan</p>
                         </div>
                         <Link href="/login" className="inline-block px-6 py-2.5 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">Login</Link>
@@ -110,7 +110,7 @@ export default function ReturClient() {
           <div className="space-y-4 lg:pt-0 pt-4">
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
-                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/30">Kebijakan Retur</p>
+                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/50">Kebijakan Retur</p>
               </div>
               <div className="p-4 space-y-3">
                 <div className="grid grid-cols-3 gap-2">
@@ -122,7 +122,7 @@ export default function ReturClient() {
                           <Icon size={14} className="text-rose" strokeWidth={1.5} />
                         </div>
                         <span className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
-                        <span className="text-[10px] md:text-[7px] text-ink/30 uppercase tracking-widest">{item.sub}</span>
+                        <span className="text-[10px] md:text-[7px] text-ink/50 uppercase tracking-widest">{item.sub}</span>
                       </div>
                     );
                   })}
@@ -139,13 +139,13 @@ export default function ReturClient() {
                   ))}
                 </div>
 
-                <Link href="/help" className="block w-full text-center py-2 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/40 hover:text-rose transition-colors">Baca Help Guide Lengkap</Link>
+                <Link href="/help" className="block w-full text-center py-2 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors">Baca Help Guide Lengkap</Link>
               </div>
             </div>
 
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
-                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/30">Alur Pengajuan</p>
+                <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/50">Alur Pengajuan</p>
               </div>
               <div className="p-4 space-y-2">
                 {[{ num: '01', text: 'Siapkan Order ID dari email konfirmasi' }, { num: '02', text: 'Rekam video unboxing 1-shot (min 30 detik)' }, { num: '03', text: 'Isi form dengan lengkap & akurat' }, { num: '04', text: 'Submit & tunggu review 1-2 hari kerja' }].map((step) => (

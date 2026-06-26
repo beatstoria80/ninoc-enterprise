@@ -86,8 +86,8 @@ export default function AssetsPage() {
                 <div className="flex items-center justify-between">
                   <label className="text-xs md:text-[10px] font-medium uppercase tracking-wider text-ink/50">Suggested Copywriting</label>
                   <div className="flex gap-2">
-                    <MessageCircle size={12} className="text-ink/40" />
-                    <PlaySquare size={12} className="text-ink/40" />
+                    <MessageCircle size={12} className="text-ink/60" />
+                    <PlaySquare size={12} className="text-ink/60" />
                   </div>
                 </div>
                 <div className="relative">
