@@ -541,10 +541,10 @@ export default function SupportChat() {
               <div className="flex items-center justify-between pr-10">
                 <div className="space-y-0.5">
                   <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50 flex items-center gap-1.5">
-                    <span className={cn("w-1.5 h-1.5 rounded-full", user ? "bg-emerald-500" : "bg-rose animate-pulse")} />
+                    <span className={cn("w-1.5 h-1.5 rounded-full", user ? "bg-emerald-500" : "bg-white/70 animate-pulse")} />
                     Dukungan NINOC
                   </p>
-                  <h3 className="text-xs font-semibold uppercase tracking-widest">Pusat <span className="text-rose">Bantuan</span></h3>
+                  <h3 className="text-xs font-semibold uppercase tracking-widest">Pusat <span className="text-white/80">Bantuan</span></h3>
                 </div>
                 {user && (
                   <p className="text-[9px] font-medium text-white/30 uppercase tracking-widest truncate max-w-[80px]">{user.email?.split('@')[0]}</p>
