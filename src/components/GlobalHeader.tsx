@@ -873,7 +873,8 @@ export default function GlobalHeader() {
                   { label: dict.header.logbook, href: '/logbook' },
                   { label: 'Supplier', href: '/supplier/apply' },
                   { label: dict.header.shippingTerms, href: '/help/shipping-payment' },
-                  { label: dict.header.about, href: '/about' }
+                  { label: dict.header.about, href: '/about' },
+                  { label: 'Return & Refund', href: '/retur' }
                 ].map((item, idx) => (
                   <motion.div
                     key={item.label}
