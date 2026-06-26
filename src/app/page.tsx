@@ -984,7 +984,7 @@ export default function Home() {
               ))
             ) : (
               products.map((product, i) => (
-                <div key={product.id} className="w-[45vw] md:w-[140px] lg:w-[150px] xl:w-[160px] 2xl:w-[180px] flex-shrink-0">
+                <div key={product.id} className="w-[45vw] md:w-[160px] lg:w-[170px] xl:w-[190px] 2xl:w-[200px] flex-shrink-0">
                   <ProductCard product={product} index={i} />
                 </div>
               ))

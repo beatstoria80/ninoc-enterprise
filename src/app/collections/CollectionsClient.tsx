@@ -353,7 +353,7 @@ export default function CollectionsClient({ initialProducts = [], initialCollect
               animate="visible"
               exit={{ opacity: 0 }}
               transition={{ duration: DURATION.normal }}
-              className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-1.5 bg-transparent"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5 bg-transparent"
             >
               {isLoading ? (
                 Array(10).fill(0).map((_, i) => (
