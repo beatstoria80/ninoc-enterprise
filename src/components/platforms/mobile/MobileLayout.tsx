@@ -227,11 +227,26 @@ export default function MobileLayout({
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [supportUnreadCount, setSupportUnreadCount] = useState(0);
-  const [isOpeningSequence, setIsOpeningSequence] = useState(pathname === '/');
+  const [isOpeningSequence, setIsOpeningSequence] = useState(() => {
+    if (pathname === '/') {
+      if (typeof window !== 'undefined' && window.sessionStorage.getItem('ninoc_intro_played') === 'true') {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
   const [isNavVisible, setIsNavVisible] = useState(!isOpeningSequence);
   const brandColor = useBrandColor();
 
   useEffect(() => {
+    if (pathname === '/') {
+      if (typeof window !== 'undefined' && window.sessionStorage.getItem('ninoc_intro_played') === 'true') {
+        setIsOpeningSequence(false);
+        setIsNavVisible(true);
+      }
+    }
+
     const handleHide = () => {
       setIsOpeningSequence(true);
       setIsNavVisible(false);
