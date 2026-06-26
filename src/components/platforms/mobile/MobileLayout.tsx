@@ -594,7 +594,7 @@ export default function MobileLayout({
                         key={cartCount}
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="w-5 h-5 bg-rose rounded-full flex items-center justify-center text-white text-[10px] font-medium"
+                        className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium"
                       >
                         {cartCount}
                       </motion.span>
@@ -712,7 +712,7 @@ export default function MobileLayout({
                     key={cartCount}
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="absolute -top-1.5 -right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-medium rounded-full flex items-center justify-center"
+                    className="absolute -top-1.5 -right-2.5 w-3.5 h-3.5 bg-emerald-500 text-white text-[8px] font-medium rounded-full flex items-center justify-center"
                   >
                     {cartCount}
                   </motion.span>

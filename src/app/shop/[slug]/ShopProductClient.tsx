@@ -768,7 +768,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                               <motion.div 
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="absolute -top-2 -right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-none"
+                                className="absolute -top-2 -right-2.5 w-3.5 h-3.5 bg-emerald-500 text-white text-[8px] font-bold flex items-center justify-center rounded-none"
                               >
                                 {items.reduce((sum, item) => sum + item.quantity, 0)}
                               </motion.div>
