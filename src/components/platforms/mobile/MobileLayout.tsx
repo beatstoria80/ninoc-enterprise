@@ -5,7 +5,7 @@ import Link from '@/components/LocalizedLink';
 import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import Image from 'next/image';
@@ -121,14 +121,13 @@ function PressScale({ children, className = '', onClick, disabled = false }: {
   disabled?: boolean;
 }) {
   return (
-    <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
+    <button
       onClick={onClick}
       disabled={disabled}
       className={cn(className, !disabled && "active:scale-[0.97] transition-transform duration-150 ease-out")}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }
 
@@ -265,16 +264,13 @@ export default function MobileLayout({
     };
   }, []);
 
-  const { scrollY } = useScroll();
-
-  // Handle "Hide and Rise" logic
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    // Scroll-hiding disabled to match standard native app UX.
-    // The global header and tab bar will always remain visible.
+  // Scroll-based hide/rise removed — the nav is always visible.
+  // This eliminates per-frame scroll listener overhead on mobile.
+  useEffect(() => {
     if (!isOpeningSequence && !isNavVisible) {
       setIsNavVisible(true);
     }
-  });
+  }, [isOpeningSequence, isNavVisible]);
 
   const isActive = (path: string) => pathname === path;
 
@@ -350,11 +346,8 @@ export default function MobileLayout({
       {/* FIXED HEADER — Hide and Rise */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {!hideHeader && (
-        <motion.header
-          initial={{ y: 0 }}
-          animate={{ y: isNavVisible ? 0 : -100 }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-          className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05]"
+        <header
+          className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05] will-change-transform"
         >
           <div className="flex items-center justify-between h-14 px-4">
             {/* Left: Back or Logo */}
@@ -407,7 +400,7 @@ export default function MobileLayout({
               </PressScale>
             </div>
           </div>
-        </motion.header>
+        </header>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
@@ -660,11 +653,8 @@ export default function MobileLayout({
       {/* FIXED BOTTOM TAB BAR — Hide and Rise */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {!hideTabBar && (
-        <motion.nav
-          initial={{ y: 0 }}
-          animate={{ y: isNavVisible ? 0 : 120 }}
-          transition={{ duration: DURATION.medium, ease: EASING.out }}
-          className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none"
+        <nav
+          className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none will-change-transform"
         >
           <div className={cn(
             "h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start pt-2 pb-[env(safe-area-inset-bottom)]",
@@ -682,13 +672,11 @@ export default function MobileLayout({
                 }}
                 className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]"
               >
-                <motion.div
-                  animate={{ scale: 1 }}
-                  transition={{ duration: DURATION.fast }}
-                  className="text-white/80"
+                <div
+                  className={cn("transition-all duration-150", isActive('/') ? "scale-110 text-rose" : "text-white/80")}
                 >
                   <HomeIcon active={false} />
-                </motion.div>
+                </div>
                 <span className="text-[7.5px] font-medium uppercase tracking-[0.1em] text-white/50">
                   Home
                 </span>
@@ -698,12 +686,11 @@ export default function MobileLayout({
             {/* Cart */}
             <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
               <div className="relative">
-                <motion.div
-                  animate={{ scale: isActive('/checkout') ? 1.1 : 1 }}
-                  className={cn("transition-colors", isActive('/checkout') ? "text-rose" : "text-white/80")}
+                <div
+                  className={cn("transition-all duration-150", isActive('/checkout') ? "scale-110 text-rose" : "text-white/80")}
                 >
                   <CartIcon active={isActive('/checkout')} />
-                </motion.div>
+                </div>
                 {cartCount > 0 && (
                   <motion.span
                     key={cartCount}
@@ -742,19 +729,18 @@ export default function MobileLayout({
 
             {/* Profile */}
             <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
-              <motion.div
-                animate={{ scale: isActive('/profile') ? 1.1 : 1 }}
-                className={cn("transition-colors", isActive('/profile') ? "text-rose" : "text-white/80")}
+              <div
+                className={cn("transition-all duration-150", isActive('/profile') ? "scale-110 text-rose" : "text-white/80")}
               >
                 <UserIcon active={isActive('/profile')} />
-              </motion.div>
+              </div>
               <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-white/50")}>
                 Profile
               </span>
             </Link>
 
           </div>
-        </motion.nav>
+        </nav>
       )}
 
 
