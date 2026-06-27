@@ -6,6 +6,7 @@ import Link from '@/components/LocalizedLink';
 import { RefreshCw, Shield, Clock, Video, Check } from 'lucide-react';
 import { ReturForm } from '@/components/ReturForm';
 import { ReturStatus } from '@/components/ReturStatus';
+import { ReturTracker } from '@/components/ReturTracker';
 import { supabase } from '@/lib/supabase';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -63,8 +64,8 @@ export default function ReturClient() {
                 <p className="text-[10px] md:text-[8px] text-ink/50 mt-0.5 uppercase tracking-widest">Form submission</p>
               </div>
               <div className="ml-auto flex gap-0">
-                {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status' }]).map(tab => (
-                  <button key={tab.id} onClick={() => setView(tab.id)} className={cn('pb-2.5 px-3 text-xs md:text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/50 hover:text-ink/60')}>
+                {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status (Akun)' }, { id: 'track' as const, label: 'Lacak (Guest)' }]).map(tab => (
+                  <button key={tab.id} onClick={() => setView(tab.id as any)} className={cn('pb-2.5 px-3 text-xs md:text-[9px] font-semibold uppercase tracking-wider border-b-2 transition-colors', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/50 hover:text-ink/60')}>
                     {tab.label}
                   </button>
                 ))}
@@ -83,9 +84,9 @@ export default function ReturClient() {
                         <p className="text-xs md:text-[9px] text-amber-800 leading-relaxed">Guest Mode — Submit sebagai tamu. Isi email aktif untuk receive update dari tim kami.</p>
                       </div>
                     )}
-                    <ReturForm isGuest={isGuest} onSuccess={() => setView('status')} />
+                    <ReturForm isGuest={isGuest} onSuccess={() => setView('track')} />
                   </motion.div>
-                ) : (
+                ) : view === 'status' ? (
                   <motion.div key="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     {user ? (
                       <ReturStatus />
@@ -96,11 +97,15 @@ export default function ReturClient() {
                         </div>
                         <div>
                           <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink/60">Login untuk Melihat Status</p>
-                          <p className="text-xs md:text-[9px] text-ink/20 mt-1">Cek status pengajuan retur yang pernah Anda ajukan</p>
+                          <p className="text-xs md:text-[9px] text-ink/20 mt-1">Cek status pengajuan retur yang pernah Anda ajukan menggunakan akun.</p>
                         </div>
                         <Link href="/login" className="inline-block px-6 py-2.5 bg-rose text-white text-xs md:text-[9px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">Login</Link>
                       </div>
                     )}
+                  </motion.div>
+                ) : (
+                  <motion.div key="track" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <ReturTracker />
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -34,19 +34,18 @@ async function testApiLogic() {
 
   console.log("Retur fetched:", returRequests.length);
 
-  console.log("Checking order_items table structure...");
-  const { data: itemSample, error: itemError } = await adminClient
-    .from('order_items')
-    .select('*')
-    .limit(1);
+  console.log("Checking orders table structure...");
+  const { data: orderSample, error: orderError } = await adminClient
+    .from('orders')
+    .select('id, order_number')
+    .limit(3);
     
-  if (itemError) {
-    console.error(itemError);
-  } else if (itemSample.length > 0) {
-    console.log("Columns:", Object.keys(itemSample[0]));
-    console.log("Sample Data:", JSON.stringify(itemSample[0], null, 2));
+  if (orderError) {
+    console.error(orderError);
+  } else if (orderSample.length > 0) {
+    console.log("Sample Orders:", JSON.stringify(orderSample, null, 2));
   } else {
-    console.log("No order items found");
+    console.log("No orders found");
   }
 }
 
