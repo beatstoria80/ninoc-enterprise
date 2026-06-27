@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       const orderIds = returRequests.map((r: any) => r.order_id);
       const { data: orders } = await adminClient
         .from('orders')
-        .select('id, total_price, status, order_items(id, product_name, size, color, quantity, price_at_purchase)')
+        .select('id, total_price, status, customer_email, customer_phone, shipping_address, order_items(id, product_name, size, color, quantity, price_at_purchase)')
         .in('id', orderIds);
       
       if (orders) {

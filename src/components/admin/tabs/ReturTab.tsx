@@ -42,6 +42,9 @@ interface ReturRequest {
     id: string;
     total_price: number;
     status: string;
+    customer_email?: string;
+    customer_phone?: string;
+    shipping_address?: { name?: string; address?: string; city?: string; postal_code?: string };
     order_items: { id: string; product_name: string; size?: string; color?: string; quantity: number; price_at_purchase: number }[];
   } | null;
 }
@@ -181,6 +184,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
     }
   };
 
+  const customerName = retur.user?.raw_user_meta_data?.full_name || retur.order?.shipping_address?.name || retur.guest_email || 'Guest User';
+  const customerEmail = retur.user?.email || retur.guest_email || retur.order?.customer_email || 'Tidak ada email';
+  const customerPhone = retur.order?.customer_phone || 'Tidak ada no HP';
+
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Panel Header */}
@@ -259,15 +266,22 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-800 border-b pb-2">Informasi Pelanggan</h3>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center text-lg font-bold">
-                {(retur.user?.raw_user_meta_data?.full_name || retur.user?.email || retur.guest_email || 'G')[0].toUpperCase()}
+            <div className="flex items-start gap-3 pt-1">
+              <div className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center text-lg font-bold shrink-0">
+                {customerName.charAt(0).toUpperCase()}
               </div>
               <div>
                 <p className="text-base font-medium text-gray-900">
-                  {retur.user?.raw_user_meta_data?.full_name || retur.guest_email || 'Guest User'}
+                  {customerName}
                 </p>
-                <p className="text-sm text-gray-500">{retur.user?.email || retur.guest_email || 'Tidak ada email'}</p>
+                <div className="mt-1 space-y-1">
+                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                    <span className="w-4 inline-block text-center text-gray-400">@</span> {customerEmail}
+                  </p>
+                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                    <span className="w-4 inline-block text-center text-gray-400">#</span> {customerPhone}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
