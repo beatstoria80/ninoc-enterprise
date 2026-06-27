@@ -113,9 +113,11 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
       return sum + (item ? item.price_at_purchase * qty : 0);
     }, 0);
 
+  const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
   const canProceedStep1 = selectedCount > 0;
   const canProceedStep2 =
     description.trim().length >= 10 &&
+    (isProduction ? videoFile !== null : true) &&
     termsAccepted &&
     termsScrolled &&
     reasonValue !== '';
