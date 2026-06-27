@@ -11,7 +11,7 @@ export default async function ReturnsPage() {
   }
 
   const { data } = await supabase
-    .from('order_returns')
+    .from('retur_requests')
     .select(`
       id,
       order_id,

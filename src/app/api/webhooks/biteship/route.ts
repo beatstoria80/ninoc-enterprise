@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 import crypto from 'crypto';
 import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsapp';
 
@@ -136,7 +141,7 @@ export async function POST(req: Request) {
               });
 
               if (waRes.success) {
-                await supabase.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+                await adminClient.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
               }
             }
             
@@ -149,14 +154,14 @@ export async function POST(req: Request) {
               });
 
               if (waRes.success) {
-                await supabase.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+                await adminClient.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
               }
             }
           }
         }
 
         // Log to tracking_logs for history
-        await supabase.from('tracking_logs').insert({
+        await adminClient.from('tracking_logs').insert({
           order_id: payload.order_id,
           biteship_status: payload.status,
           internal_status: internalStatus,
@@ -182,7 +187,7 @@ export async function POST(req: Request) {
 
       case 'order.price': {
         if (payload.order_id) {
-          await supabase.from('tracking_logs').insert({
+          await adminClient.from('tracking_logs').insert({
             order_id: payload.order_id,
             biteship_status: 'price_update',
             internal_status: 'info',
@@ -209,3 +214,4 @@ export async function GET() {
     timestamp: new Date().toISOString(),
   });
 }
+

@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 // Helper to wrap the raw message in the NINOC HTML template
 function buildNewsletterHtml(subject: string, messageHtml: string) {
@@ -113,7 +118,7 @@ export async function POST(req: Request) {
     console.log(`[Broadcast Email] Sent successfully. Message ID: ${info.messageId}, Recipients: ${recipients.length}`);
 
     // Log to operational_expenses to prevent double submission and track activity
-    await supabase.from('operational_expenses').insert({
+    await adminClient.from('operational_expenses').insert({
       category: 'marketing',
       description: `Email Broadcast: ${subject}`,
       amount: 0, // Free
@@ -131,3 +136,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || 'Failed to send broadcast email' }, { status: 500 });
   }
 }
+

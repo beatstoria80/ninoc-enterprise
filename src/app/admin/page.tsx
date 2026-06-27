@@ -34,7 +34,7 @@ import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
 import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
 import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
-import { ReturnsTab } from '@/components/admin/tabs/ReturnsTab';
+import { ReturTab } from '@/components/admin/tabs/ReturTab';
 import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
 import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
 import { EmailBroadcastTab } from '@/components/admin/tabs/EmailBroadcastTab';
@@ -1709,7 +1709,7 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'returns' && (
-            <ReturnsTab />
+            <ReturTab />
           )}
 
           {activeTab === 'submissions' && (

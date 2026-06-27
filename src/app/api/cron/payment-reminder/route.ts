@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 import { sendTemplateMessage, formatPhoneNumber, WA_TEMPLATES } from '@/lib/whatsapp';
 
 // Vercel Cron configuration
@@ -98,3 +103,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

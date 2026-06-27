@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient as createServerClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,12 +27,14 @@ export async function POST(req: NextRequest) {
     let actualGuestSession = guest_session_id;
 
     if (!actualUserId) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const serverClient = await createServerClient();
+      const { data: { user } } = await serverClient.auth.getUser();
       actualUserId = user?.id || undefined;
       actualGuestSession = user ? undefined : (guest_session_id || `guest-${Date.now()}`);
     }
 
-    const { data, error } = await supabase
+    // Use admin client to insert to bypass RLS for guest sessions
+    const { data, error } = await adminClient
       .from('customer_activity_log')
       .insert({
         user_id: actualUserId || null,

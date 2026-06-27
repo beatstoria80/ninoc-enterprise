@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +15,7 @@ export async function GET(request: Request) {
   try {
     // 1. Handle Affiliate Tracking
     if (ref) {
-      const { data: affiliate } = await supabase
+      const { data: affiliate } = await adminClient
         .from('affiliates')
         .select('id')
         .eq('code', ref.toUpperCase())
@@ -19,7 +24,7 @@ export async function GET(request: Request) {
       if (affiliate) {
         const forwardedFor = request.headers.get('x-forwarded-for');
         const ip = forwardedFor ? forwardedFor.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
-        await supabase.from('affiliate_clicks').insert({
+        await adminClient.from('affiliate_clicks').insert({
           affiliate_id: affiliate.id,
           ip_address: ip
         });
@@ -43,7 +48,7 @@ export async function GET(request: Request) {
         : `id.eq.${cleanOrderNumber}`;
 
       // Find order by order_number or id
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: orderError } = await adminClient
         .from('orders')
         .select(`
           id,
@@ -74,13 +79,13 @@ export async function GET(request: Request) {
       }
 
       // Get items
-      const { data: items } = await supabase
+      const { data: items } = await adminClient
         .from('order_items')
         .select('*')
         .eq('order_id', order.id);
 
       // Get tracking logs
-      const { data: logs } = await supabase
+      const { data: logs } = await adminClient
         .from('tracking_logs')
         .select('*')
         .eq('order_id', order.id)

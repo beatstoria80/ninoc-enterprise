@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { coreApi } from '@/lib/midtrans';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
 
@@ -141,7 +146,7 @@ export async function GET() {
 
         // 6. Restock if cancelled
         if (newStatus === 'cancelled') {
-          const { error: restockError } = await supabase.rpc('restock_inventory', { p_order_id: order.id });
+          const { error: restockError } = await adminClient.rpc('restock_inventory', { p_order_id: order.id });
           if (!restockError) {
             console.log(`[Sync Payments] Restocked inventory for cancelled order ${order.id}`);
           }
@@ -171,3 +176,4 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

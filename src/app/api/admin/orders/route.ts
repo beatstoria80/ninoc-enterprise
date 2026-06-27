@@ -6,7 +6,6 @@
  *   limit: number (default 20)
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
 
 export async function GET(req: NextRequest) {
@@ -23,7 +22,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status') || 'all';
     const limit = parseInt(searchParams.get('limit') || '20', 10);
 
-    let query = supabase
+    let query = supabaseServer
       .from('orders')
       .select('id, order_number, status, tracking_id, courier, created_at, total_price, customer_name')
       .order('created_at', { ascending: false })

@@ -44,7 +44,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   // 4. Check for existing return request
   const { data: returnData } = await supabase
-    .from('order_returns')
+    .from('retur_requests')
     .select('id, status')
     .eq('order_id', id)
     .eq('user_id', authUser.id)

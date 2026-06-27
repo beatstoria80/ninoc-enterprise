@@ -5,9 +5,14 @@
  */
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
+
+const adminClient = createSupabaseClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 const OrderPayloadSchema = z.object({
   order_id: z.string().uuid(),
@@ -36,7 +41,7 @@ async function saveOrderToSupabase(
   rawPayload?: object
 ) {
   // Get current print count
-  const { data: orderData } = await supabase
+  const { data: orderData } = await adminClient
     .from('orders')
     .select('print_count, status')
     .eq('id', orderId)
@@ -45,7 +50,7 @@ async function saveOrderToSupabase(
   const currentCount = orderData?.print_count || 0;
 
   // Update order with tracking info and increment print count
-  const { error: updateError } = await supabase
+  const { error: updateError } = await adminClient
     .from('orders')
     .update({
       tracking_id: trackingId,
@@ -60,7 +65,7 @@ async function saveOrderToSupabase(
   }
 
   // Log to tracking_logs
-  await supabase.from('tracking_logs').insert({
+  await adminClient.from('tracking_logs').insert({
     order_id: orderId,
     biteship_status: mock ? 'mock_allocated' : 'allocated',
     internal_status: 'paid',
