@@ -459,7 +459,14 @@ export default function GlobalHeader() {
                 className={cn("active:scale-[0.97] active:blur-[2px] active:opacity-70 transition-all duration-200 ease-out font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none flex items-start gap-1.5", isDarkBg ? "text-white" : "text-rose")}
                 whileHover={{ scale: 1.02 }}
               >
-                <span>ninoc</span>
+                <Image 
+                  src="/logo.png" 
+                  alt="NINOC Logo" 
+                  width={80} 
+                  height={32} 
+                  className={cn("object-contain", isDarkBg ? "brightness-0 invert" : "")} 
+                  priority 
+                />
                 <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50 translate-y-0.5">BETA</span>
               </motion.div>
             </Link>
@@ -829,8 +836,14 @@ export default function GlobalHeader() {
               className="fixed top-0 left-0 w-[85vw] max-w-[400px] h-auto max-h-[85vh] bg-cr noise z-[410] border-r border-b border-ink/5 shadow-2xl flex flex-col rounded-br-3xl overflow-hidden"
             >
               <div className="px-6 md:px-10 py-6 border-b border-ink/5 flex items-center justify-between shrink-0">
-                <div className="font-display font-medium text-3xl italic tracking-tighter text-rose">
-                  ninoc
+                <div className="flex items-center">
+                  <Image 
+                    src="/logo.png" 
+                    alt="NINOC Logo" 
+                    width={80} 
+                    height={32} 
+                    className="object-contain" 
+                  />
                 </div>
                 <PressScale onClick={() => setIsMenuOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
                   <X size={14} />
