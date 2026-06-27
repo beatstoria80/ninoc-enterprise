@@ -173,6 +173,16 @@ export async function POST(req: Request) {
     });
     calculatedGrossAmount += shippingDetails.cost;
 
+    // Add platform fee
+    const PLATFORM_FEE = 2500;
+    finalItemDetails.push({
+      id: 'PLATFORM_FEE',
+      price: PLATFORM_FEE,
+      quantity: 1,
+      name: 'Platform Fee'
+    });
+    calculatedGrossAmount += PLATFORM_FEE;
+
     // Apply Promo Code discount
     if (promo && promo.discountAmount > 0) {
       finalItemDetails.push({
@@ -323,7 +333,7 @@ export async function POST(req: Request) {
 
     // 2. Save individual order items
     if (finalItemDetails.length > 0) {
-      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO').map((item: any) => {
+      const orderItems = finalItemDetails.filter(i => i.id !== 'SHIPPING' && i.id !== 'PROMO' && i.id !== 'PLATFORM_FEE').map((item: any) => {
         const matchingItem = items.find((i: any) => i.id === item.id && i.size === item.size && i.color === item.color);
         const dbProduct = dbProducts.find((p: any) => p.id === item.id);
         
@@ -395,9 +405,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ token: snapToken, orderId, orderNumber });
   } catch (err) {
     const error = err as Error;
-    console.error('Midtrans API Error:', error);
-    // SECURITY FIX: Sanitize error messages in production. 
-    // We log the detailed error above, but only return a generic message to the client.
-    return NextResponse.json({ error: 'An error occurred during checkout. Please try again.' }, { status: 500 });
+    console.error('Midtrans API Error:', error?.message, error?.stack);
+    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+    const errorMessage = isProduction
+      ? 'An error occurred during checkout. Please try again.'
+      : `Checkout error: ${error?.message || 'Unknown error'}`;
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

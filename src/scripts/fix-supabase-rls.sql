@@ -20,7 +20,7 @@ CREATE POLICY "Products viewable by everyone" ON products FOR SELECT USING (true
 
 DROP POLICY IF EXISTS "Products admin full access" ON products;
 CREATE POLICY "Products admin full access" ON products FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 DROP POLICY IF EXISTS "Variants viewable by everyone" ON variants;
@@ -28,7 +28,7 @@ CREATE POLICY "Variants viewable by everyone" ON variants FOR SELECT USING (true
 
 DROP POLICY IF EXISTS "Variants admin full access" ON variants;
 CREATE POLICY "Variants admin full access" ON variants FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 -- 3. COLLECTIONS
@@ -38,7 +38,7 @@ CREATE POLICY "Collections viewable by everyone" ON collections FOR SELECT USING
 
 DROP POLICY IF EXISTS "Collections admin full access" ON collections;
 CREATE POLICY "Collections admin full access" ON collections FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 DROP POLICY IF EXISTS "Collection Products viewable by everyone" ON collection_products;
@@ -46,7 +46,7 @@ CREATE POLICY "Collection Products viewable by everyone" ON collection_products 
 
 DROP POLICY IF EXISTS "Collection Products admin full access" ON collection_products;
 CREATE POLICY "Collection Products admin full access" ON collection_products FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 -- 4. PRODUCT REVIEWS
@@ -59,7 +59,7 @@ CREATE POLICY "Reviews insertable by authenticated users" ON product_reviews FOR
 
 DROP POLICY IF EXISTS "Reviews editable by author or admin" ON product_reviews;
 CREATE POLICY "Reviews editable by author or admin" ON product_reviews FOR UPDATE USING (
-  auth.uid() = user_id OR EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  auth.uid() = user_id OR (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 -- 5. ORDERS & ORDER ITEMS
@@ -74,7 +74,7 @@ CREATE POLICY "Users can insert orders" ON orders FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Admins have full access to orders" ON orders;
 CREATE POLICY "Admins have full access to orders" ON orders FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 DROP POLICY IF EXISTS "Users can view their own order items" ON order_items;
@@ -87,7 +87,7 @@ CREATE POLICY "Users can insert order items" ON order_items FOR INSERT WITH CHEC
 
 DROP POLICY IF EXISTS "Admins have full access to order items" ON order_items;
 CREATE POLICY "Admins have full access to order items" ON order_items FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 -- 6. CUSTOMER PROFILES
@@ -100,9 +100,12 @@ CREATE POLICY "Users can view their own customer profile" ON customer_profiles F
 DROP POLICY IF EXISTS "Users can insert their customer profile" ON customer_profiles;
 CREATE POLICY "Users can insert their customer profile" ON customer_profiles FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Users can update their own customer profile" ON customer_profiles;
+CREATE POLICY "Users can update their own customer profile" ON customer_profiles FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
 DROP POLICY IF EXISTS "Admins have full access to customers" ON customer_profiles;
 CREATE POLICY "Admins have full access to customers" ON customer_profiles FOR ALL USING (
-  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin')
+  (auth.jwt()->'user_metadata'->>'role' = 'admin' OR EXISTS (SELECT 1 FROM admin_roles WHERE email = auth.jwt()->>'email'))
 );
 
 SELECT 'Row-Level Security has been successfully enabled and policies applied.' as Status;
