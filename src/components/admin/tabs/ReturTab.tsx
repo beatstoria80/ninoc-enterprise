@@ -250,11 +250,46 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           </div>
           {retur.description && (
             <div>
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Deskripsi</p>
-              <p className="text-[9px] text-ink/80 leading-relaxed">{retur.description}</p>
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Deskripsi Tambahan</p>
+              <p className="text-[10px] md:text-[9px] text-ink/80 leading-relaxed bg-ink/[0.02] p-2 rounded-sm border border-ink/5">{retur.description}</p>
             </div>
           )}
         </div>
+
+        {/* Riwayat / Item Pesanan */}
+        {retur.order && (
+          <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Riwayat Pesanan</p>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">
+                {retur.order.status}
+              </span>
+            </div>
+            
+            <div className="space-y-2">
+              {retur.order.order_items?.map((item) => (
+                <div key={item.id} className="flex items-center justify-between border-b border-ink/5 pb-2 last:border-0 last:pb-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-ink/5 rounded-sm flex items-center justify-center shrink-0">
+                      <Package size={12} className="text-ink/40" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] md:text-[9px] font-semibold text-ink line-clamp-1">{item.product_name}</p>
+                      <p className="text-[8px] md:text-[7px] text-ink/60 uppercase tracking-wider">{item.quantity}x @ {formatPrice(item.price_at_purchase)}</p>
+                    </div>
+                  </div>
+                  <p className="text-[10px] md:text-[9px] font-bold text-ink whitespace-nowrap ml-2">
+                    {formatPrice(item.quantity * item.price_at_purchase)}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-ink/5">
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/60">Total Pesanan</p>
+              <p className="text-xs md:text-[10px] font-bold text-ink">{formatPrice(retur.order.total_price)}</p>
+            </div>
+          </div>
+        )}
 
         {/* Video Evidence */}
         {retur.video_url && (
