@@ -448,39 +448,28 @@ export function LogisticsTab({
                   </div>
                 </div>
 
-                {/* 3 & 4. 2-Grid Layout: Ordered Products (Left) & Map (Right) */}
-                <div className="grid grid-cols-[1.2fr_1fr] gap-2 pt-1 mt-2">
-                  {/* Left Side: Ordered Products */}
-                  <div className="flex flex-col">
-                    <p className="text-[11px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
-                    <div className="flex flex-col gap-2 overflow-y-auto max-h-[120px] custom-scrollbar pr-2">
-                      {logisticsSelectedOrder.order_items?.map((item, idx) => (
-                        <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
-                          <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
-                            <Package size={16} className="text-gray-500" />
+                {/* Main Layout: Products & Timeline (Left) vs Map (Right) */}
+                <div className="grid grid-cols-[1fr] lg:grid-cols-[1.2fr_1fr] gap-4 lg:gap-6 pt-1 mt-2 flex-1 items-start">
+                  {/* Left Column: Products + Timeline */}
+                  <div className="flex flex-col gap-4">
+                    {/* Ordered Products */}
+                    <div className="flex flex-col">
+                      <p className="text-[11px] font-medium text-gray-900 mb-2">Ordered Products (IDR {logisticsSelectedOrder.total_price.toLocaleString('id-ID')})</p>
+                      <div className="flex flex-col gap-2 overflow-y-auto max-h-[120px] custom-scrollbar pr-2">
+                        {logisticsSelectedOrder.order_items?.map((item, idx) => (
+                          <div key={idx} className="flex gap-3 p-2.5 border border-gray-200 rounded-xl items-center bg-white shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
+                              <Package size={16} className="text-gray-500" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
+                              <p className="text-[11px] text-gray-500 mt-0.5">{item.quantity} item • {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ') || 'OS'}</p>
+                              <p className="text-xs font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-900 line-clamp-2 font-medium">{item.product_name || 'Garment Item'}</p>
-                            <p className="text-[11px] text-gray-500 mt-0.5">{item.quantity} item • {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ') || 'OS'}</p>
-                            <p className="text-xs font-mono font-medium text-gray-900 mt-1">IDR {item.price_at_purchase.toLocaleString('id-ID')}</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Right Side: Map Visualization */}
-                  <div className="flex flex-col">
-                    <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
-                    <div className="relative w-full h-[120px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
-                      <MapTracker 
-                        destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
-                        status={logisticsSelectedOrder.status} 
-                        className="w-full h-full relative z-[1]"
-                      />
-                    </div>
-                  </div>
-                </div>
 
                 {/* 5. Timeline */}
                 <div className="mt-0 pt-2 flex-1">
@@ -616,6 +605,20 @@ export function LogisticsTab({
                   })()}
                 </div>
               </div>
+
+              {/* Right Column: Large Map Visualization */}
+              <div className="flex flex-col h-full min-h-[350px]">
+                <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
+                <div className="relative w-full h-full bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 flex-1">
+                  <MapTracker 
+                    destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
+                    status={logisticsSelectedOrder.status} 
+                    className="w-full h-full absolute inset-0 z-[1]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
             </motion.div>
           )}
         </AnimatePresence>
