@@ -434,47 +434,47 @@ export default function GlobalHeader() {
         >
           <div className="flex items-center gap-1 md:gap-5">
             {/* Drawer Menu Toggle (3 Dots) */}
-          <PressScale 
-            onClick={() => setIsMenuOpen(true)} 
-            className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
-          >
-            <MoreVertical size={20} strokeWidth={1.5} />
-          </PressScale>
-
-          {/* Logo */}
-          <motion.div className="relative flex flex-col">
-            <Link
-              href="/"
-              className="cursor-pointer group flex flex-col focus:outline-none rounded-sm"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  sessionStorage.setItem('ninoc_intro_played', 'true');
-                  if (window.location.pathname === '/' || window.location.pathname === '/en') {
-                    window.dispatchEvent(new CustomEvent('skip-intro'));
-                  }
-                }
-              }}
+            <PressScale 
+              onClick={() => setIsMenuOpen(true)} 
+              className={cn("transition-colors cursor-pointer p-2 -ml-1 md:-m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
             >
-              <motion.div
-                className={cn("active:scale-[0.97] active:blur-[2px] active:opacity-70 transition-all duration-200 ease-out font-display font-medium text-2xl md:text-3xl italic tracking-tighter leading-none flex items-start gap-1.5", isDarkBg ? "text-white" : "text-rose")}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Image 
-                  src="/logo.png" 
-                  alt="NINOC Logo" 
-                  width={120} 
-                  height={120} 
-                  className={cn("w-7 h-7 md:w-8 md:h-8 object-contain", isDarkBg ? "brightness-0 invert" : "")} 
-                  priority 
-                  unoptimized
-                />
-                <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50 translate-y-0.5">BETA</span>
-              </motion.div>
-            </Link>
+              <MoreVertical size={20} strokeWidth={1.5} />
+            </PressScale>
 
-          {/* Back navigation on inner pages removed as requested */}
-        </motion.div>
-        </div>
+            {/* Logo */}
+            <motion.div className="relative flex items-center">
+              <Link
+                href="/"
+                className="cursor-pointer group flex items-center focus:outline-none rounded-sm"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.setItem('ninoc_intro_played', 'true');
+                    if (window.location.pathname === '/' || window.location.pathname === '/en') {
+                      window.dispatchEvent(new CustomEvent('skip-intro'));
+                    }
+                  }
+                }}
+              >
+                <motion.div
+                  className={cn("active:scale-[0.97] active:blur-[2px] active:opacity-70 transition-all duration-200 ease-out flex items-center gap-1.5", isDarkBg ? "text-white" : "text-rose")}
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <Image 
+                    src="/logo.png" 
+                    alt="NINOC Logo" 
+                    width={120} 
+                    height={120} 
+                    className={cn("w-7 h-7 md:w-8 md:h-8 object-contain", isDarkBg ? "brightness-0 invert" : "")} 
+                    priority 
+                    unoptimized
+                  />
+                  <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50">BETA</span>
+                </motion.div>
+              </Link>
+
+            {/* Back navigation on inner pages removed as requested */}
+            </motion.div>
+          </div>
 
         {/* Navigation Links - Hidden on mobile, shown on lg */}
         <motion.div
