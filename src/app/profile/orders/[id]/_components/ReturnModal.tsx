@@ -421,8 +421,8 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
 
               {/* Video Upload */}
               <div>
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/60 mb-2">
-                  Bukti Video <span className="text-rose">*</span>
+                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/60 mb-2 flex items-center gap-2">
+                  Bukti Video {isProduction ? <span className="text-rose">*</span> : <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-sm text-[8px] md:text-[6px]">OPSIONAL (TEST)</span>}
                 </p>
                 {!videoFile ? (
                   <div
@@ -434,7 +434,9 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
                     </div>
                     <p className="text-xs md:text-[10px] font-semibold text-ink uppercase tracking-wider">Upload Video</p>
                     <p className="text-[11px] md:text-[8px] text-ink/50 mt-1">MP4 / WebM, maks 50MB</p>
-                    <p className="text-[10px] md:text-[7px] text-rose/60 mt-2 font-medium">WAJIB — tanpa video, retur tidak bisa diproses</p>
+                    <p className={cn("text-[10px] md:text-[7px] mt-2 font-medium", isProduction ? "text-rose/60" : "text-amber-600/70")}>
+                      {isProduction ? 'WAJIB — tanpa video, retur tidak bisa diproses' : 'TEST MODE: Anda bisa melewati langkah ini'}
+                    </p>
                   </div>
                 ) : (
                   <div className="border border-ink/10 rounded-sm overflow-hidden">
