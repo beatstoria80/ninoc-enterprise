@@ -433,10 +433,7 @@ export default function MobileLayout({
             >
               <div className="px-4 py-5">
                 <div className="flex items-center gap-4">
-                  <motion.div
-                    className="flex-1 relative flex items-center gap-3 bg-ink/[0.03] px-4 py-3.5 border border-ink/[0.05] rounded-sm"
-                    animate={{ borderColor: brandColor.color }}
-                  >
+                  <div className="flex-1 relative flex items-center gap-3">
                     <SearchIcon />
                     <input
                       type="text"
@@ -456,7 +453,7 @@ export default function MobileLayout({
                         <CloseIcon />
                       </motion.button>
                     )}
-                  </motion.div>
+                  </div>
                   <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="w-9 h-9 flex items-center justify-center bg-ink/5 text-ink/50 hover:bg-ink hover:text-white transition-colors">
                     <CloseIcon />
                   </PressScale>
