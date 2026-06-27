@@ -95,6 +95,37 @@ function MapUpdater({ trackingCenter }: { trackingCenter: [number, number] }) {
   return null;
 }
 
+// Custom tools overlay (Recenter & Fullscreen)
+function MapCustomControls({ center }: { center: [number, number] }) {
+  const map = useMap();
+  
+  const handleRecenter = () => {
+    map.flyTo(center, 15, { animate: true, duration: 1.5 });
+  };
+  
+  const handleFullscreen = () => {
+    const container = map.getContainer();
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  return (
+    <div className="leaflet-top leaflet-right" style={{ top: '75px', right: '10px', position: 'absolute', zIndex: 1000 }}>
+      <div className="leaflet-control leaflet-bar">
+        <a href="#" role="button" onClick={(e) => { e.preventDefault(); handleRecenter(); }} title="Pusatkan Peta (Recenter)" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', color: '#4b5563' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        </a>
+        <a href="#" role="button" onClick={(e) => { e.preventDefault(); handleFullscreen(); }} title="Layar Penuh (Fullscreen)" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', color: '#4b5563' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function MapTracker({ destinationCity, status, logs: initialLogs = [], className, orderId }: Props) {
   const [destCoords, setDestCoords] = useState<[number, number] | null>(null);
   const [currentCoords, setCurrentCoords] = useState<[number, number]>(ORIGIN_COORDS);
@@ -387,7 +418,7 @@ export default function MapTracker({ destinationCity, status, logs: initialLogs 
     <div className={className || "w-full max-w-4xl mx-auto h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
       {/* LIVE Indicator */}
       {isLive && (
-        <div className="absolute top-3 right-3 z-[1000] flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm border border-gray-200">
+        <div className="absolute top-3 left-3 z-[1000] flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm border border-gray-200">
           <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
           <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>LIVE</span>
           {lastUpdate && (
@@ -408,6 +439,7 @@ export default function MapTracker({ destinationCity, status, logs: initialLogs 
         <ZoomControl position="topright" />
         <ScaleControl position="bottomright" imperial={false} />
         <MapUpdater trackingCenter={currentCoords} />
+        <MapCustomControls center={currentCoords} />
         
         {/* Use Carto Voyager for detailed street maps instead of Light All */}
         <TileLayer
