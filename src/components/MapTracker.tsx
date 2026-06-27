@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap, ZoomControl, ScaleControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -69,36 +69,28 @@ interface Props {
   orderId?: string;
 }
 
-// MapUpdater: fits the map to show the entire route (origin → destination)
-function MapUpdater({ bounds, fallbackCenter }: { bounds: [number, number][]; fallbackCenter: [number, number] }) {
+// MapUpdater: Auto-focus tightly on the current live position for detailed street view
+function MapUpdater({ trackingCenter }: { trackingCenter: [number, number] }) {
   const map = useMap();
   
   useEffect(() => {
     const timer = setTimeout(() => {
       map.invalidateSize();
-      if (bounds.length >= 2) {
-        // Fit the map to show all points with padding
-        const leafletBounds = L.latLngBounds(bounds.map(b => L.latLng(b[0], b[1])));
-        map.fitBounds(leafletBounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 1.5 });
-      } else {
-        map.flyTo(fallbackCenter, 12, { duration: 1.5, animate: true });
-      }
+      // Zoom in closely (15) to show street details immediately as requested
+      map.flyTo(trackingCenter, 15, { duration: 1.5, animate: true });
     }, 200);
     return () => clearTimeout(timer);
-  }, [map, bounds, fallbackCenter]);
+  }, [map, trackingCenter]);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       map.invalidateSize();
-      if (bounds.length >= 2) {
-        const leafletBounds = L.latLngBounds(bounds.map(b => L.latLng(b[0], b[1])));
-        map.fitBounds(leafletBounds, { padding: [40, 40], maxZoom: 14 });
-      }
+      map.setView(trackingCenter, 15);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [map, bounds]);
+  }, [map, trackingCenter]);
 
   return null;
 }
@@ -408,17 +400,19 @@ export default function MapTracker({ destinationCity, status, logs: initialLogs 
 
       <MapContainer 
         center={currentCoords} 
-        zoom={10} 
+        zoom={15} 
         scrollWheelZoom={true}
         zoomControl={false}
         className="w-full h-full absolute inset-0 z-0"
       >
-        <ZoomControl position="topleft" />
-        <MapUpdater bounds={mapBounds} fallbackCenter={destCoords || ORIGIN_COORDS} />
+        <ZoomControl position="topright" />
+        <ScaleControl position="bottomright" imperial={false} />
+        <MapUpdater trackingCenter={currentCoords} />
         
+        {/* Use Carto Voyager for detailed street maps instead of Light All */}
         <TileLayer
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         
         {/* Origin Marker (Gudang NINOC) */}
