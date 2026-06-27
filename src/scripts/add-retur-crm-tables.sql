@@ -1,5 +1,5 @@
 -- ============================================================
--- NINOC Support Center — Phase 2 Migration
+-- NINOC Support Center Phase 2 Migration
 -- Retur System + CRM Activity Log + Extended Ticket Fields
 -- ============================================================
 
@@ -110,12 +110,11 @@ CREATE TRIGGER update_retur_requests_updated_at
   BEFORE UPDATE ON retur_requests
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- 7. RLS for new tables
+-- 7. Enable RLS
 ALTER TABLE retur_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_activity_log ENABLE ROW LEVEL SECURITY;
 
--- Retur requests RLS
--- authenticated users see own rows; service role (no JWT) bypasses RLS via auth.uid() IS NULL
+-- RLS: retur_requests
 DROP POLICY IF EXISTS "retur_consumer_own" ON retur_requests;
 CREATE POLICY "retur_consumer_own" ON retur_requests
   FOR SELECT USING (
@@ -141,65 +140,75 @@ DROP POLICY IF EXISTS "retur_admin_all" ON retur_requests;
 CREATE POLICY "retur_admin_all" ON retur_requests
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM auth.users WHERE id = auth.uid()
+      SELECT 1 FROM auth.users
+      WHERE id = auth.uid()
       AND raw_user_meta_data->>'role' = 'admin'
     )
   );
 
--- Customer activity log: consumer sees own, admin sees all
+-- RLS: customer_activity_log
 DROP POLICY IF EXISTS "activity_log_read" ON customer_activity_log;
 CREATE POLICY "activity_log_read" ON customer_activity_log
-  FOR SELECT USING (auth.uid() = user_id OR auth.uid() IS NULL);
+  FOR SELECT USING (
+    auth.uid() = user_id
+    OR auth.uid() IS NULL
+  );
 
 DROP POLICY IF EXISTS "activity_log_insert" ON customer_activity_log;
 CREATE POLICY "activity_log_insert" ON customer_activity_log
-  FOR INSERT WITH CHECK (auth.uid() = user_id OR auth.uid() IS NULL);
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id
+    OR auth.uid() IS NULL
+  );
 
 DROP POLICY IF EXISTS "activity_log_admin_all" ON customer_activity_log;
 CREATE POLICY "activity_log_admin_all" ON customer_activity_log
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM auth.users WHERE id = auth.uid()
+      SELECT 1 FROM auth.users
+      WHERE id = auth.uid()
       AND raw_user_meta_data->>'role' = 'admin'
     )
   );
 
--- 8. Support tickets extended fields RLS
+-- 8. RLS: support_tickets extended
 DROP POLICY IF EXISTS "support_tickets_admin_update_fields" ON support_tickets;
 CREATE POLICY "support_tickets_admin_update_fields" ON support_tickets
   FOR UPDATE USING (
     EXISTS (
-      SELECT 1 FROM auth.users WHERE id = auth.uid()
+      SELECT 1 FROM auth.users
+      WHERE id = auth.uid()
       AND raw_user_meta_data->>'role' = 'admin'
-    ) OR auth.uid() = user_id
+    )
+    OR auth.uid() = user_id
   );
 
--- 9. Create storage bucket for unboxing videos
+-- 9. Storage bucket for unboxing videos (50MB limit)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'retur-videos',
   'retur-videos',
   FALSE,
-  52428800, -- 50MB
+  52428800,
   ARRAY['video/mp4', 'video/webm']
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Storage policy for retur videos
+-- Storage RLS: allow authenticated users to upload
 DROP POLICY IF EXISTS "retur_videos_upload" ON storage.objects;
 CREATE POLICY "retur_videos_upload" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'retur-videos'
-    AND (auth.uid() IS NOT NULL OR auth.role() = 'authenticated')
+    AND auth.uid() IS NOT NULL
   );
 
 DROP POLICY IF EXISTS "retur_videos_read" ON storage.objects;
 CREATE POLICY "retur_videos_read" ON storage.objects
   FOR SELECT USING (
     bucket_id = 'retur-videos'
-    AND (auth.uid() IS NOT NULL OR auth.role() = 'authenticated')
+    AND auth.uid() IS NOT NULL
   );
 
 -- 10. Verify
-SELECT 'Migration completed successfully' AS status;
+SELECT 'Migration Phase 2 completed successfully' AS status;
 SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN ('retur_requests', 'customer_activity_log');
