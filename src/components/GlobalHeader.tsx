@@ -462,10 +462,11 @@ export default function GlobalHeader() {
                 <Image 
                   src="/logo.png" 
                   alt="NINOC Logo" 
-                  width={80} 
-                  height={32} 
-                  className={cn("object-contain", isDarkBg ? "brightness-0 invert" : "")} 
+                  width={120} 
+                  height={120} 
+                  className={cn("w-10 h-10 md:w-12 md:h-12 object-contain", isDarkBg ? "brightness-0 invert" : "")} 
                   priority 
+                  unoptimized
                 />
                 <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50 translate-y-0.5">BETA</span>
               </motion.div>
@@ -840,9 +841,10 @@ export default function GlobalHeader() {
                   <Image 
                     src="/logo.png" 
                     alt="NINOC Logo" 
-                    width={80} 
-                    height={32} 
-                    className="object-contain" 
+                    width={120} 
+                    height={120} 
+                    className="w-12 h-12 object-contain" 
+                    unoptimized
                   />
                 </div>
                 <PressScale onClick={() => setIsMenuOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
