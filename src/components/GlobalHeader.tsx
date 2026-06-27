@@ -760,8 +760,8 @@ export default function GlobalHeader() {
                     )}
                   </AnimatePresence>
                 </div>
-                <PressScale onClick={() => setIsSearchOpen(false)} className="text-xs md:text-[9px] font-medium uppercase tracking-[0.3em] text-ink/60 hover:text-rose flex items-center gap-2">
-                  Close
+                <PressScale onClick={() => setIsSearchOpen(false)} className="w-9 h-9 flex items-center justify-center bg-ink/5 text-ink/50 hover:bg-ink hover:text-white transition-colors">
+                  <X size={16} />
                 </PressScale>
               </div>
 

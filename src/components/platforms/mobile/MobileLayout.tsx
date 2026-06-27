@@ -431,10 +431,10 @@ export default function MobileLayout({
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[510] bg-white border-b border-ink/5 shadow-2xl"
             >
-              <div className="p-4">
-                <div className="flex items-center gap-3">
+              <div className="px-4 py-5">
+                <div className="flex items-center gap-4">
                   <motion.div
-                    className="flex-1 relative flex items-center gap-3 bg-ink/[0.03] px-4 py-2.5 border border-ink/[0.05]"
+                    className="flex-1 relative flex items-center gap-3 bg-ink/[0.03] px-4 py-3.5 border border-ink/[0.05] rounded-sm"
                     animate={{ borderColor: brandColor.color }}
                   >
                     <SearchIcon />
@@ -444,7 +444,7 @@ export default function MobileLayout({
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder={`SEARCH ${dict.header.shop.toUpperCase()}...`}
                       autoFocus
-                      className="w-full bg-transparent py-1 text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
+                      className="w-full bg-transparent py-0.5 text-xs font-medium uppercase tracking-widest text-ink placeholder:text-ink/20 outline-none"
                     />
                     {searchQuery && (
                       <motion.button
@@ -457,8 +457,8 @@ export default function MobileLayout({
                       </motion.button>
                     )}
                   </motion.div>
-                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-xs font-medium uppercase tracking-widest text-ink/50">
-                    CLOSE
+                  <PressScale onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="w-9 h-9 flex items-center justify-center bg-ink/5 text-ink/50 hover:bg-ink hover:text-white transition-colors">
+                    <CloseIcon />
                   </PressScale>
                 </div>
               </div>
