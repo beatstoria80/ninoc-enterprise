@@ -268,7 +268,8 @@ export default function MobileLayout({
   // This eliminates per-frame scroll listener overhead on mobile.
   useEffect(() => {
     if (!isOpeningSequence && !isNavVisible) {
-      setIsNavVisible(true);
+      const timer = setTimeout(() => setIsNavVisible(true), 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpeningSequence, isNavVisible]);
 

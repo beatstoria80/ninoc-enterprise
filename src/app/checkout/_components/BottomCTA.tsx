@@ -55,10 +55,10 @@ export default function BottomCTA({
   const dict = useDictionary();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] ios-bottom-cta">
+    <div className="fixed bottom-[calc(50px+env(safe-area-inset-bottom))] left-0 right-0 z-[100] ios-bottom-cta">
       {/* Safe area spacer for iOS */}
       <div
-        className="h-[env(safe-area-inset-bottom,0px)] bg-white"
+        className="h-0 bg-transparent"
         aria-hidden="true"
       />
 
