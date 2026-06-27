@@ -70,12 +70,30 @@ interface Props {
 // MapUpdater safely uses the Leaflet map instance to animate pan/zoom
 function MapUpdater({ center }: { center: [number, number] }) {
   const map = useMap();
+  
   useEffect(() => {
     if (center) {
-      // flyTo gives a detailed, close-up industry standard zoom perfectly centered
-      map.flyTo(center, 13, { duration: 1.5 });
+      // Force map to recalculate its container size before flying to center
+      // This fixes the issue where the map is cut off or off-center in wide/dynamic containers
+      const timer = setTimeout(() => {
+        map.invalidateSize();
+        // Use a slightly wider zoom (12 instead of 13) to ensure points aren't cut off in wide masks
+        map.flyTo(center, 12, { duration: 1.5, animate: true });
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, [map, center]);
+
+  // Handle window resize events for responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      map.invalidateSize();
+      if (center) map.setView(center, map.getZoom());
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [map, center]);
+
   return null;
 }
 
