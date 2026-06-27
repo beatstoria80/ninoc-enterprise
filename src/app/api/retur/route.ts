@@ -140,7 +140,8 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
       if (existing) {
         return NextResponse.json({
-          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`
+          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`,
+          code: 'ALREADY_EXISTS'
         }, { status: 409 });
       }
     } else if (guest_email) {
@@ -153,7 +154,8 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
       if (existing) {
         return NextResponse.json({
-          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`
+          error: `Pengajuan retur untuk order ini sudah ada (status: ${existing.status}). Gunakan tiket yang sudah ada.`,
+          code: 'ALREADY_EXISTS'
         }, { status: 409 });
       }
     }

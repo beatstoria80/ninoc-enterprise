@@ -218,7 +218,13 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal submit retur');
+      if (!res.ok) {
+        if (data.code === 'ALREADY_EXISTS') {
+          setAlreadyExists(true);
+          return;
+        }
+        throw new Error(data.error || 'Gagal submit retur');
+      }
 
       setSubmittedId(data.retur_request?.id || '');
       setSubmitted(true);
@@ -231,6 +237,49 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   };
 
   // ── Success Screen ────────────────────────────────────────
+  if (alreadyExists) {
+    return (
+      <div className={cn('bg-white', className)}>
+        <div className="flex flex-col items-center justify-center text-center py-12 px-4 md:px-6 space-y-5">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+          >
+            <AlertCircle size={28} strokeWidth={2.5} className="text-white" />
+          </motion.div>
+          <div className="space-y-1.5">
+            <p className="text-sm md:text-[11px] font-semibold uppercase tracking-widest text-ink">Retur Sudah Ada</p>
+            <h3 className="text-[13px] font-display italic font-medium text-ink">Pengajuan Retur Sudah Dibuat</h3>
+            <p className="text-xs md:text-[9px] text-ink/60 leading-relaxed max-w-[260px]">
+              Tiket retur untuk pesanan <span className="font-semibold text-ink">{orderId}</span> sudah pernah Anda ajukan sebelumnya.
+            </p>
+          </div>
+          <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 space-y-1.5 w-full text-left">
+            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/50">Tindakan Selanjutnya</p>
+            {[
+              'Beralih ke tab "Retur Saya" atau "Status"',
+              'Tim kami sedang meninjau tiket Anda',
+              'Anda akan mendapat notifikasi via email/chat',
+            ].map((s, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 shrink-0" />
+                <p className="text-[11px] md:text-[9px] text-ink/60">{s}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => onSuccess?.(orderId)}
+            className="w-full py-3 bg-ink text-white text-xs md:text-[10px] font-semibold uppercase tracking-widest rounded-sm hover:bg-ink/90 transition-colors"
+          >
+            Lihat Status Retur
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className={cn('bg-white', className)}>
