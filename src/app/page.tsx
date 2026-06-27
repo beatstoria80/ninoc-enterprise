@@ -931,13 +931,23 @@ export default function Home() {
                 {/* Scene 02: SHOP Button Interaction */}
                 <motion.button
                   onClick={handleShopClick}
-                  className="bg-white text-ink px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#f8f8f8" }}
+                  className="bg-white text-ink px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: [1, 1.05, 1],
+                    boxShadow: ["0px 0px 0px rgba(255,255,255,0)", "0px 0px 20px rgba(255,255,255,0.4)", "0px 0px 0px rgba(255,255,255,0)"]
+                  }}
+                  transition={{
+                    opacity: { duration: 1, delay: 0.5 },
+                    y: { duration: 1, ease: [0.23, 1, 0.32, 1], delay: 0.5 },
+                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 },
+                    boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }
+                  }}
+                  whileHover={{ scale: 1.1, backgroundColor: "#f8f8f8" }}
                   whileTap={{ scale: 0.97 }} // Emil's principle
-                  transition={{ duration: DURATION.fast, ease: EASING.out }}
-                  style={{ transitionProperty: "transform, background-color, box-shadow" }}
+                  style={{ transitionProperty: "background-color" }}
                 >
                   SHOP NOW
                 </motion.button>

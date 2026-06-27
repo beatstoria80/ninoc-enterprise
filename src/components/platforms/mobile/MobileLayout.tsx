@@ -653,7 +653,7 @@ export default function MobileLayout({
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* FIXED BOTTOM TAB BAR — Hide and Rise */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {!hideTabBar && (
+      {!hideTabBar && !isOpeningSequence && (
         <nav
           className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none will-change-transform"
         >
