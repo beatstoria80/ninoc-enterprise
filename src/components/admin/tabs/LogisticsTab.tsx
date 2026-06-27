@@ -144,6 +144,7 @@ export function LogisticsTab({
       
       const payload = {
         order_id: order.id,
+        reference_id: order.id,
         courier_company: courierCompany,
         courier_type: courierType,
         destination: {

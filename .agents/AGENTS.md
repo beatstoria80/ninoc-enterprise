@@ -31,3 +31,10 @@ When moving to production, always ensure the following environment variables are
 
 ## Agent Trigger Phrase
 If the user asks: "siapkan untuk production", "ganti ke production", "deploy production", immediately cross-reference this checklist and ask the user for the production secrets (Midtrans, Supabase, dll) to populate the `.env.production` atau `.env.vercel` file.
+
+# Development Workflow Rule
+
+For every code change made in this project, the agent MUST follow this exact sequence before considering the task complete:
+1. **Lint**: Run `npm run lint` to catch syntax and styling errors.
+2. **QA & Debug**: Fix any errors that arise from the linter or tests.
+3. **Push to GitHub**: Commit the finalized changes and push them to the GitHub repository (`git add`, `git commit`, `git push origin main`).

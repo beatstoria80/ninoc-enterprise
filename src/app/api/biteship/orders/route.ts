@@ -15,7 +15,7 @@ const adminClient = createSupabaseClient(
 );
 
 const OrderPayloadSchema = z.object({
-  order_id: z.string().uuid(),
+  order_id: z.string().min(1),
   courier_company: z.string().min(1),
   courier_type: z.string().min(1),
   destination: z.any().optional(),
