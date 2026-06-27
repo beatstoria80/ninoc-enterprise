@@ -436,7 +436,7 @@ export default function GlobalHeader() {
             {/* Drawer Menu Toggle (3 Dots) */}
             <PressScale 
               onClick={() => setIsMenuOpen(true)} 
-              className={cn("transition-colors cursor-pointer p-2 -ml-2 md:-m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
+              className={cn("transition-colors cursor-pointer p-2 -ml-5 md:-m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
             >
               <MoreVertical size={20} strokeWidth={1.5} />
             </PressScale>
@@ -570,7 +570,7 @@ export default function GlobalHeader() {
       </nav>
       ) : (
         <div className="fixed top-0 inset-x-0 z-[150] px-3 md:px-6 pt-3 md:pt-4 pb-6 flex items-start justify-between pointer-events-none">
-          <div className="pointer-events-auto -ml-1">
+          <div className="pointer-events-auto -ml-5">
             <PressScale 
               onClick={() => setIsMenuOpen(true)} 
               className="text-ink/60 hover:text-rose transition-colors cursor-pointer block p-1"
