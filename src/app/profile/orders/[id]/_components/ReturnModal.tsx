@@ -118,12 +118,14 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
   const canProceedStep2 =
     description.trim().length >= 10 &&
     (isProduction ? videoFile !== null : true) &&
-    termsAccepted &&
-    termsScrolled &&
     reasonValue !== '';
+  const canProceedStep3 =
+    canProceedStep2 &&
+    termsAccepted &&
+    termsScrolled;
 
   const handleSubmit = async () => {
-    if (!canProceedStep2) return;
+    if (!canProceedStep3) return;
     setIsSubmitting(true);
     setError('');
 
@@ -601,8 +603,8 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handleSubmit}
-                disabled={!canProceedStep2 || isSubmitting}
-                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', !isSubmitting && canProceedStep2 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed')}
+                disabled={!canProceedStep3 || isSubmitting}
+                className={cn('px-5 py-2 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white rounded-sm transition-colors flex items-center gap-2', !isSubmitting && canProceedStep3 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed')}
               >
                 {isSubmitting ? (
                   <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Mengirim...</>
