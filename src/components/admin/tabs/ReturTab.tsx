@@ -184,16 +184,22 @@ function ReturDetail({ retur, onClose, onRefresh }: {
     }
   };
 
-  const customerName = retur.user?.raw_user_meta_data?.full_name || retur.order?.shipping_address?.name || retur.guest_email || 'Guest User';
-  const customerEmail = retur.user?.email || retur.guest_email || retur.order?.customer_email || 'Tidak ada email';
-  const customerPhone = retur.order?.customer_phone || 'Tidak ada no HP';
+  const shipping = retur.order?.shipping_address as any;
+  const customerName = retur.user?.raw_user_meta_data?.full_name 
+    || (shipping?.first_name ? `${shipping.first_name} ${shipping.last_name || ''}`.trim() : null)
+    || shipping?.name 
+    || retur.guest_email 
+    || 'Guest User';
+  const customerEmail = retur.user?.email || retur.guest_email || retur.order?.customer_email || shipping?.email || 'Tidak ada email';
+  const customerPhone = retur.order?.customer_phone || shipping?.phone || 'Tidak ada no HP';
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      {/* Panel Header */}
-      <div className="px-5 py-4 border-b border-gray-200 shrink-0 flex items-center justify-between">
+    <div className="h-full flex flex-col bg-white border-l border-gray-200">
+      {/* Header */}
+      <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50">
         <div className="flex items-center gap-3">
-          <span className={cn('px-2.5 py-1 text-xs font-semibold rounded-md border', cfg.color)}>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Detail Retur</h2>
+          <span className={cn('px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm', cfg.badge, cfg.text)}>
             {cfg.labelID}
           </span>
           {retur.fraud_suspected && (
@@ -787,12 +793,12 @@ export function ReturTab() {
                     
                     <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
                       <div className="flex items-center gap-2">
-                        {r.guest_email ? (
+                        {!r.user_id ? (
                           <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-semibold">GUEST</span>
                         ) : (
                           <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-semibold">USER</span>
                         )}
-                        <span className="truncate max-w-[120px]">{r.guest_email || r.user?.email || 'N/A'}</span>
+                        <span className="truncate max-w-[120px]">{r.guest_email || r.user?.email || r.order?.customer_email || (r.order?.shipping_address as any)?.email || 'N/A'}</span>
                       </div>
                       <span>{new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</span>
                     </div>
