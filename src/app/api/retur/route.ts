@@ -36,7 +36,30 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ retur_requests: data, total: count });
+    let returRequests = data || [];
+
+    // Fetch related orders manually since order_id is a TEXT field without FK
+    if (returRequests.length > 0) {
+      const orderIds = returRequests.map((r: any) => r.order_id);
+      const { data: orders } = await adminClient
+        .from('orders')
+        .select('id, total_price, status, order_items(id, product_name, quantity, price_at_purchase)')
+        .in('id', orderIds);
+      
+      if (orders) {
+        const orderMap = orders.reduce((acc: any, order: any) => {
+          acc[order.id] = order;
+          return acc;
+        }, {});
+        
+        returRequests = returRequests.map((r: any) => ({
+          ...r,
+          order: orderMap[r.order_id] || null,
+        }));
+      }
+    }
+
+    return NextResponse.json({ retur_requests: returRequests, total: count });
   } catch (err) {
     console.error('[GET /api/retur]', err);
     return NextResponse.json({ error: 'Failed to fetch retur requests' }, { status: 500 });

@@ -32,6 +32,12 @@ interface ReturRequest {
   resolved_at: string | null;
   resolved_by: string | null;
   user?: { id: string; email?: string; raw_user_meta_data?: { full_name?: string } };
+  order?: {
+    id: string;
+    total_price: number;
+    status: string;
+    order_items: { id: string; product_name: string; quantity: number; price_at_purchase: number }[];
+  } | null;
 }
 
 const STATUS_OPTS = ['all', 'pending', 'reviewed', 'approved', 'rejected', 'completed'];
@@ -69,7 +75,8 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 }) {
   const [status, setStatus] = useState(retur.status);
   const [adminNotes, setAdminNotes] = useState(retur.admin_notes || '');
-  const [refundAmount, setRefundAmount] = useState(retur.refund_amount?.toString() || '');
+  const [refundAmount, setRefundAmount] = useState(retur.refund_amount?.toString() || (retur.order?.total_price || '').toString());
+  const [exchangeShippingCost, setExchangeShippingCost] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState('');
@@ -82,9 +89,14 @@ function ReturDetail({ retur, onClose, onRefresh }: {
     try {
       const body: Record<string, unknown> = { status: newStatus };
       if (note !== undefined) body.admin_notes = note;
-      if (newStatus === 'approved' && refundAmount) {
-        body.refund_amount = parseInt(refundAmount) || 0;
-        body.refund_method = 'transfer';
+      if (newStatus === 'approved') {
+        if (retur.return_type === 'refund' && refundAmount) {
+          body.refund_amount = parseInt(refundAmount) || 0;
+          body.refund_method = 'transfer';
+        } else if (retur.return_type === 'exchange' && exchangeShippingCost) {
+          // You can save exchangeShippingCost to a metadata field or note if required
+          body.admin_notes = note ? `${note}\n[Est Ongkir Kirim Balik: ${exchangeShippingCost}]` : `[Est Ongkir Kirim Balik: ${exchangeShippingCost}]`;
+        }
       }
       const res = await fetch(`/api/retur/${retur.id}`, {
         method: 'PATCH',
@@ -301,19 +313,60 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           </div>
         </div>
 
-        {/* Refund Amount */}
+        {/* Financial Impact Analysis */}
         {['pending', 'reviewed'].includes(status) && (
-          <div className="bg-white border border-ink/5 rounded-sm p-2 space-y-2">
-            <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Jumlah Refund</p>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-ink/80 font-semibold">IDR</span>
-              <input
-                type="number"
-                value={refundAmount}
-                onChange={e => setRefundAmount(e.target.value)}
-                placeholder="0"
-                className="flex-1 text-[13px] font-display italic font-bold text-rose outline-none border-b border-ink/10 focus:border-rose/40 bg-transparent"
-              />
+          <div className="bg-white border border-ink/5 rounded-sm overflow-hidden">
+            <div className="p-2 border-b border-ink/5 bg-ink/[0.02]">
+              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 flex items-center gap-1.5">
+                Financial Impact (Kerugian/Keuntungan)
+              </p>
+            </div>
+            
+            <div className="p-3 space-y-4">
+              <div className="flex items-center justify-between border-b border-ink/5 pb-2">
+                <p className="text-[10px] md:text-[8px] font-medium text-ink/60 uppercase tracking-widest">Total Order Awal</p>
+                <p className="text-[11px] font-bold text-ink">{formatPrice(retur.order?.total_price || 0)}</p>
+              </div>
+
+              {retur.return_type === 'refund' ? (
+                <div className="space-y-2">
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Jumlah Refund (Pengembalian Dana)</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-ink/80 font-semibold">IDR</span>
+                    <input
+                      type="number"
+                      value={refundAmount}
+                      onChange={e => setRefundAmount(e.target.value)}
+                      placeholder="0"
+                      className="flex-1 text-[13px] font-display italic font-bold text-red-500 outline-none border-b border-ink/10 focus:border-red-500 bg-transparent"
+                    />
+                  </div>
+                  <div className="mt-2 p-2 bg-red-50 border border-red-100 rounded-sm">
+                    <p className="text-[9px] text-red-600 font-medium">
+                      ⚠️ Persetujuan refund ini akan mengurangi revenue NINOC sebesar <span className="font-bold font-mono">IDR {parseInt(refundAmount || '0').toLocaleString('id-ID')}</span>.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Estimasi Ongkir Barang Pengganti</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-ink/80 font-semibold">IDR</span>
+                    <input
+                      type="number"
+                      value={exchangeShippingCost}
+                      onChange={e => setExchangeShippingCost(e.target.value)}
+                      placeholder="Misal: 20000"
+                      className="flex-1 text-[13px] font-display italic font-bold text-amber-600 outline-none border-b border-ink/10 focus:border-amber-500 bg-transparent"
+                    />
+                  </div>
+                  <div className="mt-2 p-2 bg-amber-50 border border-amber-100 rounded-sm">
+                    <p className="text-[9px] text-amber-700 font-medium">
+                      ⚠️ Penukaran barang mempertahankan revenue, namun NINOC akan menanggung biaya tambahan sebesar <span className="font-bold font-mono">IDR {parseInt(exchangeShippingCost || '0').toLocaleString('id-ID')}</span> untuk ongkir, ditambah risiko HPP dari barang yang dikembalikan.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
