@@ -181,18 +181,22 @@ export function LogisticsTab({
         throw new Error(data.error || 'Failed to dispatch order via Biteship');
       }
 
-      // Optimistic Update
+      // Optimistic Update (TEST SCENARIO: Jump directly to 'delivered')
       const updatedOrder = {
         ...order,
-        status: 'shipped' as const,
+        status: 'delivered' as const,
         tracking_id: data.tracking_id || data.waybill_id,
         print_count: (order.print_count || 0) + 1,
         courier: `${data.courier_company} ${data.courier_type}`.toUpperCase()
       };
+      
+      // Update DB directly to 'delivered' for testing purposes
+      await supabase.from('orders').update({ status: 'delivered' }).eq('id', order.id);
+
       setLogisticsSelectedOrder(updatedOrder);
       if (onOrderUpdated) onOrderUpdated(updatedOrder);
       
-      alert(`Berhasil! Nomor Resi: ${data.tracking_id || data.waybill_id}`);
+      alert(`Berhasil! Nomor Resi: ${data.tracking_id || data.waybill_id}\n\n[TEST MODE] Status otomatis diubah menjadi DELIVERED untuk pengujian Retur.`);
 
     } catch (err: any) {
       console.error('Dispatch error:', err);
