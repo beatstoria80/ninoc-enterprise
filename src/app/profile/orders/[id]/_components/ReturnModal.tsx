@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, RefreshCw, Package, AlertCircle, Check, ChevronLeft, ChevronRight, Upload, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -105,6 +105,16 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
     }
   };
 
+  // Auto-detect when terms content fits without needing scroll
+  useEffect(() => {
+    if (step === 3 && termsRef.current && !termsScrolled) {
+      const { scrollHeight, clientHeight } = termsRef.current;
+      if (clientHeight >= scrollHeight - 10) {
+        setTermsScrolled(true);
+      }
+    }
+  }, [step, termsScrolled]);
+
   const selectedCount = Object.entries(selectedItems).filter(([, qty]) => qty > 0).length;
   const selectedTotal = Object.entries(selectedItems)
     .filter(([, qty]) => qty > 0)
@@ -122,7 +132,7 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
   const canProceedStep3 =
     canProceedStep2 &&
     termsAccepted &&
-    termsScrolled;
+    (isProduction ? termsScrolled : true);
 
   const handleSubmit = async () => {
     if (!canProceedStep3) return;
