@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -27,6 +28,8 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
+    let isAdmin = false;
+
     if (user) {
       // Check if admin
       const { data: roleData } = await adminClient
@@ -35,21 +38,29 @@ export async function GET(req: NextRequest) {
         .eq('email', user.email)
         .single();
       
-      const isAdmin = roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
-      
-      // If NOT admin, force query to only show their own returns
-      if (!isAdmin) {
-        query = query.eq('user_id', user.id);
-      } else {
-        // If admin, they can explicitly filter by a specific user_id if they want
-        const requestedUserId = searchParams.get('user_id');
-        if (requestedUserId) {
-          query = query.eq('user_id', requestedUserId);
-        }
-      }
-    } else {
+      isAdmin = roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
+    }
+
+    // Fallback for custom admin login that bypasses Supabase Auth
+    const cookieStore = await cookies();
+    if (cookieStore.get('admin_session')?.value === 'authenticated') {
+      isAdmin = true;
+    }
+
+    if (!isAdmin && !user) {
       // Unauthenticated users see nothing
       return NextResponse.json({ retur_requests: [], total: 0 });
+    }
+
+    if (!isAdmin && user) {
+      // If NOT admin, force query to only show their own returns
+      query = query.eq('user_id', user.id);
+    } else if (isAdmin) {
+      // If admin, they can explicitly filter by a specific user_id if they want
+      const requestedUserId = searchParams.get('user_id');
+      if (requestedUserId) {
+        query = query.eq('user_id', requestedUserId);
+      }
     }
 
     if (status && status !== 'all') {
