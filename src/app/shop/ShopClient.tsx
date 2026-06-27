@@ -163,7 +163,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                           </div>
                         )}
                         <div className="flex items-center justify-between">
-                          <p className="text-xs md:text-[11px] font-display font-semibold italic text-rose">
+                          <p className="text-sm md:text-xs font-display font-bold italic text-rose">
                             {product.price_tag === 'REDEEM'
                               ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
                               : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
@@ -317,11 +317,11 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
                             {product.price_tag === 'REDEEM' ? (
-                              <div className="text-sm md:text-xs font-display font-semibold italic text-emerald-700">
+                              <div className="text-base md:text-sm font-display font-bold italic text-emerald-700">
                                 {(product.price ?? 0).toLocaleString('id-ID')} PTS
                               </div>
                             ) : (
-                              <div className="text-sm md:text-xs font-display font-semibold italic text-emerald-700">
+                              <div className="text-base md:text-sm font-display font-bold italic text-emerald-700">
                                 IDR {(product.price ?? 0).toLocaleString('id-ID')}
                               </div>
                             )}
