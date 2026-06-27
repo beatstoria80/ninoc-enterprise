@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       const { data: roleData } = await adminClient
         .from('admin_roles')
         .select('role')
-        .eq('id', user.id)
+        .eq('email', user.email)
         .single();
       
       const isAdmin = roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
