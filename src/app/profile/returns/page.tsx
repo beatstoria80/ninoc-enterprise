@@ -28,7 +28,10 @@ export default async function ReturnsPage() {
       refund_method,
       created_at,
       updated_at,
-      resolved_at
+      resolved_at,
+      return_awb,
+      return_courier,
+      return_shipped_at
     `)
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })

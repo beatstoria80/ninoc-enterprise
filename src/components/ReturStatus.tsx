@@ -21,6 +21,9 @@ interface ReturRequest {
   fraud_suspected: boolean | null;
   admin_notes: string | null;
   refund_amount: number | null;
+  return_awb: string | null;
+  return_courier: string | null;
+  return_shipped_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -270,6 +273,67 @@ export function ReturStatus() {
                             <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-emerald-600 mb-1">Refund Disetujui</p>
                             <p className="text-sm md:text-[11px] font-display italic font-bold text-emerald-700">{formatPrice(r.refund_amount)}</p>
                             {r.admin_notes && <p className="text-[11px] md:text-[8px] text-emerald-500 mt-1">{r.admin_notes}</p>}
+                          </div>
+                        )}
+
+                        {/* Instruksi Pengiriman & Resi */}
+                        {r.status === 'approved' && !r.return_awb && (
+                          <div className="bg-ink/[0.02] border border-ink/10 rounded-sm p-3 space-y-3">
+                            <p className="text-[10px] md:text-[8px] font-semibold uppercase tracking-widest text-ink mb-1 flex items-center gap-1.5"><Package size={12}/> Tindakan Diperlukan: Kirim Barang</p>
+                            <p className="text-xs md:text-[10px] text-ink/70 leading-relaxed">
+                              Pengajuan retur disetujui. Silakan kemas barang dengan aman dan kirimkan ke:<br/>
+                              <strong>Gudang NINOC Archive</strong><br/>
+                              Jl. Sudirman No. 123, Jakarta Selatan<br/>
+                              <span className="text-[9px] md:text-[7px] italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain di chat)</span>
+                            </p>
+                            <div className="pt-2 border-t border-ink/5">
+                              <p className="text-[10px] md:text-[8px] font-semibold text-ink/60 mb-2">Input Resi Pengembalian</p>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <input 
+                                  type="text" 
+                                  id={`courier-${r.id}`}
+                                  placeholder="Nama Kurir (JNT/JNE/...)" 
+                                  className="w-full sm:w-1/3 px-2.5 py-1.5 text-xs md:text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                                />
+                                <input 
+                                  type="text" 
+                                  id={`awb-${r.id}`}
+                                  placeholder="Nomor Resi / AWB" 
+                                  className="w-full sm:flex-1 px-2.5 py-1.5 text-xs md:text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                                />
+                                <button 
+                                  onClick={async () => {
+                                    const courier = (document.getElementById(`courier-${r.id}`) as HTMLInputElement)?.value;
+                                    const awb = (document.getElementById(`awb-${r.id}`) as HTMLInputElement)?.value;
+                                    if (!courier || !awb) return alert('Kurir dan Resi wajib diisi');
+                                    try {
+                                      const res = await fetch(`/api/retur/${r.id}/shipping`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ return_courier: courier, return_awb: awb })
+                                      });
+                                      if(res.ok) handleRefresh();
+                                      else alert('Gagal menyimpan resi');
+                                    } catch(e) { alert('Error: ' + e); }
+                                  }}
+                                  className="px-3 py-1.5 bg-ink text-white text-[10px] md:text-[8px] font-bold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors whitespace-nowrap"
+                                >
+                                  Submit Resi
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Info Resi Terkirim */}
+                        {r.return_awb && (
+                          <div className="bg-blue-50 border border-blue-100 rounded-sm p-2.5 flex items-start gap-2">
+                            <Package size={14} className="text-blue-500 mt-0.5" />
+                            <div>
+                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-blue-600 mb-0.5">Barang Dikirim Kembali</p>
+                              <p className="text-xs md:text-[10px] font-bold text-blue-700">{r.return_courier?.toUpperCase()} - {r.return_awb}</p>
+                              <p className="text-[10px] md:text-[8px] text-blue-500 mt-1">Tim gudang kami akan memproses setelah barang tiba.</p>
+                            </div>
                           </div>
                         )}
 

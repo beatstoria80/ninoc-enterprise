@@ -28,6 +28,9 @@ interface ReturRequest {
   admin_notes: string | null;
   refund_amount: number | null;
   refund_method: string | null;
+  return_awb: string | null;
+  return_courier: string | null;
+  return_shipped_at: string | null;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
@@ -324,6 +327,40 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                 <p className="text-sm font-medium text-gray-600">Total Pembayaran Awal</p>
                 <p className="text-base font-bold text-gray-900">{formatPrice(retur.order.total_price)}</p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Return Shipping Status */}
+        {status === 'approved' && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2">Status Pengembalian Barang</h3>
+            <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+              {retur.return_awb ? (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                    <Package size={20} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-gray-900">Barang Sedang Dikirim Oleh Pelanggan</p>
+                    <p className="text-sm text-gray-600 mt-1">Kurir: <span className="font-semibold uppercase">{retur.return_courier}</span></p>
+                    <p className="text-sm text-gray-600">Resi: <span className="font-semibold uppercase tracking-wider">{retur.return_awb}</span></p>
+                    {retur.return_shipped_at && (
+                      <p className="text-xs text-gray-400 mt-2">Diinput pada: {formatDate(retur.return_shipped_at)}</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+                    <Clock size={20} className="text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">Menunggu Pelanggan Mengirim Barang</p>
+                    <p className="text-sm text-gray-600 mt-1">Pelanggan belum memasukkan nomor resi pengembalian.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
