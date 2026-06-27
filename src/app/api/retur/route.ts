@@ -125,9 +125,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'order_id, reason, and reason_label are required' }, { status: 400 });
     }
 
-    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
-    if (!video_url && isProduction) {
-      return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum submit retur' }, { status: 400 });
+    if (!video_url || video_url.trim() === '') {
+      return NextResponse.json({ error: 'Bukti video WAJIB — upload video unboxing sebelum submit retur' }, { status: 400 });
     }
 
     // Get current user (guest or authenticated) via server-side cookie session
@@ -138,6 +137,28 @@ export async function POST(req: NextRequest) {
     // If no user_id, guest_email is required
     if (!uid && !guest_email?.includes('@')) {
       return NextResponse.json({ error: 'Email wajib diisi untuk guest (contoh: nama@email.com)' }, { status: 400 });
+    }
+
+    // VALIDASI KEAMANAN: Pastikan order ID benar-benar ada di database dan statusnya valid
+    const { data: orderData, error: orderError } = await adminClient
+      .from('orders')
+      .select('id, user_id, status')
+      .eq('id', order_id)
+      .maybeSingle();
+
+    if (orderError || !orderData) {
+      return NextResponse.json({ error: 'Order tidak valid atau tidak ditemukan di sistem.' }, { status: 404 });
+    }
+
+    // Hanya pesanan yang sudah dikirim atau selesai yang boleh diretur
+    const allowedStatuses = ['shipped', 'delivered', 'completed'];
+    if (!allowedStatuses.includes(orderData.status.toLowerCase())) {
+      return NextResponse.json({ error: `Pesanan belum dapat diretur (Status: ${orderData.status}).` }, { status: 400 });
+    }
+
+    // Validasi kepemilikan order (jika user login)
+    if (uid && orderData.user_id && orderData.user_id !== uid) {
+      return NextResponse.json({ error: 'Order ini tidak terdaftar pada akun Anda.' }, { status: 403 });
     }
 
     // Duplicate check: check by user_id OR by order_id + guest_email
