@@ -22,7 +22,7 @@ const TRUST_ITEMS = [
 ];
 
 export default function ReturClient() {
-  const [view, setView] = useState<'form' | 'status'>('form');
+  const [view, setView] = useState<'form' | 'status' | 'track'>('form');
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
