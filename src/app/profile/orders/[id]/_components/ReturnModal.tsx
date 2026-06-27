@@ -129,18 +129,22 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
     try {
       let finalVideoUrl = '';
       if (videoFile) {
-        const { data: { user } } = await supabase.auth.getUser();
-        const uid = user?.id || userId;
-        const filename = `${uid || 'guest'}/${Date.now()}.${videoFile.name.split('.').pop()}`;
-        const buffer = await videoFile.arrayBuffer();
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('retur-videos')
-          .upload(filename, buffer, { contentType: videoFile.type, upsert: true });
-        if (uploadError) throw new Error('Gagal upload video');
-        const { data: urlData } = supabase.storage
-          .from('retur-videos')
-          .getPublicUrl(uploadData.path);
-        finalVideoUrl = urlData.publicUrl;
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        formData.append('retur_id', `temp-${Date.now()}`); // We don't have returId yet
+        
+        const uploadRes = await fetch('/api/retur/upload-video', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadRes.ok) {
+          const errorData = await uploadRes.json();
+          throw new Error(errorData.error || 'Gagal upload video ke server');
+        }
+        
+        const uploadData = await uploadRes.json();
+        finalVideoUrl = uploadData.video_url;
       }
 
       const res = await fetch('/api/retur', {

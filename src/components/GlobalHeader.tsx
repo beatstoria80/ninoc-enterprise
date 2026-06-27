@@ -427,9 +427,8 @@ export default function GlobalHeader() {
       {/* NAVIGATION BAR */}
       {!isSupplierApply ? (
         <nav
-          id="global-header"
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 transition-all duration-700",
+            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 transition-colors duration-700",
             isScrolled ? "bg-white border-b border-ink/5" : "bg-transparent"
           )}
         >

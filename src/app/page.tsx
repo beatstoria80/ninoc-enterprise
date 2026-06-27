@@ -951,22 +951,6 @@ export default function Home() {
                 >
                   SHOP NOW
                 </motion.button>
-
-                {/* Animated Scroll Indicator */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.7 }}
-                  transition={{ duration: 1, delay: 1.5 }}
-                  className="mt-8 flex flex-col items-center justify-center cursor-pointer"
-                  onClick={handleShopClick}
-                >
-                  <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <ChevronDown size={24} className="text-white/80" />
-                  </motion.div>
-                </motion.div>
               </div>
             </div>
           </motion.div>
