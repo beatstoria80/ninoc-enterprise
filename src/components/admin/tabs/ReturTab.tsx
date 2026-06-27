@@ -253,32 +253,43 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         </div>
 
         {/* Video Evidence */}
-        {retur.video_url && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Video size={16} /> Bukti Video Unboxing</span>
-              {retur.video_duration_seconds && (
-                <span className="text-xs text-gray-500">{retur.video_duration_seconds} detik</span>
-              )}
-            </h3>
-            <div className="rounded-lg overflow-hidden border border-gray-200 bg-black max-w-2xl">
-              <video
-                src={retur.video_url}
-                controls
-                className="w-full aspect-video"
-              />
-            </div>
-            {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
-              <div className="p-3 bg-red-50 rounded-md border border-red-200 space-y-2 mt-2">
-                {retur.fraud_reasons.map((r, i) => (
-                  <p key={i} className="text-sm text-red-700 flex items-start gap-2">
-                    <AlertCircle size={16} className="shrink-0 mt-0.5" />{r}
-                  </p>
-                ))}
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
+            <span className="flex items-center gap-2"><Video size={16} /> Bukti Video Unboxing</span>
+            {retur.video_duration_seconds ? (
+              <span className="text-xs text-gray-500">{retur.video_duration_seconds} detik</span>
+            ) : null}
+          </h3>
+          
+          {retur.video_url ? (
+            <>
+              <div className="rounded-lg overflow-hidden border border-gray-200 bg-black max-w-2xl">
+                <video
+                  src={retur.video_url}
+                  controls
+                  className="w-full aspect-video"
+                />
               </div>
-            )}
-          </div>
-        )}
+              {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
+                <div className="p-3 bg-red-50 rounded-md border border-red-200 space-y-2 mt-2">
+                  {retur.fraud_reasons.map((r, i) => (
+                    <p key={i} className="text-sm text-red-700 flex items-start gap-2">
+                      <AlertCircle size={16} className="shrink-0 mt-0.5" />{r}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+              <Video size={32} className="text-gray-300 mb-3" />
+              <p className="text-sm font-bold text-gray-700">Video Tidak Tersedia</p>
+              <p className="text-xs text-gray-500 text-center max-w-xs mt-1">
+                Pelanggan tidak melampirkan video unboxing. Harap waspada dan periksa detail pesanan dengan teliti.
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Order History */}
         {retur.order && (
