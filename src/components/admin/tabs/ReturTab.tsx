@@ -626,7 +626,7 @@ export function ReturTab() {
                     
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-sm font-mono font-bold text-gray-900 truncate pr-2">{r.order_id}</span>
-                      <span className={cn('text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0', cfg?.color)}>
+                      <span className={cn('text-xs px-2 py-0.5 rounded-full font-bold uppercase shrink-0', cfg?.color)}>
                         {r.status}
                       </span>
                     </div>

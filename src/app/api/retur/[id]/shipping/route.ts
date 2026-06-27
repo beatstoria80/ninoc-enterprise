@@ -14,21 +14,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const body = await req.json();
-    const { return_awb, return_courier } = body;
+    const { return_awb, return_courier, order_id } = body;
 
-    if (!return_awb || !return_courier) {
-      return NextResponse.json({ error: 'AWB and Courier are required' }, { status: 400 });
+    if (!return_awb || !return_courier || !order_id) {
+      return NextResponse.json({ error: 'AWB, Courier, and Order ID are required' }, { status: 400 });
     }
 
-    // Periksa status saat ini
+    // Periksa status saat ini dan validasi kepemilikan via order_id
     const { data: current, error: fetchErr } = await adminClient
       .from('retur_requests')
-      .select('status')
+      .select('status, order_id')
       .eq('id', id)
       .single();
 
     if (fetchErr || !current) {
       return NextResponse.json({ error: 'Retur not found' }, { status: 404 });
+    }
+
+    if (current.order_id !== order_id) {
+      return NextResponse.json({ error: 'Unauthorized: Order ID mismatch' }, { status: 403 });
     }
 
     if (current.status !== 'approved') {
