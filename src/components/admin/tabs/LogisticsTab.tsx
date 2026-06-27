@@ -479,38 +479,6 @@ export function LogisticsTab({
                       <span className="text-[11px] text-gray-800">Updated 5 mins ago</span>
                     </div>
                     <div className="flex items-center gap-2">
-
-                      {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
-                        <button 
-                          onClick={() => handleRequestPickup(logisticsSelectedOrder)}
-                          disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
-                          className={cn(
-                            "px-2 py-1 text-[11px] font-medium rounded border transition-all flex items-center gap-1.5",
-                            (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
-                              ? "bg-gray-100 text-gray-800 border-gray-200 cursor-not-allowed opacity-50"
-                              : logisticsSelectedOrder.status === 'shipped'
-                                ? "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
-                                : "bg-ink text-white border-ink hover:bg-ink/90"
-                          )}
-                        >
-                          {isDispatching ? (
-                            <>
-                              <div className="w-2.5 h-2.5 border border-white/20 border-t-white rounded-full animate-spin" />
-                              Memproses...
-                            </>
-                          ) : logisticsSelectedOrder.status === 'shipped' || (logisticsSelectedOrder.print_count && logisticsSelectedOrder.print_count > 0) ? (
-                            <>
-                              <Truck size={10} />
-                              Request Pickup (Sudah {logisticsSelectedOrder.print_count || 1}x Print)
-                            </>
-                          ) : (
-                            <>
-                              <Truck size={10} />
-                              Request Pickup (Dispatch)
-                            </>
-                          )}
-                        </button>
-                      )}
                       <button className="px-2 py-1 bg-gray-50 text-[11px] font-medium text-gray-800 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
                         Refresh
                       </button>
@@ -606,13 +574,65 @@ export function LogisticsTab({
                 </div>
               </div>
 
-              {/* Right Column: Large Map Visualization */}
+              {/* Right Column: Action Panel & Map Visualization */}
               <div className="flex flex-col h-full min-h-[350px]">
-                <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Logistics Tracking</p>
+                {/* Logistics Action (Dispatch) */}
+                <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-sm mb-3">
+                  <div className="flex justify-between items-center mb-3">
+                    <div>
+                      <p className="text-[11px] font-bold text-gray-900 uppercase tracking-wider">Logistics Action</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{logisticsSelectedOrder.courier?.toUpperCase() || 'JNE REG'} • {logisticsSelectedOrder.shipping_address?.city}</p>
+                    </div>
+                    <span className={cn(
+                      "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+                      logisticsSelectedOrder.status === 'shipped' ? "bg-orange-100 text-orange-700" :
+                      logisticsSelectedOrder.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
+                      "bg-blue-100 text-blue-700"
+                    )}>
+                      {logisticsSelectedOrder.status}
+                    </span>
+                  </div>
+                  
+                  {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
+                    <button 
+                      onClick={() => handleRequestPickup(logisticsSelectedOrder)}
+                      disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
+                      className={cn(
+                        "w-full py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex justify-center items-center gap-2",
+                        (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                          : logisticsSelectedOrder.status === 'shipped'
+                            ? "bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100"
+                            : "bg-ink text-white hover:bg-ink/90 shadow-md"
+                      )}
+                    >
+                      {isDispatching ? (
+                        <>
+                          <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                          Memproses...
+                        </>
+                      ) : logisticsSelectedOrder.status === 'shipped' || (logisticsSelectedOrder.print_count && logisticsSelectedOrder.print_count > 0) ? (
+                        <>
+                          <Truck size={14} />
+                          Request Pickup Ulang ({logisticsSelectedOrder.print_count || 1}x Print)
+                        </>
+                      ) : (
+                        <>
+                          <Package size={14} />
+                          Panggil Kurir (Dispatch)
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Map */}
+                <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Tracking Map</p>
                 <div className="relative w-full h-full bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 flex-1">
                   <MapTracker 
                     destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
                     status={logisticsSelectedOrder.status} 
+                    orderId={logisticsSelectedOrder.id}
                     className="w-full h-full absolute inset-0 z-[1]"
                   />
                 </div>
