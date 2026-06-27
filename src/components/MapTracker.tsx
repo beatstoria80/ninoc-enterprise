@@ -50,7 +50,7 @@ const cityCoordinates: Record<string, [number, number]> = {
   'malang': [-7.9666, 112.6326],
 };
 
-const ORIGIN_COORDS: [number, number] = [-6.2088, 106.8456]; // Jakarta Atelier
+const ORIGIN_COORDS: [number, number] = [-6.9175, 107.6191]; // Bandung Warehouse
 
 interface TrackingLog {
   id: string;
