@@ -674,7 +674,7 @@ export default function MobileLayout({
                 className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]"
               >
                 <div
-                  className={cn("transition-all duration-150", isActive('/') ? "scale-110 text-rose" : "text-white/80")}
+                  className={cn("transition-all duration-150", isActive('/') ? "scale-110 text-white" : "text-white/80")}
                 >
                   <HomeIcon active={false} />
                 </div>
@@ -688,7 +688,7 @@ export default function MobileLayout({
             <Link  href="/checkout" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
               <div className="relative">
                 <div
-                  className={cn("transition-all duration-150", isActive('/checkout') ? "scale-110 text-rose" : "text-white/80")}
+                  className={cn("transition-all duration-150", isActive('/checkout') ? "scale-110 text-white" : "text-white/80")}
                 >
                   <CartIcon active={isActive('/checkout')} />
                 </div>
@@ -703,7 +703,7 @@ export default function MobileLayout({
                   </motion.span>
                 )}
               </div>
-              <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-rose" : "text-white/50")}>
+              <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/checkout') ? "text-white" : "text-white/50")}>
                 Cart
               </span>
             </Link>
@@ -731,11 +731,11 @@ export default function MobileLayout({
             {/* Profile */}
             <Link  href="/profile" className="flex flex-col items-center justify-center gap-1 py-1 px-4 min-w-[60px]">
               <div
-                className={cn("transition-all duration-150", isActive('/profile') ? "scale-110 text-rose" : "text-white/80")}
+                className={cn("transition-all duration-150", isActive('/profile') ? "scale-110 text-white" : "text-white/80")}
               >
                 <UserIcon active={isActive('/profile')} />
               </div>
-              <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-rose" : "text-white/50")}>
+              <span className={cn("text-[7.5px] font-medium uppercase tracking-[0.1em]", isActive('/profile') ? "text-white" : "text-white/50")}>
                 Profile
               </span>
             </Link>
