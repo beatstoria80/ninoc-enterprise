@@ -6,9 +6,9 @@ const adminClient = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: 'Retur ID required' }, { status: 400 });
     }
