@@ -18,28 +18,20 @@ export default async function ProfilePage() {
     .eq('user_id', authUser.id)
     .single();
 
+  if (!profile) {
+    redirect('/onboarding');
+  }
+
   const deterministicCustomerNumber = 'NNC-' + authUser.id.split('-')[0].toUpperCase();
 
-  let user: UserProfile;
-  if (profile) {
-    user = {
-      id: authUser.id,
-      email: authUser.email || '',
-      full_name: profile.full_name || authUser.user_metadata?.full_name || 'NINOC Member',
-      avatar_url: profile.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
-      created_at: profile.created_at || authUser.created_at,
-      customer_number: deterministicCustomerNumber,
-    };
-  } else {
-    user = {
-      id: authUser.id,
-      email: authUser.email || '',
-      full_name: authUser.user_metadata?.full_name || 'NINOC Member',
-      avatar_url: authUser.user_metadata?.avatar_url || '',
-      created_at: authUser.created_at,
-      customer_number: deterministicCustomerNumber,
-    };
-  }
+  const user: UserProfile = {
+    id: authUser.id,
+    email: authUser.email || '',
+    full_name: profile.full_name || authUser.user_metadata?.full_name || 'NINOC Member',
+    avatar_url: profile.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
+    created_at: profile.created_at || authUser.created_at,
+    customer_number: deterministicCustomerNumber,
+  };
 
   // Fetch Orders
   const { data: ordersData } = await supabase
