@@ -7,14 +7,19 @@ const adminClient = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
-    const userId = searchParams.get('user_id');
     const orderId = searchParams.get('order_id');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
+
+    // Auth check
+    const serverClient = await createServerClient();
+    const { data: { user } } = await serverClient.auth.getUser();
 
     let query = adminClient
       .from('retur_requests')
@@ -22,11 +27,33 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
+    if (user) {
+      // Check if admin
+      const { data: roleData } = await adminClient
+        .from('admin_roles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      const isAdmin = roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
+      
+      // If NOT admin, force query to only show their own returns
+      if (!isAdmin) {
+        query = query.eq('user_id', user.id);
+      } else {
+        // If admin, they can explicitly filter by a specific user_id if they want
+        const requestedUserId = searchParams.get('user_id');
+        if (requestedUserId) {
+          query = query.eq('user_id', requestedUserId);
+        }
+      }
+    } else {
+      // Unauthenticated users see nothing
+      return NextResponse.json({ retur_requests: [], total: 0 });
+    }
+
     if (status && status !== 'all') {
       query = query.eq('status', status);
-    }
-    if (userId) {
-      query = query.eq('user_id', userId);
     }
     if (orderId) {
       query = query.ilike('order_id', `%${orderId}%`);
