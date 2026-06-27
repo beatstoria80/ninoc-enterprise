@@ -37,7 +37,7 @@ interface ReturRequest {
     id: string;
     total_price: number;
     status: string;
-    order_items: { id: string; product_name: string; quantity: number; price_at_purchase: number }[];
+    order_items: { id: string; product_name: string; size?: string; color?: string; quantity: number; price_at_purchase: number }[];
   } | null;
 }
 
@@ -296,6 +296,11 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{item.product_name}</p>
+                      {(item.color || item.size) && (
+                        <p className="text-xs font-semibold text-gray-700 bg-gray-100 px-2 py-0.5 rounded-sm inline-block my-1">
+                          Varian: {[item.color, item.size].filter(Boolean).join(' - ')}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500">{item.quantity}x @ {formatPrice(item.price_at_purchase)}</p>
                     </div>
                   </div>
