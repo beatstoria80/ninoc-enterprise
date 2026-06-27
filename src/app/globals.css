@@ -184,6 +184,13 @@ button:active, a:active, [role="button"]:active {
   box-shadow: 0 20px 40px -15px rgba(20, 20, 20, 0.1);
 }
 
+/* Hide GlobalHeader during Opening Video (hero scene) */
+.hero-active #global-header {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-20px) !important;
+}
+
 /* Smooth page transitions */
 .page-transition {
   animation: fadeSlideIn 0.3s ease-out;
