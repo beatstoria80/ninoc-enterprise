@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS retur_requests (
   video_uploaded_at TIMESTAMPTZ,
   video_duration_seconds INT,
   video_filename TEXT,
+  return_type TEXT NOT NULL DEFAULT 'refund' CHECK (return_type IN ('refund', 'exchange')),
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN (
     'pending', 'reviewed', 'approved', 'rejected', 'completed', 'cancelled'
   )),
