@@ -99,7 +99,7 @@ export function Invoice({ order }: InvoiceProps) {
                 <div className="flex flex-col max-w-[70%]">
                   <span className="font-medium text-ink text-[9.5px]">{item.product_name}</span>
                   <span className="text-[8px] text-ink/60 mt-0.5">
-                    {item.size ? `Ukuran: ${item.size}` : 'All Size'} • Qty: {item.quantity}
+                    {[item.color, item.size].filter(Boolean).join(' - ') || 'All Size'} • Qty: {item.quantity}
                   </span>
                 </div>
                 <div className="text-right flex flex-col shrink-0">
@@ -258,7 +258,7 @@ export function PrintableInvoice({ order }: InvoiceProps) {
                     <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '70%' }}>
                       <span style={{ fontWeight: 500 }}>{item.product_name}</span>
                       <span style={{ fontSize: '7.5px', color: 'rgba(20,20,20,0.4)', marginTop: '1px' }}>
-                        {item.size ? `Ukuran: ${item.size}` : 'All Size'} • Qty: {item.quantity}
+                        {[item.color, item.size].filter(Boolean).join(' - ') || 'All Size'} • Qty: {item.quantity}
                       </span>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '1px' }}>
