@@ -35,12 +35,12 @@ export interface WAParameter {
   video?: { link: string };
 }
 
-// ─── Template Names (pre-approved in Meta Business Console) ────────────────────
 export const WA_TEMPLATES = {
   INVOICE_SUCCESS: 'invoice_success',
   SHIPPING_UPDATE: 'shipping_update',
   ORDER_DELIVERED: 'order_delivered',
   PROMO_BROADCAST: 'promo_broadcast',
+  RETUR_STATUS_UPDATE: 'retur_status_update',
 } as const;
 
 export type WATemplateKey = keyof typeof WA_TEMPLATES;
@@ -205,6 +205,29 @@ export async function sendBroadcastWA(params: {
       parameters: [
         { type: 'text', text: params.customer_name },
         { type: 'text', text: params.promo_text },
+      ],
+    },
+  ]);
+}
+
+/**
+ * Send retur status update notification
+ */
+export async function sendWAReturStatusUpdate(params: {
+  phone: string;
+  customer_name: string;
+  order_id: string;
+  new_status: string;
+  additional_notes?: string;
+}): Promise<WASendResult> {
+  return sendTemplateMessage(WA_TEMPLATES.RETUR_STATUS_UPDATE, params.phone, [
+    {
+      type: 'body',
+      parameters: [
+        { type: 'text', text: params.customer_name || 'Customer' },
+        { type: 'text', text: params.order_id },
+        { type: 'text', text: params.new_status },
+        { type: 'text', text: params.additional_notes || '-' },
       ],
     },
   ]);

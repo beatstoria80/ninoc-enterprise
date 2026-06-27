@@ -241,3 +241,86 @@ export async function sendEmailReturConfirmation(returRequest: any, order: any, 
     console.error(`[Email] Failed to send retur confirmation to ${customerEmail}:`, error);
   }
 }
+
+export async function sendEmailReturStatusUpdate(returRequest: any, order: any, customerEmail: string, newStatus: string, adminNotes?: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
+  if (!customerEmail) return;
+
+  const orderIdShort = order.id.toUpperCase();
+  const trackingUrl = `https://ninoc.store/retur`;
+  
+  let statusText = '';
+  let color = '#141414';
+  let message = '';
+
+  if (newStatus === 'approved') {
+    statusText = 'DISETUJUI';
+    color = '#059669'; // emerald
+    message = 'Kabar baik! Pengajuan retur Anda telah kami <strong>Setujui</strong>. Silakan segera mengirimkan fisik barang kembali ke Gudang kami dan menginput nomor resi (AWB) pada halaman pelacakan agar tim Gudang dapat memprosesnya saat tiba.';
+  } else if (newStatus === 'rejected') {
+    statusText = 'DITOLAK';
+    color = '#e11d48'; // rose
+    message = 'Mohon maaf, pengajuan retur Anda terpaksa kami <strong>Tolak</strong> karena tidak memenuhi persyaratan kebijakan retur kami (misal: video tidak valid atau telah melewati batas 2x24 jam).';
+  } else if (newStatus === 'completed') {
+    statusText = 'SELESAI';
+    color = '#4f46e5'; // indigo
+    message = 'Barang retur Anda telah sampai di Gudang kami dan selesai melewati proses Audit QC. Pengembalian dana (Refund) atau penukaran barang akan segera diproses oleh tim kami dalam 1x24 jam kerja.';
+  } else {
+    return; // Don't send emails for other statuses (e.g., reviewed, pending)
+  }
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="margin: 0; padding: 0; background-color: #f6f6f6; font-family: Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <tr>
+        <td style="background-color: ${color}; padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">Update Status Retur</h1>
+          <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Order #${orderIdShort}</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 40px 30px;">
+          <p style="margin: 0 0 20px 0; font-size: 16px; color: #141414; line-height: 1.5;">
+            Hi <strong>${order.shipping_address?.name || 'Customer'}</strong>,<br/><br/>
+            ${message}
+          </p>
+          
+          ${adminNotes ? `
+          <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 25px;">
+            <p style="margin: 0; font-size: 14px; color: #b45309;"><strong>Catatan Admin:</strong><br/>${adminNotes}</p>
+          </div>
+          ` : ''}
+
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 40px; margin-top: 20px;">
+            <tr>
+              <td align="center">
+                <a href="${trackingUrl}" style="display: inline-block; background-color: #141414; color: #ffffff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Lacak Status Retur</a>
+              </td>
+            </tr>
+          </table>
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `[${statusText}] Status Retur Pesanan #${orderIdShort}`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Retur status (${newStatus}) update sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send retur status update to ${customerEmail}:`, error);
+  }
+}
+
