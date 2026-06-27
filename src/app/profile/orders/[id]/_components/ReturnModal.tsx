@@ -116,7 +116,6 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
   const canProceedStep1 = selectedCount > 0;
   const canProceedStep2 =
     description.trim().length >= 10 &&
-    videoFile !== null &&
     termsAccepted &&
     termsScrolled &&
     reasonValue !== '';
