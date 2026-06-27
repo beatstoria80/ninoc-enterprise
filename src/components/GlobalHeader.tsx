@@ -428,15 +428,16 @@ export default function GlobalHeader() {
       {!isSupplierApply ? (
         <nav
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 flex items-center justify-between transition-colors duration-700",
+            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 transition-colors duration-700",
             isScrolled ? "bg-white border-b border-ink/5" : "bg-transparent"
           )}
         >
+          <div className="w-full max-w-[1800px] mx-auto flex items-center justify-between relative">
           <div className="flex items-center gap-1 md:gap-5">
             {/* Drawer Menu Toggle (3 Dots) */}
             <PressScale 
               onClick={() => setIsMenuOpen(true)} 
-              className={cn("transition-colors cursor-pointer p-2 -ml-5 md:-m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
+              className={cn("transition-colors cursor-pointer p-2 -ml-5 md:-ml-5 md:-my-2 md:-mr-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
             >
               <MoreVertical size={20} strokeWidth={1.5} />
             </PressScale>
@@ -567,6 +568,7 @@ export default function GlobalHeader() {
             </PressScale>
           </motion.div>
         </motion.div>
+        </div>
       </nav>
       ) : (
         <div className="fixed top-0 inset-x-0 z-[150] px-3 md:px-6 pt-3 md:pt-4 pb-6 flex items-start justify-between pointer-events-none">
