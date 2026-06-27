@@ -74,25 +74,28 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (updateErr) throw updateErr;
 
     // Trigger Notifications for completed
-    adminClient.from('orders').select('customer_email, customer_phone, shipping_address').eq('id', retur.order_id).single()
-      .then(({ data: order }) => {
+    (async () => {
+      try {
+        const { data: order } = await adminClient.from('orders').select('customer_email, customer_phone, shipping_address').eq('id', retur.order_id).single();
         if (order) {
           const customerEmail = retur.guest_email || order.customer_email;
           if (customerEmail) {
-            sendEmailReturStatusUpdate(retur, order, customerEmail, 'completed', qc_notes).catch(console.error);
+            await sendEmailReturStatusUpdate(retur, order, customerEmail, 'completed', qc_notes);
           }
           if (order.customer_phone) {
-            sendWAReturStatusUpdate({
+            await sendWAReturStatusUpdate({
               phone: order.customer_phone,
               customer_name: (order.shipping_address as any)?.name || 'Customer',
               order_id: retur.order_id,
               new_status: 'SELESAI',
               additional_notes: qc_notes
-            }).catch(console.error);
+            });
           }
         }
-      }).catch(console.error);
-
+      } catch (e) {
+        console.error('[Notification Error]', e);
+      }
+    })();
 
     return NextResponse.json({ success: true, message: 'QC Audit completed successfully' });
 

@@ -560,85 +560,98 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         )}
       </div>
 
-      {/* QC Modal */}
-      {showQcModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b flex items-center justify-between bg-gray-50">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">QC & Audit Barang Retur</h2>
-                <p className="text-sm text-gray-500 mt-1">Lakukan penyortiran barang untuk stok gudang.</p>
+      {/* QC Modal (Emil Kowalski Polished) */}
+      <AnimatePresence>
+        {showQcModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] ring-1 ring-black/5"
+            >
+              <div className="p-6 border-b flex items-center justify-between bg-white">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 tracking-tight">QC & Audit Barang Retur</h2>
+                  <p className="text-sm text-gray-500 mt-1">Lakukan penyortiran presisi untuk data gudang.</p>
+                </div>
+                <button onClick={() => setShowQcModal(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                  <X size={20} />
+                </button>
               </div>
-              <button onClick={() => setShowQcModal(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-200">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="p-5 overflow-y-auto space-y-5">
-              {retur.order?.order_items.map((item, idx) => (
-                <div key={item.id} className="p-4 border rounded-lg bg-gray-50/50 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-gray-900">{item.product_name}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">
-                        {item.size || '-'} / {item.color || '-'} • Qty: {item.quantity}
-                      </p>
+              <div className="p-6 overflow-y-auto space-y-5 bg-gray-50/30">
+                {retur.order?.order_items.map((item, idx) => (
+                  <div key={item.id} className="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-gray-900">{item.product_name}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                          {item.size || '-'} / {item.color || '-'} • Qty: {item.quantity}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6 mt-2 pt-3 border-t border-gray-100">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name={`qc-${item.id}`} 
+                          checked={(!qcItems[item.id]) || qcItems[item.id] === 'sellable'} 
+                          onChange={() => setQcItems(prev => ({ ...prev, [item.id]: 'sellable' }))}
+                          className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                        />
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Layak Jual (Restock)</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name={`qc-${item.id}`} 
+                          checked={qcItems[item.id] === 'defective'} 
+                          onChange={() => setQcItems(prev => ({ ...prev, [item.id]: 'defective' }))}
+                          className="w-4 h-4 text-rose-600 focus:ring-rose-500 border-gray-300"
+                        />
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Cacat / Afkir (Write-off)</span>
+                      </label>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 mt-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="radio" 
-                        name={`qc-${item.id}`} 
-                        checked={(!qcItems[item.id]) || qcItems[item.id] === 'sellable'} 
-                        onChange={() => setQcItems(prev => ({ ...prev, [item.id]: 'sellable' }))}
-                        className="w-4 h-4 text-emerald-600"
-                      />
-                      <span className="text-sm font-medium text-gray-700">Layak Jual (Restock)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="radio" 
-                        name={`qc-${item.id}`} 
-                        checked={qcItems[item.id] === 'defective'} 
-                        onChange={() => setQcItems(prev => ({ ...prev, [item.id]: 'defective' }))}
-                        className="w-4 h-4 text-rose"
-                      />
-                      <span className="text-sm font-medium text-gray-700">Cacat / Afkir (Write-off)</span>
-                    </label>
-                  </div>
-                </div>
-              ))}
+                ))}
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Catatan Audit Tambahan (Opsional)</label>
-                <textarea 
-                  value={qcNotes}
-                  onChange={(e) => setQcNotes(e.target.value)}
-                  className="w-full p-3 border rounded-lg bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
-                  rows={3}
-                  placeholder="Misal: Kemasan rusak, namun produk aman..."
-                />
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Catatan Audit Tambahan (Opsional)</label>
+                  <textarea 
+                    value={qcNotes}
+                    onChange={(e) => setQcNotes(e.target.value)}
+                    className="w-full p-4 border border-gray-200 rounded-xl bg-white focus:bg-white outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm resize-none"
+                    rows={3}
+                    placeholder="Misal: Kemasan rusak, namun produk aman..."
+                  />
+                </div>
               </div>
-            </div>
-            <div className="p-5 border-t bg-gray-50 flex justify-end gap-3">
-              <button 
-                onClick={() => setShowQcModal(false)}
-                className="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border rounded-lg hover:bg-gray-50"
-              >
-                Batal
-              </button>
-              <button 
-                onClick={handleQCAudit}
-                disabled={saving}
-                className="px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
-              >
-                {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Package size={16} />}
-                Simpan & Selesaikan Retur
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="p-6 border-t bg-white flex justify-end gap-3 rounded-b-2xl">
+                <button 
+                  onClick={() => setShowQcModal(false)}
+                  className="px-6 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Batal
+                </button>
+                <button 
+                  onClick={handleQCAudit}
+                  disabled={saving}
+                  className="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+                >
+                  {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Package size={16} />}
+                  Simpan & Selesaikan Retur
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
