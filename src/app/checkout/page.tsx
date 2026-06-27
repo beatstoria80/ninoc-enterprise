@@ -660,7 +660,18 @@ export default function CheckoutPage() {
     isProcessingRef.current = true;
     setIsProcessing(true);
 
-    const fullAddress = `${formData.street} No. ${formData.house_number}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}, ${formData.postal_code}`.trim().replace(/,\s*$/, '');
+    let cleanStreet = formData.street.trim();
+    const houseNumStr = formData.house_number.trim();
+    if (houseNumStr) {
+      // Remove house number if it was prefixed by autocomplete (e.g. "40 Jl. Jamika")
+      const regexStart = new RegExp(`^${houseNumStr}\\s+`, 'i');
+      cleanStreet = cleanStreet.replace(regexStart, '');
+      // Remove house number if it was appended (e.g. "Jl. Jamika 40" or "Jl. Jamika No. 40")
+      const regexEnd = new RegExp(`\\s*(no\\.?\\s*)?${houseNumStr}$`, 'i');
+      cleanStreet = cleanStreet.replace(regexEnd, '');
+    }
+
+    const fullAddress = `${cleanStreet} No. ${houseNumStr}, RT ${formData.rt}/RW ${formData.rw}, Kel. ${formData.kelurahan}, Kec. ${formData.kecamatan}, ${formData.city}, ${formData.province}, ${formData.postal_code}`.trim().replace(/,\s*$/, '');
     const fullName = `${formData.first_name} ${formData.last_name}`.trim();
 
     try {
