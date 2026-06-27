@@ -97,6 +97,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   const [description, setDescription] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [returnType, setReturnType] = useState<'refund' | 'exchange'>('refund');
   const [videoDuration, setVideoDuration] = useState<number>(0);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -201,6 +202,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
         video_url: finalVideoUrl,
         video_duration_seconds: videoDuration,
         video_filename: videoFile?.name || '',
+        return_type: returnType,
       };
 
       if (user) {
@@ -341,6 +343,39 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-[11px] font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
               />
               <p className="text-[10px] md:text-[7px] text-ink/20 mt-1">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
+            </div>
+
+            {/* Return Type */}
+            <div>
+              <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-ink/60 mb-2">Tipe Pengajuan <span className="text-rose">*</span></p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReturnType('refund')}
+                  className={cn(
+                    'p-3 border rounded-sm flex flex-col items-center gap-1.5 transition-all text-center',
+                    returnType === 'refund'
+                      ? 'border-rose/40 bg-rose/[0.03] text-rose shadow-sm'
+                      : 'border-ink/10 bg-white text-ink/50 hover:bg-ink/[0.01]'
+                  )}
+                >
+                  <span className="text-xs md:text-[10px] font-semibold uppercase tracking-wider">Refund</span>
+                  <span className="text-[10px] md:text-[7px] uppercase tracking-widest opacity-70">Kembali Dana</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReturnType('exchange')}
+                  className={cn(
+                    'p-3 border rounded-sm flex flex-col items-center gap-1.5 transition-all text-center',
+                    returnType === 'exchange'
+                      ? 'border-rose/40 bg-rose/[0.03] text-rose shadow-sm'
+                      : 'border-ink/10 bg-white text-ink/50 hover:bg-ink/[0.01]'
+                  )}
+                >
+                  <span className="text-xs md:text-[10px] font-semibold uppercase tracking-wider">Exchange</span>
+                  <span className="text-[10px] md:text-[7px] uppercase tracking-widest opacity-70">Tukar Barang</span>
+                </button>
+              </div>
             </div>
 
             {/* Guest Email */}

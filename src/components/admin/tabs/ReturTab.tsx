@@ -23,6 +23,7 @@ interface ReturRequest {
   status: 'pending' | 'reviewed' | 'approved' | 'rejected' | 'completed' | 'cancelled';
   fraud_suspected: boolean | null;
   fraud_reasons: string[] | null;
+  return_type?: 'refund' | 'exchange';
   admin_notes: string | null;
   refund_amount: number | null;
   refund_method: string | null;
@@ -129,6 +130,16 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         {retur.fraud_suspected && (
           <span className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 rounded-sm flex items-center gap-1">
             <AlertCircle size={9} /> Fraud
+          </span>
+        )}
+        {retur.return_type === 'exchange' && (
+          <span className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest bg-purple-50 text-purple-600 border border-purple-100 rounded-sm flex items-center gap-1">
+            Exchange (Tukar)
+          </span>
+        )}
+        {retur.return_type === 'refund' && (
+          <span className="px-2 py-1 text-[9px] font-bold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100 rounded-sm flex items-center gap-1">
+            Refund (Dana)
           </span>
         )}
         {retur.guest_email && (
@@ -508,8 +519,11 @@ export function ReturTab() {
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className={cn('w-2 h-2 rounded-sm shrink-0', cfg?.badge || 'bg-gray-300')} />
                     <span className="text-[9px] font-semibold text-ink uppercase tracking-wider flex-1 truncate font-mono">{r.order_id}</span>
-                    {r.fraud_suspected && <AlertCircle size={10} className="text-red-500 shrink-0" />}
-                    {r.guest_email && <span className="px-1 py-0.5 bg-amber-50 text-amber-600 text-[6px] font-bold uppercase rounded-sm shrink-0">G</span>}
+                    <div className="flex gap-1.5 shrink-0">
+                      {r.return_type === 'exchange' && <span className="text-[9px] text-purple-600 font-bold px-1 bg-purple-50 border border-purple-100 rounded-sm uppercase">EXC</span>}
+                      {r.fraud_suspected && <AlertCircle size={10} className="text-red-500 shrink-0 mt-0.5" />}
+                      {r.guest_email && <span className="px-1 py-0.5 bg-amber-50 text-amber-600 text-[6px] font-bold uppercase rounded-sm">G</span>}
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] md:text-[7px] text-ink/90 truncate">{r.reason_label}</span>

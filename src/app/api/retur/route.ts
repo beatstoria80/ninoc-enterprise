@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       ticket_id,
       user_id: body_user_id,
       guest_email,
+      return_type,
     } = body;
 
     if (!order_id || !reason || !reason_label) {
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
         status: 'pending',
         fraud_suspected: fraudSuspected,
         fraud_reasons: fraudReasons,
+        return_type: return_type || 'refund',
       })
       .select()
       .single();
