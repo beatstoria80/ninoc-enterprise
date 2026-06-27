@@ -114,22 +114,22 @@ CREATE TRIGGER update_retur_requests_updated_at
 ALTER TABLE retur_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_activity_log ENABLE ROW LEVEL SECURITY;
 
--- Retur requests RLS: authenticated users see own rows, service role bypasses RLS for admin ops
+-- Retur requests RLS
+-- authenticated users see own rows; service role (no JWT) bypasses RLS via auth.uid() IS NULL
 DROP POLICY IF EXISTS "retur_consumer_own" ON retur_requests;
 CREATE POLICY "retur_consumer_own" ON retur_requests
   FOR SELECT USING (
-    auth.uid() = user_id                    -- logged-in user sees own
-    OR auth.uid() IS NULL                    -- service role bypass (uses adminClient, no JWT)
+    auth.uid() = user_id
+    OR auth.uid() IS NULL
   );
 
 DROP POLICY IF EXISTS "retur_consumer_insert" ON retur_requests;
 CREATE POLICY "retur_consumer_insert" ON retur_requests
   FOR INSERT WITH CHECK (
     auth.uid() = user_id
-    OR (user_id IS NULL AND auth.uid() IS NULL) -- guest insert via service role
+    OR (user_id IS NULL AND auth.uid() IS NULL)
   );
 
--- Only admin (service role) can update retur rows
 DROP POLICY IF EXISTS "retur_consumer_update" ON retur_requests;
 CREATE POLICY "retur_consumer_update" ON retur_requests
   FOR UPDATE USING (
