@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient as createServerClient } from '@/utils/supabase/server';
+import { sendEmailReturConfirmation } from '@/lib/email';
 import { createClient } from '@supabase/supabase-js';
 
 const adminClient = createClient(
@@ -142,7 +143,7 @@ export async function POST(req: NextRequest) {
     // VALIDASI KEAMANAN: Pastikan order ID benar-benar ada di database dan statusnya valid
     const { data: orderData, error: orderError } = await adminClient
       .from('orders')
-      .select('id, user_id, status')
+      .select('id, user_id, status, wa_delivered_sent_at, shipping_address, order_number')
       .eq('id', order_id)
       .maybeSingle();
 
@@ -154,6 +155,19 @@ export async function POST(req: NextRequest) {
     const allowedStatuses = ['shipped', 'delivered', 'completed'];
     if (!allowedStatuses.includes(orderData.status.toLowerCase())) {
       return NextResponse.json({ error: `Pesanan belum dapat diretur (Status: ${orderData.status}).` }, { status: 400 });
+    }
+
+    // Validasi 2x24 jam sejak paket diterima (jika ada data delivered)
+    if (orderData.wa_delivered_sent_at) {
+      const deliveredTime = new Date(orderData.wa_delivered_sent_at).getTime();
+      const nowTime = Date.now();
+      const diffHours = (nowTime - deliveredTime) / (1000 * 60 * 60);
+      
+      if (diffHours > 48) {
+        return NextResponse.json({ 
+          error: 'Batas waktu klaim retur telah kedaluwarsa. Maksimal pengajuan adalah 2x24 jam sejak pesanan diterima dari kurir.' 
+        }, { status: 400 });
+      }
     }
 
     // Validasi kepemilikan order (jika user login)
@@ -228,6 +242,20 @@ export async function POST(req: NextRequest) {
         description: `Retur diajukan untuk order ${order_id}`,
         metadata: { retur_id: data.id, order_id, reason },
       });
+    }
+
+    // Send Email Confirmation
+    let targetEmail = guest_email;
+    if (uid && !targetEmail) {
+      const { data: userData } = await adminClient.auth.admin.getUserById(uid);
+      if (userData?.user?.email) {
+        targetEmail = userData.user.email;
+      }
+    }
+
+    if (targetEmail) {
+      // Intentionally not awaiting so it doesn't block the API response
+      sendEmailReturConfirmation(data, orderData, targetEmail).catch(console.error);
     }
 
     return NextResponse.json({ retur_request: data }, { status: 201 });

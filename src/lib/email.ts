@@ -140,3 +140,104 @@ export async function sendEmailInvoice(order: any, customerEmail: string) {
     console.error('[Email] Error sending invoice email:', error);
   }
 }
+
+export async function sendEmailReturConfirmation(returRequest: any, order: any, customerEmail: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+    console.error('[Email] SMTP credentials not configured. Skipping retur email.');
+    return;
+  }
+
+  if (!customerEmail) {
+    console.error('[Email] No customer email provided for retur confirmation.');
+    return;
+  }
+
+  const orderIdShort = order.id.toUpperCase();
+  const returnDate = new Date(returRequest.created_at || Date.now()).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const trackingUrl = `https://ninoc.store/retur`;
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Konfirmasi Pengajuan Retur #${orderIdShort}</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f6f6f6; font-family: Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <!-- Header -->
+      <tr>
+        <td style="background-color: #141414; padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px;">NINOC <span style="font-size: 14px; font-weight: 400; letter-spacing: 4px;">ARCHIVE</span></h1>
+          <p style="color: #a0a0a0; margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Return Request Received</p>
+        </td>
+      </tr>
+      
+      <!-- Body -->
+      <tr>
+        <td style="padding: 40px 30px;">
+          <p style="margin: 0 0 20px 0; font-size: 16px; color: #141414; line-height: 1.5;">
+            Hi <strong>${order.shipping_address?.name || 'Customer'}</strong>,<br/><br/>
+            Kami telah menerima pengajuan retur Anda. Saat ini, tim kami sedang meninjau kelengkapan data dan bukti video unboxing yang Anda unggah.
+          </p>
+
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9f9f9; border-radius: 6px; padding: 20px; margin-bottom: 30px;">
+            <tr>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px;">Order ID</td>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px; text-align: right;">Date</td>
+            </tr>
+            <tr>
+              <td style="font-size: 16px; font-weight: bold; color: #141414; font-family: monospace;">#${order.id.toUpperCase()}</td>
+              <td style="font-size: 14px; font-weight: bold; color: #141414; text-align: right;">${returnDate}</td>
+            </tr>
+            <tr>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-top: 15px; padding-bottom: 4px;">Jenis Retur</td>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-top: 15px; padding-bottom: 4px; text-align: right;">Alasan</td>
+            </tr>
+            <tr>
+              <td style="font-size: 14px; font-weight: bold; color: #141414;">${returRequest.return_type === 'exchange' ? 'Tukar Barang' : 'Refund Dana'}</td>
+              <td style="font-size: 14px; font-weight: bold; color: #141414; text-align: right;">${returRequest.reason_label}</td>
+            </tr>
+          </table>
+
+          <p style="margin: 0 0 30px 0; font-size: 14px; color: #666; line-height: 1.6;">
+            Proses peninjauan biasanya memakan waktu <strong>1-2 hari kerja</strong>. Kami akan menginformasikan kembali hasil peninjauan (disetujui atau ditolak) melalui email ini.
+          </p>
+
+          <!-- Button -->
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 40px;">
+            <tr>
+              <td align="center">
+                <a href="${trackingUrl}" style="display: inline-block; background-color: #141414; color: #ffffff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Lacak Status Retur</a>
+              </td>
+            </tr>
+          </table>
+
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE</p>
+            <p style="margin: 0; font-size: 12px; color: #a0a0a0;">Jika Anda memiliki pertanyaan, balas email ini atau hubungi Customer Service kami.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `Konfirmasi Retur Pesanan #${orderIdShort}`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Retur confirmation sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send retur confirmation to ${customerEmail}:`, error);
+  }
+}
