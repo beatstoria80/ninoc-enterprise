@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     let query = adminClient
       .from('retur_requests')
-      .select('*, user:user_id(id, email, raw_user_meta_data)')
+      .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
