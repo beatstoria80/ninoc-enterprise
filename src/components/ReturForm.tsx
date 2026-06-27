@@ -105,6 +105,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   const [termsScrolled, setTermsScrolled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [alreadyExists, setAlreadyExists] = useState(false);
   const [submittedId, setSubmittedId] = useState('');
   const [error, setError] = useState('');
   const [fraudWarning, setFraudWarning] = useState(false);
