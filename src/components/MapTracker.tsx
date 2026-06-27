@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, Polyline, CircleMarker, useMap, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -65,42 +66,99 @@ interface Props {
   status?: string;
   logs?: TrackingLog[];
   className?: string;
+  orderId?: string;
 }
 
-// MapUpdater safely uses the Leaflet map instance to animate pan/zoom
-function MapUpdater({ center }: { center: [number, number] }) {
+// MapUpdater: fits the map to show the entire route (origin → destination)
+function MapUpdater({ bounds, fallbackCenter }: { bounds: [number, number][]; fallbackCenter: [number, number] }) {
   const map = useMap();
   
   useEffect(() => {
-    if (center) {
-      // Force map to recalculate its container size before flying to center
-      // This fixes the issue where the map is cut off or off-center in wide/dynamic containers
-      const timer = setTimeout(() => {
-        map.invalidateSize();
-        // Use a slightly wider zoom (12 instead of 13) to ensure points aren't cut off in wide masks
-        map.flyTo(center, 12, { duration: 1.5, animate: true });
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [map, center]);
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+      if (bounds.length >= 2) {
+        // Fit the map to show all points with padding
+        const leafletBounds = L.latLngBounds(bounds.map(b => L.latLng(b[0], b[1])));
+        map.fitBounds(leafletBounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 1.5 });
+      } else {
+        map.flyTo(fallbackCenter, 12, { duration: 1.5, animate: true });
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [map, bounds, fallbackCenter]);
 
-  // Handle window resize events for responsiveness
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       map.invalidateSize();
-      if (center) map.setView(center, map.getZoom());
+      if (bounds.length >= 2) {
+        const leafletBounds = L.latLngBounds(bounds.map(b => L.latLng(b[0], b[1])));
+        map.fitBounds(leafletBounds, { padding: [40, 40], maxZoom: 14 });
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [map, center]);
+  }, [map, bounds]);
 
   return null;
 }
 
-export default function MapTracker({ destinationCity, status, logs = [], className }: Props) {
+export default function MapTracker({ destinationCity, status, logs: initialLogs = [], className, orderId }: Props) {
   const [destCoords, setDestCoords] = useState<[number, number] | null>(null);
   const [currentCoords, setCurrentCoords] = useState<[number, number]>(ORIGIN_COORDS);
   const [dynamicCoords, setDynamicCoords] = useState<Record<string, [number, number] | null>>({});
+  const [realtimeLogs, setRealtimeLogs] = useState<TrackingLog[]>([]);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  // Derive isLive from orderId (no setState needed)
+  const isLive = Boolean(orderId);
+
+  // Merge initial logs with realtime logs
+  const logs = React.useMemo(() => {
+    const merged = [...initialLogs];
+    realtimeLogs.forEach(rl => {
+      if (!merged.some(l => l.id === rl.id)) {
+        merged.push(rl);
+      }
+    });
+    return merged;
+  }, [initialLogs, realtimeLogs]);
+
+  // Supabase Realtime subscription for live tracking updates
+  useEffect(() => {
+    if (!orderId) return;
+
+    const channel = supabase
+      .channel(`map-track-${orderId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'tracking_logs',
+        filter: `order_id=eq.${orderId}`
+      }, (payload) => {
+        const newLog = payload.new as TrackingLog;
+        setRealtimeLogs(prev => {
+          if (prev.some(l => l.id === newLog.id)) return prev;
+          return [...prev, newLog];
+        });
+        setLastUpdate(new Date());
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'orders',
+        filter: `id=eq.${orderId}`
+      }, () => {
+        setLastUpdate(new Date());
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [orderId]);
+
+
 
   useEffect(() => {
     if (!document.getElementById('map-custom-styles')) {
@@ -324,35 +382,64 @@ export default function MapTracker({ destinationCity, status, logs = [], classNa
     return { lat, lng, log };
   });
 
+  // Compute bounds for fitBounds
+  const mapBounds = React.useMemo(() => {
+    const points: [number, number][] = [ORIGIN_COORDS];
+    if (destCoords) points.push(destCoords);
+    if (currentCoords) points.push(currentCoords);
+    logPoints.forEach(p => points.push([p.lat, p.lng]));
+    return points;
+  }, [destCoords, currentCoords, logPoints]);
+
   return (
     <div className={className || "w-full max-w-4xl mx-auto h-[250px] md:h-[400px] relative rounded-sm overflow-hidden border border-ink/10 shadow-inner z-0"}>
+      {/* LIVE Indicator */}
+      {isLive && (
+        <div className="absolute top-3 right-3 z-[1000] flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm border border-gray-200">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+          <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>LIVE</span>
+          {lastUpdate && (
+            <span style={{ fontSize: '9px', color: '#6B7280', marginLeft: '4px' }}>
+              {lastUpdate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          )}
+        </div>
+      )}
+
       <MapContainer 
         center={currentCoords} 
-        zoom={13} 
-        scrollWheelZoom={false}
+        zoom={10} 
+        scrollWheelZoom={true}
         zoomControl={false}
         className="w-full h-full absolute inset-0 z-0"
       >
         <ZoomControl position="topleft" />
-        <MapUpdater center={destCoords || ORIGIN_COORDS} />
+        <MapUpdater bounds={mapBounds} fallbackCenter={destCoords || ORIGIN_COORDS} />
         
         <TileLayer
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         
+        {/* Origin Marker (Gudang NINOC) */}
+        <CircleMarker center={ORIGIN_COORDS} radius={6} pathOptions={{ color: '#111827', fillColor: '#111827', fillOpacity: 1, weight: 2 }}>
+          <Tooltip permanent direction="top" offset={[0, -10]} className="custom-tooltip">
+            <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#111827' }}>GUDANG NINOC</span>
+          </Tooltip>
+        </CircleMarker>
+
         {/* Destination Marker */}
         {destCoords && (
-          <CircleMarker center={destCoords} radius={5} pathOptions={{ color: '#9CA3AF', fillColor: '#F3F4F6', fillOpacity: 1, weight: 2 }}>
+          <CircleMarker center={destCoords} radius={6} pathOptions={{ color: '#EF4444', fillColor: '#FEE2E2', fillOpacity: 1, weight: 2 }}>
             <Tooltip permanent direction="bottom" offset={[0, 10]} className="custom-tooltip">
-              <span className="text-[9px] uppercase tracking-widest font-semibold text-ink/50">{destinationCity} (Tujuan)</span>
+              <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#EF4444' }}>{destinationCity} (TUJUAN)</span>
             </Tooltip>
           </CircleMarker>
         )}
 
         {/* Route Line (Actual GPS Driving Path) */}
         {routePolyline.length > 0 && (
-          <Polyline positions={routePolyline} pathOptions={{ color: '#111827', weight: 2, dashArray: '4, 8', opacity: 0.3, className: 'animated-route-line' }} />
+          <Polyline positions={routePolyline} pathOptions={{ color: '#111827', weight: 2.5, dashArray: '6, 10', opacity: 0.4, className: 'animated-route-line' }} />
         )}
 
         {/* Individual Log Points */}
