@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { createClient as createServerClient } from '@/utils/supabase/server';
 
-const adminClient = createClient(
+const adminClient = createSupabaseAdmin(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
@@ -49,8 +50,9 @@ export async function PATCH(
       refund_method,
     } = body;
 
-    // Get current admin user
-    const { data: { user } } = await adminClient.auth.getUser();
+    // Get current admin user via server-side cookie session (service role cannot getUser)
+    const serverClient = await createServerClient();
+    const { data: { user } } = await serverClient.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const updates: Record<string, unknown> = {};

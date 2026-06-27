@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient as createServerClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
+
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,8 +31,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'File size must be under 50MB' }, { status: 400 });
     }
 
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
+    // Get current user via server-side cookie session (browser client won't work in API routes)
+    const serverClient = await createServerClient();
+    const { data: { user } } = await serverClient.auth.getUser();
     const userId = user?.id || `guest-${Date.now()}`;
 
     // Generate unique filename
@@ -37,8 +44,8 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    // Upload via adminClient to bypass RLS on storage bucket
+    const { data: uploadData, error: uploadError } = await adminClient.storage
       .from('retur-videos')
       .upload(filename, buffer, {
         contentType: file.type,
@@ -47,11 +54,11 @@ export async function POST(req: NextRequest) {
 
     if (uploadError) {
       console.error('[upload-video] upload error:', uploadError);
-      return NextResponse.json({ error: 'Failed to upload video' }, { status: 500 });
+      return NextResponse.json({ error: 'Gagal upload video. Pastikan bucket "retur-videos" sudah dibuat di Supabase.' }, { status: 500 });
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = adminClient.storage
       .from('retur-videos')
       .getPublicUrl(uploadData.path);
 

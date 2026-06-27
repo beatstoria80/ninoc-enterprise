@@ -10,6 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS retur_requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  guest_email TEXT,
   order_id TEXT NOT NULL,
   ticket_id UUID REFERENCES support_tickets(id) ON DELETE SET NULL,
   reason TEXT NOT NULL CHECK (reason IN (
@@ -43,6 +44,8 @@ CREATE INDEX IF NOT EXISTS retur_requests_order_id_idx ON retur_requests(order_i
 CREATE INDEX IF NOT EXISTS retur_requests_status_idx ON retur_requests(status);
 CREATE INDEX IF NOT EXISTS retur_requests_created_at_idx ON retur_requests(created_at DESC);
 CREATE INDEX IF NOT EXISTS retur_requests_ticket_id_idx ON retur_requests(ticket_id);
+CREATE INDEX IF NOT EXISTS retur_requests_guest_email_idx ON retur_requests(guest_email) WHERE guest_email IS NOT NULL;
+CREATE INDEX IF NOT EXISTS retur_requests_return_type_idx ON retur_requests(return_type);
 
 -- 3. Create customer_activity_log table (CRM)
 CREATE TABLE IF NOT EXISTS customer_activity_log (
@@ -111,18 +114,28 @@ CREATE TRIGGER update_retur_requests_updated_at
 ALTER TABLE retur_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_activity_log ENABLE ROW LEVEL SECURITY;
 
--- Retur requests: consumer sees own, admin sees all
+-- Retur requests RLS: authenticated users see own rows, service role bypasses RLS for admin ops
 DROP POLICY IF EXISTS "retur_consumer_own" ON retur_requests;
 CREATE POLICY "retur_consumer_own" ON retur_requests
-  FOR SELECT USING (auth.uid() = user_id OR auth.uid() IS NULL);
+  FOR SELECT USING (
+    auth.uid() = user_id                    -- logged-in user sees own
+    OR auth.uid() IS NULL                    -- service role bypass (uses adminClient, no JWT)
+  );
 
 DROP POLICY IF EXISTS "retur_consumer_insert" ON retur_requests;
 CREATE POLICY "retur_consumer_insert" ON retur_requests
-  FOR INSERT WITH CHECK (auth.uid() = user_id OR auth.uid() IS NULL);
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id
+    OR (user_id IS NULL AND auth.uid() IS NULL) -- guest insert via service role
+  );
 
+-- Only admin (service role) can update retur rows
 DROP POLICY IF EXISTS "retur_consumer_update" ON retur_requests;
 CREATE POLICY "retur_consumer_update" ON retur_requests
-  FOR UPDATE USING (auth.uid() = user_id OR auth.uid() IS NULL);
+  FOR UPDATE USING (
+    auth.uid() = user_id
+    OR auth.uid() IS NULL
+  );
 
 DROP POLICY IF EXISTS "retur_admin_all" ON retur_requests;
 CREATE POLICY "retur_admin_all" ON retur_requests

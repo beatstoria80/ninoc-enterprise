@@ -75,7 +75,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 }) {
   const [status, setStatus] = useState(retur.status);
   const [adminNotes, setAdminNotes] = useState(retur.admin_notes || '');
-  const [refundAmount, setRefundAmount] = useState(retur.refund_amount?.toString() || (retur.order?.total_price || '').toString());
+  const [refundAmount, setRefundAmount] = useState(retur.refund_amount?.toString() || '');
   const [exchangeShippingCost, setExchangeShippingCost] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -330,14 +330,19 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
               {retur.return_type === 'refund' ? (
                 <div className="space-y-2">
-                  <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Jumlah Refund (Pengembalian Dana)</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Jumlah Refund (Pengembalian Dana)</p>
+                    {retur.order?.total_price && (
+                      <p className="text-[9px] text-ink/50">Nilai Order: <span className="font-semibold text-ink/70">{formatPrice(retur.order.total_price)}</span></p>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-ink/80 font-semibold">IDR</span>
                     <input
                       type="number"
                       value={refundAmount}
                       onChange={e => setRefundAmount(e.target.value)}
-                      placeholder="0"
+                      placeholder={retur.order?.total_price ? `Maks. ${retur.order.total_price.toLocaleString('id-ID')}` : "0"}
                       className="flex-1 text-[13px] font-display italic font-bold text-red-500 outline-none border-b border-ink/10 focus:border-red-500 bg-transparent"
                     />
                   </div>
@@ -406,8 +411,14 @@ function ReturDetail({ retur, onClose, onRefresh }: {
               <Eye size={11} /> Review
             </button>
             <button
-              onClick={() => handleAction('approved')}
-              disabled={saving}
+              onClick={() => {
+                const label = retur.return_type === 'exchange'
+                  ? `Setujui TUKAR BARANG untuk order ${retur.order_id}? NINOC akan menanggung ongkir IDR ${parseInt(exchangeShippingCost || '0').toLocaleString('id-ID')}.`
+                  : `Setujui REFUND IDR ${parseInt(refundAmount || '0').toLocaleString('id-ID')} untuk order ${retur.order_id}? Tindakan ini mengurangi revenue NINOC.`;
+                if (!window.confirm(label)) return;
+                handleAction('approved');
+              }}
+              disabled={saving || (retur.return_type === 'refund' && !refundAmount)}
               className="flex-1 py-2.5 text-[9px] font-semibold uppercase tracking-widest bg-emerald-500 text-white rounded-sm hover:bg-emerald-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={11} />}

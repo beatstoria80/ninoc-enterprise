@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 
 const adminClient = createClient(
@@ -91,8 +91,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum submit retur' }, { status: 400 });
     }
 
-    // Get current user (guest or authenticated)
-    const { data: { user } } = await supabase.auth.getUser();
+    // Get current user (guest or authenticated) via server-side cookie session
+    const serverClient = await createServerClient();
+    const { data: { user } } = await serverClient.auth.getUser();
     const uid = user?.id || body_user_id || null;
 
     // If no user_id, guest_email is required
