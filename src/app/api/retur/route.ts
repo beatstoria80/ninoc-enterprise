@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         .eq('email', user.email)
         .single();
       
-      isAdmin = roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
+      isAdmin = !!roleData && ['super_admin', 'outbound_logistics', 'admin'].includes(roleData.role);
     }
 
     // Fallback for custom admin login that bypasses Supabase Auth
