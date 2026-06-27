@@ -38,6 +38,10 @@ CREATE TABLE IF NOT EXISTS retur_requests (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add guest_email column if table already exists from a previous migration
+ALTER TABLE retur_requests ADD COLUMN IF NOT EXISTS guest_email TEXT;
+ALTER TABLE retur_requests ADD COLUMN IF NOT EXISTS return_type TEXT NOT NULL DEFAULT 'refund' CHECK (return_type IN ('refund', 'exchange'));
+
 -- Indexes for retur_requests
 CREATE INDEX IF NOT EXISTS retur_requests_user_id_idx ON retur_requests(user_id);
 CREATE INDEX IF NOT EXISTS retur_requests_order_id_idx ON retur_requests(order_id);
