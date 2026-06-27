@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'user_id is required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('customer_activity_log')
       .select('*')
       .eq('user_id', userId)

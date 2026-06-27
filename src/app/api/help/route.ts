@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       'store_tagline',
     ];
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('atelier_settings')
       .select('key, value')
       .in('key', keys);

@@ -109,7 +109,7 @@ export async function POST(req: Request) {
         const internalStatus = mapBiteshipStatus(payload.status);
 
         // Update main order table
-        const { data: updatedOrder } = await supabase
+        const { data: updatedOrder } = await adminClient
           .from('orders')
           .update({
             status: internalStatus,
@@ -177,7 +177,7 @@ export async function POST(req: Request) {
       case 'order.waybill_id': {
         const waybillId = payload.waybill_id || payload.courier_waybill_id;
         if (payload.order_id && waybillId) {
-          await supabase
+          await adminClient
             .from('orders')
             .update({ tracking_id: waybillId })
             .eq('id', payload.order_id);

@@ -5,14 +5,14 @@ const adminClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
-import { createClient } from '@supabase/supabase-js';
+
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
 
-    let query = supabase
+    let query = adminClient
       .from('placeholder_configs')
       .select('*')
       .eq('is_active', true)
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'label and content are required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('placeholder_configs')
       .insert({
         label,

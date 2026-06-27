@@ -20,7 +20,7 @@ import { sendEmailInvoice } from '@/lib/email';
 export async function GET() {
   try {
     // 1. Fetch all pending orders that have a snap_token (meaning they were sent to Midtrans)
-    const { data: pendingOrders, error: fetchError } = await supabase
+    const { data: pendingOrders, error: fetchError } = await adminClient
       .from('orders')
       .select('id, status, midtrans_id, snap_token, created_at')
       .eq('status', 'pending')
@@ -73,7 +73,7 @@ export async function GET() {
         }
 
         // 4. Update order status
-        const { error: updateError } = await supabase
+        const { error: updateError } = await adminClient
           .from('orders')
           .update({
             status: newStatus,
@@ -94,7 +94,7 @@ export async function GET() {
 
         // 5. If paid, trigger notifications (same logic as webhook)
         if (newStatus === 'paid') {
-          const { data: fullOrder } = await supabase
+          const { data: fullOrder } = await adminClient
             .from('orders')
             .select(`
               id, order_number, shipping_address, total_price, wa_invoice_sent,
@@ -126,7 +126,7 @@ export async function GET() {
                 });
 
                 if (waResult.success) {
-                  await supabase
+                  await adminClient
                     .from('orders')
                     .update({ wa_invoice_sent: true, wa_invoice_sent_at: new Date().toISOString() })
                     .eq('id', order.id);

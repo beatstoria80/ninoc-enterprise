@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json();
     const { label, content, category, sort_order, is_active } = body;
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('placeholder_configs')
       .update({
         ...(label !== undefined && { label }),
@@ -39,7 +39,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const { id } = await params;
 
-    const { error } = await supabase
+    const { error } = await adminClient
       .from('placeholder_configs')
       .delete()
       .eq('id', id);

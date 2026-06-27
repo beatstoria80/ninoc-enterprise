@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-    const { data: abandonedOrders, error } = await supabase
+    const { data: abandonedOrders, error } = await adminClient
       .from('orders')
       .select('id, customer_name, shipping_address, total_price')
       .eq('status', 'pending')
@@ -79,7 +79,7 @@ export async function GET(req: Request) {
       if (waRes.success) {
         sentCount++;
         // Flag it so we don't spam them again
-        await supabase
+        await adminClient
           .from('orders')
           .update({ wa_reminder_sent: true, wa_reminder_sent_at: new Date().toISOString() })
           .eq('id', order.id);

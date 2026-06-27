@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
     // ─── Double Submission Check (Idempotency) ───
     // Prevent sending the exact same subject within 1 minute
-    const { data: recentLogs } = await supabase
+    const { data: recentLogs } = await adminClient
       .from('operational_expenses')
       .select('created_at')
       .eq('description', `Email Broadcast: ${subject}`)

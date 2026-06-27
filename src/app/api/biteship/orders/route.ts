@@ -125,7 +125,7 @@ export async function POST(req: Request) {
     const courierType = courier_type.toLowerCase();
 
     // Check if already shipped to prevent double dispatch
-    const { data: existingOrder } = await supabase
+    const { data: existingOrder } = await adminClient
       .from('orders')
       .select('status, tracking_id, print_count, courier')
       .eq('id', order_id)
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
 
     if (existingOrder?.tracking_id) {
       const newCount = (existingOrder.print_count || 0) + 1;
-      await supabase.from('orders').update({ print_count: newCount }).eq('id', order_id);
+      await adminClient.from('orders').update({ print_count: newCount }).eq('id', order_id);
       
       console.log(`[Biteship Create Order] Order ${order_id} already has a tracking ID. Reprinting.`);
       return NextResponse.json({
