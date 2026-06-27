@@ -8,6 +8,7 @@ import {
   Eye, Search, CheckCircle, XCircle, Package
 } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
+import { supabase } from '@/lib/supabase';
 
 interface ReturRequest {
   id: string;
@@ -470,6 +471,18 @@ export function ReturTab() {
 
   useEffect(() => {
     queueMicrotask(() => { fetchReturs(); });
+
+    // Realtime subscription for new retur requests
+    const channel = supabase
+      .channel('admin-retur-requests')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'retur_requests' }, () => {
+        fetchReturs();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchReturs]);
 
   const filtered = returs.filter(r => {

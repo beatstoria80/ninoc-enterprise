@@ -87,7 +87,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'order_id, reason, and reason_label are required' }, { status: 400 });
     }
 
-    if (!video_url) {
+    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+    if (!video_url && isProduction) {
       return NextResponse.json({ error: 'Bukti video WAJIB — upload video sebelum submit retur' }, { status: 400 });
     }
 

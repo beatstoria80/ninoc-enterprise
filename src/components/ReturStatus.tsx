@@ -92,6 +92,18 @@ export function ReturStatus() {
 
   useEffect(() => {
     queueMicrotask(() => { fetchReturs(); });
+
+    // Realtime subscription for retur updates
+    const channel = supabase
+      .channel('customer-retur-requests')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'retur_requests' }, () => {
+        fetchReturs();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchReturs]);
 
   const handleRefresh = async () => {
