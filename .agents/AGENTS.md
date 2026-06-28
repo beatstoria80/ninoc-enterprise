@@ -38,3 +38,12 @@ For every code change made in this project, the agent MUST follow this exact seq
 1. **Lint**: Run `npm run lint` to catch syntax and styling errors.
 2. **QA & Debug**: Fix any errors that arise from the linter or tests.
 3. **Push to GitHub**: Commit the finalized changes and push them to the GitHub repository (`git add`, `git commit`, `git push origin main`).
+
+# Deep Root Configuration (Sandbox vs Production)
+
+**CRITICAL RULE**: Whenever the user asks to switch from "Sandbox" to "Production" (or vice versa), the agent MUST perform a "Deep Root Configuration" scan.
+It is NOT enough to just change the `.env` file. The agent must:
+1. **API Endpoints & Hardcodes**: Search the entire `src/app/api` directory for any hardcoded `sandbox` or `api.sandbox` URLs (e.g., Midtrans API, Biteship API) and ensure they dynamically switch based on the `NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION` or `NODE_ENV` flags.
+2. **Webhooks & CRONs**: Ensure all webhook receivers (`/api/webhooks/*`) and CRON jobs are properly validating signatures using the **Production** secrets, not relying on bypassed Sandbox logic.
+3. **Third-Party Features**: Validate that any flows reliant on external Sandbox environments (like testing accounts or dummy data generators) are completely stripped out or disabled in the Production flow.
+4. **Agent Action**: If asked to transition to production, immediately list out all deep root configurations that will be affected and ask for confirmation before modifying core logic.
