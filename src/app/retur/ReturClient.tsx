@@ -39,7 +39,7 @@ export default function ReturClient() {
 
   return (
     <div className="min-h-screen bg-white no-scrollbar overflow-x-hidden">
-      <div className="pt-4 md:pt-12 px-3 md:px-12 max-w-[1400px] mx-auto">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md pt-4 md:pt-12 px-3 md:px-12 max-w-[1400px] mx-auto w-full">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
           <Link href="/" className="flex items-center gap-2 text-ink/50 hover:text-rose transition-colors group p-2 -ml-2 md:p-0 md:ml-0">
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none" className="md:w-[14px] md:h-[14px] group-hover:-translate-x-0.5 transition-transform">
@@ -47,7 +47,9 @@ export default function ReturClient() {
             </svg>
             <span className="hidden md:inline text-xs uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
           </Link>
-          <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tight md:tracking-tighter leading-tight uppercase text-ink">Return, Refund & Exchange</h1>
+          <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tight md:tracking-tighter leading-tight uppercase text-ink">
+            Return<span className="hidden md:inline">, Refund & Exchange</span>
+          </h1>
         </div>
       </div>
 
