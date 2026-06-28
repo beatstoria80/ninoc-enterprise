@@ -381,11 +381,13 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                   className="w-full aspect-video object-contain"
                 />
               </div>
-              <div className="max-w-2xl mt-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-sm">
-                <p className="text-xs text-yellow-800 font-medium">
-                  <span className="font-bold">Info:</span> Jika layar video hitam atau tidak bisa diputar (biasanya video dari iPhone / format .mov yang tidak didukung Google Chrome), silakan klik tombol hitam di bawah ini.
-                </p>
-              </div>
+              {retur.video_url && (retur.video_url.toLowerCase().includes('.mov') || retur.video_url.toLowerCase().includes('quicktime')) && (
+                <div className="max-w-2xl mt-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-sm">
+                  <p className="text-xs text-yellow-800 font-medium">
+                    <span className="font-bold">Info:</span> Jika layar video hitam atau tidak bisa diputar (biasanya video dari iPhone / format .mov yang tidak didukung Google Chrome), silakan klik tombol hitam di bawah ini.
+                  </p>
+                </div>
+              )}
               <div className="flex justify-start mt-3">
                 <a 
                   href={retur.video_url} 
