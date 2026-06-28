@@ -15,7 +15,7 @@ export const SidebarItem = ({
   active?: boolean;
   onClick?: () => void;
   badge?: number;
-  subItems?: { label: string; id: string; active?: boolean; onClick?: () => void }[];
+  subItems?: { label: string; id: string; active?: boolean; onClick?: () => void; badge?: number }[];
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasSub = subItems && subItems.length > 0;
@@ -57,11 +57,19 @@ export const SidebarItem = ({
               key={i}
               onClick={sub.onClick}
               className={cn(
-                "w-full text-left pl-[44px] pr-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-200 rounded-lg mt-0.5",
+                "w-full flex items-center justify-between pl-[44px] pr-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-200 rounded-lg mt-0.5",
                 sub.active ? "text-rose bg-rose/10" : "text-ink/60 hover:text-ink hover:bg-gray-100"
               )}
             >
-              {sub.label}
+              <span>{sub.label}</span>
+              {sub.badge !== undefined && sub.badge > 0 && (
+                <span className={cn(
+                  "text-[10px] md:text-[8px] px-1.5 py-0.5 rounded-full ml-2",
+                  sub.active ? "bg-rose/20 text-rose" : "bg-rose/10 text-rose"
+                )}>
+                  {sub.badge}
+                </span>
+              )}
             </button>
           ))}
         </div>

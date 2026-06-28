@@ -886,6 +886,7 @@ export default function AdminDashboard() {
 
   // Stats
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const actionableOrders = orders.filter(o => o.status === 'paid').length;
   const totalStock = products.reduce((sum, p) =>
     sum + (p.variants?.reduce((s, v) => s + v.stock_quantity, 0) || 0), 0
   );
@@ -1053,10 +1054,10 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'transaction', icon: ShoppingCart, label: 'Transaction', activeKeys: ['orders', 'logistics'], badge: pendingOrders,
+      id: 'transaction', icon: ShoppingCart, label: 'Transaction', activeKeys: ['orders', 'logistics'], badge: actionableOrders > 0 ? actionableOrders : undefined,
       roles: ['super_admin', 'outbound_logistics'],
       subItems: [
-        { id: 'orders', label: 'Online Order' },
+        { id: 'orders', label: 'Online Order', badge: actionableOrders > 0 ? actionableOrders : undefined },
         { id: 'logistics', label: 'Logistics' }
       ]
     },
