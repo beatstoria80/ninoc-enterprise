@@ -100,7 +100,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
       const fetchOrder = async () => {
         const { data } = await supabase
           .from('orders')
-          .select('id, total_price, order_items(id, product_name, size, color, quantity, price_at_purchase)')
+          .select('id, total_price, customer_name, order_items(id, product_name, size, color, quantity, price_at_purchase)')
           .eq('id', retur.order_id)
           .single();
         if (data && mounted) {
@@ -209,6 +209,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
   const shipping = retur.order?.shipping_address as any;
   const customerName = retur.user?.raw_user_meta_data?.full_name 
+    || retur.order?.customer_name
     || (shipping?.first_name ? `${shipping.first_name} ${shipping.last_name || ''}`.trim() : null)
     || shipping?.name 
     || 'Guest User';

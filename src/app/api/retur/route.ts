@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       const orderIds = returRequests.map((r: any) => r.order_id);
       const { data: orders } = await adminClient
         .from('orders')
-        .select('id, total_price, status, customer_email, customer_phone, shipping_address, order_items(id, product_id, variant_id, product_name, size, color, quantity, price_at_purchase)')
+        .select('id, total_price, status, customer_name, customer_email, customer_phone, shipping_address, order_items(id, product_id, variant_id, product_name, size, color, quantity, price_at_purchase)')
         .in('id', orderIds);
       
       if (orders) {
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (orderError || !orderData) {
-      return NextResponse.json({ error: 'Order tidak valid atau tidak ditemukan di sistem.' }, { status: 404 });
+      return NextResponse.json({ error: `Order '${sanitizedOrderId}' tidak valid atau tidak ditemukan di sistem.` }, { status: 404 });
     }
 
     // Hanya pesanan yang sudah dikirim atau selesai yang boleh diretur
