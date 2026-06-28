@@ -106,6 +106,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
+  const [isCheckingOrder, setIsCheckingOrder] = useState(false);
+  const [orderData, setOrderData] = useState<any>(null);
   const [submittedId, setSubmittedId] = useState('');
   const [error, setError] = useState('');
   const [fraudWarning, setFraudWarning] = useState(false);
@@ -168,6 +170,41 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
   const canProceedStep1 = orderId.trim().length >= 4 && reason !== '' && (!isGuest || (guestEmail.includes('@') && guestEmail.includes('.')));
   const canProceedStep2 = description.trim().length >= 10 && videoFile !== null && termsAccepted && termsScrolled;
   const canSubmit = canProceedStep1 && canProceedStep2 && !isSubmitting;
+
+  const handleNextStep = async () => {
+    if (!canProceedStep1) {
+      setError('Lengkapi Order ID dan alasan retur');
+      return;
+    }
+    
+    setIsCheckingOrder(true);
+    setError('');
+    
+    try {
+      const params = new URLSearchParams({ order_id: orderId.trim() });
+      if (isGuest && guestEmail) {
+        params.set('guest_email', guestEmail.trim());
+      }
+      
+      const res = await fetch(`/api/retur/check-order?${params}`);
+      const data = await res.json();
+      
+      if (!res.ok) {
+        if (data.code === 'ALREADY_EXISTS') {
+          setAlreadyExists(true);
+          return;
+        }
+        throw new Error(data.error || 'Gagal mengecek order');
+      }
+      
+      setOrderData(data.order);
+      setStep(2);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsCheckingOrder(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -493,13 +530,21 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             {/* Next Button */}
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={() => { if (canProceedStep1) setStep(2); else setError('Lengkapi Order ID dan alasan retur'); }}
+              onClick={handleNextStep}
+              disabled={!canProceedStep1 || isCheckingOrder}
               className={cn(
                 'w-full py-2.5 text-xs md:text-sm font-semibold uppercase tracking-widest text-white rounded-sm transition-colors flex items-center justify-center gap-2',
-                canProceedStep1 ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed'
+                canProceedStep1 && !isCheckingOrder ? 'bg-rose hover:bg-rose/90' : 'bg-ink/20 text-ink/50 cursor-not-allowed'
               )}
             >
-              Lanjut <ChevronRight size={12} />
+              {isCheckingOrder ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Mengecek...
+                </>
+              ) : (
+                <>Lanjut <ChevronRight size={12} /></>
+              )}
             </motion.button>
           </motion.div>
         )}
@@ -514,11 +559,56 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             transition={{ duration: 0.2 }}
             className="px-4 md:px-5 pb-4 md:pb-5 space-y-4"
           >
+            {/* Order Summary UI */}
+            {orderData && (
+              <div className="mb-4 bg-ink/[0.02] border border-ink/10 rounded-md overflow-hidden">
+                <div className="px-4 py-2.5 bg-ink/[0.04] border-b border-ink/5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Package size={14} className="text-ink/60" />
+                    <span className="text-sm md:text-sm font-semibold uppercase tracking-widest text-ink/80">Data Pesanan</span>
+                  </div>
+                  <span className="text-xs md:text-xs font-semibold text-rose bg-rose/10 px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                    {orderData.status}
+                  </span>
+                </div>
+                <div className="p-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[11px] md:text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Pemesan</p>
+                      <p className="text-sm md:text-base font-medium text-ink">{orderData.customer_name || 'Pelanggan'}</p>
+                      {orderData.customer_email && <p className="text-xs md:text-sm text-ink/60">{orderData.customer_email}</p>}
+                    </div>
+                    <div>
+                      <p className="text-[11px] md:text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Total</p>
+                      <p className="text-sm md:text-base font-semibold text-ink">Rp {(orderData.total_price || 0).toLocaleString('id-ID')}</p>
+                    </div>
+                  </div>
+                  
+                  {orderData.order_items && orderData.order_items.length > 0 && (
+                    <div className="border-t border-ink/5 pt-3 mt-3">
+                      <p className="text-[11px] md:text-xs font-semibold uppercase tracking-widest text-ink/50 mb-2">Produk ({orderData.order_items.length})</p>
+                      <div className="space-y-2">
+                        {orderData.order_items.map((item: any) => (
+                          <div key={item.id} className="flex justify-between items-center bg-white p-2 border border-ink/5 rounded-sm">
+                            <div className="min-w-0 flex-1 pr-2">
+                              <p className="text-xs md:text-sm font-semibold text-ink truncate">{item.product_name}</p>
+                              <p className="text-[10px] md:text-xs text-ink/60 mt-0.5">{item.color} · {item.size} · {item.quantity}x</p>
+                            </div>
+                            <p className="text-xs md:text-sm font-semibold text-ink shrink-0">Rp {(item.price_at_purchase || 0).toLocaleString('id-ID')}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Reason Summary */}
             <div className="flex items-center gap-2 p-2.5 bg-rose/[0.04] border border-rose/10 rounded-sm">
               <RefreshCw size={11} className="text-rose shrink-0" />
               <p className="text-xs md:text-sm font-semibold text-rose uppercase tracking-wider">{reasonLabel}</p>
-              <p className="text-[10px] md:text-base text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
+              <p className="text-[10px] md:text-sm text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
             </div>
 
             {/* Description */}
