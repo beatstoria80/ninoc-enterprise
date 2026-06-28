@@ -28,13 +28,13 @@ export const SidebarItem = ({
           else onClick?.();
         }}
         className={cn(
-          "w-full flex items-center justify-between px-4 py-2.5 transition-all duration-200 border-b border-ink/5",
-          active ? "bg-rose text-white" : "text-ink/70 hover:bg-ink/5 hover:text-ink"
+          "w-full flex items-center justify-between px-4 py-2.5 transition-all duration-200 rounded-lg",
+          active ? "bg-rose text-white shadow-sm" : "text-ink/80 hover:bg-gray-100 hover:text-ink"
         )}
       >
         <div className="flex items-center gap-3">
-          <Icon size={16} className={cn(active ? "text-white" : "text-current")} />
-          <span className="text-xs font-semibold uppercase tracking-wider">{label}</span>
+          <Icon size={18} className={cn(active ? "text-white" : "text-current")} />
+          <span className="text-sm font-bold uppercase tracking-wider">{label}</span>
         </div>
         <div className="flex items-center gap-2">
           {badge !== undefined && badge > 0 && (
@@ -57,8 +57,8 @@ export const SidebarItem = ({
               key={i}
               onClick={sub.onClick}
               className={cn(
-                "w-full text-left pl-[40px] pr-4 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors duration-200",
-                sub.active ? "text-rose bg-ink/[0.03]" : "text-ink/60 hover:text-ink hover:bg-ink/[0.04]"
+                "w-full text-left pl-[44px] pr-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-200 rounded-lg mt-0.5",
+                sub.active ? "text-rose bg-rose/10" : "text-ink/60 hover:text-ink hover:bg-gray-100"
               )}
             >
               {sub.label}
