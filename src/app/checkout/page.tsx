@@ -1372,7 +1372,7 @@ export default function CheckoutPage() {
               </div>
             </div>
             {/* Snap Container */}
-            <div id="snap-container" className="w-full h-[580px] overflow-y-auto bg-white scrollbar-thin"></div>
+            <div id="snap-container" className="w-full h-[460px] overflow-y-auto bg-white scrollbar-thin"></div>
           </div>
         </div>
       )}
