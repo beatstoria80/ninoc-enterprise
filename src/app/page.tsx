@@ -912,7 +912,7 @@ export default function Home() {
                     alt="NINOC Logo" 
                     width={120} 
                     height={120} 
-                    className="w-7 h-7 md:w-9 md:h-9 object-contain brightness-0 invert" 
+                    className="w-10 h-10 md:w-12 md:h-12 object-contain" 
                     priority 
                     unoptimized
                   />

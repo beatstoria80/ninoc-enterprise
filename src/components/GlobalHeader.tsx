@@ -465,7 +465,7 @@ export default function GlobalHeader() {
                     alt="NINOC Logo" 
                     width={120} 
                     height={120} 
-                    className={cn("w-7 h-7 md:w-8 md:h-8 object-contain", isDarkBg ? "brightness-0 invert" : "")} 
+                    className="w-10 h-10 md:w-12 md:h-12 object-contain" 
                     priority 
                     unoptimized
                   />
@@ -845,7 +845,7 @@ export default function GlobalHeader() {
                     alt="NINOC Logo" 
                     width={120} 
                     height={120} 
-                    className="w-8 h-8 object-contain" 
+                    className="w-12 h-12 object-contain" 
                     unoptimized
                   />
                 </div>
