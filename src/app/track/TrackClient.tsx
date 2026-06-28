@@ -448,11 +448,53 @@ export default function TrackClient() {
             {/* GRID 3: History */}
             <div className={`bg-ink/[0.01] border border-ink/5 p-5 lg:overflow-y-auto pr-2 ${scrollbarStyles}`}>
               <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 font-semibold mb-6">Logistics History</p>
-              {order.logs.length > 0 ? (
-                <div className="relative pl-5 border-l border-ink/10 space-y-7 ml-2 pb-4">
-                  {order.logs.map((log, idx) => {
-                    const isLatest = idx === 0;
-                    return (
+              {(() => {
+                let displayLogs = [...order.logs];
+                
+                // Add mock 'delivered' log if missing
+                if (order.status === 'delivered' && !displayLogs.find(l => l.internal_status?.toLowerCase() === 'delivered' || l.biteship_status?.toLowerCase() === 'delivered')) {
+                  displayLogs.unshift({
+                    id: 'mock-delivered',
+                    biteship_status: 'Delivered',
+                    internal_status: 'delivered',
+                    description: 'Pesanan telah berhasil dikirimkan dan diterima di alamat tujuan.',
+                    location: order.shipping_address?.city || null,
+                    courier_company: order.courier || null,
+                    courier_driver_name: null,
+                    courier_driver_phone: null,
+                    courier_link: null,
+                    created_at: order.created_at
+                  });
+                } else if (order.status === 'shipped' && displayLogs.length === 0) {
+                  // Add mock 'shipped' log if empty
+                  displayLogs.unshift({
+                    id: 'mock-shipped',
+                    biteship_status: 'In Transit',
+                    internal_status: 'shipped',
+                    description: 'Pesanan telah diserahkan ke kurir dan sedang dalam perjalanan.',
+                    location: null,
+                    courier_company: order.courier || null,
+                    courier_driver_name: null,
+                    courier_driver_phone: null,
+                    courier_link: null,
+                    created_at: order.created_at
+                  });
+                }
+
+                if (displayLogs.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                       <p className="text-[10px] md:text-[8px] uppercase tracking-widest font-semibold">Menunggu Update</p>
+                       <p className="text-[10px] md:text-[8px] text-ink/60 text-center mt-2">Belum ada history perjalanan dari kurir.</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="relative pl-5 border-l border-ink/10 space-y-7 ml-2 pb-4">
+                    {displayLogs.map((log, idx) => {
+                      const isLatest = idx === 0;
+                      return (
                       <div key={log.id} className="relative">
                         <div className={`absolute -left-[27px] top-0.5 w-3 h-3 rounded-full border-2 flex items-center justify-center bg-white ${isLatest ? 'border-rose' : 'border-ink/20'}`}>
                           {isLatest && <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />}
@@ -494,14 +536,10 @@ export default function TrackClient() {
                         </div>
                       </div>
                     );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 opacity-50">
-                   <p className="text-[10px] md:text-[8px] uppercase tracking-widest font-semibold">Menunggu Update</p>
-                   <p className="text-[10px] md:text-[8px] text-ink/60 text-center mt-2">Belum ada history perjalanan dari kurir.</p>
-                </div>
-              )}
+                    })}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* GRID 4: Map */}
