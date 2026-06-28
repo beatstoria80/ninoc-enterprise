@@ -719,8 +719,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   if (file) handleVideoSelect(file);
                 }}
               />
-              <div className="mt-2 bg-rose/[0.03] border border-rose/10 rounded-sm p-2.5 space-y-1">
-                <p className="text-xs font-bold uppercase tracking-widest text-rose/80">📋 Panduan Video Unboxing (1-Shot — Tanpa Edit)</p>
+              <div className="mt-2 bg-rose/[0.03] border border-rose/10 rounded-sm p-3 space-y-1.5">
+                <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-rose">📋 Panduan Video Unboxing (1-Shot — Tanpa Edit)</p>
                 {[
                   'Rekam saat membuka paket dari keadaan tertutup',
                   'Tunjukkan kondisi barang dengan jelas',
@@ -728,8 +728,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   'Timestamp/waktu harus terlihat jelas di rekaman',
                   'Minimal durasi 30 detik',
                 ].map((t, i) => (
-                  <p key={i} className="text-xs text-ink/50 leading-relaxed flex items-start gap-1.5">
-                    <span className="font-bold">{i + 1}.</span>{t}
+                  <p key={i} className="text-xs md:text-sm text-ink/80 leading-relaxed flex items-start gap-1.5">
+                    <span className="font-bold text-rose/80">{i + 1}.</span>{t}
                   </p>
                 ))}
               </div>
@@ -737,7 +737,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
 
             {/* Syarat & Ketentuan */}
             <div>
-              <p className="text-xs md:text-sm font-semibold uppercase tracking-widest text-ink/60 mb-2">
+              <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-ink/80 mb-2">
                 Syarat & Ketentuan <span className="text-rose">*</span>
               </p>
               <div
@@ -747,8 +747,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
               >
                 {TERMS.map((term, i) => (
                   <div key={i} className="flex items-start gap-2 mb-2">
-                    <span className="text-sm md:text-xs font-bold text-rose shrink-0 mt-0.5">{i + 1}.</span>
-                    <p className="text-sm md:text-xs text-ink/50 leading-relaxed">{term}</p>
+                    <span className="text-xs md:text-sm font-bold text-rose shrink-0 mt-0.5">{i + 1}.</span>
+                    <p className="text-xs md:text-sm text-ink/80 leading-relaxed">{term}</p>
                   </div>
                 ))}
               </div>
