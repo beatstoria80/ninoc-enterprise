@@ -39,7 +39,7 @@ export default function ReturClient() {
 
   return (
     <div className="min-h-screen bg-white pb-safe">
-      <div className="hidden md:block sticky top-0 z-50 bg-white/95 backdrop-blur-md pt-4 md:pt-12 px-4 md:px-12 max-w-[1400px] mx-auto w-full shadow-sm md:shadow-none border-b md:border-none border-ink/5">
+      <div className="hidden md:block sticky top-0 z-50 bg-white/95 backdrop-blur-md pt-4 md:pt-6 px-4 md:px-12 max-w-[1400px] mx-auto w-full shadow-sm md:shadow-none border-b md:border-none border-ink/5">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
           <Link href="/" className="flex items-center gap-2 text-ink/50 hover:text-rose transition-colors group p-2 -ml-2 md:p-0 md:ml-0">
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none" className="md:w-[14px] md:h-[14px] group-hover:-translate-x-0.5 transition-transform">
@@ -47,17 +47,17 @@ export default function ReturClient() {
             </svg>
             <span className="hidden md:inline text-xs uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
           </Link>
-          <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tight md:tracking-tighter leading-tight uppercase text-ink">
+          <h1 className="font-display font-medium md:font-normal italic text-xl md:text-xl tracking-tight md:tracking-normal leading-tight uppercase text-ink">
             Return<span className="hidden md:inline">, Refund & Exchange</span>
           </h1>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-3 md:px-12 pt-6 pb-20">
+      <div className="max-w-[1400px] mx-auto px-3 md:px-12 pt-4 pb-20">
         <div className="lg:grid lg:grid-cols-[1fr_340px] gap-6">
 
           <div className="border border-ink/5 bg-white rounded-sm">
-            <div className="sticky top-[55px] md:top-[90px] z-40 px-4 md:px-5 pt-4 md:py-4 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-4 md:gap-3 bg-white/95 backdrop-blur-md rounded-t-sm">
+            <div className="sticky top-[55px] md:top-[60px] z-40 px-4 md:px-5 pt-4 md:py-2.5 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-4 md:gap-2 bg-white/95 backdrop-blur-md rounded-t-sm">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center shrink-0">
                   <RefreshCw size={14} className="text-rose" strokeWidth={1.5} />
@@ -116,7 +116,7 @@ export default function ReturClient() {
             </div>
           </div>
 
-          <div className="space-y-5 lg:pt-0 pt-4 lg:sticky lg:top-[90px] lg:self-start">
+          <div className="space-y-5 lg:pt-0 pt-4 lg:sticky lg:top-[60px] lg:self-start">
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
                 <p className="text-sm md:text-base font-bold uppercase tracking-widest text-ink/60">Kebijakan Retur</p>
