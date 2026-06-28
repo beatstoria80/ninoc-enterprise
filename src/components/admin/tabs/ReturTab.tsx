@@ -92,9 +92,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const [savingNote, setSavingNote] = useState(false);
   
   // Robustly fetch order items if missing
-  const [orderDetails, setOrderDetails] = useState<any>(retur.order || null);
+  const [fetchedOrderDetails, setFetchedOrderDetails] = useState<any>(null);
   
   useEffect(() => {
+    let mounted = true;
     if (!retur.order || !retur.order.order_items) {
       const fetchOrder = async () => {
         const { data } = await supabase
@@ -102,15 +103,16 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           .select('id, total_price, order_items(id, product_name, size, color, quantity, price_at_purchase)')
           .eq('id', retur.order_id)
           .single();
-        if (data) {
-          setOrderDetails(data);
+        if (data && mounted) {
+          setFetchedOrderDetails(data);
         }
       };
       fetchOrder();
-    } else {
-      setOrderDetails(retur.order);
     }
+    return () => { mounted = false; };
   }, [retur.order_id, retur.order]);
+  
+  const orderDetails = (retur.order && retur.order.order_items) ? retur.order : fetchedOrderDetails;
   
   // QC State
   const [showQcModal, setShowQcModal] = useState(false);
@@ -368,16 +370,25 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           
           {retur.video_url ? (
             <>
-              <div className="rounded-sm overflow-hidden border border-ink/10 bg-black max-w-2xl">
+              <div className="rounded-sm overflow-hidden border border-ink/10 bg-black max-w-2xl relative group">
                 <video
                   key={retur.video_url}
                   src={retur.video_url}
                   controls
                   playsInline
                   preload="metadata"
-                  crossOrigin="anonymous"
                   className="w-full aspect-video object-contain"
                 />
+              </div>
+              <div className="flex justify-start mt-2">
+                <a 
+                  href={retur.video_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-ink/60 hover:text-ink transition-colors"
+                >
+                  <Video size={14} /> Buka / Unduh Video Eksternal
+                </a>
               </div>
               {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
                 <div className="p-3 bg-red-50 rounded-md border border-red-200 space-y-2 mt-2">
