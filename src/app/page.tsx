@@ -907,7 +907,15 @@ export default function Home() {
               {/* Header area */}
               <div className="flex justify-between items-center w-full">
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
-                  <p className="text-3xl md:text-2xl font-display font-medium italic tracking-tighter uppercase">NINOC</p>
+                  <Image 
+                    src="/logo.png" 
+                    alt="NINOC Logo" 
+                    width={120} 
+                    height={120} 
+                    className="w-7 h-7 md:w-9 md:h-9 object-contain brightness-0 invert" 
+                    priority 
+                    unoptimized
+                  />
                 </motion.div>
                 
                 <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
