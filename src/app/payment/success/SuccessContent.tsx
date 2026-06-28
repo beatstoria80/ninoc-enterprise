@@ -176,13 +176,13 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-6 md:pt-16 pb-8 md:pb-12 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-6 md:pt-8 pb-8 md:pb-8 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-[1600px] mx-auto w-full"
+        className="max-w-[1400px] mx-auto w-full"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-12 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
           <div className="lg:col-span-3 flex flex-col space-y-1.5 md:space-y-4 order-1">
@@ -208,7 +208,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 }}
-              className="bg-amber-50/50 border border-amber-200 p-3 md:p-4 mt-2 md:mt-6"
+              className="bg-amber-50/50 border border-amber-200 p-3 md:p-3 mt-2 md:mt-4"
             >
               <div className="flex items-start gap-3">
                 <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
@@ -225,22 +225,22 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="hidden lg:flex flex-col space-y-4 pt-8 border-t border-ink/5"
+              className="hidden lg:flex flex-col space-y-3 pt-6 border-t border-ink/5"
             >
-              <Link href="/shop" className="w-full bg-ink text-white px-6 py-4 text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-3 text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
                 Continue Collecting
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-3 text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
                 <FileText size={14} />
                 View Full Invoice
               </button>
-              <button onClick={() => window.print()} className="w-full px-6 py-4 text-[10px] font-medium uppercase tracking-widest text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
+              <button onClick={() => window.print()} className="w-full px-6 py-3 text-[10px] font-medium uppercase tracking-widest text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
                 <Printer size={14} />
                 Save as PDF
               </button>
-              <div className="text-center pt-2">
-                <Link href="/" className="inline-block px-8 py-3 text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+              <div className="text-center pt-1">
+                <Link href="/" className="inline-block px-8 py-2 text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                   Return to Atelier
                 </Link>
               </div>
@@ -256,7 +256,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               className="bg-white border border-ink/5 shadow-xl shadow-ink/5 overflow-hidden"
             >
               {/* Receipt Header */}
-              <div className="px-4 md:px-8 py-2 md:py-5 border-b border-ink/5 flex items-center justify-between">
+              <div className="px-4 md:px-6 py-2 md:py-4 border-b border-ink/5 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 md:w-8 md:h-8 bg-ink/[0.03] flex items-center justify-center">
                     <Printer size={13} className="text-ink/60" />
@@ -272,7 +272,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               {/* Invoice & Payment IDs */}
-              <div className="px-4 md:px-8 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
+              <div className="px-4 md:px-6 py-2 md:py-3 border-b border-ink/5 bg-ink/[0.01]">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/50 mb-0.5">Invoice</p>
@@ -301,23 +301,23 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </div>
 
               {/* Purchased Items */}
-              <div className="px-4 md:px-8 py-2 md:py-4 border-b border-ink/5">
-                <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/50 mb-2">Items</p>
+              <div className="px-4 md:px-6 py-2 md:py-3 border-b border-ink/5">
+                <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/50 mb-1.5">Items</p>
                 <div className="space-y-1.5">
                   {order.order_items?.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] md:text-sm font-semibold text-ink line-clamp-2 leading-tight">{item.product_name}</p>
+                        <p className="text-[11px] md:text-[13px] font-semibold text-ink line-clamp-2 leading-tight">{item.product_name}</p>
                         <p className="text-[10px] text-ink/60 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · ×{item.quantity}</p>
                       </div>
-                      <p className="text-[11px] md:text-sm font-mono font-semibold text-ink shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
+                      <p className="text-[11px] md:text-[13px] font-mono font-semibold text-ink shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Financial Breakdown */}
-              <div className="px-4 md:px-8 py-2 md:py-4 space-y-0.5">
+              <div className="px-4 md:px-6 py-2 md:py-3 space-y-0.5">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-ink/50">Subtotal</span>
                   <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
@@ -338,7 +338,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
               {/* Shipping Address */}
               {order.shipping_address && (
-                <div className="px-4 md:px-8 py-2 md:py-4 border-t border-ink/5 bg-ink/[0.01]">
+                <div className="px-4 md:px-6 py-2 md:py-3 border-t border-ink/5 bg-ink/[0.01]">
                   <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/50 mb-1">Ship To</p>
                   <p className="text-[11px] font-semibold text-ink leading-tight uppercase">{order.shipping_address.name || order.customer_name}</p>
                   {order.shipping_address.phone && (
@@ -351,7 +351,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               {/* View Invoice Button (inside receipt card) */}
               <button
                 onClick={() => setShowInvoiceModal(true)}
-                className="w-full px-4 md:px-8 py-2.5 md:py-4 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink/60 hover:text-rose cursor-pointer group"
+                className="w-full px-4 md:px-6 py-2.5 md:py-3 border-t border-ink/5 bg-ink/[0.02] hover:bg-rose/5 transition-colors flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink/60 hover:text-rose cursor-pointer group"
               >
                 <FileText size={12} className="group-hover:scale-110 transition-transform" />
                 Lihat Invoice Lengkap
@@ -365,9 +365,9 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white border border-ink/5 p-4 md:p-8 shadow-xl shadow-ink/5 relative overflow-hidden"
+              className="bg-white border border-ink/5 p-4 md:p-6 shadow-xl shadow-ink/5 relative overflow-hidden h-full flex flex-col"
             >
-              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-ink/50 mb-4 md:mb-8 flex items-center justify-between border-b border-ink/5 pb-3 md:pb-4">
+              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-ink/50 mb-3 md:mb-5 flex items-center justify-between border-b border-ink/5 pb-2 md:pb-3">
                 <span>Shipment Status</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -375,7 +375,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 </div>
               </h3>
 
-              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-8" style={{ gap: '0px' }}>
+              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-4 flex-1 justify-center" style={{ gap: '0px' }}>
 
                 <motion.div
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
@@ -384,7 +384,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                     <ShieldCheck size={16} strokeWidth={2.5} className="animate-pulse" />
                   </div>
-                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-3 md:p-6 relative overflow-hidden">
+                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-3 md:p-4 md:py-5 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
                     <div className="flex items-center gap-2 mb-1 relative">
                       <h4 className="text-[11px] md:text-xs font-semibold text-emerald-700">Payment Confirmed</h4>
@@ -403,7 +403,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/50 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                     <Package size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-3 md:p-6 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                  <div className="p-3 md:p-4 md:py-5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                     <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">Processing in Atelier</h4>
                     <p className="text-[9px] md:text-[10px] text-ink/50">Pending Quality Control</p>
                   </div>
@@ -416,7 +416,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/50 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                     <Truck size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-3 md:p-6 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                  <div className="p-3 md:p-4 md:py-5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                     <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">Handed to Logistics</h4>
                     <p className="text-[9px] md:text-[10px] text-ink/50">Courier: <span className="text-ink/50">{courierName}</span></p>
                   </div>
