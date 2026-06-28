@@ -141,10 +141,11 @@ export async function POST(req: NextRequest) {
     }
 
     // VALIDASI KEAMANAN: Pastikan order ID benar-benar ada di database dan statusnya valid
+    const sanitizedOrderId = order_id.trim().toUpperCase();
     const { data: orderData, error: orderError } = await adminClient
       .from('orders')
       .select('id, user_id, status, wa_delivered_sent_at, shipping_address, order_number')
-      .eq('id', order_id)
+      .eq('id', sanitizedOrderId)
       .maybeSingle();
 
     if (orderError || !orderData) {
@@ -216,7 +217,7 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id: uid,
         guest_email: uid ? null : guest_email,
-        order_id,
+        order_id: sanitizedOrderId,
         reason,
         reason_label,
         description,
