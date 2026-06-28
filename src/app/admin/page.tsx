@@ -122,6 +122,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [pendingReturns, setPendingReturns] = useState(0);
   const [finance, setFinance] = useState<FinanceSummary>({
     totalRevenue: 0,
     todayRevenue: 0,
@@ -349,6 +350,13 @@ export default function AdminDashboard() {
         .select('*')
         .order('customer_number', { ascending: true });
       if (customerData) setCustomers(customerData);
+
+      // Fetch pending returns count
+      const { count: pendingReturnsCount } = await supabase
+        .from('retur_requests')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['pending', 'reviewed']);
+      if (pendingReturnsCount !== null) setPendingReturns(pendingReturnsCount);
 
       // Fetch categories
       const { data: catData } = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ({ data: [] }));
@@ -1053,7 +1061,7 @@ export default function AdminDashboard() {
       ]
     },
     { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'], roles: ['super_admin'] },
-    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'], roles: ['super_admin', 'outbound_logistics'] },
+    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'], badge: pendingReturns > 0 ? pendingReturns : undefined, roles: ['super_admin', 'outbound_logistics'] },
     { 
       id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['submissions', 'suppliers', 'warehouse'],
       roles: ['super_admin', 'finance'],
