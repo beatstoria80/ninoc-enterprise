@@ -208,8 +208,9 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   };
 
   const shipping = retur.order?.shipping_address as any;
+  const orderAny = retur.order as any;
   const customerName = retur.user?.raw_user_meta_data?.full_name 
-    || retur.order?.customer_name
+    || orderAny?.customer_name
     || (shipping?.first_name ? `${shipping.first_name} ${shipping.last_name || ''}`.trim() : null)
     || shipping?.name 
     || 'Guest User';
