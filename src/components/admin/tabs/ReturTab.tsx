@@ -270,51 +270,67 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
         {/* Customer & Order Information */}
         <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2">Informasi Pelanggan</h3>
-            <div className="flex items-start gap-3 pt-1">
-              <div className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center text-lg font-bold shrink-0">
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-ink/50 border-b border-ink/10 pb-2">Informasi Pelanggan</h3>
+            <div className="flex items-start gap-4 pt-1">
+              <div className="w-12 h-12 bg-ink text-white rounded-sm flex items-center justify-center text-xl font-display font-medium shrink-0">
                 {customerName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="text-base font-medium text-gray-900">
+                <p className="text-base font-bold text-ink uppercase tracking-wide">
                   {customerName}
                 </p>
-                <div className="mt-1 space-y-1">
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
-                    <span className="w-4 inline-block text-center text-gray-400">@</span> {customerEmail}
+                <div className="mt-1.5 space-y-1">
+                  <p className="text-xs text-ink/70 flex items-center gap-2 font-medium tracking-wide">
+                    <span className="w-4 inline-block text-center text-ink/30">@</span> {customerEmail}
                   </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
-                    <span className="w-4 inline-block text-center text-gray-400">#</span> {customerPhone}
+                  <p className="text-xs text-ink/70 flex items-center gap-2 font-medium tracking-wide">
+                    <span className="w-4 inline-block text-center text-ink/30">#</span> {customerPhone}
                   </p>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2">Detail Pengajuan</h3>
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-ink/50 border-b border-ink/10 pb-2">Detail Pengajuan & Transaksi</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-gray-500 mb-1">Order ID</p>
-                <p className="text-sm font-semibold text-gray-900 font-mono">{retur.order_id}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Order ID</p>
+                <p className="text-sm font-bold text-ink font-mono tracking-tight">{retur.order_id}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Tanggal Diajukan</p>
-                <p className="text-sm text-gray-900">{formatDate(retur.created_at)}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Tanggal Diajukan</p>
+                <p className="text-sm font-semibold text-ink tracking-tight">{formatDate(retur.created_at)}</p>
               </div>
             </div>
+            
+            {/* Added Product Transaction Data */}
+            {retur.order && retur.order.order_items && retur.order.order_items.length > 0 && (
+              <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Produk Transaksi</p>
+                {retur.order.order_items.map((item, idx) => (
+                  <div key={item.id} className={cn("flex justify-between items-start", idx !== 0 && "mt-2 pt-2 border-t border-ink/5")}>
+                    <div>
+                      <p className="text-xs font-bold text-ink">{item.product_name}</p>
+                      <p className="text-[10px] text-ink/60 uppercase tracking-widest mt-0.5">{item.color} | Size {item.size} x {item.quantity}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <div>
-              <p className="text-xs text-gray-500 mb-1">Alasan Retur</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Alasan Retur</p>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-medium rounded-md">{retur.reason_label}</span>
-                <span className="text-sm text-gray-600">{retur.reason}</span>
+                <span className="px-2.5 py-1 bg-rose/10 text-rose text-[10px] font-bold uppercase tracking-widest rounded-sm">{retur.reason_label}</span>
+                <span className="text-xs font-semibold text-ink/80">{retur.reason}</span>
               </div>
             </div>
             {retur.description && (
               <div>
-                <p className="text-xs text-gray-500 mb-1">Catatan Pelanggan</p>
-                <p className="text-sm text-gray-800 bg-gray-50 p-3 rounded-md border border-gray-200">{retur.description}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-1">Catatan Pelanggan</p>
+                <p className="text-xs text-ink bg-ink/[0.02] p-3 rounded-sm border border-ink/5 leading-relaxed font-medium">{retur.description}</p>
               </div>
             )}
           </div>
@@ -322,20 +338,24 @@ function ReturDetail({ retur, onClose, onRefresh }: {
 
         {/* Video Evidence */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
-            <span className="flex items-center gap-2"><Video size={16} /> Bukti Video Unboxing</span>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-ink/50 border-b border-ink/10 pb-2 flex items-center justify-between">
+            <span className="flex items-center gap-2"><Video size={14} className="text-ink/50" /> BUKTI VIDEO UNBOXING</span>
             {retur.video_duration_seconds ? (
-              <span className="text-xs text-gray-500">{retur.video_duration_seconds} detik</span>
+              <span className="text-[10px] font-bold text-ink/40 tracking-widest uppercase">{retur.video_duration_seconds} detik</span>
             ) : null}
           </h3>
           
           {retur.video_url ? (
             <>
-              <div className="rounded-lg overflow-hidden border border-gray-200 bg-black max-w-2xl">
+              <div className="rounded-sm overflow-hidden border border-ink/10 bg-black max-w-2xl">
                 <video
+                  key={retur.video_url}
                   src={retur.video_url}
                   controls
-                  className="w-full aspect-video"
+                  playsInline
+                  preload="metadata"
+                  crossOrigin="anonymous"
+                  className="w-full aspect-video object-contain"
                 />
               </div>
               {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
