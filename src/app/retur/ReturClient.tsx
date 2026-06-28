@@ -127,7 +127,7 @@ export default function ReturClient() {
                           <Icon size={14} className="text-rose" strokeWidth={1.5} />
                         </div>
                         <span className="text-xs font-semibold text-ink uppercase tracking-wider text-center">{item.label}</span>
-                        <span className="text-xs md:text-base text-ink/50 uppercase tracking-widest text-center">{item.sub}</span>
+                        <span className="text-[10px] md:text-[11px] text-ink/60 uppercase tracking-widest text-center">{item.sub}</span>
                       </div>
                     );
                   })}
@@ -139,7 +139,7 @@ export default function ReturClient() {
                       <div className="w-3.5 h-3.5 bg-rose/10 rounded-full flex items-center justify-center mt-0.5 shrink-0">
                         <Check size={7} className="text-rose" strokeWidth={2.5} />
                       </div>
-                      <p className="text-sm md:text-xs text-ink/50 leading-relaxed">{text}</p>
+                      <p className="text-xs md:text-sm text-ink/70 leading-relaxed">{text}</p>
                     </div>
                   ))}
                 </div>
@@ -155,8 +155,8 @@ export default function ReturClient() {
               <div className="p-4 space-y-2">
                 {[{ num: '01', text: 'Siapkan Order ID dari email konfirmasi' }, { num: '02', text: 'Rekam video unboxing 1-shot (min 30 detik)' }, { num: '03', text: 'Isi form dengan lengkap & akurat' }, { num: '04', text: 'Submit & tunggu review 1-2 hari kerja' }].map((step) => (
                   <div key={step.num} className="flex items-start gap-3">
-                    <span className="text-sm md:text-xs font-bold text-rose shrink-0 mt-0.5">{step.num}</span>
-                    <p className="text-sm md:text-xs text-ink/50 leading-relaxed">{step.text}</p>
+                    <span className="text-xs md:text-sm font-bold text-rose shrink-0 mt-0.5">{step.num}</span>
+                    <p className="text-xs md:text-sm text-ink/70 leading-relaxed">{step.text}</p>
                   </div>
                 ))}
               </div>
@@ -166,7 +166,7 @@ export default function ReturClient() {
               <div className="border border-amber-100 bg-amber-50 rounded-sm p-4 space-y-2">
                 <p className="text-xs md:text-sm font-semibold text-amber-800 uppercase tracking-wider">Info Guest</p>
                 <p className="text-xs md:text-sm text-amber-700 leading-relaxed">Anda submit sebagai <strong>tamu</strong>. Kami akan hubungi via email untuk update status pengajuan.</p>
-                <p className="text-sm md:text-xs text-amber-600 leading-relaxed">Sudah punya akun? <Link href="/login" className="underline hover:text-amber-800">Login</Link> untuk lacak retur lebih mudah.</p>
+                <p className="text-xs md:text-sm text-amber-600 leading-relaxed">Sudah punya akun? <Link href="/login" className="underline hover:text-amber-800">Login</Link> untuk lacak retur lebih mudah.</p>
               </div>
             )}
           </div>
