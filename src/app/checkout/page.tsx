@@ -1350,13 +1350,13 @@ export default function CheckoutPage() {
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
       {paymentToken && !isRedirecting && !isMobile && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
-          <div className="w-full max-w-2xl bg-white border border-ink/10 shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto md:h-auto md:min-h-[600px]">
-            <div className="flex justify-between items-center p-4 md:p-5 border-b border-ink/5 bg-ink/[0.02]">
+          <div className="w-full max-w-[420px] bg-white border border-ink/10 shadow-2xl rounded-md flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-3 md:p-4 border-b border-ink/5 bg-ink/[0.02] shrink-0">
               <div className="flex items-center gap-3">
-                <ShieldCheck size={18} className="text-emerald-500" />
+                <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
                 <div className="flex flex-col">
-                  <span className="text-sm md:text-[11px] font-medium uppercase tracking-widest text-ink">Payment Authorization</span>
-                  <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Secured by Midtrans</span>
+                  <span className="text-xs md:text-[10px] font-semibold uppercase tracking-widest text-ink">Payment</span>
+                  <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/60">Secured by Midtrans</span>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -1365,14 +1365,14 @@ export default function CheckoutPage() {
                     setPaymentToken(null);
                     setIsProcessing(false);
                   }} 
-                  className="px-4 py-2 border border-ink/10 text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors"
+                  className="px-3 py-1.5 border border-ink/10 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors rounded-sm"
                 >
-                  Abort
+                  Tutup
                 </button>
               </div>
             </div>
             {/* Snap Container */}
-            <div id="snap-container" className="w-full flex-1 md:h-[600px] overflow-hidden bg-white"></div>
+            <div id="snap-container" className="w-full h-[580px] overflow-y-auto bg-white scrollbar-thin"></div>
           </div>
         </div>
       )}
