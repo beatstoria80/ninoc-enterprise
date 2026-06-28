@@ -168,7 +168,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
 
   const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
   const canProceedStep1 = orderId.trim().length >= 4 && reason !== '' && (!isGuest || (guestEmail.includes('@') && guestEmail.includes('.')));
-  const canProceedStep2 = description.trim().length >= 10 && videoFile !== null && termsAccepted && termsScrolled;
+  const canProceedStep2 = description.trim().length >= 10 && videoFile !== null && termsAccepted;
   const canSubmit = canProceedStep1 && canProceedStep2 && !isSubmitting;
 
   const handleNextStep = async () => {
@@ -768,9 +768,6 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   Saya telah membaca dan menyetujui syarat & ketentuan di atas
                 </p>
               </label>
-              {!termsScrolled && (
-                <p className="text-[10px] md:text-base text-rose/60 mt-1 italic">← Scroll ke bawah untuk enable tombol submit</p>
-              )}
             </div>
 
             {/* Error */}
