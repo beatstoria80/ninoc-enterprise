@@ -62,7 +62,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       <MobileLayout
         cartCount={items.length}
         hideTabBar={isCheckoutPage || isProfilePage || isOnboardingPage || isLoginPage || isRegisterPage || isAdminPage}
-        hideHeader={!showGlobalHeader}
+        hideHeader={!showGlobalHeader && !isReturPage}
       >
         {children}
       </MobileLayout>

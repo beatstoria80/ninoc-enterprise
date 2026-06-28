@@ -377,6 +377,15 @@ export default function MobileLayout({
                     unoptimized
                   />
                 </Link>
+              ) : pathname === '/retur' ? (
+                <div className="flex items-center gap-3">
+                  <Link href="/" className="flex items-center text-ink/60 hover:text-rose transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 14 14" fill="none" className="transition-transform">
+                      <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Link>
+                  <span className="font-display font-medium italic text-xl tracking-tight uppercase text-ink">RETUR</span>
+                </div>
               ) : pathname === '/shop' ? (
                 <div className="flex items-center leading-none px-1">
                   <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/60">{dict.header.shop}</span>

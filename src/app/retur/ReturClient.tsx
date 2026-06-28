@@ -39,7 +39,7 @@ export default function ReturClient() {
 
   return (
     <div className="min-h-screen bg-white pb-safe">
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md pt-4 md:pt-12 px-4 md:px-12 max-w-[1400px] mx-auto w-full shadow-sm md:shadow-none border-b md:border-none border-ink/5">
+      <div className="hidden md:block sticky top-0 z-50 bg-white/95 backdrop-blur-md pt-4 md:pt-12 px-4 md:px-12 max-w-[1400px] mx-auto w-full shadow-sm md:shadow-none border-b md:border-none border-ink/5">
         <div className="flex items-center justify-between border-b border-ink/5 pb-2">
           <Link href="/" className="flex items-center gap-2 text-ink/50 hover:text-rose transition-colors group p-2 -ml-2 md:p-0 md:ml-0">
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none" className="md:w-[14px] md:h-[14px] group-hover:-translate-x-0.5 transition-transform">
