@@ -108,12 +108,19 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
         />
       )}
 
-      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-14" : "pt-6 md:pt-8")}>
+      <section className={cn("relative px-6 md:px-12 max-w-[1200px] mx-auto", isMobile ? "pt-2" : "pt-6 md:pt-8")}>
 
-        {!isMobile && (
-        <Link href="/shop" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
-          <span className="text-sm font-medium">Kembali ke Katalog</span>
-        </Link>
+        {!isMobile ? (
+          <Link href="/shop" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-6 group">
+            <span className="text-sm font-medium">Kembali ke Katalog</span>
+          </Link>
+        ) : (
+          <div className="flex justify-between items-center mb-3 mt-2">
+            <h2 className="text-lg font-bold text-slate-800">My Profile</h2>
+            <Link href="/shop" className="text-[10px] font-bold uppercase tracking-widest text-white bg-ink px-3 py-1.5 rounded-full hover:bg-rose transition-colors">
+              Go to Catalog
+            </Link>
+          </div>
         )}
 
         <motion.div 
@@ -122,10 +129,10 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-6"
         >
-          {/* Profile Header */}
-          <div className="border border-ink/5 rounded-[10px] p-4 md:p-6 flex flex-col md:flex-row items-center gap-6 bg-ink/[0.01]">
-            <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10 relative">
+          {/* Profile Header (Sticky on Mobile) */}
+          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b md:border border-ink/5 md:rounded-[10px] p-3 md:p-6 flex flex-row items-center gap-3 md:gap-6 -mx-6 px-6 md:mx-0 shadow-sm md:shadow-none bg-ink/[0.01]">
+            <div className="relative group shrink-0">
+              <div className="w-14 h-14 md:w-24 md:h-24 rounded-full bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10 relative">
                 {isUploading && (
                   <div className="absolute inset-0 bg-ink/40 z-10 flex items-center justify-center text-white">
                     <Loader2 size={24} className="animate-spin" />
@@ -140,23 +147,23 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
                 )}
               </div>
               
-              <label className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-ink cursor-pointer hover:bg-rose hover:text-white transition-all border border-ink/5">
-                <Camera size={14} />
+              <label className="absolute -bottom-1 -right-1 w-6 h-6 md:w-8 md:h-8 bg-white rounded-full shadow-md flex items-center justify-center text-ink cursor-pointer hover:bg-rose hover:text-white transition-all border border-ink/5">
+                <Camera className="w-3 h-3 md:w-4 md:h-4" />
                 <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" disabled={isUploading} />
               </label>
             </div>
 
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-2xl font-bold text-slate-800">{user?.full_name}</h1>
+            <div className="flex-1 text-left min-w-0">
+              <h1 className="text-sm md:text-2xl font-bold text-slate-800 truncate">{user?.full_name}</h1>
               {user?.customer_number && (
-                <div className="flex items-center justify-center md:justify-start gap-1 mt-1 text-sm text-slate-500 font-medium">
-                  <CornerDownRight size={14} className="text-slate-400" />
+                <div className="flex items-center gap-1 mt-0.5 text-[10px] md:text-sm text-slate-500 font-medium truncate">
+                  <CornerDownRight size={10} className="text-slate-400 shrink-0" />
                   ID: {user.customer_number}
                 </div>
               )}
-              <p className="text-sm text-slate-500 mt-1">Ninoc Membership • Est. {memberSince}</p>
+              <p className="hidden md:block text-sm text-slate-500 mt-1">Ninoc Membership • Est. {memberSince}</p>
               
-              <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-6">
+              <div className="hidden md:flex flex-wrap justify-start gap-6 mt-6">
                 <div className="space-y-0.5">
                   <p className="text-xs text-slate-500">Email Terdaftar</p>
                   <p className="text-sm font-medium text-slate-800">{user?.email}</p>
@@ -170,10 +177,10 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
 
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm font-medium px-5 py-2.5 border border-slate-200 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-slate-600"
+              className="shrink-0 flex items-center justify-center w-8 h-8 md:w-auto md:h-auto md:px-5 md:py-2.5 border border-slate-200 hover:bg-rose hover:text-white hover:border-rose transition-all rounded-full text-slate-600 bg-white"
             >
-              <LogOut size={14} />
-              Keluar Akun
+              <LogOut size={14} className="md:mr-2" />
+              <span className="hidden md:inline text-sm font-medium">Keluar</span>
             </button>
           </div>
 
@@ -214,7 +221,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
                   <Link 
                     key={order.id} 
                     href={`/profile/orders/${order.id}`}
-                    className="group border border-slate-100 rounded-[4px] p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-slate-50 transition-all"
+                    className="group border border-slate-100 rounded-[4px] p-3 md:p-4 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 hover:bg-slate-50 transition-all bg-white"
                   >
                     <div className="flex flex-col gap-1 flex-1">
                       <div className="flex items-center gap-3">
@@ -229,16 +236,16 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
                       <p className="text-xs text-slate-500">Dipesan pada {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
 
-                    <div className="flex items-center gap-12 text-right">
+                    <div className="flex items-center justify-between md:justify-end gap-4 md:gap-12 mt-1 md:mt-0 text-left md:text-right">
                       <div className="space-y-0.5">
-                        <p className="text-xs text-slate-500">Total Belanja</p>
-                        <p className="text-sm font-semibold text-slate-800">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        <p className="text-[10px] md:text-xs text-slate-500">Total Belanja</p>
+                        <p className="text-xs md:text-sm font-semibold text-slate-800">Rp {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-xs text-slate-500">Kurir Pengiriman</p>
-                        <p className="text-sm font-medium text-slate-700 uppercase">{order.courier || 'Unassigned'}</p>
+                        <p className="text-[10px] md:text-xs text-slate-500">Kurir Pengiriman</p>
+                        <p className="text-xs md:text-sm font-medium text-slate-700 uppercase">{order.courier || 'Unassigned'}</p>
                       </div>
-                      <ChevronRight size={16} className="text-slate-300 group-hover:text-rose group-hover:translate-x-1 transition-all" />
+                      <ChevronRight size={14} className="text-slate-300 group-hover:text-rose group-hover:translate-x-1 transition-all" />
                     </div>
                   </Link>
                 ))
