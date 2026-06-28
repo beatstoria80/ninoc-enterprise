@@ -488,8 +488,8 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
             </button>
 
             {/* Invoice Content */}
-            <div className="overflow-auto max-h-[70vh] md:max-h-[85vh] w-full bg-ink/[0.02] p-2 md:p-4 flex justify-start md:justify-center">
-              <div id="responsive-invoice-container" className="w-full shrink-0" style={{ overflow: 'visible' }}>
+            <div className="overflow-auto max-h-[70vh] md:max-h-[85vh] w-full bg-ink/[0.02] p-4 md:p-8 flex justify-center">
+              <div id="responsive-invoice-container" className="w-[320px] shrink-0 bg-white" style={{ overflow: 'visible' }}>
                 <Invoice order={order as any} />
               </div>
             </div>
