@@ -368,7 +368,14 @@ export default function MobileLayout({
                     }
                   }}
                 >
-                  <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
+                  <Image 
+                    src="/logo.png" 
+                    alt="NINOC Logo" 
+                    width={120} 
+                    height={120} 
+                    className="w-8 h-8 object-contain" 
+                    unoptimized
+                  />
                 </Link>
               ) : pathname === '/shop' ? (
                 <div className="flex items-center leading-none px-1">
@@ -384,7 +391,14 @@ export default function MobileLayout({
                       <BackIcon />
                     </motion.div>
                     <div className="flex items-center leading-none">
-                      <span className="text-xl font-display font-medium italic tracking-tighter uppercase text-ink">ninoc</span>
+                      <Image 
+                        src="/logo.png" 
+                        alt="NINOC Logo" 
+                        width={120} 
+                        height={120} 
+                        className="w-8 h-8 object-contain" 
+                        unoptimized
+                      />
                     </div>
                   </PressScale>
                 </Link>
