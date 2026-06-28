@@ -285,7 +285,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+            className="w-16 h-16 bg-rose/[0.03]0 rounded-full flex items-center justify-center shadow-lg"
           >
             <AlertCircle size={28} strokeWidth={2.5} className="text-white" />
           </motion.div>
@@ -297,7 +297,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             </p>
           </div>
           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 space-y-1.5 w-full text-left">
-            <p className="text-[10px] md:text-base font-semibold uppercase tracking-widest text-ink/50">Tindakan Selanjutnya</p>
+            <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-ink/50">Tindakan Selanjutnya</p>
             {[
               'Beralih ke tab "Retur Saya" atau "Status"',
               'Tim kami sedang meninjau tiket Anda',
@@ -305,7 +305,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             ].map((s, i) => (
               <div key={i} className="flex items-start gap-2">
                 <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 shrink-0" />
-                <p className="text-[11px] md:text-sm text-ink/60">{s}</p>
+                <p className="text-[11px] md:text-xs text-ink/60">{s}</p>
               </div>
             ))}
           </div>
@@ -341,7 +341,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             </p>
           </div>
           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 space-y-1.5 w-full text-left">
-            <p className="text-[10px] md:text-base font-semibold uppercase tracking-widest text-ink/50">Langkah Selanjutnya</p>
+            <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-ink/50">Langkah Selanjutnya</p>
             {[
               'Tim kami akan review dalam 1x24 jam kerja',
               'Anda akan mendapat notifikasi via chat',
@@ -349,7 +349,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             ].map((s, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="w-4 h-4 bg-ink/5 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-[10px] md:text-base font-bold text-ink/60">{i + 1}</span>
+                  <span className="text-[10px] md:text-xs font-bold text-ink/60">{i + 1}</span>
                 </span>
                 <p className="text-xs md:text-sm text-ink/50 leading-relaxed">{s}</p>
               </div>
@@ -377,7 +377,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
           </div>
           <div>
             <p className="text-sm md:text-base font-semibold uppercase tracking-widest text-ink">Ajukan Retur</p>
-            <p className="text-[10px] md:text-base text-ink/50 uppercase tracking-widest mt-0.5">Return & Refund</p>
+            <p className="text-[10px] md:text-xs text-ink/50 uppercase tracking-widest mt-0.5">Return & Refund</p>
           </div>
         </div>
         {onClose && (
@@ -394,7 +394,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             <div key={s} className="flex items-center gap-0">
               {s > 1 ? <div className={cn('h-px flex-1 transition-colors', step >= s ? 'bg-rose' : 'bg-ink/5')} /> : null}
               <div className={cn(
-                'w-5 h-5 rounded-full flex items-center justify-center text-[11px] md:text-base font-bold transition-colors shrink-0',
+                'w-5 h-5 rounded-full flex items-center justify-center text-[11px] md:text-xs font-bold transition-colors shrink-0',
                 step >= s ? 'bg-rose text-white' : 'bg-ink/5 text-ink/50'
               )}>
                 {step > s ? <Check size={9} strokeWidth={3} /> : s}
@@ -404,7 +404,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
         </div>
         <div className="flex justify-between mt-1">
           {['Order ID', 'Alasan', 'Syarat'].map((label, i) => (
-            <p key={label} className={cn('text-[11px] md:text-base mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/50')}>{label}</p>
+            <p key={label} className={cn('text-[11px] md:text-xs mt-1', i + 1 <= step ? 'text-rose font-semibold' : 'text-ink/50')}>{label}</p>
           ))}
         </div>
       </div>
@@ -418,7 +418,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 12 }}
             transition={{ duration: 0.2 }}
-            className="px-4 md:px-5 pb-4 md:pb-5 space-y-4"
+            className="px-4 md:px-5 pb-4 md:pb-5 space-y-5"
           >
             {/* Order ID */}
             <div>
@@ -432,7 +432,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 placeholder="Contoh: NINOC-12345"
                 className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-base font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
               />
-              <p className="text-[10px] md:text-base text-ink/20 mt-1">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
+              <p className="text-[10px] md:text-xs text-ink/20 mt-1">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
             </div>
 
             {/* Return Type */}
@@ -450,7 +450,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   )}
                 >
                   <span className="text-xs md:text-sm font-semibold uppercase tracking-wider">Refund</span>
-                  <span className="text-[10px] md:text-base uppercase tracking-widest opacity-70">Kembali Dana</span>
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">Kembali Dana</span>
                 </button>
                 <button
                   type="button"
@@ -463,7 +463,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   )}
                 >
                   <span className="text-xs md:text-sm font-semibold uppercase tracking-wider">Exchange</span>
-                  <span className="text-[10px] md:text-base uppercase tracking-widest opacity-70">Tukar Barang</span>
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">Tukar Barang</span>
                 </button>
               </div>
             </div>
@@ -481,7 +481,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   placeholder="nama@email.com"
                   className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-base font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
                 />
-                <p className="text-[10px] md:text-base text-ink/20 mt-1">Kami akan hubungi Anda via email untuk update status retur</p>
+                <p className="text-[10px] md:text-xs text-ink/20 mt-1">Kami akan hubungi Anda via email untuk update status retur</p>
               </div>
             )}
 
@@ -508,7 +508,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={cn('text-xs md:text-sm font-semibold uppercase tracking-wider', selected ? 'text-rose' : 'text-ink')}>{r.label}</p>
-                        <p className="text-[11px] md:text-base text-ink/50 mt-0.5 leading-relaxed">{r.desc}</p>
+                        <p className="text-[11px] md:text-xs text-ink/50 mt-0.5 leading-relaxed">{r.desc}</p>
                       </div>
                       {selected && <Check size={12} className="text-rose shrink-0" strokeWidth={2.5} />}
                     </motion.button>
@@ -557,7 +557,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 12 }}
             transition={{ duration: 0.2 }}
-            className="px-4 md:px-5 pb-4 md:pb-5 space-y-4"
+            className="px-4 md:px-5 pb-4 md:pb-5 space-y-5"
           >
             {/* Order Summary UI */}
             {orderData && (
@@ -571,7 +571,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                     {orderData.status}
                   </span>
                 </div>
-                <div className="p-4 space-y-4">
+                <div className="p-4 space-y-5">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-[11px] md:text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Pemesan</p>
@@ -608,7 +608,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             <div className="flex items-center gap-2 p-2.5 bg-rose/[0.04] border border-rose/10 rounded-sm">
               <RefreshCw size={11} className="text-rose shrink-0" />
               <p className="text-xs md:text-sm font-semibold text-rose uppercase tracking-wider">{reasonLabel}</p>
-              <p className="text-[10px] md:text-sm text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
+              <p className="text-[10px] md:text-xs text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
             </div>
 
             {/* Description */}
@@ -617,7 +617,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 <label className="text-xs md:text-sm font-semibold uppercase tracking-widest text-ink/60">
                   Deskripsi Masalah <span className="text-rose">*</span>
                 </label>
-                <span className={cn('text-[10px] md:text-base', description.length < 10 ? 'text-ink/20' : 'text-emerald-500')}>
+                <span className={cn('text-[10px] md:text-xs', description.length < 10 ? 'text-ink/20' : 'text-emerald-500')}>
                   {description.length}/500
                 </span>
               </div>
@@ -629,7 +629,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 className="w-full px-3 py-2.5 border border-ink/10 text-sm md:text-base focus:outline-none focus:border-rose/40 resize-none rounded-sm placeholder:text-ink/15 bg-ink/[0.01] leading-relaxed"
               />
               {description.length > 0 && description.length < 10 && (
-                <p className="text-[10px] md:text-base text-rose mt-1">Minimal 10 karakter diperlukan</p>
+                <p className="text-[10px] md:text-xs text-rose mt-1">Minimal 10 karakter diperlukan</p>
               )}
             </div>
 
@@ -647,8 +647,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                     <Upload size={18} className="text-ink/50" />
                   </div>
                   <p className="text-xs md:text-sm font-semibold text-ink uppercase tracking-wider">Upload Video</p>
-                  <p className="text-[11px] md:text-base text-ink/50 mt-1">MP4 / WebM, maks 50MB</p>
-                  <p className="text-[10px] md:text-base mt-2 font-medium text-rose/60">
+                  <p className="text-[11px] md:text-xs text-ink/50 mt-1">MP4 / WebM, maks 50MB</p>
+                  <p className="text-[10px] md:text-xs mt-2 font-medium text-rose/60">
                     ⚠️ WAJIB — Tanpa video, retur tidak bisa diproses
                   </p>
                 </div>
@@ -686,12 +686,12 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                       </button>
                       <div className="flex-1">
                         <p className="text-xs md:text-sm font-medium text-ink truncate">{videoFile.name}</p>
-                        <p className="text-[10px] md:text-base text-ink/50">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
+                        <p className="text-[10px] md:text-xs text-ink/50">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
                       </div>
                       {fraudWarning && (
                         <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-sm">
                           <AlertCircle size={10} className="text-amber-500" />
-                          <p className="text-[10px] md:text-base text-amber-600 font-semibold">Video &lt;10 detik</p>
+                          <p className="text-[10px] md:text-xs text-amber-600 font-semibold">Video &lt;10 detik</p>
                         </div>
                       )}
                       <button
@@ -719,8 +719,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   if (file) handleVideoSelect(file);
                 }}
               />
-              <div className="mt-2 bg-blue-50 border border-blue-100 rounded-sm p-2.5 space-y-1">
-                <p className="text-[10px] md:text-base font-bold uppercase tracking-widest text-blue-600">📋 Panduan Video Unboxing (1-Shot — Tanpa Edit)</p>
+              <div className="mt-2 bg-rose/[0.03] border border-rose/10 rounded-sm p-2.5 space-y-1">
+                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-rose/80">📋 Panduan Video Unboxing (1-Shot — Tanpa Edit)</p>
                 {[
                   'Rekam saat membuka paket dari keadaan tertutup',
                   'Tunjukkan kondisi barang dengan jelas',
@@ -728,7 +728,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   'Timestamp/waktu harus terlihat jelas di rekaman',
                   'Minimal durasi 30 detik',
                 ].map((t, i) => (
-                  <p key={i} className="text-[10px] md:text-base text-blue-400 leading-relaxed flex items-start gap-1.5">
+                  <p key={i} className="text-[10px] md:text-xs text-ink/50 leading-relaxed flex items-start gap-1.5">
                     <span className="font-bold">{i + 1}.</span>{t}
                   </p>
                 ))}
@@ -747,8 +747,8 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
               >
                 {TERMS.map((term, i) => (
                   <div key={i} className="flex items-start gap-2 mb-2">
-                    <span className="text-[11px] md:text-base font-bold text-rose shrink-0 mt-0.5">{i + 1}.</span>
-                    <p className="text-[11px] md:text-base text-ink/50 leading-relaxed">{term}</p>
+                    <span className="text-[11px] md:text-xs font-bold text-rose shrink-0 mt-0.5">{i + 1}.</span>
+                    <p className="text-[11px] md:text-xs text-ink/50 leading-relaxed">{term}</p>
                   </div>
                 ))}
               </div>
@@ -764,7 +764,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 >
                   {termsAccepted && <Check size={10} className="text-white" strokeWidth={3} />}
                 </div>
-                <p className={cn('text-[11px] md:text-base', termsAccepted ? 'text-ink/60' : 'text-ink/50')}>
+                <p className={cn('text-[11px] md:text-xs', termsAccepted ? 'text-ink/60' : 'text-ink/50')}>
                   Saya telah membaca dan menyetujui syarat & ketentuan di atas
                 </p>
               </label>
