@@ -47,7 +47,7 @@ export default function ReturClient() {
             </svg>
             <span className="text-sm md:text-xs uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
           </Link>
-          <h1 className="font-display font-medium italic text-2xl md:text-3xl tracking-tighter uppercase text-ink">Return, Refund & Exchange</h1>
+          <h1 className="font-display font-medium italic text-xl md:text-3xl tracking-tight md:tracking-tighter leading-tight uppercase text-ink">Return, Refund & Exchange</h1>
         </div>
       </div>
 
