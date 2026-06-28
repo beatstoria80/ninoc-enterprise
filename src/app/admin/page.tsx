@@ -978,6 +978,25 @@ export default function AdminDashboard() {
     };
   }, [fetchData]);
 
+  // Real-time subscription for retur requests to update badge count
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_retur_requests_changes')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'retur_requests' 
+      }, () => {
+        // Auto refresh data to update pendingReturns count
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchData]);
+
   // Mark messages as read when session is active
   useEffect(() => {
     if (activeChatSession && activeTab === 'messages') {
@@ -1501,10 +1520,8 @@ export default function AdminDashboard() {
                     label: sub.label,
                     id: sub.id,
                     active: activeTab === sub.id,
-                    onClick: () => {
-                      setActiveTab(sub.id);
-                      setIsMobileMenuOpen(false);
-                    }
+                    onClick: () => { setActiveTab(sub.id); setIsMobileMenuOpen(false); },
+                    badge: sub.badge
                   }))}
                 />
               ))}
@@ -1542,7 +1559,8 @@ export default function AdminDashboard() {
                 label: sub.label,
                 id: sub.id,
                 active: activeTab === sub.id,
-                onClick: () => setActiveTab(sub.id)
+                onClick: () => setActiveTab(sub.id),
+                badge: sub.badge
               }))}
             />
           ))}
