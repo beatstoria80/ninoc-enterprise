@@ -1636,7 +1636,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-hidden flex flex-col p-0 md:px-1 md:pt-1">
+        <section className="flex-1 overflow-hidden flex flex-col p-4 md:px-8 md:py-6">
           
           {activeTab === 'overview' && (
             <OverviewTab 
