@@ -211,7 +211,6 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const customerName = retur.user?.raw_user_meta_data?.full_name 
     || (shipping?.first_name ? `${shipping.first_name} ${shipping.last_name || ''}`.trim() : null)
     || shipping?.name 
-    || retur.guest_email 
     || 'Guest User';
   const customerEmail = retur.user?.email || retur.guest_email || retur.order?.customer_email || shipping?.email || 'Tidak ada email';
   const customerPhone = retur.order?.customer_phone || shipping?.phone || 'Tidak ada no HP';
@@ -380,14 +379,14 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                   className="w-full aspect-video object-contain"
                 />
               </div>
-              <div className="flex justify-start mt-2">
+              <div className="flex justify-start mt-3">
                 <a 
                   href={retur.video_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-ink/60 hover:text-ink transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white bg-ink px-4 py-2.5 rounded-sm hover:bg-ink/80 transition-colors shadow-sm"
                 >
-                  <Video size={14} /> Buka / Unduh Video Eksternal
+                  <Video size={16} /> Buka / Unduh Video Eksternal (Klik di sini)
                 </a>
               </div>
               {retur.fraud_reasons && retur.fraud_reasons.length > 0 && (
