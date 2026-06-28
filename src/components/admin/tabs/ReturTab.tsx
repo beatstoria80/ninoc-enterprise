@@ -91,6 +91,27 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const [notifyMsg, setNotifyMsg] = useState('');
   const [savingNote, setSavingNote] = useState(false);
   
+  // Robustly fetch order items if missing
+  const [orderDetails, setOrderDetails] = useState<any>(retur.order || null);
+  
+  useEffect(() => {
+    if (!retur.order || !retur.order.order_items) {
+      const fetchOrder = async () => {
+        const { data } = await supabase
+          .from('orders')
+          .select('id, total_price, order_items(id, product_name, size, color, quantity, price_at_purchase)')
+          .eq('id', retur.order_id)
+          .single();
+        if (data) {
+          setOrderDetails(data);
+        }
+      };
+      fetchOrder();
+    } else {
+      setOrderDetails(retur.order);
+    }
+  }, [retur.order_id, retur.order]);
+  
   // QC State
   const [showQcModal, setShowQcModal] = useState(false);
   const [qcItems, setQcItems] = useState<Record<string, 'sellable' | 'defective'>>({});
@@ -306,10 +327,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
             </div>
             
             {/* Added Product Transaction Data */}
-            {retur.order && retur.order.order_items && retur.order.order_items.length > 0 && (
-              <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3">
+            {orderDetails && orderDetails.order_items && orderDetails.order_items.length > 0 && (
+              <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-3 mt-4 col-span-2">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Produk Transaksi</p>
-                {retur.order.order_items.map((item, idx) => (
+                {orderDetails.order_items.map((item: any, idx: number) => (
                   <div key={item.id} className={cn("flex justify-between items-start", idx !== 0 && "mt-2 pt-2 border-t border-ink/5")}>
                     <div>
                       <p className="text-xs font-bold text-ink">{item.product_name}</p>
