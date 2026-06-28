@@ -178,18 +178,20 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
       // 1. Upload video
       let finalVideoUrl = '';
       if (videoFile) {
-        const { data: { user } } = await supabase.auth.getUser();
-        const userId = user?.id || `guest-${Date.now()}`;
-        const filename = `${userId}/${Date.now()}.${videoFile.name.split('.').pop()}`;
-        const buffer = await videoFile.arrayBuffer();
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('retur-videos')
-          .upload(filename, buffer, { contentType: videoFile.type, upsert: true });
-        if (uploadError) throw new Error('Gagal upload video');
-        const { data: urlData } = supabase.storage
-          .from('retur-videos')
-          .getPublicUrl(uploadData.path);
-        finalVideoUrl = urlData.publicUrl;
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        formData.append('retur_id', orderId);
+
+        const uploadRes = await fetch('/api/retur/upload-video', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) {
+          throw new Error(uploadData.error || 'Gagal upload video');
+        }
+        finalVideoUrl = uploadData.video_url;
       }
 
       // 2. Get current user
