@@ -208,7 +208,7 @@ export function ReturStatus() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-xs md:text-sm font-semibold text-ink uppercase tracking-wider break-words">{r.order_id}</p>
+                      <p className="text-sm md:text-base font-bold text-ink uppercase tracking-widest tracking-wider break-words">{r.order_id}</p>
                       <span className={cn('px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
                         <Tag size={7} className="inline mr-0.5" />{cfg.label}
                       </span>
@@ -367,7 +367,7 @@ export function ReturStatus() {
                                       {isDone ? <Check size={7} strokeWidth={3} /> : null}
                                     </div>
                                     <p className={cn(
-                                      'text-[6px] font-medium uppercase tracking-widest mt-1 text-center',
+                                      'text-xs font-medium uppercase tracking-widest mt-1 text-center',
                                       isDone || isCurrent ? 'text-ink/60' : 'text-ink/20'
                                     )}>{step.label}</p>
                                   </div>

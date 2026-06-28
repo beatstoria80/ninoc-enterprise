@@ -86,11 +86,11 @@ export function ReturTracker() {
         <div className="p-5 border border-ink/10 rounded-sm bg-white space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="flex justify-between items-start border-b border-ink/5 pb-3">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-ink/50 font-semibold mb-1">Order ID</p>
+              <p className="text-xs uppercase tracking-widest text-ink/50 font-semibold mb-1">Order ID</p>
               <p className="text-sm font-mono font-bold text-ink">{result.order_id}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] uppercase tracking-widest text-ink/50 font-semibold mb-1">Tanggal</p>
+              <p className="text-xs uppercase tracking-widest text-ink/50 font-semibold mb-1">Tanggal</p>
               <p className="text-xs text-ink">{new Date(result.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
             </div>
           </div>
@@ -109,8 +109,8 @@ export function ReturTracker() {
                     <p className="text-xs text-ink/60 mt-1 leading-relaxed">{cfg.desc}</p>
                     
                     <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1.5 bg-ink/[0.03] rounded-sm">
-                      <span className="text-[10px] uppercase tracking-wider text-ink/40 font-bold">Jenis Klaim:</span>
-                      <span className="text-[11px] font-semibold text-ink/80">{result.return_type === 'exchange' ? 'Tukar Barang' : 'Refund Dana'}</span>
+                      <span className="text-xs uppercase tracking-wider text-ink/40 font-bold">Jenis Klaim:</span>
+                      <span className="text-sm font-semibold text-ink/80">{result.return_type === 'exchange' ? 'Tukar Barang' : 'Refund Dana'}</span>
                     </div>
                   </div>
                 </>
