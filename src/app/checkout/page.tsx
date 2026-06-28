@@ -644,7 +644,11 @@ export default function CheckoutPage() {
       toast.error('Format email tidak valid. Pastikan penulisan benar dan tidak ada email berulang.');
       return;
     }
-    
+    if (!formData.first_name || !formData.first_name.trim()) {
+      toast.error('Nama depan wajib diisi dengan benar.');
+      return;
+    }
+
     if (formData.first_name.length > 50 || formData.last_name.length > 50) {
       toast.error('Nama terlalu panjang. Mohon masukkan nama yang wajar.');
       return;

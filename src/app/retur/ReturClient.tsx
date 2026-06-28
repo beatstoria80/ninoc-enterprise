@@ -56,8 +56,8 @@ export default function ReturClient() {
       <div className="max-w-[1400px] mx-auto px-3 md:px-12 pt-6 pb-20">
         <div className="lg:grid lg:grid-cols-[1fr_340px] gap-6">
 
-          <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
-            <div className="px-4 md:px-5 pt-4 md:py-4 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-4 md:gap-3 bg-ink/[0.01]">
+          <div className="border border-ink/5 bg-white rounded-sm">
+            <div className="sticky top-[55px] md:top-[90px] z-40 px-4 md:px-5 pt-4 md:py-4 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-4 md:gap-3 bg-white/95 backdrop-blur-md rounded-t-sm">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-rose/10 rounded-full flex items-center justify-center shrink-0">
                   <RefreshCw size={14} className="text-rose" strokeWidth={1.5} />
@@ -116,7 +116,7 @@ export default function ReturClient() {
             </div>
           </div>
 
-          <div className="space-y-5 lg:pt-0 pt-4">
+          <div className="space-y-5 lg:pt-0 pt-4 lg:sticky lg:top-[90px] lg:self-start">
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-ink/5 bg-ink/[0.01]">
                 <p className="text-sm md:text-base font-bold uppercase tracking-widest text-ink/60">Kebijakan Retur</p>
