@@ -109,6 +109,7 @@ export interface ProductCosting {
   courier_instant_cost: number;
   target_margin_pct: number;
   selling_price: number;
+  return_cost?: number;
 }
 
 export interface SupplierCostLog {

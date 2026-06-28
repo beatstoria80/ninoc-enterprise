@@ -499,6 +499,7 @@ export function MarketingTab() {
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Selling Price (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">HPP Pabrik (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Packaging (IDR)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide text-rose">Biaya Retur (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Operational (%)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Target Margin (%)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10">Target ROAS (x)</th>
@@ -515,12 +516,13 @@ export function MarketingTab() {
                 const sp = Number(p.price) || 0;
                 const hpp = Number(currentData.supplier_cost) || 0;
                 const pkg = Number(currentData.packaging_cost) || 0;
+                const ret = Number(currentData.return_cost) || 0;
                 const opsPct = Number(currentData.operational_pct) || 0;
                 const marginPct = Number(currentData.target_margin_pct) || 40;
                 const roasPct = Number(currentData.target_roas) || 3;
 
                 const opsCost = (opsPct / 100) * sp;
-                const totalCogs = hpp + pkg + opsCost;
+                const totalCogs = hpp + pkg + ret + opsCost;
                 const maxCpa = roasPct > 0 ? sp / roasPct : 0;
                 const estNetProfit = sp - totalCogs - maxCpa;
                 const targetNetProfit = (marginPct / 100) * sp;
@@ -554,6 +556,16 @@ export function MarketingTab() {
                         className="w-24 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                         value={currentData.packaging_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'packaging_cost', e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                    <td className="px-1.5 py-1">
+                      <input 
+                        type="number"
+                        min="0"
+                        className="w-24 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-rose/50 focus:ring-1 focus:ring-rose/20 transition-all bg-rose/5 hover:bg-white text-rose"
+                        value={currentData.return_cost ?? ''}
+                        onChange={(e) => handleCostingChange(p.id, 'return_cost', e.target.value)}
                         placeholder="0"
                       />
                     </td>

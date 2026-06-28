@@ -1,0 +1,1 @@
+ALTER TABLE public.product_costings ADD COLUMN IF NOT EXISTS return_cost DECIMAL(12, 2) DEFAULT 0 NOT NULL;
