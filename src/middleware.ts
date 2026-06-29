@@ -2,9 +2,43 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+// Simple In-Memory Rate Limiter (Per Edge Isolate)
+const rateLimitMap = new Map<string, { count: number; startTime: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const windowMs = 60 * 1000; // 1 minute window
+  const limit = 100; // 100 requests per minute max
+  const now = Date.now();
+
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, startTime: now });
+    return true;
+  }
+
+  const record = rateLimitMap.get(ip)!;
+  if (now - record.startTime > windowMs) {
+    rateLimitMap.set(ip, { count: 1, startTime: now });
+    return true;
+  }
+
+  record.count += 1;
+  if (record.count > limit) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   const requestHeaders = new Headers(request.headers)
+  
+  // 0. Anti-DDoS / Rate Limiter Check
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : request.headers.get('x-real-ip') || 'unknown';
+  if (ip !== 'unknown' && !checkRateLimit(ip)) {
+    return new NextResponse('Too Many Requests - Rate Limit Exceeded', { status: 429 });
+  }
   
   // Create base response based on i18n URL rewriting
   let response: NextResponse;
