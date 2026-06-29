@@ -217,7 +217,7 @@ export default function OrdersClient({
             </div>
             
             <div className="py-2">
-              <AnimatedShippingMap currentStepIndex={currentStepIndex} />
+              <AnimatedShippingMap currentStepIndex={currentStepIndex} isCancelled={order.status === 'cancelled'} />
             </div>
 
             {order.tracking_id && (
