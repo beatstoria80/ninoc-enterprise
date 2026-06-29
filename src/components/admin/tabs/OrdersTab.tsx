@@ -1360,14 +1360,16 @@ export function OrdersTab({
                                             <div>
                                               <p className="text-[9px] uppercase tracking-widest text-red-600 mb-1 font-bold">Manual Refund Info</p>
                                               {order.refund_bank_details ? (
-                                                <div className="bg-red-50 p-2 rounded border border-red-100">
-                                                  <p className="text-[10px] text-red-800 font-medium">Bank: {order.refund_bank_details.bank_name}</p>
-                                                  <p className="text-[10px] text-red-800 font-medium">Rekening: {order.refund_bank_details.account_number}</p>
-                                                  <p className="text-[10px] text-red-800 font-medium">Atas Nama: {order.refund_bank_details.account_name}</p>
-                                                  <p className="text-[8px] text-red-600 mt-1">Submitted: {new Date(order.refund_bank_details.submitted_at).toLocaleDateString('id-ID')}</p>
+                                                <div className="bg-red-50 p-2 rounded-sm border border-red-100/50">
+                                                  <p className="font-bold text-red-800 uppercase tracking-wider text-[10px]">{order.refund_bank_details.bank_name}</p>
+                                                  <p className="font-mono font-medium text-red-900 text-[10px]">{order.refund_bank_details.account_number}</p>
+                                                  <p className="text-red-700/80 uppercase text-[9px] mt-0.5">A.N {order.refund_bank_details.account_name}</p>
                                                 </div>
                                               ) : (
-                                                <p className="text-[10px] text-red-500 italic">Menunggu customer mengisi form rekening.</p>
+                                                <div className="flex items-center gap-1.5 p-1.5 bg-red-50/50 border border-red-100/50 rounded-sm">
+                                                  <Clock size={10} className="text-red-500" />
+                                                  <p className="text-[9px] text-red-600 font-medium uppercase tracking-widest">Menunggu Data Rekening</p>
+                                                </div>
                                               )}
                                             </div>
                                           </>

@@ -493,17 +493,25 @@ export function FinanceTab({
                         <div className="col-span-3 p-3 flex items-center justify-end gap-2">
                           {!isCompleted && (
                             <>
-                              <button 
-                                onClick={() => {
-                                  const phone = customerPhone.replace(/\D/g, '');
-                                  const waPhone = phone.startsWith('0') ? '62' + phone.substring(1) : phone;
-                                  const msg = `Halo Kak, kami dari Ninoc Store.\n\nPesanan Anda #${order.id.toUpperCase()} batal. Krn pembayaran menggunakan VA/Transfer Bank, kami butuh nomor rekening Kakak untuk proses Refund.\n\nNama Bank:\nNo Rekening:\nAtas Nama:\n\nTerima kasih!`;
-                                  window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-                                }}
-                                className="px-2 py-1 text-[9px] uppercase tracking-wider border border-ink/10 hover:border-ink/30 transition-colors"
-                              >
-                                WA Minta Rekening
-                              </button>
+                              {order.refund_bank_details ? (
+                                <div className="text-right text-[9px] leading-tight mr-2 px-2 py-1 bg-emerald-50 border border-emerald-100 rounded-sm">
+                                  <p className="font-bold text-emerald-800 uppercase tracking-wider">{order.refund_bank_details.bank_name}</p>
+                                  <p className="font-mono font-medium text-emerald-900">{order.refund_bank_details.account_number}</p>
+                                  <p className="text-emerald-700/80 uppercase">A.N {order.refund_bank_details.account_name}</p>
+                                </div>
+                              ) : (
+                                <button 
+                                  onClick={() => {
+                                    const phone = customerPhone.replace(/\D/g, '');
+                                    const waPhone = phone.startsWith('0') ? '62' + phone.substring(1) : phone;
+                                    const msg = `Halo Kak, kami dari Ninoc Store.\n\nPesanan Anda #${order.id.toUpperCase()} batal. Krn pembayaran menggunakan VA/Transfer Bank, kami butuh nomor rekening Kakak untuk proses Refund.\n\nNama Bank:\nNo Rekening:\nAtas Nama:\n\nTerima kasih!`;
+                                    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                                  }}
+                                  className="px-2 py-1 text-[9px] uppercase tracking-wider border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+                                >
+                                  WA Minta Rekening
+                                </button>
+                              )}
                               <button 
                                 onClick={async () => {
                                   if (!window.confirm(`Mark order #${order.id.toUpperCase()} as Refunded?`)) return;
