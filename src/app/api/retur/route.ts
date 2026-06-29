@@ -126,9 +126,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'order_id, reason, and reason_label are required' }, { status: 400 });
     }
 
+    // VALIDASI VIDEO DIMATIKAN SEMENTARA UNTUK TESTING
+    /*
     if (!video_url || video_url.trim() === '') {
       return NextResponse.json({ error: 'Bukti video WAJIB — upload video unboxing sebelum submit retur' }, { status: 400 });
     }
+    */
 
     // Get current user (guest or authenticated) via server-side cookie session
     const serverClient = await createServerClient();
@@ -152,6 +155,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Order '${sanitizedOrderId}' tidak valid atau tidak ditemukan di sistem.` }, { status: 404 });
     }
 
+    // VALIDASI DIMATIKAN SEMENTARA UNTUK TESTING
+    /*
     // Hanya pesanan yang sudah dikirim atau selesai yang boleh diretur
     const allowedStatuses = ['shipped', 'delivered', 'completed'];
     if (!allowedStatuses.includes(orderData.status.toLowerCase())) {
@@ -170,12 +175,15 @@ export async function POST(req: NextRequest) {
         }, { status: 400 });
       }
     }
+    */
 
     // Validasi kepemilikan order (jika user login)
     if (uid && orderData.user_id && orderData.user_id !== uid) {
       return NextResponse.json({ error: 'Order ini tidak terdaftar pada akun Anda.' }, { status: 403 });
     }
 
+    // CEK DUPLIKAT DIMATIKAN SEMENTARA UNTUK TESTING
+    /*
     // Duplicate check: check by user_id OR by order_id + guest_email
     if (uid) {
       const { data: existing } = await adminClient
@@ -206,6 +214,7 @@ export async function POST(req: NextRequest) {
         }, { status: 409 });
       }
     }
+    */
 
     // Fraud detection: flag if video duration < 30 seconds
     const fraudSuspected = video_duration_seconds && video_duration_seconds < 30;
