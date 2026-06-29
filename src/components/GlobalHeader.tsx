@@ -343,6 +343,7 @@ export default function GlobalHeader() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
 
@@ -374,6 +375,33 @@ export default function GlobalHeader() {
         .single();
       if (data?.avatar_url) setProfileAvatar(data.avatar_url);
       if (data?.full_name) setProfileName(data.full_name);
+
+      const { count } = await supabase
+        .from('user_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false);
+      setUnreadNotifications(count || 0);
+
+      const channel = supabase
+        .channel(`notifications-${userId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'user_notifications',
+          filter: `user_id=eq.${userId}`
+        }, () => {
+          // Re-fetch count when any notification changes
+          supabase
+            .from('user_notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('is_read', false)
+            .then(({ count }) => setUnreadNotifications(count || 0));
+        })
+        .subscribe();
+
+      // Return cleanup logic for subscription if needed, or handle in component unmount
     };
 
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -387,6 +415,7 @@ export default function GlobalHeader() {
       else {
         setProfileAvatar(null);
         setProfileName(null);
+        setUnreadNotifications(0);
       }
     });
 
@@ -527,7 +556,10 @@ export default function GlobalHeader() {
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }} className="flex items-center">
             <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
-              <Link  href={user ? "/profile" : "/login"} className="flex items-center justify-center">
+              <Link  href={user ? "/profile" : "/login"} className="flex items-center justify-center relative">
+                {unreadNotifications > 0 && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full border-2 border-white dark:border-ink z-10 shadow-sm animate-pulse" />
+                )}
                 {profileAvatar ? (
                   <div className={cn("relative w-[20px] h-[20px] rounded-full overflow-hidden shadow-sm ring-1 ring-offset-1", isDarkBg ? "ring-white/20 ring-offset-transparent" : "ring-ink/10 ring-offset-white")}>
                     <Image src={profileAvatar} alt="Profile" fill className="object-cover" />
@@ -865,6 +897,9 @@ export default function GlobalHeader() {
                   >
                     {profileAvatar ? (
                       <div className="relative w-10 h-10 shrink-0">
+                        {unreadNotifications > 0 && (
+                          <div className="absolute 0 top-0 right-0 w-3 h-3 bg-rose rounded-full border-2 border-white dark:border-cr z-10 animate-pulse" />
+                        )}
                         <Image src={profileAvatar} alt="Profile" fill className="object-cover rounded-full border-2 border-rose/20" />
                       </div>
                     ) : (
