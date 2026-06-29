@@ -50,8 +50,14 @@ interface ReturRequest {
     status: string;
     customer_email?: string;
     customer_phone?: string;
-    shipping_address?: { name?: string; address?: string; city?: string; postal_code?: string };
+    shipping_address?: { name?: string; address?: string; city?: string; postal_code?: string; shipping_method?: string };
     order_items: { id: string; product_name: string; size?: string; color?: string; quantity: number; price_at_purchase: number }[];
+    refund_bank_details?: {
+      bank_name: string;
+      account_number: string;
+      account_name: string;
+      submitted_at: string;
+    } | null;
   } | null;
 }
 
@@ -108,7 +114,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
       const fetchOrder = async () => {
         const { data } = await supabase
           .from('orders')
-          .select('id, total_price, customer_name, order_items(id, product_name, size, color, quantity, price_at_purchase)')
+          .select('id, total_price, customer_name, refund_bank_details, order_items(id, product_name, size, color, quantity, price_at_purchase)')
           .eq('id', retur.order_id)
           .single();
         if (data && mounted) {
@@ -577,6 +583,49 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                   >
                     Tandai Ongkir Telah Ditransfer (Finance)
                   </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Info Rekening Refund */}
+        {retur.return_type === 'refund' && (status === 'approved' || status === 'completed') && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
+              Data Rekening Tujuan Refund
+              {orderDetails?.refund_bank_details ? (
+                <span className="px-2 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-md uppercase tracking-wider">
+                  Diterima
+                </span>
+              ) : (
+                <span className="px-2 py-1 text-xs font-bold bg-amber-100 text-amber-800 rounded-md uppercase tracking-wider">
+                  Menunggu Customer
+                </span>
+              )}
+            </h3>
+            <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+              {orderDetails?.refund_bank_details ? (
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Transfer Ke</p>
+                    <p className="text-sm font-bold text-gray-900">{orderDetails.refund_bank_details.bank_name} - {orderDetails.refund_bank_details.account_number}</p>
+                    <p className="text-sm text-gray-600">a.n {orderDetails.refund_bank_details.account_name}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Nominal Refund</p>
+                    <p className="text-lg font-bold text-emerald-600">IDR {(retur.refund_amount || 0).toLocaleString('id-ID')}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+                    <Clock size={20} className="text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">Menunggu Input Data Rekening</p>
+                    <p className="text-sm text-gray-600 mt-1">Customer belum mengisi form rekening pengembalian dana.</p>
+                  </div>
                 </div>
               )}
             </div>

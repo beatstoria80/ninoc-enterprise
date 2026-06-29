@@ -33,6 +33,14 @@ export interface ReturRequest {
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
+  order?: {
+    refund_bank_details?: {
+      bank_name: string;
+      account_number: string;
+      account_name: string;
+      submitted_at: string;
+    } | null;
+  };
 }
 
 const STATUS_FLOW = [
@@ -62,6 +70,40 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [bankForm, setBankForm] = useState({ bank_name: '', account_number: '', account_name: '' });
+  const [isSubmittingBank, setIsSubmittingBank] = useState(false);
+
+  const handleSubmitBank = async (e: React.FormEvent, orderId: string) => {
+    e.preventDefault();
+    if (!bankForm.bank_name || !bankForm.account_number || !bankForm.account_name) {
+      alert('Mohon lengkapi semua data rekening.');
+      return;
+    }
+    setIsSubmittingBank(true);
+    try {
+      const res = await fetch('/api/orders/refund-bank', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderId,
+          user_id: userId,
+          ...bankForm
+        })
+      });
+      if (!res.ok) throw new Error('Gagal mengirim data rekening');
+      setReturns(prev => prev.map(r => r.order_id === orderId ? {
+        ...r,
+        order: {
+          ...r.order,
+          refund_bank_details: { ...bankForm, submitted_at: new Date().toISOString() }
+        }
+      } : r));
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingBank(false);
+    }
+  };
 
   const fetchReturns = useCallback(async () => {
     try {
@@ -320,8 +362,28 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                                 IDR {ret.refund_amount.toLocaleString('id-ID')}
                               </p>
                               <p className="text-sm md:text-xs text-emerald-500/70 mt-1">
-                                {ret.refund_method === 'transfer' ? 'Dana ditransfer ke rekening Anda' : 'Refund via metode pembayaran asli'}
+                                {ret.refund_method === 'transfer' ? 'Dana ditransfer ke rekening Anda.' : 'Refund via metode pembayaran asli.'}
                               </p>
+                              {ret.refund_method === 'transfer' && !ret.order?.refund_bank_details && (
+                                <form onSubmit={(e) => handleSubmitBank(e, ret.order_id)} className="mt-3 bg-white p-3 rounded border border-emerald-100 shadow-sm space-y-2">
+                                  <p className="text-[11px] font-semibold text-ink">Formulir Rekening Refund</p>
+                                  <input type="text" placeholder="Nama Bank (BCA, Mandiri, dll)" value={bankForm.bank_name} onChange={e => setBankForm({...bankForm, bank_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-emerald-400" required />
+                                  <input type="text" placeholder="Nomor Rekening" value={bankForm.account_number} onChange={e => setBankForm({...bankForm, account_number: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-emerald-400" required />
+                                  <input type="text" placeholder="Nama Pemilik Rekening" value={bankForm.account_name} onChange={e => setBankForm({...bankForm, account_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-emerald-400" required />
+                                  <button type="submit" disabled={isSubmittingBank} className="w-full bg-emerald-600 text-white py-1.5 rounded text-[11px] font-semibold hover:bg-emerald-700 disabled:opacity-50 transition-colors tracking-widest uppercase">
+                                    {isSubmittingBank ? 'Mengirim...' : 'Kirim Data Rekening'}
+                                  </button>
+                                </form>
+                              )}
+                              {ret.refund_method === 'transfer' && ret.order?.refund_bank_details && (
+                                <div className="mt-3 bg-emerald-50/50 border border-emerald-100 p-2.5 rounded-sm flex items-start gap-2">
+                                  <CheckCircle size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                                  <div>
+                                    <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest">Data Rekening Diterima</p>
+                                    <p className="text-[10px] text-emerald-700 mt-1">Refund diproses ke <strong>{ret.order.refund_bank_details.bank_name} - {ret.order.refund_bank_details.account_number}</strong> (a.n {ret.order.refund_bank_details.account_name}).</p>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
 

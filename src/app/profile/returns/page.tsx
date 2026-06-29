@@ -37,7 +37,27 @@ export default async function ReturnsPage() {
     .order('created_at', { ascending: false })
     .limit(50);
 
-  const returnsData = (data || []) as ReturRequest[];
+  const returnsData = (data || []) as any[];
 
-  return <ReturnsClient initialReturns={returnsData} userId={user.id} />;
+  // Fetch refund_bank_details for these orders
+  const orderIds = returnsData.map(r => r.order_id);
+  let ordersData: any[] = [];
+  if (orderIds.length > 0) {
+    const { data: orders } = await supabase
+      .from('orders')
+      .select('id, refund_bank_details')
+      .in('id', orderIds);
+    ordersData = orders || [];
+  }
+
+  // Merge the data
+  const mergedReturns = returnsData.map(ret => {
+    const matchedOrder = ordersData.find(o => o.id === ret.order_id);
+    return {
+      ...ret,
+      order: matchedOrder ? { refund_bank_details: matchedOrder.refund_bank_details } : undefined
+    };
+  }) as ReturRequest[];
+
+  return <ReturnsClient initialReturns={mergedReturns} userId={user.id} />;
 }
