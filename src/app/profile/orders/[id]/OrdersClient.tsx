@@ -112,70 +112,72 @@ export default function OrdersClient({
   const currentStepIndex = Math.max(0, steps.findIndex(s => s.status === order.status));
 
   return (
-    <main className="min-h-screen bg-white text-ink font-medium selection:bg-ink selection:text-white pb-32">
-      <div className="max-w-[1000px] mx-auto px-6 pt-4 md:pt-40">
+    <main className="min-h-screen bg-gray-50 text-ink font-sans selection:bg-ink selection:text-white pb-32">
+      <div className="max-w-[800px] mx-auto md:px-6 pt-4 md:pt-10">
         
         {/* Header Navigation */}
-        <div className="flex items-center justify-between mb-16">
-          <Link href="/profile" className="flex items-center gap-2 text-ink/50 hover:text-ink transition-colors group">
-            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">Exit to Order Log</span>
+        <div className="bg-white px-4 py-4 mb-4 shadow-sm md:rounded-lg flex items-center justify-between">
+          <Link href="/profile" className="flex items-center gap-2 text-ink/70 hover:text-ink transition-colors group">
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-semibold">Kembali</span>
           </Link>
           <div className="text-right">
-            <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 mb-1">Origin Specification ID</p>
-            <p className="text-xs uppercase tracking-wider">{order.id}</p>
+            <p className="text-xs text-ink/50 mb-0.5">ID Pesanan</p>
+            <p className="text-sm font-semibold uppercase">{order.id}</p>
           </div>
         </div>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-4 px-4 md:px-0"
         >
           {/* LEFT COLUMN: Logistics Situation Report */}
-          <div className="lg:col-span-7 space-y-6">
+          <div className="lg:col-span-7 space-y-4">
             
             {/* Tracking Visualizer */}
-            <section className="space-y-4">
-              <h2 className="text-xs md:text-[10px] uppercase tracking-[0.4em] border-b border-ink/5 pb-4">Logistics Situation Report</h2>
+            <section className="bg-white p-5 rounded-lg shadow-sm space-y-5">
+              <h2 className="text-sm font-bold border-b border-gray-100 pb-3">Status Pengiriman</h2>
               
-              <AnimatedShippingMap currentStepIndex={currentStepIndex} />
+              <div className="py-2">
+                <AnimatedShippingMap currentStepIndex={currentStepIndex} />
+              </div>
 
               {/* Waybill / Tracking Card */}
               {order.tracking_id && (
-                <div className="bg-ink/[0.01] border border-ink/5 p-6 flex items-center justify-between rounded-[4px]">
+                <div className="bg-gray-50 border border-gray-100 p-4 flex items-center justify-between rounded-lg mt-4">
                   <div className="space-y-1">
-                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50">Active Waybill Reference</p>
-                    <p className="text-xs tracking-wider">{order.tracking_id}</p>
+                    <p className="text-xs text-gray-500">Nomor Resi</p>
+                    <p className="text-sm font-semibold text-ink">{order.tracking_id}</p>
                   </div>
                   <div className="text-right space-y-1">
-                    <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50">Carrier Entity</p>
-                    <p className="text-xs uppercase tracking-wider text-rose">{order.courier}</p>
+                    <p className="text-xs text-gray-500">Kurir</p>
+                    <p className="text-sm font-semibold uppercase text-rose">{order.courier}</p>
                   </div>
                 </div>
               )}
 
               {/* Detailed Tracking Logs (from Biteship Webhook) */}
-              <div className="space-y-4">
-                <h3 className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50">Event Logs (Temporal Log)</h3>
-                <div className="border border-ink/5 rounded-[4px] divide-y divide-ink/5">
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Riwayat Pengiriman</h3>
+                <div className="border border-gray-100 rounded-lg divide-y divide-gray-100">
                   {trackingLogs.length === 0 ? (
-                    <div className="p-8 text-center">
-                      <p className="text-xs md:text-[9px] italic text-ink/50 uppercase tracking-widest">Initial handshake pending...</p>
+                    <div className="p-6 text-center bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-500">Menunggu pembaruan status kurir...</p>
                     </div>
                   ) : (
                     trackingLogs.map((log, idx) => (
-                      <div key={idx} className="p-3 flex items-start justify-between group hover:bg-ink/[0.01] transition-colors">
-                        <div className="space-y-0.5">
-                          <p className="text-xs md:text-[9px] text-ink/80 tracking-wide">
-                            {log.biteship_status?.replace(/_/g, ' ').toUpperCase() || log.status}
+                      <div key={idx} className="p-3.5 flex items-start justify-between group hover:bg-gray-50 transition-colors">
+                        <div className="space-y-1">
+                          <p className="text-sm text-ink font-medium capitalize">
+                            {log.biteship_status?.replace(/_/g, ' ').toLowerCase() || log.status.toLowerCase()}
                           </p>
-                          <p className="text-[10px] md:text-[7px] text-ink/50 font-medium uppercase tracking-tight">
-                            {new Date(log.created_at).toLocaleString('id-ID')}
+                          <p className="text-xs text-gray-500">
+                            {new Date(log.created_at).toLocaleString('id-ID', {
+                              dateStyle: 'medium',
+                              timeStyle: 'short'
+                            })}
                           </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          <span className="text-[10px] md:text-[7px] border border-ink/10 px-1 py-0.5 rounded text-ink/60 uppercase tracking-widest group-hover:border-rose/30 group-hover:text-rose transition-all">Verified</span>
                         </div>
                       </div>
                     ))
@@ -186,74 +188,75 @@ export default function OrdersClient({
           </div>
 
           {/* RIGHT COLUMN: Unit Specification Details */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-4">
             
             {/* Order Items */}
-            <section className="space-y-6">
-              <h2 className="text-xs md:text-[10px] uppercase tracking-[0.4em] border-b border-ink/5 pb-4">Origin Specification Items</h2>
-              <div className="space-y-4">
+            <section className="bg-white p-5 rounded-lg shadow-sm space-y-4">
+              <h2 className="text-sm font-bold border-b border-gray-100 pb-3">Rincian Pesanan</h2>
+              <div className="space-y-3">
                 {items.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-4 p-4 border border-ink/5 rounded-[4px]">
-                    <div className="w-16 h-20 bg-ink/5 flex-shrink-0 border border-ink/5" />
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="w-16 h-16 bg-gray-100 flex-shrink-0 rounded-md border border-gray-200" />
                     <div className="flex-1 space-y-1">
-                      <p className="text-xs md:text-[10px] uppercase tracking-wider">{item.product_name}</p>
-                      <p className="text-[11px] md:text-[8px] text-ink/60 uppercase tracking-widest">Size {item.size} • Qty {item.quantity}</p>
-                      <p className="text-xs md:text-[10px] text-ink/70">IDR {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      <p className="text-sm font-semibold text-ink line-clamp-1">{item.product_name}</p>
+                      <p className="text-xs text-gray-500">Variasi: {item.size} • x{item.quantity}</p>
+                      <p className="text-sm font-bold text-ink">Rp {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID')}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="pt-4 border-t border-ink/5 flex justify-between items-end">
-                <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50">Total Investment Value</p>
-                <p className="text-xl font-display italic tracking-tight">IDR {order.total_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+              <div className="pt-4 border-t border-gray-100 flex justify-between items-center mt-2">
+                <p className="text-sm font-semibold text-gray-600">Total Pesanan</p>
+                <p className="text-lg font-bold text-rose">Rp {order.total_price.toLocaleString('id-ID')}</p>
               </div>
 
               {/* Return Request CTA — only for delivered orders without active return */}
               {order.status === 'delivered' && !returnRequest && (
                 <button
                   onClick={() => setShowReturnModal(true)}
-                  className="w-full py-3 border border-rose/30 text-rose hover:bg-rose/5 text-xs md:text-[9px] font-semibold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                  className="w-full mt-4 py-2.5 border border-rose/30 text-rose hover:bg-rose/5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                 >
-                  <RefreshCw size={12} />
-                  Ajukan Retur / Exchange
+                  <RefreshCw size={14} />
+                  Ajukan Retur / Tukar
                 </button>
               )}
 
               {/* Return Request Status */}
               {returnRequest && (
-                <div className="border border-amber-200 bg-amber-50 p-4 space-y-2">
+                <div className="border border-amber-200 bg-amber-50 p-4 rounded-lg space-y-2 mt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <RefreshCw size={12} className="text-amber-500" />
-                      <p className="text-xs md:text-[9px] font-semibold uppercase tracking-widest text-amber-600">Retur Pending</p>
+                      <RefreshCw size={14} className="text-amber-600" />
+                      <p className="text-sm font-bold text-amber-700">Status Retur</p>
                     </div>
-                    <span className="text-[11px] md:text-[8px] uppercase tracking-widest px-2 py-0.5 bg-amber-200 text-amber-700">
+                    <span className="text-xs font-semibold px-2.5 py-1 bg-amber-200 text-amber-800 rounded-full capitalize">
                       {returnRequest.status}
                     </span>
                   </div>
-                  <p className="text-xs md:text-[9px] text-amber-600/70">
-                    Retur sedang diproses oleh tim kami. Kami akan menghubungi Anda segera.
+                  <p className="text-xs text-amber-700 leading-relaxed">
+                    Pengajuan retur Anda sedang diproses. Kami akan segera menghubungi Anda.
                   </p>
                 </div>
               )}
             </section>
 
             {/* Shipping Metadata */}
-            <section className="space-y-6 bg-ink/[0.01] p-6 border border-ink/5 rounded-[4px]">
-              <h2 className="text-xs md:text-[10px] uppercase tracking-[0.4em] border-b border-ink/5 pb-4 flex items-center gap-2">
-                <MapPin size={12} className="text-rose" />
-                Shipping Target
+            <section className="bg-white p-5 rounded-lg shadow-sm space-y-4">
+              <h2 className="text-sm font-bold border-b border-gray-100 pb-3 flex items-center gap-2">
+                <MapPin size={16} className="text-rose" />
+                Alamat Pengiriman
               </h2>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 italic">Registered Consignee</p>
-                  <p className="text-sm md:text-[11px] leading-relaxed uppercase tracking-tight">{order.shipping_address?.name || order.shipping_address?.phone || 'Unknown Recipient'}</p>
-                  <p className="text-xs md:text-[9px] text-ink/60">{order.shipping_address?.phone || '—'}</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-semibold text-ink">{order.shipping_address?.name || order.shipping_address?.phone || 'Tidak diketahui'}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{order.shipping_address?.phone || '-'}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[11px] md:text-[8px] uppercase tracking-widest text-ink/50 italic">Dest. Node Specification</p>
-                  <p className="text-xs md:text-[10px] leading-relaxed text-ink/60 uppercase">
-                    {order.shipping_address?.address}, {order.shipping_address?.city}, {order.shipping_address?.province} {order.shipping_address?.postal_code}
+                <div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {order.shipping_address?.address}
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    {order.shipping_address?.city}, {order.shipping_address?.province} {order.shipping_address?.postal_code}
                   </p>
                 </div>
               </div>
@@ -289,10 +292,10 @@ export default function OrdersClient({
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={printInvoice}
-          className="flex items-center gap-2 px-4 py-2.5 bg-ink text-white rounded-full shadow-lg hover:bg-rose transition-colors text-xs md:text-[9px] font-semibold uppercase tracking-widest"
+          className="flex items-center gap-2 px-4 py-3 bg-ink text-white rounded-full shadow-lg hover:bg-ink/90 transition-colors text-sm font-semibold"
         >
-          <Printer size={12} />
-          Invoice A5
+          <Printer size={16} />
+          Cetak Invoice
         </button>
       </div>
 
