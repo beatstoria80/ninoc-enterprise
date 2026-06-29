@@ -60,7 +60,8 @@ export async function GET(request: Request) {
           tracking_id,
           created_at,
           customer_name,
-          shipping_address
+          shipping_address,
+          snap_token
         `)
         .or(orQuery)
         .single();

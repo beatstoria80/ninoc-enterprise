@@ -5,17 +5,17 @@ import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { order_id } = body;
+    const { order_id, phone } = body;
 
     if (!order_id) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user && !phone) {
+      return NextResponse.json({ error: 'Unauthorized or missing phone number' }, { status: 401 });
     }
 
     const supabaseAdmin = createSupabaseAdmin(
@@ -28,11 +28,23 @@ export async function POST(req: Request) {
       .from('orders')
       .select('*, order_items(*)')
       .eq('id', order_id)
-      .eq('user_id', user.id)
       .single();
 
     if (orderError || !order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // Validate Ownership
+    if (user) {
+      if (order.user_id !== user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    } else if (phone) {
+      const orderPhone = order.shipping_address?.phone?.replace(/\D/g, '') || '';
+      const inputPhone = phone.replace(/\D/g, '');
+      if (orderPhone !== inputPhone && !orderPhone.endsWith(inputPhone) && !inputPhone.endsWith(orderPhone)) {
+        return NextResponse.json({ error: 'Phone number does not match order' }, { status: 403 });
+      }
     }
 
     if (order.status !== 'pending' || order.payment_status !== 'pending') {

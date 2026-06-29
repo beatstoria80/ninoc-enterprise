@@ -62,6 +62,8 @@ interface Order {
   items: OrderItem[];
   order_items?: OrderItem[];
   notes?: string | null;
+  snap_token?: string | null;
+  payment_url?: string | null;
   refund_bank_details?: {
     bank_name: string;
     account_number: string;
@@ -127,6 +129,32 @@ export default function TrackClient() {
   const [scanMessage, setScanMessage] = useState('');
   const phoneInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Payment states
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  // Inject Midtrans Script
+  useEffect(() => {
+    const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+    const scriptUrl = isProd 
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '';
+
+    let script = document.querySelector(`script[src="${scriptUrl}"]`) as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.src = scriptUrl;
+      script.setAttribute('data-client-key', clientKey);
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    return () => {
+      // Optional: Cleanup if needed, but Snap can persist across routes
+    };
+  }, []);
+
   useEffect(() => {
     const qOrder = searchParams.get('order_number');
     const qPhone = searchParams.get('phone');
@@ -136,6 +164,77 @@ export default function TrackClient() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  const handlePayNow = async () => {
+    if (!order?.snap_token) {
+      alert('Token pembayaran tidak ditemukan. Silakan hubungi Customer Service.');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      if ((window as any).snap) {
+        (window as any).snap.pay(order.snap_token, {
+          onSuccess: function (result: any) {
+            console.log('Payment success', result);
+            window.location.reload();
+          },
+          onPending: function (result: any) {
+            console.log('Payment pending', result);
+            alert('Pembayaran pending, silakan selesaikan pembayaran Anda.');
+          },
+          onError: function (result: any) {
+            console.error('Payment error', result);
+            alert('Terjadi kesalahan saat memproses pembayaran.');
+            setIsProcessingPayment(false);
+          },
+          onClose: function () {
+            setIsProcessingPayment(false);
+          }
+        });
+      } else {
+        throw new Error('Sistem pembayaran belum siap, muat ulang halaman.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Terjadi kesalahan sistem pembayaran.');
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!order?.id) return;
+    
+    if (!confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Aksi ini tidak dapat diurungkan.')) {
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      const res = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          order_id: order.id,
+          phone: phone // Important for guest validation
+        })
+      });
+      
+      const json = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(json.error || 'Gagal membatalkan pesanan');
+      }
+
+      alert('Pesanan berhasil dibatalkan.');
+      const mockEvent = { preventDefault: () => {} } as React.FormEvent;
+      handleTrack(mockEvent, orderNumber, phone);
+      
+    } catch (err: any) {
+      alert(err.message || 'Terjadi kesalahan jaringan.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const handleSubmitBank = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -386,6 +485,43 @@ export default function TrackClient() {
             <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
               {renderForm()}
               
+              {order.status === 'pending' && order.payment_status === 'pending' && (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="relative flex h-2.5 w-2.5 items-center justify-center">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                    </div>
+                    <h2 className="text-xs font-bold text-amber-800 uppercase tracking-widest">Menunggu Pembayaran</h2>
+                  </div>
+                  <p className="text-[11px] text-amber-700 leading-relaxed mb-4">
+                    Selesaikan pembayaran agar pesanan dapat segera diproses oleh NINOC. Jika tidak dibayar, pesanan akan kadaluarsa secara otomatis.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {order.snap_token ? (
+                      <button 
+                        onClick={handlePayNow}
+                        disabled={isProcessingPayment}
+                        className="flex-1 bg-amber-500 text-white py-2 px-4 rounded-sm text-[11px] font-bold tracking-widest uppercase hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 disabled:opacity-50"
+                      >
+                        {isProcessingPayment ? 'Memproses...' : 'Bayar Sekarang'}
+                      </button>
+                    ) : (
+                      <div className="flex-1 text-[10px] text-amber-600 italic bg-amber-100/50 p-2 text-center rounded-sm border border-amber-200/50">
+                        Memuat link pembayaran...
+                      </div>
+                    )}
+                    <button 
+                      onClick={handleCancelOrder}
+                      disabled={isCancelling}
+                      className="flex-1 bg-white text-red-600 border border-red-200 py-2 px-4 rounded-sm text-[11px] font-bold tracking-widest uppercase hover:bg-red-50 hover:border-red-300 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 disabled:opacity-50"
+                    >
+                      {isCancelling ? 'Membatalkan...' : 'Batalkan Pesanan'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {order.status === 'cancelled' && (
                 <div className="p-4 bg-red-50 border border-red-100 rounded-sm">
                   <div className="flex items-center gap-2 mb-2">
