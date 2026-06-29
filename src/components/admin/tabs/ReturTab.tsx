@@ -91,7 +91,9 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const [status, setStatus] = useState(retur.status);
   const [adminNotes, setAdminNotes] = useState(retur.admin_notes || '');
   const [refundAmount, setRefundAmount] = useState(retur.refund_amount?.toString() || '');
-  const [exchangeShippingCost, setExchangeShippingCost] = useState('');
+  const [exchangeShippingCost, setExchangeShippingCost] = useState(
+    (retur.order?.shipping_address as any)?.shipping_cost?.toString() || ''
+  );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState('');
@@ -623,11 +625,15 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                         className="flex-1 text-lg font-bold text-gray-900 outline-none border-b-2 border-gray-300 focus:border-blue-600 transition-colors pb-1"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 mt-2 flex items-center gap-1.5">
+                      <CheckCircle size={12} className="text-emerald-500" />
+                      Otomatis diisi dari ongkos kirim awal pesanan pelanggan ({(retur.order?.shipping_address as any)?.shipping_method || 'Kurir'}).
+                    </p>
                   </div>
                   {exchangeShippingCost && (
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
                       <p className="text-sm text-amber-800">
-                        ⚠️ Penukaran barang akan menggunakan ongkos kirim sebesar <span className="font-bold">IDR {parseInt(exchangeShippingCost).toLocaleString('id-ID')}</span> yang akan ditanggung NINOC.
+                        ⚠️ Penukaran barang akan menggunakan estimasi ongkos kirim <span className="font-bold">IDR {parseInt(exchangeShippingCost).toLocaleString('id-ID')}</span> yang akan ditanggung oleh NINOC.
                       </p>
                     </div>
                   )}

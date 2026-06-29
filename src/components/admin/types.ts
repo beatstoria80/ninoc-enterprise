@@ -85,6 +85,8 @@ export interface ShippingAddress {
   province?: string;
   postal_code: string;
   address_type?: string;
+  shipping_method?: string;
+  shipping_cost?: number;
 }
 
 export interface FinanceSummary {
