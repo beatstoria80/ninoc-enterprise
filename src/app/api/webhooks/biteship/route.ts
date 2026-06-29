@@ -7,6 +7,7 @@ const adminClient = createClient(
 );
 import crypto from 'crypto';
 import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { notifyAllChannels } from '@/lib/notifications';
 
 // ============================================================
 // BITESHIP WEBHOOK HANDLER (PRODUCTION VERSION)
@@ -118,7 +119,7 @@ export async function POST(req: Request) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', payload.order_id)
-          .select('id, shipping_address, customer_name, wa_shipping_sent, wa_delivered_sent')
+          .select('id, user_id, order_number, shipping_address, customer_name, wa_shipping_sent, wa_delivered_sent')
           .single();
 
         if (updatedOrder) {
@@ -156,6 +157,26 @@ export async function POST(req: Request) {
               if (waRes.success) {
                 await adminClient.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
               }
+            }
+          }
+
+          // In-App + Push Notification
+          if (updatedOrder.user_id) {
+            if (internalStatus === 'shipped') {
+              const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || '';
+              await notifyAllChannels({
+                userId: updatedOrder.user_id,
+                title: 'Pesanan Dalam Pengiriman',
+                message: `Pesanan #${updatedOrder.order_number || updatedOrder.id} sedang dalam perjalanan.${trackingId ? ` Resi: ${trackingId}` : ''}`,
+                actionLink: `/profile/orders/${updatedOrder.id}`,
+              });
+            } else if (internalStatus === 'delivered') {
+              await notifyAllChannels({
+                userId: updatedOrder.user_id,
+                title: 'Pesanan Telah Diterima',
+                message: `Pesanan #${updatedOrder.order_number || updatedOrder.id} telah sampai. Terima kasih telah berbelanja di NINOC!`,
+                actionLink: `/profile/orders/${updatedOrder.id}`,
+              });
             }
           }
         }

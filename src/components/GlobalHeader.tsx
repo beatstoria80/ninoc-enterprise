@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut, Bell } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -553,13 +553,24 @@ export default function GlobalHeader() {
             </PressScale>
           </motion.div>
 
+          {/* Notification Button (Only if logged in) */}
+          {user && (
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.52, duration: DURATION.fast }} className="flex items-center">
+              <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
+                <Link href="/profile/notifications" className="flex items-center justify-center relative">
+                  <Bell size={18} strokeWidth={1.5} />
+                  {unreadNotifications > 0 && (
+                    <div className="absolute -top-1 -right-1 w-[14px] h-[14px] bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full shadow-sm ring-2 ring-white dark:ring-ink" />
+                  )}
+                </Link>
+              </PressScale>
+            </motion.div>
+          )}
+
           {/* User Profile */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.55, duration: DURATION.fast }} className="flex items-center">
             <PressScale className={cn("transition-colors p-2 -m-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}>
               <Link  href={user ? "/profile" : "/login"} className="flex items-center justify-center relative">
-                {unreadNotifications > 0 && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-rose rounded-full border-2 border-white dark:border-ink z-10 shadow-sm animate-pulse" />
-                )}
                 {profileAvatar ? (
                   <div className={cn("relative w-[20px] h-[20px] rounded-full overflow-hidden shadow-sm ring-1 ring-offset-1", isDarkBg ? "ring-white/20 ring-offset-transparent" : "ring-ink/10 ring-offset-white")}>
                     <Image src={profileAvatar} alt="Profile" fill className="object-cover" />

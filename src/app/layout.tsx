@@ -10,6 +10,7 @@ import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
 import ClientOverlays from "@/components/ClientOverlays";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const inter = {
   variable: "--font-sans",
@@ -118,6 +119,8 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#111111" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- loaded via <link> for Turbopack compatibility, next/font/google causes build issues */}
@@ -291,6 +294,7 @@ export default async function RootLayout({
             </BrandProvider>
           </ClientPlatformManager>
           <ClientOverlays />
+          <PushNotificationManager />
         </SmoothScrollProvider>
       </body>
     </html>

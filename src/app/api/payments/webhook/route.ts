@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { coreApi } from '@/lib/midtrans';
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
+import { notifyAllChannels } from '@/lib/notifications';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseAdmin = createClient(
@@ -84,6 +85,21 @@ export async function POST(req: Request) {
       } else {
         console.log(`[Payment Webhook] Successfully restocked inventory for cancelled order ${orderId}`);
       }
+
+      // Notify: Order Cancelled/Expired
+      const { data: cancelledOrder } = await supabaseAdmin
+        .from('orders')
+        .select('user_id, order_number')
+        .eq('id', orderId)
+        .single();
+      if (cancelledOrder?.user_id) {
+        await notifyAllChannels({
+          userId: cancelledOrder.user_id,
+          title: 'Pesanan Dibatalkan',
+          message: `Pesanan #${cancelledOrder.order_number || orderId} telah dibatalkan/kadaluarsa. Jika Anda sudah membayar, dana akan dikembalikan.`,
+          actionLink: `/profile/orders/${orderId}`,
+        });
+      }
     }
 
     // 5. Send WhatsApp Invoice Notification, Generate Affiliate Commission, and Distribute Supplier Ledger
@@ -91,7 +107,7 @@ export async function POST(req: Request) {
       const { data: order } = await supabaseAdmin
         .from('orders')
         .select(`
-          id, order_number, shipping_address, total_price, wa_invoice_sent, affiliate_id,
+          id, order_number, user_id, shipping_address, total_price, wa_invoice_sent, affiliate_id,
           order_items ( id, supplier_id, supplier_hpp )
         `)
         .eq('id', orderId)
@@ -236,6 +252,16 @@ export async function POST(req: Request) {
           await sendEmailInvoice(order, customerEmail);
         } else {
           console.log(`[Payment Webhook] No customer email found in shipping_address for order ${order.id}`);
+        }
+
+        // --- IN-APP + PUSH NOTIFICATION ---
+        if (order.user_id) {
+          await notifyAllChannels({
+            userId: order.user_id,
+            title: 'Pembayaran Berhasil!',
+            message: `Pesanan #${order.order_number || order.id} senilai Rp ${Number(order.total_price).toLocaleString('id-ID')} telah dikonfirmasi. Pesanan Anda sedang diproses.`,
+            actionLink: `/profile/orders/${order.id}`,
+          });
         }
       }
     }

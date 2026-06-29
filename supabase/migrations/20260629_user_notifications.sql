@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS public.user_notifications (
 
 ALTER TABLE public.user_notifications ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own notifications" ON public.user_notifications;
+DROP POLICY IF EXISTS "Users can update their own notifications" ON public.user_notifications;
+DROP POLICY IF EXISTS "Service role can insert notifications" ON public.user_notifications;
+
 CREATE POLICY "Users can view their own notifications" ON public.user_notifications FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can update their own notifications" ON public.user_notifications FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Service role can insert notifications" ON public.user_notifications FOR INSERT WITH CHECK (true);

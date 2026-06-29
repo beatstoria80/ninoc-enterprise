@@ -324,3 +324,71 @@ export async function sendEmailReturStatusUpdate(returRequest: any, order: any, 
   }
 }
 
+export async function sendEmailReminder(order: any, customerEmail: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+    console.error('[Email] SMTP credentials not configured. Skipping email send.');
+    return;
+  }
+
+  if (!customerEmail) {
+    console.error('[Email] No customer email provided.');
+    return;
+  }
+
+  const orderIdShort = order.id.toUpperCase();
+  const trackingUrl = `https://ninoc.store/track?order_number=${order.order_number || order.id}&phone=${encodeURIComponent(order.shipping_address?.phone || '')}`;
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Selesaikan Pembayaran Anda</title>
+  </head>
+  <body style="font-family: Helvetica, Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; line-height: 1.6; color: #141414;">
+    <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; width: 100%; border: 1px solid #eaeaea; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 30px; text-align: center; background-color: #141414; color: #ffffff;">
+          <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">NINOC</h1>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 40px 30px;">
+          <h2 style="margin: 0 0 20px 0; font-size: 18px; color: #141414;">Menunggu Pembayaran</h2>
+          <p style="margin: 0 0 20px 0; font-size: 14px; color: #666;">
+            Halo ${order.customer_name || order.shipping_address?.name || 'Pelanggan'},<br><br>
+            Kami mengingatkan bahwa pesanan Anda <strong>#${orderIdShort}</strong> senilai <strong>Rp ${Number(order.total_price).toLocaleString('id-ID')}</strong> masih menunggu pembayaran.
+          </p>
+          <p style="margin: 0 0 30px 0; font-size: 14px; color: #666;">
+            Harap segera selesaikan pembayaran Anda agar pesanan dapat segera diproses oleh tim kami. Pesanan yang tidak dibayar akan kadaluarsa secara otomatis.
+          </p>
+          <table style="width: 100%; text-align: center; margin-bottom: 30px;">
+            <tr>
+              <td>
+                <a href="${trackingUrl}" style="display: inline-block; background-color: #141414; color: #ffffff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Bayar Sekarang</a>
+              </td>
+            </tr>
+          </table>
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `[Menunggu Pembayaran] Pesanan #${orderIdShort}`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Payment reminder sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send payment reminder to ${customerEmail}:`, error);
+  }
+}
+

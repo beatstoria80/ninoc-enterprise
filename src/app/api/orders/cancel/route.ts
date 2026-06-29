@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { notifyAllChannels } from '@/lib/notifications';
 
 export async function POST(req: Request) {
   try {
@@ -100,6 +101,16 @@ export async function POST(req: Request) {
             .eq('id', item.product_id);
         }
       }
+    }
+
+    // 5. Notify customer
+    if (order.user_id) {
+      await notifyAllChannels({
+        userId: order.user_id,
+        title: 'Pesanan Dibatalkan',
+        message: `Pesanan #${order.order_number || order.id} berhasil dibatalkan. Stok telah dikembalikan.`,
+        actionLink: `/profile/orders/${order.id}`,
+      });
     }
 
     return NextResponse.json({ 

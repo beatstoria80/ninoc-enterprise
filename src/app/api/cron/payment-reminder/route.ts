@@ -6,6 +6,8 @@ const adminClient = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 import { sendTemplateMessage, formatPhoneNumber, WA_TEMPLATES } from '@/lib/whatsapp';
+import { sendEmailReminder } from '@/lib/email';
+import { notifyAllChannels } from '@/lib/notifications';
 
 // Vercel Cron configuration
 // Runs every hour. 
@@ -31,7 +33,7 @@ export async function GET(req: Request) {
 
     const { data: abandonedOrders, error } = await adminClient
       .from('orders')
-      .select('id, customer_name, shipping_address, total_price')
+      .select('id, user_id, order_number, customer_name, shipping_address, total_price')
       .eq('status', 'pending')
       .eq('wa_reminder_sent', false)
       .gte('created_at', twentyFourHoursAgo.toISOString())
@@ -83,6 +85,22 @@ export async function GET(req: Request) {
           .from('orders')
           .update({ wa_reminder_sent: true, wa_reminder_sent_at: new Date().toISOString() })
           .eq('id', order.id);
+
+        // --- EMAIL NOTIFICATION ---
+        const customerEmail = (order.shipping_address as any)?.email;
+        if (customerEmail) {
+          await sendEmailReminder(order, customerEmail);
+        }
+
+        // --- PUSH / IN-APP NOTIFICATION ---
+        if (order.user_id) {
+          await notifyAllChannels({
+            userId: order.user_id,
+            title: 'Menunggu Pembayaran',
+            message: `Pesanan #${order.order_number || order.id} menunggu pembayaran Anda. Selesaikan sekarang sebelum kehabisan!`,
+            actionLink: `/profile/orders/${order.id}`,
+          });
+        }
       } else {
         console.error(`[Cron] Failed to send reminder for order ${order.id}:`, waRes.error);
         failedIds.push(order.id);
