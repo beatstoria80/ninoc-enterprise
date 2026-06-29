@@ -29,6 +29,10 @@ async function clearFakeData() {
     // We will delete all orders where status is not null (which is all of them)
     // Supabase requires a filter for delete. We can use .neq('id', 'dummy-id')
     
+    console.log("Deleting retur_requests...");
+    const { error: err0 } = await supabase.from('retur_requests').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (err0) console.log("Warning (retur_requests):", err0.message);
+
     console.log("Deleting supplier_ledgers...");
     const { error: err1 } = await supabase.from('supplier_ledgers').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     if (err1) console.log("Warning (supplier_ledgers):", err1.message);

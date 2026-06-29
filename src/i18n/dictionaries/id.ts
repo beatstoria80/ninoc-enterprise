@@ -13,7 +13,7 @@ export const id = {
     shippingTerms: "Syarat Pengiriman & Pembayaran"
   },
   home: {
-    heroTitle: "NINOC ATELIER",
+    heroTitle: "NINOC STORE",
     heroSubtitle: "STUDIO DESAIN & PRODUKSI",
     shopNow: "Lihat Koleksi",
     featured: "Koleksi Pilihan",

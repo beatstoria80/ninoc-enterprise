@@ -560,7 +560,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                 </motion.div>
 
                 <h1 className="text-3xl md:text-5xl lg:text-7xl font-display font-medium italic tracking-tighter text-ink leading-[0.9] uppercase">
-                  {"NINOC ATELIER".split(" ").map((word: string, wi: number) => (
+                  {"NINOC STORE".split(" ").map((word: string, wi: number) => (
                     <span key={word + wi} className="block overflow-hidden">
                       {word.split("").map((char: string, ci: number) => (
                         <motion.span key={ci} variants={charVariants} initial="hidden" animate="visible" custom={wi * 8 + ci} className="inline-block">
@@ -730,7 +730,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
               transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
               className="absolute inset-0 w-full h-full"
             >
-              <Image src="/banner_ninoc_1.png" alt="NINOC Atelier" fill sizes="100vw" className="object-cover object-top" priority />
+              <Image src="/banner_ninoc_1.png" alt="NINOC STORE" fill sizes="100vw" className="object-cover object-top" priority />
             </motion.div>
 
             {/* Subtle gradient */}

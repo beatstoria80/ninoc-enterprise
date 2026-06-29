@@ -28,7 +28,7 @@ export default function LegalClient() {
       terms: {
         title: "TERMS & CONDITIONS",
         sections: [
-          { id: "01", title: "Acceptance of Terms", text: "By accessing and purchasing from NINOC ATELIER, you legally agree to be bound by these Terms of Service. These terms apply to all users of the site, including browsers, vendors, and customers. If you do not agree, you are strictly prohibited from using our services." },
+          { id: "01", title: "Acceptance of Terms", text: "By accessing and purchasing from NINOC STORE, you legally agree to be bound by these Terms of Service. These terms apply to all users of the site, including browsers, vendors, and customers. If you do not agree, you are strictly prohibited from using our services." },
           { id: "02", title: "Accuracy & Modifications", text: "We reserve the right to modify prices, product availability, and specifications at any time without prior notice. We shall not be liable to you or any third party for any modification, price change, suspension, or discontinuance of the Service." },
           { id: "03", title: "Shipping & Liability", text: "All purchases are made pursuant to a shipment contract (FOB Shipping Point). The risk of loss and title for such items pass to you upon our delivery to the shipping carrier. We are not liable for delays caused by customs or carrier mishandling." },
           { id: "04", title: "Strict Return Policy", text: "Returns are ONLY accepted within 48 hours (2x24 hours) of delivery confirmation. Claims MUST be accompanied by an uncut, unedited continuous UNBOXING VIDEO. Products must be unworn, unwashed, with all original tags attached. Without the unboxing video, any claim for defect or shortage will be automatically rejected." },
@@ -53,7 +53,7 @@ export default function LegalClient() {
       terms: {
         title: "SYARAT & KETENTUAN",
         sections: [
-          { id: "01", title: "Persetujuan Hukum", text: "Dengan mengakses dan bertransaksi di NINOC ATELIER, Anda secara sah terikat dengan Syarat dan Ketentuan ini. Ketentuan ini berlaku untuk seluruh pengguna situs. Jika Anda tidak setuju dengan ketentuan hukum ini, Anda dilarang keras untuk menggunakan layanan kami." },
+          { id: "01", title: "Persetujuan Hukum", text: "Dengan mengakses dan bertransaksi di NINOC STORE, Anda secara sah terikat dengan Syarat dan Ketentuan ini. Ketentuan ini berlaku untuk seluruh pengguna situs. Jika Anda tidak setuju dengan ketentuan hukum ini, Anda dilarang keras untuk menggunakan layanan kami." },
           { id: "02", title: "Akurasi & Perubahan", text: "NINOC memegang hak prerogatif penuh untuk mengubah harga, ketersediaan produk, dan spesifikasi kapan saja tanpa pemberitahuan sebelumnya. Kami tidak bertanggung jawab kepada pihak mana pun atas kerugian akibat perubahan harga atau penangguhan layanan." },
           { id: "03", title: "Pengiriman & Tanggung Jawab", text: "Pengiriman barang mengacu pada kontrak pengiriman (FOB Shipping Point). Segala risiko kehilangan dan kerusakan berpindah menjadi tanggung jawab Anda sepenuhnya terhitung sejak paket kami serahkan ke pihak ekspedisi (kurir). Kami tidak bertanggung jawab atas keterlambatan atau kelalaian pihak ketiga." },
           { id: "04", title: "Kebijakan Retur Ketat", text: "Klaim pengembalian (retur) HANYA dilayani maksimal 2x24 jam sejak resi dinyatakan 'Diterima'. Klaim WAJIB menyertakan VIDEO UNBOXING secara utuh tanpa jeda (cut) atau editan sejak paket masih tersegel. Produk harus dalam kondisi baru (belum dipakai/dicuci) dan tag masih terpasang. Tanpa Video Unboxing, segala bentuk klaim cacat atau kekurangan barang akan ditolak mutlak." },
@@ -83,7 +83,7 @@ export default function LegalClient() {
           <ArrowLeft size={12} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           <div className="flex flex-col leading-none">
             <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/20">Studio Exit</span>
-            <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">Back to Atelier</span>
+            <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">Back to Store</span>
           </div>
         </Link>
 

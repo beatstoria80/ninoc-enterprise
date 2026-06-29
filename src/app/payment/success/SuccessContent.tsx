@@ -241,7 +241,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               </button>
               <div className="text-center pt-1">
                 <Link href="/" className="inline-block px-8 py-2 text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
-                  Return to Atelier
+                  Return to Store
                 </Link>
               </div>
             </motion.div>
@@ -404,7 +404,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     <Package size={16} strokeWidth={2} />
                   </div>
                   <div className="p-3 md:p-4 md:py-5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
-                    <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">Processing in Atelier</h4>
+                    <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">PROCESS IN NINOC</h4>
                     <p className="text-[9px] md:text-[10px] text-ink/50">Pending Quality Control</p>
                   </div>
                 </motion.div>

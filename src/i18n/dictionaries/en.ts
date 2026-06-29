@@ -13,7 +13,7 @@ export const en = {
     shippingTerms: "Shipping & Payment Terms"
   },
   home: {
-    heroTitle: "NINOC ATELIER",
+    heroTitle: "NINOC STORE",
     heroSubtitle: "DESIGN & PRODUCTION STUDIO",
     shopNow: "View Collection",
     featured: "Featured Collection",
