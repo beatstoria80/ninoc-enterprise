@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck, RefreshCw, Printer } from 'lucide-react';
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, ShieldCheck, RefreshCw, Printer, AlertTriangle } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import AnimatedShippingMap from '../../_components/AnimatedShippingMap';
 import { ReturnModal } from './_components/ReturnModal';
@@ -26,6 +26,7 @@ export interface Order {
   courier: string | null;
   tracking_id: string | null;
   created_at: string;
+  notes?: string | null;
 }
 
 export interface OrderItem {
@@ -127,6 +128,31 @@ export default function OrdersClient({
         </div>
 
         <div className="flex flex-col">
+          
+          {/* Cancellation Notice */}
+          {order.status === 'cancelled' && (
+            <>
+              <div className="p-4 bg-red-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle size={16} className="text-red-600" />
+                  <h2 className="text-sm font-bold text-red-800">Pesanan Dibatalkan</h2>
+                </div>
+                <p className="text-xs text-red-700 leading-relaxed mb-3">
+                  Pesanan ini telah dibatalkan oleh pihak NINOC.
+                  {order.notes && (
+                    <span className="block mt-1">Alasan: <span className="font-semibold">{order.notes.split('Refund Status')[0].replace(/Cancelled on.*:/, '').trim()}</span></span>
+                  )}
+                </p>
+                <div className="pt-3 border-t border-red-200/60">
+                  <p className="text-[10px] text-red-800 leading-relaxed">
+                    <strong className="block mb-0.5">Tindak Lanjut:</strong> 
+                    Jika Anda sudah melakukan pembayaran, dana Anda akan dikembalikan (Refund) 100%. Tim Finance kami akan menghubungi Anda segera, atau silakan hubungi Customer Service kami jika ada pertanyaan lebih lanjut.
+                  </p>
+                </div>
+              </div>
+              <div className="h-1.5 w-full bg-gray-50" />
+            </>
+          )}
           
           {/* Status & Tracking */}
           <div className="p-4 space-y-4">
