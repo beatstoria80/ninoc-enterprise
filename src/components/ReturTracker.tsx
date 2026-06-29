@@ -117,6 +117,70 @@ export function ReturTracker() {
               );
             })()}
           </div>
+          
+          {/* Instruksi Pengiriman & Resi untuk Guest */}
+          {result.status === 'approved' && !result.return_awb && (
+            <div className="mt-4 bg-ink/[0.02] border border-ink/10 rounded-sm p-3 space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-ink mb-1 flex items-center gap-1.5"><Package size={12}/> Tindakan Diperlukan: Kirim Barang</p>
+              <p className="text-xs md:text-sm text-ink/70 leading-relaxed">
+                Pengajuan retur disetujui. Silakan kemas barang dengan aman dan kirimkan ke:<br/>
+                <strong>Gudang NINOC Archive</strong><br/>
+                Jl. Sudirman No. 123, Jakarta Selatan<br/>
+                <span className="text-xs italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain di chat CS)</span>
+              </p>
+              <div className="pt-2 border-t border-ink/5">
+                <p className="text-xs font-semibold text-ink/60 mb-2">Input Resi Pengembalian</p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input 
+                    type="text" 
+                    id={`courier-${result.id}`}
+                    placeholder="Nama Kurir (JNT/JNE/...)" 
+                    className="w-full sm:w-1/3 px-2.5 py-1.5 text-xs md:text-sm border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                  />
+                  <input 
+                    type="text" 
+                    id={`awb-${result.id}`}
+                    placeholder="Nomor Resi / AWB" 
+                    className="w-full sm:flex-1 px-2.5 py-1.5 text-xs md:text-sm border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                  />
+                  <button 
+                    onClick={async () => {
+                      const courier = (document.getElementById(`courier-${result.id}`) as HTMLInputElement)?.value;
+                      const awb = (document.getElementById(`awb-${result.id}`) as HTMLInputElement)?.value;
+                      if (!courier || !awb) return alert('Kurir dan Resi wajib diisi');
+                      try {
+                        const res = await fetch(`/api/retur/${result.id}/shipping`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ return_courier: courier, return_awb: awb, order_id: result.order_id })
+                        });
+                        if(res.ok) {
+                          alert('Resi berhasil disimpan!');
+                          setResult((prev: any) => ({ ...prev, return_courier: courier, return_awb: awb }));
+                        }
+                        else alert('Gagal menyimpan resi');
+                      } catch(e) { alert('Error: ' + e); }
+                    }}
+                    className="px-3 py-1.5 bg-ink text-white text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors whitespace-nowrap"
+                  >
+                    Submit Resi
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Info Resi Terkirim */}
+          {result.return_awb && (
+            <div className="mt-4 bg-blue-50 border border-blue-100 rounded-sm p-3 flex items-start gap-3">
+              <Package size={16} className="text-blue-500 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">Barang Dikirim Kembali</p>
+                <p className="text-sm font-bold text-blue-800">{result.return_courier?.toUpperCase()} - {result.return_awb}</p>
+                <p className="text-xs text-blue-600/80 mt-1">Tim gudang kami akan memproses segera setelah paket tiba.</p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
