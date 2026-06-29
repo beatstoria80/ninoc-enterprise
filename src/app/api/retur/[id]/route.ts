@@ -57,7 +57,12 @@ export async function PATCH(
     // Get current admin user via server-side cookie session (service role cannot getUser)
     const serverClient = await createServerClient();
     const { data: { user } } = await serverClient.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    const cookieStore = await req.cookies;
+    const adminSession = cookieStore.get('admin_session');
+    const isAdmin = adminSession?.value === 'authenticated';
+
+    if (!user && !isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const updates: Record<string, unknown> = {};
     if (status) updates.status = status;
@@ -69,7 +74,7 @@ export async function PATCH(
 
     // Set resolved_at and resolved_by when status changes to approved/rejected/completed
     if (status && ['approved', 'rejected', 'completed'].includes(status)) {
-      updates.resolved_by = user.id;
+      updates.resolved_by = user?.id || null;
       updates.resolved_at = new Date().toISOString();
     }
 
@@ -83,7 +88,7 @@ export async function PATCH(
     if (error) throw error;
 
     // Log activity
-    if (user.id && status) {
+    if (status) {
       await adminClient.from('customer_activity_log').insert({
         user_id: data.user_id,
         activity_type: status === 'approved' ? 'retur_approved'
