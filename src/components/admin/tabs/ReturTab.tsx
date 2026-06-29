@@ -292,6 +292,23 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           </div>
         </div>
 
+        {/* Email & WA Notification Proof */}
+        {['approved', 'rejected', 'completed'].includes(status) && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
+            <div className="bg-emerald-100 p-2 rounded-full shrink-0">
+              <CheckCircle size={18} className="text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-emerald-800">Bukti Notifikasi Terkirim (Otomatis)</p>
+              <p className="text-xs text-emerald-700 mt-1 leading-relaxed">
+                Pesan WhatsApp dan Email perubahan status <strong>{cfg.labelID}</strong> telah berhasil dikirimkan ke:
+                <br />
+                📧 <span className="font-semibold font-mono tracking-tight">{customerEmail}</span> &nbsp;|&nbsp; 📱 <span className="font-semibold font-mono tracking-tight">{customerPhone}</span>
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Customer & Order Information */}
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
