@@ -1368,7 +1368,12 @@ export function OrdersTab({
                                         {['pending', 'paid', 'shipped'].includes(order.status) && (
                                           <button 
                                             onClick={(e) => { e.stopPropagation(); handleCancelOrder(order); }}
-                                            className="w-full mt-2 flex justify-center items-center gap-2 bg-white text-rose border border-rose py-2 rounded-sm hover:bg-rose hover:text-white transition-all text-[10px] font-medium uppercase tracking-widest"
+                                            disabled={order.status === 'shipped'}
+                                            className={`w-full mt-2 flex justify-center items-center gap-2 py-2 rounded-sm text-[10px] font-medium uppercase tracking-widest transition-all ${
+                                              order.status === 'shipped'
+                                                ? 'bg-ink/5 text-ink/40 border border-ink/10 cursor-not-allowed'
+                                                : 'bg-white text-rose border border-rose hover:bg-rose hover:text-white'
+                                            }`}
                                           >
                                             <X size={12} />
                                             Cancel Order
