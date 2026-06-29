@@ -33,6 +33,8 @@ export interface Order {
     account_name: string;
     submitted_at: string;
   } | null;
+  snap_token?: string | null;
+  payment_url?: string | null;
 }
 
 export interface OrderItem {
@@ -76,6 +78,72 @@ export default function OrdersClient({
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [bankForm, setBankForm] = useState({ bank_name: '', account_number: '', account_name: '' });
   const [isSubmittingBank, setIsSubmittingBank] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  // Inject Midtrans Snap script dynamically
+  React.useEffect(() => {
+    if (order.status === 'pending' && order.payment_status === 'pending' && order.snap_token) {
+      const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+      const snapSrc = isProd ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+      const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '';
+      
+      if (!document.querySelector(`script[src="${snapSrc}"]`)) {
+        const script = document.createElement('script');
+        script.src = snapSrc;
+        script.setAttribute('data-client-key', clientKey);
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    }
+  }, [order.status, order.payment_status, order.snap_token]);
+
+  const handlePayNow = () => {
+    if (!order.snap_token) return;
+    setIsProcessingPayment(true);
+    // @ts-ignore
+    if (window.snap) {
+      // @ts-ignore
+      window.snap.pay(order.snap_token, {
+        onSuccess: function (result: any) {
+          setIsProcessingPayment(false);
+          window.location.reload();
+        },
+        onPending: function (result: any) {
+          setIsProcessingPayment(false);
+          alert('Pembayaran tertunda. Silakan selesaikan instruksi pembayaran Anda.');
+        },
+        onError: function (result: any) {
+          setIsProcessingPayment(false);
+          alert('Terjadi kesalahan saat memproses pembayaran Anda.');
+        },
+        onClose: function () {
+          setIsProcessingPayment(false);
+        }
+      });
+    } else {
+      setIsProcessingPayment(false);
+      alert('Sistem pembayaran sedang memuat, silakan coba beberapa detik lagi.');
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Aksi ini tidak dapat dibatalkan.')) return;
+    setIsCancelling(true);
+    try {
+      const res = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: order.id })
+      });
+      if (!res.ok) throw new Error('Gagal membatalkan pesanan.');
+      alert('Pesanan berhasil dibatalkan.');
+      window.location.reload();
+    } catch (err: any) {
+      alert(err.message);
+      setIsCancelling(false);
+    }
+  };
 
   const handleSubmitBank = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,6 +230,46 @@ export default function OrdersClient({
 
         <div className="flex flex-col">
           
+          {/* Pending Payment Action */}
+          {order.status === 'pending' && order.payment_status === 'pending' && (
+            <>
+              <div className="p-4 bg-yellow-50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Clock size={80} />
+                </div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+                    </div>
+                    <h2 className="text-sm font-bold text-yellow-800">Menunggu Pembayaran</h2>
+                  </div>
+                  <p className="text-xs text-yellow-700 leading-relaxed mb-4">
+                    Pesanan Anda sudah tercatat, namun kami belum menerima pembayaran. Silakan selesaikan pembayaran agar pesanan dapat segera kami proses.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={handlePayNow}
+                      disabled={isProcessingPayment || isCancelling}
+                      className="w-full bg-rose text-white font-bold py-3 rounded text-xs uppercase tracking-widest hover:bg-rose/90 transition-colors disabled:opacity-50"
+                    >
+                      {isProcessingPayment ? 'Memproses...' : 'Bayar Sekarang'}
+                    </button>
+                    <button 
+                      onClick={handleCancelOrder}
+                      disabled={isCancelling || isProcessingPayment}
+                      className="w-full bg-white text-red-600 font-bold py-3 rounded text-xs uppercase tracking-widest border border-red-200 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      {isCancelling ? 'Membatalkan...' : 'Batalkan Pesanan'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="h-1.5 w-full bg-gray-50" />
+            </>
+          )}
+
           {/* Cancellation Notice */}
           {order.status === 'cancelled' && (
             <>
