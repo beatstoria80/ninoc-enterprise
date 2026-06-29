@@ -112,158 +112,144 @@ export default function OrdersClient({
   const currentStepIndex = Math.max(0, steps.findIndex(s => s.status === order.status));
 
   return (
-    <main className="min-h-screen bg-gray-50 text-ink font-sans selection:bg-ink selection:text-white pb-32">
-      <div className="max-w-[800px] mx-auto md:px-6 pt-4 md:pt-10">
+    <main className="min-h-screen bg-white text-ink font-sans pb-24 md:pb-12">
+      <div className="max-w-[600px] mx-auto md:border-x border-gray-100 min-h-screen">
         
         {/* Header Navigation */}
-        <div className="bg-white px-4 py-4 mb-4 shadow-sm md:rounded-lg flex items-center justify-between">
-          <Link href="/profile" className="flex items-center gap-2 text-ink/70 hover:text-ink transition-colors group">
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-semibold">Kembali</span>
+        <div className="sticky top-0 bg-white/90 backdrop-blur-md z-10 px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+          <Link href="/profile" className="flex items-center gap-3 text-ink/80 hover:text-ink">
+            <ArrowLeft size={18} />
+            <span className="text-sm font-bold">Detail Pesanan</span>
           </Link>
           <div className="text-right">
-            <p className="text-xs text-ink/50 mb-0.5">ID Pesanan</p>
-            <p className="text-sm font-semibold uppercase">{order.id}</p>
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest">{order.id}</p>
           </div>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-4 px-4 md:px-0"
-        >
-          {/* LEFT COLUMN: Logistics Situation Report */}
-          <div className="lg:col-span-7 space-y-4">
+        <div className="flex flex-col">
+          
+          {/* Status & Tracking */}
+          <div className="p-4 space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-sm font-bold">Status Pengiriman</h2>
+              <span className="text-xs font-semibold px-2 py-1 bg-ink/5 rounded text-ink uppercase tracking-wider">
+                {order.status}
+              </span>
+            </div>
             
-            {/* Tracking Visualizer */}
-            <section className="bg-white p-5 rounded-lg shadow-sm space-y-5">
-              <h2 className="text-sm font-bold border-b border-gray-100 pb-3">Status Pengiriman</h2>
-              
-              <div className="py-2">
-                <AnimatedShippingMap currentStepIndex={currentStepIndex} />
-              </div>
+            <div className="py-2">
+              <AnimatedShippingMap currentStepIndex={currentStepIndex} />
+            </div>
 
-              {/* Waybill / Tracking Card */}
-              {order.tracking_id && (
-                <div className="bg-gray-50 border border-gray-100 p-4 flex items-center justify-between rounded-lg mt-4">
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500">Nomor Resi</p>
-                    <p className="text-sm font-semibold text-ink">{order.tracking_id}</p>
-                  </div>
-                  <div className="text-right space-y-1">
-                    <p className="text-xs text-gray-500">Kurir</p>
-                    <p className="text-sm font-semibold uppercase text-rose">{order.courier}</p>
-                  </div>
+            {order.tracking_id && (
+              <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border border-gray-100">
+                <div>
+                  <p className="text-[10px] text-gray-500 uppercase">Kurir</p>
+                  <p className="text-xs font-bold text-rose uppercase">{order.courier}</p>
                 </div>
-              )}
-
-              {/* Detailed Tracking Logs (from Biteship Webhook) */}
-              <div className="space-y-3 pt-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Riwayat Pengiriman</h3>
-                <div className="border border-gray-100 rounded-lg divide-y divide-gray-100">
-                  {trackingLogs.length === 0 ? (
-                    <div className="p-6 text-center bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-500">Menunggu pembaruan status kurir...</p>
-                    </div>
-                  ) : (
-                    trackingLogs.map((log, idx) => (
-                      <div key={idx} className="p-3.5 flex items-start justify-between group hover:bg-gray-50 transition-colors">
-                        <div className="space-y-1">
-                          <p className="text-sm text-ink font-medium capitalize">
-                            {log.biteship_status?.replace(/_/g, ' ').toLowerCase() || log.status.toLowerCase()}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(log.created_at).toLocaleString('id-ID', {
-                              dateStyle: 'medium',
-                              timeStyle: 'short'
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                <div className="text-right">
+                  <p className="text-[10px] text-gray-500 uppercase">Nomor Resi</p>
+                  <p className="text-xs font-bold text-ink">{order.tracking_id}</p>
                 </div>
               </div>
-            </section>
+            )}
           </div>
 
-          {/* RIGHT COLUMN: Unit Specification Details */}
-          <div className="lg:col-span-5 space-y-4">
-            
-            {/* Order Items */}
-            <section className="bg-white p-5 rounded-lg shadow-sm space-y-4">
-              <h2 className="text-sm font-bold border-b border-gray-100 pb-3">Rincian Pesanan</h2>
-              <div className="space-y-3">
-                {items.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-4">
-                    <div className="w-16 h-16 bg-gray-100 flex-shrink-0 rounded-md border border-gray-200" />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-semibold text-ink line-clamp-1">{item.product_name}</p>
-                      <p className="text-xs text-gray-500">Variasi: {item.size} • x{item.quantity}</p>
-                      <p className="text-sm font-bold text-ink">Rp {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID')}</p>
-                    </div>
+          <div className="h-1.5 w-full bg-gray-50" />
+
+          {/* Rincian Pesanan */}
+          <div className="p-4 space-y-3">
+            <h2 className="text-sm font-bold">Rincian Pesanan</h2>
+            <div className="space-y-3">
+              {items.map((item, idx) => (
+                <div key={idx} className="flex gap-3">
+                  <div className="w-14 h-14 bg-gray-100 shrink-0 rounded border border-gray-200" />
+                  <div className="flex-1 flex flex-col justify-center">
+                    <p className="text-xs font-semibold line-clamp-1">{item.product_name}</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Var: {item.size} • Qty: {item.quantity}</p>
+                    <p className="text-xs font-bold mt-1">Rp {(item.unit_price ?? item.price_at_purchase).toLocaleString('id-ID')}</p>
                   </div>
-                ))}
-              </div>
-              <div className="pt-4 border-t border-gray-100 flex justify-between items-center mt-2">
-                <p className="text-sm font-semibold text-gray-600">Total Pesanan</p>
-                <p className="text-lg font-bold text-rose">Rp {order.total_price.toLocaleString('id-ID')}</p>
-              </div>
-
-              {/* Return Request CTA — only for delivered orders without active return */}
-              {order.status === 'delivered' && !returnRequest && (
-                <button
-                  onClick={() => setShowReturnModal(true)}
-                  className="w-full mt-4 py-2.5 border border-rose/30 text-rose hover:bg-rose/5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  <RefreshCw size={14} />
-                  Ajukan Retur / Tukar
-                </button>
-              )}
-
-              {/* Return Request Status */}
-              {returnRequest && (
-                <div className="border border-amber-200 bg-amber-50 p-4 rounded-lg space-y-2 mt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <RefreshCw size={14} className="text-amber-600" />
-                      <p className="text-sm font-bold text-amber-700">Status Retur</p>
-                    </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 bg-amber-200 text-amber-800 rounded-full capitalize">
-                      {returnRequest.status}
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-700 leading-relaxed">
-                    Pengajuan retur Anda sedang diproses. Kami akan segera menghubungi Anda.
-                  </p>
                 </div>
-              )}
-            </section>
-
-            {/* Shipping Metadata */}
-            <section className="bg-white p-5 rounded-lg shadow-sm space-y-4">
-              <h2 className="text-sm font-bold border-b border-gray-100 pb-3 flex items-center gap-2">
-                <MapPin size={16} className="text-rose" />
-                Alamat Pengiriman
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-semibold text-ink">{order.shipping_address?.name || order.shipping_address?.phone || 'Tidak diketahui'}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{order.shipping_address?.phone || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {order.shipping_address?.address}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    {order.shipping_address?.city}, {order.shipping_address?.province} {order.shipping_address?.postal_code}
-                  </p>
-                </div>
-              </div>
-            </section>
-
+              ))}
+            </div>
+            <div className="pt-3 flex justify-between items-center border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-600">Total Pesanan</p>
+              <p className="text-sm font-bold text-rose">Rp {order.total_price.toLocaleString('id-ID')}</p>
+            </div>
           </div>
-        </motion.div>
+
+          <div className="h-1.5 w-full bg-gray-50" />
+
+          {/* Alamat Pengiriman */}
+          <div className="p-4 space-y-2">
+            <h2 className="text-sm font-bold flex items-center gap-1.5">
+              <MapPin size={14} className="text-gray-400" /> Alamat Pengiriman
+            </h2>
+            <div className="pl-5 space-y-0.5">
+              <p className="text-xs font-bold">{order.shipping_address?.name || order.shipping_address?.phone}</p>
+              <p className="text-[10px] text-gray-500">{order.shipping_address?.phone}</p>
+              <p className="text-xs text-gray-700 leading-snug mt-1">
+                {order.shipping_address?.address}, {order.shipping_address?.city}, {order.shipping_address?.province} {order.shipping_address?.postal_code}
+              </p>
+            </div>
+          </div>
+
+          <div className="h-1.5 w-full bg-gray-50" />
+
+          {/* Riwayat Pengiriman */}
+          <div className="p-4 space-y-3">
+            <h2 className="text-sm font-bold">Riwayat Lacak</h2>
+            <div className="space-y-3 border-l-2 border-gray-100 ml-2 pl-3">
+              {trackingLogs.length === 0 ? (
+                <p className="text-xs text-gray-500">Menunggu info kurir...</p>
+              ) : (
+                trackingLogs.map((log, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-[19px] top-1 w-2.5 h-2.5 bg-gray-300 rounded-full ring-4 ring-white" />
+                    <p className="text-xs font-semibold capitalize text-ink">
+                      {log.biteship_status?.replace(/_/g, ' ').toLowerCase() || log.status.toLowerCase()}
+                    </p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      {new Date(log.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="p-4 pt-2 space-y-3">
+            {order.status === 'delivered' && !returnRequest && (
+              <button
+                onClick={() => setShowReturnModal(true)}
+                className="w-full py-2.5 border border-gray-300 text-gray-700 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-2 hover:bg-gray-50"
+              >
+                <RefreshCw size={14} /> Ajukan Tukar / Retur
+              </button>
+            )}
+
+            {returnRequest && (
+              <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-md">
+                <div className="flex items-center gap-2">
+                  <RefreshCw size={14} className="text-amber-600" />
+                  <p className="text-xs font-bold text-amber-800">Status Retur</p>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-200 text-amber-900 rounded capitalize">
+                  {returnRequest.status}
+                </span>
+              </div>
+            )}
+            
+            <button
+              onClick={printInvoice}
+              className="w-full py-2.5 bg-ink text-white rounded-md text-xs font-bold flex items-center justify-center gap-2 hover:bg-ink/90"
+            >
+              <Printer size={14} /> Unduh Invoice
+            </button>
+          </div>
+
+        </div>
       </div>
 
       {/* Return Request Modal */}
@@ -288,20 +274,7 @@ export default function OrdersClient({
         )}
       </AnimatePresence>
 
-      {/* Download Invoice */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={printInvoice}
-          className="flex items-center gap-2 px-4 py-3 bg-ink text-white rounded-full shadow-lg hover:bg-ink/90 transition-colors text-sm font-semibold"
-        >
-          <Printer size={16} />
-          Cetak Invoice
-        </button>
-      </div>
-
-      {/* Printable Invoice (hidden, triggered by window.print()) */}
       <PrintableInvoice order={order as any} />
-
     </main>
   );
 }
