@@ -252,6 +252,11 @@ button:active, a:active, [role="button"]:active {
 }
 
 /* Input focus enhancement */
+input, textarea, select {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
 input:focus, textarea:focus, select:focus {
   transform: scale(1.01);
   box-shadow: 0 0 0 3px rgba(232, 82, 122, 0.1);
