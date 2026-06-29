@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import CourierLogo from '@/components/CourierLogo';
 import { supabase } from '@/lib/supabase';
 import jsQR from 'jsqr';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
@@ -59,6 +60,14 @@ interface Order {
   customer_name: string;
   customer_phone: string;
   items: OrderItem[];
+  order_items?: OrderItem[];
+  notes?: string | null;
+  refund_bank_details?: {
+    bank_name: string;
+    account_number: string;
+    account_name: string;
+    submitted_at: string;
+  } | null;
   logs: TrackingLog[];
 }
 
@@ -107,6 +116,8 @@ export default function TrackClient() {
   const [phone, setPhone] = useState(searchParams.get('phone') || '');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
+  const [bankForm, setBankForm] = useState({ bank_name: '', account_number: '', account_name: '' });
+  const [isSubmittingBank, setIsSubmittingBank] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
   
@@ -125,6 +136,35 @@ export default function TrackClient() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  const handleSubmitBank = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order || !bankForm.bank_name || !bankForm.account_number || !bankForm.account_name) {
+      alert('Mohon lengkapi semua data rekening.');
+      return;
+    }
+    setIsSubmittingBank(true);
+    try {
+      const res = await fetch('/api/orders/refund-bank', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: order.id,
+          email_or_phone: phone,
+          ...bankForm
+        })
+      });
+      if (!res.ok) throw new Error('Gagal mengirim data rekening');
+      setOrder({ 
+        ...order, 
+        refund_bank_details: { ...bankForm, submitted_at: new Date().toISOString() } 
+      });
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingBank(false);
+    }
+  };
 
   async function handleTrack(e: React.FormEvent, directOrder?: string, directPhone?: string) {
     e.preventDefault();
@@ -346,6 +386,47 @@ export default function TrackClient() {
             <div className={`flex flex-col gap-4 lg:overflow-y-auto pr-1 ${scrollbarStyles}`}>
               {renderForm()}
               
+              {order.status === 'cancelled' && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={16} className="text-red-600" />
+                    <h2 className="text-xs font-bold text-red-800 uppercase tracking-widest">Pesanan Dibatalkan</h2>
+                  </div>
+                  <p className="text-[11px] text-red-700 leading-relaxed mb-3">
+                    Pesanan ini telah dibatalkan oleh pihak NINOC.
+                    {order.notes && (
+                      <span className="block mt-1">Alasan: <span className="font-semibold">{order.notes.split('Refund Status')[0].replace(/Cancelled on.*:/, '').trim()}</span></span>
+                    )}
+                  </p>
+                  <div className="pt-3 border-t border-red-200/60">
+                    <p className="text-[10px] text-red-800 leading-relaxed">
+                      <strong className="block mb-0.5">Tindak Lanjut:</strong> 
+                      Jika Anda sudah melakukan pembayaran, dana Anda akan dikembalikan (Refund) 100%.
+                    </p>
+                    {order.notes?.includes('Manual Refund') && !order.refund_bank_details && (
+                      <form onSubmit={handleSubmitBank} className="mt-3 bg-white p-3 rounded border border-red-100 shadow-sm space-y-2">
+                        <p className="text-[11px] font-semibold text-ink">Formulir Rekening Refund</p>
+                        <input type="text" placeholder="Nama Bank (BCA, Mandiri, dll)" value={bankForm.bank_name} onChange={e => setBankForm({...bankForm, bank_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                        <input type="text" placeholder="Nomor Rekening" value={bankForm.account_number} onChange={e => setBankForm({...bankForm, account_number: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                        <input type="text" placeholder="Nama Pemilik Rekening" value={bankForm.account_name} onChange={e => setBankForm({...bankForm, account_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                        <button type="submit" disabled={isSubmittingBank} className="w-full bg-red-600 text-white py-1.5 rounded text-[11px] font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors tracking-widest uppercase">
+                          {isSubmittingBank ? 'Mengirim...' : 'Kirim Data Rekening'}
+                        </button>
+                      </form>
+                    )}
+                    {order.refund_bank_details && (
+                      <div className="mt-3 bg-green-50 border border-green-200 p-3 rounded-sm flex items-start gap-2">
+                        <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-[10px] font-bold text-green-800 uppercase tracking-widest">Data Rekening Diterima</p>
+                          <p className="text-[10px] text-green-700 mt-1">Refund diproses ke <strong>{order.refund_bank_details.bank_name} - {order.refund_bank_details.account_number}</strong>.</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-ink/[0.01] border border-ink/5 p-4 flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-4 pb-4 border-b border-ink/5">
                   <div>

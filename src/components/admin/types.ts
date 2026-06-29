@@ -62,6 +62,12 @@ export interface Order {
   last_printed_by?: string;
   last_printed_at?: string;
   notes?: string | null;
+  refund_bank_details?: {
+    bank_name: string;
+    account_number: string;
+    account_name: string;
+    submitted_at: string;
+  } | null;
   updated_at?: string;
 }
 

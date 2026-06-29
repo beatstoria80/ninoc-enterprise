@@ -1354,6 +1354,24 @@ export function OrdersTab({
                                             </div>
                                           </>
                                         )}
+                                        {order.status === 'cancelled' && order.notes?.includes('Manual Refund') && (
+                                          <>
+                                            <div className="h-px bg-ink/5" />
+                                            <div>
+                                              <p className="text-[9px] uppercase tracking-widest text-red-600 mb-1 font-bold">Manual Refund Info</p>
+                                              {order.refund_bank_details ? (
+                                                <div className="bg-red-50 p-2 rounded border border-red-100">
+                                                  <p className="text-[10px] text-red-800 font-medium">Bank: {order.refund_bank_details.bank_name}</p>
+                                                  <p className="text-[10px] text-red-800 font-medium">Rekening: {order.refund_bank_details.account_number}</p>
+                                                  <p className="text-[10px] text-red-800 font-medium">Atas Nama: {order.refund_bank_details.account_name}</p>
+                                                  <p className="text-[8px] text-red-600 mt-1">Submitted: {new Date(order.refund_bank_details.submitted_at).toLocaleDateString('id-ID')}</p>
+                                                </div>
+                                              ) : (
+                                                <p className="text-[10px] text-red-500 italic">Menunggu customer mengisi form rekening.</p>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
                                       </div>
                                       
                                       <div className="mt-4">

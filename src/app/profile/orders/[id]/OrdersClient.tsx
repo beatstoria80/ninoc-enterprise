@@ -27,6 +27,12 @@ export interface Order {
   tracking_id: string | null;
   created_at: string;
   notes?: string | null;
+  refund_bank_details?: {
+    bank_name: string;
+    account_number: string;
+    account_name: string;
+    submitted_at: string;
+  } | null;
 }
 
 export interface OrderItem {
@@ -68,6 +74,33 @@ export default function OrdersClient({
   const [trackingLogs, setTrackingLogs] = useState<TrackingLog[]>(initialLogs);
   const [returnRequest, setReturnRequest] = useState<{ id: string; status: string } | null>(initialReturnRequest);
   const [showReturnModal, setShowReturnModal] = useState(false);
+  const [bankForm, setBankForm] = useState({ bank_name: '', account_number: '', account_name: '' });
+  const [isSubmittingBank, setIsSubmittingBank] = useState(false);
+
+  const handleSubmitBank = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankForm.bank_name || !bankForm.account_number || !bankForm.account_name) {
+      alert('Mohon lengkapi semua data rekening.');
+      return;
+    }
+    setIsSubmittingBank(true);
+    try {
+      const res = await fetch('/api/orders/refund-bank', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: order.id,
+          user_id: userId,
+          ...bankForm
+        })
+      });
+      if (!res.ok) throw new Error('Gagal mengirim data rekening');
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingBank(false);
+    }
+  };
 
   // Realtime subscription
   React.useEffect(() => {
@@ -148,6 +181,26 @@ export default function OrdersClient({
                     <strong className="block mb-0.5">Tindak Lanjut:</strong> 
                     Jika Anda sudah melakukan pembayaran, dana Anda akan dikembalikan (Refund) 100%. Tim Finance kami akan menghubungi Anda segera, atau silakan hubungi Customer Service kami jika ada pertanyaan lebih lanjut.
                   </p>
+                  {order.notes?.includes('Manual Refund') && !order.refund_bank_details && (
+                    <form onSubmit={handleSubmitBank} className="mt-3 bg-white p-3 rounded border border-red-100 shadow-sm space-y-2">
+                      <p className="text-[11px] font-semibold text-ink">Formulir Rekening Refund</p>
+                      <input type="text" placeholder="Nama Bank (BCA, Mandiri, dll)" value={bankForm.bank_name} onChange={e => setBankForm({...bankForm, bank_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                      <input type="text" placeholder="Nomor Rekening" value={bankForm.account_number} onChange={e => setBankForm({...bankForm, account_number: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                      <input type="text" placeholder="Nama Pemilik Rekening" value={bankForm.account_name} onChange={e => setBankForm({...bankForm, account_name: e.target.value})} className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:border-red-400" required />
+                      <button type="submit" disabled={isSubmittingBank} className="w-full bg-red-600 text-white py-1.5 rounded text-[11px] font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors tracking-widest uppercase">
+                        {isSubmittingBank ? 'Mengirim...' : 'Kirim Data Rekening'}
+                      </button>
+                    </form>
+                  )}
+                  {order.refund_bank_details && (
+                    <div className="mt-3 bg-green-50 border border-green-200 p-3 rounded-sm flex items-start gap-2">
+                      <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[10px] font-bold text-green-800 uppercase tracking-widest">Data Rekening Diterima</p>
+                        <p className="text-[10px] text-green-700 mt-1">Refund sedang diproses ke rekening <strong>{order.refund_bank_details.bank_name} - {order.refund_bank_details.account_number}</strong> (a.n {order.refund_bank_details.account_name}).</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="h-1.5 w-full bg-gray-50" />
