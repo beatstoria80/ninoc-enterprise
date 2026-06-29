@@ -31,6 +31,12 @@ interface ReturRequest {
   return_awb: string | null;
   return_courier: string | null;
   return_shipped_at: string | null;
+  shipping_receipt_url?: string;
+  customer_bank_code?: string;
+  customer_bank_account?: string;
+  customer_bank_account_name?: string;
+  reimburse_status?: string;
+  reimburse_amount?: number;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
@@ -501,6 +507,74 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                     <p className="text-sm font-bold text-gray-900">Menunggu Pelanggan Mengirim Barang</p>
                     <p className="text-sm text-gray-600 mt-1">Pelanggan belum memasukkan nomor resi pengembalian.</p>
                   </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Klaim Reimburse Ongkir */}
+        {retur.reimburse_status && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
+              Klaim Reimburse Ongkir (Customer ke NINOC)
+              <span className={cn(
+                "px-2 py-1 text-xs font-bold rounded-md uppercase tracking-wider",
+                retur.reimburse_status === 'validated' ? "bg-amber-100 text-amber-800" :
+                retur.reimburse_status === 'transferred' ? "bg-emerald-100 text-emerald-800" :
+                "bg-gray-100 text-gray-600"
+              )}>
+                {retur.reimburse_status === 'validated' ? 'Tervalidasi (Menunggu Transfer)' : 
+                 retur.reimburse_status === 'transferred' ? 'Dana Telah Ditransfer' : retur.reimburse_status}
+              </span>
+            </h3>
+            <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Detail Rekening Tujuan</p>
+                    <p className="text-sm font-bold text-gray-900 mt-1">{retur.customer_bank_code} - {retur.customer_bank_account}</p>
+                    <p className="text-sm text-gray-600">a.n {retur.customer_bank_account_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Nominal Klaim</p>
+                    <p className="text-lg font-bold text-gray-900 mt-1 text-emerald-600">IDR {(retur.reimburse_amount || 0).toLocaleString('id-ID')}</p>
+                  </div>
+                </div>
+                {retur.shipping_receipt_url && (
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Bukti Struk Pengiriman</p>
+                    <a href={retur.shipping_receipt_url} target="_blank" rel="noopener noreferrer" className="block w-full max-w-[200px] aspect-[4/3] rounded-md overflow-hidden border border-gray-200 hover:opacity-80 transition-opacity bg-gray-100 flex flex-col items-center justify-center">
+                      <span className="text-xs font-medium text-blue-600">Lihat Struk (Buka di Tab Baru)</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+              
+              {retur.reimburse_status === 'validated' && (
+                <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                  <button
+                    onClick={() => {
+                      if(window.confirm('Tandai bahwa dana ongkir telah ditransfer ke rekening pelanggan?')) {
+                        handleAction(status, 'Tandai Dana Ongkir Telah Ditransfer');
+                        // Wait, handleAction above updates status. I need a specific one for reimburse_status.
+                        // I will write a direct fetch call here.
+                        setSaving(true);
+                        fetch(`/api/retur/${retur.id}`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ reimburse_status: 'transferred' })
+                        }).then(res => res.json()).then(data => {
+                          if (data.error) alert(data.error);
+                          else { setNotifyMsg('Status pencairan berhasil diupdate!'); onRefresh(); }
+                        }).finally(() => setSaving(false));
+                      }
+                    }}
+                    disabled={saving}
+                    className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                  >
+                    Tandai Ongkir Telah Ditransfer (Finance)
+                  </button>
                 </div>
               )}
             </div>

@@ -23,6 +23,12 @@ export interface ReturRequest {
   refund_method: string | null;
   return_awb: string | null;
   return_courier: string | null;
+  shipping_receipt_url?: string;
+  customer_bank_code?: string;
+  customer_bank_account?: string;
+  customer_bank_account_name?: string;
+  reimburse_status?: string;
+  reimburse_amount?: number;
   return_shipped_at: string | null;
   created_at: string;
   updated_at: string;
@@ -364,6 +370,75 @@ export default function ReturnsClient({ initialReturns, userId }: { initialRetur
                                     Submit Resi
                                   </button>
                                 </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Klaim Reimburse Ongkir */}
+                          {ret.status === 'approved' && ret.return_awb && !ret.reimburse_status && (
+                            <div className="bg-emerald/[0.02] border border-emerald/20 rounded-sm p-4 space-y-3 mt-2">
+                              <p className="text-xs md:text-sm font-semibold uppercase tracking-widest text-emerald-800 mb-1 flex items-center gap-1.5">
+                                Klaim Reimburse Ongkir Pengiriman
+                              </p>
+                              <p className="text-sm md:text-xs text-ink/70 leading-relaxed">
+                                Jika ongkir pengembalian ditanggung NINOC, silakan klaim di sini dengan menyertakan bukti struk dari kurir.
+                              </p>
+                              <div className="flex flex-col gap-3 mt-3">
+                                <input type="text" id={`reimburse-receipt-${ret.id}`} placeholder="URL Foto Struk (Upload via imgBB/dsb)" className="w-full px-3 py-2 text-sm border border-ink/10 rounded-sm focus:outline-none focus:border-emerald-500" />
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <select id={`reimburse-bank-${ret.id}`} className="w-full sm:w-1/3 px-3 py-2 text-sm border border-ink/10 rounded-sm focus:outline-none focus:border-emerald-500 bg-white">
+                                    <option value="">Pilih Bank</option>
+                                    <option value="BCA">BCA</option>
+                                    <option value="MANDIRI">Mandiri</option>
+                                    <option value="BNI">BNI</option>
+                                    <option value="BRI">BRI</option>
+                                    <option value="BSI">BSI</option>
+                                    <option value="CIMB">CIMB Niaga</option>
+                                  </select>
+                                  <input type="text" id={`reimburse-acc-${ret.id}`} placeholder="Nomor Rekening" className="w-full sm:w-1/3 px-3 py-2 text-sm border border-ink/10 rounded-sm focus:outline-none focus:border-emerald-500" />
+                                  <input type="number" id={`reimburse-amt-${ret.id}`} placeholder="Nominal (Rp)" className="w-full sm:w-1/3 px-3 py-2 text-sm border border-ink/10 rounded-sm focus:outline-none focus:border-emerald-500" />
+                                </div>
+                                <button 
+                                  onClick={async () => {
+                                    const receipt = (document.getElementById(`reimburse-receipt-${ret.id}`) as HTMLInputElement)?.value;
+                                    const bank = (document.getElementById(`reimburse-bank-${ret.id}`) as HTMLSelectElement)?.value;
+                                    const acc = (document.getElementById(`reimburse-acc-${ret.id}`) as HTMLInputElement)?.value;
+                                    const amt = (document.getElementById(`reimburse-amt-${ret.id}`) as HTMLInputElement)?.value;
+                                    if (!receipt || !bank || !acc || !amt) return alert('Semua data reimburse wajib diisi');
+                                    try {
+                                      const res = await fetch(`/api/retur/${ret.id}/reimburse`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ shipping_receipt_url: receipt, customer_bank_code: bank, customer_bank_account: acc, reimburse_amount: amt })
+                                      });
+                                      const data = await res.json();
+                                      if(res.ok) window.location.reload();
+                                      else alert('Gagal: ' + data.error);
+                                    } catch(e) { alert('Error: ' + e); }
+                                  }}
+                                  className="px-4 py-2 bg-emerald-600 text-white text-sm font-bold uppercase tracking-wider rounded-sm hover:bg-emerald-700 transition-colors mt-2"
+                                >
+                                  Submit Klaim
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Status Klaim Reimburse */}
+                          {ret.reimburse_status && (
+                            <div className="bg-amber-50 border border-amber-100 rounded-sm p-3 mt-2 flex items-start gap-3">
+                              <div>
+                                <p className="text-sm md:text-xs font-semibold uppercase tracking-widest text-amber-800 mb-1">Status Klaim Ongkir</p>
+                                <p className="text-sm font-bold text-amber-900">
+                                  {ret.reimburse_status === 'pending_validation' ? 'Menunggu Validasi' : 
+                                   ret.reimburse_status === 'validated' ? 'Tervalidasi (Menunggu Transfer)' : 
+                                   ret.reimburse_status === 'transferred' ? 'Dana Telah Ditransfer' : 'Ditolak'}
+                                </p>
+                                {ret.reimburse_amount && (
+                                  <p className="text-xs text-amber-700 mt-1">
+                                    Nominal: IDR {ret.reimburse_amount.toLocaleString('id-ID')} ke {ret.customer_bank_code} {ret.customer_bank_account}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           )}

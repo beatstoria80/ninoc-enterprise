@@ -52,6 +52,7 @@ export async function PATCH(
       fraud_reasons,
       refund_amount,
       refund_method,
+      reimburse_status,
     } = body;
 
     // Get current admin user via server-side cookie session (service role cannot getUser)
@@ -71,6 +72,7 @@ export async function PATCH(
     if (fraud_reasons !== undefined) updates.fraud_reasons = fraud_reasons;
     if (refund_amount !== undefined) updates.refund_amount = refund_amount;
     if (refund_method !== undefined) updates.refund_method = refund_method;
+    if (reimburse_status !== undefined) updates.reimburse_status = reimburse_status;
 
     // Set resolved_at and resolved_by when status changes to approved/rejected/completed
     if (status && ['approved', 'rejected', 'completed'].includes(status)) {
@@ -97,6 +99,13 @@ export async function PATCH(
           : 'note_added',
         description: `Retur status diubah ke ${status}`,
         metadata: { retur_id: id, admin_notes },
+      });
+    } else if (reimburse_status === 'transferred') {
+      await adminClient.from('customer_activity_log').insert({
+        user_id: data.user_id,
+        activity_type: 'reimburse_transferred',
+        description: `Dana reimburse ongkir telah ditransfer ke pelanggan.`,
+        metadata: { retur_id: id },
       });
     }
 
