@@ -1354,7 +1354,7 @@ export default function CheckoutPage() {
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
       {paymentToken && !isRedirecting && !isMobile && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
-          <div className="w-full max-w-[420px] bg-white border border-ink/10 shadow-2xl rounded-md flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-hidden">
+          <div className="w-full max-w-[420px] lg:max-w-[520px] bg-white border border-ink/10 shadow-2xl rounded-md flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] lg:max-h-[95vh] overflow-hidden">
             <div className="flex justify-between items-center p-3 md:p-4 border-b border-ink/5 bg-ink/[0.02] shrink-0">
               <div className="flex items-center gap-3">
                 <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
@@ -1376,7 +1376,7 @@ export default function CheckoutPage() {
               </div>
             </div>
             {/* Snap Container */}
-            <div id="snap-container" className="w-full h-[460px] overflow-y-auto bg-white scrollbar-thin"></div>
+            <div id="snap-container" className="w-full h-[460px] lg:h-[700px] overflow-y-auto bg-white scrollbar-thin"></div>
           </div>
         </div>
       )}
