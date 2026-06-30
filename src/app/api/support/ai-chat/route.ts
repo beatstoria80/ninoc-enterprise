@@ -75,27 +75,43 @@ export async function POST(req: Request) {
       contents.push({ role: 'user', parts: [{ text: message }] });
     }
 
-    // 2. Call Gemini with error handling
+    // 2. Call Gemini with retry logic for rate limiting
     let response;
-    try {
-      response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents,
-        config: {
-          systemInstruction: systemPrompt,
-          tools: [aiToolsDeclaration],
+    const MAX_RETRIES = 2;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents,
+          config: {
+            systemInstruction: systemPrompt,
+            tools: [aiToolsDeclaration],
+          }
+        });
+        break; // Success, exit retry loop
+      } catch (genError: any) {
+        const isRateLimit = genError.status === 429 || genError.message?.includes('RESOURCE_EXHAUSTED');
+        const isAuthError = genError.status === 401 || genError.status === 403 || genError.message?.includes('API_KEY_INVALID');
+        
+        if (isRateLimit && attempt < MAX_RETRIES) {
+          // Wait before retrying (exponential backoff: 2s, 4s)
+          const waitMs = Math.pow(2, attempt + 1) * 1000;
+          console.warn(`[AI-Chat] Rate limited (429). Retrying in ${waitMs}ms... (attempt ${attempt + 1}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, waitMs));
+          continue;
         }
-      });
-    } catch (genError: any) {
-      console.error('[AI-Chat] Gemini generateContent failed:', genError.message, genError.status || '', genError.code || '');
-      
-      // Check for common error types
-      if (genError.message?.includes('API_KEY_INVALID') || genError.message?.includes('API key not valid') || genError.status === 403 || genError.status === 401) {
-        console.error('[AI-Chat] ⚠️ GEMINI_API_KEY is invalid. Please update it in .env.local with a valid key from https://aistudio.google.com/apikey');
+        
+        if (isRateLimit) {
+          console.error('[AI-Chat] ⚠️ Gemini quota exhausted. Check billing at https://ai.dev/rate-limit');
+        } else if (isAuthError) {
+          console.error('[AI-Chat] ⚠️ GEMINI_API_KEY is invalid. Update in .env.local from https://aistudio.google.com/apikey');
+        } else {
+          console.error('[AI-Chat] Gemini generateContent failed:', genError.message, genError.status || '');
+        }
+        
+        await saveFallbackResponse(ticketId, FALLBACK_RESPONSE);
+        return NextResponse.json({ response: FALLBACK_RESPONSE });
       }
-      
-      await saveFallbackResponse(ticketId, FALLBACK_RESPONSE);
-      return NextResponse.json({ response: FALLBACK_RESPONSE });
     }
 
     let finalResponseText = response.text || '';
