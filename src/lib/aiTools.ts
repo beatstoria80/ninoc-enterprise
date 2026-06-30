@@ -22,7 +22,7 @@ export const aiToolsDeclaration = [
     type: 'function',
     function: {
       name: 'search_products',
-      description: 'Cari produk di database berdasarkan kata kunci nama produk. Gunakan ini saat pelanggan menanyakan ketersediaan produk, harga, atau detail produk tertentu.',
+      description: 'Cari produk di database berdasarkan kata kunci nama produk. Gunakan ini saat pelanggan menanyakan ketersediaan produk, harga. Hasil akan mengembalikan field "slug" yang wajib digunakan untuk membuat link produk dengan format https://ninoc.store/shop/[slug]',
       parameters: {
         type: 'object',
         properties: {
@@ -77,7 +77,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     const { keyword } = args;
     const { data, error } = await supabase
       .from('products')
-      .select('name, price, description, category')
+      .select('name, price, description, category, slug')
       .ilike('name', `%${keyword}%`)
       .limit(5);
     
