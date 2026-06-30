@@ -131,19 +131,20 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
       setError('Format video harus MP4 atau WebM');
       return;
     }
-    setVideoFile(file);
-    setError('');
     const url = URL.createObjectURL(file);
-    setVideoUrl(url);
-    // Get duration
     const video = document.createElement('video');
     video.src = url;
     video.onloadedmetadata = () => {
-      setVideoDuration(Math.round(video.duration));
-      if (video.duration < 10) {
-        setFraudWarning(true);
+      const duration = Math.round(video.duration);
+      if (duration < 15 || duration > 30) {
+        setError('Durasi video unboxing harus 15 hingga 30 detik (1-shot)');
+        URL.revokeObjectURL(url);
       } else {
+        setVideoFile(file);
+        setVideoUrl(url);
+        setVideoDuration(duration);
         setFraudWarning(false);
+        setError('');
       }
     };
   }, []);
@@ -724,7 +725,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   'Tunjukkan kondisi barang dengan jelas',
                   'WAJIB 1-shot — tanpa edit, potong, henti',
                   'Timestamp/waktu harus terlihat jelas',
-                  'Minimal durasi 30 detik',
+                  'Durasi video wajib 15 - 30 detik',
                 ].map((t, i) => (
                   <p key={i} className="text-[9px] text-ink/80 leading-snug flex items-start gap-1">
                     <span className="font-bold text-rose/80">{i + 1}.</span>{t}

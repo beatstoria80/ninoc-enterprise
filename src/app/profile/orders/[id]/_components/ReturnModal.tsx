@@ -37,7 +37,7 @@ const VIDEO_GUIDE = [
   'Tunjukkan kondisi barang dengan jelas',
   'WAJIB 1-shot — tanpa edit, potong, henti, atau sisipkan adegan',
   'Timestamp/waktu harus terlihat jelas',
-  'Minimal durasi 30 detik',
+  'Durasi video wajib 15 - 30 detik',
 ];
 
 export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: ReturnModalProps) {
@@ -85,14 +85,20 @@ export function ReturnModal({ orderId, userId, items, onClose, onSuccess }: Retu
       setError('Format video harus MP4 atau WebM');
       return;
     }
-    setVideoFile(file);
-    setError('');
     const url = URL.createObjectURL(file);
-    setVideoUrl(url);
     const video = document.createElement('video');
     video.src = url;
     video.onloadedmetadata = () => {
-      setVideoDuration(Math.round(video.duration));
+      const duration = Math.round(video.duration);
+      if (duration < 15 || duration > 30) {
+        setError('Durasi video unboxing harus 15 hingga 30 detik (1-shot)');
+        URL.revokeObjectURL(url);
+      } else {
+        setVideoFile(file);
+        setVideoUrl(url);
+        setVideoDuration(duration);
+        setError('');
+      }
     };
   }, []);
 
