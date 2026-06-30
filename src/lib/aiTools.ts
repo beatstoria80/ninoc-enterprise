@@ -77,7 +77,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     const { keyword } = args;
     const { data, error } = await supabase
       .from('products')
-      .select('name, price, stock, description, colors')
+      .select('name, price, description, category')
       .ilike('name', `%${keyword}%`)
       .limit(5);
     
