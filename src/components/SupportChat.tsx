@@ -12,10 +12,8 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-import { AUTO_REPLY_CONFIG, classifyMessage, getResponse } from '@/lib/supportAutoReply';
-
+// legacy imports removed
 // ═══════════════════════════════════════════════════════════════════════════════
-// ICON COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function QuickIcon({ name, className }: { name: string; className?: string }) {
@@ -267,32 +265,41 @@ export default function SupportChat() {
       return next;
     });
 
-    // Check if this is the first reply in the current session/ticket
-    const isFirstReply = !chatMessages.some(m => m.is_auto_reply);
-
-    // Classify message
-    const { category: matchedCategory } = classifyMessage(msgText);
-    const responseText = getResponse(matchedCategory, msgText, isFirstReply);
-
-    // Show typing indicator
     setIsTyping(true);
-    await new Promise(resolve => setTimeout(resolve, 800)); // simulate typing
-    setIsTyping(false);
 
-    // Optimistic UI update
-    const autoReplyMsg: SupportMessage = {
-      id: `ar-${Date.now()}`,
-      ticket_id: ticketId,
-      sender_id: null,
-      sender_role: 'admin',
-      message: responseText,
-      created_at: new Date().toISOString(),
-      is_auto_reply: true,
-    };
-    setChatMessages(prev => [...prev, autoReplyMsg]);
+    try {
+      const response = await fetch('/api/support/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId, message: msgText }),
+      });
+      
+      const data = await response.json();
+      const responseText = data.response || 'Maaf, terjadi kesalahan pada AI. Silakan tunggu balasan manual dari tim kami.';
 
-    // Persist to database
-    await sendAutoReply(ticketId, responseText);
+      // Note: The API route itself saves the admin message to Supabase.
+      // But we can optimistically update the UI to avoid waiting for the realtime channel,
+      // or we just let the realtime subscription handle it!
+      // Wait, we have a realtime channel active in SupportChat that pushes admin messages!
+      // Let's rely on the realtime channel to avoid duplicates, OR we manually push it here.
+      // Actually, if we rely on realtime, it might take a second. Let's do optimistic.
+      
+      const autoReplyMsg: SupportMessage = {
+        id: `ar-${Date.now()}`,
+        ticket_id: ticketId,
+        sender_id: null,
+        sender_role: 'admin',
+        message: responseText,
+        created_at: new Date().toISOString(),
+        is_auto_reply: true,
+      };
+      setChatMessages(prev => [...prev, autoReplyMsg]);
+      
+    } catch (error) {
+      console.error('Failed to get AI reply:', error);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const sendMessage = async (overrideMessage?: string, overrideTicket?: SupportTicket) => {
@@ -415,18 +422,53 @@ export default function SupportChat() {
     }
   };
 
-  // ─── Build QUICK_ACTIONS dari config
-  const QUICK_ACTIONS = Object.entries(AUTO_REPLY_CONFIG).map(([key, config]) => ({
-    id: key,
-    label: config.label,
-    sublabel: config.placeholder.split('...')[0].replace('Ketik ', ''),
-    icon: config.icon,
-    color: config.color,
-    iconColor: config.iconColor,
-    subject: config.subject,
-    category: key,
-    placeholder: config.placeholder,
-  }));
+  // ─── Static QUICK_ACTIONS since AUTO_REPLY_CONFIG is removed
+  const QUICK_ACTIONS = [
+    {
+      id: 'shipping',
+      label: 'Lacak Pesanan',
+      sublabel: 'nomor Order ID atau resi pengiriman',
+      icon: 'Truck',
+      color: 'bg-blue-50 border-blue-100',
+      iconColor: 'text-blue-500',
+      subject: 'Tracking Pesanan',
+      category: 'shipping',
+      placeholder: 'Ketik nomor Order ID atau resi pengiriman...',
+    },
+    {
+      id: 'return',
+      label: 'Retur & Refund',
+      sublabel: 'nomor Order ID atau nama produk',
+      icon: 'RefreshCw',
+      color: 'bg-rose/5 border-rose/10',
+      iconColor: 'text-rose',
+      subject: 'Pengajuan Retur / Refund',
+      category: 'return',
+      placeholder: 'Ketik nomor Order ID atau keluhan produk...',
+    },
+    {
+      id: 'product',
+      label: 'Info Produk',
+      sublabel: 'nama barang atau stok',
+      icon: 'Package',
+      color: 'bg-emerald-50 border-emerald-100',
+      iconColor: 'text-emerald-500',
+      subject: 'Informasi Produk',
+      category: 'product',
+      placeholder: 'Tanya soal bahan, ukuran, atau stok...',
+    },
+    {
+      id: 'payment',
+      label: 'Pembayaran',
+      sublabel: 'konfirmasi bayar / kendala',
+      icon: 'CreditCard',
+      color: 'bg-amber-50 border-amber-100',
+      iconColor: 'text-amber-500',
+      subject: 'Kendala Pembayaran',
+      category: 'payment',
+      placeholder: 'Tanya soal metode bayar, cicilan, dsb...',
+    },
+  ];
 
   // Hide on admin/checkout pages to prevent overlay interference
   const isCheckoutPage = pathname?.startsWith('/checkout');
