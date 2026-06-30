@@ -117,6 +117,28 @@ export function ReturTracker() {
               );
             })()}
           </div>
+
+          {/* QC Audit Results */}
+          {result.status === 'completed' && result.qc_status === 'valid_ninoc_fault' && (
+            <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2.5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 mb-0.5">QC Audit: Klaim Valid</p>
+              <p className="text-xs text-emerald-700 leading-snug">
+                Mohon maaf atas kesalahan kami. Barang telah diperiksa di gudang dan proses penggantian (Exchange) atau Refund sedang diproses.
+              </p>
+            </div>
+          )}
+          {result.status === 'rejected' && result.qc_status === 'fraud_non_ninoc' && (
+            <div className="bg-red-50 border border-red-100 rounded-sm p-2.5 flex items-start gap-2">
+              <AlertCircle size={16} className="text-red-500 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-0.5">RETUR DITOLAK (FRAUD)</p>
+                <p className="text-xs text-red-700 leading-snug font-medium">
+                  Barang yang dikembalikan tidak sesuai / bukan produk Ninoc asli. Klaim retur dibatalkan sepihak oleh sistem.
+                </p>
+                {result.qc_notes && <p className="text-[10px] text-red-500 mt-1 italic">Catatan Gudang: {result.qc_notes}</p>}
+              </div>
+            </div>
+          )}
           
           {/* Instruksi Pengiriman & Resi untuk Guest */}
           {result.status === 'approved' && !result.return_awb && (

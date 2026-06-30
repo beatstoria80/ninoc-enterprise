@@ -24,6 +24,8 @@ interface ReturRequest {
   return_awb: string | null;
   return_courier: string | null;
   return_shipped_at: string | null;
+  qc_status?: string;
+  qc_notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -267,6 +269,28 @@ export function ReturStatus() {
                           </div>
                         )}
 
+                        {/* QC Audit Results */}
+                        {r.status === 'completed' && r.qc_status === 'valid_ninoc_fault' && (
+                          <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2">
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-emerald-600 mb-0.5">QC Audit: Klaim Valid</p>
+                            <p className="text-[10px] text-emerald-700 leading-snug">
+                              Mohon maaf atas kesalahan kami. Barang telah diperiksa dan proses penggantian (Exchange) atau Refund sedang diproses.
+                            </p>
+                          </div>
+                        )}
+                        {r.status === 'rejected' && r.qc_status === 'fraud_non_ninoc' && (
+                          <div className="bg-red-50 border border-red-100 rounded-sm p-2 flex items-start gap-2">
+                            <AlertCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-red-600 mb-0.5">RETUR DITOLAK (FRAUD)</p>
+                              <p className="text-[10px] text-red-700 leading-snug font-medium">
+                                Barang yang dikembalikan tidak sesuai / bukan produk Ninoc asli. Klaim retur dibatalkan sepihak oleh sistem.
+                              </p>
+                              {r.qc_notes && <p className="text-[9px] text-red-500 mt-1 italic">Catatan Gudang: {r.qc_notes}</p>}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Refund info */}
                         {r.status === 'approved' && r.refund_amount && (
                           <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2">
@@ -338,7 +362,7 @@ export function ReturStatus() {
                         )}
 
                         {/* Admin notes */}
-                        {r.admin_notes && r.status !== 'approved' && (
+                        {r.admin_notes && r.status !== 'approved' && r.qc_status !== 'fraud_non_ninoc' && (
                           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2">
                             <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Catatan Admin</p>
                             <p className="text-[10px] text-ink/70 leading-snug">{r.admin_notes}</p>

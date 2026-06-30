@@ -119,9 +119,9 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
           <div className="bg-rose/[0.02] border border-rose/10 rounded-sm p-2 space-y-0.5">
             {[
               'Klaim maksimal 2x24 jam setelah barang diterima',
-              'Bukti video 1-shot tanpa edit WAJIB',
-              'Guest bisa ajukan tanpa login',
-              'Refund 3-7 hari kerja setelah persetujuan',
+              'Bukti video 1-shot tanpa edit WAJIB disertakan',
+              'Semua retur wajib melalui proses Audit Fisik Gudang',
+              'Klaim palsu/bukan produk Ninoc = Fraud (Retur Ditolak)',
             ].map((text, i) => (
               <div key={i} className="flex items-start gap-1.5">
                 <div className="w-3 h-3 bg-rose/10 rounded-full flex items-center justify-center mt-px shrink-0">

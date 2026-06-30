@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (!id) return NextResponse.json({ error: 'Retur ID required' }, { status: 400 });
 
     const body = await req.json();
-    const { items, qc_notes } = body;
+    const { items, qc_notes, qc_outcome } = body;
 
     if (!items || !Array.isArray(items)) {
       return NextResponse.json({ error: 'Items array is required' }, { status: 400 });
@@ -32,43 +32,56 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Retur not found' }, { status: 404 });
     }
 
-    for (const item of items) {
-      if (item.condition === 'sellable') {
-        if (item.variant_id) {
-          const { data: variant } = await adminClient.from('variants').select('stock_quantity').eq('id', item.variant_id).single();
-          if (variant) {
-            await adminClient.from('variants').update({ stock_quantity: variant.stock_quantity + item.quantity }).eq('id', item.variant_id);
+    // Only restock if it's not fraud and items are sellable
+    if (qc_outcome !== 'fraud_non_ninoc') {
+      for (const item of items) {
+        if (item.condition === 'sellable') {
+          if (item.variant_id) {
+            const { data: variant } = await adminClient.from('variants').select('stock_quantity').eq('id', item.variant_id).single();
+            if (variant) {
+              await adminClient.from('variants').update({ stock_quantity: variant.stock_quantity + item.quantity }).eq('id', item.variant_id);
+            }
+          } else if (item.product_id) {
+            const { data: product } = await adminClient.from('products').select('stock').eq('id', item.product_id).single();
+            if (product && typeof product.stock === 'number') {
+              await adminClient.from('products').update({ stock: product.stock + item.quantity }).eq('id', item.product_id);
+            }
           }
-        } else if (item.product_id) {
-          const { data: product } = await adminClient.from('products').select('stock').eq('id', item.product_id).single();
-          if (product && typeof product.stock === 'number') {
-            await adminClient.from('products').update({ stock: product.stock + item.quantity }).eq('id', item.product_id);
-          }
+
+          await adminClient.from('inventory_movements').insert({
+            movement_type: 'return',
+            quantity_change: item.quantity,
+            reference_id: `RETUR-${id}`,
+            notes: `Restocked from QC (Sellable). OrderItem: ${item.order_item_id || 'Unknown'}`
+          });
+
+        } else if (item.condition === 'defective') {
+          await adminClient.from('inventory_movements').insert({
+            movement_type: 'adjustment_loss',
+            quantity_change: 0,
+            reference_id: `RETUR-${id}`,
+            notes: `Defective Retur (Written off). OrderItem: ${item.order_item_id || 'Unknown'}`
+          });
         }
-
-        await adminClient.from('inventory_movements').insert({
-          movement_type: 'return',
-          quantity_change: item.quantity,
-          reference_id: `RETUR-${id}`,
-          notes: `Restocked from QC (Sellable). OrderItem: ${item.order_item_id || 'Unknown'}`
-        });
-
-      } else if (item.condition === 'defective') {
-        await adminClient.from('inventory_movements').insert({
-          movement_type: 'adjustment_loss',
-          quantity_change: 0,
-          reference_id: `RETUR-${id}`,
-          notes: `Defective Retur (Written off). OrderItem: ${item.order_item_id || 'Unknown'}`
-        });
       }
+    }
+
+    // Determine final status based on QC Outcome
+    let finalStatus = 'completed';
+    let fraudFlag = false;
+
+    if (qc_outcome === 'fraud_non_ninoc') {
+      finalStatus = 'rejected';
+      fraudFlag = true;
     }
 
     const { error: updateErr } = await adminClient
       .from('retur_requests')
       .update({
-        status: 'completed',
-        qc_status: 'audited',
+        status: finalStatus,
+        qc_status: qc_outcome || 'audited',
         qc_notes: qc_notes || null,
+        fraud_suspected: fraudFlag ? true : retur.fraud_suspected,
         resolved_at: new Date().toISOString()
       })
       .eq('id', id);

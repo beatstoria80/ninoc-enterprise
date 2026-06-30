@@ -132,6 +132,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const [showQcModal, setShowQcModal] = useState(false);
   const [qcItems, setQcItems] = useState<Record<string, 'sellable' | 'defective'>>({});
   const [qcNotes, setQcNotes] = useState('');
+  const [qcOutcome, setQcOutcome] = useState<'valid_ninoc_fault' | 'fraud_non_ninoc' | 'defective' | ''>('');
   
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const statusIdx = TIMELINE.findIndex(s => s.key === status);
@@ -180,18 +181,23 @@ function ReturDetail({ retur, onClose, onRefresh }: {
       condition: qcItems[item.id] || 'sellable'
     }));
 
+    if (!qcOutcome) {
+      alert("Mohon pilih Kesimpulan QC terlebih dahulu.");
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/retur/${retur.id}/qc`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, qc_notes: qcNotes })
+        body: JSON.stringify({ items, qc_notes: qcNotes, qc_outcome: qcOutcome })
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus('completed');
+        setStatus(qcOutcome === 'fraud_non_ninoc' ? 'rejected' : 'completed');
         setShowQcModal(false);
-        setNotifyMsg('QC Audit Selesai & Stok Diperbarui');
+        setNotifyMsg(qcOutcome === 'fraud_non_ninoc' ? 'Retur Ditolak (Fraud)' : 'QC Audit Selesai & Stok Diperbarui');
         setTimeout(() => setNotifyMsg(''), 3000);
         onRefresh();
       } else {
@@ -798,6 +804,44 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                 </button>
               </div>
               <div className="p-6 overflow-y-auto space-y-5 bg-gray-50/30">
+                {/* Customer Claim Context */}
+                <div className="p-4 border border-indigo-100 rounded-xl bg-indigo-50/30 shadow-sm space-y-2">
+                  <h3 className="text-xs font-bold text-indigo-800 uppercase tracking-wider">Klaim Customer</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Alasan Retur</p>
+                      <p className="text-sm font-semibold text-gray-900">{retur.reason_label || retur.reason}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Deskripsi / Keluhan</p>
+                      <p className="text-sm text-gray-800 italic">{retur.description || 'Tidak ada deskripsi.'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-gray-900 border-b pb-2">Kesimpulan QC (Wajib)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label className={cn("p-3 border rounded-xl cursor-pointer transition-all", qcOutcome === 'valid_ninoc_fault' ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500" : "border-gray-200 bg-white hover:border-gray-300")}>
+                      <input type="radio" name="qcoutcome" className="hidden" checked={qcOutcome === 'valid_ninoc_fault'} onChange={() => setQcOutcome('valid_ninoc_fault')} />
+                      <p className="text-sm font-bold text-emerald-800 mb-1">Klaim Valid</p>
+                      <p className="text-xs text-emerald-600/80 leading-snug">Kesalahan Ninoc terkonfirmasi. Proses penggantian.</p>
+                    </label>
+                    <label className={cn("p-3 border rounded-xl cursor-pointer transition-all", qcOutcome === 'fraud_non_ninoc' ? "border-red-500 bg-red-50 ring-1 ring-red-500" : "border-gray-200 bg-white hover:border-gray-300")}>
+                      <input type="radio" name="qcoutcome" className="hidden" checked={qcOutcome === 'fraud_non_ninoc'} onChange={() => setQcOutcome('fraud_non_ninoc')} />
+                      <p className="text-sm font-bold text-red-800 mb-1">Fraud / Palsu</p>
+                      <p className="text-xs text-red-600/80 leading-snug">Bukan produk Ninoc / Klaim palsu. Retur Ditolak.</p>
+                    </label>
+                    <label className={cn("p-3 border rounded-xl cursor-pointer transition-all", qcOutcome === 'defective' ? "border-amber-500 bg-amber-50 ring-1 ring-amber-500" : "border-gray-200 bg-white hover:border-gray-300")}>
+                      <input type="radio" name="qcoutcome" className="hidden" checked={qcOutcome === 'defective'} onChange={() => setQcOutcome('defective')} />
+                      <p className="text-sm font-bold text-amber-800 mb-1">Cacat Pabrik</p>
+                      <p className="text-xs text-amber-600/80 leading-snug">Produk asli namun cacat produksi (Afkir).</p>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-gray-900 border-b pb-2">Kondisi Barang Masuk</h3>
                 {retur.order?.order_items.map((item, idx) => (
                   <div key={item.id} className="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
                     <div className="flex justify-between items-start">
@@ -832,6 +876,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
                     </div>
                   </div>
                 ))}
+                </div>
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Catatan Audit Tambahan (Opsional)</label>
