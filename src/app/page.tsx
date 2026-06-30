@@ -981,7 +981,7 @@ export default function Home() {
             transition={{ duration: isReturningVisitor ? 0.3 : 1.2, ease: EASING.inOut, delay: isReturningVisitor ? 0 : 0.1 }} // Cinematic scale up and reveal
           >
              {/* ORIGINAL HOME PAGE CONTENT WRAPPED IN ARCHIVE SCENE */}
-             <div className="mobile-momentum select-none">
+             <div className="mobile-momentum">
 
       <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
 
