@@ -278,17 +278,17 @@ export default function HelpClient({ initialSettings = [] }: { initialSettings?:
           </div>
 
           <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[160px_1fr] gap-0 border-t border-ink/5">
-            <div className="lg:border-r lg:border-ink/5 overflow-y-auto">
-              <nav className="flex lg:flex-col gap-0">
+            <div className="lg:border-r lg:border-ink/5 overflow-x-auto lg:overflow-x-hidden overflow-y-hidden lg:overflow-y-auto border-b lg:border-b-0 border-ink/5 no-scrollbar">
+              <nav className="flex lg:flex-col gap-0 min-w-max lg:min-w-0">
                 {HELP_SECTIONS.map((section) => {
                   const isActive = activeSection === section.key;
                   return (
                     <button
                       key={section.key}
                       onClick={() => setActiveSection(section.key)}
-                      className={`shrink-0 flex items-center gap-2 px-3 py-2 lg:px-3 lg:py-2 border-b lg:border-b lg:border-r lg:border-l lg:border-t transition-all text-left w-full ${isActive ? 'bg-rose text-white border-rose lg:border-rose' : 'text-ink/60 hover:text-ink hover:bg-ink/[0.02] border-transparent'}`}
+                      className={`shrink-0 flex items-center gap-2 px-4 py-3 lg:px-3 lg:py-2 border-b-2 lg:border-b lg:border-r lg:border-l lg:border-t transition-all text-left ${isActive ? 'bg-rose/5 lg:bg-rose text-rose lg:text-white border-b-rose lg:border-rose' : 'text-ink/60 hover:text-ink hover:bg-ink/[0.02] border-b-transparent lg:border-transparent'}`}
                     >
-                      <span className={`w-6 h-6 rounded-sm flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-ink/[0.04] text-ink/50'}`}>
+                      <span className={`w-6 h-6 rounded-sm flex items-center justify-center shrink-0 ${isActive ? 'bg-rose/20 lg:bg-white/20 text-rose lg:text-white' : 'bg-ink/[0.04] text-ink/50'}`}>
                         {section.icon}
                       </span>
                       <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.08em]">{section.label}</span>
@@ -298,7 +298,7 @@ export default function HelpClient({ initialSettings = [] }: { initialSettings?:
               </nav>
             </div>
 
-            <div className="lg:pl-6 pt-3 lg:pt-3 min-w-0 overflow-y-auto pb-4">
+            <div className="lg:pl-6 pt-4 lg:pt-3 min-w-0 overflow-y-auto pb-6">
               {activeItem ? (
                 <>
                   <div className="flex items-center gap-2 mb-3 pb-2 border-b border-ink/5">
