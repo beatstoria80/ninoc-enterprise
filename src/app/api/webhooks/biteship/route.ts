@@ -7,6 +7,7 @@ const adminClient = createClient(
 );
 import crypto from 'crypto';
 import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { sendEmailShipping, sendEmailDelivered } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 
 // ============================================================
@@ -119,7 +120,7 @@ export async function POST(req: Request) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', payload.order_id)
-          .select('id, user_id, order_number, shipping_address, customer_name, wa_shipping_sent, wa_delivered_sent')
+          .select('id, user_id, order_number, shipping_address, customer_name, customer_email, wa_shipping_sent, wa_delivered_sent')
           .single();
 
         if (updatedOrder) {
@@ -127,36 +128,44 @@ export async function POST(req: Request) {
           const phone = formatPhoneNumber(phoneRaw);
           const customerName = updatedOrder.customer_name || (updatedOrder.shipping_address as any)?.name || 'Pelanggan';
           
-          if (phone) {
+          if (phone || updatedOrder.customer_email) {
             // Send Shipping Notification (only if not sent before)
             if (internalStatus === 'shipped' && !updatedOrder.wa_shipping_sent) {
               const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || 'Otomatis';
               const courier = payload.courier_company || 'Kurir Ekspedisi';
               
-              const waRes = await sendShippingWA({
-                phone,
-                customer_name: customerName,
-                order_id: updatedOrder.id,
-                tracking_id: trackingId,
-                courier_name: courier,
-              });
-
-              if (waRes.success) {
-                await adminClient.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+              if (phone) {
+                await sendShippingWA({
+                  phone,
+                  customer_name: customerName,
+                  order_id: updatedOrder.id,
+                  tracking_id: trackingId,
+                  courier_name: courier,
+                });
               }
+
+              if (updatedOrder.customer_email) {
+                await sendEmailShipping(updatedOrder, updatedOrder.customer_email, trackingId, courier);
+              }
+
+              await adminClient.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
             }
             
             // Send Delivered Notification (only if not sent before)
             if (internalStatus === 'delivered' && !updatedOrder.wa_delivered_sent) {
-              const waRes = await sendDeliveredWA({
-                phone,
-                customer_name: customerName,
-                order_id: updatedOrder.id,
-              });
-
-              if (waRes.success) {
-                await adminClient.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+              if (phone) {
+                await sendDeliveredWA({
+                  phone,
+                  customer_name: customerName,
+                  order_id: updatedOrder.id,
+                });
               }
+
+              if (updatedOrder.customer_email) {
+                await sendEmailDelivered(updatedOrder, updatedOrder.customer_email);
+              }
+
+              await adminClient.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
             }
           }
 

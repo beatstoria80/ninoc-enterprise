@@ -392,3 +392,135 @@ export async function sendEmailReminder(order: any, customerEmail: string) {
   }
 }
 
+export async function sendEmailShipping(order: any, customerEmail: string, trackingId: string, courierName: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
+  if (!customerEmail) return;
+
+  const orderIdShort = order.id.toUpperCase();
+  const trackingUrl = `https://ninoc.store/track?order_number=${order.order_number || order.id}&phone=${encodeURIComponent(order.shipping_address?.phone || '')}`;
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="margin: 0; padding: 0; background-color: #f6f6f6; font-family: Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <tr>
+        <td style="background-color: #141414; padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">Pesanan Anda Sedang Dikirim</h1>
+          <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Order #${orderIdShort}</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 40px 30px;">
+          <p style="margin: 0 0 20px 0; font-size: 16px; color: #141414; line-height: 1.5;">
+            Hi <strong>${order.customer_name || order.shipping_address?.name || 'Customer'}</strong>,<br/><br/>
+            Kabar gembira! Pesanan Anda telah diserahkan ke pihak kurir <strong>${courierName}</strong> dan saat ini sedang dalam perjalanan menuju alamat Anda.
+          </p>
+          
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9f9f9; border-radius: 6px; padding: 20px; margin-bottom: 30px;">
+            <tr>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px;">Kurir</td>
+              <td style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px; text-align: right;">Nomor Resi</td>
+            </tr>
+            <tr>
+              <td style="font-size: 16px; font-weight: bold; color: #141414;">${courierName}</td>
+              <td style="font-size: 16px; font-weight: bold; color: #141414; text-align: right; font-family: monospace;">${trackingId}</td>
+            </tr>
+          </table>
+
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
+            <tr>
+              <td align="center">
+                <a href="${trackingUrl}" style="display: inline-block; background-color: #141414; color: #ffffff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Lacak Pengiriman</a>
+              </td>
+            </tr>
+          </table>
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `[Pesanan Dikirim] Paket Anda dari NINOC sedang dalam perjalanan`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Shipping notification sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send shipping notification to ${customerEmail}:`, error);
+  }
+}
+
+export async function sendEmailDelivered(order: any, customerEmail: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
+  if (!customerEmail) return;
+
+  const orderIdShort = order.id.toUpperCase();
+  const trackingUrl = `https://ninoc.store/track?order_number=${order.order_number || order.id}&phone=${encodeURIComponent(order.shipping_address?.phone || '')}`;
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="margin: 0; padding: 0; background-color: #f6f6f6; font-family: Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <tr>
+        <td style="background-color: #059669; padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">Paket Anda Telah Tiba!</h1>
+          <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Order #${orderIdShort}</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 40px 30px;">
+          <p style="margin: 0 0 20px 0; font-size: 16px; color: #141414; line-height: 1.5;">
+            Hi <strong>${order.customer_name || order.shipping_address?.name || 'Customer'}</strong>,<br/><br/>
+            Berdasarkan laporan dari kurir, paket pesanan Anda telah berhasil dikirimkan ke alamat tujuan.
+          </p>
+          
+          <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 25px;">
+            <p style="margin: 0 0 10px 0; font-size: 14px; color: #b45309; font-weight: bold;">Mohon Segera Cek Barang Anda!</p>
+            <p style="margin: 0; font-size: 13px; color: #b45309; line-height: 1.5;">Jangan lupa untuk merekam <strong>Video Unboxing 1-shot (tanpa edit/jeda)</strong> saat membuka paket. Jika ada barang cacat atau tidak sesuai, Anda dapat mengajukan retur dalam batas maksimal <strong>2x24 jam</strong> sejak paket diterima.</p>
+          </div>
+
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+            <tr>
+              <td align="center">
+                <a href="${trackingUrl}" style="display: inline-block; background-color: #141414; color: #ffffff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Konfirmasi Terima / Ajukan Retur</a>
+              </td>
+            </tr>
+          </table>
+          
+          <p style="font-size: 13px; color: #666; text-align: center; margin-bottom: 20px;">
+            Jika Anda sudah mengecek dan merasa puas dengan produk kami, konfirmasi pesanan sangat kami apresiasi!
+          </p>
+
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `[Pesanan Tiba] Paket NINOC Anda telah sampai di tujuan`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Delivered notification sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send delivered notification to ${customerEmail}:`, error);
+  }
+}
