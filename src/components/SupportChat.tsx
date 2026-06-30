@@ -577,7 +577,7 @@ export default function SupportChat() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
               "fixed z-[600] bg-white shadow-2xl overflow-hidden border border-ink/5 flex flex-col origin-bottom md:origin-bottom-right",
-              "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[300px] md:h-[480px] md:rounded-2xl"
+              "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[400px] md:h-[600px] md:rounded-2xl"
             )}
           >
             {/* Backdrop for mobile */}
