@@ -134,37 +134,37 @@ export function ReturStatus() {
   const pendingCount = returs.filter(r => r.status === 'pending').length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2.5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">Retur Saya</h2>
-          <p className="text-xs md:text-sm text-ink/60 mt-0.5">Riwayat pengajuan retur</p>
+          <h2 className="text-xs font-semibold text-ink uppercase tracking-wider">Retur Saya</h2>
+          <p className="text-[10px] text-ink/60 mt-px">Riwayat pengajuan retur</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {pendingCount > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-100 rounded-sm">
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-100 rounded-sm">
               <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-              <p className="text-sm md:text-xs font-semibold text-amber-600 uppercase tracking-wider">{pendingCount} pending</p>
+              <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">{pendingCount} pending</p>
             </div>
           )}
           <button
             onClick={handleRefresh}
-            className="w-7 h-7 flex items-center justify-center border border-ink/10 rounded-sm text-ink/50 hover:text-rose hover:border-rose/30 transition-colors"
+            className="w-6 h-6 flex items-center justify-center border border-ink/10 rounded-sm text-ink/50 hover:text-rose hover:border-rose/30 transition-colors"
           >
-            <RefreshCw size={10} className={cn('transition-transform', refreshing && 'animate-spin')} />
+            <RefreshCw size={9} className={cn('transition-transform', refreshing && 'animate-spin')} />
           </button>
         </div>
       </div>
 
       {/* Filter tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar">
         {['all', 'pending', 'reviewed', 'approved', 'rejected', 'completed'].map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
-              'px-2.5 py-1 text-sm md:text-xs font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors',
+              'px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-sm whitespace-nowrap transition-colors',
               filter === f ? 'bg-rose text-white' : 'bg-ink/5 text-ink/60 hover:bg-ink/10'
             )}
           >
@@ -175,16 +175,16 @@ export function ReturStatus() {
 
       {/* List */}
       {loading ? (
-        <div className="py-12 flex justify-center">
-          <div className="w-5 h-5 border-2 border-rose/30 border-t-rose rounded-full animate-spin" />
+        <div className="py-8 flex justify-center">
+          <div className="w-4 h-4 border-2 border-rose/30 border-t-rose rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-12 flex flex-col items-center justify-center text-center space-y-2">
-          <RefreshCw size={20} className="text-ink/10" strokeWidth={1} />
-          <p className="text-xs md:text-sm uppercase tracking-widest text-ink/50">Belum ada pengajuan retur</p>
+        <div className="py-8 flex flex-col items-center justify-center text-center space-y-1.5">
+          <RefreshCw size={16} className="text-ink/10" strokeWidth={1} />
+          <p className="text-[10px] uppercase tracking-widest text-ink/50">Belum ada pengajuan retur</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {filtered.map((r, i) => {
             const cfg = STATUS_CONFIG[r.status];
             const Tag = cfg.icon;
@@ -192,39 +192,39 @@ export function ReturStatus() {
             return (
               <motion.div
                 key={r.id}
-                initial={{ opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
+                transition={{ delay: i * 0.03 }}
                 className="border border-ink/5 rounded-sm overflow-hidden bg-white hover:border-ink/10 transition-colors"
               >
                 {/* Header row */}
                 <div
                   onClick={() => handleToggleExpand(r.id)}
-                  className="flex items-center gap-3 p-3 cursor-pointer"
+                  className="flex items-center gap-2 px-2.5 py-2 cursor-pointer"
                 >
                   {/* Status dot */}
-                  <div className={cn('w-2 h-2 rounded-full shrink-0', cfg.dot)} />
+                  <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', cfg.dot)} />
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm md:text-base font-bold text-ink uppercase tracking-widest tracking-wider break-words">{r.order_id}</p>
-                      <span className={cn('px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
-                        <Tag size={7} className="inline mr-0.5" />{cfg.label}
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-bold text-ink uppercase tracking-wider break-words">{r.order_id}</p>
+                      <span className={cn('px-1 py-px text-[9px] font-bold uppercase tracking-wider border rounded-sm', cfg.color)}>
+                        <Tag size={6} className="inline mr-px" />{cfg.label}
                       </span>
                       {r.fraud_suspected && (
-                        <span className="px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-0.5">
-                          <AlertCircle size={7} /> Fraud?
+                        <span className="px-1 py-px text-[9px] font-bold uppercase tracking-wider bg-red-50 text-red-500 border border-red-100 rounded-sm flex items-center gap-px">
+                          <AlertCircle size={6} /> Fraud?
                         </span>
                       )}
                     </div>
-                    <p className="text-sm md:text-xs text-ink/50 mt-0.5">
+                    <p className="text-[10px] text-ink/50 mt-px">
                       {REASON_LABELS[r.reason] || r.reason_label} &middot; {formatDate(r.created_at)}
                     </p>
                   </div>
 
                   {/* Chevron */}
-                  <ChevronDown size={12} className={cn('text-ink/20 transition-transform shrink-0', isOpen && 'rotate-180')} />
+                  <ChevronDown size={10} className={cn('text-ink/20 transition-transform shrink-0', isOpen && 'rotate-180')} />
                 </div>
 
                 {/* Expanded content */}
@@ -237,19 +237,19 @@ export function ReturStatus() {
                       transition={{ duration: 0.2 }}
                       className="border-t border-ink/5 overflow-hidden"
                     >
-                      <div className="p-3 space-y-3">
+                      <div className="px-2.5 py-2 space-y-2">
                         {/* Description */}
                         {r.description && (
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Deskripsi</p>
-                            <p className="text-xs md:text-sm text-ink/60 leading-relaxed">{r.description}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Deskripsi</p>
+                            <p className="text-[10px] text-ink/60 leading-snug">{r.description}</p>
                           </div>
                         )}
 
                         {/* Video Preview */}
                         {r.video_url && (
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Bukti Video</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Bukti Video</p>
                             <div className="border border-ink/5 rounded-sm overflow-hidden bg-black">
                               <video
                                 ref={el => { videoRefs.current[r.id] = el; }}
@@ -260,7 +260,7 @@ export function ReturStatus() {
                               />
                             </div>
                             {r.video_duration_seconds && (
-                              <p className="text-xs text-ink/20 mt-1 text-right">
+                              <p className="text-[9px] text-ink/20 mt-0.5 text-right">
                                 Durasi: {r.video_duration_seconds}s
                               </p>
                             )}
@@ -269,37 +269,37 @@ export function ReturStatus() {
 
                         {/* Refund info */}
                         {r.status === 'approved' && r.refund_amount && (
-                          <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2.5">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-1">Refund Disetujui</p>
-                            <p className="text-sm font-display italic font-bold text-emerald-700">{formatPrice(r.refund_amount)}</p>
-                            {r.admin_notes && <p className="text-sm md:text-xs text-emerald-500 mt-1">{r.admin_notes}</p>}
+                          <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-2">
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-emerald-600 mb-0.5">Refund Disetujui</p>
+                            <p className="text-xs font-display italic font-bold text-emerald-700">{formatPrice(r.refund_amount)}</p>
+                            {r.admin_notes && <p className="text-[10px] text-emerald-500 mt-0.5">{r.admin_notes}</p>}
                           </div>
                         )}
 
                         {/* Instruksi Pengiriman & Resi */}
                         {r.status === 'approved' && !r.return_awb && (
-                          <div className="bg-ink/[0.02] border border-ink/10 rounded-sm p-3 space-y-3">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-ink mb-1 flex items-center gap-1.5"><Package size={12}/> Tindakan Diperlukan: Kirim Barang</p>
-                            <p className="text-xs md:text-sm text-ink/70 leading-relaxed">
-                              Pengajuan retur disetujui. Silakan kemas barang dengan aman dan kirimkan ke:<br/>
+                          <div className="bg-ink/[0.02] border border-ink/10 rounded-sm p-2 space-y-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-ink flex items-center gap-1"><Package size={10}/> Tindakan: Kirim Barang</p>
+                            <p className="text-[10px] text-ink/70 leading-snug">
+                              Retur disetujui. Kemas barang dan kirimkan ke:<br/>
                               <strong>Gudang NINOC Archive</strong><br/>
                               Jl. Sudirman No. 123, Jakarta Selatan<br/>
-                              <span className="text-xs italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain di chat)</span>
+                              <span className="text-[9px] italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain)</span>
                             </p>
-                            <div className="pt-2 border-t border-ink/5">
-                              <p className="text-xs font-semibold text-ink/60 mb-2">Input Resi Pengembalian</p>
-                              <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="pt-1.5 border-t border-ink/5">
+                              <p className="text-[10px] font-semibold text-ink/60 mb-1">Input Resi Pengembalian</p>
+                              <div className="flex flex-col sm:flex-row gap-1.5">
                                 <input 
                                   type="text" 
                                   id={`courier-${r.id}`}
-                                  placeholder="Nama Kurir (JNT/JNE/...)" 
-                                  className="w-full sm:w-1/3 px-2.5 py-1.5 text-xs md:text-sm border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                                  placeholder="Kurir (JNT/JNE/...)" 
+                                  className="w-full sm:w-1/3 px-2 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
                                 />
                                 <input 
                                   type="text" 
                                   id={`awb-${r.id}`}
                                   placeholder="Nomor Resi / AWB" 
-                                  className="w-full sm:flex-1 px-2.5 py-1.5 text-xs md:text-sm border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                                  className="w-full sm:flex-1 px-2 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
                                 />
                                 <button 
                                   onClick={async () => {
@@ -316,7 +316,7 @@ export function ReturStatus() {
                                       else alert('Gagal menyimpan resi');
                                     } catch(e) { alert('Error: ' + e); }
                                   }}
-                                  className="px-3 py-1.5 bg-ink text-white text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors whitespace-nowrap"
+                                  className="px-2 py-1 bg-ink text-white text-[10px] font-bold uppercase tracking-wider rounded-sm hover:bg-rose transition-colors whitespace-nowrap"
                                 >
                                   Submit Resi
                                 </button>
@@ -327,27 +327,27 @@ export function ReturStatus() {
 
                         {/* Info Resi Terkirim */}
                         {r.return_awb && (
-                          <div className="bg-blue-50 border border-blue-100 rounded-sm p-2.5 flex items-start gap-2">
-                            <Package size={14} className="text-blue-500 mt-0.5" />
+                          <div className="bg-blue-50 border border-blue-100 rounded-sm p-2 flex items-start gap-2">
+                            <Package size={12} className="text-blue-500 mt-px" />
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-0.5">Barang Dikirim Kembali</p>
-                              <p className="text-xs md:text-sm font-bold text-blue-700">{r.return_courier?.toUpperCase()} - {r.return_awb}</p>
-                              <p className="text-xs text-blue-500 mt-1">Tim gudang kami akan memproses setelah barang tiba.</p>
+                              <p className="text-[9px] font-semibold uppercase tracking-widest text-blue-600 mb-px">Barang Dikirim Kembali</p>
+                              <p className="text-[10px] font-bold text-blue-700">{r.return_courier?.toUpperCase()} - {r.return_awb}</p>
+                              <p className="text-[9px] text-blue-500 mt-0.5">Tim gudang akan memproses setelah barang tiba.</p>
                             </div>
                           </div>
                         )}
 
                         {/* Admin notes */}
                         {r.admin_notes && r.status !== 'approved' && (
-                          <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Catatan Admin</p>
-                            <p className="text-xs md:text-sm text-ink/60 leading-relaxed">{r.admin_notes}</p>
+                          <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2">
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Catatan Admin</p>
+                            <p className="text-[10px] text-ink/60 leading-snug">{r.admin_notes}</p>
                           </div>
                         )}
 
                         {/* Timeline */}
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-widest text-ink/50 mb-1">Timeline</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Timeline</p>
                           <div className="flex items-center gap-0">
                             {STATUS_FLOW.map((step, idx) => {
                               const stepIdx = STATUS_FLOW.findIndex(s => s.key === r.status);
@@ -357,22 +357,22 @@ export function ReturStatus() {
                                 <React.Fragment key={step.key}>
                                   <div className="flex flex-col items-center">
                                     <div className={cn(
-                                      'w-3.5 h-3.5 rounded-sm flex items-center justify-center border transition-colors',
+                                      'w-3 h-3 rounded-sm flex items-center justify-center border transition-colors',
                                       isDone
                                         ? 'bg-emerald-500 border-emerald-500 text-white'
                                         : isCurrent
                                           ? 'bg-rose border-rose text-white'
                                           : 'border-ink/10 bg-white text-ink/20'
                                     )}>
-                                      {isDone ? <Check size={7} strokeWidth={3} /> : null}
+                                      {isDone ? <Check size={6} strokeWidth={3} /> : null}
                                     </div>
                                     <p className={cn(
-                                      'text-xs font-medium uppercase tracking-widest mt-1 text-center',
+                                      'text-[8px] font-medium uppercase tracking-widest mt-0.5 text-center',
                                       isDone || isCurrent ? 'text-ink/60' : 'text-ink/20'
                                     )}>{step.label}</p>
                                   </div>
                                   {idx < STATUS_FLOW.length - 1 && (
-                                    <div className={cn('flex-1 h-px mx-0.5 mb-3 transition-colors', idx < stepIdx ? 'bg-emerald-300' : 'bg-ink/5')} />
+                                    <div className={cn('flex-1 h-px mx-px mb-2.5 transition-colors', idx < stepIdx ? 'bg-emerald-300' : 'bg-ink/5')} />
                                   )}
                                 </React.Fragment>
                               );
@@ -381,13 +381,13 @@ export function ReturStatus() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2 pt-1">
+                        <div className="flex items-center gap-1.5 pt-0.5">
                           <motion.button
                             whileTap={{ scale: 0.97 }}
                             onClick={() => openChat(r)}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-ink text-white text-sm md:text-xs font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                            className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-ink text-white text-[10px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
                           >
-                            <MessageSquare size={10} /> Chat Support
+                            <MessageSquare size={9} /> Chat Support
                           </motion.button>
                           {r.video_url && (
                             <motion.a
@@ -395,9 +395,9 @@ export function ReturStatus() {
                               href={r.video_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-ink/5 text-ink/50 text-sm md:text-xs font-semibold uppercase tracking-wider hover:bg-ink/10 transition-colors rounded-sm"
+                              className="flex items-center justify-center gap-1 px-2.5 py-1.5 bg-ink/5 text-ink/50 text-[10px] font-semibold uppercase tracking-wider hover:bg-ink/10 transition-colors rounded-sm"
                             >
-                              <ExternalLink size={10} /> Lihat Video
+                              <ExternalLink size={9} /> Lihat Video
                             </motion.a>
                           )}
                         </div>
