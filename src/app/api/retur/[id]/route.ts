@@ -111,7 +111,7 @@ export async function PATCH(
 
     // Trigger Notifications for approved or rejected
     if (status === 'approved' || status === 'rejected') {
-      (async () => {
+      await (async () => {
         try {
           const { data: order } = await adminClient.from('orders').select('customer_email, customer_phone, shipping_address').eq('id', data.order_id).single();
           if (order) {

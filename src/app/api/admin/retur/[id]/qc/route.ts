@@ -89,7 +89,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (updateErr) throw updateErr;
 
     // Trigger Notifications for completed
-    (async () => {
+    await (async () => {
       try {
         const { data: order } = await adminClient.from('orders').select('customer_email, customer_phone, shipping_address').eq('id', retur.order_id).single();
         if (order) {

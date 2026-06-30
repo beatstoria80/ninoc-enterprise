@@ -67,3 +67,11 @@ self.addEventListener('activate', function (event) {
   console.log('[SW] Service Worker activated');
   event.waitUntil(self.clients.claim());
 });
+
+// ─── PWA Requirement (Fetch Listener) ─────────────────────────────────────────
+// A minimal fetch listener is required by Chrome and Safari to treat the site
+// as a valid PWA and allow "Add to Home Screen" or Push Notification prompts.
+self.addEventListener('fetch', function (event) {
+  // Pass through all requests without modifying them
+  return;
+});
