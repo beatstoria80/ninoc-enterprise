@@ -296,7 +296,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             </p>
           </div>
           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5 space-y-1 w-full text-left">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50">Tindakan Selanjutnya</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70">Tindakan Selanjutnya</p>
             {[
               'Beralih ke tab "Retur Saya" atau "Status"',
               'Tim kami sedang meninjau tiket Anda',
@@ -304,7 +304,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             ].map((s, i) => (
               <div key={i} className="flex items-start gap-1.5">
                 <div className="w-1 h-1 bg-blue-400 rounded-full mt-1.5 shrink-0" />
-                <p className="text-[10px] text-ink/60">{s}</p>
+                <p className="text-[10px] text-ink/70">{s}</p>
               </div>
             ))}
           </div>
@@ -339,7 +339,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             </p>
           </div>
           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2.5 space-y-1 w-full text-left">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50">Langkah Selanjutnya</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70">Langkah Selanjutnya</p>
             {[
               'Tim kami akan review dalam 1x24 jam kerja',
               'Anda akan mendapat notifikasi via chat',
@@ -349,7 +349,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 <span className="w-3.5 h-3.5 bg-ink/5 rounded-full flex items-center justify-center shrink-0 mt-px">
                   <span className="text-[8px] font-bold text-ink/60">{i + 1}</span>
                 </span>
-                <p className="text-[10px] text-ink/50 leading-snug">{s}</p>
+                <p className="text-[10px] text-ink/70 leading-snug">{s}</p>
               </div>
             ))}
           </div>
@@ -375,7 +375,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-ink">Ajukan Retur</p>
-            <p className="text-[9px] text-ink/50 uppercase tracking-widest">Return & Refund</p>
+            <p className="text-[9px] text-ink/60 uppercase tracking-widest">Return & Refund</p>
           </div>
         </div>
         {onClose && (
@@ -430,7 +430,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 placeholder="Contoh: NINOC-12345"
                 className="w-full px-2.5 py-2 border border-ink/10 text-xs font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
               />
-              <p className="text-[9px] text-ink/20 mt-0.5">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
+              <p className="text-[9px] text-ink/50 mt-0.5">Cek di email atau menu &quot;Pesanan Saya&quot;</p>
             </div>
 
             {/* Return Type */}
@@ -479,7 +479,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                   placeholder="nama@email.com"
                   className="w-full px-2.5 py-2 border border-ink/10 text-xs font-medium focus:outline-none focus:border-rose/40 rounded-sm placeholder:text-ink/15 bg-ink/[0.01]"
                 />
-                <p className="text-[9px] text-ink/20 mt-0.5">Kami akan hubungi Anda via email untuk update status retur</p>
+                <p className="text-[9px] text-ink/50 mt-0.5">Kami akan hubungi Anda via email untuk update status retur</p>
               </div>
             )}
 
@@ -506,7 +506,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={cn('text-[10px] font-semibold uppercase tracking-wider', selected ? 'text-rose' : 'text-ink')}>{r.label}</p>
-                        <p className="text-[9px] text-ink/50 mt-px leading-snug">{r.desc}</p>
+                        <p className="text-[9px] text-ink/60 mt-px leading-snug">{r.desc}</p>
                       </div>
                       {selected && <Check size={10} className="text-rose shrink-0" strokeWidth={2.5} />}
                     </motion.button>
@@ -572,19 +572,19 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 <div className="p-2.5 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Pemesan</p>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Pemesan</p>
                       <p className="text-[10px] font-medium text-ink">{orderData.customer_name || 'Pelanggan'}</p>
                       {orderData.customer_email && <p className="text-[9px] text-ink/60">{orderData.customer_email}</p>}
                     </div>
                     <div>
-                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Total</p>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Total</p>
                       <p className="text-[10px] font-semibold text-ink">Rp {(orderData.total_price || 0).toLocaleString('id-ID')}</p>
                     </div>
                   </div>
                   
                   {orderData.order_items && orderData.order_items.length > 0 && (
                     <div className="border-t border-ink/5 pt-2">
-                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Produk ({orderData.order_items.length})</p>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-1">Produk ({orderData.order_items.length})</p>
                       <div className="space-y-1">
                         {orderData.order_items.map((item: any) => (
                           <div key={item.id} className="flex justify-between items-center bg-white p-1.5 border border-ink/5 rounded-sm">
@@ -606,7 +606,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             <div className="flex items-center gap-1.5 p-2 bg-rose/[0.04] border border-rose/10 rounded-sm">
               <RefreshCw size={10} className="text-rose shrink-0" />
               <p className="text-[10px] font-semibold text-rose uppercase tracking-wider">{reasonLabel}</p>
-              <p className="text-[9px] text-ink/50 ml-auto">Order: <span className="font-medium text-ink/50">{orderId}</span></p>
+              <p className="text-[9px] text-ink/70 ml-auto">Order: <span className="font-medium text-ink/80">{orderId}</span></p>
             </div>
 
             {/* Description */}
@@ -615,7 +615,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                 <label className="text-[10px] font-semibold uppercase tracking-widest text-ink/60">
                   Deskripsi Masalah <span className="text-rose">*</span>
                 </label>
-                <span className={cn('text-[9px]', description.length < 10 ? 'text-ink/20' : 'text-emerald-500')}>
+                <span className={cn('text-[9px]', description.length < 10 ? 'text-ink/50' : 'text-emerald-500')}>
                   {description.length}/500
                 </span>
               </div>
@@ -645,7 +645,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                     <Upload size={14} className="text-ink/50" />
                   </div>
                   <p className="text-xs font-bold text-ink uppercase tracking-wider">Upload Video</p>
-                  <p className="text-[9px] text-ink/50 mt-0.5">MP4 / WebM, maks 50MB</p>
+                  <p className="text-[9px] text-ink/60 mt-0.5">MP4 / WebM, maks 50MB</p>
                   <p className="text-[9px] mt-1 font-medium text-rose/60">
                     ⚠️ WAJIB — Tanpa video, retur tidak bisa diproses
                   </p>
@@ -684,7 +684,7 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
                       </button>
                       <div className="flex-1">
                         <p className="text-[10px] font-medium text-ink truncate">{videoFile.name}</p>
-                        <p className="text-[9px] text-ink/50">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
+                        <p className="text-[9px] text-ink/60">{videoDuration}s · {(videoFile.size / 1024 / 1024).toFixed(1)}MB</p>
                       </div>
                       {fraudWarning && (
                         <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-50 border border-amber-200 rounded-sm">

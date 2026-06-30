@@ -139,7 +139,7 @@ export function ReturStatus() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xs font-semibold text-ink uppercase tracking-wider">Retur Saya</h2>
-          <p className="text-[10px] text-ink/60 mt-px">Riwayat pengajuan retur</p>
+          <p className="text-[10px] text-ink/70 mt-px">Riwayat pengajuan retur</p>
         </div>
         <div className="flex items-center gap-1.5">
           {pendingCount > 0 && (
@@ -181,7 +181,7 @@ export function ReturStatus() {
       ) : filtered.length === 0 ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-1.5">
           <RefreshCw size={16} className="text-ink/10" strokeWidth={1} />
-          <p className="text-[10px] uppercase tracking-widest text-ink/50">Belum ada pengajuan retur</p>
+          <p className="text-[10px] uppercase tracking-widest text-ink/70">Belum ada pengajuan retur</p>
         </div>
       ) : (
         <div className="space-y-1.5">
@@ -218,13 +218,13 @@ export function ReturStatus() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-ink/50 mt-px">
+                    <p className="text-[10px] text-ink/70 mt-px">
                       {REASON_LABELS[r.reason] || r.reason_label} &middot; {formatDate(r.created_at)}
                     </p>
                   </div>
 
                   {/* Chevron */}
-                  <ChevronDown size={10} className={cn('text-ink/20 transition-transform shrink-0', isOpen && 'rotate-180')} />
+                  <ChevronDown size={10} className={cn('text-ink/40 transition-transform shrink-0', isOpen && 'rotate-180')} />
                 </div>
 
                 {/* Expanded content */}
@@ -241,15 +241,15 @@ export function ReturStatus() {
                         {/* Description */}
                         {r.description && (
                           <div>
-                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Deskripsi</p>
-                            <p className="text-[10px] text-ink/60 leading-snug">{r.description}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Deskripsi</p>
+                            <p className="text-[10px] text-ink/70 leading-snug">{r.description}</p>
                           </div>
                         )}
 
                         {/* Video Preview */}
                         {r.video_url && (
                           <div>
-                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Bukti Video</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Bukti Video</p>
                             <div className="border border-ink/5 rounded-sm overflow-hidden bg-black">
                               <video
                                 ref={el => { videoRefs.current[r.id] = el; }}
@@ -260,7 +260,7 @@ export function ReturStatus() {
                               />
                             </div>
                             {r.video_duration_seconds && (
-                              <p className="text-[9px] text-ink/20 mt-0.5 text-right">
+                              <p className="text-[9px] text-ink/50 mt-0.5 text-right">
                                 Durasi: {r.video_duration_seconds}s
                               </p>
                             )}
@@ -287,13 +287,13 @@ export function ReturStatus() {
                               <span className="text-[9px] italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain)</span>
                             </p>
                             <div className="pt-1.5 border-t border-ink/5">
-                              <p className="text-[10px] font-semibold text-ink/60 mb-1">Input Resi Pengembalian</p>
+                              <p className="text-[10px] font-semibold text-ink/80 mb-1">Input Resi Pengembalian</p>
                               <div className="flex flex-col sm:flex-row gap-1.5">
                                 <input 
                                   type="text" 
                                   id={`courier-${r.id}`}
                                   placeholder="Kurir (JNT/JNE/...)" 
-                                  className="w-full sm:w-1/3 px-2 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/30"
+                                  className="w-full sm:w-1/3 px-2 py-1 text-[10px] border border-ink/10 rounded-sm bg-white focus:outline-none focus:border-ink/50"
                                 />
                                 <input 
                                   type="text" 
@@ -340,14 +340,14 @@ export function ReturStatus() {
                         {/* Admin notes */}
                         {r.admin_notes && r.status !== 'approved' && (
                           <div className="bg-ink/[0.02] border border-ink/5 rounded-sm p-2">
-                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-0.5">Catatan Admin</p>
-                            <p className="text-[10px] text-ink/60 leading-snug">{r.admin_notes}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-0.5">Catatan Admin</p>
+                            <p className="text-[10px] text-ink/70 leading-snug">{r.admin_notes}</p>
                           </div>
                         )}
 
                         {/* Timeline */}
                         <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/50 mb-1">Timeline</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-widest text-ink/70 mb-1">Timeline</p>
                           <div className="flex items-center gap-0">
                             {STATUS_FLOW.map((step, idx) => {
                               const stepIdx = STATUS_FLOW.findIndex(s => s.key === r.status);
@@ -362,13 +362,13 @@ export function ReturStatus() {
                                         ? 'bg-emerald-500 border-emerald-500 text-white'
                                         : isCurrent
                                           ? 'bg-rose border-rose text-white'
-                                          : 'border-ink/10 bg-white text-ink/20'
+                                          : 'border-ink/10 bg-white text-ink/40'
                                     )}>
                                       {isDone ? <Check size={6} strokeWidth={3} /> : null}
                                     </div>
                                     <p className={cn(
                                       'text-[8px] font-medium uppercase tracking-widest mt-0.5 text-center',
-                                      isDone || isCurrent ? 'text-ink/60' : 'text-ink/20'
+                                      isDone || isCurrent ? 'text-ink/70' : 'text-ink/40'
                                     )}>{step.label}</p>
                                   </div>
                                   {idx < STATUS_FLOW.length - 1 && (

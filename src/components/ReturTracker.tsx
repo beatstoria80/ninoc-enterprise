@@ -49,14 +49,14 @@ export function ReturTracker() {
           <Search size={16} className="text-ink/60" />
         </div>
         <h2 className="text-sm font-bold text-ink uppercase tracking-wider">Lacak Pengajuan Retur</h2>
-        <p className="text-[10px] text-ink/50 max-w-xs mx-auto leading-snug">
+        <p className="text-[10px] text-ink/70 max-w-xs mx-auto leading-snug">
           Masukkan Nomor Order (misal: NINOC-...) atau Nomor Invoice untuk mengecek status retur Anda.
         </p>
       </div>
 
       <form onSubmit={handleTrack} className="flex items-center gap-1.5">
         <div className="relative flex-1">
-          <Package size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/30" />
+          <Package size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/50" />
           <input
             type="text"
             value={query}
@@ -86,11 +86,11 @@ export function ReturTracker() {
         <div className="p-3 border border-ink/10 rounded-sm bg-white space-y-2.5 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="flex justify-between items-start border-b border-ink/5 pb-2">
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-0.5">Order ID</p>
+              <p className="text-[9px] uppercase tracking-widest text-ink/70 font-semibold mb-0.5">Order ID</p>
               <p className="text-xs font-mono font-bold text-ink">{result.order_id}</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] uppercase tracking-widest text-ink/50 font-semibold mb-0.5">Tanggal</p>
+              <p className="text-[9px] uppercase tracking-widest text-ink/70 font-semibold mb-0.5">Tanggal</p>
               <p className="text-[10px] text-ink">{new Date(result.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
             </div>
           </div>
@@ -106,10 +106,10 @@ export function ReturTracker() {
                   </div>
                   <div>
                     <h3 className={`text-xs font-bold ${cfg.color}`}>{cfg.label}</h3>
-                    <p className="text-[10px] text-ink/60 mt-0.5 leading-snug">{cfg.desc}</p>
+                    <p className="text-[10px] text-ink/70 mt-0.5 leading-snug">{cfg.desc}</p>
                     
                     <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-1 bg-ink/[0.03] rounded-sm">
-                      <span className="text-[9px] uppercase tracking-wider text-ink/40 font-bold">Klaim:</span>
+                      <span className="text-[9px] uppercase tracking-wider text-ink/60 font-bold">Klaim:</span>
                       <span className="text-[11px] font-semibold text-ink/80">{result.return_type === 'exchange' ? 'Tukar Barang' : 'Refund Dana'}</span>
                     </div>
                   </div>
@@ -129,7 +129,7 @@ export function ReturTracker() {
                 <span className="text-[9px] italic opacity-70">(Ongkir ditanggung pembeli kecuali ada kesepakatan lain)</span>
               </p>
               <div className="pt-1.5 border-t border-ink/5">
-                <p className="text-[10px] font-semibold text-ink/60 mb-1.5">Input Resi Pengembalian</p>
+                <p className="text-[10px] font-semibold text-ink/80 mb-1.5">Input Resi Pengembalian</p>
                 <div className="flex flex-col sm:flex-row gap-1.5">
                   <input 
                     type="text" 

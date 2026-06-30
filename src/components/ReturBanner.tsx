@@ -109,7 +109,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                     <Icon size={11} className="text-rose" strokeWidth={1.5} />
                   </div>
                   <span className="text-[9px] font-semibold text-ink uppercase tracking-wider">{item.label}</span>
-                  <span className="text-[7px] text-ink/50 uppercase tracking-widest">{item.desc}</span>
+                  <span className="text-[7px] text-ink/70 uppercase tracking-widest">{item.desc}</span>
                 </div>
               );
             })}
@@ -127,7 +127,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
                 <div className="w-3 h-3 bg-rose/10 rounded-full flex items-center justify-center mt-px shrink-0">
                   <Check size={6} className="text-rose" strokeWidth={2.5} />
                 </div>
-                <p className="text-[8px] text-ink/50 leading-snug">{text}</p>
+                <p className="text-[8px] text-ink/70 leading-snug">{text}</p>
               </div>
             ))}
           </div>
@@ -142,7 +142,7 @@ export function ReturBanner({ variant = 'card', className = '' }: ReturBannerPro
           </Link>
 
           {/* Sub link */}
-          <p className="text-[8px] text-center text-ink/20">
+          <p className="text-[8px] text-center text-ink/50">
             Guest tidak perlu login — siapkan Order ID dan email aktif
           </p>
         </div>

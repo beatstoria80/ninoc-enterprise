@@ -46,7 +46,7 @@ export function FloatingReturCTA({ excludePaths = [], className = '' }: Floating
             </div>
             <button
               onClick={() => setDismissed(true)}
-              className="text-ink/20 hover:text-ink/60 transition-colors -mt-px"
+              className="text-ink/40 hover:text-ink/60 transition-colors -mt-px"
             >
               <X size={12} />
             </button>

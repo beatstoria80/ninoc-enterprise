@@ -64,12 +64,12 @@ export default function ReturClient() {
                 </div>
                 <div>
                   <p className="text-[11px] font-bold text-ink uppercase tracking-wider leading-none">Pengajuan Retur</p>
-                  <p className="text-[8px] text-ink/50 mt-px uppercase tracking-widest leading-none">Form submission</p>
+                  <p className="text-[8px] text-ink/60 mt-px uppercase tracking-widest leading-none">Form submission</p>
                 </div>
               </div>
               <div className="md:ml-auto flex gap-0 w-full md:w-auto overflow-x-auto no-scrollbar border-t md:border-none border-ink/5 pt-0.5 md:pt-0">
                 {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status (Akun)' }, { id: 'track' as const, label: 'Lacak (Guest)' }]).map(tab => (
-                  <button key={tab.id} onClick={() => setView(tab.id as any)} className={cn('pb-2 pt-1.5 md:pt-0 px-3 md:px-2.5 text-[9px] md:text-[10px] font-semibold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/50 hover:text-ink/60')}>
+                  <button key={tab.id} onClick={() => setView(tab.id as any)} className={cn('pb-2 pt-1.5 md:pt-0 px-3 md:px-2.5 text-[9px] md:text-[10px] font-semibold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/60 hover:text-ink/70')}>
                     {tab.label}
                   </button>
                 ))}
@@ -101,7 +101,7 @@ export default function ReturClient() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-widest text-ink/60">Login untuk Melihat Status</p>
-                          <p className="text-[10px] text-ink/20 mt-0.5">Cek status pengajuan retur menggunakan akun.</p>
+                          <p className="text-[10px] text-ink/50 mt-0.5">Cek status pengajuan retur menggunakan akun.</p>
                         </div>
                         <Link href="/login" className="inline-block px-4 py-2 bg-rose text-white text-[10px] font-semibold uppercase tracking-widest rounded-sm hover:bg-rose/90 transition-colors">Login</Link>
                       </div>
@@ -119,7 +119,7 @@ export default function ReturClient() {
           <div className="space-y-3 lg:pt-0 pt-3 lg:sticky lg:top-[50px] lg:self-start">
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-3 py-2 border-b border-ink/5 bg-ink/[0.01]">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/60">Kebijakan Retur</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/70">Kebijakan Retur</p>
               </div>
               <div className="p-2.5 space-y-2">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -148,13 +148,13 @@ export default function ReturClient() {
                   ))}
                 </div>
 
-                <Link href="/help" className="block w-full text-center py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors">Baca Help Guide Lengkap</Link>
+                <Link href="/help" className="block w-full text-center py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/70 hover:text-rose transition-colors">Baca Help Guide Lengkap</Link>
               </div>
             </div>
 
             <div className="border border-ink/5 bg-white rounded-sm overflow-hidden">
               <div className="px-3 py-2 border-b border-ink/5 bg-ink/[0.01]">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/60">Alur Pengajuan</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink/70">Alur Pengajuan</p>
               </div>
               <div className="p-2.5 space-y-1.5">
                 {[{ num: '01', text: 'Siapkan Order ID dari email konfirmasi' }, { num: '02', text: 'Rekam video unboxing 1-shot (min 30 detik)' }, { num: '03', text: 'Isi form dengan lengkap & akurat' }, { num: '04', text: 'Submit & tunggu review 1-2 hari kerja' }].map((step) => (
