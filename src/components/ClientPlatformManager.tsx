@@ -64,7 +64,6 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       }
     } else {
       sessionStorage.setItem('ninoc_intro_played', 'true');
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIntroPlaying(false);
     }
   }, [pathname]);
