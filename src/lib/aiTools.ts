@@ -5,13 +5,13 @@ export const aiToolsDeclaration = [
     type: 'function',
     function: {
       name: 'get_order_details',
-      description: 'Dapatkan detail pesanan berdasarkan ID pesanan (misal: NCO-123456). Gunakan ini saat pelanggan menanyakan status pesanan, resi, atau kendala pengiriman.',
+      description: 'Dapatkan detail pesanan berdasarkan ID pesanan (misal: NINOC-1782791806880 atau ID Invoice). Gunakan ini saat pelanggan menanyakan status pesanan, resi, atau kendala pengiriman.',
       parameters: {
         type: 'object',
         properties: {
           order_id: {
             type: 'string',
-            description: 'ID Pesanan (contoh: NCO-123456)',
+            description: 'ID Pesanan / Invoice ID (contoh: NINOC-1782791806880)',
           },
         },
         required: ['order_id'],
