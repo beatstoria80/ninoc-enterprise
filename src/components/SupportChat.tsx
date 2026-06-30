@@ -274,8 +274,13 @@ export default function SupportChat() {
         body: JSON.stringify({ ticketId, message: msgText }),
       });
       
-      const data = await response.json();
-      const responseText = data.response || 'Maaf, terjadi kesalahan pada AI. Silakan tunggu balasan manual dari tim kami.';
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+      const responseText = data.response || 'Terima kasih telah menghubungi kami! Tim kami akan segera membalas pesan Anda. Mohon ditunggu ya! 😊';
 
       // Note: The API route itself saves the admin message to Supabase.
       // But we can optimistically update the UI to avoid waiting for the realtime channel,
