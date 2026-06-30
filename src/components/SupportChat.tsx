@@ -604,7 +604,7 @@ export default function SupportChat() {
             <div className="flex-1 overflow-hidden flex flex-col">
               {/* ─── HOME TAB ─── */}
               {activeTab === 'home' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col h-full overflow-hidden bg-white">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col flex-1 h-full w-full overflow-hidden bg-white">
                   <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
                     {/* Quick Action Grid */}
                     <div>
@@ -716,7 +716,7 @@ export default function SupportChat() {
 
               {/* ─── CHAT TAB ─── */}
               {activeTab === 'chat' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full overflow-hidden">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col flex-1 h-full w-full overflow-hidden">
                   {/* Chat Header */}
                   <div className="p-3 md:p-4 border-b border-ink/5 flex items-center justify-between bg-white flex-shrink-0">
                     <button onClick={() => setActiveTab('home')} className="w-8 h-8 flex items-center justify-center rounded-full bg-ink/5 text-ink hover:bg-ink hover:text-white transition-colors duration-150 ease-out cursor-pointer hover:-translate-x-0.5 active:scale-90">
