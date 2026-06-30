@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
 import { supabase } from '@/lib/supabase';
-import { aiToolsDeclaration, executeAiTool } from '@/lib/aiTools';
 
 const systemPrompt = `You are NINOC's Customer Service Agent.
 Your job is to assist customers politely, professionally, and accurately.
@@ -10,10 +8,9 @@ If an issue is too complex or requires a refund/manual review, politely tell the
 Respond in Indonesian (Bahasa Indonesia). Keep responses concise and friendly.
 Format your responses using clean text (no markdown formatting like ** or ##).`;
 
-// Fallback response when all AI providers are unavailable
 const FALLBACK_RESPONSE = 'Terima kasih telah menghubungi kami! 😊 Saat ini layanan AI kami sedang dalam perbaikan. Tim customer service kami akan segera membalas pesan Anda secara manual. Mohon ditunggu ya!';
 
-// ─── Chat History Helper ────────────────────────────────────────────────────
+// ─── Chat History ───────────────────────────────────────────────────────────
 async function fetchChatHistory(ticketId: string, currentMessage: string) {
   const { data: historyData } = await supabase
     .from('support_messages')
@@ -32,12 +29,10 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     }
   }
 
-  // Ensure the last message is the current user message
   if (!messages.length || messages[messages.length - 1].content !== currentMessage) {
     messages.push({ role: 'user', content: currentMessage });
   }
 
-  // Ensure messages don't start with 'assistant' role
   while (messages.length > 0 && messages[0].role === 'assistant') {
     messages.shift();
   }
@@ -49,11 +44,11 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
   return messages;
 }
 
-// ─── Provider 1: Groq (Free — Llama 3.3 70B) ───────────────────────────────
+// ─── Groq AI (Free — Llama 3.3 70B) ────────────────────────────────────────
 async function callGroq(messages: Array<{ role: string; content: string }>): Promise<string | null> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    console.warn('[AI-Chat] GROQ_API_KEY not set, skipping Groq provider.');
+    console.warn('[AI-Chat] GROQ_API_KEY not set.');
     return null;
   }
 
@@ -89,68 +84,6 @@ async function callGroq(messages: Array<{ role: string; content: string }>): Pro
   }
 }
 
-// ─── Provider 2: Gemini (Google) ────────────────────────────────────────────
-async function callGemini(messages: Array<{ role: string; content: string }>, ticketId: string): Promise<string | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.warn('[AI-Chat] GEMINI_API_KEY not set, skipping Gemini provider.');
-    return null;
-  }
-
-  try {
-    const ai = new GoogleGenAI({ apiKey });
-
-    // Convert to Gemini format
-    const contents = messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
-    }));
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents,
-      config: {
-        systemInstruction: systemPrompt,
-        tools: [aiToolsDeclaration],
-      }
-    });
-
-    let finalText = response.text || '';
-
-    // Handle tool/function calls
-    if (response.functionCalls && response.functionCalls.length > 0) {
-      const call = response.functionCalls[0];
-      try {
-        const result = await executeAiTool(call.name || '', call.args as Record<string, any>);
-
-        contents.push({
-          role: 'model',
-          parts: [{ functionCall: call } as any],
-        });
-        contents.push({
-          role: 'user',
-          parts: [{ functionResponse: { name: call.name || '', response: result } } as any],
-        });
-
-        const followUp = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents,
-          config: { systemInstruction: systemPrompt, tools: [aiToolsDeclaration] },
-        });
-
-        finalText = followUp.text || finalText;
-      } catch (toolErr: any) {
-        console.error('[AI-Chat] Gemini tool call failed:', toolErr.message);
-      }
-    }
-
-    return finalText || null;
-  } catch (error: any) {
-    console.error('[AI-Chat] Gemini call failed:', error.message, error.status || '');
-    return null;
-  }
-}
-
 // ─── Main Handler ───────────────────────────────────────────────────────────
 export async function POST(req: Request) {
   try {
@@ -162,40 +95,19 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // Fetch chat history (shared format for all providers)
     const chatMessages = await fetchChatHistory(ticketId, message);
 
-    // Try providers in order: Groq (free) → Gemini → Fallback
-    let aiResponse: string | null = null;
-    let providerUsed = '';
+    // Call Groq AI
+    let aiResponse = await callGroq(chatMessages);
 
-    // 1️⃣ Try Groq first (free, fast, reliable)
-    aiResponse = await callGroq(chatMessages);
-    if (aiResponse) {
-      providerUsed = 'Groq';
-    }
-
-    // 2️⃣ Fallback to Gemini
-    if (!aiResponse) {
-      aiResponse = await callGemini(chatMessages, ticketId);
-      if (aiResponse) {
-        providerUsed = 'Gemini';
-      }
-    }
-
-    // 3️⃣ Ultimate fallback
     if (!aiResponse) {
       aiResponse = FALLBACK_RESPONSE;
-      providerUsed = 'Fallback';
-    }
-
-    if (providerUsed !== 'Fallback') {
-      console.log(`[AI-Chat] ✅ Response from ${providerUsed} (${aiResponse.length} chars)`);
+      console.warn('[AI-Chat] Groq failed, using fallback.');
     } else {
-      console.warn('[AI-Chat] ⚠️ All providers failed, using fallback.');
+      console.log(`[AI-Chat] ✅ Groq response (${aiResponse.length} chars)`);
     }
 
-    // Save AI response to Supabase
+    // Save to Supabase
     await supabase.from('support_messages').insert({
       ticket_id: ticketId,
       sender_id: null,
