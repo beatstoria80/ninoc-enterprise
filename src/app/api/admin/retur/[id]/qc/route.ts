@@ -95,14 +95,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if (order) {
           const customerEmail = retur.guest_email || order.customer_email;
           if (customerEmail) {
-            await sendEmailReturStatusUpdate(retur, order, customerEmail, 'completed', qc_notes);
+            await sendEmailReturStatusUpdate(retur, order, customerEmail, finalStatus, qc_notes);
           }
           if (order.customer_phone) {
             await sendWAReturStatusUpdate({
               phone: order.customer_phone,
               customer_name: (order.shipping_address as any)?.name || 'Customer',
               order_id: retur.order_id,
-              new_status: 'SELESAI',
+              new_status: finalStatus === 'completed' ? 'SELESAI' : 'DITOLAK',
               additional_notes: qc_notes
             });
           }
