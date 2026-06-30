@@ -174,7 +174,23 @@ export async function POST(req: Request) {
 
     // Prepare Context & History
     const storeContext = await fetchStoreContext();
-    const finalSystemPrompt = BASE_SYSTEM_PROMPT + storeContext;
+    
+    let ticketContext = '';
+    if (!ticketId.startsWith('guest-')) {
+      const { data: ticketData } = await supabase
+        .from('support_tickets')
+        .select('subject, order_id')
+        .eq('id', ticketId)
+        .single();
+        
+      if (ticketData) {
+        ticketContext = `\n\nKONTEKS TIKET INI:
+- Subjek Tiket: ${ticketData.subject}
+${ticketData.order_id ? `- ID Pesanan Customer: ${ticketData.order_id} (PENTING: Gunakan ID pesanan ini secara otomatis untuk mengecek status pesanan jika customer bertanya tentang pesanannya!)` : ''}`;
+      }
+    }
+
+    const finalSystemPrompt = BASE_SYSTEM_PROMPT + storeContext + ticketContext;
     const chatMessages = await fetchChatHistory(ticketId, message);
 
     // Call Groq AI
