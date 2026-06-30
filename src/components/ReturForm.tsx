@@ -81,11 +81,11 @@ const RETUR_REASONS = [
 
 // Syarat & Ketentuan
 const TERMS = [
-  'Barang belum digunakan, dicuci, atau dimodifikasi',
-  'Label & tag masih menempel',
-  'Bukti unboxing video diambil dalam 1-shot tanpa edit, potong, atau henti',
-  'Informasi yang diberikan adalah benar dan akurat',
-  'NINOC berhak menolak pengajuan yang tidak memenuhi syarat',
+  'Pengajuan retur maksimal 2x24 jam setelah pesanan berstatus Diterima.',
+  'Barang belum digunakan, dicuci, atau dimodifikasi, serta hangtag utuh.',
+  'Bukti unboxing video diambil dalam 1-shot (15-30s) tanpa edit/potong.',
+  'Persetujuan akhir bergantung pada hasil Audit QC Fisik oleh Tim Gudang.',
+  'Klaim otomatis DITOLAK jika terdeteksi FRAUD (bukan produk NINOC asli).',
 ];
 
 export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess, onClose, className }: ReturFormProps) {

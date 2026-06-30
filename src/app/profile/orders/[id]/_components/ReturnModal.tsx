@@ -25,11 +25,11 @@ const RETURN_REASONS = [
 ];
 
 const TERMS = [
-  'Barang belum digunakan, dicuci, atau dimodifikasi',
-  'Label & tag masih menempel',
-  'Bukti unboxing video WAJIB — 1-shot tanpa edit, potong, atau henti',
-  'Pengajuan maksimal 2 x 24 jam setelah barang diterima',
-  'NINOC berhak menolak pengajuan yang tidak memenuhi syarat',
+  'Pengajuan retur maksimal 2x24 jam setelah pesanan berstatus Diterima.',
+  'Barang belum digunakan, dicuci, atau dimodifikasi, serta hangtag utuh.',
+  'Bukti unboxing video diambil dalam 1-shot (15-30s) tanpa edit/potong.',
+  'Persetujuan akhir bergantung pada hasil Audit QC Fisik oleh Tim Gudang.',
+  'Klaim otomatis DITOLAK jika terdeteksi FRAUD (bukan produk NINOC asli).',
 ];
 
 const VIDEO_GUIDE = [
