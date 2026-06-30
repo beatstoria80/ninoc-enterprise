@@ -18,7 +18,7 @@ export default async function ProfilePage() {
     .eq('user_id', authUser.id)
     .single();
 
-  if (!profile) {
+  if (!profile || !profile.is_verified) {
     redirect('/onboarding');
   }
 

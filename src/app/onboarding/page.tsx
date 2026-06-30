@@ -188,8 +188,11 @@ export default function OnboardingPage() {
       const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
       const parts = name.split(' ');
       setF(p => ({ ...p, fn: parts[0] || '', ln: parts.slice(1).join(' ') || '' }));
-      const { data: ex } = await supabase.from('customer_profiles').select('user_id').eq('user_id', user.id).single();
-      if (ex) router.push('/profile');
+      const { data: ex } = await supabase.from('customer_profiles').select('user_id, is_verified').eq('user_id', user.id).single();
+      if (ex?.is_verified) {
+        router.push('/profile');
+        return;
+      }
       setIsLoading(false);
     };
     check();
