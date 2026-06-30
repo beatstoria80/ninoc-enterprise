@@ -283,22 +283,8 @@ export default function SupportChat() {
       const responseText = data.response || 'Terima kasih telah menghubungi kami! Tim kami akan segera membalas pesan Anda. Mohon ditunggu ya! 😊';
 
       // Note: The API route itself saves the admin message to Supabase.
-      // But we can optimistically update the UI to avoid waiting for the realtime channel,
-      // or we just let the realtime subscription handle it!
-      // Wait, we have a realtime channel active in SupportChat that pushes admin messages!
-      // Let's rely on the realtime channel to avoid duplicates, OR we manually push it here.
-      // Actually, if we rely on realtime, it might take a second. Let's do optimistic.
-      
-      const autoReplyMsg: SupportMessage = {
-        id: `ar-${Date.now()}`,
-        ticket_id: ticketId,
-        sender_id: null,
-        sender_role: 'admin',
-        message: responseText,
-        created_at: new Date().toISOString(),
-        is_auto_reply: true,
-      };
-      setChatMessages(prev => [...prev, autoReplyMsg]);
+      // We rely entirely on the Supabase real-time channel to display the AI's reply.
+      // This prevents duplicate messages (optimistic + realtime).
       
     } catch (error) {
       console.error('Failed to get AI reply:', error);
