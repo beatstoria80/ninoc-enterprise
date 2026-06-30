@@ -1,42 +1,62 @@
 import { supabase } from './supabase';
-import { Type, Tool } from '@google/genai';
 
-export const aiToolsDeclaration: Tool = {
-  functionDeclarations: [
-    {
+export const aiToolsDeclaration = [
+  {
+    type: 'function',
+    function: {
       name: 'get_order_details',
-      description: 'Get details of an order, including status, shipping address, and tracking number. Use this when the user asks about their order status or when diagnosing a product issue.',
+      description: 'Dapatkan detail pesanan berdasarkan ID pesanan (misal: NCO-123456). Gunakan ini saat pelanggan menanyakan status pesanan, resi, atau kendala pengiriman.',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
           order_id: {
-            type: Type.STRING,
-            description: 'The order ID (e.g., NCO-1234567890)',
+            type: 'string',
+            description: 'ID Pesanan (contoh: NCO-123456)',
           },
         },
         required: ['order_id'],
       },
-    },
-    {
-      name: 'escalate_to_human',
-      description: 'Use this tool to escalate the issue to a human agent when the AI cannot confidently resolve it, or if the user requests human assistance. This updates the ticket status and alerts the human team.',
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_products',
+      description: 'Cari produk di database berdasarkan kata kunci nama produk. Gunakan ini saat pelanggan menanyakan ketersediaan produk, harga, atau detail produk tertentu.',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
+        properties: {
+          keyword: {
+            type: 'string',
+            description: 'Kata kunci pencarian nama produk (contoh: Kaos, Worn Not Born, dll)',
+          },
+        },
+        required: ['keyword'],
+      },
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'escalate_to_human',
+      description: 'Gunakan ini jika AI tidak bisa menjawab, informasi terlalu kompleks, butuh campur tangan manusia (misal: refund, komplain keras), atau customer meminta admin manusia.',
+      parameters: {
+        type: 'object',
         properties: {
           ticket_id: {
-            type: Type.STRING,
-            description: 'The support ticket ID',
+            type: 'string',
+            description: 'ID tiket support',
           },
           reason: {
-            type: Type.STRING,
-            description: 'The reason for escalating to a human',
+            type: 'string',
+            description: 'Alasan eskalasi ke manusia',
           },
         },
         required: ['ticket_id', 'reason'],
       },
     }
-  ]
-};
+  }
+];
 
 export async function executeAiTool(name: string, args: Record<string, any>) {
   if (name === 'get_order_details') {
@@ -53,6 +73,20 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     return { success: true, order: data };
   }
 
+  if (name === 'search_products') {
+    const { keyword } = args;
+    const { data, error } = await supabase
+      .from('products')
+      .select('name, price, stock, description, colors')
+      .ilike('name', `%${keyword}%`)
+      .limit(5);
+    
+    if (error || !data || data.length === 0) {
+      return { error: 'Tidak ditemukan produk dengan kata kunci tersebut.' };
+    }
+    return { success: true, products: data };
+  }
+
   if (name === 'escalate_to_human') {
     const { ticket_id, reason } = args;
     const { error } = await supabase
@@ -64,7 +98,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       return { error: 'Failed to escalate ticket.' };
     }
 
-    // Add a note
+    // Add an internal system note
     await supabase.from('support_messages').insert({
       ticket_id,
       sender_id: null,
