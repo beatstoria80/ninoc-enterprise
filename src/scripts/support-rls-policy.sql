@@ -48,11 +48,7 @@ CREATE POLICY "Allow admin all"
 ON support_tickets FOR ALL
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE id = auth.uid()
-    AND raw_user_meta_data->>'role' = 'admin'
-  )
+  auth.jwt()->'user_metadata'->>'role' = 'admin'
 );
 
 -- Admin: update tickets (status, flagged fields)
@@ -60,11 +56,7 @@ CREATE POLICY "Allow admin update"
 ON support_tickets FOR UPDATE
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE id = auth.uid()
-    AND raw_user_meta_data->>'role' = 'admin'
-  )
+  auth.jwt()->'user_metadata'->>'role' = 'admin'
 );
 
 -- ── 3. support_messages policies ──────────────────────────
@@ -108,11 +100,7 @@ CREATE POLICY "Allow admin all"
 ON support_messages FOR ALL
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE id = auth.uid()
-    AND raw_user_meta_data->>'role' = 'admin'
-  )
+  auth.jwt()->'user_metadata'->>'role' = 'admin'
 );
 
 -- ── 4. placeholder_configs policies ───────────────────────
@@ -128,11 +116,7 @@ CREATE POLICY "Allow admin manage placeholders"
 ON placeholder_configs FOR ALL
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE id = auth.uid()
-    AND raw_user_meta_data->>'role' = 'admin'
-  )
+  auth.jwt()->'user_metadata'->>'role' = 'admin'
 );
 
 -- ── 5. Verify ─────────────────────────────────────────────
