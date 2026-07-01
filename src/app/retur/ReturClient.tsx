@@ -45,7 +45,7 @@ export default function ReturClient() {
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="group-hover:-translate-x-0.5 transition-transform">
               <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="hidden md:inline text-[10px] uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
+            <span className="hidden md:inline text-[10px] uppercase tracking-[0.2em] font-medium">Catalog</span>
           </Link>
           <h1 className="font-display font-medium md:font-normal italic text-lg tracking-tight md:tracking-normal leading-tight uppercase text-ink">
             Retur Tracker
