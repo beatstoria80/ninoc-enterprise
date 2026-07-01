@@ -28,7 +28,7 @@ export const aiToolsDeclaration = [
         properties: {
           keyword: {
             type: 'string',
-            description: 'Kata kunci pencarian nama produk (contoh: Kaos, Worn Not Born, dll)',
+            description: 'Kata kunci pencarian nama produk (contoh: Kaos). ATAU gunakan "baru" jika pelanggan menanyakan produk terbaru/new arrival. Gunakan "promo" jika menanyakan diskon.',
           },
         },
         required: ['keyword'],
@@ -75,11 +75,22 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
 
   if (name === 'search_products') {
     const { keyword } = args;
-    const { data, error } = await supabase
-      .from('products')
-      .select('name, price, description, category, slug')
-      .ilike('name', `%${keyword}%`)
-      .limit(5);
+    const kw = (keyword || '').toLowerCase();
+    
+    let query = supabase.from('products').select('name, price, description, category, slug');
+    
+    if (kw.includes('baru') || kw.includes('new') || kw.includes('terbaru') || kw === '') {
+      // Fetch newest products
+      query = query.order('created_at', { ascending: false }).limit(5);
+    } else if (kw.includes('promo') || kw.includes('diskon') || kw.includes('discount')) {
+      // Fetch products (you can add specific promo filter if exists, for now we fetch latest)
+      query = query.order('created_at', { ascending: false }).limit(5);
+    } else {
+      // Literal name search
+      query = query.ilike('name', `%${keyword}%`).limit(5);
+    }
+
+    const { data, error } = await query;
     
     if (error || !data || data.length === 0) {
       return { error: 'Tidak ditemukan produk dengan kata kunci tersebut.' };
