@@ -566,7 +566,7 @@ export default function AdminDashboard() {
       setIsProductModalOpen(false);
       
       if (data.costingMissing) {
-        showToast('Success: Product saved! ⚠️ PEMBERITAHUAN: Jangan lupa isi HPP/Costing untuk SKU ini di menu Marketing & ROAS agar data Finance akurat.', 'error');
+        showToast('Success: Product saved! ⚠️ PEMBERITAHUAN: Jangan lupa isi HPP/Costing untuk SKU ini di menu Marketing & ROAS agar data Finance akurat.', 'info');
       } else {
         showToast('Success: Product saved successfully!', 'success');
       }
