@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { aiToolsDeclaration, executeAiTool } from '@/lib/aiTools';
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 const BASE_SYSTEM_PROMPT = `You are NINOC's Customer Service Agent, interacting primarily with Gen-Z customers.
 Your persona: Friendly, helpful, and acts like a human staff (use "aku", "kak", casual but polite Indonesian). AVOID stiff, robotic, or overly formal language (do NOT say "Mohon maaf, apakah Anda dapat memberikan detail...").
@@ -43,7 +48,7 @@ async function fetchStoreContext() {
       'help_guide_shipping',
       'help_guide_how_to_order',
     ];
-    const { data } = await supabase
+    const { data } = await supabaseAdmin
       .from('atelier_settings')
       .select('key, value')
       .in('key', keys);
@@ -63,7 +68,7 @@ async function fetchStoreContext() {
 
 // ─── Chat History ───────────────────────────────────────────────────────────
 async function fetchChatHistory(ticketId: string, currentMessage: string) {
-  const { data: historyData } = await supabase
+  const { data: historyData } = await supabaseAdmin
     .from('support_messages')
     .select('message, sender_role')
     .eq('ticket_id', ticketId)
@@ -198,7 +203,7 @@ export async function POST(req: Request) {
     
     let ticketContext = '';
     if (!ticketId.startsWith('guest-')) {
-      const { data: ticketData } = await supabase
+      const { data: ticketData } = await supabaseAdmin
         .from('support_tickets')
         .select('subject, order_id')
         .eq('id', ticketId)
@@ -225,13 +230,17 @@ ${ticketData.order_id ? `- ID Pesanan Customer: ${ticketData.order_id} (PENTING:
     }
 
     // Save to Supabase
-    await supabase.from('support_messages').insert({
+    const { error: insertError } = await supabaseAdmin.from('support_messages').insert({
       ticket_id: ticketId,
       sender_id: null,
       sender_role: 'admin',
       message: aiResponse,
       is_auto_reply: true,
     });
+
+    if (insertError) {
+      console.error('[AI-Chat] Insert error:', insertError);
+    }
 
     return NextResponse.json({ response: aiResponse });
 
