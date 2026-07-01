@@ -43,9 +43,9 @@ export function ReturTracker() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-3 py-2">
+    <div className="max-w-md mx-auto space-y-2.5 py-1">
       <div className="text-center space-y-1">
-        <div className="w-9 h-9 bg-ink/5 rounded-full flex items-center justify-center mx-auto mb-1.5">
+        <div className="w-8 h-8 bg-ink/5 rounded-full flex items-center justify-center mx-auto mb-1">
           <Search size={16} className="text-ink/60" />
         </div>
         <h2 className="text-sm font-bold text-ink uppercase tracking-wider">Lacak Pengajuan Retur</h2>
@@ -54,7 +54,7 @@ export function ReturTracker() {
         </p>
       </div>
 
-      <form onSubmit={handleTrack} className="flex items-center gap-1.5">
+      <form onSubmit={handleTrack} className="flex items-center gap-1">
         <div className="relative flex-1">
           <Package size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/50" />
           <input

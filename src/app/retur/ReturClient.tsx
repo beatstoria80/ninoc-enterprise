@@ -48,16 +48,16 @@ export default function ReturClient() {
             <span className="hidden md:inline text-[10px] uppercase tracking-[0.2em] font-medium">Return to Studio Catalog</span>
           </Link>
           <h1 className="font-display font-medium md:font-normal italic text-lg tracking-tight md:tracking-normal leading-tight uppercase text-ink">
-            Return<span className="hidden md:inline">, Refund & Exchange</span>
+            Retur Tracker
           </h1>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-3 md:px-10 pt-2 pb-12">
+      <div className="max-w-[1400px] mx-auto px-2 md:px-10 pt-2 pb-6">
         <div className="lg:grid lg:grid-cols-[1fr_300px] gap-4">
 
           <div className="border border-ink/5 bg-white rounded-sm">
-            <div className="sticky top-[45px] md:top-[50px] z-40 px-3 md:px-4 pt-2.5 md:py-2 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-2 md:gap-1.5 bg-white/95 backdrop-blur-md rounded-t-sm">
+            <div className="sticky top-[45px] md:top-[50px] z-40 px-2 md:px-4 pt-2 md:py-2 border-b border-ink/5 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-1.5 bg-white/95 backdrop-blur-md rounded-t-sm">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-rose/10 rounded-full flex items-center justify-center shrink-0">
                   <RefreshCw size={11} className="text-rose" strokeWidth={1.5} />
@@ -67,9 +67,9 @@ export default function ReturClient() {
                   <p className="text-[8px] text-ink/60 mt-px uppercase tracking-widest leading-none">Form submission</p>
                 </div>
               </div>
-              <div className="md:ml-auto flex gap-0 w-full md:w-auto overflow-x-auto no-scrollbar border-t md:border-none border-ink/5 pt-0.5 md:pt-0">
-                {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status (Akun)' }, { id: 'track' as const, label: 'Lacak (Guest)' }]).map(tab => (
-                  <button key={tab.id} onClick={() => setView(tab.id as any)} className={cn('pb-2 pt-1.5 md:pt-0 px-3 md:px-2.5 text-[9px] md:text-[10px] font-semibold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/60 hover:text-ink/70')}>
+              <div className="md:ml-auto flex gap-1 w-full md:w-auto overflow-x-auto no-scrollbar pt-1 md:pt-0">
+                {([{ id: 'form' as const, label: 'Ajukan' }, { id: 'status' as const, label: 'Status' }, { id: 'track' as const, label: 'Lacak' }]).map(tab => (
+                  <button key={tab.id} onClick={() => setView(tab.id as any)} className={cn('pb-1.5 pt-1 md:pt-0 px-2.5 md:px-2.5 text-[10px] md:text-[10px] font-semibold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap', view === tab.id ? 'border-rose text-rose' : 'border-transparent text-ink/60 hover:text-ink/70')}>
                     {tab.label}
                   </button>
                 ))}
