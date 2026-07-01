@@ -300,6 +300,31 @@ export default function SupportChat() {
     }
   };
 
+  // ─── Clear Chat History
+  const clearHistory = async () => {
+    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus semua riwayat percakapan?");
+    if (!confirmDelete) return;
+
+    if (user) {
+      // Delete user's tickets from the database
+      const { error } = await supabase
+        .from('support_tickets')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('[clearHistory] Error:', error);
+        alert('Gagal menghapus riwayat. Pastikan RLS mengizinkan operasi delete.');
+        return;
+      }
+    }
+
+    // Clear local state
+    setTickets([]);
+    if (activeTab === 'chat') setActiveTab('home');
+    setChatMessages([]);
+  };
+
   // ─── Send message + auto-reply
   const processAutoReply = async (ticketId: string, msgText: string) => {
     const replyKey = `${ticketId}|${msgText}`;
@@ -669,7 +694,17 @@ export default function SupportChat() {
 
                     {/* Active Conversations */}
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 mb-2">Riwayat Percakapan</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50">Riwayat Percakapan</p>
+                        {tickets.length > 0 && (
+                          <button
+                            onClick={clearHistory}
+                            className="text-[9px] font-bold uppercase tracking-widest text-rose hover:text-rose-600 transition-colors active:scale-95"
+                          >
+                            Hapus Riwayat
+                          </button>
+                        )}
+                      </div>
                       {tickets.length > 0 ? (
                         <div className="space-y-1">
                           {tickets.slice(0, 5).map((t, i) => (
