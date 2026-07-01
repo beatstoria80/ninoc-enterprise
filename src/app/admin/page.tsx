@@ -2063,7 +2063,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="space-y-2">
                       {productForm.specifications?.map((spec, idx) => {
-                        if (spec.label.startsWith('ColorImage:')) return null;
+                        if (spec.label.startsWith('ColorImage:') || spec.label.startsWith('ColorP') || spec.label === 'GlobalP5') return null;
                         return (
                         <div key={idx} className="flex gap-2 items-start">
                           <input
