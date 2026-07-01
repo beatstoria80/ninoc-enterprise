@@ -314,7 +314,7 @@ export default function SupportChat() {
 
       if (error) {
         console.error('[clearHistory] Error:', error);
-        alert(`Gagal menghapus riwayat.\n\nDetail Error: ${error.message}\nCode: ${error.code}\nDetails: ${error.details}\nHint: ${error.hint}`);
+        alert('Gagal menghapus riwayat. Silakan coba lagi nanti.');
         return;
       }
     }
