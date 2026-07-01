@@ -163,6 +163,7 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
       }
 
       // 2nd Request to get final answer
+      payload.tool_choice = 'none';
       const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
