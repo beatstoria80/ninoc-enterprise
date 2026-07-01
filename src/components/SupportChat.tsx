@@ -83,6 +83,39 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
   });
 }
 
+const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+function renderMessageWithLinks(text: string, isCustomer: boolean) {
+  if (!text) return null;
+  const parts = text.split(urlRegex);
+  
+  return parts.map((part, i) => {
+    if (part.match(urlRegex)) {
+      let label = "Buka Tautan";
+      if (part.includes('/shop/')) label = "Lihat Produk";
+      else if (part.includes('/retur')) label = "Info Tracking / Retur";
+      else if (part.includes('/help')) label = "Info Lengkap / Bantuan";
+      else if (part.includes('ninoc.store')) label = "Kunjungi Website";
+      
+      return (
+        <a 
+          key={i} 
+          href={part} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 mt-1.5 mb-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 mx-0.5 whitespace-nowrap",
+            isCustomer ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-ink/90"
+          )}
+        >
+          {label} <ChevronRight size={12} strokeWidth={2.5} />
+        </a>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -732,7 +765,7 @@ export default function SupportChat() {
                       >
                         <div className="max-w-[85%]">
                           <div className={`px-4 py-3 rounded-xl text-sm md:text-xs leading-relaxed whitespace-pre-wrap ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-ink/5 border border-ink/10 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
-                            {m.message}
+                            {renderMessageWithLinks(m.message, m.sender_role === 'customer')}
                           </div>
                           {(m.sender_role === 'admin' || m.is_auto_reply) && (
                             <div className={`flex items-center gap-1 mt-0.5 ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
