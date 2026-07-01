@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import Link from 'next/link';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -91,25 +92,37 @@ function renderMessageWithLinks(text: string, isCustomer: boolean) {
   
   return parts.map((part, i) => {
     if (part.match(urlRegex)) {
+      // Membersihkan tanda baca di akhir URL jika AI memasukkannya
+      const urlStr = part.replace(/[.,;?!]+$/, '');
+      const trailingPunc = part.slice(urlStr.length);
+
       let label = "Buka Tautan";
-      if (part.includes('/shop/')) label = "Lihat Produk";
-      else if (part.includes('/retur')) label = "Info Tracking / Retur";
-      else if (part.includes('/help')) label = "Info Lengkap / Bantuan";
-      else if (part.includes('ninoc.store')) label = "Kunjungi Website";
+      if (urlStr.includes('/shop/')) label = "Lihat Produk";
+      else if (urlStr.includes('/retur')) label = "Info Tracking / Retur";
+      else if (urlStr.includes('/help')) label = "Info Lengkap / Bantuan";
+      else if (urlStr.includes('ninoc.store')) label = "Kunjungi Website";
       
+      const isInternal = urlStr.startsWith('https://ninoc.store') || urlStr.startsWith('http://localhost');
+      const href = isInternal ? urlStr.replace(/^https?:\/\/[^/]+/, '') || '/' : urlStr;
+
+      const linkClass = cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 mt-1.5 mb-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 mx-0.5 whitespace-nowrap",
+        isCustomer ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-ink/90"
+      );
+
       return (
-        <a 
-          key={i} 
-          href={part} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 mt-1.5 mb-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 mx-0.5 whitespace-nowrap",
-            isCustomer ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-ink/90"
+        <span key={i}>
+          {isInternal ? (
+            <Link href={href} className={linkClass}>
+              {label} <ChevronRight size={12} strokeWidth={2.5} />
+            </Link>
+          ) : (
+            <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+              {label} <ChevronRight size={12} strokeWidth={2.5} />
+            </a>
           )}
-        >
-          {label} <ChevronRight size={12} strokeWidth={2.5} />
-        </a>
+          {trailingPunc}
+        </span>
       );
     }
     return <span key={i}>{part}</span>;
