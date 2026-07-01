@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       .from('product_costings')
       .select('supplier_cost')
       .eq('product_id', productId)
-      .single();
+      .maybeSingle();
 
     return NextResponse.json({ 
       success: true, 

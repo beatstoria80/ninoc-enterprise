@@ -769,11 +769,19 @@ export default function AdminDashboard() {
   const deleteProduct = async (id: string) => {
     if (!confirm('Delete this product?')) return;
     try {
-      await supabase.from('variants').delete().eq('product_id', id);
-      await supabase.from('products').delete().eq('id', id);
+      const res = await fetch('/api/admin/products/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete product');
+      
+      showToast('Product deleted successfully', 'success');
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete product:', error);
+      showToast('Failed to delete product: ' + error.message, 'error');
     }
   };
 
