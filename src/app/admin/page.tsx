@@ -485,7 +485,7 @@ export default function AdminDashboard() {
     try {
       const hasColors = productForm.variants.some(v => v.color);
       let finalImageUrl = productForm.image_url || null;
-      let finalImageAlt = productForm.image_alt || null;
+      let finalImageAlt = productForm.image_alt || productForm.name || null;
       let finalP1 = productForm.perspective1 || null;
       let finalP2 = productForm.perspective2 || null;
       let finalP3 = productForm.perspective3 || null;
@@ -1857,7 +1857,6 @@ export default function AdminDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] bg-ink/40 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6"
-            onClick={() => setIsProductModalOpen(false)}
           >
             <div className="flex items-start justify-center gap-4 w-full max-w-[1200px] max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
               
