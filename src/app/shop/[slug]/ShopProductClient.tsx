@@ -1056,6 +1056,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         )}
       </div>
 
+      <ImageLightbox
+        isOpen={!!fullscreenImage}
+        imageUrl={fullscreenImage}
+        onClose={() => setFullscreenImage(null)}
+        altText={product?.name || "Product Image"}
+      />
     </main>
   );
 }
