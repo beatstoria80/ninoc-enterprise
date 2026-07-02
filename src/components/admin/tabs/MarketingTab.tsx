@@ -260,6 +260,7 @@ export function MarketingTab() {
         operational_pct: Number(editingCostings[id].operational_pct !== undefined ? editingCostings[id].operational_pct : costings.find(c => c.id === id).operational_pct),
         target_margin_pct: Number(editingCostings[id].target_margin_pct !== undefined ? editingCostings[id].target_margin_pct : costings.find(c => c.id === id).target_margin_pct),
         target_roas: Number(editingCostings[id].target_roas !== undefined ? editingCostings[id].target_roas : costings.find(c => c.id === id).target_roas),
+        return_cost: Number(editingCostings[id].return_cost !== undefined ? editingCostings[id].return_cost : costings.find(c => c.id === id).return_cost),
       }));
 
       for (const update of updates) {
