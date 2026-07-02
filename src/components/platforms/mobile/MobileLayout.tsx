@@ -348,7 +348,7 @@ export default function MobileLayout({
       {/* ═══════════════════════════════════════════════════════════════ */}
       {!hideHeader && (
         <header
-          className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white/95 backdrop-blur-xl border-b border-ink/[0.05] will-change-transform"
+          className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white border-b border-ink/[0.05] will-change-transform shadow-sm"
         >
           <div className="flex items-center justify-between h-14 px-4">
             {/* Left: Back or Logo */}
@@ -675,7 +675,7 @@ export default function MobileLayout({
       {/* ═══════════════════════════════════════════════════════════════ */}
       {!hideTabBar && !isOpeningSequence && (
         <nav
-          className="fixed bottom-0 left-0 right-0 z-[400] bg-ink/95 backdrop-blur-xl border-t border-white/[0.08] ios-bottom-nav select-none will-change-transform"
+          className="fixed bottom-0 left-0 right-0 z-[400] bg-ink border-t border-white/[0.08] ios-bottom-nav select-none will-change-transform"
         >
           <div className={cn(
             "h-[calc(50px+env(safe-area-inset-bottom))] px-2 flex items-start pt-2 pb-[env(safe-area-inset-bottom)]",
