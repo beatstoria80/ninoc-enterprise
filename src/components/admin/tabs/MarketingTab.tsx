@@ -13,6 +13,7 @@ export function MarketingTab() {
     totalCOGS: 0,
     grossProfit: 0,
     marketingSpend: 0,
+    inventoryValue: 0,
     googleAds: { totalSpend: 0, totalClicks: 0, totalImpressions: 0, totalConversions: 0, campaigns: [] } as GoogleAdsData,
     netProfit: 0,
     roas: 0,
@@ -48,17 +49,36 @@ export function MarketingTab() {
     try {
       setLoading(true);
       // 1. Fetch Products & Costings
-      const { data: productsData } = await supabase.from('products').select('id, name, price, variants(sku)');
+      const { data: productsData } = await supabase.from('products').select('id, name, price, variants(sku, stock_quantity)');
       const { data: costingsData } = await supabase.from('product_costings').select('*');
       
+      let totalInventoryValue = 0;
+
       const mergedCostings = productsData?.map(p => {
         const c = costingsData?.find((cc: any) => cc.product_id === p.id) || {};
         const safeRoas = c.target_roas ? (c.target_roas > 50 ? c.target_roas / 100 : c.target_roas) : 3;
+        
+        // Calculate inventory value for this product
+        let productStock = 0;
+        if (p.variants) {
+          p.variants.forEach((v: any) => {
+            productStock += v.stock_quantity || 0;
+          });
+        }
+        
+        const baseCost = Number(c.supplier_cost) || 0;
+        const pkgCost = Number(c.packaging_cost) || 0;
+        const opCost = Number(c.operational_pct) || 0; // treating as IDR
+        const unitCogs = baseCost + pkgCost + opCost;
+        
+        totalInventoryValue += (productStock * unitCogs);
+
         return { 
           supplier_cost: 0, packaging_cost: 0, operational_pct: 0, target_margin_pct: 40,
           ...c, 
           ...p,
-          target_roas: safeRoas
+          target_roas: safeRoas,
+          total_stock: productStock
         };
       }) || [];
       
@@ -68,7 +88,7 @@ export function MarketingTab() {
       const costMap: Record<string, number> = {};
       mergedCostings.forEach(c => {
         const baseCost = Number(c.supplier_cost) + Number(c.packaging_cost);
-        const opCost = (Number(c.operational_pct) / 100) * Number(c.price);
+        const opCost = Number(c.operational_pct) || 0; // Fixed: Treat as flat IDR instead of percentage
         costMap[c.id] = baseCost + opCost; // COGS per unit
       });
 
@@ -193,6 +213,7 @@ export function MarketingTab() {
         totalCOGS: totalCogs,
         grossProfit: totalGrossProfit,
         marketingSpend: totalMarketingCost,
+        inventoryValue: totalInventoryValue,
         googleAds: googleAds,
         netProfit: totalNetProfit,
         roas: totalMarketingCost > 0 ? (totalRev / totalMarketingCost) : (totalRev > 0 ? 9999 : 0),
@@ -474,6 +495,21 @@ export function MarketingTab() {
         </div>
       </div>
 
+      {/* INVENTORY VALUATION UI */}
+      <div className="pt-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink flex items-center gap-2 border-b border-ink/10 pb-1.5 mb-3">
+          <PackageOpen className="w-4 h-4 text-ink/80" /> Inventory Valuation (All Stock)
+        </h2>
+        <div className="bg-ink text-white rounded-md p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-1">Total Nilai Persediaan Barang (COGS)</p>
+            <p className="text-3xl font-mono tracking-tight text-white">IDR {fIDR(metrics.inventoryValue)}</p>
+            <p className="text-[11px] text-white/60 mt-1">Estimasi nilai modal dari seluruh stok barang yang tersedia (HPP x Global Stock).</p>
+          </div>
+          <PackageOpen className="w-12 h-12 text-white/10" />
+        </div>
+      </div>
+
       {/* COSTING CONFIGURATION GRID */}
       <div className="pt-6">
         <div className="flex items-center justify-between mb-3 border-b border-ink/10 pb-1.5">
@@ -500,7 +536,7 @@ export function MarketingTab() {
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">HPP Pabrik (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Packaging (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide text-rose">Biaya Retur (IDR)</th>
-                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Operational (%)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Operational (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Target Margin (%)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10">Target ROAS (x)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02]">Total COGS</th>
@@ -517,12 +553,12 @@ export function MarketingTab() {
                 const hpp = Number(currentData.supplier_cost) || 0;
                 const pkg = Number(currentData.packaging_cost) || 0;
                 const ret = Number(currentData.return_cost) || 0;
-                const opsPct = Number(currentData.operational_pct) || 0;
+                const opsPct = Number(currentData.operational_pct) || 0; // treating as IDR
                 const marginPct = Number(currentData.target_margin_pct) || 40;
                 const roasPct = Number(currentData.target_roas) || 3;
 
-                const opsCost = (opsPct / 100) * sp;
-                const totalCogs = hpp + pkg + ret + opsCost;
+                const opsCost = opsPct; // Fixed: treating as absolute value instead of percentage
+                const totalCogs = hpp + pkg + opsCost; // Fixed: excluding ret (Biaya Retur) for now
                 const maxCpa = roasPct > 0 ? sp / roasPct : 0;
                 const estNetProfit = sp - totalCogs - maxCpa;
                 const targetNetProfit = (marginPct / 100) * sp;
@@ -570,17 +606,14 @@ export function MarketingTab() {
                       />
                     </td>
                     <td className="px-1.5 py-1">
-                      <div className="relative w-20">
-                        <input 
-                          type="number"
-                          min="0"
-                          className="w-full text-xs font-mono pl-2 pr-6 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
-                          value={currentData.operational_pct ?? ''}
-                          onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
-                          placeholder="0"
-                        />
-                        <span className="absolute right-2 top-1.5 text-xs text-ink/50">%</span>
-                      </div>
+                      <input 
+                        type="number"
+                        min="0"
+                        className="w-24 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
+                        value={currentData.operational_pct ?? ''}
+                        onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
+                        placeholder="0"
+                      />
                     </td>
                     <td className="px-1.5 py-1">
                       <div className="relative w-20">
