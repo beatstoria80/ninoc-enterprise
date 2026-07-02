@@ -54,7 +54,7 @@ async function runQA() {
     console.log(`✅ Sales inserted correctly. New Balance: ${salesInsert.balance}`);
 
     // 3. Insert test refund (-500)
-    console.log("📝 Inserting Test Refund (Credit 500)...");
+    console.log("📝 Mensimulasikan Upload Bukti Transfer & Selesaikan Refund (Credit 500)...");
     const { data: refundInsert, error: refundErr } = await supabase
       .from('finance_ledgers')
       .insert({

@@ -53,6 +53,7 @@ export async function PATCH(
       refund_amount,
       refund_method,
       reimburse_status,
+      refund_proof_url,
     } = body;
 
     // Get current admin user via server-side cookie session (service role cannot getUser)
@@ -73,6 +74,7 @@ export async function PATCH(
     if (refund_amount !== undefined) updates.refund_amount = refund_amount;
     if (refund_method !== undefined) updates.refund_method = refund_method;
     if (reimburse_status !== undefined) updates.reimburse_status = reimburse_status;
+    if (refund_proof_url !== undefined) updates.refund_proof_url = refund_proof_url;
 
     // Set resolved_at and resolved_by when status changes to approved/rejected/completed
     if (status && ['approved', 'rejected', 'completed'].includes(status)) {
@@ -89,8 +91,8 @@ export async function PATCH(
 
     if (error) throw error;
 
-    // Finance Ledger Integration: Auto record refund cash-out
-    if (status === 'approved' && data.return_type === 'refund' && data.refund_amount > 0) {
+    // Finance Ledger Integration: Auto record refund cash-out when completed
+    if (status === 'completed' && data.return_type === 'refund' && data.refund_amount > 0 && data.refund_proof_url) {
       // Check if it's already recorded to prevent double entry
       const { data: existingLedger } = await adminClient
         .from('finance_ledgers')

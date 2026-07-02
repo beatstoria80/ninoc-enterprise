@@ -37,6 +37,7 @@ interface ReturRequest {
   customer_bank_account_name?: string;
   reimburse_status?: string;
   reimburse_amount?: number;
+  refund_proof_url?: string | null;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
@@ -104,6 +105,7 @@ function ReturDetail({ retur, onClose, onRefresh }: {
   const [saved, setSaved] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [refundProofUrl, setRefundProofUrl] = useState(retur.refund_proof_url || '');
   
   // Robustly fetch order items if missing
   const [fetchedOrderDetails, setFetchedOrderDetails] = useState<any>(null);
@@ -147,7 +149,11 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           body.refund_amount = parseInt(refundAmount) || 0;
           body.refund_method = 'transfer';
         } else if (retur.return_type === 'exchange' && exchangeShippingCost) {
-          body.admin_notes = note ? `${note}\n[Est Ongkir Kirim Balik: ${exchangeShippingCost}]` : `[Est Ongkir Kirim Balik: ${exchangeShippingCost}]`;
+          body.admin_notes = note ? `${note}\n[Est Ongkir Kirim Balik: ${exchangeShippingCost}]` : `[Est Ongkir Kirim Kirim Balik: ${exchangeShippingCost}]`;
+        }
+      } else if (newStatus === 'completed' && retur.return_type === 'refund') {
+        if (refundProofUrl) {
+          body.refund_proof_url = refundProofUrl;
         }
       }
       const res = await fetch(`/api/retur/${retur.id}`, {
@@ -698,6 +704,30 @@ function ReturDetail({ retur, onClose, onRefresh }: {
           </div>
         )}
 
+        {/* Manual Refund Transfer Section */}
+        {status === 'approved' && retur.return_type === 'refund' && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center gap-2">
+              <CheckCircle size={16} className="text-blue-500" /> Konfirmasi Transfer Manual
+            </h3>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm space-y-4">
+              <p className="text-sm text-blue-900">
+                Silakan transfer dana sebesar <span className="font-bold">IDR {parseInt(retur.refund_amount?.toString() || '0').toLocaleString('id-ID')}</span> ke rekening pelanggan. Setelah selesai, lampirkan bukti dan konfirmasi untuk menyelesaikan proses dan menyinkronkan data ke Finance Ledger.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">URL / Link Bukti Transfer (Opsional namun disarankan)</label>
+                <input
+                  type="text"
+                  value={refundProofUrl}
+                  onChange={e => setRefundProofUrl(e.target.value)}
+                  placeholder="https://... atau paste link bukti resi"
+                  className="w-full text-sm text-gray-900 outline-none border border-gray-300 rounded-md p-2 focus:border-blue-600 transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Admin Notes */}
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-gray-800 border-b pb-2 flex items-center justify-between">
@@ -757,19 +787,36 @@ function ReturDetail({ retur, onClose, onRefresh }: {
               className="px-6 py-2.5 text-sm font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2 shadow-sm"
             >
               {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={16} />}
-              Setujui & Proses
+              Setujui & Lanjutkan
             </button>
           </>
         )}
         {status === 'approved' && (
-          <button
-            onClick={() => setShowQcModal(true)}
-            disabled={saving}
-            className="px-6 py-2.5 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm"
-          >
-            {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Package size={16} />}
-            QC & Audit Barang Masuk
-          </button>
+          <>
+            {retur.return_type === 'refund' && (
+              <button
+                onClick={() => {
+                  if (!refundProofUrl) {
+                    if (!window.confirm('Anda belum melampirkan URL Bukti Transfer. Sinkronisasi ke Finance Ledger membutuhkan bukti. Yakin ingin menyelesaikan tanpa bukti?')) return;
+                  }
+                  handleAction('completed');
+                }}
+                disabled={saving}
+                className="px-6 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm mr-auto"
+              >
+                {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle size={16} />}
+                Konfirmasi Transfer & Selesai
+              </button>
+            )}
+            <button
+              onClick={() => setShowQcModal(true)}
+              disabled={saving}
+              className="px-6 py-2.5 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm"
+            >
+              {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Package size={16} />}
+              QC & Audit Barang Masuk
+            </button>
+          </>
         )}
         {(status === 'rejected' || status === 'completed') && (
           <p className="text-sm font-medium text-gray-500">
