@@ -264,12 +264,14 @@ export function MarketingTab() {
       }));
 
       for (const update of updates) {
-        await supabase.from('product_costings').upsert(update, { onConflict: 'product_id' });
+        const { error } = await supabase.from('product_costings').upsert(update, { onConflict: 'product_id' });
+        if (error) throw new Error(error.message);
       }
       setEditingCostings({});
       await loadData();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert("Gagal menyimpan data: " + (err.message || "Terjadi kesalahan server"));
     } finally {
       setSavingCosting(false);
     }
