@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { FinanceSummary, Product, Order, ProductCosting } from '../types';
+import { supabase } from '@/lib/supabase';
 
 export function FinanceTab({
   finance,
@@ -24,6 +25,15 @@ export function FinanceTab({
   setCostingForm: (f: any) => void;
   setIsCostingModalOpen: (b: boolean) => void;
 }) {
+  const [ledgers, setLedgers] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (financeTab === 'ledger') {
+      supabase.from('finance_ledgers').select('*').order('transaction_date', { ascending: false }).limit(50)
+        .then(({ data }) => setLedgers(data || []));
+    }
+  }, [financeTab]);
+
   // Accounting Mocks
   const grossRevenue = finance.totalRevenue;
   const cogs = grossRevenue * 0.3;
@@ -235,15 +245,23 @@ export function FinanceTab({
               <div className="col-span-2 p-3 text-[9px] font-medium uppercase tracking-widest text-ink/80 text-right">Balance</div>
             </div>
             <div className="min-w-[800px]">
-              {orders.slice(0, 10).map((o, i) => (
-                <div key={i} className="grid grid-cols-12 gap-0 border-b border-ink/5 hover:bg-ink/[0.01]">
-                  <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10">{new Date(o.created_at).toLocaleDateString('id-ID')}</div>
-                  <div className="col-span-4 p-3 text-[10px] text-ink border-r border-ink/10 truncate uppercase">Sales - Order #{o.id.slice(0,8)}</div>
-                  <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10 text-right">{o.total_price.toLocaleString('id-ID')}</div>
-                  <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10 text-right">-</div>
-                  <div className="col-span-2 p-3 text-[10px] font-mono text-ink text-right">...</div>
+              {ledgers.length === 0 ? (
+                <div className="p-12 text-center text-[10px] uppercase tracking-widest text-ink/50">
+                  No ledger entries found
                 </div>
-              ))}
+              ) : (
+                ledgers.map((l) => (
+                  <div key={l.id} className="grid grid-cols-12 gap-0 border-b border-ink/5 hover:bg-ink/[0.01]">
+                    <div className="col-span-2 p-3 text-[10px] font-mono text-ink border-r border-ink/10">{new Date(l.transaction_date).toLocaleDateString('id-ID')}</div>
+                    <div className="col-span-4 p-3 text-[10px] text-ink border-r border-ink/10 truncate">
+                      {l.description} <span className="text-[8px] text-ink/50 block font-mono uppercase">{l.type} {l.reference_id ? `- ${l.reference_id}` : ''}</span>
+                    </div>
+                    <div className="col-span-2 p-3 text-[10px] font-mono text-emerald-600 border-r border-ink/10 text-right">{l.debit > 0 ? l.debit.toLocaleString('id-ID') : '-'}</div>
+                    <div className="col-span-2 p-3 text-[10px] font-mono text-rose border-r border-ink/10 text-right">{l.credit > 0 ? l.credit.toLocaleString('id-ID') : '-'}</div>
+                    <div className="col-span-2 p-3 text-[10px] font-mono font-bold text-ink text-right">{l.balance.toLocaleString('id-ID')}</div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

@@ -89,6 +89,27 @@ export async function PATCH(
 
     if (error) throw error;
 
+    // Finance Ledger Integration: Auto record refund cash-out
+    if (status === 'approved' && data.return_type === 'refund' && data.refund_amount > 0) {
+      // Check if it's already recorded to prevent double entry
+      const { data: existingLedger } = await adminClient
+        .from('finance_ledgers')
+        .select('id')
+        .eq('reference_id', `retur_refund_${id}`)
+        .maybeSingle();
+        
+      if (!existingLedger) {
+        await adminClient.from('finance_ledgers').insert({
+          description: `Refund Dana Retur untuk Order #${data.order_id}`,
+          type: 'refund',
+          debit: 0,
+          credit: data.refund_amount,
+          reference_id: `retur_refund_${id}`,
+          created_by: user?.id || null
+        });
+      }
+    }
+
     // Log activity
     if (status) {
       await adminClient.from('customer_activity_log').insert({
