@@ -43,7 +43,7 @@ export function GoogleAdsTab() {
   const overallCtr = data.totalImpressions > 0 ? (data.totalClicks / data.totalImpressions) * 100 : 0;
 
   return (
-    <div className="space-y-4 w-full pb-20">
+    <div className="flex-1 overflow-y-auto minimal-scroll space-y-4 w-full pr-2 pb-20">
       <div className="mb-4 flex items-center justify-between border-b border-ink/10 pb-4">
         <div>
           <h1 className="text-xl font-medium tracking-tight text-ink flex items-center gap-2">

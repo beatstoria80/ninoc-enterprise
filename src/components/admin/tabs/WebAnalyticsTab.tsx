@@ -60,7 +60,7 @@ export function WebAnalyticsTab() {
   }
 
   return (
-    <div className="space-y-8 w-full pb-24">
+    <div className="flex-1 overflow-y-auto minimal-scroll space-y-8 w-full pr-2 pb-24">
       {/* HEADER & FILTER TABS */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
