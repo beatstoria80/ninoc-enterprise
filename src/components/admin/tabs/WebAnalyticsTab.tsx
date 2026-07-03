@@ -92,9 +92,19 @@ export function WebAnalyticsTab() {
           
           {data.ga4 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <div className="bg-indigo-600 border border-indigo-700 rounded-md p-3 shadow-md relative overflow-hidden">
+                  <div className="absolute top-3 right-3">
+                    <span className="flex h-3 w-3 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    </span>
+                  </div>
+                  <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-1">Real-Time (30 Min)</p>
+                  <p className="text-2xl font-mono font-bold text-white">{data.ga4.realtimeVisitors.toLocaleString()}</p>
+                </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Pengunjung Aktif</p>
+                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Pengguna (30 Hari)</p>
                   <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.visitors.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">

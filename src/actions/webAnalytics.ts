@@ -5,6 +5,7 @@ import { GoogleAuth } from 'google-auth-library';
 export type WebAnalyticsData = {
   configured: boolean;
   ga4: {
+    realtimeVisitors: number;
     visitors: number;
     pageviews: number;
     sessions: number;
@@ -108,7 +109,29 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         pageviews: parseInt(row.metricValues?.[1]?.value || '0', 10),
       }));
 
+      // Realtime (last 30 minutes)
+      let realtimeVisitors = 0;
+      try {
+        const gaRtRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            metrics: [{ name: 'activeUsers' }]
+          })
+        });
+        if (gaRtRes.ok) {
+          const gaRtData = await gaRtRes.json();
+          realtimeVisitors = parseInt(gaRtData.rows?.[0]?.metricValues?.[0]?.value || '0', 10);
+        }
+      } catch (e) {
+        console.error("Failed to fetch realtime data:", e);
+      }
+
       ga4Data = {
+        realtimeVisitors,
         visitors: parseInt(gaData.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
         pageviews: parseInt(gaData.rows?.[0]?.metricValues?.[1]?.value || '0', 10),
         sessions: parseInt(gaData.rows?.[0]?.metricValues?.[2]?.value || '0', 10),
