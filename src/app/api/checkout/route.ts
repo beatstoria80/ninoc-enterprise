@@ -11,7 +11,7 @@ const supabaseAdmin = createClient(
 );
 
 const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
-const SIZE_SURCHARGE_AMOUNT = 15000;
+const SIZE_SURCHARGE_AMOUNT = 25000;
 
 interface CheckoutItem {
   id: string;

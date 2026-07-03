@@ -668,20 +668,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         {size}
                         {isSurchargeSize(size) && (
                           <span className={cn(
-                            "absolute -top-1.5 -right-1 text-[6px] font-bold px-1 py-0.5 leading-none rounded-sm shadow-sm",
-                            effectiveSize === size ? "bg-white text-rose" : "bg-rose text-white"
+                            "absolute -top-1.5 -right-2 text-[7px] font-bold px-1.5 py-0.5 leading-none rounded-sm shadow-sm border",
+                            effectiveSize === size ? "bg-white text-rose border-rose" : "bg-rose text-white border-rose/20"
                           )}>
-                            +15K
+                            +25K
                           </span>
                         )}
                       </motion.button>
                     ))}
                   </div>
                   {currentSurcharge > 0 && (
-                    <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-1 px-1">
-                      <div className="w-1 h-1 rounded-full bg-rose animate-pulse" />
-                      <span className="text-[11px] md:text-[8px] font-medium text-rose uppercase tracking-wider">
-                        +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} surcharge untuk ukuran {effectiveSize}
+                    <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-2 px-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
+                      <span className="text-[11px] md:text-[9px] font-semibold text-rose uppercase tracking-wider">
+                        +IDR {SIZE_SURCHARGE_AMOUNT.toLocaleString('id-ID')} biaya tambahan ukuran {effectiveSize}
                       </span>
                     </motion.div>
                   )}

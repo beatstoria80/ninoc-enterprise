@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 // Sizes that incur an extra surcharge (XXL and above)
 export const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
-export const SIZE_SURCHARGE_AMOUNT = 15000; // Rp 15.000
+export const SIZE_SURCHARGE_AMOUNT = 25000; // Rp 25.000
 
 export interface CartItem {
   id: string;
