@@ -12,6 +12,9 @@ export type WebAnalyticsData = {
     avgSessionDuration: string;
     trend: { date: string; visitors: number; pageviews: number }[];
     topPages?: { path: string; title: string; views: number; users: number }[];
+    topCities?: { city: string; country: string; users: number; views: number }[];
+    devices?: { device: string; users: number; percentage: number }[];
+    channels?: { channel: string; sessions: number; users: number }[];
   } | null;
   gsc: {
     clicks: number;
@@ -21,6 +24,8 @@ export type WebAnalyticsData = {
     topQueries: { query: string; clicks: number; impressions: number; ctr?: number; position?: number }[];
     trend?: { date: string; clicks: number; impressions: number; ctr: number; position: number }[];
     topPages?: { page: string; clicks: number; impressions: number; ctr: number; position: number }[];
+    topCountries?: { country: string; clicks: number; impressions: number; ctr: number }[];
+    devices?: { device: string; clicks: number; impressions: number; ctr: number }[];
   } | null;
   error?: string;
 };
@@ -183,6 +188,98 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         console.warn('Failed to fetch GA4 top pages', e);
       }
 
+      // Top Cities (Wilayah Demografi)
+      let topCities: { city: string; country: string; users: number; views: number }[] = [];
+      try {
+        const gaCitiesRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'city' }, { name: 'country' }],
+            metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
+            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+            limit: 6
+          })
+        });
+        const gaCitiesData = await gaCitiesRes.json();
+        if (!gaCitiesData.error && gaCitiesData.rows) {
+          topCities = gaCitiesData.rows.map((row: any) => ({
+            city: row.dimensionValues?.[0]?.value || 'Unknown',
+            country: row.dimensionValues?.[1]?.value || 'ID',
+            users: parseInt(row.metricValues?.[0]?.value || '0', 10),
+            views: parseInt(row.metricValues?.[1]?.value || '0', 10),
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GA4 top cities', e);
+      }
+
+      // Devices (Perangkat)
+      let devices: { device: string; users: number; percentage: number }[] = [];
+      try {
+        const gaDevRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'deviceCategory' }],
+            metrics: [{ name: 'activeUsers' }],
+            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+            limit: 4
+          })
+        });
+        const gaDevData = await gaDevRes.json();
+        if (!gaDevData.error && gaDevData.rows) {
+          const totalDevUsers = gaDevData.rows.reduce((sum: number, r: any) => sum + parseInt(r.metricValues?.[0]?.value || '0', 10), 0) || 1;
+          devices = gaDevData.rows.map((row: any) => {
+            const u = parseInt(row.metricValues?.[0]?.value || '0', 10);
+            return {
+              device: row.dimensionValues?.[0]?.value || 'desktop',
+              users: u,
+              percentage: Math.round((u / totalDevUsers) * 100),
+            };
+          });
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GA4 devices', e);
+      }
+
+      // Traffic Channels (Sumber Akuisisi)
+      let channels: { channel: string; sessions: number; users: number }[] = [];
+      try {
+        const gaChanRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+            metrics: [{ name: 'sessions' }, { name: 'activeUsers' }],
+            orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+            limit: 5
+          })
+        });
+        const gaChanData = await gaChanRes.json();
+        if (!gaChanData.error && gaChanData.rows) {
+          channels = gaChanData.rows.map((row: any) => ({
+            channel: row.dimensionValues?.[0]?.value || 'Direct',
+            sessions: parseInt(row.metricValues?.[0]?.value || '0', 10),
+            users: parseInt(row.metricValues?.[1]?.value || '0', 10),
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GA4 channels', e);
+      }
+
       ga4Data = {
         realtimeVisitors,
         visitors: parseInt(gaData.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
@@ -191,6 +288,9 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         avgSessionDuration: parseFloat(gaData.rows?.[0]?.metricValues?.[3]?.value || '0').toFixed(2) + 's',
         trend,
         topPages,
+        topCities,
+        devices,
+        channels,
       };
     }
 
@@ -305,6 +405,64 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         console.warn('Failed to fetch GSC top pages', e);
       }
 
+      // GSC Top Countries
+      let topCountries: { country: string; clicks: number; impressions: number; ctr: number }[] = [];
+      try {
+        const gscCountriesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startDate: formatDate(thirtyDaysAgo),
+            endDate: formatDate(today),
+            dimensions: ['country'],
+            rowLimit: 6
+          })
+        });
+        const gscCountriesData = await gscCountriesRes.json();
+        if (!gscCountriesData.error && gscCountriesData.rows) {
+          topCountries = gscCountriesData.rows.map((row: any) => ({
+            country: (row.keys?.[0] || 'id').toUpperCase(),
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: (row.ctr || 0) * 100,
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GSC top countries', e);
+      }
+
+      // GSC Devices
+      let devices: { device: string; clicks: number; impressions: number; ctr: number }[] = [];
+      try {
+        const gscDevRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startDate: formatDate(thirtyDaysAgo),
+            endDate: formatDate(today),
+            dimensions: ['device'],
+            rowLimit: 4
+          })
+        });
+        const gscDevData = await gscDevRes.json();
+        if (!gscDevData.error && gscDevData.rows) {
+          devices = gscDevData.rows.map((row: any) => ({
+            device: row.keys?.[0] || 'DESKTOP',
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: (row.ctr || 0) * 100,
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GSC devices', e);
+      }
+
       const totals = gscTotalData.rows?.[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       const topQueries = (gscQueriesData.rows || []).map((row: any) => ({
         query: row.keys?.[0] || 'Unknown',
@@ -322,6 +480,8 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         topQueries,
         trend,
         topPages,
+        topCountries,
+        devices,
       };
     }
 
