@@ -74,7 +74,7 @@ async function getAccessToken(): Promise<string> {
   return token.token;
 }
 
-export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
+export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<WebAnalyticsData> {
   try {
     if (!isConfigured()) {
       return { configured: false, ga4: null, gsc: null };
@@ -83,6 +83,25 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
     const token = await getAccessToken();
     let ga4Data = null;
     let gscData = null;
+
+    let gaStartDate = '28daysAgo';
+    let gscDaysBack = 28;
+    if (timeFilter === '24h') {
+      gaStartDate = '1daysAgo';
+      gscDaysBack = 2; // GSC requires minimum 2 days latency window
+    } else if (timeFilter === '7d') {
+      gaStartDate = '7daysAgo';
+      gscDaysBack = 7;
+    } else if (timeFilter === '28d') {
+      gaStartDate = '28daysAgo';
+      gscDaysBack = 28;
+    } else if (timeFilter === '90d') {
+      gaStartDate = '90daysAgo';
+      gscDaysBack = 90;
+    } else if (timeFilter === 'all') {
+      gaStartDate = '365daysAgo';
+      gscDaysBack = 365;
+    }
 
     // Fetch GA4 Data via REST API
     if (process.env.GA4_PROPERTY_ID) {
@@ -96,7 +115,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
           metrics: [
             { name: 'activeUsers' },
             { name: 'screenPageViews' },
@@ -118,7 +137,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
           dimensions: [{ name: 'date' }],
           metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
           orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }]
@@ -168,7 +187,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
             dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
             metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
             orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
@@ -198,7 +217,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
             dimensions: [{ name: 'city' }, { name: 'country' }],
             metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
             orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
@@ -228,7 +247,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
             dimensions: [{ name: 'deviceCategory' }],
             metrics: [{ name: 'activeUsers' }],
             orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
@@ -261,7 +280,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
             dimensions: [{ name: 'sessionDefaultChannelGroup' }],
             metrics: [{ name: 'sessions' }, { name: 'activeUsers' }],
             orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
@@ -298,7 +317,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
     if (process.env.GSC_SITE_URL) {
       const siteUrl = process.env.GSC_SITE_URL;
       const today = new Date();
-      const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(today.getTime() - gscDaysBack * 24 * 60 * 60 * 1000);
       const formatDate = (d: Date) => d.toISOString().split('T')[0];
 
       // Totals

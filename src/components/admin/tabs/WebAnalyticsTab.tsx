@@ -11,11 +11,81 @@ export function WebAnalyticsTab() {
   const [data, setData] = useState<WebAnalyticsData | null>(null);
   const [activeSection, setActiveSection] = useState<'all' | 'ga4' | 'gsc'>('all');
   const [gscTableTab, setGscTableTab] = useState<'queries' | 'pages' | 'countries' | 'devices'>('queries');
+  const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
 
-  const loadData = async () => {
+  const getTimeLabel = () => {
+    switch (timeFilter) {
+      case '24h': return '24 JAM';
+      case '7d': return '7 HARI';
+      case '28d': return '28 HARI';
+      case '90d': return '3 BULAN';
+      case 'all': return 'SEMUA PERIODE';
+      default: return '28 HARI';
+    }
+  };
+
+  const getTimeDesc = () => {
+    switch (timeFilter) {
+      case '24h': return 'dalam 24 jam terakhir';
+      case '7d': return 'dalam 7 hari terakhir';
+      case '28d': return 'dalam 28 hari terakhir';
+      case '90d': return 'dalam 3 bulan terakhir';
+      case 'all': return 'dalam 1 tahun terakhir';
+      default: return 'dalam 28 hari terakhir';
+    }
+  };
+
+  const renderTimeSelector = (colorScheme: 'indigo' | 'emerald') => {
+    const timeFilterOptions: { id: '24h' | '7d' | '28d' | '90d' | 'all'; label: string; desc: string }[] = [
+      { id: '24h', label: '24 Jam', desc: '1 Hari Terakhir' },
+      { id: '7d', label: '7 Hari', desc: 'Minggu Ini' },
+      { id: '28d', label: '28 Hari', desc: '1 Bulan Terakhir' },
+      { id: '90d', label: '3 Month', desc: 'Kuartal Ini' },
+      { id: 'all', label: '& More', desc: 'Semua / 1 Tahun' },
+    ];
+    return (
+      <div className={cn(
+        "flex flex-wrap items-center justify-between gap-3 border p-2.5 rounded-xl shadow-xs transition-colors my-2",
+        colorScheme === 'indigo' ? "border-indigo-200 bg-indigo-50/40" : "border-emerald-200 bg-emerald-50/40"
+      )}>
+        <div className="flex items-center gap-2 px-2">
+          <Clock size={15} className={colorScheme === 'indigo' ? 'text-indigo-600' : 'text-emerald-600'} />
+          <span className="text-xs font-extrabold text-ink uppercase tracking-wider">Parameter Waktu UI UX :</span>
+        </div>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {timeFilterOptions.map((opt) => {
+            const isActive = timeFilter === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setTimeFilter(opt.id)}
+                disabled={loading}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 active:scale-95 cursor-pointer",
+                  isActive
+                    ? colorScheme === 'indigo'
+                      ? "bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-600/20"
+                      : "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-600/20"
+                    : "bg-white border border-ink/10 text-ink/70 hover:bg-white hover:text-ink hover:border-ink/20 shadow-2xs"
+                )}
+              >
+                <span>{opt.label}</span>
+                <span className={cn("text-[9px] px-1.5 py-0.5 rounded-sm font-normal hidden sm:inline-block", isActive ? "bg-white/20 text-white" : "bg-ink/5 text-ink/50")}>
+                  {opt.desc}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const loadData = async (filterOverride?: string | React.MouseEvent) => {
+    const filter = typeof filterOverride === 'string' ? filterOverride : timeFilter;
     try {
       setLoading(true);
-      const res = await getWebAnalyticsData();
+      const res = await getWebAnalyticsData(filter);
       setData(res);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -26,8 +96,8 @@ export function WebAnalyticsTab() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadData();
-  }, []);
+    loadData(timeFilter);
+  }, [timeFilter]);
 
   if (loading) {
     return (
@@ -110,7 +180,7 @@ export function WebAnalyticsTab() {
           </div>
 
           <button 
-            onClick={loadData} 
+            onClick={() => loadData(timeFilter)} 
             className="bg-white border border-ink/15 text-ink/80 hover:text-ink hover:border-ink/30 px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sinkronisasi
@@ -139,6 +209,8 @@ export function WebAnalyticsTab() {
             <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">GA4 Property ID: {process.env.NEXT_PUBLIC_GA4_ID || '543147964'}</span>
           </div>
 
+          {renderTimeSelector('indigo')}
+
           {data.ga4 ? (
             <>
               {/* 5 SUMMARY CARDS FULL WIDTH */}
@@ -166,14 +238,14 @@ export function WebAnalyticsTab() {
                   <div>
                     <div className="flex items-center justify-between">
                       <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <Users size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Pengguna (30 Hari)
+                        <Users size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Pengguna ({getTimeLabel()})
                       </p>
                       <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
                     </div>
                     <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.visitors.toLocaleString()}</p>
                   </div>
                   <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
-                    Total pengunjung unik (Unique Users) dalam 30 hari terakhir
+                    Total pengunjung unik (Unique Users) {getTimeDesc()}
                   </p>
                 </div>
 
@@ -227,7 +299,7 @@ export function WebAnalyticsTab() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div>
                       <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                        <TrendingUp size={16} className="text-indigo-600" /> Tren Pengunjung & Pageviews (30 Hari)
+                        <TrendingUp size={16} className="text-indigo-600" /> Tren Pengunjung & Pageviews ({getTimeLabel()})
                       </h3>
                       <p className="text-xs text-ink/60 mt-0.5">Indikator warna terpisah: Pengunjung (Indigo) vs Pageviews (Amber / Orange)</p>
                     </div>
@@ -406,7 +478,7 @@ export function WebAnalyticsTab() {
               <AlertCircle size={24} className="mx-auto mb-2 text-rose-500" />
               <p className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GA4</p>
               {data.error && <p className="text-xs text-rose-500 max-w-md mx-auto mt-1">{data.error}</p>}
-              <button onClick={loadData} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
+              <button onClick={() => loadData(timeFilter)} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
             </div>
           )}
         </div>
@@ -424,6 +496,8 @@ export function WebAnalyticsTab() {
             </h2>
             <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">Domain: {process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store/'}</span>
           </div>
+
+          {renderTimeSelector('emerald')}
 
           {data.gsc ? (
             <>
@@ -495,7 +569,7 @@ export function WebAnalyticsTab() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div>
                       <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                        <TrendingUp size={16} className="text-emerald-600" /> Tren Performa Google Search Console (30 Hari)
+                        <TrendingUp size={16} className="text-emerald-600" /> Tren Performa Google Search Console ({getTimeLabel()})
                       </h3>
                       <p className="text-xs text-ink/60 mt-0.5">Indikator warna terpisah: Clicks (Emerald Green) vs Impressions (Sky Blue)</p>
                     </div>
@@ -706,7 +780,7 @@ export function WebAnalyticsTab() {
               <AlertCircle size={24} className="mx-auto mb-2 text-rose-500" />
               <p className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GSC</p>
               {data.error && <p className="text-xs text-rose-500 max-w-md mx-auto mt-1">{data.error}</p>}
-              <button onClick={loadData} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
+              <button onClick={() => loadData(timeFilter)} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
             </div>
           )}
         </div>
