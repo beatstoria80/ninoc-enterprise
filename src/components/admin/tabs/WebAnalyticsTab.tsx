@@ -47,13 +47,9 @@ export function WebAnalyticsTab() {
     ];
     return (
       <div className={cn(
-        "flex flex-wrap items-center justify-between gap-3 border p-2.5 rounded-xl shadow-xs transition-colors my-2",
+        "flex flex-wrap items-center gap-1.5 border p-2 rounded-xl shadow-xs transition-colors my-2",
         colorScheme === 'indigo' ? "border-indigo-200 bg-indigo-50/40" : colorScheme === 'emerald' ? "border-emerald-200 bg-emerald-50/40" : "border-purple-200 bg-purple-50/40"
       )}>
-        <div className="flex items-center gap-2 px-2">
-          <Clock size={15} className={colorScheme === 'indigo' ? 'text-indigo-600' : colorScheme === 'emerald' ? 'text-emerald-600' : 'text-purple-600'} />
-          <span className="text-xs font-extrabold text-ink uppercase tracking-wider">Parameter Waktu:</span>
-        </div>
         <div className="flex items-center gap-1.5 flex-wrap">
           {timeFilterOptions.map((opt) => {
             const isActive = timeFilter === opt.id;

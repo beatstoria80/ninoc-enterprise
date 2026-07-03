@@ -104,30 +104,14 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    const fallbackCategories = [
-      { category: 'Outerwear', views: 3420, sold: 142, revenue: 63900000, percentage: 38.5, growth: '+14.2%' },
-      { category: 'T-Shirt', views: 5120, sold: 218, revenue: 41420000, percentage: 25.0, growth: '+18.5%' },
-      { category: 'Pants & Denim', views: 2890, sold: 94, revenue: 35720000, percentage: 21.5, growth: '+8.3%' },
-      { category: 'Accessories', views: 1840, sold: 112, revenue: 24960000, percentage: 15.0, growth: '+22.1%' }
-    ];
-
-    const fallbackProducts = [
-      { id: 'prod-1', name: 'NINOC Cybernetic Varsity Jacket', category: 'Outerwear', image_url: '/placeholder.png', price: 650000, views: 1240, sold: 54, revenue: 35100000, stock: 12, conversionRate: 4.35 },
-      { id: 'prod-2', name: 'NINOC Techwear Cargo Denim', category: 'Pants & Denim', image_url: '/placeholder.png', price: 480000, views: 980, sold: 42, revenue: 20160000, stock: 8, conversionRate: 4.28 },
-      { id: 'prod-3', name: 'NINOC Oversized Graphic Tee - Obsidian', category: 'T-Shirt', image_url: '/placeholder.png', price: 195000, views: 1850, sold: 88, revenue: 17160000, stock: 24, conversionRate: 4.75 },
-      { id: 'prod-4', name: 'NINOC Windbreaker Anorak - Neo Tokyo', category: 'Outerwear', image_url: '/placeholder.png', price: 580000, views: 890, sold: 34, revenue: 19720000, stock: 4, conversionRate: 3.82 },
-      { id: 'prod-5', name: 'NINOC Tactical Chest Rig Bag', category: 'Accessories', image_url: '/placeholder.png', price: 280000, views: 760, sold: 46, revenue: 12880000, stock: 15, conversionRate: 6.05 },
-      { id: 'prod-6', name: 'NINOC Heavyweight Hoodie - Eclipse', category: 'Outerwear', image_url: '/placeholder.png', price: 495000, views: 920, sold: 32, revenue: 15840000, stock: 18, conversionRate: 3.47 },
-    ];
 
     if (!supabaseUrl || !supabaseKey) {
       return {
-        totalUnitsSold: 566,
-        totalRevenue: 166000000,
-        conversionRate: 4.26,
-        topCategories: fallbackCategories,
-        topProducts: fallbackProducts,
+        totalUnitsSold: 0,
+        totalRevenue: 0,
+        conversionRate: 0,
+        topCategories: [],
+        topProducts: [],
       };
     }
 
@@ -149,11 +133,11 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
     if (!productsData || productsData.length === 0) {
       return {
-        totalUnitsSold: 566,
-        totalRevenue: 166000000,
-        conversionRate: 4.26,
-        topCategories: fallbackCategories,
-        topProducts: fallbackProducts,
+        totalUnitsSold: 0,
+        totalRevenue: 0,
+        conversionRate: 0,
+        topCategories: [],
+        topProducts: [],
       };
     }
 
@@ -163,7 +147,7 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
       .gte('created_at', startDateObj);
 
     const validOrders = (ordersData || []).filter(o => 
-      o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered' || o.payment_status === 'success' || o.status === 'completed' || o.status === 'pending'
+      o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered' || o.payment_status === 'success' || o.status === 'completed'
     );
     const validOrderIds = validOrders.map(o => o.id);
 
@@ -186,8 +170,8 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
         (item.product_name && item.product_name.toLowerCase() === p.name?.toLowerCase())
       );
 
-      const sold = matchingItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
-      const rev = matchingItems.reduce((sum, item) => sum + ((Number(item.quantity) || 1) * (Number(item.price_at_purchase) || Number(p.price) || 0)), 0);
+      const sold = matchingItems.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+      const rev = matchingItems.reduce((sum, item) => sum + ((Number(item.quantity) || 0) * (Number(item.price_at_purchase) || Number(p.price) || 0)), 0);
 
       let views = 0;
       if (ga4TopPages && ga4TopPages.length > 0) {
@@ -198,10 +182,6 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
         if (matchPage) {
           views = matchPage.views;
         }
-      }
-
-      if (views === 0) {
-        views = Math.max(sold * 25 + Math.floor(Math.random() * 40) + 18, 25);
       }
 
       totalUnitsSold += sold;
@@ -237,11 +217,11 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
     const topCategories = Object.values(catMap).map(c => ({
       ...c,
-      percentage: totalRevenue > 0 ? (c.revenue / totalRevenue) * 100 : (c.sold > 0 ? 25 : 100 / Object.keys(catMap).length),
-      growth: '+14.5%',
+      percentage: totalRevenue > 0 ? (c.revenue / totalRevenue) * 100 : 0,
+      growth: '+0%',
     })).sort((a, b) => b.revenue - a.revenue);
 
-    const conversionRate = totalViews > 0 ? (totalUnitsSold / totalViews) * 100 : 3.85;
+    const conversionRate = totalViews > 0 ? (totalUnitsSold / totalViews) * 100 : 0;
 
     return {
       totalUnitsSold,
