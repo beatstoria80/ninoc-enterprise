@@ -125,8 +125,8 @@ export function ProductCostingTab() {
           </button>
         </div>
 
-        {/* Scrollable Container with sticky first column */}
-        <div className="overflow-x-auto">
+        {/* Scrollable Container with sticky first column & sticky header */}
+        <div className="overflow-auto max-h-[75vh] border-b border-ink/5">
           <table className="w-full min-w-[1200px] text-left">
             <thead className="bg-ink/[0.03] border-b border-ink/10 sticky top-0 z-10">
               <tr>
