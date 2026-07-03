@@ -24,6 +24,7 @@ import { InventoryTab } from '@/components/admin/tabs/InventoryTab';
 import { OrdersTab } from '@/components/admin/tabs/OrdersTab';
 import { LogisticsTab } from '@/components/admin/tabs/LogisticsTab';
 import { FinanceTab } from '@/components/admin/tabs/FinanceTab';
+import { ProductCostingTab } from '@/components/admin/tabs/ProductCostingTab';
 import PoManager from '@/components/admin/PoManager';
 import DoReceiving from '@/components/admin/DoReceiving';
 import StockLedger from '@/components/admin/StockLedger';
@@ -1116,10 +1117,11 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'report', icon: BarChart3, label: 'Finance', activeKeys: ['finance', 'accounting', 'opex'],
+      id: 'report', icon: BarChart3, label: 'Finance', activeKeys: ['finance', 'accounting', 'opex', 'product_costings'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'finance', label: 'Finance Dashboard' },
+        { id: 'product_costings', label: 'Product Costing Config' },
         { id: 'accounting', label: 'Accounting / Jurnal' },
         { id: 'opex', label: 'Opex (Biaya Operasional)' }
       ]
@@ -1597,7 +1599,7 @@ export default function AdminDashboard() {
               {['products', 'upload'].includes(activeTab) ? 'Product / ' :
                ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
                ['inventory'].includes(activeTab) ? 'Inventory / ' :
-               ['finance', 'accounting', 'opex'].includes(activeTab) ? 'Finance / ' :
+               ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance / ' :
                ['messages', 'placeholders', 'wabroadcast', 'email_broadcast'].includes(activeTab) ? 'Support / ' :
                'Dashboard / '}
             </span>
@@ -1618,6 +1620,7 @@ export default function AdminDashboard() {
                activeTab === 'stock_ledger' ? 'Kartu Stok' :
                activeTab === 'stock_opname' ? 'Stock Opname' :
                activeTab === 'finance' ? 'Finance' :
+               activeTab === 'product_costings' ? 'Product Costing Config' :
                activeTab === 'opex' ? 'Opex Tracker' :
                activeTab === 'messages' ? 'Support Chat' :
                activeTab === 'placeholders' ? 'Placeholder' :
@@ -1763,6 +1766,9 @@ export default function AdminDashboard() {
 
           {activeTab === 'finance' && (
             <FinanceDashboard />
+          )}
+          {activeTab === 'product_costings' && (
+            <ProductCostingTab />
           )}
 
           {activeTab === 'accounting' && (
