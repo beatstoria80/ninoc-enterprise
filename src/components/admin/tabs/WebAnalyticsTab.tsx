@@ -52,7 +52,7 @@ export function WebAnalyticsTab() {
       )}>
         <div className="flex items-center gap-2 px-2">
           <Clock size={15} className={colorScheme === 'indigo' ? 'text-indigo-600' : colorScheme === 'emerald' ? 'text-emerald-600' : 'text-purple-600'} />
-          <span className="text-xs font-extrabold text-ink uppercase tracking-wider">Parameter Waktu UI UX :</span>
+          <span className="text-xs font-extrabold text-ink uppercase tracking-wider">Parameter Waktu:</span>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
           {timeFilterOptions.map((opt) => {
