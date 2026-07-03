@@ -263,10 +263,17 @@ export function MarketingTab() {
         return_cost: Number(editingCostings[id].return_cost !== undefined ? editingCostings[id].return_cost : costings.find(c => c.id === id).return_cost),
       }));
 
-      for (const update of updates) {
-        const { error } = await supabase.from('product_costings').upsert(update, { onConflict: 'product_id' });
-        if (error) throw new Error(error.message);
+      const res = await fetch('/api/admin/costings/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to save costings');
       }
+
       setEditingCostings({});
       await loadData();
     } catch (err: any) {
