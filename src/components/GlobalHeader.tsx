@@ -182,9 +182,12 @@ function CartItem({
         )}
         {/* Remove button overlay */}
         <motion.button
-          onClick={onRemove}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
+          animate={{ opacity: isHovered ? 1 : 0, pointerEvents: isHovered ? 'auto' : 'none' }}
           transition={{ duration: DURATION.fast }}
           className="absolute inset-0 bg-ink/20 flex items-center justify-center"
         >
