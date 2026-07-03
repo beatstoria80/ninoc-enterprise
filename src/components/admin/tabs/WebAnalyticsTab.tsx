@@ -2,16 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor } from 'lucide-react';
+import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingBag, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { getWebAnalyticsData, type WebAnalyticsData } from '@/actions/webAnalytics';
 import { cn } from '@/lib/utils';
 
 export function WebAnalyticsTab() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<WebAnalyticsData | null>(null);
-  const [activeSection, setActiveSection] = useState<'all' | 'ga4' | 'gsc'>('all');
+  const [activeSection, setActiveSection] = useState<'all' | 'ga4' | 'gsc' | 'products'>('all');
   const [gscTableTab, setGscTableTab] = useState<'queries' | 'pages' | 'countries' | 'devices'>('queries');
   const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
+  const [ecommerceTab, setEcommerceTab] = useState<'categories' | 'products'>('categories');
+  const [productSearchQuery, setProductSearchQuery] = useState('');
 
   const getTimeLabel = () => {
     switch (timeFilter) {
@@ -35,7 +37,7 @@ export function WebAnalyticsTab() {
     }
   };
 
-  const renderTimeSelector = (colorScheme: 'indigo' | 'emerald') => {
+  const renderTimeSelector = (colorScheme: 'indigo' | 'emerald' | 'purple') => {
     const timeFilterOptions: { id: '24h' | '7d' | '28d' | '90d' | 'all'; label: string; desc: string }[] = [
       { id: '24h', label: '24 Jam', desc: '1 Hari Terakhir' },
       { id: '7d', label: '7 Hari', desc: 'Minggu Ini' },
@@ -46,10 +48,10 @@ export function WebAnalyticsTab() {
     return (
       <div className={cn(
         "flex flex-wrap items-center justify-between gap-3 border p-2.5 rounded-xl shadow-xs transition-colors my-2",
-        colorScheme === 'indigo' ? "border-indigo-200 bg-indigo-50/40" : "border-emerald-200 bg-emerald-50/40"
+        colorScheme === 'indigo' ? "border-indigo-200 bg-indigo-50/40" : colorScheme === 'emerald' ? "border-emerald-200 bg-emerald-50/40" : "border-purple-200 bg-purple-50/40"
       )}>
         <div className="flex items-center gap-2 px-2">
-          <Clock size={15} className={colorScheme === 'indigo' ? 'text-indigo-600' : 'text-emerald-600'} />
+          <Clock size={15} className={colorScheme === 'indigo' ? 'text-indigo-600' : colorScheme === 'emerald' ? 'text-emerald-600' : 'text-purple-600'} />
           <span className="text-xs font-extrabold text-ink uppercase tracking-wider">Parameter Waktu UI UX :</span>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -65,7 +67,9 @@ export function WebAnalyticsTab() {
                   isActive
                     ? colorScheme === 'indigo'
                       ? "bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-600/20"
-                      : "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-600/20"
+                      : colorScheme === 'emerald'
+                      ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-600/20"
+                      : "bg-purple-600 text-white shadow-sm ring-2 ring-purple-600/20"
                     : "bg-white border border-ink/10 text-ink/70 hover:bg-white hover:text-ink hover:border-ink/20 shadow-2xs"
                 )}
               >
@@ -176,6 +180,15 @@ export function WebAnalyticsTab() {
               )}
             >
               <Search size={13} /> GSC SEO Performance
+            </button>
+            <button
+              onClick={() => setActiveSection('products')}
+              className={cn(
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                activeSection === 'products' ? "bg-purple-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
+              )}
+            >
+              <Package size={13} /> Analitik Kategori & Produk
             </button>
           </div>
 
@@ -781,6 +794,321 @@ export function WebAnalyticsTab() {
               <p className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GSC</p>
               {data.error && <p className="text-xs text-rose-500 max-w-md mx-auto mt-1">{data.error}</p>}
               <button onClick={() => loadData(timeFilter)} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SECTION 3: E-COMMERCE PRODUCT & CATEGORY ANALYTICS */}
+      {(activeSection === 'all' || activeSection === 'products') && (
+        <div className="space-y-6 pt-4 border-t border-ink/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h2 className="text-sm font-extrabold uppercase tracking-widest text-purple-700 flex items-center gap-2 bg-purple-50/80 border border-purple-100 px-3 py-1.5 rounded-lg w-fit">
+              <Package size={16} /> E-Commerce Analytics — Penjualan Kategori & Item Produk
+            </h2>
+            <span className="text-[11px] text-ink/50 font-medium">Sinkronisasi: Supabase Orders DB + GA4 Pageviews</span>
+          </div>
+
+          {renderTimeSelector('purple')}
+
+          {data.ecommerce ? (
+            <>
+              {/* 4 KPI SUMMARY CARDS */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Total Units Sold */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-purple-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <ShoppingBag size={14} className="text-purple-600 group-hover:scale-110 transition-transform" /> Item Terjual ({getTimeLabel()})
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                    </div>
+                    <p className="text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.ecommerce.totalUnitsSold.toLocaleString()} <span className="text-sm font-sans font-normal text-ink/60">unit</span></p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Total kuantitas produk fashion yang berhasil terjual {getTimeDesc()}
+                  </p>
+                </div>
+
+                {/* Total Revenue */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <DollarSign size={14} className="text-emerald-600 group-hover:scale-110 transition-transform" /> Omzet Produk ({getTimeLabel()})
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-mono font-extrabold text-emerald-700 tracking-tight mt-1">
+                      Rp {data.ecommerce.totalRevenue.toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Total pendapatan kotor dari transaksi item produk {getTimeDesc()}
+                  </p>
+                </div>
+
+                {/* Top Category */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Award size={14} className="text-amber-600 group-hover:scale-110 transition-transform" /> Kategori Terlaris
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                    </div>
+                    <p className="text-2xl font-extrabold text-ink tracking-tight mt-1 truncate">
+                      {data.ecommerce.topCategories[0]?.category || '-'}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Kontribusi omzet: <span className="font-bold text-amber-700">{data.ecommerce.topCategories[0]?.percentage.toFixed(1)}%</span> dari total penjualan
+                  </p>
+                </div>
+
+                {/* Conversion Rate */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Zap size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Tingkat Konversi ({getTimeLabel()})
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                    </div>
+                    <p className="text-3xl font-mono font-extrabold text-indigo-700 tracking-tight mt-1">
+                      {data.ecommerce.conversionRate.toFixed(2)}%
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Persentase kunjungan halaman produk yang menghasilkan transaksi pembelian
+                  </p>
+                </div>
+              </div>
+
+              {/* TABS FOR CATEGORIES vs PRODUCTS */}
+              <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ink/10">
+                  <div>
+                    <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                      {ecommerceTab === 'categories' ? <Layers size={16} className="text-purple-600" /> : <Tag size={16} className="text-purple-600" />}
+                      {ecommerceTab === 'categories' ? 'Analitik Penjualan Per Kategori (Category Breakdown)' : 'Peringkat & Analitik Per Item Produk (Top Products)'}
+                    </h3>
+                    <p className="text-xs text-ink/60 mt-0.5">
+                      {ecommerceTab === 'categories' 
+                        ? 'Membandingkan performa trafik (views), unit terjual, omzet, dan kontribusi antar kategori produk'
+                        : 'Daftar lengkap produk dengan metrik konversi (Sold/Views), status stok, dan omzet per item'}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="flex bg-ink/5 p-1 rounded-lg border border-ink/10">
+                      <button
+                        onClick={() => setEcommerceTab('categories')}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                          ecommerceTab === 'categories' ? "bg-white text-purple-700 shadow-sm" : "text-ink/60 hover:text-ink"
+                        )}
+                      >
+                        <Layers size={13} /> Analitik Kategori
+                      </button>
+                      <button
+                        onClick={() => setEcommerceTab('products')}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                          ecommerceTab === 'products' ? "bg-white text-purple-700 shadow-sm" : "text-ink/60 hover:text-ink"
+                        )}
+                      >
+                        <Package size={13} /> Item Produk ({data.ecommerce.topProducts.length})
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {ecommerceTab === 'categories' ? (
+                  <div className="space-y-6">
+                    {/* Visual Progress Bar Share */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-ink/70">
+                        <span>Proporsi Kontribusi Omzet Per Kategori ({getTimeLabel()})</span>
+                        <span>Total: Rp {data.ecommerce.totalRevenue.toLocaleString('id-ID')}</span>
+                      </div>
+                      <div className="h-4 w-full bg-ink/5 rounded-full overflow-hidden flex gap-0.5 p-0.5 border border-ink/10">
+                        {data.ecommerce.topCategories.map((cat, idx) => {
+                          const colors = [
+                            'bg-purple-600 hover:bg-purple-500',
+                            'bg-indigo-600 hover:bg-indigo-500',
+                            'bg-emerald-600 hover:bg-emerald-500',
+                            'bg-amber-500 hover:bg-amber-400',
+                            'bg-rose-500 hover:bg-rose-400',
+                            'bg-sky-500 hover:bg-sky-400'
+                          ];
+                          const colorClass = colors[idx % colors.length];
+                          return (
+                            <div
+                              key={cat.category}
+                              style={{ width: `${Math.max(cat.percentage, 4)}%` }}
+                              className={cn("h-full rounded-sm transition-all relative group cursor-pointer", colorClass)}
+                              title={`${cat.category}: ${cat.percentage.toFixed(1)}% (Rp ${cat.revenue.toLocaleString('id-ID')})`}
+                            />
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-1">
+                        {data.ecommerce.topCategories.map((cat, idx) => {
+                          const badgeColors = [
+                            'bg-purple-600',
+                            'bg-indigo-600',
+                            'bg-emerald-600',
+                            'bg-amber-500',
+                            'bg-rose-500',
+                            'bg-sky-500'
+                          ];
+                          return (
+                            <div key={cat.category} className="flex items-center gap-1.5 text-xs">
+                              <span className={cn("w-2.5 h-2.5 rounded-full inline-block", badgeColors[idx % badgeColors.length])} />
+                              <span className="font-bold text-ink">{cat.category}:</span>
+                              <span className="text-ink/60 font-mono">{cat.percentage.toFixed(1)}%</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Table Categories */}
+                    <div className="overflow-x-auto rounded-xl border border-ink/10">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-ink/5 text-[11px] font-extrabold uppercase tracking-wider text-ink/60 border-b border-ink/10">
+                            <th className="py-3 px-4">Kategori Produk</th>
+                            <th className="py-3 px-4 text-right">Dilihat (Views)</th>
+                            <th className="py-3 px-4 text-right">Terjual (Units)</th>
+                            <th className="py-3 px-4 text-right">Total Omzet</th>
+                            <th className="py-3 px-4 text-right">Kontribusi (%)</th>
+                            <th className="py-3 px-4 text-right">Tingkat Konversi</th>
+                            <th className="py-3 px-4 text-right">Tren Penjualan</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ink/10 text-xs font-medium text-ink">
+                          {data.ecommerce.topCategories.map((cat, idx) => {
+                            const conv = cat.views > 0 ? (cat.sold / cat.views) * 100 : 0;
+                            return (
+                              <tr key={cat.category} className="hover:bg-purple-50/30 transition-colors">
+                                <td className="py-3 px-4 font-bold flex items-center gap-2">
+                                  <span className="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 font-mono font-bold flex items-center justify-center text-[11px]">
+                                    {idx + 1}
+                                  </span>
+                                  <span className="text-sm">{cat.category}</span>
+                                </td>
+                                <td className="py-3 px-4 text-right font-mono text-ink/80">{cat.views.toLocaleString()}</td>
+                                <td className="py-3 px-4 text-right font-mono font-bold text-purple-700">{cat.sold.toLocaleString()}</td>
+                                <td className="py-3 px-4 text-right font-mono font-extrabold text-emerald-700">Rp {cat.revenue.toLocaleString('id-ID')}</td>
+                                <td className="py-3 px-4 text-right font-mono">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <div className="w-16 bg-ink/10 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                      <div className="bg-purple-600 h-full rounded-full" style={{ width: `${Math.min(cat.percentage, 100)}%` }} />
+                                    </div>
+                                    <span className="font-bold">{cat.percentage.toFixed(1)}%</span>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4 text-right font-mono">
+                                  <span className={cn("px-2 py-0.5 rounded-md font-bold text-[11px]", conv >= 4 ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-indigo-50 text-indigo-700 border border-indigo-200")}>
+                                    {conv.toFixed(2)}%
+                                  </span>
+                                </td>
+                                <td className="py-3 px-4 text-right">
+                                  <span className="inline-flex items-center gap-1 font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-[11px]">
+                                    <ArrowUpRight size={12} /> {cat.growth}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Search inside product analytics */}
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <div className="relative w-full sm:w-72">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
+                        <input
+                          type="text"
+                          placeholder="Cari nama produk atau kategori..."
+                          value={productSearchQuery}
+                          onChange={(e) => setProductSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 bg-white border border-ink/15 rounded-lg text-xs focus:outline-none focus:border-purple-600 transition-colors shadow-2xs font-medium"
+                        />
+                      </div>
+                      <div className="text-xs text-ink/60 font-medium">
+                        Menampilkan <span className="font-bold text-ink">{data.ecommerce.topProducts.filter(p => p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || p.category.toLowerCase().includes(productSearchQuery.toLowerCase())).length}</span> item produk
+                      </div>
+                    </div>
+
+                    {/* Table Products */}
+                    <div className="overflow-x-auto rounded-xl border border-ink/10 max-h-[500px] minimal-scroll">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 bg-white z-10 shadow-xs">
+                          <tr className="bg-ink/5 text-[11px] font-extrabold uppercase tracking-wider text-ink/60 border-b border-ink/10">
+                            <th className="py-3 px-4">Item Produk</th>
+                            <th className="py-3 px-4">Kategori</th>
+                            <th className="py-3 px-4 text-right">Harga Satuan</th>
+                            <th className="py-3 px-4 text-right">Dilihat (Views)</th>
+                            <th className="py-3 px-4 text-right">Terjual (Units)</th>
+                            <th className="py-3 px-4 text-right">Total Omzet</th>
+                            <th className="py-3 px-4 text-center">Sisa Stok</th>
+                            <th className="py-3 px-4 text-right">Tingkat Konversi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ink/10 text-xs font-medium text-ink">
+                          {data.ecommerce.topProducts
+                            .filter(p => p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || p.category.toLowerCase().includes(productSearchQuery.toLowerCase()))
+                            .map((prod, idx) => (
+                            <tr key={prod.id} className="hover:bg-purple-50/30 transition-colors">
+                              <td className="py-3 px-4 font-bold flex items-center gap-3">
+                                <span className="w-5 h-5 rounded bg-ink/5 text-ink/60 font-mono font-bold flex items-center justify-center text-[10px] shrink-0">
+                                  {idx + 1}
+                                </span>
+                                <div className="truncate max-w-[220px] sm:max-w-[300px]" title={prod.name}>
+                                  <p className="text-xs font-extrabold text-ink truncate">{prod.name}</p>
+                                  <p className="text-[10px] text-ink/40 font-normal">ID: {prod.id.slice(0, 8)}</p>
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold text-[10px] border border-purple-200 uppercase tracking-wider">
+                                  {prod.category}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right font-mono text-ink/70">Rp {prod.price.toLocaleString('id-ID')}</td>
+                              <td className="py-3 px-4 text-right font-mono text-ink/80">{prod.views.toLocaleString()}</td>
+                              <td className="py-3 px-4 text-right font-mono font-bold text-purple-700">{prod.sold.toLocaleString()}</td>
+                              <td className="py-3 px-4 text-right font-mono font-extrabold text-emerald-700">Rp {prod.revenue.toLocaleString('id-ID')}</td>
+                              <td className="py-3 px-4 text-center">
+                                <span className={cn("px-2 py-0.5 rounded-full font-mono font-bold text-[10px]", prod.stock < 5 ? "bg-rose-100 text-rose-700" : prod.stock < 15 ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800")}>
+                                  {prod.stock} unit
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right font-mono">
+                                <span className={cn("px-2 py-0.5 rounded-md font-bold text-[11px]", prod.conversionRate >= 4.5 ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : prod.conversionRate >= 3.0 ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "bg-ink/5 text-ink/70")}>
+                                  {prod.conversionRate.toFixed(2)}%
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="bg-purple-50 rounded-xl p-8 text-center border border-dashed border-purple-200">
+              <AlertCircle size={24} className="mx-auto mb-2 text-purple-500" />
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-700 mb-1">Gagal Memuat Analitik Produk</p>
+              <button onClick={() => loadData(timeFilter)} className="mt-4 text-xs font-bold uppercase tracking-widest text-purple-700 border border-purple-300 bg-white rounded-lg px-4 py-2 hover:bg-purple-100 transition-colors shadow-sm">Coba Lagi</button>
             </div>
           )}
         </div>
