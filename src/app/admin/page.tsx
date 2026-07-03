@@ -2807,13 +2807,13 @@ export default function AdminDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3"
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl"
+              className="w-full max-w-lg my-auto bg-white rounded-2xl flex flex-col max-h-[90vh]"
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-100 flex items-center justify-between">
@@ -2826,7 +2826,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <div className="p-3 space-y-5">
+              <div className="p-3 space-y-5 overflow-y-auto flex-1">
                 {/* Cost Components */}
                 <div className="space-y-3">
                   <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
@@ -2927,12 +2927,12 @@ export default function AdminDashboard() {
                     const baseCost = costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost;
                     const withOpr = baseCost * (1 + costingForm.operasional_pct / 100);
                     const withTax = withOpr * (1 + costingForm.tax_rate / 100);
-                    const { error } = await supabase.from('product_costing').upsert({
+                    const { error } = await supabase.from('product_costings').upsert({
                       product_id: selectedProductForCosting!.id,
                       supplier_cost: costingForm.supplier_cost,
                       shipping_cost: costingForm.shipping_cost,
                       packaging_cost: costingForm.packaging_cost,
-                      operasional_pct: costingForm.operasional_pct,
+                      operational_pct: costingForm.operasional_pct,
                       tax_rate: costingForm.tax_rate,
                       courier_regency_cost: costingForm.courier_regency_cost,
                       courier_inter_regency_cost: costingForm.courier_inter_regency_cost,
@@ -2940,8 +2940,11 @@ export default function AdminDashboard() {
                       courier_instant_cost: costingForm.courier_instant_cost,
                       target_margin_pct: costingForm.target_margin_pct,
                       selling_price: costingForm.selling_price
-                    });
-                    if (!error) {
+                    }, { onConflict: 'product_id' });
+                    if (error) {
+                      showToast(`Gagal menyimpan costing: ${error.message}`, 'error');
+                    } else {
+                      showToast('Product costing berhasil disimpan!', 'success');
                       await fetchFinancialData();
                       setIsCostingModalOpen(false);
                     }
