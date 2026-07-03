@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       .from('products')
       .select(`
         id, price, name, supplier_id,
-        product_costings ( supplier_base_price, ninoc_markup ),
+        product_costings ( supplier_base_price, supplier_surcharge_cost, ninoc_markup ),
         variants ( id, size, color )
       `)
       .in('id', productIds);
