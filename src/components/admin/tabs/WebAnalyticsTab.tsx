@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointerClick, Search, Target, AlertTriangle, AlertCircle, RefreshCw } from 'lucide-react';
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, ArrowUpRight } from 'lucide-react';
 import { getWebAnalyticsData, type WebAnalyticsData } from '@/actions/webAnalytics';
 import { cn } from '@/lib/utils';
 
 export function WebAnalyticsTab() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<WebAnalyticsData | null>(null);
+  const [activeSection, setActiveSection] = useState<'all' | 'ga4' | 'gsc'>('all');
+  const [gscTableTab, setGscTableTab] = useState<'queries' | 'pages'>('queries');
 
   const loadData = async () => {
     try {
@@ -29,9 +31,10 @@ export function WebAnalyticsTab() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 opacity-50">
-        <Activity className="w-8 h-8 animate-pulse text-ink mb-4" />
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-ink">Mengambil Data Google Analytics & Search Console...</p>
+      <div className="flex flex-col items-center justify-center py-24 opacity-70">
+        <Activity className="w-10 h-10 animate-pulse text-indigo-600 mb-4" />
+        <p className="text-xs uppercase tracking-widest font-bold text-ink/80">Sinkronisasi Data Google Analytics & Search Console...</p>
+        <p className="text-[11px] text-ink/50 mt-1">Memuat metrik pengunjung real-time, performa SEO, dan tren 30 hari</p>
       </div>
     );
   }
@@ -40,11 +43,11 @@ export function WebAnalyticsTab() {
 
   if (!data.configured) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-20 bg-ink/[0.02] border border-dashed border-ink/20 rounded-xl p-8">
         <AlertTriangle className="w-12 h-12 text-rose mb-4" />
         <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Web Analytics Belum Dikonfigurasi</h2>
         <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
-          Kredensial <strong>Google Service Account</strong> tidak ditemukan di server. Untuk menampilkan grafik pengunjung (GA4) dan data SEO (GSC) di dasbor ini, tambahkan kredensial di <code>.env.local</code>.
+          Kredensial <strong>Google Service Account</strong> tidak ditemukan di server. Untuk menampilkan grafik pengunjung (GA4) dan data SEO (GSC) di dasbor ini, tambahkan kredensial di <code>.env.local</code> atau Vercel Environment Variables.
         </p>
         <div className="bg-ink/5 p-4 rounded-md w-full max-w-2xl text-left font-mono text-[11px] text-ink/80 space-y-1">
           <p>GOOGLE_SERVICE_ACCOUNT_EMAIL=namarobot@project-id.iam.gserviceaccount.com</p>
@@ -57,178 +60,474 @@ export function WebAnalyticsTab() {
   }
 
   return (
-    <div className="space-y-6 w-full pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-4">
+    <div className="space-y-8 w-full pb-24">
+      {/* HEADER & FILTER TABS */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
-          <h1 className="text-xl font-medium tracking-tight text-ink flex items-center gap-2">
-            <Activity className="w-5 h-5 text-indigo-600" />
-            Website Analytics (GA4 & GSC)
-          </h1>
-          <p className="text-xs md:text-sm text-ink/80 mt-1">
-            Data pengunjung real-time dari Google Analytics 4 dan Google Search Console (30 Hari Terakhir).
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center justify-center p-1.5 bg-indigo-50 text-indigo-600 rounded-md">
+              <BarChart2 className="w-5 h-5" />
+            </span>
+            <h1 className="text-xl font-bold tracking-tight text-ink">
+              Website Analytics & SEO Dashboard
+            </h1>
+          </div>
+          <p className="text-xs md:text-sm text-ink/70">
+            Pantau trafik real-time, perilaku pengunjung (GA4), serta peringkat kata kunci organik Google Search Console (30 Hari Terakhir).
           </p>
         </div>
-        <button onClick={loadData} className="bg-white border border-ink/10 text-ink/80 hover:text-ink px-3 py-1.5 rounded-sm flex items-center gap-2 text-xs font-medium uppercase tracking-widest transition-colors shadow-sm w-fit">
-          <RefreshCw size={14} /> Sinkronisasi
-        </button>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Section Selector */}
+          <div className="bg-ink/5 p-1 rounded-lg flex items-center border border-ink/10 text-xs font-semibold">
+            <button
+              onClick={() => setActiveSection('all')}
+              className={cn(
+                "px-3 py-1.5 rounded-md transition-all duration-200",
+                activeSection === 'all' ? "bg-white text-ink shadow-sm" : "text-ink/60 hover:text-ink"
+              )}
+            >
+              Semua Overview
+            </button>
+            <button
+              onClick={() => setActiveSection('ga4')}
+              className={cn(
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                activeSection === 'ga4' ? "bg-indigo-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
+              )}
+            >
+              <Users size={13} /> GA4 Traffic
+            </button>
+            <button
+              onClick={() => setActiveSection('gsc')}
+              className={cn(
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                activeSection === 'gsc' ? "bg-emerald-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
+              )}
+            >
+              <Search size={13} /> GSC SEO
+            </button>
+          </div>
+
+          <button 
+            onClick={loadData} 
+            className="bg-white border border-ink/15 text-ink/80 hover:text-ink hover:border-ink/30 px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sinkronisasi
+          </button>
+        </div>
       </div>
 
       {data.error && (
-        <div className="bg-rose/10 border border-rose/30 text-rose p-3 rounded-md flex items-start gap-2">
-          <AlertCircle size={16} className="mt-0.5" />
-          <div>
-            <p className="text-sm font-bold">Terjadi kesalahan koneksi API</p>
-            <p className="text-xs mt-0.5">{data.error}</p>
+        <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <AlertCircle size={20} className="text-rose-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-bold">Peringatan Koneksi API Analytics</p>
+            <p className="text-xs text-rose-700 leading-relaxed">{data.error}</p>
+            <p className="text-[11px] text-rose-600 font-medium">Beberapa data mungkin tidak tampil maksimal. Pastikan Service Account memiliki akses &apos;Viewer&apos; di Google Analytics dan Google Search Console.</p>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* GA4 SECTION */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-700 flex items-center gap-2">
-            <Users size={16} /> Google Analytics 4
-          </h2>
-          
+      {/* SECTION 1: GOOGLE ANALYTICS 4 */}
+      {(activeSection === 'all' || activeSection === 'ga4') && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-widest text-indigo-700 flex items-center gap-2 bg-indigo-50/80 border border-indigo-100 px-3 py-1.5 rounded-lg w-fit">
+              <Users size={16} /> Google Analytics 4 — Perilaku & Trafik Pengunjung
+            </h2>
+            <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">Diperbarui secara real-time dari GA4 Property ID: {process.env.NEXT_PUBLIC_GA4_ID || 'Active'}</span>
+          </div>
+
           {data.ga4 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div className="bg-indigo-600 border border-indigo-700 rounded-md p-3 shadow-md relative overflow-hidden">
-                  <div className="absolute top-3 right-3">
-                    <span className="flex h-3 w-3 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+              {/* 5 SUMMARY CARDS FULL WIDTH */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                {/* Card 1: Real-time */}
+                <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 border border-indigo-800 rounded-xl p-4 shadow-md relative overflow-hidden text-white group hover:shadow-lg transition-all duration-200">
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                     </span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-200">Live</span>
                   </div>
-                  <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-1">Real-Time (30 Min)</p>
-                  <p className="text-2xl font-mono font-bold text-white">{data.ga4.realtimeVisitors.toLocaleString()}</p>
-                  <p className="text-[9px] text-white/50 mt-1 leading-tight">Pengunjung aktif di web saat ini (30 menit terakhir)</p>
+                  <p className="text-[11px] font-bold text-indigo-100 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <Activity size={14} className="text-indigo-200" /> Real-Time (30 Min)
+                  </p>
+                  <p className="text-3xl font-mono font-extrabold tracking-tight mt-2">{data.ga4.realtimeVisitors.toLocaleString()}</p>
+                  <p className="text-[11px] text-indigo-100/80 mt-2 font-medium leading-tight border-t border-white/10 pt-2">
+                    Pengunjung yang sedang aktif menjelajahi web saat ini
+                  </p>
                 </div>
-                <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Pengguna (30 Hari)</p>
-                  <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.visitors.toLocaleString()}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Total pengunjung unik dalam 30 hari terakhir</p>
+
+                {/* Card 2: Visitors */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Users size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Pengguna (30 Hari)
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.visitors.toLocaleString()}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Total pengunjung unik (Unique Users) dalam 30 hari terakhir
+                  </p>
                 </div>
-                <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Pageviews</p>
-                  <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.pageviews.toLocaleString()}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Total halaman yang dibuka oleh seluruh pengunjung</p>
+
+                {/* Card 3: Pageviews */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Eye size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Pageviews
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.pageviews.toLocaleString()}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Total halaman yang dibuka oleh seluruh pengunjung
+                  </p>
                 </div>
-                <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Total Sesi</p>
-                  <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.sessions.toLocaleString()}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Jumlah kunjungan aktif ke website</p>
+
+                {/* Card 4: Sessions */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Layers size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Total Sesi
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.sessions.toLocaleString()}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Jumlah kunjungan aktif dari awal buka sampai selesai
+                  </p>
                 </div>
-                <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Durasi Rata-rata</p>
-                  <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.avgSessionDuration}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Rata-rata waktu pengunjung menelusuri web</p>
+
+                {/* Card 5: Duration */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between col-span-2 sm:col-span-1">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Clock size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Durasi Rata-rata
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.avgSessionDuration}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Rata-rata durasi waktu pengunjung berada di dalam website
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white border border-ink/10 rounded-md p-4 shadow-sm h-[300px]">
-                <p className="text-xs font-semibold text-ink/60 uppercase tracking-widest mb-4">Tren Pengunjung (30 Hari)</p>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.ga4.trend} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#4338ca" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#4338ca" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#666' }} tickLine={false} axisLine={false} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
-                    <YAxis tick={{ fontSize: 10, fill: '#666' }} tickLine={false} axisLine={false} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '4px', fontSize: '12px' }}
-                      labelStyle={{ fontWeight: 'bold', color: '#333' }}
-                    />
-                    <Area type="monotone" dataKey="visitors" stroke="#4338ca" strokeWidth={2} fillOpacity={1} fill="url(#colorVis)" name="Pengunjung Aktif" />
-                  </AreaChart>
-                </ResponsiveContainer>
+              {/* GA4 CHART & TOP PAGES GRID */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Chart 2/3 width */}
+                <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                      <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                        <TrendingUp size={16} className="text-indigo-600" /> Tren Pengunjung & Pageviews (30 Hari)
+                      </h3>
+                      <p className="text-xs text-ink/60 mt-0.5">Perbandingan fluktuasi pengunjung harian dan total halaman dilihat</p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs font-semibold">
+                      <span className="flex items-center gap-1.5 text-indigo-700">
+                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Pengunjung Aktif
+                      </span>
+                      <span className="flex items-center gap-1.5 text-purple-600">
+                        <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Pageviews
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="h-[320px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={data.ga4.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.35}/>
+                            <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.0}/>
+                          </linearGradient>
+                          <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.25}/>
+                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                        <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                          labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                          formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'visitors' ? 'Pengunjung Aktif' : 'Pageviews']}
+                        />
+                        <Area type="monotone" dataKey="visitors" stroke="#4f46e5" strokeWidth={2.5} fillOpacity={1} fill="url(#colorVis)" name="visitors" />
+                        <Area type="monotone" dataKey="pageviews" stroke="#a855f7" strokeWidth={2} fillOpacity={1} fill="url(#colorPv)" name="pageviews" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Top Pages 1/3 width */}
+                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                  <div className="p-4 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
+                        <FileText size={14} className="text-indigo-600" /> Halaman Terpopuler
+                      </h3>
+                      <p className="text-[11px] text-ink/60 mt-0.5">Top halaman berdasarkan views</p>
+                    </div>
+                  </div>
+                  
+                  <div className="overflow-y-auto max-h-[350px] divide-y divide-ink/5">
+                    {!data.ga4.topPages || data.ga4.topPages.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-ink/50">Belum ada data halaman</div>
+                    ) : (
+                      data.ga4.topPages.map((page, idx) => (
+                        <div key={idx} className="p-3 hover:bg-indigo-50/40 transition-colors flex items-center justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-semibold text-ink truncate" title={page.title}>{page.title || page.path}</p>
+                            <p className="text-[10px] text-ink/50 font-mono truncate">{page.path}</p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="text-xs font-mono font-bold text-indigo-700">{page.views.toLocaleString()}</p>
+                            <p className="text-[9px] text-ink/50 uppercase">views</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </>
           ) : (
-            <div className="bg-rose-50 rounded-md p-6 text-center border border-dashed border-rose-200">
-              <AlertCircle size={20} className="mx-auto mb-2 text-rose-500" />
-              <p className="text-xs font-semibold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GA4</p>
-              {data.error && <p className="text-[11px] text-rose-500/80 mt-1">{data.error}</p>}
-              <button onClick={loadData} className="mt-3 text-[10px] uppercase tracking-widest font-bold text-rose-600 border border-rose-300 rounded px-3 py-1 hover:bg-rose-100 transition-colors">Coba Lagi</button>
+            <div className="bg-rose-50 rounded-xl p-8 text-center border border-dashed border-rose-200">
+              <AlertCircle size={24} className="mx-auto mb-2 text-rose-500" />
+              <p className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GA4</p>
+              {data.error && <p className="text-xs text-rose-500 max-w-md mx-auto mt-1">{data.error}</p>}
+              <button onClick={loadData} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
             </div>
           )}
         </div>
+      )}
 
-        {/* GSC SECTION */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-700 flex items-center gap-2">
-            <Search size={16} /> Google Search Console
-          </h2>
-          
+      {/* DIVIDER if showing all */}
+      {activeSection === 'all' && <hr className="border-ink/10 my-8" />}
+
+      {/* SECTION 2: GOOGLE SEARCH CONSOLE */}
+      {(activeSection === 'all' || activeSection === 'gsc') && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold uppercase tracking-widest text-emerald-700 flex items-center gap-2 bg-emerald-50/80 border border-emerald-100 px-3 py-1.5 rounded-lg w-fit">
+              <Search size={16} /> Google Search Console — Performa Kata Kunci & Peringkat Organik
+            </h2>
+            <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">Domain: {process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store/'}</span>
+          </div>
+
           {data.gsc ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Total Clicks</p>
-                  <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.clicks.toLocaleString()}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Klik dari hasil pencarian Google</p>
+              {/* 4 SUMMARY CARDS FULL WIDTH */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Clicks */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <MousePointerClick size={14} className="text-emerald-600 group-hover:scale-110 transition-transform" /> Total Clicks
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </div>
+                    <p className="text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.gsc.clicks.toLocaleString()}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Total klik dari hasil pencarian organik Google (Organic Traffic)
+                  </p>
                 </div>
-                <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Impressions</p>
-                  <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.impressions.toLocaleString()}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Berapa kali web muncul di pencarian Google</p>
+
+                {/* Impressions */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Eye size={14} className="text-teal-600 group-hover:scale-110 transition-transform" /> Total Impressions
+                      </p>
+                      <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                    </div>
+                    <p className="text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.gsc.impressions.toLocaleString()}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Berapa kali website NINOC muncul di layar pencarian Google
+                  </p>
                 </div>
-                <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">CTR Rata-rata</p>
-                  <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.ctr.toFixed(2)}%</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Rasio klik setelah melihat link Anda</p>
+
+                {/* CTR */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <TrendingUp size={14} className="text-emerald-600 group-hover:scale-110 transition-transform" /> CTR Rata-rata
+                    </p>
+                    <p className="text-3xl font-mono font-extrabold text-emerald-700 tracking-tight mt-1">{data.gsc.ctr.toFixed(2)}%</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Persentase rasio klik dibagi impresi (Click-Through Rate)
+                  </p>
                 </div>
-                <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
-                  <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1">Posisi Rata-rata</p>
-                  <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.position.toFixed(1)}</p>
-                  <p className="text-[9px] text-ink/40 mt-1 leading-tight">Peringkat rata-rata di Google (1 = paling atas)</p>
+
+                {/* Position */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Globe size={14} className="text-teal-600 group-hover:scale-110 transition-transform" /> Posisi Rata-rata
+                    </p>
+                    <p className="text-3xl font-mono font-extrabold text-teal-700 tracking-tight mt-1">{data.gsc.position.toFixed(1)}</p>
+                  </div>
+                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
+                    Peringkat rata-rata di halaman pencarian Google (1 = Paling Atas)
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white border border-ink/10 rounded-md overflow-hidden shadow-sm">
-                <div className="p-3 border-b border-ink/10 bg-ink/[0.015]">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-ink/70">Top Search Queries (30 Hari)</h3>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-ink/10 bg-white">
-                        <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider">Kata Kunci (Query)</th>
-                        <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Clicks</th>
-                        <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Impressions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-ink/5">
-                      {data.gsc.topQueries.length === 0 ? (
-                        <tr><td colSpan={3} className="px-3 py-6 text-center text-xs text-ink/50">Tidak ada data pencarian yang cukup</td></tr>
+              {/* GSC CHART & DETAILED TABLES */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* GSC Chart 2/3 width */}
+                <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                      <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                        <TrendingUp size={16} className="text-emerald-600" /> Tren Performa Google Search Console (30 Hari)
+                      </h3>
+                      <p className="text-xs text-ink/60 mt-0.5">Pertumbuhan grafik klik organik dan penayangan pencarian (Impressions)</p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs font-semibold">
+                      <span className="flex items-center gap-1.5 text-emerald-700">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span> Clicks
+                      </span>
+                      <span className="flex items-center gap-1.5 text-teal-600">
+                        <span className="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> Impressions
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="h-[340px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      {data.gsc.trend && data.gsc.trend.length > 0 ? (
+                        <AreaChart data={data.gsc.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#059669" stopOpacity={0.35}/>
+                              <stop offset="95%" stopColor="#059669" stopOpacity={0.0}/>
+                            </linearGradient>
+                            <linearGradient id="colorImp" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#0d9488" stopOpacity={0.25}/>
+                              <stop offset="95%" stopColor="#0d9488" stopOpacity={0.0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                          <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                            labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                            formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'clicks' ? 'Total Clicks' : 'Impressions']}
+                          />
+                          <Area type="monotone" dataKey="clicks" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#colorClicks)" name="clicks" />
+                          <Area type="monotone" dataKey="impressions" stroke="#0d9488" strokeWidth={2} fillOpacity={1} fill="url(#colorImp)" name="impressions" />
+                        </AreaChart>
                       ) : (
-                        data.gsc.topQueries.map((q, i) => (
-                          <tr key={i} className="hover:bg-ink/[0.01]">
-                            <td className="px-3 py-2 text-xs font-semibold text-ink">{q.query}</td>
-                            <td className="px-3 py-2 text-xs font-mono text-emerald-600 font-bold text-right">{q.clicks.toLocaleString()}</td>
-                            <td className="px-3 py-2 text-xs font-mono text-ink/60 text-right">{q.impressions.toLocaleString()}</td>
-                          </tr>
-                        ))
+                        <div className="h-full flex items-center justify-center text-xs text-ink/50 bg-ink/[0.01] rounded-lg border border-dashed border-ink/10">
+                          Grafik tren GSC belum tersedia untuk periode ini
+                        </div>
                       )}
-                    </tbody>
-                  </table>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Tabbed Table: Top Queries / Top Landing Pages */}
+                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                    <div className="flex items-center gap-1 bg-ink/5 p-1 rounded-lg text-[11px] font-bold">
+                      <button
+                        onClick={() => setGscTableTab('queries')}
+                        className={cn(
+                          "px-2.5 py-1 rounded transition-all",
+                          gscTableTab === 'queries' ? "bg-white text-emerald-700 shadow-sm" : "text-ink/60 hover:text-ink"
+                        )}
+                      >
+                        Kata Kunci (Queries)
+                      </button>
+                      <button
+                        onClick={() => setGscTableTab('pages')}
+                        className={cn(
+                          "px-2.5 py-1 rounded transition-all",
+                          gscTableTab === 'pages' ? "bg-white text-emerald-700 shadow-sm" : "text-ink/60 hover:text-ink"
+                        )}
+                      >
+                        Halaman (Pages)
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto flex-1 max-h-[350px]">
+                    {gscTableTab === 'queries' ? (
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-ink/10 bg-white sticky top-0 z-10">
+                            <th className="px-3.5 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider">Top Queries</th>
+                            <th className="px-2 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider text-right">Clicks</th>
+                            <th className="px-2 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider text-right">Impr</th>
+                            <th className="px-3.5 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider text-right">CTR</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ink/5">
+                          {data.gsc.topQueries.length === 0 ? (
+                            <tr><td colSpan={4} className="px-4 py-8 text-center text-xs text-ink/50">Belum ada kata kunci terindeks</td></tr>
+                          ) : (
+                            data.gsc.topQueries.map((q, i) => (
+                              <tr key={i} className="hover:bg-emerald-50/30 transition-colors">
+                                <td className="px-3.5 py-2.5 text-xs font-semibold text-ink truncate max-w-[140px]" title={q.query}>{q.query}</td>
+                                <td className="px-2 py-2.5 text-xs font-mono text-emerald-600 font-extrabold text-right">{q.clicks.toLocaleString()}</td>
+                                <td className="px-2 py-2.5 text-xs font-mono text-ink/60 text-right">{q.impressions.toLocaleString()}</td>
+                                <td className="px-3.5 py-2.5 text-xs font-mono text-ink/70 text-right font-medium">{q.ctr !== undefined ? `${q.ctr.toFixed(1)}%` : '-'}</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-ink/10 bg-white sticky top-0 z-10">
+                            <th className="px-3.5 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider">Top Landing URL</th>
+                            <th className="px-2 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider text-right">Clicks</th>
+                            <th className="px-3.5 py-2.5 text-[10px] font-extrabold text-ink/60 uppercase tracking-wider text-right">CTR</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ink/5">
+                          {!data.gsc.topPages || data.gsc.topPages.length === 0 ? (
+                            <tr><td colSpan={3} className="px-4 py-8 text-center text-xs text-ink/50">Belum ada halaman terindeks</td></tr>
+                          ) : (
+                            data.gsc.topPages.map((p, i) => (
+                              <tr key={i} className="hover:bg-emerald-50/30 transition-colors">
+                                <td className="px-3.5 py-2.5 text-xs font-semibold text-ink truncate max-w-[170px]" title={p.page}>
+                                  <span className="text-emerald-700">{p.page}</span>
+                                </td>
+                                <td className="px-2 py-2.5 text-xs font-mono text-emerald-600 font-extrabold text-right">{p.clicks.toLocaleString()}</td>
+                                <td className="px-3.5 py-2.5 text-xs font-mono text-ink/70 text-right font-medium">{p.ctr.toFixed(1)}%</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
                 </div>
               </div>
             </>
           ) : (
-             <div className="bg-rose-50 rounded-md p-6 text-center border border-dashed border-rose-200">
-              <AlertCircle size={20} className="mx-auto mb-2 text-rose-500" />
-              <p className="text-xs font-semibold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GSC</p>
-              {data.error && <p className="text-[11px] text-rose-500/80 mt-1">{data.error}</p>}
-              <button onClick={loadData} className="mt-3 text-[10px] uppercase tracking-widest font-bold text-rose-600 border border-rose-300 rounded px-3 py-1 hover:bg-rose-100 transition-colors">Coba Lagi</button>
+            <div className="bg-rose-50 rounded-xl p-8 text-center border border-dashed border-rose-200">
+              <AlertCircle size={24} className="mx-auto mb-2 text-rose-500" />
+              <p className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GSC</p>
+              {data.error && <p className="text-xs text-rose-500 max-w-md mx-auto mt-1">{data.error}</p>}
+              <button onClick={loadData} className="mt-4 text-xs font-bold uppercase tracking-widest text-rose-600 border border-rose-300 bg-white rounded-lg px-4 py-2 hover:bg-rose-100 transition-colors shadow-sm">Coba Lagi</button>
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

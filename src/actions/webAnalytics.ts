@@ -11,13 +11,16 @@ export type WebAnalyticsData = {
     sessions: number;
     avgSessionDuration: string;
     trend: { date: string; visitors: number; pageviews: number }[];
+    topPages?: { path: string; title: string; views: number; users: number }[];
   } | null;
   gsc: {
     clicks: number;
     impressions: number;
     ctr: number;
     position: number;
-    topQueries: { query: string; clicks: number; impressions: number }[];
+    topQueries: { query: string; clicks: number; impressions: number; ctr?: number; position?: number }[];
+    trend?: { date: string; clicks: number; impressions: number; ctr: number; position: number }[];
+    topPages?: { page: string; clicks: number; impressions: number; ctr: number; position: number }[];
   } | null;
   error?: string;
 };
@@ -150,6 +153,36 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         throw new Error(e.message || "Failed to fetch realtime data");
       }
 
+      // Top Pages
+      let topPages: { path: string; title: string; views: number; users: number }[] = [];
+      try {
+        const gaPagesRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
+            metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+            orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+            limit: 8
+          })
+        });
+        const gaPagesData = await gaPagesRes.json();
+        if (!gaPagesData.error && gaPagesData.rows) {
+          topPages = gaPagesData.rows.map((row: any) => ({
+            path: row.dimensionValues?.[0]?.value || '/',
+            title: row.dimensionValues?.[1]?.value || 'Page',
+            views: parseInt(row.metricValues?.[0]?.value || '0', 10),
+            users: parseInt(row.metricValues?.[1]?.value || '0', 10),
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GA4 top pages', e);
+      }
+
       ga4Data = {
         realtimeVisitors,
         visitors: parseInt(gaData.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
@@ -157,6 +190,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         sessions: parseInt(gaData.rows?.[0]?.metricValues?.[2]?.value || '0', 10),
         avgSessionDuration: parseFloat(gaData.rows?.[0]?.metricValues?.[3]?.value || '0').toFixed(2) + 's',
         trend,
+        topPages,
       };
     }
 
@@ -195,7 +229,7 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
           startDate: formatDate(thirtyDaysAgo),
           endDate: formatDate(today),
           dimensions: ['query'],
-          rowLimit: 5
+          rowLimit: 10
         })
       });
       const gscQueriesData = await gscQueriesRes.json();
@@ -203,11 +237,81 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         throw new Error(`GSC Queries API Error: ${gscQueriesData.error.message || gscQueriesData.error.status}`);
       }
 
+      // GSC Daily Trend
+      let trend: { date: string; clicks: number; impressions: number; ctr: number; position: number }[] = [];
+      try {
+        const gscTrendRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startDate: formatDate(thirtyDaysAgo),
+            endDate: formatDate(today),
+            dimensions: ['date']
+          })
+        });
+        const gscTrendData = await gscTrendRes.json();
+        if (!gscTrendData.error && gscTrendData.rows) {
+          trend = gscTrendData.rows.map((row: any) => ({
+            date: row.keys?.[0] || '',
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: (row.ctr || 0) * 100,
+            position: row.position || 0,
+          })).sort((a: any, b: any) => a.date.localeCompare(b.date));
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GSC trend', e);
+      }
+
+      // GSC Top Landing Pages
+      let topPages: { page: string; clicks: number; impressions: number; ctr: number; position: number }[] = [];
+      try {
+        const gscPagesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startDate: formatDate(thirtyDaysAgo),
+            endDate: formatDate(today),
+            dimensions: ['page'],
+            rowLimit: 8
+          })
+        });
+        const gscPagesData = await gscPagesRes.json();
+        if (!gscPagesData.error && gscPagesData.rows) {
+          topPages = gscPagesData.rows.map((row: any) => {
+            let pageUrl = row.keys?.[0] || '/';
+            if (pageUrl.startsWith('http')) {
+              try {
+                const u = new URL(pageUrl);
+                pageUrl = u.pathname + u.search;
+              } catch {}
+            }
+            return {
+              page: pageUrl,
+              clicks: row.clicks || 0,
+              impressions: row.impressions || 0,
+              ctr: (row.ctr || 0) * 100,
+              position: row.position || 0,
+            };
+          });
+        }
+      } catch (e) {
+        console.warn('Failed to fetch GSC top pages', e);
+      }
+
       const totals = gscTotalData.rows?.[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       const topQueries = (gscQueriesData.rows || []).map((row: any) => ({
         query: row.keys?.[0] || 'Unknown',
         clicks: row.clicks || 0,
         impressions: row.impressions || 0,
+        ctr: (row.ctr || 0) * 100,
+        position: row.position || 0,
       }));
 
       gscData = {
@@ -216,6 +320,8 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         ctr: (totals.ctr || 0) * 100,
         position: totals.position || 0,
         topQueries,
+        trend,
+        topPages,
       };
     }
 
