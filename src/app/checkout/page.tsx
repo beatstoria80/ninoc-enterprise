@@ -705,6 +705,15 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Payment token not received from server');
       }
 
+      // MOBILE FIX: Use native redirect instead of snap.pay iframe to avoid browser block/bugs
+      if (isMobile && data.redirect_url) {
+        setIsRedirecting(true);
+        if (!userId) clearCart(); // Keep cart if member, like in desktop callbacks
+        sessionStorage.removeItem('ninoc_checkout_form');
+        window.location.href = data.redirect_url;
+        return;
+      }
+
       setPaymentToken(data.token);
       if (data.orderId) setCreatedOrderId(data.orderId);
       if (data.orderNumber) setCreatedOrderNumber(data.orderNumber);
