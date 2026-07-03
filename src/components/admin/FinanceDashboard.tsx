@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, CreditCard, PieChart } from 'lucide-react';
+// import { BarChart3, TrendingUp, CreditCard, PieChart } from 'lucide-react'; // Unused in minimalist mode
 import { supabase } from '@/lib/supabase';
 
 export default function FinanceDashboard() {
@@ -91,117 +91,93 @@ export default function FinanceDashboard() {
   if (loading) return <div className="p-12 text-center text-gray-500">Loading Financial Data...</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold text-ink">Finance & P&L Dashboard (Current Month)</h2>
+    <div className="space-y-3">
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="text-sm font-bold text-ink">Finance & P&L Dashboard (Current Month)</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Gross Revenue */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
-            <BarChart3 size={20} />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
-          <p className="text-2xl font-bold text-ink">Rp {metrics.grossRevenue.toLocaleString('id-ID')}</p>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div className="bg-white p-3 rounded border border-ink/10 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-ink/60 uppercase tracking-wider mb-0.5">Gross Revenue</p>
+          <p className="text-base font-bold text-ink font-mono">Rp {metrics.grossRevenue.toLocaleString('id-ID')}</p>
         </div>
 
-        {/* Total HPP (Cost of Goods Sold) */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 mb-4">
-            <PieChart size={20} />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total COGS (HPP)</p>
-          <p className="text-2xl font-bold text-ink">Rp {metrics.totalHpp.toLocaleString('id-ID')}</p>
+        <div className="bg-white p-3 rounded border border-ink/10 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-ink/60 uppercase tracking-wider mb-0.5">Total COGS (HPP)</p>
+          <p className="text-base font-bold text-ink font-mono">Rp {metrics.totalHpp.toLocaleString('id-ID')}</p>
         </div>
 
-        {/* Affiliate Payouts */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 mb-4">
-            <CreditCard size={20} />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Affiliate Commission</p>
-          <p className="text-2xl font-bold text-ink">Rp {metrics.totalAffiliateCommissions.toLocaleString('id-ID')}</p>
+        <div className="bg-white p-3 rounded border border-ink/10 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-ink/60 uppercase tracking-wider mb-0.5">Affiliate Comm.</p>
+          <p className="text-base font-bold text-ink font-mono">Rp {metrics.totalAffiliateCommissions.toLocaleString('id-ID')}</p>
         </div>
 
-        {/* Total OPEX */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
-          <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 mb-4 relative z-10">
-            <TrendingUp size={20} className="rotate-180" />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 relative z-10">Total OPEX</p>
-          <p className="text-2xl font-bold text-ink relative z-10">Rp {metrics.totalOpex.toLocaleString('id-ID')}</p>
+        <div className="bg-white p-3 rounded border border-ink/10 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-ink/60 uppercase tracking-wider mb-0.5">Total OPEX</p>
+          <p className="text-base font-bold text-ink font-mono">Rp {metrics.totalOpex.toLocaleString('id-ID')}</p>
         </div>
 
-        {/* Net Profit */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden md:col-span-2 lg:col-span-1">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <TrendingUp size={64} className="text-rose" />
-          </div>
-          <div className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center text-rose mb-4 relative z-10">
-            <TrendingUp size={20} />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 relative z-10">Net Profit Estimates</p>
-          <p className="text-2xl font-bold text-ink relative z-10">Rp {metrics.netProfit.toLocaleString('id-ID')}</p>
+        <div className="bg-rose/5 p-3 rounded border border-rose/20 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-rose uppercase tracking-wider mb-0.5">Net Profit Estimates</p>
+          <p className="text-base font-bold text-rose font-mono">Rp {metrics.netProfit.toLocaleString('id-ID')}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-ink mb-4">Supplier Liabilities (Hutang Pabrik)</h3>
-          <div className="flex items-center justify-between p-4 bg-orange-50/50 rounded-lg border border-orange-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="bg-white p-3 rounded border border-ink/10">
+          <h3 className="text-[11px] font-bold text-ink mb-2 uppercase tracking-wider">Supplier Liabilities</h3>
+          <div className="flex items-center justify-between p-2 bg-orange-50/50 rounded border border-orange-100">
             <div>
-              <p className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-1">Pending Payments</p>
-              <p className="text-sm text-gray-600">Total owed to suppliers from successful orders.</p>
+              <p className="text-[10px] font-bold text-orange-600 uppercase mb-0.5">Pending Payments</p>
             </div>
-            <div className="text-xl font-bold text-ink">
+            <div className="text-sm font-bold text-ink font-mono">
               Rp {metrics.pendingSupplierPayments.toLocaleString('id-ID')}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-ink mb-4">Financial Health</h3>
-          <div className="space-y-4">
+        <div className="bg-white p-3 rounded border border-ink/10">
+          <h3 className="text-[11px] font-bold text-ink mb-2 uppercase tracking-wider">Financial Health</h3>
+          <div className="grid grid-cols-3 gap-4 mt-3">
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-500">Profit Margin</span>
-                <span className="font-bold text-ink">
+              <div className="flex justify-between text-[10px] mb-1">
+                <span className="font-medium text-ink/60">Margin</span>
+                <span className="font-bold text-ink font-mono">
                   {metrics.grossRevenue > 0 ? Math.round((metrics.netProfit / metrics.grossRevenue) * 100) : 0}%
                 </span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
+              <div className="w-full bg-ink/5 h-1">
                 <div 
-                  className="bg-rose h-2 rounded-full" 
+                  className="bg-rose h-1" 
                   style={{ width: `${metrics.grossRevenue > 0 ? Math.round((metrics.netProfit / metrics.grossRevenue) * 100) : 0}%` }}
                 ></div>
               </div>
             </div>
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-500">COGS (HPP) Ratio</span>
-                <span className="font-bold text-ink">
+              <div className="flex justify-between text-[10px] mb-1">
+                <span className="font-medium text-ink/60">COGS</span>
+                <span className="font-bold text-ink font-mono">
                   {metrics.grossRevenue > 0 ? Math.round((metrics.totalHpp / metrics.grossRevenue) * 100) : 0}%
                 </span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
+              <div className="w-full bg-ink/5 h-1">
                 <div 
-                  className="bg-orange-400 h-2 rounded-full" 
+                  className="bg-orange-400 h-1" 
                   style={{ width: `${metrics.grossRevenue > 0 ? Math.round((metrics.totalHpp / metrics.grossRevenue) * 100) : 0}%` }}
                 ></div>
               </div>
             </div>
             
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-500">OPEX Ratio</span>
-                <span className="font-bold text-ink">
+              <div className="flex justify-between text-[10px] mb-1">
+                <span className="font-medium text-ink/60">OPEX</span>
+                <span className="font-bold text-ink font-mono">
                   {metrics.grossRevenue > 0 ? Math.round((metrics.totalOpex / metrics.grossRevenue) * 100) : 0}%
                 </span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
+              <div className="w-full bg-ink/5 h-1">
                 <div 
-                  className="bg-purple-400 h-2 rounded-full" 
+                  className="bg-purple-400 h-1" 
                   style={{ width: `${metrics.grossRevenue > 0 ? Math.round((metrics.totalOpex / metrics.grossRevenue) * 100) : 0}%` }}
                 ></div>
               </div>
