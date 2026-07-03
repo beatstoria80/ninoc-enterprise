@@ -102,35 +102,35 @@ export function WebAnalyticsTab() {
                   </div>
                   <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Real-Time (30 Min)</span>
-                    <Info size={12} className="opacity-50 hover:opacity-100 cursor-help" title="Jumlah pengunjung yang sedang aktif membuka web Anda saat ini (berdasarkan 30 menit terakhir)." />
+                    <span title="Jumlah pengunjung yang sedang aktif membuka web Anda saat ini (berdasarkan 30 menit terakhir)."><Info size={12} className="opacity-50 hover:opacity-100 cursor-help" /></span>
                   </p>
                   <p className="text-2xl font-mono font-bold text-white">{data.ga4.realtimeVisitors.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Pengguna (30 Hari)</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Total pengunjung unik yang datang ke web Anda dalam 30 hari terakhir." />
+                    <span title="Total pengunjung unik yang datang ke web Anda dalam 30 hari terakhir."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.visitors.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Pageviews</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Total halaman yang dibuka atau dilihat oleh seluruh pengunjung." />
+                    <span title="Total halaman yang dibuka atau dilihat oleh seluruh pengunjung."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.pageviews.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Total Sesi</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Total kunjungan aktif. Satu pengunjung bisa melakukan beberapa sesi kunjungan di hari yang berbeda." />
+                    <span title="Total kunjungan aktif. Satu pengunjung bisa melakukan beberapa sesi kunjungan di hari yang berbeda."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.sessions.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-indigo-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Durasi Rata-rata</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Rata-rata waktu yang dihabiskan pengunjung saat menelusuri website Anda." />
+                    <span title="Rata-rata waktu yang dihabiskan pengunjung saat menelusuri website Anda."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-indigo-700">{data.ga4.avgSessionDuration}</p>
                 </div>
@@ -177,28 +177,28 @@ export function WebAnalyticsTab() {
                 <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Total Clicks</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Berapa kali orang mengklik link website Anda di hasil pencarian Google." />
+                    <span title="Berapa kali orang mengklik link website Anda di hasil pencarian Google."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.clicks.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Impressions</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Berapa kali website Anda muncul atau terlihat di hasil pencarian Google (meskipun tidak diklik)." />
+                    <span title="Berapa kali website Anda muncul atau terlihat di hasil pencarian Google (meskipun tidak diklik)."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.impressions.toLocaleString()}</p>
                 </div>
                 <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>CTR Rata-rata</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Click-Through Rate (Rasio Klik). Persentase orang yang mengklik setelah melihat link Anda." />
+                    <span title="Click-Through Rate (Rasio Klik). Persentase orang yang mengklik setelah melihat link Anda."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.ctr.toFixed(2)}%</p>
                 </div>
                 <div className="bg-white border border-emerald-100 rounded-md p-3 shadow-sm">
                   <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-1 flex items-center justify-between">
                     <span>Posisi Rata-rata</span>
-                    <Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" title="Peringkat rata-rata website Anda di halaman pencarian Google. Angka 1 berarti tampil paling atas." />
+                    <span title="Peringkat rata-rata website Anda di halaman pencarian Google. Angka 1 berarti tampil paling atas."><Info size={12} className="opacity-30 hover:opacity-100 cursor-help transition-opacity" /></span>
                   </p>
                   <p className="text-xl font-mono font-bold text-emerald-700">{data.gsc.position.toFixed(1)}</p>
                 </div>
