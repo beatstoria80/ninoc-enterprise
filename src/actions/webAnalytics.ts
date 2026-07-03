@@ -85,6 +85,9 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         })
       });
       const gaData = await gaRes.json();
+      if (gaData.error) {
+        throw new Error(`GA4 API Error: ${gaData.error.message || gaData.error.status}`);
+      }
 
       // Trend
       const gaTrendRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
@@ -101,6 +104,9 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         })
       });
       const gaTrendData = await gaTrendRes.json();
+      if (gaTrendData.error) {
+        throw new Error(`GA4 Trend API Error: ${gaTrendData.error.message || gaTrendData.error.status}`);
+      }
 
       const trend = (gaTrendData.rows || []).map((row: any) => ({
         date: row.dimensionValues?.[0]?.value ? 
@@ -122,12 +128,13 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
             metrics: [{ name: 'activeUsers' }]
           })
         });
-        if (gaRtRes.ok) {
-          const gaRtData = await gaRtRes.json();
-          realtimeVisitors = parseInt(gaRtData.rows?.[0]?.metricValues?.[0]?.value || '0', 10);
+        const gaRtData = await gaRtRes.json();
+        if (gaRtData.error) {
+          throw new Error(`GA4 Realtime API Error: ${gaRtData.error.message || gaRtData.error.status}`);
         }
-      } catch (e) {
-        console.error("Failed to fetch realtime data:", e);
+        realtimeVisitors = parseInt(gaRtData.rows?.[0]?.metricValues?.[0]?.value || '0', 10);
+      } catch (e: any) {
+        throw new Error(e.message || "Failed to fetch realtime data");
       }
 
       ga4Data = {
@@ -160,6 +167,9 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
         })
       });
       const gscTotalData = await gscTotalRes.json();
+      if (gscTotalData.error) {
+        throw new Error(`GSC API Error: ${gscTotalData.error.message || gscTotalData.error.status}`);
+      }
 
       // Top queries
       const gscQueriesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
@@ -172,10 +182,13 @@ export async function getWebAnalyticsData(): Promise<WebAnalyticsData> {
           startDate: formatDate(thirtyDaysAgo),
           endDate: formatDate(today),
           dimensions: ['query'],
-          rowLimit: 10
+          rowLimit: 5
         })
       });
       const gscQueriesData = await gscQueriesRes.json();
+      if (gscQueriesData.error) {
+        throw new Error(`GSC Queries API Error: ${gscQueriesData.error.message || gscQueriesData.error.status}`);
+      }
 
       const totals = gscTotalData.rows?.[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       const topQueries = (gscQueriesData.rows || []).map((row: any) => ({
