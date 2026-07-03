@@ -149,8 +149,11 @@ export function WebAnalyticsTab() {
               </div>
             </>
           ) : (
-            <div className="bg-ink/5 rounded-md p-6 text-center border border-dashed border-ink/20">
-              <p className="text-xs font-semibold uppercase tracking-widest text-ink/50">GA4_PROPERTY_ID Belum Disetel</p>
+            <div className="bg-rose-50 rounded-md p-6 text-center border border-dashed border-rose-200">
+              <AlertCircle size={20} className="mx-auto mb-2 text-rose-500" />
+              <p className="text-xs font-semibold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GA4</p>
+              {data.error && <p className="text-[11px] text-rose-500/80 mt-1">{data.error}</p>}
+              <button onClick={loadData} className="mt-3 text-[10px] uppercase tracking-widest font-bold text-rose-600 border border-rose-300 rounded px-3 py-1 hover:bg-rose-100 transition-colors">Coba Lagi</button>
             </div>
           )}
         </div>
@@ -217,8 +220,11 @@ export function WebAnalyticsTab() {
               </div>
             </>
           ) : (
-             <div className="bg-ink/5 rounded-md p-6 text-center border border-dashed border-ink/20">
-              <p className="text-xs font-semibold uppercase tracking-widest text-ink/50">GSC_SITE_URL Belum Disetel</p>
+             <div className="bg-rose-50 rounded-md p-6 text-center border border-dashed border-rose-200">
+              <AlertCircle size={20} className="mx-auto mb-2 text-rose-500" />
+              <p className="text-xs font-semibold uppercase tracking-widest text-rose-600 mb-1">Gagal Memuat Data GSC</p>
+              {data.error && <p className="text-[11px] text-rose-500/80 mt-1">{data.error}</p>}
+              <button onClick={loadData} className="mt-3 text-[10px] uppercase tracking-widest font-bold text-rose-600 border border-rose-300 rounded px-3 py-1 hover:bg-rose-100 transition-colors">Coba Lagi</button>
             </div>
           )}
         </div>
