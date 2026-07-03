@@ -149,7 +149,10 @@ export async function POST(req: Request) {
       // Supplier & Ledger Costings
       const costing = dbProduct.product_costings?.[0] || dbProduct.product_costings;
       const supplierBasePrice = costing?.supplier_base_price || 0;
-      const ninocMarkup = costing?.ninoc_markup || (itemPrice - supplierBasePrice);
+      const supplierSurchargeCost = costing?.supplier_surcharge_cost || 0;
+      
+      const finalHpp = supplierBasePrice + (isSurchargeSize ? supplierSurchargeCost : 0);
+      const ninocMarkup = costing?.ninoc_markup || (itemPrice - finalHpp);
 
       finalItemDetails.push({
         id: item.id,
@@ -159,7 +162,7 @@ export async function POST(req: Request) {
         size: item.size || null,
         color: item.color || null,
         supplier_id: dbProduct.supplier_id,
-        supplier_hpp: supplierBasePrice,
+        supplier_hpp: finalHpp,
         ninoc_markup: ninocMarkup
       });
     }

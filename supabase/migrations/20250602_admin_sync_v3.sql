@@ -110,26 +110,36 @@ ALTER TABLE support_messages ENABLE ROW LEVEL SECURITY;
 -- ============================================================
 
 -- product_costing: admin only (service role reads/writes)
+DROP POLICY IF EXISTS "Admin read product_costing" ON product_costing;
 CREATE POLICY "Admin read product_costing" ON product_costing FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admin insert product_costing" ON product_costing;
 CREATE POLICY "Admin insert product_costing" ON product_costing FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Admin update product_costing" ON product_costing;
 CREATE POLICY "Admin update product_costing" ON product_costing FOR UPDATE USING (true);
 
 -- supplier_cost_log: admin only
+DROP POLICY IF EXISTS "Admin read supplier_cost_log" ON supplier_cost_log;
 CREATE POLICY "Admin read supplier_cost_log" ON supplier_cost_log FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admin insert supplier_cost_log" ON supplier_cost_log;
 CREATE POLICY "Admin insert supplier_cost_log" ON supplier_cost_log FOR INSERT WITH CHECK (true);
 
 -- promo_impact: public read, admin writes
+DROP POLICY IF EXISTS "Public read promo_impact" ON promo_impact;
 CREATE POLICY "Public read promo_impact" ON promo_impact FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admin insert promo_impact" ON promo_impact;
 CREATE POLICY "Admin insert promo_impact" ON promo_impact FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Admin update promo_impact" ON promo_impact;
 CREATE POLICY "Admin update promo_impact" ON promo_impact FOR UPDATE USING (true);
 
 -- support_messages: ticket owner / admin
+DROP POLICY IF EXISTS "Users read own ticket messages" ON support_messages;
 CREATE POLICY "Users read own ticket messages" ON support_messages
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM support_tickets WHERE id = ticket_id AND user_id = auth.uid())
     OR auth.uid() IS NOT NULL  -- admin via service role
   );
 
+DROP POLICY IF EXISTS "Users insert own messages" ON support_messages;
 CREATE POLICY "Users insert own messages" ON support_messages
   FOR INSERT WITH CHECK (auth.uid() = sender_id OR auth.uid() IS NOT NULL);
 

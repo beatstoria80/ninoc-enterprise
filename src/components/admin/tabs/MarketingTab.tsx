@@ -256,6 +256,7 @@ export function MarketingTab() {
       const updates = Object.keys(editingCostings).map(id => ({
         product_id: id,
         supplier_cost: Number(editingCostings[id].supplier_cost !== undefined ? editingCostings[id].supplier_cost : costings.find(c => c.id === id).supplier_cost),
+        supplier_surcharge_cost: Number(editingCostings[id].supplier_surcharge_cost !== undefined ? editingCostings[id].supplier_surcharge_cost : costings.find(c => c.id === id).supplier_surcharge_cost || 0),
         packaging_cost: Number(editingCostings[id].packaging_cost !== undefined ? editingCostings[id].packaging_cost : costings.find(c => c.id === id).packaging_cost),
         operational_pct: Number(editingCostings[id].operational_pct !== undefined ? editingCostings[id].operational_pct : costings.find(c => c.id === id).operational_pct),
         target_margin_pct: Number(editingCostings[id].target_margin_pct !== undefined ? editingCostings[id].target_margin_pct : costings.find(c => c.id === id).target_margin_pct),
@@ -544,6 +545,7 @@ export function MarketingTab() {
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide sticky left-0 bg-white">Product</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Selling Price (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">HPP Pabrik (IDR)</th>
+                <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">HPP XXL+ (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Packaging (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide text-rose">Biaya Retur (IDR)</th>
                 <th className="px-1.5 py-1.5 text-xs font-medium text-ink/80 uppercase tracking-wide">Operational (IDR)</th>
@@ -593,6 +595,17 @@ export function MarketingTab() {
                         value={currentData.supplier_cost ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'supplier_cost', e.target.value)}
                         placeholder="0"
+                      />
+                    </td>
+                    <td className="px-1.5 py-1">
+                      <input 
+                        type="number"
+                        min="0"
+                        className="w-28 text-xs font-mono px-2 py-1 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white text-indigo-700 font-semibold"
+                        value={currentData.supplier_surcharge_cost ?? ''}
+                        onChange={(e) => handleCostingChange(p.id, 'supplier_surcharge_cost', e.target.value)}
+                        placeholder="0"
+                        title="Extra cost for XXL+ sizes"
                       />
                     </td>
                     <td className="px-1.5 py-1">
