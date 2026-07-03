@@ -127,9 +127,13 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
     const startDateObj = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: productsData } = await supabaseAdmin
+    const { data: productsData, error: productsError } = await supabaseAdmin
       .from('products')
-      .select('id, name, category, price, stock, image_url, slug');
+      .select('id, name, category, price, image_url, slug, variants(stock_quantity)');
+
+    if (productsError) {
+      console.error('Error fetching products for ecommerce analytics:', productsError);
+    }
 
     if (!productsData || productsData.length === 0) {
       return {
@@ -202,7 +206,7 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
         views,
         sold,
         revenue: rev,
-        stock: Number(p.stock) || 0,
+        stock: p.variants ? p.variants.reduce((s: number, v: any) => s + (Number(v.stock_quantity) || 0), 0) : 0,
         conversionRate,
       };
     }).sort((a, b) => b.revenue - a.revenue);
