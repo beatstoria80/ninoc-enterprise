@@ -175,13 +175,11 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
       let views = 0;
       if (ga4TopPages && ga4TopPages.length > 0) {
-        const matchPage = ga4TopPages.find(gp => 
-          (p.slug && gp.path.includes(p.slug)) || 
+        const matchPages = ga4TopPages.filter(gp => 
+          (p.slug && (gp.path.includes(`/${p.slug}`) || gp.path.includes(p.slug))) || 
           (p.name && gp.title.toLowerCase().includes(p.name.toLowerCase()))
         );
-        if (matchPage) {
-          views = matchPage.views;
-        }
+        views = matchPages.reduce((sum, gp) => sum + (Number(gp.views) || 0), 0);
       }
 
       totalUnitsSold += sold;
@@ -354,7 +352,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
             dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
             metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
             orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
-            limit: 8
+            limit: 500
           })
         });
         const gaPagesData = await gaPagesRes.json();
@@ -469,7 +467,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
         sessions: parseInt(gaData.rows?.[0]?.metricValues?.[2]?.value || '0', 10),
         avgSessionDuration: parseFloat(gaData.rows?.[0]?.metricValues?.[3]?.value || '0').toFixed(2) + 's',
         trend,
-        topPages,
+        topPages: topPages.slice(0, 10),
         topCities,
         devices,
         channels,

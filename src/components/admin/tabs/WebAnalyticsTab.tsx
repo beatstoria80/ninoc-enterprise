@@ -222,107 +222,115 @@ export function WebAnalyticsTab() {
 
           {data.ga4 ? (
             <>
-              {/* 5 SUMMARY CARDS FULL WIDTH */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {/* COMPACT KPI STAT RIBBON (5 COLS) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {/* Card 1: Real-time */}
-                <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 border border-indigo-800 rounded-xl p-4 shadow-md relative overflow-hidden text-white group hover:shadow-lg transition-all duration-200">
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                    <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                    </span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-200">Live</span>
+                <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 border border-indigo-800 rounded-xl p-3.5 shadow-sm relative overflow-hidden text-white group hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[10px] font-bold text-indigo-100 uppercase tracking-wider flex items-center gap-1.5">
+                        <Activity size={13} className="text-indigo-200" /> Real-Time
+                      </p>
+                      <div className="flex items-center gap-1 bg-white/15 px-1.5 py-0.5 rounded-full">
+                        <span className="flex h-1.5 w-1.5 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+                        </span>
+                        <span className="text-[8px] font-extrabold uppercase tracking-wider text-emerald-200">Live</span>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-mono font-extrabold tracking-tight mt-1">{data.ga4.realtimeVisitors.toLocaleString()}</p>
                   </div>
-                  <p className="text-[11px] font-bold text-indigo-100 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                    <Activity size={14} className="text-indigo-200" /> Real-Time (30 Min)
-                  </p>
-                  <p className="text-3xl font-mono font-extrabold tracking-tight mt-2">{data.ga4.realtimeVisitors.toLocaleString()}</p>
-                  <p className="text-[11px] text-indigo-100/80 mt-2 font-medium leading-tight border-t border-white/10 pt-2">
-                    Pengunjung yang sedang aktif menjelajahi web saat ini
+                  <p className="text-[10px] text-indigo-100/80 mt-2 font-medium border-t border-white/10 pt-1.5 truncate" title="Pengunjung aktif 30 menit terakhir">
+                    Aktif 30 menit terakhir
                   </p>
                 </div>
 
                 {/* Card 2: Visitors */}
-                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                <div className="bg-white border border-ink/10 rounded-xl p-3.5 shadow-xs hover:border-indigo-200 transition-all duration-200 group flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <Users size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Pengguna ({getTimeLabel()})
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                        <Users size={13} className="text-indigo-600" /> Pengguna ({getTimeLabel()})
                       </p>
-                      <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
                     </div>
-                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.visitors.toLocaleString()}</p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.ga4.visitors.toLocaleString()}</p>
                   </div>
-                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
-                    Total pengunjung unik (Unique Users) {getTimeDesc()}
+                  <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5 truncate" title={`Total pengunjung unik ${getTimeDesc()}`}>
+                    Unique users ({timeFilter})
                   </p>
                 </div>
 
-                {/* Card 3: Pageviews (Amber Color Indicator) */}
-                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                {/* Card 3: Pageviews */}
+                <div className="bg-white border border-ink/10 rounded-xl p-3.5 shadow-xs hover:border-amber-300 transition-all duration-200 group flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <Eye size={14} className="text-amber-600 group-hover:scale-110 transition-transform" /> Pageviews
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                        <Eye size={13} className="text-amber-600" /> Pageviews
                       </p>
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                     </div>
-                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.pageviews.toLocaleString()}</p>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.ga4.pageviews.toLocaleString()}</p>
                   </div>
-                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
-                    Total halaman yang dibuka oleh seluruh pengunjung
+                  <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5 truncate" title="Total halaman yang dilihat">
+                    Total halaman dilihat
                   </p>
                 </div>
 
                 {/* Card 4: Sessions */}
-                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                <div className="bg-white border border-ink/10 rounded-xl p-3.5 shadow-xs hover:border-indigo-200 transition-all duration-200 group flex flex-col justify-between">
                   <div>
-                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                      <Layers size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Total Sesi
-                    </p>
-                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.sessions.toLocaleString()}</p>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                        <Layers size={13} className="text-indigo-600" /> Total Sesi
+                      </p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                    </div>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.ga4.sessions.toLocaleString()}</p>
                   </div>
-                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
-                    Jumlah kunjungan aktif dari awal buka sampai selesai
+                  <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5 truncate" title="Jumlah kunjungan dari awal buka">
+                    Kunjungan aktif (Sessions)
                   </p>
                 </div>
 
                 {/* Card 5: Duration */}
-                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all duration-200 group flex flex-col justify-between col-span-2 sm:col-span-1">
+                <div className="bg-white border border-ink/10 rounded-xl p-3.5 shadow-xs hover:border-indigo-200 transition-all duration-200 group flex flex-col justify-between col-span-2 sm:col-span-1">
                   <div>
-                    <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                      <Clock size={14} className="text-indigo-600 group-hover:scale-110 transition-transform" /> Durasi Rata-rata
-                    </p>
-                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-2">{data.ga4.avgSessionDuration}</p>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                        <Clock size={13} className="text-indigo-600" /> Durasi Sesi
+                      </p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    </div>
+                    <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.ga4.avgSessionDuration}</p>
                   </div>
-                  <p className="text-[11px] text-ink/60 mt-3 leading-tight font-medium border-t border-ink/5 pt-2">
-                    Rata-rata durasi waktu pengunjung berada di dalam website
+                  <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5 truncate" title="Rata-rata durasi berada di web">
+                    Rata-rata waktu jelajah
                   </p>
                 </div>
               </div>
 
-              {/* GA4 CHART & TOP PAGES GRID */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Chart 2/3 width */}
-                <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm lg:col-span-2 flex flex-col justify-between">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              {/* ROW 1: TREND CHART (2/3) & TRAFFIC SOURCES + DEVICES (1/3) */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Left 2 Cols: Trend Chart */}
+                <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-xs lg:col-span-2 flex flex-col justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                     <div>
-                      <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                        <TrendingUp size={16} className="text-indigo-600" /> Tren Pengunjung & Pageviews ({getTimeLabel()})
+                      <h3 className="text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                        <TrendingUp size={15} className="text-indigo-600" /> Tren Pengunjung & Pageviews ({getTimeLabel()})
                       </h3>
-                      <p className="text-xs text-ink/60 mt-0.5">Indikator warna terpisah: Pengunjung (Indigo) vs Pageviews (Amber / Orange)</p>
                     </div>
-                    <div className="flex items-center gap-4 text-xs font-semibold">
-                      <span className="flex items-center gap-1.5 text-indigo-700">
-                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Pengunjung Aktif
+                    <div className="flex items-center gap-3 text-[11px] font-semibold">
+                      <span className="flex items-center gap-1 text-indigo-700">
+                        <span className="w-2 h-2 rounded-full bg-indigo-600 inline-block"></span> Pengunjung
                       </span>
-                      <span className="flex items-center gap-1.5 text-amber-700">
-                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Pageviews
+                      <span className="flex items-center gap-1 text-amber-700">
+                        <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Pageviews
                       </span>
                     </div>
                   </div>
-
-                  <div className="h-[320px] w-full">
+                  <div className="h-[260px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={data.ga4.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
@@ -350,26 +358,92 @@ export function WebAnalyticsTab() {
                   </div>
                 </div>
 
-                {/* Top Pages 1/3 width */}
-                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <div className="p-4 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                {/* Right 1 Col: Perangkat & Sumber Akuisisi combined panel */}
+                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-xs flex flex-col h-[315px]">
+                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between shrink-0">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
+                      <Smartphone size={14} className="text-indigo-600" /> Perangkat & Akuisisi
+                    </h3>
+                    <span className="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-bold">Traffic</span>
+                  </div>
+                  <div className="p-3 overflow-y-auto flex-1 space-y-4 divide-y divide-ink/5">
+                    {/* Device Section */}
                     <div>
-                      <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
-                        <FileText size={14} className="text-indigo-600" /> Halaman Terpopuler
-                      </h3>
-                      <p className="text-[11px] text-ink/60 mt-0.5">Top halaman berdasarkan views</p>
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-2">Kategori Perangkat</p>
+                      {!data.ga4.devices || data.ga4.devices.length === 0 ? (
+                        <p className="text-xs text-ink/50">Belum ada data perangkat</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {data.ga4.devices.map((d, idx) => (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-semibold uppercase text-[11px] text-ink flex items-center gap-1">
+                                  {d.device === 'mobile' ? <Smartphone size={12} className="text-indigo-600" /> : <Monitor size={12} className="text-indigo-600" />}
+                                  {d.device}
+                                </span>
+                                <div className="font-mono text-[11px]">
+                                  <span className="font-bold text-indigo-700">{d.percentage}%</span>
+                                  <span className="text-[10px] text-ink/50 ml-1">({d.users.toLocaleString()})</span>
+                                </div>
+                              </div>
+                              <div className="w-full bg-ink/5 h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 h-full rounded-full" style={{ width: `${d.percentage}%` }}></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Acquisition Section */}
+                    <div className="pt-3">
+                      <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-2">Saluran Akuisisi (Channels)</p>
+                      {!data.ga4.channels || data.ga4.channels.length === 0 ? (
+                        <p className="text-xs text-ink/50">Belum ada data akuisisi</p>
+                      ) : (
+                        <div className="space-y-1.5">
+                          {data.ga4.channels.slice(0, 4).map((ch, idx) => (
+                            <div key={idx} className="flex items-center justify-between gap-2 text-xs hover:bg-indigo-50/30 p-1 rounded transition-colors">
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-ink text-[11px] truncate">{ch.channel}</p>
+                              </div>
+                              <div className="text-right shrink-0 font-mono text-[11px]">
+                                <span className="font-bold text-indigo-700">{ch.users.toLocaleString()}</span>
+                                <span className="text-[9px] text-ink/50 ml-1">users</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="overflow-y-auto max-h-[350px] divide-y divide-ink/5">
+                </div>
+              </div>
+
+              {/* ROW 2: TOP PAGES (1/2) & DEMOGRAPHICS GEO (1/2) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left Panel: Halaman Terpopuler */}
+                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-xs flex flex-col">
+                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
+                      <FileText size={14} className="text-indigo-600" /> Halaman Terpopuler (Top Pages)
+                    </h3>
+                    <span className="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-bold">Pageviews</span>
+                  </div>
+                  <div className="overflow-y-auto max-h-[250px] divide-y divide-ink/5">
                     {!data.ga4.topPages || data.ga4.topPages.length === 0 ? (
                       <div className="p-6 text-center text-xs text-ink/50">Belum ada data halaman</div>
                     ) : (
                       data.ga4.topPages.map((page, idx) => (
-                        <div key={idx} className="p-3 hover:bg-indigo-50/40 transition-colors flex items-center justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-ink truncate" title={page.title}>{page.title || page.path}</p>
-                            <p className="text-[10px] text-ink/50 font-mono truncate">{page.path}</p>
+                        <div key={idx} className="p-2.5 hover:bg-indigo-50/40 transition-colors flex items-center justify-between gap-3">
+                          <div className="min-w-0 flex-1 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-ink truncate" title={page.title}>{page.title || page.path}</p>
+                              <p className="text-[10px] text-ink/50 font-mono truncate">{page.path}</p>
+                            </div>
                           </div>
                           <div className="text-right shrink-0">
                             <p className="text-xs font-mono font-bold text-indigo-700">{page.views.toLocaleString()}</p>
@@ -380,26 +454,23 @@ export function WebAnalyticsTab() {
                     )}
                   </div>
                 </div>
-              </div>
 
-              {/* DEMOGRAPHY, DEVICES & ACQUISITION CHANNELS ROW */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Top Cities / Regions */}
-                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <div className="p-3.5 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                {/* Right Panel: Demografi Wilayah */}
+                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-xs flex flex-col">
+                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
                     <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
                       <MapPin size={14} className="text-indigo-600" /> Demografi Wilayah (Kota)
                     </h3>
-                    <span className="text-[10px] font-mono bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-bold">GA4 Geo</span>
+                    <span className="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-bold">GA4 Geo</span>
                   </div>
-                  <div className="divide-y divide-ink/5 flex-1 overflow-y-auto max-h-[260px]">
+                  <div className="divide-y divide-ink/5 flex-1 overflow-y-auto max-h-[250px]">
                     {!data.ga4.topCities || data.ga4.topCities.length === 0 ? (
                       <div className="p-6 text-center text-xs text-ink/50">Belum ada data demografi wilayah</div>
                     ) : (
                       data.ga4.topCities.map((c, idx) => (
-                        <div key={idx} className="p-3 hover:bg-indigo-50/20 transition-colors flex items-center justify-between gap-2">
+                        <div key={idx} className="p-2.5 hover:bg-indigo-50/20 transition-colors flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0">
+                            <span className="w-5 h-5 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0">
                               {idx + 1}
                             </span>
                             <div className="min-w-0">
@@ -407,73 +478,9 @@ export function WebAnalyticsTab() {
                               <p className="text-[10px] text-ink/50 uppercase font-mono">{c.country}</p>
                             </div>
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-xs font-mono font-bold text-indigo-700">{c.users.toLocaleString()} <span className="text-[9px] font-normal text-ink/50">users</span></p>
-                            <p className="text-[10px] font-mono text-ink/60">{c.views.toLocaleString()} views</p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Device Categories */}
-                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <div className="p-3.5 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
-                      <Smartphone size={14} className="text-indigo-600" /> Kategori Perangkat
-                    </h3>
-                    <span className="text-[10px] font-mono bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-bold">Devices</span>
-                  </div>
-                  <div className="p-4 space-y-4 flex-1 flex flex-col justify-center">
-                    {!data.ga4.devices || data.ga4.devices.length === 0 ? (
-                      <div className="text-center text-xs text-ink/50">Belum ada data perangkat</div>
-                    ) : (
-                      data.ga4.devices.map((d, idx) => (
-                        <div key={idx} className="space-y-1.5">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-semibold uppercase tracking-wider text-ink flex items-center gap-1.5">
-                              {d.device === 'mobile' ? <Smartphone size={13} className="text-indigo-600" /> : <Monitor size={13} className="text-indigo-600" />}
-                              {d.device}
-                            </span>
-                            <div className="font-mono">
-                              <span className="font-bold text-indigo-700">{d.percentage}%</span>
-                              <span className="text-[10px] text-ink/50 ml-1.5">({d.users.toLocaleString()} users)</span>
-                            </div>
-                          </div>
-                          <div className="w-full bg-ink/5 h-2 rounded-full overflow-hidden">
-                            <div 
-                              className="bg-gradient-to-r from-indigo-600 to-indigo-500 h-full rounded-full transition-all duration-500" 
-                              style={{ width: `${d.percentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Acquisition Channels */}
-                <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <div className="p-3.5 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
-                      <Share2 size={14} className="text-indigo-600" /> Sumber Akuisisi (Channels)
-                    </h3>
-                    <span className="text-[10px] font-mono bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-bold">Traffic</span>
-                  </div>
-                  <div className="divide-y divide-ink/5 flex-1 overflow-y-auto max-h-[260px]">
-                    {!data.ga4.channels || data.ga4.channels.length === 0 ? (
-                      <div className="p-6 text-center text-xs text-ink/50">Belum ada data akuisisi</div>
-                    ) : (
-                      data.ga4.channels.map((ch, idx) => (
-                        <div key={idx} className="p-3 hover:bg-indigo-50/20 transition-colors flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-ink truncate">{ch.channel}</p>
-                            <p className="text-[10px] text-ink/50">{ch.sessions.toLocaleString()} sesi</p>
-                          </div>
                           <div className="text-right shrink-0 font-mono">
-                            <p className="text-xs font-bold text-indigo-700">{ch.users.toLocaleString()}</p>
-                            <p className="text-[9px] text-ink/50 uppercase">users</p>
+                            <span className="text-xs font-bold text-indigo-700">{c.users.toLocaleString()}</span>
+                            <span className="text-[10px] text-ink/50 ml-1">users ({c.views.toLocaleString()} views)</span>
                           </div>
                         </div>
                       ))
