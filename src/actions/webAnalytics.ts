@@ -175,10 +175,15 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
       let views = 0;
       if (ga4TopPages && ga4TopPages.length > 0) {
-        const matchPages = ga4TopPages.filter(gp => 
-          (p.slug && (gp.path.includes(`/${p.slug}`) || gp.path.includes(p.slug))) || 
-          (p.name && gp.title.toLowerCase().includes(p.name.toLowerCase()))
-        );
+        const matchPages = ga4TopPages.filter(gp => {
+          if (p.slug && (gp.path.includes(`/${p.slug}`) || gp.path.includes(p.slug))) return true;
+          if (p.name && gp.title.toLowerCase().includes(p.name.toLowerCase())) return true;
+          if (p.name) {
+            const nameSlug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            if (nameSlug.length > 3 && gp.path.includes(nameSlug)) return true;
+          }
+          return false;
+        });
         views = matchPages.reduce((sum, gp) => sum + (Number(gp.views) || 0), 0);
       }
 
@@ -244,6 +249,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
     const token = await getAccessToken();
     let ga4Data = null;
     let gscData = null;
+    let allGa4Pages: { path: string; title: string; views: number; users: number }[] = [];
 
     let gaStartDate = '28daysAgo';
     let gscDaysBack = 28;
@@ -363,6 +369,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
             views: parseInt(row.metricValues?.[0]?.value || '0', 10),
             users: parseInt(row.metricValues?.[1]?.value || '0', 10),
           }));
+          allGa4Pages = topPages;
         }
       } catch (e) {
         console.warn('Failed to fetch GA4 top pages', e);
@@ -665,7 +672,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
       };
     }
 
-    const ecommerceData = await getEcommerceAnalytics(timeFilter, ga4Data?.topPages || []);
+    const ecommerceData = await getEcommerceAnalytics(timeFilter, allGa4Pages);
 
     return {
       configured: true,
