@@ -33,10 +33,23 @@ const isConfigured = () => {
 // Gets a valid access token using the already installed google-auth-library
 async function getAccessToken(): Promise<string> {
   let privateKey = process.env.GOOGLE_PRIVATE_KEY || '';
-  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+  
+  // Strip surrounding quotes (single or double)
+  if ((privateKey.startsWith('"') && privateKey.endsWith('"')) ||
+      (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
     privateKey = privateKey.slice(1, -1);
   }
-  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  // Handle all newline escape variations from Vercel env vars
+  privateKey = privateKey.replace(/\\\\n/g, '\n'); // double-escaped \\n
+  privateKey = privateKey.replace(/\\n/g, '\n');    // single-escaped \n
+  
+  // Validate key format
+  if (!privateKey.includes('-----BEGIN')) {
+    console.error('[WebAnalytics] GOOGLE_PRIVATE_KEY tidak mengandung header PEM yang valid. Panjang key:', privateKey.length);
+    throw new Error('GOOGLE_PRIVATE_KEY format tidak valid. Pastikan key mengandung "-----BEGIN PRIVATE KEY-----"');
+  }
+  
   const auth = new GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
