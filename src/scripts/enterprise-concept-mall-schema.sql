@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- NINOC ENTERPRISE — CONCEPT MALL & MULTI-ORIGIN WAREHOUSE SCHEMA
 -- Run this migration in Supabase Dashboard > SQL Editor
--- This script is idempotent & self-healing (adds missing columns if table pre-exists)
+-- This script is 100% idempotent, self-healing, and free of dollar-quotes ($$)
 -- ==============================================================================
 
 -- 1. DEPARTMENTS TABLE (Concept Mall Pillars)
@@ -28,16 +28,11 @@ ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
--- Ensure unique constraint on slug for ON CONFLICT
-DO $$ 
-BEGIN 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'departments_slug_key'
-  ) THEN 
-    ALTER TABLE departments ADD CONSTRAINT departments_slug_key UNIQUE (slug);
-  END IF;
-EXCEPTION WHEN OTHERS THEN NULL;
-END $$;
+-- Enable Row Level Security (RLS) explicitly
+ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
+
+-- Ensure unique index on slug for ON CONFLICT clause (without DO blocks)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_departments_slug_unique ON departments(slug);
 
 -- Insert Default Concept Mall Pillars (Apparel, Objects, Pantry/F&B)
 INSERT INTO departments (name, slug, gpc_code, description, sort_order) VALUES
@@ -89,16 +84,11 @@ ADD COLUMN IF NOT EXISTS is_crossdock_hub BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
--- Ensure unique constraint on code for ON CONFLICT
-DO $$ 
-BEGIN 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'warehouses_code_key'
-  ) THEN 
-    ALTER TABLE warehouses ADD CONSTRAINT warehouses_code_key UNIQUE (code);
-  END IF;
-EXCEPTION WHEN OTHERS THEN NULL;
-END $$;
+-- Enable Row Level Security (RLS) explicitly
+ALTER TABLE warehouses ENABLE ROW LEVEL SECURITY;
+
+-- Ensure unique index on code for ON CONFLICT clause (without DO blocks)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_warehouses_code_unique ON warehouses(code);
 
 -- Insert Official NINOC Warehouses (Griya Saluyu Studio as Primary)
 INSERT INTO warehouses (name, code, contact_name, contact_phone, street_address, district, city, province, postal_code, is_primary, is_crossdock_hub) VALUES
@@ -125,22 +115,13 @@ ADD COLUMN IF NOT EXISTS shelf_life_days INT NULL, -- For perishable F&B
 ADD COLUMN IF NOT EXISTS is_perishable BOOLEAN DEFAULT false;
 
 -- Populate default department_id and warehouse_id for existing fashion products if null
-DO $$
-DECLARE
-  default_dept_id UUID;
-  default_wh_id UUID;
-BEGIN
-  SELECT id INTO default_dept_id FROM departments WHERE slug = 'apparel' LIMIT 1;
-  SELECT id INTO default_wh_id FROM warehouses WHERE is_primary = true LIMIT 1;
-  
-  IF default_dept_id IS NOT NULL THEN
-    UPDATE products SET department_id = default_dept_id WHERE department_id IS NULL;
-  END IF;
+UPDATE products 
+SET department_id = (SELECT id FROM departments WHERE slug = 'apparel' LIMIT 1) 
+WHERE department_id IS NULL AND EXISTS (SELECT 1 FROM departments WHERE slug = 'apparel');
 
-  IF default_wh_id IS NOT NULL THEN
-    UPDATE products SET warehouse_id = default_wh_id WHERE warehouse_id IS NULL;
-  END IF;
-END $$;
+UPDATE products 
+SET warehouse_id = (SELECT id FROM warehouses WHERE is_primary = true LIMIT 1) 
+WHERE warehouse_id IS NULL AND EXISTS (SELECT 1 FROM warehouses WHERE is_primary = true);
 
 -- 4. CREATE PERFORMANCE INDEXES FOR ENTERPRISE SCALING
 CREATE INDEX IF NOT EXISTS idx_products_department ON products(department_id);
