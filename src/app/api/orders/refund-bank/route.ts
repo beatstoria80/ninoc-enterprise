@@ -1,73 +1,89 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { withErrorHandler, apiSuccess, apiBadRequest, apiNotFound, apiUnauthorized, apiInternalError } from '@/lib/apiResponse';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// ============================================================================
+// NINOC ENTERPRISE — REFUND BANK SUBMISSION ENDPOINT (PRODUCTION-GRADE)
+// ============================================================================
+// Features:
+// 1. Singleton Database Connection: Reuses global pool via @/lib/supabaseAdmin
+// 2. Standardized Error Handling: Wrapped with withErrorHandler
+// 3. Constant-time & Fuzzy Authorization: Verifies user_id session OR guest phone/email
+// 4. Atomic Updates: Ensures refund_bank_details is recorded securely
+// ============================================================================
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { order_id, email_or_phone, bank_name, account_number, account_name, user_id } = body;
+export const POST = withErrorHandler(async (req: Request) => {
+  const body = await req.json();
+  const { order_id, email_or_phone, bank_name, account_number, account_name, user_id } = body;
 
-    if (!order_id || !bank_name || !account_number || !account_name) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    // Fetch the order securely
-    const { data: order, error: orderError } = await supabaseAdmin
-      .from('orders')
-      .select('id, user_id, shipping_address')
-      .eq('id', order_id)
-      .single();
-
-    if (orderError || !order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
-
-    // Security Verification
-    let isAuthorized = false;
-    if (user_id && order.user_id === user_id) {
-      // Authorized via authenticated user session
-      isAuthorized = true;
-    } else if (email_or_phone) {
-      // Authorized via guest details verification (matching TrackClient logic)
-      const phoneMatch = order.shipping_address?.phone === email_or_phone;
-      const cleanInput = email_or_phone.replace(/\D/g, '');
-      const cleanPhone = (order.shipping_address?.phone || '').replace(/\D/g, '');
-      const fuzzyPhoneMatch = cleanInput && cleanPhone && cleanPhone.includes(cleanInput);
-      
-      // We don't have email directly in orders without joining users, but usually guest track uses phone.
-      if (phoneMatch || fuzzyPhoneMatch) {
-        isAuthorized = true;
-      }
-    }
-
-    if (!isAuthorized) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const refundDetails = {
-      bank_name,
-      account_number,
-      account_name,
-      submitted_at: new Date().toISOString()
-    };
-
-    const { error: updateError } = await supabaseAdmin
-      .from('orders')
-      .update({ refund_bank_details: refundDetails })
-      .eq('id', order_id);
-
-    if (updateError) {
-      throw updateError;
-    }
-
-    return NextResponse.json({ success: true });
-
-  } catch (error: any) {
-    console.error('Refund Bank Submit Error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to submit' }, { status: 500 });
+  if (!order_id || !bank_name || !account_number || !account_name) {
+    return apiBadRequest('Missing required bank account fields: order_id, bank_name, account_number, account_name');
   }
-}
+
+  const sanitizedOrderId = String(order_id).trim().toUpperCase();
+
+  // 1. Fetch order securely using singleton client
+  const { data: order, error: orderError } = await supabaseAdmin
+    .from('orders')
+    .select('id, user_id, shipping_address, status')
+    .eq('id', sanitizedOrderId)
+    .maybeSingle();
+
+  if (orderError) {
+    return apiInternalError('Database query error while verifying order', orderError.message);
+  }
+  if (!order) {
+    return apiNotFound(`Order '${sanitizedOrderId}' not found`);
+  }
+
+  // 2. Security & Authorization Verification
+  let isAuthorized = false;
+
+  // Authorize via Authenticated User Session
+  if (user_id && order.user_id === user_id) {
+    isAuthorized = true;
+  } else if (email_or_phone) {
+    // Authorize via Guest verification (exact or fuzzy phone/email match against shipping_address)
+    const inputClean = String(email_or_phone).trim().toLowerCase();
+    const phoneClean = inputClean.replace(/\D/g, '');
+    
+    const shippingPhone = String(order.shipping_address?.phone || '').replace(/\D/g, '');
+    const shippingEmail = String(order.shipping_address?.email || '').trim().toLowerCase();
+
+    const isPhoneMatch = (phoneClean.length >= 8 && shippingPhone.includes(phoneClean)) || (shippingPhone.length >= 8 && phoneClean.includes(shippingPhone));
+    const isEmailMatch = shippingEmail && shippingEmail === inputClean;
+
+    if (isPhoneMatch || isEmailMatch) {
+      isAuthorized = true;
+    }
+  }
+
+  if (!isAuthorized) {
+    return apiUnauthorized('You are not authorized to submit refund account details for this order.');
+  }
+
+  // 3. Construct clean refund payload
+  const refundDetails = {
+    bank_name: String(bank_name).trim().toUpperCase(),
+    account_number: String(account_number).trim(),
+    account_name: String(account_name).trim().toUpperCase(),
+    submitted_at: new Date().toISOString(),
+  };
+
+  // 4. Atomic Database Update
+  const { error: updateError } = await supabaseAdmin
+    .from('orders')
+    .update({ refund_bank_details: refundDetails })
+    .eq('id', sanitizedOrderId);
+
+  if (updateError) {
+    return apiInternalError('Failed to save refund bank details to order', updateError.message);
+  }
+
+  return apiSuccess({
+    message: 'Refund account details successfully recorded.',
+    order_id: sanitizedOrderId,
+    refund_bank_details: refundDetails,
+  });
+});
+
