@@ -57,11 +57,11 @@ interface Product {
 }
 
 function MobileShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
-  const categoryMap: Record<string, string> = {
+  const categoryMap: Record<string, string | string[]> = {
     'All': 'All',
-    'Fashion': 'pakaian',
-    'Utilities': 'utilities',
-    'Accessories': 'aksesoris',
+    'Apparel': 'pakaian',
+    'Objects': ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles'],
+    'Pantry': ['coffee', 'pastry', 'rtd', 'snack', 'beverage'],
   };
   const displayCategories = Object.keys(categoryMap);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
@@ -69,7 +69,11 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
   const filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(p => p.category === categoryMap[selectedCategory]);
+    : products.filter(p => {
+        const mapped = categoryMap[selectedCategory];
+        if (Array.isArray(mapped)) return mapped.includes(p.category);
+        return p.category === mapped;
+      });
 
   const groupedProducts = filteredProducts.reduce((acc, product) => {
     if (!acc[product.category]) {
@@ -217,18 +221,22 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 }
 
 function DesktopShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
-  const categoryMap: Record<string, string> = {
+  const categoryMap: Record<string, string | string[]> = {
     'All': 'All',
-    'Fashion': 'pakaian',
-    'Utilities': 'utilities',
-    'Accessories': 'aksesoris',
+    'Apparel': 'pakaian',
+    'Objects': ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles'],
+    'Pantry': ['coffee', 'pastry', 'rtd', 'snack', 'beverage'],
   };
   const displayCategories = Object.keys(categoryMap);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
 
   const filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(p => p.category === categoryMap[selectedCategory]);
+    : products.filter(p => {
+        const mapped = categoryMap[selectedCategory];
+        if (Array.isArray(mapped)) return mapped.includes(p.category);
+        return p.category === mapped;
+      });
 
   return (
     <main className="min-h-screen bg-cr noise pb-40">
@@ -373,7 +381,7 @@ function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
 
-  const allowedCategories = ['All', 'Fashion', 'Utilities', 'Accessories'];
+  const allowedCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const initialCategory = filterParam && allowedCategories.includes(filterParam) ? filterParam : 'All';
 
   const { isMobile } = useDevice();

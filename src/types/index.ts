@@ -1,4 +1,4 @@
-export type CategoryType = 'pakaian' | 'utilities' | 'aksesoris' | string;
+export type CategoryType = 'pakaian' | 'outerwear' | 'footwear' | 'utilities' | 'home' | 'kitchen' | 'ceramics' | 'collectibles' | 'coffee' | 'pastry' | 'rtd' | 'snack' | 'beverage' | 'aksesoris' | string;
 
 export interface Department {
   id: string;

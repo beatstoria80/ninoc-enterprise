@@ -20,32 +20,38 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CUSTOM MODERN ICONS — NINOC STUDIO
+// CONCEPT MALL PILLAR ICONS — NINOC ENTERPRISE
 // ═══════════════════════════════════════════════════════════════
 
-// Pakaian (Apparel) — T-shirt icon
-const PakaianIcon = () => (
+// Apparel & Archive — Hanger icon
+const ApparelIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
   </svg>
 );
 
-// Utilities (Functional) — Wrench/tool icon
-const UtilitiesIcon = () => (
+// Objects & Consumer Goods — Cube/box icon
+const ObjectsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+    <line x1="12" y1="22.08" x2="12" y2="12" />
   </svg>
 );
 
-// Aksesoris (Accents) — Diamond/gem icon
-const AksesorisIcon = () => (
+// Pantry & Café — Coffee cup icon
+const PantryIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2L2 9L12 16L22 9L12 2Z" />
-    <path d="M2 15L12 22L22 15" />
-    <path d="M2 9V15L12 22V9" />
-    <path d="M22 9V15L12 22V9" />
+    <path d="M17 8h1a4 4 0 110 8h-1" />
+    <path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z" />
+    <line x1="6" y1="2" x2="6" y2="4" />
+    <line x1="10" y1="2" x2="10" y2="4" />
+    <line x1="14" y1="2" x2="14" y2="4" />
   </svg>
 );
+
+// Legacy alias for fallback
+const PakaianIcon = ApparelIcon;
 
 // ═══════════════════════════════════════════════════════════════
 // EMIL KOWALSKI ANIMATION ENGINE — NINOC STUDIO
@@ -68,13 +74,13 @@ const DURATION = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// CATEGORY CONFIGURATION
+// CONCEPT MALL DEPARTMENT PILLARS
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  { id: 'pakaian' as CategoryType, label: 'Pakaian', sublabel: 'Apparel', icon: PakaianIcon, href: '/shop?filter=Fashion', spec: 'GARMENT-001' },
-  { id: 'utilities' as CategoryType, label: 'Utilities', sublabel: 'Functional', icon: UtilitiesIcon, href: '/shop?filter=Utilities', spec: 'UTIL-002' },
-  { id: 'aksesoris' as CategoryType, label: 'Aksesoris', sublabel: 'Accents', icon: AksesorisIcon, href: '/shop?filter=Accessories', spec: 'ACCS-003' },
+  { id: 'pakaian' as CategoryType, label: 'Apparel & Archive', sublabel: 'Fashion', icon: ApparelIcon, href: '/shop?filter=Apparel', spec: 'APR-001' },
+  { id: 'utilities' as CategoryType, label: 'Objects & Goods', sublabel: 'Consumer', icon: ObjectsIcon, href: '/shop?filter=Objects', spec: 'OBJ-002' },
+  { id: 'coffee' as CategoryType, label: 'Pantry & Café', sublabel: 'F&B', icon: PantryIcon, href: '/shop?filter=Pantry', spec: 'PTR-003' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -355,7 +361,7 @@ function ProductCard({ product, index }: ProductCardProps) {
               animate={{ opacity: isHovered ? 1 : 0.7 }}
               transition={{ duration: DURATION.fast }}
             >
-              {categoryInfo?.label || 'Garment Origin'}
+              {categoryInfo?.label || 'NINOC'}
             </motion.p>
 
             <motion.h3
@@ -683,8 +689,8 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                   transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                   className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
                 >
-                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-2">Technical Detail</p>
-                  <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Hand-stitched precision<br />Industrial Grade Fabrics</p>
+                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-2">Concept Mall</p>
+                  <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Curated with precision<br />Fashion · Objects · Pantry</p>
                 </motion.div>
               </div>
 
@@ -711,7 +717,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                       </div>
                       <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest">Origin Verified</span>
                     </div>
-                    <div className="text-sm md:text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just clothing. These are artifacts born from the streets, the stage, and the culture that shaped who we are.</div>
+                    <div className="text-sm md:text-[11px] font-medium uppercase leading-loose tracking-widest !text-white !opacity-100">Not just products. These are curated artifacts — from the runway to the roastery to the living room.</div>
                   </motion.div>
                 </div>
               </div>
@@ -919,11 +925,11 @@ export default function Home() {
                 </motion.div>
                 
                 <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
-                  <span>Catalog</span>
-                  <span>Collections</span>
-                  <span>Category</span>
+                  <span>Apparel</span>
+                  <span>Objects</span>
+                  <span>Pantry</span>
                   <span>Logbook</span>
-                  <span>About Us</span>
+                  <span>About</span>
                 </motion.div>
                 
                 <motion.div className="flex gap-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}>
@@ -1087,8 +1093,8 @@ export default function Home() {
             {/* Bottom CTA */}
             <div className="mt-8 pt-6 border-t border-ink/5 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col">
-                <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em] text-rose">NINOC ENTERPRISE</p>
-                <p className="text-base md:text-xs font-display font-medium italic text-ink mt-0.5">Wear the art, own the day.</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em] text-rose">NINOC CONCEPT MALL</p>
+                <p className="text-base md:text-xs font-display font-medium italic text-ink mt-0.5">Style. Substance. Savor.</p>
               </div>
               <div className="flex items-center gap-3">
                 <Link href="/about" className="px-5 py-2.5 bg-rose text-white text-sm md:text-[9px] font-semibold uppercase tracking-widest hover:bg-rose/90 transition-colors">

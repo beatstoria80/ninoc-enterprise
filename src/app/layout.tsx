@@ -34,13 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE_URL),
     title: {
-      default: isEn ? 'NINOC — Premium Archival Garment Studio' : 'NINOC — Premium Archival Garment Studio',
+      default: isEn ? 'NINOC — Enterprise Concept Mall' : 'NINOC — Enterprise Concept Mall',
       template: '%s | NINOC STORE',
     },
     description: isEn 
-      ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections with minimalist industrial design. Shop now!'
-      : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist. Shop now!',
-    keywords: ['garment archival', 'apparel premium', 'industrial minimalist', 'fashion bandung', 'distro bandung', 'brand lokal Indonesia', 'premium clothing'],
+      ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, artisan objects & homeware, and specialty coffee & pantry under one roof. Shop now!'
+      : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan & homeware, serta specialty coffee & pantry dalam satu atap. Shop now!',
+    keywords: ['concept mall indonesia', 'apparel premium', 'specialty coffee bandung', 'homeware artisan', 'ceramics bandung', 'brand lokal Indonesia', 'premium clothing', 'pantry cafe bandung', 'objects consumer goods'],
     authors: [{ name: 'NINOC STORE' }],
     creator: 'NINOC STORE',
     publisher: 'NINOC STORE',
@@ -49,25 +49,25 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: isEn ? 'en_US' : 'id_ID',
       url: BASE_URL,
       siteName: 'NINOC STORE',
-      title: 'NINOC — Premium Archival Garment Studio',
+      title: 'NINOC — Enterprise Concept Mall',
       description: isEn
-        ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections with minimalist industrial design.'
-        : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium dengan desain industrial minimalist.',
+        ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, artisan objects, and specialty coffee & pantry.'
+        : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan, serta specialty coffee & pantry.',
       images: [
         {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: 'NINOC STORE — Premium Archival Garment Studio',
+          alt: 'NINOC STORE — Enterprise Concept Mall',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'NINOC — Premium Archival Garment Studio',
+      title: 'NINOC — Enterprise Concept Mall',
       description: isEn
-        ? 'NINOC is an Indonesian archival garment studio presenting premium apparel collections.'
-        : 'NINOC adalah brand garment archival studio Indonesia yang menghadirkan koleksi apparel premium.',
+        ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, objects, and specialty pantry.'
+        : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan, dan pantry spesialti.',
       images: ['/og-image.png'],
       creator: '@ninocstore',
     },
