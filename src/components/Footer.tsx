@@ -61,6 +61,12 @@ export default function GlobalFooter() {
           <Link href="/help" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.footer.support}
           </Link>
+          <Link href="/shipping-policy" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
+            {(dict.footer as any).shippingPolicy || 'Shipping Policy'}
+          </Link>
+          <Link href="/refund-policy" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
+            {(dict.footer as any).refundPolicy || 'Refund Policy'}
+          </Link>
           <Link href="/track" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.header.track}
           </Link>
@@ -76,19 +82,19 @@ export default function GlobalFooter() {
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
               <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 leading-tight">
-                Bandung City, West Java, ID 40112
+                Jl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, ID
               </p>
             </div>
             <div className="flex items-center gap-1.5">
               <Mail size={9} className="text-rose flex-shrink-0" />
-              <a href="mailto:beatstoria.ai@gmail.com" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                beatstoria.ai@gmail.com
+              <a href="mailto:cs@ninoc.store" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+                cs@ninoc.store
               </a>
             </div>
             <div className="flex items-center gap-1.5">
               <Phone size={9} className="text-rose flex-shrink-0" />
               <a href="tel:+628211983774" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                +62 8211983774
+                +62 821-1983-7744
               </a>
             </div>
           </div>

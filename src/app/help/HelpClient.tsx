@@ -81,7 +81,7 @@ const HELP_SECTIONS: HelpSection[] = [
 const DEFAULT_VALUES: Record<string, any> = {
   help_guide_customer_care: {
     wa: '08211983774',
-    email: 'cs@ninoc.id',
+    email: 'cs@ninoc.store',
     hours: 'Senin–Sabtu, 08.00–17.00 WIB',
     notes: 'Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan buat tiket bantuan melalui fitur Support Chat di pojok kanan bawah.',
   },
@@ -90,12 +90,12 @@ const DEFAULT_VALUES: Record<string, any> = {
     accounts: [],
   },
   help_guide_return: {
-    policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 2 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.\n• Bukti unboxing video WAJIB — 1-shot tanpa edit, potong, atau henti.\n• Label& tag masih menempel.\n• Timestamp/waktu terlihat jelas di rekaman.',
+    policy: 'Kepuasan pelanggan adalah prioritas kami. Jika produk yang Anda terima tidak sesuai, rusak, atau terdapat kesalahan pengiriman, Anda dapat mengajukan retur atau refund sesuai ketentuan berikut.\n\nSyarat Pengajuan:\n\n• Produk diterima dalam kondisi rusak atau cacat.\n• Produk yang dikirim tidak sesuai dengan pesanan.\n• Pengajuan dilakukan maksimal 2 x 24 jam setelah barang diterima.\n• Produk belum digunakan dan masih dalam kondisi lengkap.\n• Bukti unboxing video WAJIB — 1-shot tanpa edit, potong, atau henti.\n• Label& tag masih menempel.\n• Timestamp/waktu terlihat jelas di rekaman.\n\n• Kebijakan Retur & Refund Lengkap: /refund-policy',
     process: '1. Buka fitur Support Chat di pojok kanan bawah layar.\n2. Buat tiket baru dengan memilih topik "Retur & Refund".\n3. Sertakan nomor pesanan, foto produk, deskripsi kendala, dan bukti video unboxing (1-shot).\n4. Tim kami akan melakukan verifikasi dalam 1–2 hari kerja.\n5. Refund diproses 3–7 hari kerja setelah persetujuan.\n\nPanduan Video Unboxing:\n\n• Rekam saat membuka paket dari keadaan tertutup.\n• Tunjukkan kondisi barang dengan jelas.\n• WAJIB 1-shot — tanpa edit, potong, henti, atau sisipkan adegan.\n• Timestamp/waktu harus terlihat jelas.\n• Minimal durasi 30 detik.',
     notes: '• Bukti video 1-shot tanpa edit adalah WAJIB — tanpa video, pengajuan tidak dapat diproses.\n• Refund dikembalikan melalui metode pembayaran awal atau transfer bank.\n• Biaya pengiriman retur ditanggung sesuai hasil verifikasi.\n• NINOC berhak menolak pengajuan yang tidak memenuhi syarat.\n• Pengajuan bisa dilakukan tanpa login — cukup siapkan Order ID dan email aktif.',
   },
   help_guide_shipping: {
-    info: 'Terima kasih telah berbelanja di toko kami.\n\nKami memproses pesanan setiap hari kerja (Senin–Sabtu) pukul 08.00–17.00 WIB.\n\nEstimasi Pengiriman:\n\nJabodetabek: 1–2 hari kerja\nPulau Jawa: 2–4 hari kerja\nLuar Pulau Jawa: 3–7 hari kerja\n\nKetentuan Pengiriman:\n\n• Pesanan yang masuk sebelum pukul 15.00 WIB akan diproses di hari yang sama.\n• Nomor resi akan dikirim otomatis setelah pesanan dikirim.',
+    info: 'Terima kasih telah berbelanja di toko kami.\n\nKami memproses pesanan setiap hari kerja (Senin–Sabtu) pukul 08.00–17.00 WIB.\n\nEstimasi Pengiriman:\n\nJabodetabek: 1–2 hari kerja\nPulau Jawa: 2–4 hari kerja\nLuar Pulau Jawa: 3–7 hari kerja\n\nKetentuan Pengiriman:\n\n• Pesanan yang masuk sebelum pukul 15.00 WIB akan diproses di hari yang sama.\n• Nomor resi akan dikirim otomatis setelah pesanan dikirim.\n\n• Kebijakan Pengiriman Lengkap: /shipping-policy',
     area: 'Kami mengirim ke seluruh Indonesia',
   },
   help_guide_how_to_order: 'Ikuti langkah mudah berikut untuk melakukan pemesanan:\n1. Pilih produk yang ingin Anda beli.\n2. Klik tombol Tambah ke Keranjang atau Beli Sekarang.\n3. Masukkan jumlah produk yang diinginkan.\n4. Isi data pengiriman dengan lengkap.\n5. Pilih metode pembayaran yang tersedia.\n6. Klik Buat Pesanan.\n7. Lakukan pembayaran sesuai instruksi.\n8. Pesanan Anda akan segera kami proses setelah pembayaran terverifikasi.\n\nCatatan:\n\n• Pastikan alamat dan nomor WhatsApp yang Anda masukkan sudah benar.\n• Simpan nomor pesanan untuk memudahkan pengecekan status.',

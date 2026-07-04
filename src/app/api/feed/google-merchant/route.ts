@@ -72,7 +72,10 @@ export async function GET() {
       const description = escapeXml(product.description || product.name);
       const link = `${domain}/shop/${product.slug}`;
       const imageLink = product.image_url ? (product.image_url.startsWith('http') ? product.image_url : `${domain}${product.image_url}`) : '';
-      const price = `${product.price} IDR`;
+      const formattedPrice = typeof product.price === 'number' 
+        ? product.price.toFixed(2) 
+        : parseFloat(product.price || '0').toFixed(2);
+      const price = `${formattedPrice} IDR`;
 
       xml += `
     <item>
@@ -85,6 +88,8 @@ export async function GET() {
       <g:availability>${availability}</g:availability>
       <g:price>${price}</g:price>
       <g:brand>NINOC</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:mpn>${escapeXml(product.id)}</g:mpn>
       <g:google_product_category>166</g:google_product_category>
     </item>`;
     }

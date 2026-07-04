@@ -31,6 +31,8 @@ export const en = {
     contact: "Contact",
     returns: "Returns",
     terms: "Terms of Service",
+    shippingPolicy: "Shipping Policy",
+    refundPolicy: "Refund Policy",
     rights: "All Rights Reserved."
   },
   shop: {
@@ -117,7 +119,7 @@ export const en = {
     stats: {
       est: { label: "Est.", value: "2024" },
       location: { label: "Location", value: "Bandung" },
-      contact: { label: "Contact", value: "hello@ninoc.art" }
+      contact: { label: "Contact", value: "cs@ninoc.store" }
     },
     verified: {
       label: "Origin Verified",

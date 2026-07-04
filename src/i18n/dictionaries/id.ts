@@ -31,6 +31,8 @@ export const id = {
     contact: "Kontak",
     returns: "Pengembalian",
     terms: "Syarat & Ketentuan",
+    shippingPolicy: "Kebijakan Pengiriman",
+    refundPolicy: "Kebijakan Retur & Refund",
     rights: "Semua Hak Dilindungi."
   },
   shop: {
@@ -117,7 +119,7 @@ export const id = {
     stats: {
       est: { label: "Didirikan", value: "2024" },
       location: { label: "Lokasi", value: "Bandung" },
-      contact: { label: "Kontak", value: "hello@ninoc.art" }
+      contact: { label: "Kontak", value: "cs@ninoc.store" }
     },
     verified: {
       label: "Terverifikasi Origin",

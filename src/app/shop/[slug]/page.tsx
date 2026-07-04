@@ -122,6 +122,16 @@ export default async function ShopProductPage({ params }: Props) {
     }));
   }
 
+  const totalStock = Array.isArray(product.variants)
+    ? product.variants.reduce((sum: number, v: any) => sum + (v.stock_quantity || 0), 0)
+    : 1;
+
+  const availability = product.price_tag === 'PREORDER'
+    ? 'https://schema.org/PreOrder'
+    : totalStock > 0
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
+
   const description = product.description
     ? product.description.slice(0, 160)
     : `Beli ${product.name} dari NINOC — Premium Archival Garment Studio. IDR ${product.price?.toLocaleString('id-ID')}.`;
@@ -139,20 +149,53 @@ export default async function ShopProductPage({ params }: Props) {
     manufacturer: {
       '@type': 'Organization',
       name: 'NINOC Enterprise',
-      address: 'Bandung, Indonesia'
+      address: 'Jl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, Indonesia'
     },
     offers: {
       '@type': 'Offer',
       price: product.price,
       priceCurrency: 'IDR',
       itemCondition: 'https://schema.org/NewCondition',
-      availability: product.price_tag === 'PREORDER'
-        ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/InStock',
+      availability,
       url: `${BASE_URL}/shop/${slug}`,
       seller: {
         '@type': 'Organization',
         name: 'NINOC STORE',
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'ID',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 2,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn'
+      },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: 0,
+          currency: 'IDR'
+        },
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'ID'
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 1,
+            maxValue: 2,
+            unitCode: 'DAY'
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 2,
+            maxValue: 5,
+            unitCode: 'DAY'
+          }
+        }
       }
     },
     ...(aggregateRating ? { aggregateRating } : {}),
