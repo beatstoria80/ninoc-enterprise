@@ -207,6 +207,8 @@ export default function AdminDashboard() {
 
   // Form states
   const [dbCategories, setDbCategories] = useState<any[]>([]);
+  const [dbDepartments, setDbDepartments] = useState<any[]>([]);
+  const [dbWarehouses, setDbWarehouses] = useState<any[]>([]);
   const [productForm, setProductForm] = useState({
     name: '',
     slug: '',
@@ -217,6 +219,14 @@ export default function AdminDashboard() {
     model_info: '',
     price: '',
     category: 'pakaian',
+    department_id: '',
+    warehouse_id: '',
+    weight_grams: 500,
+    length_cm: 20,
+    width_cm: 20,
+    height_cm: 5,
+    shelf_life_days: '',
+    is_perishable: false,
     image_url: '',
     image_alt: '',
     perspective1: '',
@@ -359,9 +369,18 @@ export default function AdminDashboard() {
         .in('status', ['pending', 'reviewed']);
       if (pendingReturnsCount !== null) setPendingReturns(pendingReturnsCount);
 
-      // Fetch categories
-      const { data: catData } = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ({ data: [] }));
-      if (catData && Array.isArray(catData)) setDbCategories(catData);
+      // Fetch categories, departments, and warehouses
+      const catData = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ([]));
+      const cats = Array.isArray(catData) ? catData : (catData?.data || []);
+      if (Array.isArray(cats)) setDbCategories(cats);
+
+      const deptData = await fetch('/api/admin/departments').then(r => r.json()).catch(() => ([]));
+      const depts = Array.isArray(deptData) ? deptData : (deptData?.data || []);
+      if (Array.isArray(depts)) setDbDepartments(depts);
+
+      const whData = await fetch('/api/admin/warehouses').then(r => r.json()).catch(() => ([]));
+      const whs = Array.isArray(whData) ? whData : (whData?.data || []);
+      if (Array.isArray(whs)) setDbWarehouses(whs);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -391,6 +410,14 @@ export default function AdminDashboard() {
         model_info: product.model_info || '',
         price: product.price.toString(),
         category: product.category,
+        department_id: product.department_id || dbDepartments[0]?.id || '',
+        warehouse_id: product.warehouse_id || dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
+        weight_grams: product.weight_grams || 500,
+        length_cm: product.length_cm || 20,
+        width_cm: product.width_cm || 20,
+        height_cm: product.height_cm || 5,
+        shelf_life_days: product.shelf_life_days ? String(product.shelf_life_days) : '',
+        is_perishable: product.is_perishable || false,
         image_url: product.image_url || '',
         image_alt: product.image_alt || '',
         perspective1: product.perspective1 || '',
@@ -422,6 +449,14 @@ export default function AdminDashboard() {
         model_info: '',
         price: '',
         category: 'pakaian',
+        department_id: dbDepartments[0]?.id || '',
+        warehouse_id: dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
+        weight_grams: 500,
+        length_cm: 20,
+        width_cm: 20,
+        height_cm: 5,
+        shelf_life_days: '',
+        is_perishable: false,
         image_url: '',
         image_alt: '',
         perspective1: '',
@@ -524,6 +559,14 @@ export default function AdminDashboard() {
         model_info: productForm.model_info || null,
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
+        department_id: (productForm as any).department_id || null,
+        warehouse_id: (productForm as any).warehouse_id || null,
+        weight_grams: parseInt(String((productForm as any).weight_grams)) || 500,
+        length_cm: parseInt(String((productForm as any).length_cm)) || 20,
+        width_cm: parseInt(String((productForm as any).width_cm)) || 20,
+        height_cm: parseInt(String((productForm as any).height_cm)) || 5,
+        shelf_life_days: (productForm as any).shelf_life_days ? parseInt(String((productForm as any).shelf_life_days)) : null,
+        is_perishable: Boolean((productForm as any).is_perishable),
         image_url: finalImageUrl,
         image_alt: finalImageAlt,
         perspective1: finalP1,
@@ -1955,6 +1998,118 @@ export default function AdminDashboard() {
                           </>
                         )}
                       </select>
+                    </div>
+                  </div>
+
+                  {/* CONCEPT MALL & LOGISTICS SPECS */}
+                  <div className="p-3 bg-gray-50/80 border border-gray-200/80 rounded-lg space-y-3">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
+                      <span>🏢</span> Concept Mall & Multi-Origin Logistics (Biteship)
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Department Pillar</label>
+                        <select
+                          value={productForm.department_id}
+                          onChange={(e) => setProductForm({ ...productForm, department_id: e.target.value })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 bg-white"
+                        >
+                          <option value="">-- Pilih Department --</option>
+                          {dbDepartments.map(d => (
+                            <option key={d.id} value={d.id}>{d.name}</option>
+                          ))}
+                          {!dbDepartments.length && (
+                            <>
+                              <option value="1">Apparel & Archive</option>
+                              <option value="2">Objects & Consumer Goods</option>
+                              <option value="3">Pantry & Café (F&B)</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Origin Warehouse</label>
+                        <select
+                          value={productForm.warehouse_id}
+                          onChange={(e) => setProductForm({ ...productForm, warehouse_id: e.target.value })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 bg-white"
+                        >
+                          <option value="">-- Pilih Gudang Asal --</option>
+                          {dbWarehouses.map(w => (
+                            <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
+                          ))}
+                          {!dbWarehouses.length && (
+                            <>
+                              <option value="wh-1">Gudang Utama NINOC (WH-BANDUNG-01)</option>
+                              <option value="wh-2">NINOC Pantry Roastery Hub (WH-BANDUNG-FB)</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2">
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-1">Weight (g)</label>
+                        <input
+                          type="number"
+                          value={productForm.weight_grams}
+                          onChange={(e) => setProductForm({ ...productForm, weight_grams: parseInt(e.target.value) || 0 })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-1">Length (cm)</label>
+                        <input
+                          type="number"
+                          value={productForm.length_cm}
+                          onChange={(e) => setProductForm({ ...productForm, length_cm: parseInt(e.target.value) || 0 })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-1">Width (cm)</label>
+                        <input
+                          type="number"
+                          value={productForm.width_cm}
+                          onChange={(e) => setProductForm({ ...productForm, width_cm: parseInt(e.target.value) || 0 })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-1">Height (cm)</label>
+                        <input
+                          type="number"
+                          value={productForm.height_cm}
+                          onChange={(e) => setProductForm({ ...productForm, height_cm: parseInt(e.target.value) || 0 })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 items-center">
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-1">Shelf Life (Days - F&B Optional)</label>
+                        <input
+                          type="number"
+                          placeholder="e.g. 90"
+                          value={productForm.shelf_life_days}
+                          onChange={(e) => setProductForm({ ...productForm, shelf_life_days: e.target.value })}
+                          className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs bg-white"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 pt-4">
+                        <input
+                          type="checkbox"
+                          id="is_perishable"
+                          checked={productForm.is_perishable}
+                          onChange={(e) => setProductForm({ ...productForm, is_perishable: e.target.checked })}
+                          className="rounded border-gray-300 text-rose focus:ring-rose"
+                        />
+                        <label htmlFor="is_perishable" className="text-[11px] font-medium text-gray-700 cursor-pointer">
+                          Perishable (Mudah Basi / Instan Only)
+                        </label>
+                      </div>
                     </div>
                   </div>
 

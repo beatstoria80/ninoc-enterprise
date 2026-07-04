@@ -23,6 +23,8 @@ export async function GET() {
         description, 
         price, 
         image_url,
+        category,
+        departments ( gpc_code, name ),
         variants ( stock_quantity )
       `);
 
@@ -77,6 +79,19 @@ export async function GET() {
         : parseFloat(product.price || '0').toFixed(2);
       const price = `${formattedPrice} IDR`;
 
+      // Determine Google Product Category (GPC) dynamically
+      let gpc = '166'; // Default: Apparel & Accessories > Clothing
+      if (product.departments && (product.departments as any).gpc_code) {
+        gpc = (product.departments as any).gpc_code;
+      } else if (product.category) {
+        const catLower = String(product.category).toLowerCase();
+        if (catLower.includes('pantry') || catLower.includes('kopi') || catLower.includes('coffee') || catLower.includes('f&b') || catLower.includes('food') || catLower.includes('beverage')) {
+          gpc = 'Food, Beverages & Tobacco > Beverages > Coffee';
+        } else if (catLower.includes('object') || catLower.includes('goods') || catLower.includes('utilities') || catLower.includes('home')) {
+          gpc = 'Home & Garden > Kitchen & Dining';
+        }
+      }
+
       xml += `
     <item>
       <g:id>${escapeXml(product.id)}</g:id>
@@ -90,7 +105,7 @@ export async function GET() {
       <g:brand>NINOC</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:mpn>${escapeXml(product.id)}</g:mpn>
-      <g:google_product_category>166</g:google_product_category>
+      <g:google_product_category>${escapeXml(gpc)}</g:google_product_category>
     </item>`;
     }
 
