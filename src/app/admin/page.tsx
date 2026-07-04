@@ -242,9 +242,10 @@ export default function AdminDashboard() {
 
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
 
-  // Derived state for Concept Mall UI/UX conditional hierarchy
-  const isFnB = productForm.department_id === '3' || productForm.department_id === 'pantry' || productForm.category === 'coffee' || productForm.category === 'pastry' || productForm.category === 'rtd' || productForm.category === 'snack';
-  const isObjects = productForm.department_id === '2' || productForm.department_id === 'objects' || productForm.category === 'home' || productForm.category === 'kitchen' || productForm.category === 'utilities' || productForm.category === 'collectibles';
+  // Derived state for Concept Mall UI/UX conditional hierarchy (supports database UUIDs, slug strings, and category fallbacks)
+  const selectedDeptObj = dbDepartments.find(d => d.id === productForm.department_id || d.slug === productForm.department_id || String(d.id) === String(productForm.department_id));
+  const isFnB = productForm.department_id === '3' || productForm.department_id === 'pantry' || selectedDeptObj?.slug === 'pantry' || (selectedDeptObj?.name || '').toLowerCase().includes('pantry') || (selectedDeptObj?.name || '').toLowerCase().includes('f&b') || (selectedDeptObj?.name || '').toLowerCase().includes('cafe') || productForm.category === 'coffee' || productForm.category === 'pastry' || productForm.category === 'rtd' || productForm.category === 'snack' || productForm.category === 'beverage';
+  const isObjects = !isFnB && (productForm.department_id === '2' || productForm.department_id === 'objects' || selectedDeptObj?.slug === 'objects' || (selectedDeptObj?.name || '').toLowerCase().includes('objects') || (selectedDeptObj?.name || '').toLowerCase().includes('consumer') || productForm.category === 'home' || productForm.category === 'kitchen' || productForm.category === 'utilities' || productForm.category === 'collectibles' || productForm.category === 'ceramics');
   const isFashion = !isFnB && !isObjects;
 
   // Customer form states
@@ -415,7 +416,11 @@ export default function AdminDashboard() {
         model_info: product.model_info || '',
         price: product.price.toString(),
         category: product.category,
-        department_id: product.department_id || dbDepartments[0]?.id || '',
+        department_id: product.department_id || dbDepartments.find(d => {
+          if (product.category === 'coffee' || product.category === 'pastry' || product.category === 'rtd' || product.category === 'snack') return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
+          if (product.category === 'home' || product.category === 'kitchen' || product.category === 'utilities') return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
+          return d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel');
+        })?.id || dbDepartments[0]?.id || '',
         warehouse_id: product.warehouse_id || dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
         weight_grams: product.weight_grams || 500,
         length_cm: product.length_cm || 20,
@@ -449,12 +454,12 @@ export default function AdminDashboard() {
         slug: '',
         description: '',
         description_en: '',
-        specifications: [{ label: 'Jenis Pakaian', value: 'Kaos' }],
+        specifications: [{ label: 'Fit', value: 'Standar' }],
         measurements: [],
         model_info: '',
         price: '',
         category: 'pakaian',
-        department_id: dbDepartments[0]?.id || '',
+        department_id: dbDepartments.find(d => d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel'))?.id || dbDepartments[0]?.id || '',
         warehouse_id: dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
         weight_grams: 500,
         length_cm: 20,
@@ -1963,28 +1968,41 @@ export default function AdminDashboard() {
                           value={productForm.department_id}
                           onChange={(e) => {
                             const newDept = e.target.value;
+                            const selDept = dbDepartments.find(d => d.id === newDept || d.slug === newDept || String(d.id) === String(newDept));
+                            const isPantrySel = newDept === '3' || newDept === 'pantry' || selDept?.slug === 'pantry' || (selDept?.name || '').toLowerCase().includes('pantry') || (selDept?.name || '').toLowerCase().includes('f&b') || (selDept?.name || '').toLowerCase().includes('cafe');
+                            const isObjectsSel = newDept === '2' || newDept === 'objects' || selDept?.slug === 'objects' || (selDept?.name || '').toLowerCase().includes('objects') || (selDept?.name || '').toLowerCase().includes('consumer');
+
                             let newCat = productForm.category;
                             let newWh = productForm.warehouse_id;
                             let newPerishable = productForm.is_perishable;
-                            if (newDept === '3' || newDept === 'pantry') {
+                            let newSpecs = [...(productForm.specifications || [])];
+
+                            const fbWh = dbWarehouses.find(w => (w.name || '').toLowerCase().includes('roastery') || (w.name || '').toLowerCase().includes('f&b') || w.code === 'WH-BANDUNG-FB')?.id || 'wh-2';
+                            const mainWh = dbWarehouses.find(w => w.is_primary || w.code === 'WH-BANDUNG-01')?.id || dbWarehouses[0]?.id || 'wh-1';
+
+                            if (isPantrySel) {
                               newCat = 'coffee';
-                              newWh = 'wh-2';
+                              newWh = fbWh;
                               newPerishable = true;
-                            } else if (newDept === '2' || newDept === 'objects') {
+                              newSpecs = [{ label: 'Roast Level', value: 'Medium Roast' }];
+                            } else if (isObjectsSel) {
                               newCat = 'utilities';
-                              newWh = 'wh-1';
+                              newWh = mainWh;
                               newPerishable = false;
+                              newSpecs = [{ label: 'Material', value: 'High-Grade Ceramic' }];
                             } else {
                               newCat = 'pakaian';
-                              newWh = 'wh-1';
+                              newWh = mainWh;
                               newPerishable = false;
+                              newSpecs = [{ label: 'Fit', value: 'Standar' }];
                             }
                             setProductForm({
                               ...productForm,
                               department_id: newDept,
                               category: newCat,
                               warehouse_id: newWh,
-                              is_perishable: newPerishable
+                              is_perishable: newPerishable,
+                              specifications: newSpecs
                             });
                           }}
                           className="w-full px-2 py-1.5 border border-white/20 rounded-lg text-xs focus:outline-none focus:border-rose bg-gray-900 text-white font-medium shadow-inner"
