@@ -84,10 +84,10 @@ export function apiInternalError(
  * Higher-order error handler wrapper for API route handlers.
  * Catches unhandled exceptions, logs them with route metadata, and returns a structured 500 response.
  */
-export function withErrorHandler(
-  handler: (req: Request, ...args: any[]) => Promise<NextResponse>
+export function withErrorHandler<R extends Request = Request>(
+  handler: (req: R, ...args: any[]) => Promise<NextResponse>
 ) {
-  return async (req: Request, ...args: any[]): Promise<NextResponse> => {
+  return async (req: R, ...args: any[]): Promise<NextResponse> => {
     try {
       return await handler(req, ...args);
     } catch (error: any) {
