@@ -1,19 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 // Google Merchant Center ID: 5814201453
-
-
-// Use Service Role Key to bypass RLS since this is a secure server route generating a public feed
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
 
 export async function GET() {
   try {
     // Fetch all active products
-    // Note: Assuming all products in the table are active unless there's a specific 'is_active' flag.
     const { data: products, error } = await supabaseAdmin
       .from('products')
       .select(`

@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { apiBadRequest, apiInternalError, apiSuccess } from '@/lib/apiResponse';
 
 export async function GET() {
   try {
-    const { data, error } = await adminClient
+    const { data, error } = await supabaseAdmin
       .from('warehouses')
       .select('*')
       .order('is_primary', { ascending: false });
@@ -47,12 +43,12 @@ export async function GET() {
           }
         ]);
       }
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
     return NextResponse.json(data);
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (err: any) {
+    return apiInternalError('Failed to fetch warehouses', err?.message);
   }
 }
 
@@ -62,15 +58,15 @@ export async function POST(req: NextRequest) {
     const { name, code, contact_name, contact_phone, street_address, district, city, province, postal_code, is_primary } = body;
 
     if (!name || !code || !contact_phone || !street_address) {
-      return NextResponse.json({ error: 'Name, code, phone, and address are required' }, { status: 400 });
+      return apiBadRequest('Name, code, phone, and address are required');
     }
 
     // If setting as primary, unset other primary warehouses
     if (is_primary) {
-      await adminClient.from('warehouses').update({ is_primary: false }).eq('is_primary', true);
+      await supabaseAdmin.from('warehouses').update({ is_primary: false }).eq('is_primary', true);
     }
 
-    const { data, error } = await adminClient
+    const { data, error } = await supabaseAdmin
       .from('warehouses')
       .insert({
         name,
@@ -88,12 +84,12 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
-    return NextResponse.json(data);
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return apiSuccess({ data }, 201);
+  } catch (err: any) {
+    return apiInternalError('Failed to create warehouse', err?.message);
   }
 }
 
@@ -103,20 +99,20 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+      return apiBadRequest('ID is required');
     }
 
-    const { error } = await adminClient
+    const { error } = await supabaseAdmin
       .from('warehouses')
       .delete()
       .eq('id', id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return apiSuccess({ message: 'Warehouse deleted successfully' });
+  } catch (err: any) {
+    return apiInternalError('Failed to delete warehouse', err?.message);
   }
 }

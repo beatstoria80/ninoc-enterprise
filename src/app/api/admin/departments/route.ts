@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { apiBadRequest, apiInternalError, apiSuccess } from '@/lib/apiResponse';
 
 export async function GET() {
   try {
-    const { data, error } = await adminClient
+    const { data, error } = await supabaseAdmin
       .from('departments')
       .select('*')
       .order('sort_order', { ascending: true });
@@ -22,12 +18,12 @@ export async function GET() {
           { id: '3', name: 'Pantry & Café (F&B)', slug: 'pantry', gpc_code: 'Food, Beverages & Tobacco > Beverages > Coffee', sort_order: 3 }
         ]);
       }
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
     return NextResponse.json(data);
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (err: any) {
+    return apiInternalError('Failed to fetch departments', err?.message);
   }
 }
 
@@ -37,10 +33,10 @@ export async function POST(req: NextRequest) {
     const { name, slug, gpc_code, description, sort_order } = body;
 
     if (!name || !slug || !gpc_code) {
-      return NextResponse.json({ error: 'Name, slug, and GPC code are required' }, { status: 400 });
+      return apiBadRequest('Name, slug, and GPC code are required');
     }
 
-    const { data, error } = await adminClient
+    const { data, error } = await supabaseAdmin
       .from('departments')
       .insert({
         name,
@@ -53,12 +49,12 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
-    return NextResponse.json(data);
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return apiSuccess({ data }, 201);
+  } catch (err: any) {
+    return apiInternalError('Failed to create department', err?.message);
   }
 }
 
@@ -68,20 +64,20 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+      return apiBadRequest('ID is required');
     }
 
-    const { error } = await adminClient
+    const { error } = await supabaseAdmin
       .from('departments')
       .delete()
       .eq('id', id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiBadRequest(error.message);
     }
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return apiSuccess({ message: 'Department deleted successfully' });
+  } catch (err: any) {
+    return apiInternalError('Failed to delete department', err?.message);
   }
 }

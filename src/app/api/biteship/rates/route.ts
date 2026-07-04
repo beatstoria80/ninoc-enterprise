@@ -1,14 +1,10 @@
 /**
  * Biteship Shipping Rates API
- * Proxy to Biteship API — tries real Biteship first, falls back to mock on failure
+ * Proxy to Biteship API — tries real Biteship first, falls back to mock on failure.
+ * Features in-memory TTL caching for origin warehouse lookups to eliminate DB bottlenecks.
  */
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 const MOCK_RATES = {
   success: true,
@@ -24,6 +20,36 @@ const MOCK_RATES = {
   ],
   available_couriers: ['jne', 'grab', 'gojek'],
 };
+
+// In-memory TTL cache for primary crossdock origin warehouse (5 minutes TTL)
+let cachedOriginHub: { postalCode: number; expiresAt: number } | null = null;
+
+async function getOriginPostalCode(): Promise<number> {
+  const now = Date.now();
+  if (cachedOriginHub && cachedOriginHub.expiresAt > now) {
+    return cachedOriginHub.postalCode;
+  }
+
+  let defaultOrigin = 41254; // Fallback Griya Saluyu
+  try {
+    const { data: hubData } = await supabaseAdmin
+      .from('warehouses')
+      .select('postal_code')
+      .eq('is_crossdock_hub', true)
+      .limit(1)
+      .single();
+    if (hubData?.postal_code) {
+      defaultOrigin = parseInt(hubData.postal_code, 10);
+    }
+    cachedOriginHub = {
+      postalCode: defaultOrigin,
+      expiresAt: now + 5 * 60 * 1000,
+    };
+  } catch (e) {
+    console.warn('[Biteship Rates] Failed to fetch Ninoc Hub from DB, using fallback.', e);
+  }
+  return defaultOrigin;
+}
 
 function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
   const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
@@ -86,21 +112,8 @@ export async function POST(req: Request) {
         if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
         else if (final_dest_id) bodyPayload.destination_area_id = final_dest_id;
 
-        // Dynamically fetch Origin Hub (NINOC Central Warehouse)
-        let defaultOrigin = 41254; // Fallback
-        try {
-          const { data: hubData } = await supabaseAdmin
-            .from('warehouses')
-            .select('postal_code')
-            .eq('is_crossdock_hub', true)
-            .limit(1)
-            .single();
-          if (hubData?.postal_code) {
-            defaultOrigin = parseInt(hubData.postal_code, 10);
-          }
-        } catch (e) {
-          console.warn('[Biteship Rates] Failed to fetch Ninoc Hub from DB, using fallback.', e);
-        }
+        // Dynamically fetch Origin Hub (NINOC Central Warehouse) with in-memory TTL cache
+        const defaultOrigin = await getOriginPostalCode();
 
         bodyPayload.origin_postal_code = origin_postal_code || defaultOrigin;
 
