@@ -883,7 +883,7 @@ export default function GlobalHeader() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 w-[85vw] max-w-[400px] h-auto max-h-[85vh] bg-cr noise z-[410] border-r border-b border-ink/5 shadow-2xl flex flex-col rounded-br-3xl overflow-hidden"
+              className="fixed top-0 left-0 w-[85vw] max-w-[400px] h-full max-h-screen bg-cr noise z-[410] border-r border-ink/5 shadow-2xl flex flex-col overflow-hidden"
             >
               <div className="px-6 md:px-10 py-6 border-b border-ink/5 flex items-center justify-between shrink-0">
                 <div className="flex items-center">
@@ -901,7 +901,7 @@ export default function GlobalHeader() {
                 </PressScale>
               </div>
 
-              <div className="overflow-y-auto no-scrollbar px-6 md:px-10 py-8 flex flex-col gap-6">
+              <div className="overflow-y-auto no-scrollbar px-6 md:px-10 py-8 flex-1 flex flex-col gap-6">
                 {/* Member Info Section */}
                 {user && (
                   <motion.div
@@ -937,9 +937,8 @@ export default function GlobalHeader() {
                 <div className="flex flex-col gap-3 pb-6 border-b border-ink/10">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-rose">
-                      Departemen
+                      Life Style
                     </span>
-                    <span className="text-[9px] font-mono text-ink/40 uppercase">3 Pilar</span>
                   </div>
                   
                   {/* Portal 01: Apparel & Archive */}
@@ -1073,7 +1072,6 @@ export default function GlobalHeader() {
                         )}
                       >
                         <span>{item.label}</span>
-                        {item.highlight && <span className="text-[8px] px-1.5 py-0.5 bg-rose text-white uppercase font-mono">2x24h</span>}
                       </Link>
                     </motion.div>
                   ))}
