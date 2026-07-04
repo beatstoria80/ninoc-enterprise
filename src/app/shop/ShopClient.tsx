@@ -56,24 +56,74 @@ interface Product {
   badge_text?: string | null;
 }
 
+function matchesCategoryPillar(productCategory: string, pillar: string): boolean {
+  if (pillar === 'All') return true;
+  if (!productCategory) return false;
+  const cat = productCategory.toLowerCase().trim();
+  if (pillar === 'Apparel') {
+    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi'].some(k => cat.includes(k));
+  }
+  if (pillar === 'Objects') {
+    return ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k));
+  }
+  if (pillar === 'Pantry') {
+    return ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry', 'cafe', 'roastery', 'food', 'drinks', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast'].some(k => cat.includes(k));
+  }
+  return cat === pillar.toLowerCase();
+}
+
+function KithEmptyState({ selectedCategory, onReset }: { selectedCategory: string; onReset: () => void }) {
+  const code = selectedCategory === 'Apparel' ? 'APR-01' : selectedCategory === 'Objects' ? 'OBJ-02' : selectedCategory === 'Pantry' ? 'PTR-03' : 'EMPTY';
+  
+  return (
+    <div className="w-full border border-ink/10 bg-white p-8 md:p-20 text-center flex flex-col items-center justify-center min-h-[45vh] relative overflow-hidden my-6 shadow-sm rounded-none">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
+        <span className="text-[80px] md:text-[180px] font-display font-bold italic tracking-tighter uppercase text-ink">
+          {code}
+        </span>
+      </div>
+
+      <div className="relative z-10 max-w-lg mx-auto space-y-5">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-ink text-white font-mono text-[9px] md:text-[10px] uppercase tracking-[0.25em]">
+          <span>PORTAL STATUS // {selectedCategory.toUpperCase()}</span>
+        </div>
+
+        <h3 className="text-xl md:text-3xl font-display font-medium uppercase tracking-tight text-ink leading-tight">
+          {selectedCategory === 'Apparel' && "Archive Empty — Garment Curation in Progress"}
+          {selectedCategory === 'Objects' && "No Objects Listed — Studio Edition Dropping Soon"}
+          {selectedCategory === 'Pantry' && "Roastery Closed — Fresh Batch Roast in Progress"}
+          {selectedCategory === 'All' && "Catalog Currently Empty"}
+        </h3>
+
+        <p className="text-xs md:text-xs text-ink/60 font-mono tracking-wider leading-relaxed">
+          We are currently cataloging new arrivals and archival pieces for this department. All items undergo stringent quality inspection prior to public release.
+        </p>
+
+        <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+          <button
+            onClick={onReset}
+            className="w-full sm:w-auto px-6 py-3.5 bg-ink text-white text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-rose transition-colors duration-300 rounded-none"
+          >
+            View All Departments
+          </button>
+          <Link
+            href="/logbook"
+            className="w-full sm:w-auto px-6 py-3.5 border border-ink/20 text-ink text-[11px] font-bold uppercase tracking-[0.2em] hover:border-ink hover:bg-ink/[0.03] transition-colors duration-300 inline-block rounded-none"
+          >
+            Read Editorial Logbook
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MobileShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
-  const categoryMap: Record<string, string | string[]> = {
-    'All': 'All',
-    'Apparel': 'pakaian',
-    'Objects': ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles'],
-    'Pantry': ['coffee', 'pastry', 'rtd', 'snack', 'beverage'],
-  };
-  const displayCategories = Object.keys(categoryMap);
+  const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
-  const filteredProducts = selectedCategory === 'All'
-    ? products
-    : products.filter(p => {
-        const mapped = categoryMap[selectedCategory];
-        if (Array.isArray(mapped)) return mapped.includes(p.category);
-        return p.category === mapped;
-      });
+  const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
 
   const groupedProducts = filteredProducts.reduce((acc, product) => {
     if (!acc[product.category]) {
@@ -205,9 +255,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
         ))}
 
         {filteredProducts.length === 0 && (
-          <div className="py-6 text-center">
-            <p className="text-xs md:text-[11px] text-ink/50 uppercase tracking-wider">{dict.shop.notFound}</p>
-          </div>
+          <KithEmptyState selectedCategory={selectedCategory} onReset={() => setSelectedCategory('All')} />
         )}
       </div>
 
@@ -221,22 +269,10 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 }
 
 function DesktopShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
-  const categoryMap: Record<string, string | string[]> = {
-    'All': 'All',
-    'Apparel': 'pakaian',
-    'Objects': ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles'],
-    'Pantry': ['coffee', 'pastry', 'rtd', 'snack', 'beverage'],
-  };
-  const displayCategories = Object.keys(categoryMap);
+  const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
 
-  const filteredProducts = selectedCategory === 'All'
-    ? products
-    : products.filter(p => {
-        const mapped = categoryMap[selectedCategory];
-        if (Array.isArray(mapped)) return mapped.includes(p.category);
-        return p.category === mapped;
-      });
+  const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
 
   return (
     <main className="min-h-screen bg-cr noise pb-40">
@@ -367,10 +403,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
         </div>
 
         {filteredProducts.length === 0 && (
-          <div className="py-40 text-center space-y-6 opacity-20">
-            <Search size={64} className="mx-auto" />
-            <p className="text-xl font-medium uppercase tracking-[0.4em]">{dict.shop.notFound}</p>
-          </div>
+          <KithEmptyState selectedCategory={selectedCategory} onReset={() => setSelectedCategory('All')} />
         )}
       </section>
     </main>
@@ -386,7 +419,7 @@ function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
 
   const { isMobile } = useDevice();
 
-  return <ShopClientInner initialCategory={initialCategory} isMobile={isMobile} initialProducts={initialProducts} />;
+  return <ShopClientInner key={initialCategory} initialCategory={initialCategory} isMobile={isMobile} initialProducts={initialProducts} />;
 }
 
 function ShopClientInner({ initialCategory, isMobile, initialProducts }: { initialCategory: string; isMobile: boolean | null; initialProducts: Product[] }) {
