@@ -822,7 +822,7 @@ export default function GlobalHeader() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.98 }}
                     transition={{ duration: DURATION.normal, ease: EASING.out }}
-                    className="absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-ink/5 max-h-[400px] overflow-y-auto"
+                    className="absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-ink/5 max-h-[400px] overflow-y-auto no-scrollbar"
                   >
                     <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -901,7 +901,7 @@ export default function GlobalHeader() {
                 </PressScale>
               </div>
 
-              <div className="overflow-y-auto px-6 md:px-10 py-8 flex flex-col gap-6">
+              <div className="overflow-y-auto no-scrollbar px-6 md:px-10 py-8 flex flex-col gap-6">
                 {/* Member Info Section */}
                 {user && (
                   <motion.div
@@ -937,9 +937,9 @@ export default function GlobalHeader() {
                 <div className="flex flex-col gap-3 pb-6 border-b border-ink/10">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-rose">
-                      Department Portals
+                      Departemen
                     </span>
-                    <span className="text-[9px] font-mono text-ink/40 uppercase">3 Pillars</span>
+                    <span className="text-[9px] font-mono text-ink/40 uppercase">3 Pilar</span>
                   </div>
                   
                   {/* Portal 01: Apparel & Archive */}
@@ -963,9 +963,6 @@ export default function GlobalHeader() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
-                      APR-01
-                    </span>
                   </Link>
 
                   {/* Portal 02: Objects & Goods */}
@@ -991,9 +988,6 @@ export default function GlobalHeader() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
-                      OBJ-02
-                    </span>
                   </Link>
 
                   {/* Portal 03: Pantry & Café */}
@@ -1021,9 +1015,6 @@ export default function GlobalHeader() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
-                      PTR-03
-                    </span>
                   </Link>
                 </div>
 
@@ -1062,8 +1053,8 @@ export default function GlobalHeader() {
                     Services & Policies
                   </span>
                   {[
-                    { label: 'Return & Refund Protocol', href: '/retur', highlight: true },
-                    { label: 'Supplier Partner Portal', href: '/supplier/apply' },
+                    { label: 'Return & Refund', href: '/retur', highlight: true },
+                    { label: 'Mitra Supplier (B2B)', href: '/supplier/apply' },
                     { label: dict.header.affiliate, href: '/affiliate' },
                     { label: dict.header.shippingTerms, href: '/help/shipping-payment' },
                   ].map((item, idx) => (
