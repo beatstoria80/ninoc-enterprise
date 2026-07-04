@@ -1,6 +1,7 @@
 -- ==============================================================================
 -- NINOC ENTERPRISE — CONCEPT MALL & MULTI-ORIGIN WAREHOUSE SCHEMA
 -- Run this migration in Supabase Dashboard > SQL Editor
+-- This script is idempotent & self-healing (adds missing columns if table pre-exists)
 -- ==============================================================================
 
 -- 1. DEPARTMENTS TABLE (Concept Mall Pillars)
@@ -15,6 +16,28 @@ CREATE TABLE IF NOT EXISTS departments (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Self-healing: Add columns in case table pre-existed with different schema
+ALTER TABLE departments 
+ADD COLUMN IF NOT EXISTS name VARCHAR(100),
+ADD COLUMN IF NOT EXISTS slug VARCHAR(100),
+ADD COLUMN IF NOT EXISTS gpc_code VARCHAR(255) DEFAULT 'Apparel & Accessories > Clothing',
+ADD COLUMN IF NOT EXISTS description TEXT,
+ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true,
+ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- Ensure unique constraint on slug for ON CONFLICT
+DO $$ 
+BEGIN 
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'departments_slug_key'
+  ) THEN 
+    ALTER TABLE departments ADD CONSTRAINT departments_slug_key UNIQUE (slug);
+  END IF;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 
 -- Insert Default Concept Mall Pillars (Apparel, Objects, Pantry/F&B)
 INSERT INTO departments (name, slug, gpc_code, description, sort_order) VALUES
@@ -42,21 +65,53 @@ CREATE TABLE IF NOT EXISTS warehouses (
   longitude NUMERIC(10, 7),
   is_primary BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
+  is_crossdock_hub BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Self-healing: Add missing columns if warehouses table already existed in database
+ALTER TABLE warehouses 
+ADD COLUMN IF NOT EXISTS name VARCHAR(150),
+ADD COLUMN IF NOT EXISTS code VARCHAR(50),
+ADD COLUMN IF NOT EXISTS contact_name VARCHAR(100) DEFAULT 'NINOC Logistics',
+ADD COLUMN IF NOT EXISTS contact_phone VARCHAR(30) DEFAULT '+628211983774',
+ADD COLUMN IF NOT EXISTS street_address TEXT DEFAULT 'Kompleks Griya Saluyu, Blok AA No.87',
+ADD COLUMN IF NOT EXISTS district VARCHAR(100) DEFAULT 'Mekarjaya, Rancasari',
+ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Kota Bandung',
+ADD COLUMN IF NOT EXISTS province VARCHAR(100) DEFAULT 'Jawa Barat',
+ADD COLUMN IF NOT EXISTS postal_code VARCHAR(10) DEFAULT '40292',
+ADD COLUMN IF NOT EXISTS latitude NUMERIC(10, 7),
+ADD COLUMN IF NOT EXISTS longitude NUMERIC(10, 7),
+ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true,
+ADD COLUMN IF NOT EXISTS is_crossdock_hub BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- Ensure unique constraint on code for ON CONFLICT
+DO $$ 
+BEGIN 
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'warehouses_code_key'
+  ) THEN 
+    ALTER TABLE warehouses ADD CONSTRAINT warehouses_code_key UNIQUE (code);
+  END IF;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
 -- Insert Official NINOC Warehouses (Griya Saluyu Studio as Primary)
-INSERT INTO warehouses (name, code, contact_name, contact_phone, street_address, district, city, province, postal_code, is_primary) VALUES
-('Gudang Utama NINOC (Apparel & Goods)', 'WH-BANDUNG-01', 'NINOC Logistics', '+628211983774', 'Kompleks Griya Saluyu, Blok AA No.87', 'Mekarjaya, Rancasari', 'Kota Bandung', 'Jawa Barat', '40292', true),
-('NINOC Pantry Roastery Hub (F&B)', 'WH-BANDUNG-FB', 'NINOC Roastery', '+628211983774', 'Kompleks Griya Saluyu, Blok AA No.87', 'Mekarjaya, Rancasari', 'Kota Bandung', 'Jawa Barat', '40292', false)
+INSERT INTO warehouses (name, code, contact_name, contact_phone, street_address, district, city, province, postal_code, is_primary, is_crossdock_hub) VALUES
+('Gudang Utama NINOC (Apparel & Goods)', 'WH-BANDUNG-01', 'NINOC Logistics', '+628211983774', 'Kompleks Griya Saluyu, Blok AA No.87', 'Mekarjaya, Rancasari', 'Kota Bandung', 'Jawa Barat', '40292', true, true),
+('NINOC Pantry Roastery Hub (F&B)', 'WH-BANDUNG-FB', 'NINOC Roastery', '+628211983774', 'Kompleks Griya Saluyu, Blok AA No.87', 'Mekarjaya, Rancasari', 'Kota Bandung', 'Jawa Barat', '40292', false, false)
 ON CONFLICT (code) DO UPDATE SET
   contact_phone = EXCLUDED.contact_phone,
   street_address = EXCLUDED.street_address,
   district = EXCLUDED.district,
   city = EXCLUDED.city,
   province = EXCLUDED.province,
-  postal_code = EXCLUDED.postal_code;
+  postal_code = EXCLUDED.postal_code,
+  is_crossdock_hub = EXCLUDED.is_crossdock_hub;
 
 -- 3. EXTEND PRODUCTS TABLE FOR CONCEPT MALL & MULTI-ORIGIN WAREHOUSES
 ALTER TABLE products 
