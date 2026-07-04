@@ -80,7 +80,7 @@ const DURATION = {
 
 const CATEGORIES = [
   { id: 'pakaian' as CategoryType, label: 'Apparel & Archive', sublabel: 'Fashion', icon: ApparelIcon, href: '/shop?filter=Apparel', spec: 'APR-001' },
-  { id: 'utilities' as CategoryType, label: 'Objects & Goods', sublabel: 'Consumer', icon: ObjectsIcon, href: '/shop?filter=Objects', spec: 'OBJ-002' },
+  { id: 'utilities' as CategoryType, label: 'Home & Living', sublabel: 'Homeware', icon: ObjectsIcon, href: '/shop?filter=Objects', spec: 'OBJ-002' },
   { id: 'coffee' as CategoryType, label: 'Pantry & Café', sublabel: 'F&B', icon: PantryIcon, href: '/shop?filter=Pantry', spec: 'PTR-003' },
 ];
 

@@ -47,9 +47,9 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
   OBJECTS: {
     id: 'OBJECTS',
     code: 'OBJ-02',
-    name: 'Objects & Goods',
-    nameId: 'Objek & Peralatan Rumah',
-    subtitle: 'Homeware · Ceramics · Functional Goods',
+    name: 'Home & Living',
+    nameId: 'Peralatan Rumah & Homeware',
+    subtitle: 'Homeware · Ceramics · Decor',
     isPerishable: false,
     returnAllowed: true,
     defaultSizePreset: ['REGULAR', 'SMALL', 'LARGE', 'SET OF 2', 'SET OF 4'],

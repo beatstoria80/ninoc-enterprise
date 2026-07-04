@@ -514,7 +514,7 @@ export default function GlobalHeader() {
           className="hidden lg:flex items-center gap-10 xl:gap-14 absolute left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.2em]"
         >
           <NavLink index={0} isDark={isDarkBg} href="/shop?filter=Apparel">Apparel</NavLink>
-          <NavLink index={1} isDark={isDarkBg} href="/shop?filter=Objects">Objects</NavLink>
+          <NavLink index={1} isDark={isDarkBg} href="/shop?filter=Objects">Home & Living</NavLink>
           <NavLink index={2} isDark={isDarkBg} href="/shop?filter=Pantry">Pantry & Café</NavLink>
           <NavLink index={3} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
           <NavLink index={4} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
@@ -980,10 +980,10 @@ export default function GlobalHeader() {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs font-bold uppercase tracking-[0.15em] text-ink group-hover:text-rose transition-colors">
-                          Objects & Goods
+                          Home & Living
                         </span>
                         <span className="text-[10px] text-ink/50 font-medium">
-                          Homeware · Ceramics · Functional
+                          Homeware · Ceramics · Decor
                         </span>
                       </div>
                     </div>
