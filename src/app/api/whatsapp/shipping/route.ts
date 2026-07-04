@@ -8,6 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendShippingWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { sendEmailShipping } from '@/lib/email';
+import { notifyAllChannels } from '@/lib/notifications';
 
 const adminClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -39,10 +41,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
 
-    // ─── 2. Fetch order details for WA ──────────────────────────────
+    // ─── 2. Fetch order details for WA & Email ──────────────────────
     const { data: order } = await adminClient
       .from('orders')
-      .select('shipping_address, wa_shipping_sent, total_price')
+      .select('id, user_id, order_number, shipping_address, customer_name, customer_email, wa_shipping_sent, total_price')
       .eq('id', order_id)
       .single();
 
@@ -50,78 +52,76 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // Skip if WA already sent
-    if (order.wa_shipping_sent) {
-      console.log(`[WhatsApp Shipping API] WA already sent for order ${order_id}`);
-      return NextResponse.json({ success: true, skipped: true, reason: 'Already sent' });
-    }
-
     const shippingAddress = order.shipping_address as Record<string, string> | null;
     const phone = shippingAddress?.phone || '';
-    const customerName = shippingAddress?.name || 'Pelanggan';
+    const customerName = order.customer_name || shippingAddress?.name || 'Pelanggan';
+    const customerEmail = order.customer_email || shippingAddress?.email;
     const formattedPhone = formatPhoneNumber(phone);
 
-    if (!formattedPhone) {
-      // Status updated but no valid phone — log it
+    let waSent = false;
+    let messageId = null;
+    let waError = null;
+
+    if (!order.wa_shipping_sent && formattedPhone) {
+      console.log(`[WhatsApp Shipping API] Sending shipping WA for order ${order_id} to ${formattedPhone}`);
+      const waResult = await sendShippingWA({
+        phone: formattedPhone,
+        customer_name: customerName,
+        order_id,
+        tracking_id: tracking_id || '',
+        courier_name: courier_name || 'NINOC Delivery',
+        estimated_delivery,
+      });
+
+      waSent = waResult.success;
+      messageId = waResult.message_id || null;
+      waError = waResult.error || null;
+
       await adminClient.from('wa_send_log').insert({
         type: 'shipping',
         order_id,
-        phone: phone,
+        phone: formattedPhone,
         customer_name: customerName,
         template_name: 'shipping_update',
-        status: 'failed',
-        error_message: 'Invalid phone number format',
-        sent_at: new Date().toISOString(),
+        status: waResult.success ? 'sent' : 'failed',
+        whatsapp_message_id: messageId,
+        error_message: waError,
+        sent_at: waResult.success ? new Date().toISOString() : null,
       });
-      return NextResponse.json({ success: true, skipped: true, reason: 'Invalid phone' });
+
+      if (waResult.success) {
+        await adminClient
+          .from('orders')
+          .update({
+            wa_shipping_sent: true,
+            wa_shipping_sent_at: new Date().toISOString(),
+            wa_tracking_message_id: messageId,
+          })
+          .eq('id', order_id);
+      }
     }
 
-    // ─── 3. Send WhatsApp shipping notification ───────────────────
-    console.log(`[WhatsApp Shipping API] Sending shipping WA for order ${order_id} to ${formattedPhone}`);
+    // ─── 6. Send Email Shipping Notification ─────────────────────
+    if (customerEmail) {
+      console.log(`[Shipping API] Sending shipping email for order ${order_id} to ${customerEmail}`);
+      await sendEmailShipping(order, customerEmail, tracking_id || 'Otomatis', courier_name || 'Ekspedisi');
+    }
 
-    const waResult = await sendShippingWA({
-      phone: formattedPhone,
-      customer_name: customerName,
-      order_id,
-      tracking_id: tracking_id || '',
-      courier_name: courier_name || 'NINOC Delivery',
-      estimated_delivery,
-    });
-
-    // ─── 4. Log WA result ────────────────────────────────────────
-    await adminClient.from('wa_send_log').insert({
-      type: 'shipping',
-      order_id,
-      phone: formattedPhone,
-      customer_name: customerName,
-      template_name: 'shipping_update',
-      status: waResult.success ? 'sent' : 'failed',
-      whatsapp_message_id: waResult.message_id || null,
-      error_message: waResult.error || null,
-      sent_at: waResult.success ? new Date().toISOString() : null,
-    });
-
-    // ─── 5. Update order WA tracking columns ─────────────────────
-    await adminClient
-      .from('orders')
-      .update({
-        wa_shipping_sent: true,
-        wa_shipping_sent_at: new Date().toISOString(),
-        wa_tracking_message_id: waResult.message_id || null,
-      })
-      .eq('id', order_id);
-
-    if (waResult.success) {
-      console.log(`[WhatsApp Shipping API] Shipping WA sent. Message ID: ${waResult.message_id}`);
-    } else {
-      console.warn(`[WhatsApp Shipping API] Shipping WA failed: ${waResult.error}`);
+    // ─── 7. Send Push & In-App Notification ──────────────────────
+    if (order.user_id) {
+      await notifyAllChannels({
+        userId: order.user_id,
+        title: 'Pesanan Dalam Pengiriman',
+        message: `Pesanan #${order.order_number || order.id} sedang dalam perjalanan via ${courier_name || 'Kurir'}. Resi: ${tracking_id || '-'}`,
+        actionLink: `/profile/orders/${order.id}`,
+      });
     }
 
     return NextResponse.json({
       success: true,
-      wa_sent: waResult.success,
-      message_id: waResult.message_id,
-      error: waResult.error || null,
+      wa_sent: waSent,
+      message_id: messageId,
+      error: waError || null,
     });
 
   } catch (err) {

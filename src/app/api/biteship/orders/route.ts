@@ -8,6 +8,9 @@ import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
+import { sendEmailShipping } from '@/lib/email';
+import { sendShippingWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { notifyAllChannels } from '@/lib/notifications';
 
 const adminClient = createSupabaseClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -75,6 +78,72 @@ async function saveOrderToSupabase(
     courier_driver_phone: null,
     raw_payload: JSON.stringify(rawPayload || { mock }),
   });
+
+  // ─── Trigger Immediate Shipping Notifications (Email, WA, Push) ───
+  try {
+    const { data: fullOrder } = await adminClient
+      .from('orders')
+      .select('id, user_id, order_number, shipping_address, customer_name, wa_shipping_sent')
+      .eq('id', orderId)
+      .single();
+
+    if (fullOrder) {
+      const courierFormatted = `${courierCompany} ${courierType}`.toUpperCase();
+      const customerName = fullOrder.customer_name || (fullOrder.shipping_address as any)?.name || 'Pelanggan';
+      const phoneRaw = (fullOrder.shipping_address as any)?.phone || '';
+      const phone = formatPhoneNumber(phoneRaw);
+      const customerEmail = (fullOrder.shipping_address as any)?.email;
+
+      // 1. WhatsApp Notification
+      if (phone && !fullOrder.wa_shipping_sent) {
+        const waResult = await sendShippingWA({
+          phone,
+          customer_name: customerName,
+          order_id: fullOrder.id,
+          tracking_id: trackingId,
+          courier_name: courierFormatted,
+        });
+
+        await adminClient.from('wa_send_log').insert({
+          type: 'shipping',
+          order_id: fullOrder.id,
+          phone,
+          customer_name: customerName,
+          template_name: 'shipping_update',
+          status: waResult.success ? 'sent' : 'failed',
+          whatsapp_message_id: waResult.message_id || null,
+          error_message: waResult.error || null,
+          sent_at: waResult.success ? new Date().toISOString() : null,
+        });
+
+        if (waResult.success) {
+          await adminClient.from('orders').update({
+            wa_shipping_sent: true,
+            wa_shipping_sent_at: new Date().toISOString(),
+            wa_tracking_message_id: waResult.message_id || null,
+          }).eq('id', fullOrder.id);
+        }
+      }
+
+      // 2. Email Shipping Notification
+      if (customerEmail) {
+        console.log(`[Biteship Create Order] Sending shipping email to ${customerEmail} for order ${fullOrder.id}`);
+        await sendEmailShipping(fullOrder, customerEmail, trackingId, courierFormatted);
+      }
+
+      // 3. Push & In-App Notification
+      if (fullOrder.user_id) {
+        await notifyAllChannels({
+          userId: fullOrder.user_id,
+          title: 'Pesanan Dalam Pengiriman',
+          message: `Pesanan #${fullOrder.order_number || fullOrder.id} sedang dalam perjalanan via ${courierFormatted}. Resi: ${trackingId}`,
+          actionLink: `/profile/orders/${fullOrder.id}`,
+        });
+      }
+    }
+  } catch (notifErr) {
+    console.error('[Biteship Create Order] Error sending immediate shipping notifications:', notifErr);
+  }
 }
 
 export async function POST(req: Request) {
