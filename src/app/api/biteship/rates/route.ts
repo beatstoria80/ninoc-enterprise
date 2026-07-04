@@ -25,6 +25,33 @@ const MOCK_RATES = {
   available_couriers: ['jne', 'grab', 'gojek'],
 };
 
+function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
+  const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
+    const cat = String(it.category || '').toLowerCase();
+    const name = String(it.name || '').toLowerCase();
+    const dept = String(it.department_id || '');
+    return Boolean(it.is_perishable) || dept === '3' || cat.includes('pantry') || cat.includes('coffee') || cat.includes('kopi') || cat.includes('f&b') || cat.includes('food') || cat.includes('beverage') || name.includes('kopi') || name.includes('roast') || name.includes('beans') || name.includes('snack') || name.includes('kue');
+  });
+
+  if (!isFnBOrPerishable || !pricing || !Array.isArray(pricing)) {
+    return { pricing: pricing || [], is_fnb_restricted: false };
+  }
+
+  // If item is F&B or Perishable, restrict to Instant & Sameday couriers (GrabExpress, GoSend, Anteraja Sameday)
+  const fnbPricing = pricing.filter((rate: any) => {
+    const code = String(rate.courier_service_code || '').toLowerCase();
+    const name = String(rate.courier_service_name || '').toLowerCase();
+    const comp = String(rate.company || '').toLowerCase();
+    return code.includes('instant') || code.includes('sameday') || name.includes('instant') || name.includes('same day') || comp === 'grab' || comp === 'gojek';
+  });
+
+  return {
+    pricing: fnbPricing,
+    is_fnb_restricted: true,
+    fnb_notice: 'Produk Pantry / F&B (Roastery Hub) saat ini khusus pengiriman kurir Instan & Sameday (GoSend / GrabExpress wilayah Bandung & Sekitarnya) demi menjaga kualitas dan kesegaran produk.'
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, items, couriers } = await req.json();
@@ -90,13 +117,15 @@ export async function POST(req: Request) {
 
         // If success, return real data
         if (response.ok && data.success !== false) {
-          return NextResponse.json({ ...data, source: 'biteship' });
+          const fnbResult = applyFnBRestrictions(data.pricing || [], items, destination_area_name);
+          return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
         }
 
         // If rates API error (no balance), fall back to mock
         if (!response.ok || data.success === false) {
           console.warn(`[Biteship Rates] API returned error, using fallback mock data: ${JSON.stringify(data)}`);
-          return NextResponse.json({ ...MOCK_RATES, reason: data.error || 'API unavailable' });
+          const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, items, destination_area_name);
+          return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: data.error || 'API unavailable' });
         }
 
       } catch (apiErr) {
@@ -106,12 +135,14 @@ export async function POST(req: Request) {
     }
 
     // Fallback mock data — works without API activation
-    return NextResponse.json(MOCK_RATES);
+    const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, items, destination_area_name);
+    return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice });
 
   } catch (err) {
     const error = err as Error;
     console.error('[Biteship Rates] Error:', error.message);
     // Still return mock data on unexpected error
-    return NextResponse.json({ ...MOCK_RATES, reason: error.message });
+    const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, []);
+    return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: error.message });
   }
 }

@@ -170,6 +170,7 @@ export default function CheckoutPage() {
   // Dynamic Shipping State
   const [dynamicShippingOptions, setDynamicShippingOptions] = useState<any[]>([]);
   const [loadingShipping, setLoadingShipping] = useState<boolean>(false);
+  const [fnbNotice, setFnbNotice] = useState<string | null>(null);
 
   // Email Check State
   const [emailCheckStatus, setEmailCheckStatus] = useState<'idle' | 'checking' | 'registered' | 'unregistered'>('idle');
@@ -560,7 +561,10 @@ export default function CheckoutPage() {
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            weight: 100, // default 100g per item
+            weight: (item as any).weight_grams || 100,
+            department_id: (item as any).department_id,
+            category: (item as any).category,
+            is_perishable: (item as any).is_perishable,
           }));
 
           const res = await fetch('/api/biteship/rates', {
@@ -576,6 +580,7 @@ export default function CheckoutPage() {
           const data = await res.json();
           if (data.success && data.pricing) {
             setDynamicShippingOptions(data.pricing);
+            setFnbNotice(data.fnb_notice || null);
             setShippingMethod('');
             setShippingCost(0);
           }
@@ -1110,6 +1115,15 @@ export default function CheckoutPage() {
                       <span className="text-ink/50 text-xs md:text-[10px]">!</span>
                     </div>
                     <span className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60 text-center px-4">{dict.checkout.completeLocation}</span>
+                  </div>
+                )}
+                {fnbNotice && (
+                  <div className="col-span-3 mb-2 p-3 bg-amber-50/95 border border-amber-300/80 rounded-lg flex items-start gap-2.5 shadow-sm">
+                    <span className="text-amber-600 text-sm mt-0.5">☕</span>
+                    <div className="flex-1">
+                      <h5 className="text-[10px] font-bold uppercase tracking-widest text-amber-900 mb-0.5">Pengiriman Khusus F&B / Pantry (Bandung Area)</h5>
+                      <p className="text-[11px] text-amber-800/90 font-medium leading-relaxed">{fnbNotice}</p>
+                    </div>
                   </div>
                 )}
                 {displayOptions.map((option) => {
