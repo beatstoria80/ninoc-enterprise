@@ -83,6 +83,18 @@ const CATEGORIES = [
   { id: 'coffee' as CategoryType, label: 'Pantry & Café', sublabel: 'F&B', icon: PantryIcon, href: '/shop?filter=Pantry', spec: 'PTR-003' },
 ];
 
+function getCategoryInfo(categoryStr?: string) {
+  if (!categoryStr) return CATEGORIES[0];
+  const cat = categoryStr.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  if (['coffee', 'pantry', 'cafe', 'roastery', 'f&b', 'pastry', 'rtd', 'snack', 'beverage', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast', 'food', 'drinks'].some(k => cat.includes(k))) {
+    return CATEGORIES[2];
+  }
+  if (['utilities', 'objects', 'goods', 'home', 'kitchen', 'ceramics', 'collectibles', 'homeware', 'lifestyle', 'consumer', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k))) {
+    return CATEGORIES[1];
+  }
+  return CATEGORIES[0];
+}
+
 // ═══════════════════════════════════════════════════════════════
 // VARIANT DEFINITIONS
 // ═══════════════════════════════════════════════════════════════
@@ -297,7 +309,7 @@ function ProductCard({ product, index }: ProductCardProps) {
   const { addItem } = useCart();
   const router = useRouter();
 
-  const categoryInfo = CATEGORIES.find((c) => c.id === product.category);
+  const categoryInfo = getCategoryInfo(product.category);
   const CategoryIcon = categoryInfo?.icon || PakaianIcon;
 
   const handleQuickBuy = (e: React.MouseEvent) => {

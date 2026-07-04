@@ -244,8 +244,10 @@ export default function AdminDashboard() {
 
   // Derived state for Concept Mall UI/UX conditional hierarchy (supports database UUIDs, slug strings, and category fallbacks)
   const selectedDeptObj = dbDepartments.find(d => d.id === productForm.department_id || d.slug === productForm.department_id || String(d.id) === String(productForm.department_id));
-  const isFnB = productForm.department_id === '3' || productForm.department_id === 'pantry' || selectedDeptObj?.slug === 'pantry' || (selectedDeptObj?.name || '').toLowerCase().includes('pantry') || (selectedDeptObj?.name || '').toLowerCase().includes('f&b') || (selectedDeptObj?.name || '').toLowerCase().includes('cafe') || productForm.category === 'coffee' || productForm.category === 'pastry' || productForm.category === 'rtd' || productForm.category === 'snack' || productForm.category === 'beverage';
-  const isObjects = !isFnB && (productForm.department_id === '2' || productForm.department_id === 'objects' || selectedDeptObj?.slug === 'objects' || (selectedDeptObj?.name || '').toLowerCase().includes('objects') || (selectedDeptObj?.name || '').toLowerCase().includes('consumer') || productForm.category === 'home' || productForm.category === 'kitchen' || productForm.category === 'utilities' || productForm.category === 'collectibles' || productForm.category === 'ceramics');
+  const deptNameClean = (selectedDeptObj?.name || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const catClean = (productForm.category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const isFnB = productForm.department_id === '3' || productForm.department_id === 'pantry' || selectedDeptObj?.slug === 'pantry' || ['pantry', 'f&b', 'cafe', 'roastery', 'coffee', 'pastry', 'rtd', 'snack', 'beverage', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast', 'food', 'drinks'].some(k => deptNameClean.includes(k) || catClean.includes(k));
+  const isObjects = !isFnB && (productForm.department_id === '2' || productForm.department_id === 'objects' || selectedDeptObj?.slug === 'objects' || ['objects', 'consumer', 'home', 'kitchen', 'utilities', 'collectibles', 'ceramics', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => deptNameClean.includes(k) || catClean.includes(k)));
   const isFashion = !isFnB && !isObjects;
 
   // Customer form states
@@ -1969,8 +1971,9 @@ export default function AdminDashboard() {
                           onChange={(e) => {
                             const newDept = e.target.value;
                             const selDept = dbDepartments.find(d => d.id === newDept || d.slug === newDept || String(d.id) === String(newDept));
-                            const isPantrySel = newDept === '3' || newDept === 'pantry' || selDept?.slug === 'pantry' || (selDept?.name || '').toLowerCase().includes('pantry') || (selDept?.name || '').toLowerCase().includes('f&b') || (selDept?.name || '').toLowerCase().includes('cafe');
-                            const isObjectsSel = newDept === '2' || newDept === 'objects' || selDept?.slug === 'objects' || (selDept?.name || '').toLowerCase().includes('objects') || (selDept?.name || '').toLowerCase().includes('consumer');
+                            const deptNameClean = (selDept?.name || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                            const isPantrySel = newDept === '3' || newDept === 'pantry' || selDept?.slug === 'pantry' || ['pantry', 'f&b', 'cafe', 'roastery', 'coffee', 'pastry', 'rtd', 'snack', 'beverage', 'kopi'].some(k => deptNameClean.includes(k));
+                            const isObjectsSel = !isPantrySel && (newDept === '2' || newDept === 'objects' || selDept?.slug === 'objects' || ['objects', 'consumer', 'home', 'kitchen', 'utilities', 'collectibles', 'ceramics', 'goods', 'homeware', 'lifestyle', 'keramik'].some(k => deptNameClean.includes(k)));
 
                             let newCat = productForm.category;
                             let newWh = productForm.warehouse_id;
