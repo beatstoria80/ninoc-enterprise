@@ -35,7 +35,7 @@ export default function RefundPolicyPage() {
     {
       id: "06",
       title: "ALAMAT PENGEMBALIAN & KONTAK LEGAL",
-      text: "Alamat Penerimaan Retur Gudang NINOC:\nJl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, Indonesia.\n\nUntuk pengajuan retur cepat, gunakan menu 'Retur' di navigasi bawah atau hubungi tim layanan pelanggan resmi kami via email di cs@ninoc.store atau WhatsApp +62 821-1983-7744."
+      text: "Alamat Penerimaan Retur Gudang NINOC:\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292\n\nUntuk pengajuan retur cepat, gunakan menu 'Retur' di navigasi bawah atau hubungi tim layanan pelanggan resmi kami via email di cs@ninoc.store atau WhatsApp +628211983774."
     }
   ];
 

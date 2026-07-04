@@ -149,7 +149,7 @@ export default async function ShopProductPage({ params }: Props) {
     manufacturer: {
       '@type': 'Organization',
       name: 'NINOC Enterprise',
-      address: 'Jl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, Indonesia'
+      address: 'Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292'
     },
     offers: {
       '@type': 'Offer',

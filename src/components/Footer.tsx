@@ -82,7 +82,7 @@ export default function GlobalFooter() {
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
               <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 leading-tight">
-                Jl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, ID
+                Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292
               </p>
             </div>
             <div className="flex items-center gap-1.5">
@@ -94,7 +94,7 @@ export default function GlobalFooter() {
             <div className="flex items-center gap-1.5">
               <Phone size={9} className="text-rose flex-shrink-0" />
               <a href="tel:+628211983774" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                +62 821-1983-7744
+                +628211983774
               </a>
             </div>
           </div>

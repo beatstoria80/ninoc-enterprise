@@ -35,7 +35,7 @@ export default function ShippingPolicyPage() {
     {
       id: "06",
       title: "LOKASI GUDANG & KONTAK LOGISTIK",
-      text: "Gudang Utama NINOC ENTERPRISE:\nJl. Dago No. 108, Coblong, Kota Bandung, Jawa Barat 40132, Indonesia.\n\nUntuk kendala keterlambatan atau pertanyaan logistik, silakan hubungi tim kami di cs@ninoc.store atau WhatsApp +62 821-1983-7744."
+      text: "Gudang Utama NINOC ENTERPRISE:\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292\n\nUntuk kendala keterlambatan atau pertanyaan logistik, silakan hubungi tim kami di cs@ninoc.store atau WhatsApp +628211983774."
     }
   ];
 
@@ -106,7 +106,7 @@ export default function ShippingPolicyPage() {
                 <span className="text-xs font-bold uppercase tracking-widest">Asal Pengiriman</span>
               </div>
               <p className="text-xs text-ink/70 leading-relaxed">
-                Seluruh produk dikirim langsung dari Studio Utama NINOC ENTERPRISE, Bandung, Jawa Barat, Indonesia.
+                Seluruh produk dikirim langsung dari Gudang Utama NINOC ENTERPRISE (Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292).
               </p>
             </div>
 
