@@ -236,12 +236,18 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   // 9. Asynchronous Activity Logging & Notification
   if (uid) {
-    supabaseAdmin.from('customer_activity_log').insert({
-      user_id: uid,
-      activity_type: 'retur_submitted',
-      description: `Retur diajukan untuk order ${sanitizedOrderId}`,
-      metadata: { retur_id: data.id, order_id: sanitizedOrderId, reason },
-    }).then().catch(err => console.error('[ActivityLog Error]', err));
+    void (async () => {
+      try {
+        await supabaseAdmin.from('customer_activity_log').insert({
+          user_id: uid,
+          activity_type: 'retur_submitted',
+          description: `Retur diajukan untuk order ${sanitizedOrderId}`,
+          metadata: { retur_id: data.id, order_id: sanitizedOrderId, reason },
+        });
+      } catch (err) {
+        console.error('[ActivityLog Error]', err);
+      }
+    })();
   }
 
   let targetEmail = guest_email;

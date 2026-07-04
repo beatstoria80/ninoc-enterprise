@@ -73,6 +73,10 @@ export function apiNotFound(message = 'Resource Not Found', details?: any): Next
   return apiError(message, 404, details);
 }
 
+export function apiConflict(message = 'Conflict', details?: any): NextResponse {
+  return apiError(message, 409, details);
+}
+
 export function apiInternalError(
   message = 'Internal Server Error',
   details?: any
