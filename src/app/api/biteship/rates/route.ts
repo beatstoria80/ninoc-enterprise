@@ -5,6 +5,7 @@
  */
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { isFnBDepartment } from '@/lib/departmentDomain';
 
 const MOCK_RATES = {
   success: true,
@@ -53,10 +54,7 @@ async function getOriginPostalCode(): Promise<number> {
 
 function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
   const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
-    const cat = String(it.category || '').toLowerCase();
-    const name = String(it.name || '').toLowerCase();
-    const dept = String(it.department_id || '');
-    return Boolean(it.is_perishable) || dept === '3' || cat.includes('pantry') || cat.includes('coffee') || cat.includes('kopi') || cat.includes('f&b') || cat.includes('food') || cat.includes('beverage') || name.includes('kopi') || name.includes('roast') || name.includes('beans') || name.includes('snack') || name.includes('kue');
+    return Boolean(it.is_perishable) || isFnBDepartment(it);
   });
 
   if (!isFnBOrPerishable || !pricing || !Array.isArray(pricing)) {

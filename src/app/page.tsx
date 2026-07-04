@@ -14,6 +14,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 import { usePathname, useRouter } from 'next/navigation';
+import { classifyDepartment } from '@/lib/departmentDomain';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -85,13 +86,9 @@ const CATEGORIES = [
 
 function getCategoryInfo(categoryStr?: string) {
   if (!categoryStr) return CATEGORIES[0];
-  const cat = categoryStr.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-  if (['coffee', 'pantry', 'cafe', 'roastery', 'f&b', 'pastry', 'rtd', 'snack', 'beverage', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast', 'food', 'drinks'].some(k => cat.includes(k))) {
-    return CATEGORIES[2];
-  }
-  if (['utilities', 'objects', 'goods', 'home', 'kitchen', 'ceramics', 'collectibles', 'homeware', 'lifestyle', 'consumer', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k))) {
-    return CATEGORIES[1];
-  }
+  const pillar = classifyDepartment(categoryStr);
+  if (pillar === 'PANTRY') return CATEGORIES[2];
+  if (pillar === 'OBJECTS') return CATEGORIES[1];
   return CATEGORIES[0];
 }
 

@@ -55,6 +55,7 @@ import { StatusBadge } from '@/components/admin/StatusBadge';
 import { SidebarItem } from '@/components/admin/SidebarItem';
 import { SeoHelper } from '@/components/admin/SeoHelper';
 import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
+import { isFnBDepartment, isObjectsDepartment } from '@/lib/departmentDomain';
 
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -244,10 +245,8 @@ export default function AdminDashboard() {
 
   // Derived state for Concept Mall UI/UX conditional hierarchy (supports database UUIDs, slug strings, and category fallbacks)
   const selectedDeptObj = dbDepartments.find(d => d.id === productForm.department_id || d.slug === productForm.department_id || String(d.id) === String(productForm.department_id));
-  const deptNameClean = (selectedDeptObj?.name || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const catClean = (productForm.category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const isFnB = productForm.department_id === '3' || productForm.department_id === 'pantry' || selectedDeptObj?.slug === 'pantry' || ['pantry', 'f&b', 'cafe', 'roastery', 'coffee', 'pastry', 'rtd', 'snack', 'beverage', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast', 'food', 'drinks'].some(k => deptNameClean.includes(k) || catClean.includes(k));
-  const isObjects = !isFnB && (productForm.department_id === '2' || productForm.department_id === 'objects' || selectedDeptObj?.slug === 'objects' || ['objects', 'consumer', 'home', 'kitchen', 'utilities', 'collectibles', 'ceramics', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => deptNameClean.includes(k) || catClean.includes(k)));
+  const isFnB = isFnBDepartment({ department_id: productForm.department_id, slug: selectedDeptObj?.slug, name: selectedDeptObj?.name, category: productForm.category });
+  const isObjects = !isFnB && isObjectsDepartment({ department_id: productForm.department_id, slug: selectedDeptObj?.slug, name: selectedDeptObj?.name, category: productForm.category });
   const isFashion = !isFnB && !isObjects;
 
   // Customer form states
