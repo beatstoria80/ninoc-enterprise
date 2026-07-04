@@ -38,6 +38,11 @@ interface Props {
   isInvalid: boolean;
 }
 
+function formatIDR(val?: number | null): string {
+  if (typeof val !== 'number' || isNaN(val)) return '0';
+  return val.toLocaleString('id-ID');
+}
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
@@ -68,22 +73,34 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
     if (!isInvalid && order) {
       let isMember = false;
       if (typeof window !== 'undefined') {
-        for (let i = 0; i < window.localStorage.length; i++) {
-          const key = window.localStorage.key(i);
-          if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
-            isMember = true;
-            break;
+        try {
+          for (let i = 0; i < window.localStorage.length; i++) {
+            const key = window.localStorage.key(i);
+            if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+              isMember = true;
+              break;
+            }
           }
+        } catch (e) {
+          console.warn('localStorage access failed:', e);
         }
       }
 
       // Clear cart for guests, OR for members if payment is successful
-      if (!isMember || order.status === 'paid' || order.status === 'success' || order.payment_status === 'paid' || order.payment_status === 'settlement') {
-        clearCart();
+      try {
+        if (!isMember || order.status === 'paid' || order.status === 'success' || order.payment_status === 'paid' || order.payment_status === 'settlement') {
+          clearCart();
+        }
+      } catch (e) {
+        console.warn('clearCart failed:', e);
       }
 
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('ninoc_checkout_form');
+        try {
+          sessionStorage.removeItem('ninoc_checkout_form');
+        } catch (e) {
+          console.warn('sessionStorage removeItem failed:', e);
+        }
       }
     }
   }, [isInvalid, order, clearCart]);
@@ -266,7 +283,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                     <p className="text-[10px] font-mono text-ink/50 mt-0.5">{displayId}</p>
                   </div>
                 </div>
-                <p className="text-[10px] font-medium text-ink/60">
+                <p className="text-[10px] font-medium text-ink/60" suppressHydrationWarning>
                   {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </p>
               </div>
@@ -304,13 +321,13 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               <div className="px-4 md:px-6 py-2 md:py-3 border-b border-ink/5">
                 <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-ink/50 mb-1.5">Items</p>
                 <div className="space-y-1.5">
-                  {order.order_items?.map((item: OrderItem) => (
+                  {(order.order_items || []).map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] md:text-[13px] font-semibold text-ink line-clamp-2 leading-tight">{item.product_name}</p>
                         <p className="text-[10px] text-ink/60 mt-0.5">{item.size ? `Size ${item.size}` : 'One Size'} · ×{item.quantity}</p>
                       </div>
-                      <p className="text-[11px] md:text-[13px] font-mono font-semibold text-ink shrink-0">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</p>
+                      <p className="text-[11px] md:text-[13px] font-mono font-semibold text-ink shrink-0">IDR {formatIDR((item.price_at_purchase || 0) * (item.quantity || 0))}</p>
                     </div>
                   ))}
                 </div>
@@ -320,11 +337,11 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               <div className="px-4 md:px-6 py-2 md:py-3 space-y-0.5">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-ink/50">Subtotal</span>
-                  <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${sub.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[11px] font-mono font-medium text-ink">{sub > 0 ? `IDR ${formatIDR(sub)}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-ink/50">Logistics ({courierName})</span>
-                  <span className="text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${shipping.toLocaleString('id-ID')}` : '—'}</span>
+                  <span className="text-[11px] font-mono font-medium text-ink">{shipping > 0 ? `+ IDR ${formatIDR(shipping)}` : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-ink/50">Platform Fee</span>
@@ -332,7 +349,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-1 border-t border-ink/10">
                   <span className="text-[11px] font-semibold text-ink">Total</span>
-                  <span className="text-base md:text-lg font-display font-semibold italic text-rose">IDR {order.total_price.toLocaleString('id-ID')}</span>
+                  <span className="text-base md:text-lg font-display font-semibold italic text-rose">IDR {formatIDR(order.total_price)}</span>
                 </div>
               </div>
 
@@ -555,7 +572,7 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
           {order.midtrans_id && (
             <p className="text-[10px] font-mono text-ink/50 mt-1">TX: {order.midtrans_id}</p>
           )}
-          <p className="text-[11px] md:text-xs uppercase mt-1">{order.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
+          <p className="text-[11px] md:text-xs uppercase mt-1" suppressHydrationWarning>{order.created_at ? new Date(order.created_at).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : `${date} ${time}`}</p>
         </div>
       </div>
 
@@ -584,12 +601,12 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
           </tr>
         </thead>
         <tbody className="font-mono text-xs">
-          {order.order_items?.map((item: OrderItem) => (
+          {(order.order_items || []).map((item: OrderItem) => (
             <tr key={item.id} className="border-b border-black/10">
               <td className="py-4 font-sans font-medium text-sm uppercase">{item.product_name} {item.size ? `(Size ${item.size})` : ''}</td>
               <td className="py-4 text-center">{item.quantity}</td>
-              <td className="py-4 text-right">IDR {item.price_at_purchase.toLocaleString('id-ID')}</td>
-              <td className="py-4 text-right">IDR {(item.price_at_purchase * item.quantity).toLocaleString('id-ID')}</td>
+              <td className="py-4 text-right">IDR {formatIDR(item.price_at_purchase)}</td>
+              <td className="py-4 text-right">IDR {formatIDR((item.price_at_purchase || 0) * (item.quantity || 0))}</td>
             </tr>
           ))}
         </tbody>
@@ -599,11 +616,11 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
         <div className="w-1/2 space-y-2 text-sm">
           <div className="flex justify-between border-b border-black/10 pb-1">
             <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Subtotal</span>
-            <span className="font-mono">IDR {sub.toLocaleString('id-ID')}</span>
+            <span className="font-mono">IDR {formatIDR(sub)}</span>
           </div>
           <div className="flex justify-between border-b border-black/10 pb-1">
             <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Logistics</span>
-            <span className="font-mono">IDR {shipping > 0 ? shipping.toLocaleString('id-ID') : '0'}</span>
+            <span className="font-mono">IDR {shipping > 0 ? formatIDR(shipping) : '0'}</span>
           </div>
           <div className="flex justify-between border-b border-black/10 pb-1">
             <span className="text-[11px] md:text-xs uppercase tracking-widest font-medium">Platform Fee</span>
@@ -611,7 +628,7 @@ function PrintableInvoice({ order, courierName }: { order: Order; courierName: s
           </div>
           <div className="flex justify-between pt-2 border-b-[3px] border-black pb-2 mt-2">
             <span className="font-medium uppercase tracking-widest">Total Investment</span>
-            <span className="font-medium font-mono text-lg">IDR {order.total_price.toLocaleString('id-ID')}</span>
+            <span className="font-medium font-mono text-lg">IDR {formatIDR(order.total_price)}</span>
           </div>
         </div>
       </div>

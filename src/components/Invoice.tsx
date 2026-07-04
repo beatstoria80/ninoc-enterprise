@@ -7,16 +7,24 @@ interface InvoiceProps {
   order: Order;
 }
 
-function formatCurrency(amount: number): string {
-  return "Rp " + amount.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+function formatCurrency(amount?: number | null): string {
+  const num = typeof amount === 'number' && !isNaN(amount) ? amount : 0;
+  return "Rp " + num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+function formatDate(dateStr?: string | null): string {
+  if (!dateStr) return '-';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
 }
 
 // ─── STYLISH MINIMALIST VERTICAL INVOICE (ULTRA COMPACT) ───────────────
