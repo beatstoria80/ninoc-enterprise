@@ -97,7 +97,7 @@ export function WebAnalyticsTab() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData(timeFilter);
-  }, [timeFilter]);
+  }, [timeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
