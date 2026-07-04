@@ -1,223 +1,233 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from '@/components/LocalizedLink';
 import NextLink from 'next/link';
-import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle, X } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Scale, FileText, AlertTriangle, X, Package, Coffee, Shirt, CheckCircle2 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const DICT = {
-  ID: {
-    back: "Kembali ke Form Supplier",
-    doc: "Dokumen Legal",
-    title: "Perjanjian Tingkat Layanan (OEM SLA)",
-    desc: "Perjanjian ini mengikat secara hukum antara NINOC dan Anda sebagai Mitra Manufaktur (Supplier), diatur dan tunduk pada hukum perundang-undangan Negara Kesatuan Republik Indonesia.",
-    date: "9 Juni 2026",
-    s1_title: "Ketentuan Umum & Definisi",
-    s1_1: "\"Program Supplier B2B\" adalah kemitraan eksklusif Original Equipment Manufacturer (OEM) di mana Supplier memproduksi barang fisik untuk diedarkan oleh NINOC.",
-    s1_2: "\"NINOC Hub\" merujuk pada Gudang Pusat NINOC tempat barang diserahkan untuk proses Quality Control (QC) dan fulfillment ke tangan pembeli.",
-    s1_3: "Seluruh dokumen Know Your Customer (KYC) yang diserahkan bersifat rahasia dan dilindungi oleh Kebijakan Privasi perusahaan.",
-    s2_title: "Syarat Produksi",
-    s2_1: "Supplier wajib memiliki entitas hukum yang sah atau terdaftar minimal dengan NIB untuk keperluan komersial (B2B).",
-    s2_2: "Kapasitas produksi harus dapat memenuhi Service Level Agreement (SLA) waktu penyelesaian yang disepakati untuk setiap Purchase Order (PO).",
-    s2_3: "Supplier menjamin mutu barang tidak mengandung bahan berbahaya atau menyalahi regulasi standardisasi industri Republik Indonesia (SNI).",
-    s3_title: "Hak Rebrand Eksklusif",
-    s3_tag: "Model OEM (White-Label)",
-    s3_tag_desc: "NINOC memegang kendali penuh atas identitas akhir produk yang dipasarkan ke konsumen.",
-    s3_1: "Supplier memberikan hak eksklusif yang sah, final, dan tak tergugurkan kepada NINOC untuk mengemas, mengubah, dan memberi merek ulang (rebrand) setiap barang yang didistribusikan.",
-    s3_2: "Identitas asli dari pabrik (Supplier) akan dijaga kerahasiaannya untuk melindungi persaingan B2B. Semua distribusi konsumen akan berada di bawah merek NINOC atau afiliasinya.",
-    s4_title: "Integritas & Kepatuhan",
-    s4_1: "Pelanggaran Kekayaan Intelektual: Supplier menjamin seluruh produk yang dipasok bebas dari pelanggaran paten, desain industri, hak cipta, atau merek pihak ketiga. Risiko sengketa HKI sepenuhnya menjadi tanggung jawab Supplier.",
-    s4_2: "Konsinyasi Fisik (QC): Semua barang wajib dikirim fisik ke NINOC Hub. Sistem Dropshipping langsung dari fasilitas Supplier sangat dilarang keras demi menjaga standarisasi Quality Control.",
-    s5_title: "Mekanisme Pembayaran HPP",
-    s5_1: "Harga Pokok Produksi (HPP) ditentukan dan dikunci di muka pada setiap dokumen Purchase Order (PO).",
-    s5_2: "Syarat Payout: Dana HPP baru akan dikreditkan ke buku besar (ledger) Supplier setelah konsumen akhir menyatakan pesanan \"Selesai\" (Delivered) dan melewati batas klaim Retur Garansi 7 hari secara aman tanpa sengketa kualitas.",
-    s5_3: "Pemotongan pajak (jika ada) akan dilakukan sesuai peraturan Dirjen Pajak RI terkait transaksi B2B.",
-    s6_title: "Penyelesaian Sengketa",
-    s6_1: "Perjanjian SLA ini tunduk pada hukum perdata Negara Kesatuan Republik Indonesia.",
-    s6_2: "Perselisihan terkait pembayaran maupun kualitas barang akan diselesaikan secara musyawarah dalam kurun waktu maksimum 30 hari kalender.",
-    s6_3: "Apabila mufakat tidak tercapai, sengketa akan dibawa ke yurisdiksi non-eksklusif Pengadilan Negeri terdekat domisili perusahaan NINOC."
-  },
-  EN: {
-    back: "Back to Supplier Form",
-    doc: "Legal Document",
-    title: "Service Level Agreement (OEM SLA)",
-    desc: "This agreement is legally binding between NINOC and you as the Manufacturing Partner (Supplier), governed by and subject to the laws of the Republic of Indonesia.",
-    date: "June 9, 2026",
-    s1_title: "General Terms & Definitions",
-    s1_1: 'The "B2B Supplier Program" is an exclusive Original Equipment Manufacturer (OEM) partnership where the Supplier produces physical goods to be distributed by NINOC.',
-    s1_2: '"NINOC Hub" refers to the NINOC Central Warehouse where goods are handed over for Quality Control (QC) processes and fulfillment to buyers.',
-    s1_3: "All submitted Know Your Customer (KYC) documents are confidential and protected by the company's Privacy Policy.",
-    s2_title: "Production Requirements",
-    s2_1: "The Supplier must have a valid legal entity or be registered with at least an NIB for commercial (B2B) purposes.",
-    s2_2: "Production capacity must meet the agreed Service Level Agreement (SLA) completion time for each Purchase Order (PO).",
-    s2_3: "The Supplier guarantees that the product quality does not contain hazardous materials or violate the industrial standardization regulations of the Republic of Indonesia (SNI).",
-    s3_title: "Exclusive Rebrand Rights",
-    s3_tag: "OEM Model (White-Label)",
-    s3_tag_desc: "NINOC holds full control over the final identity of the products marketed to consumers.",
-    s3_1: "The Supplier grants an exclusive, valid, final, and irrevocable right to NINOC to package, alter, and rebrand every distributed item.",
-    s3_2: "The original identity of the factory (Supplier) will be kept confidential to protect B2B competition. All consumer distribution will be under the NINOC brand or its affiliates.",
-    s4_title: "Integrity & Compliance",
-    s4_1: "Intellectual Property Infringement: The Supplier guarantees that all supplied products are free from third-party patent, industrial design, copyright, or trademark infringements. The risk of IP disputes is entirely the responsibility of the Supplier.",
-    s4_2: "Physical Consignment (QC): All goods must be physically sent to the NINOC Hub. Direct Dropshipping systems from the Supplier's facility are strictly prohibited to maintain Quality Control standards.",
-    s5_title: "HPP Payment Mechanism",
-    s5_1: "The Cost of Goods Sold (HPP) is determined and locked upfront on every Purchase Order (PO) document.",
-    s5_2: "Payout Conditions: HPP funds will only be credited to the Supplier's ledger after the end consumer declares the order \"Completed\" (Delivered) and safely passes the 7-day Warranty Return claim limit without quality disputes.",
-    s5_3: "Tax deductions (if applicable) will be made according to the regulations of the Directorate General of Taxes of the Republic of Indonesia regarding B2B transactions.",
-    s6_title: "Dispute Resolution",
-    s6_1: "This SLA agreement is subject to the civil laws of the Republic of Indonesia.",
-    s6_2: "Disputes related to payments or product quality will be resolved amicably within a maximum of 30 calendar days.",
-    s6_3: "If no consensus is reached, the dispute will be brought to the non-exclusive jurisdiction of the nearest District Court to the NINOC company domicile."
-  }
-};
 
 export default function SupplierTermsPage() {
   const pathname = usePathname();
   const lang = pathname?.startsWith('/en') ? 'EN' : 'ID';
+  const [activeOemPillar, setActiveOemPillar] = useState<'ALL' | 'APR' | 'OBJ' | 'PTR'>('ALL');
+
+  const oemMatrix = {
+    APR: {
+      code: "APR-OEM",
+      name: "Apparel & Archive Mfg",
+      icon: Shirt,
+      leadTime: "14 – 21 Hari Kerja per PO",
+      qcTolerance: "Defect stitching < 2%, Toleransi ukuran ± 1.5cm, Color fastness grade 4+.",
+      packaging: "Wajib dikemas dalam kemasan ziplock anti-statis resmi NINOC dengan woven label terjahit presisi.",
+      warranty: "Garansi retur produksi 7 hari setelah tiba di Gudang Pusat NINOC."
+    },
+    OBJ: {
+      code: "OBJ-OEM",
+      name: "Objects & Ceramics Mfg",
+      icon: Package,
+      leadTime: "21 – 30 Hari Kerja per PO",
+      qcTolerance: "Defect glaze < 1%, Zero chip tolerance, Lulus uji drop-test box standar ASTM.",
+      packaging: "Wajib menggunakan boks ganda (double-wall corrugated) dengan sisipan EPE foam custom anti-pecah.",
+      warranty: "Garansi klaim penggantian 100% jika terjadi kerusakan struktur pabrik saat QC gudang."
+    },
+    PTR: {
+      code: "PTR-OEM",
+      name: "Pantry & Café Roastery Mfg",
+      icon: Coffee,
+      leadTime: "2 – 4 Hari Kerja (On-Demand Freshness SLA)",
+      qcTolerance: "Toleransi skor warna Agtron ± 2 poin, Integritas one-way degassing valve 100%, Tanggal roasting tercetak jelas.",
+      packaging: "Wajib menggunakan pouch aluminium foil food-grade dengan katup degassing dan nitrogen flush sealing.",
+      warranty: "SLA ketat perlindungan kebersihan pangan: barang basi/bocor saat penyerahan gudang ditolak mutlak."
+    }
+  };
+
+  const DICT = {
+    ID: {
+      back: "Kembali ke Form Supplier",
+      doc: "OEM SLA Matrix Ver 3.1",
+      title: "Perjanjian Tingkat Layanan (OEM SLA)",
+      desc: "Perjanjian mengikat antara NINOC dan Mitra Manufaktur (Supplier), diatur spesifik per pilar departemen untuk memenuhi kepatuhan standar industri RI & verifikasi Google Merchant Center.",
+      date: "9 Juni 2026",
+      s1_title: "Ketentuan Umum & Kemitraan White-Label",
+      s1_text: "Program Supplier B2B adalah kemitraan eksklusif Original Equipment Manufacturer (OEM). NINOC memegang kendali penuh atas rebrand dan distribusi akhir produk. Identitas pabrik dijaga kerahasiaannya untuk melindungi persaingan bisnis.",
+      s2_title: "Standarisasi Produksi & QC Hub",
+      s2_text: "Seluruh barang wajib dikirim fisik ke NINOC Hub Bandung untuk inspeksi Quality Control (QC). Sistem Dropshipping langsung dari fasilitas Supplier sangat dilarang demi menjaga keseragaman kualitas Concept Mall.",
+      s3_title: "Mekanisme Pembayaran HPP",
+      s3_text: "Harga Pokok Produksi (HPP) dikunci di muka pada setiap Purchase Order (PO). Payout dikreditkan ke buku besar Supplier setelah pesanan konsumen akhir selesai dan melewati batas klaim retur garansi tanpa sengketa."
+    },
+    EN: {
+      back: "Back to Supplier Form",
+      doc: "OEM SLA Matrix Ver 3.1",
+      title: "Service Level Agreement (OEM SLA)",
+      desc: "Legally binding agreement between NINOC and Manufacturing Partners (Suppliers), structured specifically per department pillar for RI industrial compliance and Google Merchant Center verification.",
+      date: "June 9, 2026",
+      s1_title: "General Terms & White-Label Partnership",
+      s1_text: "The B2B Supplier Program is an exclusive Original Equipment Manufacturer (OEM) partnership. NINOC holds full control over rebranding and final distribution. Factory identity is kept confidential.",
+      s2_title: "Production Standardization & QC Hub",
+      s2_text: "All goods must be physically delivered to the NINOC Bandung Hub for Quality Control (QC) inspection. Direct Dropshipping from supplier facilities is strictly prohibited.",
+      s3_title: "HPP Payment Mechanism",
+      s3_text: "Cost of Goods Sold (HPP) is locked upfront on every Purchase Order (PO). Payouts are credited to the supplier ledger after end-consumer orders are completed without quality disputes."
+    }
+  };
+
   const dict = DICT[lang];
 
   return (
-    <div className="min-h-screen w-full bg-cr noise flex flex-col p-4 md:p-8 overflow-y-auto relative">
-      <div className="w-full lg:w-[96vw] max-w-[1800px] my-auto mx-auto lg:min-h-[800px] lg:h-[92vh] lg:max-h-[1000px] flex flex-col lg:grid lg:grid-cols-12 bg-white shadow-2xl border border-ink/5 rounded-xl overflow-visible lg:overflow-hidden z-10">
+    <div className="min-h-screen w-full bg-[#111111] text-[#E5E5E5] flex flex-col p-4 md:p-8 overflow-y-auto relative font-sans selection:bg-rose selection:text-white">
+      <div className="w-full max-w-[1600px] my-auto mx-auto min-h-[85vh] flex flex-col lg:grid lg:grid-cols-12 bg-[#161616] shadow-2xl border border-white/10 rounded-none overflow-hidden z-10">
         
         {/* Left Column - Header Info */}
-        <div className="lg:col-span-3 flex flex-col bg-ink p-8 md:p-12 text-white relative overflow-hidden h-full">
+        <div className="lg:col-span-4 flex flex-col bg-[#111111] p-8 md:p-12 text-white relative overflow-hidden h-full border-r border-white/10">
           <div className="absolute top-0 right-0 opacity-5 pointer-events-none translate-x-1/4 -translate-y-1/4">
-            <Scale size={300} />
+            <Scale size={350} />
           </div>
           
-          <div className="relative z-10 flex flex-col h-full">
-            <Link href="/supplier/apply" className="inline-flex items-center gap-2 text-xs font-medium text-white/50 hover:text-white mb-12 transition-colors uppercase tracking-widest shrink-0">
-              <ArrowLeft size={16} />
-              {dict.back}
-            </Link>
+          <div className="relative z-10 flex flex-col h-full justify-between space-y-8">
+            <div>
+              <Link href="/supplier/apply" className="inline-flex items-center gap-2 text-xs font-mono text-white/50 hover:text-rose mb-10 transition-colors uppercase tracking-widest">
+                <ArrowLeft size={16} />
+                {dict.back}
+              </Link>
 
-            <div className="flex-1">
               <div className="flex items-center gap-3 mb-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs md:text-[10px] font-medium uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose/20 border border-rose/40 text-rose text-[10px] font-mono uppercase tracking-widest">
                   <ShieldCheck size={14} />
                   {dict.doc}
                 </div>
                 
                 {/* Language Switcher */}
-                <div className="flex items-center text-xs md:text-[10px] font-medium uppercase tracking-widest bg-white/5 border border-white/10 rounded-full p-1">
-                  <NextLink  href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'ID' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>ID</NextLink>
-                  <NextLink  href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 rounded-full transition-colors", lang === 'EN' ? "bg-white text-ink" : "text-white/50 hover:text-white")}>EN</NextLink>
+                <div className="flex items-center text-[10px] font-mono uppercase tracking-widest bg-white/5 border border-white/10 p-1">
+                  <NextLink href={pathname?.replace('/en', '') || '/'} className={cn("px-2 py-1 transition-colors", lang === 'ID' ? "bg-rose text-white font-bold" : "text-white/50 hover:text-white")}>ID</NextLink>
+                  <NextLink href={`/en${pathname?.replace('/en', '')}`} className={cn("px-2 py-1 transition-colors", lang === 'EN' ? "bg-rose text-white font-bold" : "text-white/50 hover:text-white")}>EN</NextLink>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-display italic font-medium mb-6 leading-tight">{dict.title}</h1>
-              <p className="text-white/60 text-sm leading-relaxed max-w-sm">
+              <h1 className="text-3xl md:text-4xl font-display italic font-medium mb-6 leading-tight uppercase tracking-tight">{dict.title}</h1>
+              <p className="text-white/60 text-xs md:text-sm leading-relaxed font-mono">
                 {dict.desc}
               </p>
             </div>
 
-            <div className="mt-auto pt-8 border-t border-white/10 flex items-center justify-between shrink-0">
+            <div className="pt-8 border-t border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2 text-white/40">
-                <FileText size={16} />
-                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest">NINOC Legal Dept.</span>
+                <FileText size={16} className="text-rose" />
+                <span className="text-[10px] font-mono uppercase tracking-widest">NINOC Legal Dept.</span>
               </div>
-              <p className="text-xs md:text-[10px] text-white/40 uppercase tracking-widest font-medium">{dict.date}</p>
+              <p className="text-[10px] text-white/40 font-mono uppercase tracking-widest font-bold">{dict.date}</p>
             </div>
           </div>
         </div>
 
-        {/* Right Column - Terms Content (3 Grids) */}
-        <div className="lg:col-span-9 p-8 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
+        {/* Right Column - SLA Matrix Content */}
+        <div className="lg:col-span-8 p-8 md:p-12 relative flex flex-col h-full bg-[#181818] overflow-hidden">
           
-          {/* Close Button UI/UX */}
-          <Link href="/supplier/apply" className="absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 bg-ink/5 hover:bg-ink hover:text-white rounded-full flex items-center justify-center transition-all duration-300 z-50 group">
+          <Link href="/supplier/apply" className="absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 bg-white/5 hover:bg-rose hover:text-white flex items-center justify-center transition-all duration-300 z-50 group border border-white/10">
             <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
           </Link>
 
-          <div className="flex-1 overflow-y-auto no-scrollbar pr-4 pt-4 md:pt-0">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-8">
             
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 md:gap-12 space-y-8">
-              
-              {/* 1. KETENTUAN UMUM */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/60">01</span>
-                  {dict.s1_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <p>1.1. {dict.s1_1}</p>
-                  <p>1.2. {dict.s1_2}</p>
-                  <p>1.3. {dict.s1_3}</p>
-                </div>
-              </section>
-
-              {/* 2. SYARAT PRODUKSI & KUALIFIKASI */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/60">02</span>
-                  {dict.s2_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <p>2.1. {dict.s2_1}</p>
-                  <p>2.2. {dict.s2_2}</p>
-                  <p>2.3. {dict.s2_3}</p>
-                </div>
-              </section>
-
-              {/* 3. HAK REBRAND & DISTRIBUSI */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/60">03</span>
-                  {dict.s3_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <div className="bg-cr noise border border-ink/10 p-4 text-ink font-mono text-xs md:text-[10px] mb-4">
-                    <strong className="block mb-1 uppercase tracking-wider text-ink">{dict.s3_tag}</strong>
-                    {dict.s3_tag_desc}
-                  </div>
-                  <p>3.1. {dict.s3_1}</p>
-                  <p>3.2. {dict.s3_2}</p>
-                </div>
-              </section>
-
-              {/* 4. INTEGRITAS HUKUM & QC */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-rose uppercase tracking-widest flex items-center gap-2 border-b border-rose/20 pb-2">
-                  <AlertTriangle size={14} className="text-rose" />
-                  {dict.s4_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <p>4.1. {dict.s4_1}</p>
-                  <p>4.2. {dict.s4_2}</p>
-                </div>
-              </section>
-
-              {/* 5. MEKANISME PENCAIRAN DANA */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/60">05</span>
-                  {dict.s5_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <p>5.1. {dict.s5_1}</p>
-                  <p>5.2. {dict.s5_2}</p>
-                  <p>5.3. {dict.s5_3}</p>
-                </div>
-              </section>
-
-              {/* 6. PENYELESAIAN SENGKETA */}
-              <section className="break-inside-avoid space-y-4">
-                <h2 className="text-sm font-display font-medium text-ink uppercase tracking-widest flex items-center gap-2 border-b border-ink/10 pb-2">
-                  <span className="text-ink/60">06</span>
-                  {dict.s6_title}
-                </h2>
-                <div className="space-y-3 text-xs text-ink/70 leading-relaxed">
-                  <p>6.1. {dict.s6_1}</p>
-                  <p>6.2. {dict.s6_2}</p>
-                  <p>6.3. {dict.s6_3}</p>
-                </div>
-              </section>
-
+            {/* Pillar Filter Bar */}
+            <div className="border-b border-white/10 pb-6">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-rose block mb-3">
+                Pilih Kategori Manufaktur Anda (Department Pillar SLA):
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { id: 'ALL', label: 'SEMUA PILAR // SUMMARY', code: 'ALL' },
+                  { id: 'APR', label: 'APPAREL MFG', code: 'APR-OEM' },
+                  { id: 'OBJ', label: 'OBJECTS MFG', code: 'OBJ-OEM' },
+                  { id: 'PTR', label: 'ROASTERY MFG', code: 'PTR-OEM' },
+                ].map((btn) => {
+                  const active = activeOemPillar === btn.id;
+                  return (
+                    <button
+                      key={btn.id}
+                      onClick={() => setActiveOemPillar(btn.id as any)}
+                      className={`p-3 text-left transition-all border flex flex-col justify-between ${
+                        active ? 'bg-rose text-white border-rose font-bold shadow-md' : 'bg-[#141414] text-white/60 border-white/10 hover:border-white/30 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-[9px] font-mono text-rose">{btn.code}</span>
+                      <span className="text-xs font-display uppercase tracking-wider">{btn.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Matrix Display */}
+            <div className="space-y-6">
+              {Object.entries(oemMatrix).map(([key, oem]) => {
+                if (activeOemPillar !== 'ALL' && activeOemPillar !== key) return null;
+                const Icon = oem.icon;
+                return (
+                  <div key={key} className="p-6 bg-[#141414] border border-white/10 space-y-4 hover:border-white/20 transition-all">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-rose/20 text-rose border border-rose/30">
+                          <Icon size={20} />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono text-rose block uppercase font-bold">{oem.code}</span>
+                          <h3 className="text-base font-display font-bold uppercase tracking-tight text-white">{oem.name}</h3>
+                        </div>
+                      </div>
+                      <span className="text-xs font-mono bg-white/5 border border-white/10 px-3 py-1 text-white/80">
+                        Lead Time: <strong className="text-rose">{oem.leadTime}</strong>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans text-xs">
+                      <div className="bg-black/40 p-3.5 border border-white/5 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-amber-400 uppercase block">QC Tolerance SLA</span>
+                        <p className="text-white/80 leading-relaxed">{oem.qcTolerance}</p>
+                      </div>
+                      <div className="bg-black/40 p-3.5 border border-white/5 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-blue-400 uppercase block">Packaging Standard</span>
+                        <p className="text-white/80 leading-relaxed">{oem.packaging}</p>
+                      </div>
+                      <div className="bg-black/40 p-3.5 border border-white/5 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase block">Warranty & Payout</span>
+                        <p className="text-white/80 leading-relaxed">{oem.warranty}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* General B2B Contract Clauses */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10">
+              <div className="p-5 bg-[#141414] border border-white/10 space-y-2">
+                <h4 className="text-xs font-display font-bold uppercase tracking-wider text-rose">01 // {dict.s1_title}</h4>
+                <p className="text-xs text-white/70 leading-relaxed">{dict.s1_text}</p>
+              </div>
+              <div className="p-5 bg-[#141414] border border-white/10 space-y-2">
+                <h4 className="text-xs font-display font-bold uppercase tracking-wider text-amber-400">02 // {dict.s2_title}</h4>
+                <p className="text-xs text-white/70 leading-relaxed">{dict.s2_text}</p>
+              </div>
+              <div className="p-5 bg-[#141414] border border-white/10 space-y-2">
+                <h4 className="text-xs font-display font-bold uppercase tracking-wider text-emerald-400">03 // {dict.s3_title}</h4>
+                <p className="text-xs text-white/70 leading-relaxed">{dict.s3_text}</p>
+              </div>
+            </div>
+
+            {/* Regulatory Compliance Stamp */}
+            <div className="p-6 bg-gradient-to-r from-rose/20 to-black border border-rose/30 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle size={24} className="text-rose shrink-0" />
+                <p className="text-xs text-white/80 font-mono">
+                  SLA di atas mengikat secara hukum sesuai UU RI dan melindungi kredibilitas rantai pasok dari teguran otomatis audit Google Merchant Center B2B.
+                </p>
+              </div>
+              <span className="text-[10px] font-mono font-bold uppercase px-3 py-1 bg-rose text-white shrink-0">
+                VERIFIED SLA
+              </span>
+            </div>
+
           </div>
         </div>
-
       </div>
     </div>
   );
