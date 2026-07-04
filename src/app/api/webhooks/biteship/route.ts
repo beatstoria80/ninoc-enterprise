@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
 import crypto from 'crypto';
 import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailShipping, sendEmailDelivered } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 // ============================================================
 // BITESHIP WEBHOOK HANDLER (PRODUCTION VERSION)
@@ -18,7 +13,6 @@ import { notifyAllChannels } from '@/lib/notifications';
 
 interface BiteshipWebhookPayload {
   event: string;
-  // order.status event
   order_id?: string;
   status?: string;
   courier_tracking_id?: string;
@@ -27,13 +21,10 @@ interface BiteshipWebhookPayload {
   courier_driver_name?: string;
   courier_driver_phone?: string;
   courier_link?: string;
-  // order.price event
   price?: number;
-  // order.waybill_id event
   waybill_id?: string;
 }
 
-// Map Biteship status to our internal order status
 function mapBiteshipStatus(biteshipStatus: string): string {
   const statusMap: Record<string, string> = {
     'confirmed': 'pending',
@@ -55,14 +46,11 @@ function mapBiteshipStatus(biteshipStatus: string): string {
   return statusMap[biteshipStatus] || 'pending';
 }
 
-// Verify webhook signature from Biteship
 function verifySignature(payload: string, signature: string, secret: string): boolean {
-  if (!secret) return true; // Skip verification if no secret configured
+  if (!secret) return true;
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(payload);
   const computed = hmac.digest('hex');
-  // Use simple comparison for hex strings — timingSafeEqual requires same buffer length
-  // Both are 64-char hex strings, but guard against malformed signatures
   if (signature.length !== computed.length) return false;
   return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature));
 }
@@ -71,7 +59,6 @@ export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
 
-    // 1. Handle empty body (ping check)
     if (!rawBody || rawBody.trim() === '') {
       return NextResponse.json({ status: 'OK', message: 'Handshake successful' });
     }
@@ -84,34 +71,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ status: 'OK', message: 'Payload accepted' });
     }
 
-    // 2. Verify signature if secret is set in Vercel
     const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
     const signature = req.headers.get('x-biteship-signature') || '';
 
     if (webhookSecret) {
-      // If secret is configured, signature MUST be present and valid
       if (!signature) {
-        console.error('[Biteship Webhook] Signature header missing but secret is configured');
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
       const isValid = verifySignature(rawBody, signature, webhookSecret);
       if (!isValid) {
-        console.error('[Biteship Webhook] Signature verification failed');
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
 
     console.log(`[Biteship Webhook] Event: ${payload.event}, Order: ${payload.order_id}`);
+    const supabaseAdmin = getSupabaseAdmin();
 
-    // 3. Process Events
     switch (payload.event) {
       case 'order.status': {
         if (!payload.order_id || !payload.status) break;
 
         const internalStatus = mapBiteshipStatus(payload.status);
 
-        // Update main order table
-        const { data: updatedOrder } = await adminClient
+        const { data: updatedOrder } = await supabaseAdmin
           .from('orders')
           .update({
             status: internalStatus,
@@ -128,70 +110,73 @@ export async function POST(req: Request) {
           const phone = formatPhoneNumber(phoneRaw);
           const customerName = updatedOrder.customer_name || (updatedOrder.shipping_address as any)?.name || 'Pelanggan';
           
-          if (phone || updatedOrder.customer_email) {
-            // Send Shipping Notification (only if not sent before)
-            if (internalStatus === 'shipped' && !updatedOrder.wa_shipping_sent) {
-              const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || 'Otomatis';
-              const courier = payload.courier_company || 'Kurir Ekspedisi';
-              
-              if (phone) {
-                await sendShippingWA({
-                  phone,
-                  customer_name: customerName,
-                  order_id: updatedOrder.id,
-                  tracking_id: trackingId,
-                  courier_name: courier,
-                });
-              }
+          // ATOMIC FIX: Prevent TOCTOU spam by updating notification flag BEFORE executing slow network I/O
+          if (internalStatus === 'shipped' && !updatedOrder.wa_shipping_sent) {
+            await supabaseAdmin
+              .from('orders')
+              .update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() })
+              .eq('id', updatedOrder.id);
 
-              if (updatedOrder.customer_email) {
-                await sendEmailShipping(updatedOrder, updatedOrder.customer_email, trackingId, courier);
-              }
-
-              await adminClient.from('orders').update({ wa_shipping_sent: true, wa_shipping_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
-            }
+            const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || 'Otomatis';
+            const courier = payload.courier_company || 'Kurir Ekspedisi';
             
-            // Send Delivered Notification (only if not sent before)
-            if (internalStatus === 'delivered' && !updatedOrder.wa_delivered_sent) {
-              if (phone) {
-                await sendDeliveredWA({
-                  phone,
-                  customer_name: customerName,
-                  order_id: updatedOrder.id,
-                });
-              }
+            if (phone) {
+              sendShippingWA({
+                phone,
+                customer_name: customerName,
+                order_id: updatedOrder.id,
+                tracking_id: trackingId,
+                courier_name: courier,
+              }).catch(err => console.error('[Biteship Webhook] Async WA Shipping Error:', err));
+            }
 
-              if (updatedOrder.customer_email) {
-                await sendEmailDelivered(updatedOrder, updatedOrder.customer_email);
-              }
+            if (updatedOrder.customer_email) {
+              sendEmailShipping(updatedOrder, updatedOrder.customer_email, trackingId, courier)
+                .catch(err => console.error('[Biteship Webhook] Async Email Shipping Error:', err));
+            }
+          }
+          
+          if (internalStatus === 'delivered' && !updatedOrder.wa_delivered_sent) {
+            await supabaseAdmin
+              .from('orders')
+              .update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() })
+              .eq('id', updatedOrder.id);
 
-              await adminClient.from('orders').update({ wa_delivered_sent: true, wa_delivered_sent_at: new Date().toISOString() }).eq('id', updatedOrder.id);
+            if (phone) {
+              sendDeliveredWA({
+                phone,
+                customer_name: customerName,
+                order_id: updatedOrder.id,
+              }).catch(err => console.error('[Biteship Webhook] Async WA Delivered Error:', err));
+            }
+
+            if (updatedOrder.customer_email) {
+              sendEmailDelivered(updatedOrder, updatedOrder.customer_email)
+                .catch(err => console.error('[Biteship Webhook] Async Email Delivered Error:', err));
             }
           }
 
-          // In-App + Push Notification
           if (updatedOrder.user_id) {
             if (internalStatus === 'shipped') {
               const trackingId = payload.courier_tracking_id || payload.courier_waybill_id || '';
-              await notifyAllChannels({
+              notifyAllChannels({
                 userId: updatedOrder.user_id,
                 title: 'Pesanan Dalam Pengiriman',
                 message: `Pesanan #${updatedOrder.order_number || updatedOrder.id} sedang dalam perjalanan.${trackingId ? ` Resi: ${trackingId}` : ''}`,
                 actionLink: `/profile/orders/${updatedOrder.id}`,
-              });
+              }).catch(err => console.error('[Biteship Webhook] Async Push Shipped Error:', err));
             } else if (internalStatus === 'delivered') {
-              await notifyAllChannels({
+              notifyAllChannels({
                 userId: updatedOrder.user_id,
                 title: 'Pesanan Telah Diterima',
                 message: `Pesanan #${updatedOrder.order_number || updatedOrder.id} telah sampai. Terima kasih telah berbelanja di NINOC!`,
                 actionLink: `/profile/orders/${updatedOrder.id}`,
-              });
+              }).catch(err => console.error('[Biteship Webhook] Async Push Delivered Error:', err));
             }
           }
         }
 
-        // Log to tracking_logs for history
-        await adminClient.from('tracking_logs').insert({
+        await supabaseAdmin.from('tracking_logs').insert({
           order_id: payload.order_id,
           biteship_status: payload.status,
           internal_status: internalStatus,
@@ -207,7 +192,7 @@ export async function POST(req: Request) {
       case 'order.waybill_id': {
         const waybillId = payload.waybill_id || payload.courier_waybill_id;
         if (payload.order_id && waybillId) {
-          await adminClient
+          await supabaseAdmin
             .from('orders')
             .update({ tracking_id: waybillId })
             .eq('id', payload.order_id);
@@ -217,7 +202,7 @@ export async function POST(req: Request) {
 
       case 'order.price': {
         if (payload.order_id) {
-          await adminClient.from('tracking_logs').insert({
+          await supabaseAdmin.from('tracking_logs').insert({
             order_id: payload.order_id,
             biteship_status: 'price_update',
             internal_status: 'info',
@@ -244,4 +229,3 @@ export async function GET() {
     timestamp: new Date().toISOString(),
   });
 }
-

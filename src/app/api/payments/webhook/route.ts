@@ -3,12 +3,7 @@ import { coreApi } from '@/lib/midtrans';
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function POST(req: Request) {
   try {
@@ -24,10 +19,12 @@ export async function POST(req: Request) {
 
     console.log(`[Payment Webhook] Order: ${orderId} | TX: ${transactionId} | Status: ${transactionStatus} | Fraud: ${fraudStatus}`);
 
+    const supabaseAdmin = getSupabaseAdmin();
+
     // 2. Validate order exists in database
     const { data: existingOrder, error: fetchError } = await supabaseAdmin
       .from('orders')
-      .select('id, status, midtrans_id')
+      .select('id, status, midtrans_id, wa_invoice_sent')
       .eq('id', orderId)
       .single();
 
@@ -36,10 +33,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // 3. Idempotency check — only skip if order already reached a final state (paid/cancelled)
-    if (existingOrder.midtrans_id === transactionId && (existingOrder.status === 'paid' || existingOrder.status === 'cancelled')) {
-      console.log(`[Payment Webhook] Duplicate webhook for order ${orderId} (already ${existingOrder.status}) — skipping`);
-      return NextResponse.json({ status: 'OK', note: 'Already processed' });
+    const previousStatus = existingOrder.status;
+
+    // 3. Strict Terminal State Idempotency Check
+    // If order is already in a terminal state (paid or cancelled), prevent out-of-order webhooks from reverting it
+    if (previousStatus === 'paid' || previousStatus === 'cancelled') {
+      if (existingOrder.midtrans_id === transactionId || transactionStatus === 'pending' || transactionStatus === 'capture') {
+        console.log(`[Payment Webhook] Terminal state reached (${previousStatus}) for order ${orderId} — skipping duplicate/out-of-order webhook`);
+        return NextResponse.json({ status: 'OK', note: `Already in terminal state: ${previousStatus}` });
+      }
     }
 
     let orderUpdateStatus = '';
@@ -58,11 +60,11 @@ export async function POST(req: Request) {
       orderUpdateStatus = 'pending';
     }
 
-    if (!orderUpdateStatus) {
-      return NextResponse.json({ status: 'OK', note: 'No status change' });
+    if (!orderUpdateStatus || orderUpdateStatus === previousStatus) {
+      return NextResponse.json({ status: 'OK', note: 'No status change required' });
     }
 
-    // 4. Update order status + store midtrans_id and payment_type
+    // 4. Update order status + store midtrans_id
     const { error: updateError } = await supabaseAdmin
       .from('orders')
       .update({
@@ -77,8 +79,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
 
-    // --- INVENTORY RESTOCK (IF CANCELLED/EXPIRED) ---
-    if (orderUpdateStatus === 'cancelled') {
+    // --- INVENTORY RESTOCK (ATOMIC FIX: Only restock if transitioning INTO cancelled from a non-cancelled state) ---
+    if (orderUpdateStatus === 'cancelled' && previousStatus !== 'cancelled') {
       const { error: restockError } = await supabaseAdmin.rpc('restock_inventory', { p_order_id: orderId });
       if (restockError) {
         console.error(`[Payment Webhook] Failed to restock inventory for order ${orderId}:`, restockError);
@@ -102,8 +104,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Send WhatsApp Invoice Notification, Generate Affiliate Commission, and Distribute Supplier Ledger
-    if (orderUpdateStatus === 'paid') {
+    // 5. Financial Distribution & Async Notifications (When order becomes PAID)
+    if (orderUpdateStatus === 'paid' && previousStatus !== 'paid') {
       const { data: order } = await supabaseAdmin
         .from('orders')
         .select(`
@@ -114,20 +116,19 @@ export async function POST(req: Request) {
         .single();
 
       if (order) {
-        // --- SUPPLIER LEDGER DISTRIBUTION ---
+        // --- SUPPLIER LEDGER DISTRIBUTION (IDEMPOTENT Check) ---
         if (order.order_items && order.order_items.length > 0) {
           const ledgerEntries = order.order_items
-            .filter((item: any) => item.supplier_id && item.supplier_hpp > 0)
+            .filter((item: any) => item.supplier_id && Number(item.supplier_hpp) > 0)
             .map((item: any) => ({
               supplier_id: item.supplier_id,
               order_id: order.id,
               order_item_id: item.id,
               hpp_amount: item.supplier_hpp,
-              status: 'pending' // clears after 14 days or whatever policy says
+              status: 'pending'
             }));
           
           if (ledgerEntries.length > 0) {
-            // Check if already created
             const { data: existingLedger } = await supabaseAdmin
               .from('supplier_ledgers')
               .select('id')
@@ -138,12 +139,16 @@ export async function POST(req: Request) {
               const { error: ledgerError } = await supabaseAdmin
                 .from('supplier_ledgers')
                 .insert(ledgerEntries);
-              if (ledgerError) console.error('[Payment Webhook] Failed to create supplier ledger entries:', ledgerError);
-              else console.log(`[Payment Webhook] Distributed ${ledgerEntries.length} supplier ledger entries for order ${order.id}`);
+              if (ledgerError) {
+                console.error('[Payment Webhook] Failed to create supplier ledger entries:', ledgerError);
+              } else {
+                console.log(`[Payment Webhook] Distributed ${ledgerEntries.length} supplier ledger entries for order ${order.id}`);
+              }
             }
           }
         }
-        // --- AFFILIATE COMMISSION LOGIC ---
+
+        // --- AFFILIATE COMMISSION LOGIC (IDEMPOTENT Check) ---
         if (order.affiliate_id) {
           const { data: existingCommission } = await supabaseAdmin
             .from('affiliate_commissions')
@@ -159,22 +164,18 @@ export async function POST(req: Request) {
               .single();
 
             if (affiliate) {
-              // Fraud Prevention: Only calculate commission on eligible products
               const { data: orderItems } = await supabaseAdmin
                 .from('order_items')
                 .select(`
                   price_at_purchase,
                   quantity,
-                  products (
-                    affiliate_eligible
-                  )
+                  products ( affiliate_eligible )
                 `)
                 .eq('order_id', order.id);
 
               let eligibleTotal = 0;
               if (orderItems && orderItems.length > 0) {
                 orderItems.forEach((item: any) => {
-                  // Check if the joined product explicitly allows affiliate commissions
                   if (item.products && item.products.affiliate_eligible === true) {
                     eligibleTotal += (Number(item.price_at_purchase) * Number(item.quantity));
                   }
@@ -191,77 +192,53 @@ export async function POST(req: Request) {
                     amount: commissionAmount,
                     status: 'pending'
                   });
-                console.log(`[Payment Webhook] Created affiliate commission for order ${order.id}: Rp ${commissionAmount} (Eligible Base: Rp ${eligibleTotal})`);
-              } else {
-                console.log(`[Payment Webhook] No eligible products for affiliate commission on order ${order.id}`);
+                console.log(`[Payment Webhook] Created affiliate commission for order ${order.id}: Rp ${commissionAmount}`);
               }
             }
           }
         }
 
+        // --- NON-BLOCKING ASYNC NOTIFICATIONS (Prevents Midtrans webhook I/O timeout loops) ---
+        const shippingAddress = order.shipping_address as Record<string, string> | null;
+        const phone = shippingAddress?.phone || '';
+        const customerName = shippingAddress?.name || 'Pelanggan';
+        const formattedPhone = formatPhoneNumber(phone);
+        const customerEmail = shippingAddress?.email;
+
+        // Atomically lock email/WA notification flag to prevent concurrent retries
         if (!order.wa_invoice_sent) {
-          const shippingAddress = order.shipping_address as Record<string, string> | null;
-          const phone = shippingAddress?.phone || '';
-          const customerName = shippingAddress?.name || 'Pelanggan';
-          const formattedPhone = formatPhoneNumber(phone);
+          await supabaseAdmin
+            .from('orders')
+            .update({ wa_invoice_sent: true, wa_invoice_sent_at: new Date().toISOString() })
+            .eq('id', orderId);
 
-        if (formattedPhone) {
-          const formattedPrice = `Rp ${Number(order.total_price).toLocaleString('id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          })}`;
+          if (formattedPhone) {
+            const formattedPrice = `Rp ${Number(order.total_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+            const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+            const trackId = order.order_number || order.id;
+            const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 
-          const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
-          const trackId = order.order_number || order.id;
-          const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
-
-          console.log(`[Payment Webhook] Sending invoice WA to ${formattedPhone} for order ${order.id}`);
-
-          const waResult = await sendInvoiceWA({
-            phone: formattedPhone,
-            customer_name: customerName,
-            order_id: order.id,
-            total_price: formattedPrice,
-            payment_url: paymentUrl,
-          });
-
-          if (waResult.success) {
-            console.log(`[Payment Webhook] Invoice WA sent. Message ID: ${waResult.message_id}`);
-            // Only mark as sent if WhatsApp actually succeeded
-            await supabaseAdmin
-              .from('orders')
-              .update({
-                wa_invoice_sent: true,
-                wa_invoice_sent_at: new Date().toISOString(),
-              })
-              .eq('id', orderId);
-          } else {
-            console.warn(`[Payment Webhook] Invoice WA failed: ${waResult.error}`);
+            sendInvoiceWA({
+              phone: formattedPhone,
+              customer_name: customerName,
+              order_id: order.id,
+              total_price: formattedPrice,
+              payment_url: paymentUrl,
+            }).catch(err => console.error('[Payment Webhook] Async WA Invoice Error:', err));
           }
-        } else {
-          console.warn(`[Payment Webhook] No valid phone number for order ${order.id}`);
-        }
-        } else {
-          console.log(`[Payment Webhook] Invoice WA already sent for order ${order.id}, skipping`);
+
+          if (customerEmail) {
+            sendEmailInvoice(order, customerEmail).catch(err => console.error('[Payment Webhook] Async Email Invoice Error:', err));
+          }
         }
 
-        // --- EMAIL NOTIFICATION ---
-        const customerEmail = (order.shipping_address as Record<string, string> | null)?.email;
-        if (customerEmail) {
-          console.log(`[Payment Webhook] Attempting to send Email Invoice to ${customerEmail}...`);
-          await sendEmailInvoice(order, customerEmail);
-        } else {
-          console.log(`[Payment Webhook] No customer email found in shipping_address for order ${order.id}`);
-        }
-
-        // --- IN-APP + PUSH NOTIFICATION ---
         if (order.user_id) {
-          await notifyAllChannels({
+          notifyAllChannels({
             userId: order.user_id,
             title: 'Pembayaran Berhasil!',
-            message: `Pesanan #${order.order_number || order.id} senilai Rp ${Number(order.total_price).toLocaleString('id-ID')} telah dikonfirmasi. Pesanan Anda sedang diproses.`,
+            message: `Pesanan #${order.order_number || order.id} senilai Rp ${Number(order.total_price).toLocaleString('id-ID')} telah dikonfirmasi.`,
             actionLink: `/profile/orders/${order.id}`,
-          });
+          }).catch(err => console.error('[Payment Webhook] Async Push Notification Error:', err));
         }
       }
     }
@@ -274,7 +251,7 @@ export async function POST(req: Request) {
 
   } catch (err) {
     const error = err as Error;
-    console.error('[Payment Webhook] Error:', error);
+    console.error('[Payment Webhook] Fatal Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
