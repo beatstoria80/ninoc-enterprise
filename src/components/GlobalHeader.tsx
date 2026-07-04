@@ -511,12 +511,13 @@ export default function GlobalHeader() {
 
         {/* Navigation Links - Hidden on mobile, shown on lg */}
         <motion.div
-          className="hidden lg:flex items-center gap-16 absolute left-1/2 -translate-x-1/2"
+          className="hidden lg:flex items-center gap-10 xl:gap-14 absolute left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.2em]"
         >
-          <NavLink index={0} isDark={isDarkBg} href="/shop">{dict.header.shop}</NavLink>
-          <NavLink index={1} isDark={isDarkBg} href="/collections">{dict.header.collections}</NavLink>
-          <NavLink index={2} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
-          <NavLink index={3} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
+          <NavLink index={0} isDark={isDarkBg} href="/shop?filter=Apparel">Apparel</NavLink>
+          <NavLink index={1} isDark={isDarkBg} href="/shop?filter=Objects">Objects</NavLink>
+          <NavLink index={2} isDark={isDarkBg} href="/shop?filter=Pantry">Pantry & Café</NavLink>
+          <NavLink index={3} isDark={isDarkBg} href="/logbook">{dict.header.logbook}</NavLink>
+          <NavLink index={4} isDark={isDarkBg} href="/about">{dict.header.about}</NavLink>
         </motion.div>
 
         {/* Action Icons */}
@@ -932,31 +933,160 @@ export default function GlobalHeader() {
                   </motion.div>
                 )}
 
-                {[
-                  { label: dict.header.shop, href: '/shop' },
-                  { label: dict.header.collections, href: '/collections' },
-                  { label: dict.header.affiliate, href: '/affiliate' },
-                  { label: dict.header.logbook, href: '/logbook' },
-                  { label: 'Supplier', href: '/supplier/apply' },
-                  { label: dict.header.shippingTerms, href: '/help/shipping-payment' },
-                  { label: 'Return & Refund', href: '/retur' },
-                  { label: dict.header.about, href: '/about' }
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
+                {/* ══ SECTION 1: DEPARTMENT PORTAL GATEWAY (PILLAR SWITCHER) ══ */}
+                <div className="flex flex-col gap-3 pb-6 border-b border-ink/10">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-rose">
+                      Department Portals
+                    </span>
+                    <span className="text-[9px] font-mono text-ink/40 uppercase">3 Pillars</span>
+                  </div>
+                  
+                  {/* Portal 01: Apparel & Archive */}
+                  <Link
+                    href="/shop?filter=Apparel"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="group relative flex items-center justify-between p-3 bg-ink/[0.02] hover:bg-rose/[0.04] border border-ink/10 hover:border-rose/50 transition-all duration-300"
                   >
-                    <Link
-                      href={item.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-sm md:text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors"
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-rose/10 text-rose flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase tracking-[0.15em] text-ink group-hover:text-rose transition-colors">
+                          Apparel & Archive
+                        </span>
+                        <span className="text-[10px] text-ink/50 font-medium">
+                          Fashion · Garment · Footwear
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
+                      APR-01
+                    </span>
+                  </Link>
+
+                  {/* Portal 02: Objects & Goods */}
+                  <Link
+                    href="/shop?filter=Objects"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="group relative flex items-center justify-between p-3 bg-ink/[0.02] hover:bg-rose/[0.04] border border-ink/10 hover:border-rose/50 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-rose/10 text-rose flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                          <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase tracking-[0.15em] text-ink group-hover:text-rose transition-colors">
+                          Objects & Goods
+                        </span>
+                        <span className="text-[10px] text-ink/50 font-medium">
+                          Homeware · Ceramics · Functional
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
+                      OBJ-02
+                    </span>
+                  </Link>
+
+                  {/* Portal 03: Pantry & Café */}
+                  <Link
+                    href="/shop?filter=Pantry"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="group relative flex items-center justify-between p-3 bg-ink/[0.02] hover:bg-rose/[0.04] border border-ink/10 hover:border-rose/50 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-rose/10 text-rose flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 8h1a4 4 0 110 8h-1" />
+                          <path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z" />
+                          <line x1="6" y1="2" x2="6" y2="4" />
+                          <line x1="10" y1="2" x2="10" y2="4" />
+                          <line x1="14" y1="2" x2="14" y2="4" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase tracking-[0.15em] text-ink group-hover:text-rose transition-colors">
+                          Pantry & Café
+                        </span>
+                        <span className="text-[10px] text-ink/50 font-medium">
+                          Specialty Coffee · Pastry · RTD
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[8px] font-mono font-semibold uppercase tracking-widest px-1.5 py-0.5 bg-rose/10 text-rose border border-rose/20">
+                      PTR-03
+                    </span>
+                  </Link>
+                </div>
+
+                {/* ══ SECTION 2: CATALOG & EXPLORE ══ */}
+                <div className="flex flex-col gap-3.5 pb-6 border-b border-ink/10">
+                  <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-ink/40">
+                    Catalog & Explore
+                  </span>
+                  {[
+                    { label: 'Shop All Products', href: '/shop' },
+                    { label: dict.header.collections, href: '/collections' },
+                    { label: dict.header.logbook, href: '/logbook' },
+                    { label: dict.header.about, href: '/about' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
                     >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors flex items-center justify-between"
+                      >
+                        <span>{item.label}</span>
+                        <span className="text-ink/20">→</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* ══ SECTION 3: SERVICES, SUPPLIER & POLICIES ══ */}
+                <div className="flex flex-col gap-3.5">
+                  <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-ink/40">
+                    Services & Policies
+                  </span>
+                  {[
+                    { label: 'Return & Refund Protocol', href: '/retur', highlight: true },
+                    { label: 'Supplier Partner Portal', href: '/supplier/apply' },
+                    { label: dict.header.affiliate, href: '/affiliate' },
+                    { label: dict.header.shippingTerms, href: '/help/shipping-payment' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.35 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={cn(
+                          "text-xs font-bold uppercase tracking-[0.2em] transition-colors flex items-center justify-between",
+                          item.highlight ? "text-rose hover:text-rose/80" : "text-ink/70 hover:text-rose"
+                        )}
+                      >
+                        <span>{item.label}</span>
+                        {item.highlight && <span className="text-[8px] px-1.5 py-0.5 bg-rose text-white uppercase font-mono">2x24h</span>}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
 
                 {/* Logout Button for Members */}
                 {user && (
