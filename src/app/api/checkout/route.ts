@@ -263,6 +263,7 @@ export async function POST(req: Request) {
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
     const orderId = `NINOC-${Date.now()}`;
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
 
     const parameter = {
       transaction_details: {
@@ -304,9 +305,9 @@ export async function POST(req: Request) {
         unit: 'hour'
       },
       callbacks: {
-        finish: `${process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store'}/payment/success?order_id=${orderId}&courier=${shippingDetails.method}`,
-        unfinish: `${process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store'}/shop`,
-        error: `${process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store'}/checkout`
+        finish: `${appUrl}/payment/success?order_id=${orderId}&courier=${shippingDetails.method}`,
+        unfinish: `${appUrl}/shop`,
+        error: `${appUrl}/checkout`
       }
     };
 

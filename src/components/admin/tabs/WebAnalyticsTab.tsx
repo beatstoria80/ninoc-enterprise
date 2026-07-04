@@ -510,7 +510,7 @@ export function WebAnalyticsTab() {
             <h2 className="text-sm font-extrabold uppercase tracking-widest text-emerald-700 flex items-center gap-2 bg-emerald-50/80 border border-emerald-100 px-3 py-1.5 rounded-lg w-fit">
               <Search size={16} /> Google Search Console — SEO, Kata Kunci & Negara Pencari
             </h2>
-            <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">Domain: {process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store/'}</span>
+            <span className="text-[11px] text-ink/50 font-medium hidden sm:inline-block">Domain: {(process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store')}</span>
           </div>
 
           {renderTimeSelector('emerald')}
