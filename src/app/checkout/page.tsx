@@ -707,9 +707,9 @@ export default function CheckoutPage() {
 
       // MOBILE FIX: Use native redirect instead of snap.pay iframe to avoid browser block/bugs
       if (isMobile && data.redirect_url) {
-        setIsRedirecting(true);
         if (!userId) clearCart(); // Keep cart if member, like in desktop callbacks
-        sessionStorage.removeItem('ninoc_checkout_form');
+        try { sessionStorage.removeItem('ninoc_checkout_form'); } catch {}
+        // Redirect immediately — no state update delay
         window.location.href = data.redirect_url;
         return;
       }
@@ -1392,17 +1392,17 @@ export default function CheckoutPage() {
 
       {/* REDIRECTING OVERLAY */}
       {isRedirecting && (
-        <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-cr/95 backdrop-blur-md p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-white p-4">
           <div className="flex flex-col items-center text-center max-w-sm">
             <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6">
               <CheckCircle size={24} className="text-emerald-500" />
             </div>
-            <h2 className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight text-ink mb-2">Payment Confirmed</h2>
+            <h2 className="text-xl md:text-2xl font-display font-medium italic uppercase tracking-tight text-ink mb-2">Memproses Pesanan</h2>
             <p className="text-xs md:text-[10px] text-ink/50 font-medium uppercase tracking-[0.2em] leading-relaxed mb-8">
-              Preparing your transaction receipt...
+              Menyiapkan struk transaksi Anda...
             </p>
-            <div className="w-48 h-1 bg-ink/5 overflow-hidden">
-              <div className="h-full bg-rose w-1/2 animate-[slideRight_1s_ease-in-out_infinite]" />
+            <div className="w-48 h-1 bg-ink/5 overflow-hidden rounded-full">
+              <div className="h-full bg-rose w-1/3 animate-[slideRight_0.8s_ease-in-out_infinite]" />
             </div>
           </div>
         </div>
