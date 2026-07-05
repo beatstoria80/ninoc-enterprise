@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingBag, ArrowRight, ImageOff, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, ImageOff, ShoppingCart, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getProductStock, getProductViews } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -129,6 +130,8 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
   const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const pathname = usePathname();
+  const isId = !pathname?.startsWith('/en');
 
   const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
 
@@ -168,89 +171,88 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
       <div className="h-[56px]" />
 
       <div className="px-3 pt-3 space-y-4 pb-10">
-        {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
+        {displayCategories.filter(c => c !== 'All' && (selectedCategory === 'All' || selectedCategory === c)).map((category) => (
           <div key={category} className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-sm md:text-[11px] font-display font-medium italic uppercase tracking-widest text-ink">
-                {category}
+            <div className="flex items-center justify-between border-b border-ink/10 pb-1">
+              <h2 className="text-[10px] font-display font-medium italic uppercase tracking-wider text-ink/80">
+                {getCategoryDisplayName(category)}
               </h2>
-              <span className="text-[10px] md:text-[9px] text-ink/50 uppercase tracking-wider">
-                {categoryProducts.length} {dict.shop.pieces}
+              <span className="text-[8px] font-mono text-ink/40">
+                ({groupedProducts[category]?.length || 0})
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-1.5">
-              {categoryProducts.map((product, index) => (
+              {groupedProducts[category]?.map((product, index) => (
                 <motion.div
                   key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: index * 0.03 }}
                 >
-                  <Link  href={`/shop/${product.slug}`} className="block h-full border border-ink/5 bg-white shadow-sm flex flex-col">
-                    <div
-                      className="aspect-[4/5] bg-ink/[0.02] rounded-none overflow-hidden border-b border-ink/5 relative"
-                    >
-                      <SafeImage
-                        src={product.image_url}
-                        alt={product.name}
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        draggable={false}
-                        className="select-none pointer-events-none"
-                      />
-                      {product.price_tag && (
-                        <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
-                          {product.price_tag}
+                  <Link href={`/shop/${product.slug}`} className="block h-full">
+                    <div className="bg-white border border-ink/5 h-full flex flex-col justify-between p-2 relative group overflow-hidden">
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02] mb-2">
+                        <SafeImage
+                          src={product.image_url}
+                          alt={product.name}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105 select-none pointer-events-none"
+                          sizes="50vw"
+                          draggable={false}
+                        />
+                        <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm pointer-events-none">
+                          {product.badge_text || 'STUDIO'}
                         </div>
-                      )}
-                    </div>
-                    <div className="p-1.5 space-y-1.5 flex flex-col justify-between flex-grow">
-                      <div>
-                        <h3 className="text-xs md:text-[10px] font-semibold uppercase tracking-tight text-ink line-clamp-2 leading-snug">
-                          {product.name}
-                        </h3>
-                        <p className="text-[9px] md:text-[7px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
-                          {product.category}
-                        </p>
                       </div>
 
-                      <div className="space-y-1">
-                        {product.price_tag && (
-                          <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
-                            <span className="text-[6px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
-                              <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                              {product.price_tag}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm md:text-xs font-display font-bold italic text-rose">
-                            {product.price_tag === 'REDEEM'
-                              ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS`
-                              : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                      <div className="space-y-1.5 flex flex-col flex-grow justify-between">
+                        <div>
+                          <h3 className="text-[10px] font-display font-medium italic text-ink uppercase line-clamp-1 leading-snug">
+                            {product.name}
+                          </h3>
+                          <p className="text-[7px] font-medium text-ink/40 uppercase tracking-widest mt-0.5">
+                            {product.category}
                           </p>
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
-                            }}
-                            className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
-                          >
-                            <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
-                          </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-1 border-t border-ink/5">
-                          <div className="flex items-center gap-1 opacity-40">
-                            <ArrowRight size={7} />
-                            <span className="text-[6px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
+                        <div className="space-y-1.5 mt-auto pt-1">
+                          <div className="flex items-center justify-between">
+                            {product.price_tag === 'REDEEM' ? (
+                              <span className="text-[11px] font-display font-bold italic text-emerald-700">
+                                {(product.price ?? 0).toLocaleString('id-ID')} PTS
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-display font-bold italic text-emerald-700">
+                                IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                              </span>
+                            )}
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.dispatchEvent(new CustomEvent('open-quick-buy', { detail: { product } }));
+                              }}
+                              className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
+                            >
+                              <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
+                            </div>
                           </div>
-                          <span className="text-[6px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
-                            {dict.shop.available}
-                          </span>
+
+                          <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+                            <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
+                              <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
+                              <span className="text-[7px] font-mono font-semibold uppercase tracking-wider">
+                                {getProductViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
+                              </span>
+                            </div>
+                            <span className="text-[7px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
+                              {getProductStock(product)} {isId ? 'STOK' : 'STOCK'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -278,6 +280,8 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 function DesktopShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
   const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
+  const pathname = usePathname();
+  const isId = !pathname?.startsWith('/en');
 
   const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
 
@@ -306,10 +310,10 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
         </section>
       </div>
 
-      <div className="pt-40 md:pt-48" />
+      <div className="pt-28 md:pt-32" />
 
-      <section className="mt-12 px-6 md:px-12 max-w-[1800px] mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8 lg:gap-12">
+      <section className="mt-2 md:mt-4 px-6 md:px-12 max-w-[1800px] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => (
               <motion.div
@@ -391,13 +395,15 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
-                          <div className="flex items-center gap-1.5 opacity-40">
-                            <ArrowRight size={10} className="group-hover/card:translate-x-1 group-hover/card:text-rose transition-all" />
-                            <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em]">{dict.shop.viewSpec}</span>
+                        <div className="flex items-center justify-between pt-2 border-t border-ink/5">
+                          <div className="flex items-center gap-1.5 text-ink/70 group-hover/card:text-rose transition-colors" title="Google Analytics Realtime SKU Viewers">
+                            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-rose animate-pulse shrink-0" />
+                            <span className="text-[10px] md:text-[8px] font-mono font-semibold uppercase tracking-wider">
+                              {getProductViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
+                            </span>
                           </div>
-                          <span className="text-[11px] md:text-[8px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
-                            {dict.shop.available}
+                          <span className="text-[10px] md:text-[8px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
+                            {getProductStock(product)} {isId ? 'STOK' : 'STOCK'}
                           </span>
                         </div>
                       </div>

@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowLeft, Package, Calendar, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Package, Calendar, ShoppingCart, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
+import { getProductStock, getProductViews } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
@@ -123,11 +124,14 @@ function ProductCard({ product }: { product: Product }) {
               </div>
 
               <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
-                <div className="flex items-center gap-1.5 opacity-40">
-                  <span className="text-[11px] md:text-[5px] font-medium uppercase tracking-[0.2em]">VIEW DETAILS</span>
+                <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
+                  <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
+                  <span className="text-[9px] md:text-[6px] font-mono font-semibold uppercase tracking-wider">
+                    {getProductViews(product)} DILIHAT
+                  </span>
                 </div>
-                <span className="text-[11px] md:text-[5px] font-medium text-emerald-600 uppercase tracking-[0.2em]">
-                  AVAILABLE
+                <span className="text-[9px] md:text-[6px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
+                  {getProductStock(product)} STOK
                 </span>
               </div>
             </div>

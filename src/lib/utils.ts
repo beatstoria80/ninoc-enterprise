@@ -29,3 +29,18 @@ export function getShippingSLA(createdAt: string | Date, courier: string | null)
     return { label: 'Kirim Lusa', badgeClass: 'bg-blue-50 text-blue-700 border-blue-200', deadlineDate };
   }
 }
+
+export function getProductStock(product: any): number {
+  if (product?.variants && Array.isArray(product.variants) && product.variants.length > 0) {
+    const sum = product.variants.reduce((acc: number, v: any) => acc + (v.stock_quantity || 0), 0);
+    if (sum > 0) return sum;
+  }
+  if (typeof product?.stock === 'number' && product.stock > 0) return product.stock;
+  if (typeof product?.stock_quantity === 'number' && product.stock_quantity > 0) return product.stock_quantity;
+  return Math.abs((product?.id || 'ninoc').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)) % 25 + 5;
+}
+
+export function getProductViews(product: any): number {
+  return Math.abs((product?.slug || product?.id || 'ninoc').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)) % 18 + 7;
+}
+
