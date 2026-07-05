@@ -1129,42 +1129,30 @@ export default function AdminDashboard() {
   const allNavItems: any[] = [
     { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', activeKeys: ['overview'], roles: ['super_admin', 'finance'] },
     { 
-      id: 'catalog', icon: Package, label: 'Product', activeKeys: ['products', 'upload'],
-      roles: ['super_admin'],
-      subItems: [
-        { id: 'products', label: 'Product List' },
-        { id: 'upload', label: 'Upload Images' }
-      ]
-    },
-    { 
-      id: 'transaction', icon: ShoppingCart, label: 'Transaction', activeKeys: ['orders', 'logistics'], badge: actionableOrders > 0 ? actionableOrders : undefined,
-      roles: ['super_admin', 'outbound_logistics'],
-      subItems: [
-        { id: 'orders', label: 'Online Order', badge: actionableOrders > 0 ? actionableOrders : undefined },
-        { id: 'logistics', label: 'Logistics' }
-      ]
-    },
-    { id: 'logbook', icon: BookOpen, label: 'Studio Logbook', activeKeys: ['logbook'], roles: ['super_admin'] },
-    { id: 'returns', icon: RefreshCw, label: 'Retur', activeKeys: ['returns'], badge: pendingReturns > 0 ? pendingReturns : undefined, roles: ['super_admin', 'outbound_logistics'] },
-    { 
-      id: 'supply', icon: Factory, label: 'Supplier Hub', activeKeys: ['submissions', 'suppliers', 'warehouse'],
+      id: 'report', icon: BarChart3, label: 'Finance & Accounting', activeKeys: ['finance', 'accounting', 'opex', 'product_costings'],
       roles: ['super_admin', 'finance'],
       subItems: [
-        { id: 'submissions', label: 'Product Submissions' },
-        { id: 'suppliers', label: 'Partner Review' },
-        { id: 'warehouse', label: 'Ninoc Warehouse Hub' }
+        { id: 'finance', label: 'Finance Dashboard' },
+        { id: 'product_costings', label: 'Product Costing Config' },
+        { id: 'accounting', label: 'Accounting / Jurnal' },
+        { id: 'opex', label: 'Opex Tracker' }
       ]
     },
-    { id: 'customers', icon: Users, label: 'Membership', activeKeys: ['customers'], badge: customers.length, roles: ['super_admin'] },
-    { id: 'affiliates', icon: Shield, label: 'Affiliates', activeKeys: ['affiliates'], roles: ['super_admin', 'finance'] },
-    { id: 'marketing', icon: TrendingUp, label: 'Marketing & ROAS', activeKeys: ['marketing'], roles: ['super_admin'] },
-    { id: 'google_ads', icon: TrendingUp, label: 'Google Ads Manager', activeKeys: ['google_ads'], roles: ['super_admin', 'finance'] },
-    { id: 'web_analytics', icon: TrendingUp, label: 'Web Analytics (GA4/GSC)', activeKeys: ['web_analytics'], roles: ['super_admin', 'finance'] },
     { 
-      id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'po', 'do', 'stock_ledger', 'stock_opname'],
+      id: 'transaction', icon: ShoppingCart, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (actionableOrders || 0) + (pendingReturns || 0) > 0 ? (actionableOrders || 0) + (pendingReturns || 0) : undefined,
+      roles: ['super_admin', 'outbound_logistics'],
+      subItems: [
+        { id: 'orders', label: 'Online Orders', badge: actionableOrders > 0 ? actionableOrders : undefined },
+        { id: 'logistics', label: 'Shipping & Logistics' },
+        { id: 'returns', label: 'Retur & Reimbursement', badge: pendingReturns > 0 ? pendingReturns : undefined }
+      ]
+    },
+    { 
+      id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'],
       roles: ['super_admin', 'finance', 'inbound_warehouse'],
       subItems: [
         { id: 'inventory', label: 'Stock Management', roles: ['super_admin', 'inbound_warehouse'] },
+        { id: 'warehouse', label: 'Ninoc Warehouse Hub', roles: ['super_admin', 'inbound_warehouse'] },
         { id: 'stock_opname', label: 'Stock Opname', roles: ['super_admin', 'inbound_warehouse'] },
         { id: 'po', label: 'Purchase Orders (PO)', roles: ['super_admin', 'finance'] },
         { id: 'do', label: 'Receiving (DO)', roles: ['super_admin', 'inbound_warehouse'] },
@@ -1172,20 +1160,44 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'report', icon: BarChart3, label: 'Finance', activeKeys: ['finance', 'accounting', 'opex', 'product_costings'],
-      roles: ['super_admin', 'finance'],
+      id: 'catalog', icon: Package, label: 'Catalog & Content', activeKeys: ['products', 'upload', 'logbook'],
+      roles: ['super_admin'],
       subItems: [
-        { id: 'finance', label: 'Finance Dashboard' },
-        { id: 'product_costings', label: 'Product Costing Config' },
-        { id: 'accounting', label: 'Accounting / Jurnal' },
-        { id: 'opex', label: 'Opex (Biaya Operasional)' }
+        { id: 'products', label: 'Product List' },
+        { id: 'upload', label: 'Bulk Asset Manager' },
+        { id: 'logbook', label: 'Studio Logbook' }
       ]
     },
-    { id: 'messages', icon: MessageSquare, label: 'Support Chat', activeKeys: ['messages'], badge: totalUnreadChats, roles: ['super_admin', 'outbound_logistics'] },
-    { id: 'wabroadcast', icon: Send, label: 'WA Broadcast', activeKeys: ['wabroadcast'], roles: ['super_admin'] },
-    { id: 'email_broadcast', icon: Mail, label: 'Email Broadcast', activeKeys: ['email_broadcast'], roles: ['super_admin'] },
-    { id: 'placeholders', icon: Tag, label: 'Placeholder', activeKeys: ['placeholders'], roles: ['super_admin'] },
-    { id: 'settings', icon: Settings, label: 'Settings', activeKeys: ['settings'], roles: ['super_admin'] }
+    { 
+      id: 'supply', icon: Factory, label: 'Partner & Supplier Hub', activeKeys: ['submissions', 'suppliers'],
+      roles: ['super_admin', 'finance'],
+      subItems: [
+        { id: 'suppliers', label: 'Partner Review' },
+        { id: 'submissions', label: 'Product Submissions' }
+      ]
+    },
+    { 
+      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'google_ads', 'web_analytics'],
+      roles: ['super_admin', 'finance'],
+      subItems: [
+        { id: 'marketing', label: 'Marketing & ROAS' },
+        { id: 'google_ads', label: 'Google Ads Manager' },
+        { id: 'web_analytics', label: 'Web Analytics (GA4/GSC)' }
+      ]
+    },
+    { 
+      id: 'support_crm', icon: MessageSquare, label: 'CRM & Customer Support', activeKeys: ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'], badge: totalUnreadChats > 0 ? totalUnreadChats : undefined,
+      roles: ['super_admin', 'outbound_logistics', 'finance'],
+      subItems: [
+        { id: 'messages', label: 'Support Chat', badge: totalUnreadChats > 0 ? totalUnreadChats : undefined, roles: ['super_admin', 'outbound_logistics'] },
+        { id: 'placeholders', label: 'Quick Reply Templates', roles: ['super_admin', 'outbound_logistics'] },
+        { id: 'customers', label: 'Membership Database', badge: customers.length, roles: ['super_admin'] },
+        { id: 'affiliates', label: 'Affiliates Network', roles: ['super_admin', 'finance'] },
+        { id: 'wabroadcast', label: 'WA Broadcast', roles: ['super_admin'] },
+        { id: 'email_broadcast', label: 'Email Broadcast', roles: ['super_admin'] }
+      ]
+    },
+    { id: 'settings', icon: Settings, label: 'System Settings', activeKeys: ['settings'], roles: ['super_admin'] }
   ];
 
   const userRole = adminUser?.role || 'super_admin'; // default to super_admin for global admin login
@@ -1651,37 +1663,45 @@ export default function AdminDashboard() {
         <header className="hidden md:flex h-14 bg-white border-b border-ink/5 px-8 items-center justify-between shrink-0">
           <div className="flex-1 flex items-center gap-2">
             <span className="text-[10px] font-medium uppercase tracking-wider text-ink/80">
-              {['products', 'upload'].includes(activeTab) ? 'Product / ' :
-               ['orders', 'logistics'].includes(activeTab) ? 'Transaction / ' :
-               ['inventory'].includes(activeTab) ? 'Inventory / ' :
-               ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance / ' :
-               ['messages', 'placeholders', 'wabroadcast', 'email_broadcast'].includes(activeTab) ? 'Support / ' :
+              {['products', 'upload', 'logbook'].includes(activeTab) ? 'Catalog / ' :
+               ['orders', 'logistics', 'returns'].includes(activeTab) ? 'Transaction / ' :
+               ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'].includes(activeTab) ? 'Inventory & WMS / ' :
+               ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
+               ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
+               ['marketing', 'google_ads', 'web_analytics'].includes(activeTab) ? 'Marketing / ' :
+               ['submissions', 'suppliers'].includes(activeTab) ? 'Partner Hub / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
               {activeTab === 'overview' ? 'Overview' :
                activeTab === 'products' ? 'Product List' :
-               activeTab === 'upload' ? 'Upload Images' :
-               activeTab === 'orders' ? 'Online Order' :
-               activeTab === 'logistics' ? 'Logistics' :
+               activeTab === 'upload' ? 'Bulk Asset Manager' :
+               activeTab === 'logbook' ? 'Studio Logbook' :
+               activeTab === 'orders' ? 'Online Orders' :
+               activeTab === 'logistics' ? 'Shipping & Logistics' :
+               activeTab === 'returns' ? 'Retur & Reimbursement' :
                activeTab === 'submissions' ? 'Product Submissions' :
-               activeTab === 'suppliers' ? 'Supplier Review' :
-               activeTab === 'warehouse' ? 'Warehouse Hub' :
-               activeTab === 'customers' ? 'Membership' :
+               activeTab === 'suppliers' ? 'Partner Review' :
+               activeTab === 'warehouse' ? 'Ninoc Warehouse Hub' :
+               activeTab === 'customers' ? 'Membership Database' :
+               activeTab === 'affiliates' ? 'Affiliates Network' :
+               activeTab === 'marketing' ? 'Marketing & ROAS' :
                activeTab === 'google_ads' ? 'Google Ads Manager' :
+               activeTab === 'web_analytics' ? 'Web Analytics (GA4/GSC)' :
                activeTab === 'inventory' ? 'Stock Management' :
                activeTab === 'po' ? 'Purchase Orders' :
                activeTab === 'do' ? 'Inbound Receiving' :
                activeTab === 'stock_ledger' ? 'Kartu Stok' :
                activeTab === 'stock_opname' ? 'Stock Opname' :
-               activeTab === 'finance' ? 'Finance' :
+               activeTab === 'finance' ? 'Finance Dashboard' :
                activeTab === 'product_costings' ? 'Product Costing Config' :
+               activeTab === 'accounting' ? 'Accounting / Jurnal' :
                activeTab === 'opex' ? 'Opex Tracker' :
                activeTab === 'messages' ? 'Support Chat' :
-               activeTab === 'placeholders' ? 'Placeholder' :
+               activeTab === 'placeholders' ? 'Quick Reply Templates' :
                activeTab === 'wabroadcast' ? 'WA Broadcast' :
                activeTab === 'email_broadcast' ? 'Email Broadcast' :
-               activeTab === 'settings' ? 'Settings' : activeTab}
+               activeTab === 'settings' ? 'System Settings' : activeTab}
             </h1>
           </div>
           
