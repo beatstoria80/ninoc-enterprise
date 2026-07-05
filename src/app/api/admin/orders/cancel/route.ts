@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { notifyAllChannels } from '@/lib/notifications';
+import { sendEmailOrderCancelled } from '@/lib/email';
+import { sendCancelledWA, formatPhoneNumber } from '@/lib/whatsapp';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -152,6 +155,45 @@ export async function POST(req: Request) {
       }
     } catch (err) {
       console.error('Error during stock reversion:', err);
+    }
+
+    // 6. Multi-Channel Customer & Admin Feedback Engine (Critical Safety & Refund Feedback)
+    try {
+      const shippingAddr = order.shipping_address as Record<string, any> | null;
+      const customerEmail = order.customer_email || shippingAddr?.email;
+      const rawPhone = shippingAddr?.phone || '';
+      const customerName = order.customer_name || shippingAddr?.name || 'Pelanggan';
+      const orderNum = order.order_number || order.id.toUpperCase();
+
+      // 6a. Send In-App & Web Push Notification
+      if (order.user_id) {
+        await notifyAllChannels({
+          userId: order.user_id,
+          title: 'Pesanan Dibatalkan Admin',
+          message: `Pesanan #${orderNum} telah dibatalkan oleh Admin NINOC karena: ${reason}. Status Refund: ${refundStatus}.`,
+          actionLink: `/profile/orders/${order.id}`,
+        });
+      }
+
+      // 6b. Send Professional Email Notice
+      if (customerEmail) {
+        await sendEmailOrderCancelled(order, customerEmail, reason, refundStatus);
+      }
+
+      // 6c. Send WhatsApp Notice
+      const formattedPhone = formatPhoneNumber(rawPhone);
+      if (formattedPhone) {
+        await sendCancelledWA({
+          phone: formattedPhone,
+          customer_name: customerName,
+          order_id: orderNum,
+          reason: reason,
+          refund_status: refundStatus,
+        }).catch(err => console.error('[Admin Cancel API] WA Send Error:', err));
+      }
+    } catch (notifyErr) {
+      console.error('[Admin Cancel API] Failed to execute feedback notifications:', notifyErr);
+      // Don't fail the cancellation response if notifications encounter network issues
     }
 
     return NextResponse.json({ 

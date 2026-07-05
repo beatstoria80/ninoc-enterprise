@@ -524,3 +524,116 @@ export async function sendEmailDelivered(order: any, customerEmail: string) {
     console.error(`[Email] Failed to send delivered notification to ${customerEmail}:`, error);
   }
 }
+
+export async function sendEmailOrderCancelled(order: any, customerEmail: string, reason: string, refundStatus: string) {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
+  if (!customerEmail) return;
+
+  const orderNumber = order.order_number || order.id.toUpperCase();
+  const customerName = order.customer_name || (order.shipping_address as any)?.name || 'Pelanggan';
+  const totalPriceFormatted = (order.total_price || 0).toLocaleString('id-ID');
+  const isManualRefund = refundStatus.toLowerCase().includes('manual');
+  const isRefunded = refundStatus.toLowerCase().includes('refunded') || refundStatus.toLowerCase().includes('cancelled before');
+
+  let refundNoticeHtml = '';
+  if (isManualRefund) {
+    refundNoticeHtml = `
+      <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; margin-top: 20px; border-radius: 4px;">
+        <p style="margin: 0; font-size: 13px; color: #9f1239; line-height: 1.5;">
+          <strong>⚠️ Informasi Refund Manual:</strong><br/>
+          Metode pembayaran yang Anda gunakan memerlukan transfer refund manual antarbank. Tim Finance kami akan menghubungi Anda melalui WhatsApp atau Email dalam 1x24 jam kerja untuk memverifikasi nomor rekening tujuan transfer dana refund Anda.
+        </p>
+      </div>
+    `;
+  } else if (isRefunded) {
+    refundNoticeHtml = `
+      <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 15px; margin-top: 20px; border-radius: 4px;">
+        <p style="margin: 0; font-size: 13px; color: #065f46; line-height: 1.5;">
+          <strong>✅ Informasi Refund Otomatis:</strong><br/>
+          Dana transaksi Anda telah diproses pengembaliannya secara otomatis melalui sistem Midtrans ke metode pembayaran asal. Estimasi dana masuk tergantung kebijakan bank/penerbit (1-7 hari kerja).
+        </p>
+      </div>
+    `;
+  } else {
+    refundNoticeHtml = `
+      <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin-top: 20px; border-radius: 4px;">
+        <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.5;">
+          <strong>ℹ️ Status Pengembalian Dana:</strong> ${refundStatus}<br/>
+          Jika ada pertanyaan mengenai pengembalian dana, silakan hubungi tim dukungan pelanggan kami melalui Live Chat di web atau WhatsApp.
+        </p>
+      </div>
+    `;
+  }
+
+  const emailHtml = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="margin: 0; padding: 0; background-color: #f6f6f6; font-family: Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <tr>
+        <td style="background-color: #e11d48; padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">Pesanan Dibatalkan</h1>
+          <p style="color: #ffe4e6; margin: 10px 0 0 0; font-size: 14px;">Pemberitahuan Resmi NINOC STORE</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 30px;">
+          <p style="font-size: 16px; color: #333333; margin-top: 0;">Halo <strong>${customerName}</strong>,</p>
+          <p style="font-size: 14px; color: #555555; line-height: 1.6;">
+            Mohon maaf sebesar-besarnya, pesanan Anda dengan nomor <strong>#${orderNumber}</strong> terpaksa kami batalkan dan tidak dapat diproses lebih lanjut.
+          </p>
+          
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin-top: 20px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <td style="font-size: 13px; color: #64748b; padding-bottom: 8px;" width="40%">Nomor Pesanan:</td>
+                <td style="font-size: 13px; color: #0f172a; font-weight: bold; padding-bottom: 8px;">#${orderNumber}</td>
+              </tr>
+              <tr>
+                <td style="font-size: 13px; color: #64748b; padding-bottom: 8px;">Total Tagihan:</td>
+                <td style="font-size: 13px; color: #0f172a; font-weight: bold; padding-bottom: 8px;">Rp ${totalPriceFormatted}</td>
+              </tr>
+              <tr>
+                <td style="font-size: 13px; color: #64748b; padding-bottom: 8px;">Alasan Pembatalan:</td>
+                <td style="font-size: 13px; color: #e11d48; font-weight: bold; padding-bottom: 8px;">${reason}</td>
+              </tr>
+              <tr>
+                <td style="font-size: 13px; color: #64748b;">Status Refund:</td>
+                <td style="font-size: 13px; color: #0f172a; font-weight: bold;">${refundStatus}</td>
+              </tr>
+            </table>
+          </div>
+
+          ${refundNoticeHtml}
+
+          <p style="font-size: 14px; color: #555555; line-height: 1.6; margin-top: 25px;">
+            Atas ketidaknyamanan ini, kami mohon maaf yang sebesar-besarnya. Kami senantiasa berusaha meningkatkan kualitas manajemen stok dan layanan operasional kami agar kejadian ini tidak terulang kembali.
+          </p>
+
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="https://ninoc.store/profile" style="display: inline-block; background-color: #141414; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-size: 14px; font-weight: bold;">Lihat Status Pesanan di Akun Saya</a>
+          </div>
+
+          <div style="border-top: 1px solid #eaeaea; padding-top: 20px; margin-top: 30px; text-align: center;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; color: #a0a0a0;">NINOC STORE &mdash; Customer & Finance Care</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      to: customerEmail,
+      subject: `[Dibatalkan] Pesanan #${orderNumber} & Informasi Pengembalian Dana`,
+      html: emailHtml,
+    });
+    console.log(`[Email] Order cancelled notification sent to ${customerEmail}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send order cancelled notification to ${customerEmail}:`, error);
+  }
+}

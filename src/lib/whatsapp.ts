@@ -41,6 +41,7 @@ export const WA_TEMPLATES = {
   ORDER_DELIVERED: 'order_delivered',
   PROMO_BROADCAST: 'promo_broadcast',
   RETUR_STATUS_UPDATE: 'retur_status_update',
+  ORDER_CANCELLED: 'order_cancelled',
 } as const;
 
 export type WATemplateKey = keyof typeof WA_TEMPLATES;
@@ -270,3 +271,27 @@ export function isWAConfigured(): boolean {
     process.env.WHATSAPP_WABA_ID
   );
 }
+
+/**
+ * Send order cancellation and refund status update via WhatsApp
+ */
+export async function sendCancelledWA(params: {
+  phone: string;
+  customer_name: string;
+  order_id: string;
+  reason: string;
+  refund_status: string;
+}): Promise<WASendResult> {
+  return sendTemplateMessage(WA_TEMPLATES.ORDER_CANCELLED, params.phone, [
+    {
+      type: 'body',
+      parameters: [
+        { type: 'text', text: params.customer_name || 'Pelanggan' },
+        { type: 'text', text: params.order_id },
+        { type: 'text', text: params.reason || 'Dibatalkan oleh Admin' },
+        { type: 'text', text: params.refund_status || 'Diproses' },
+      ],
+    },
+  ]);
+}
+
