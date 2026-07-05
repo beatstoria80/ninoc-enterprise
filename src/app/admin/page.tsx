@@ -432,7 +432,7 @@ export default function AdminDashboard() {
         shelf_life_days: product.shelf_life_days ? String(product.shelf_life_days) : '',
         is_perishable: product.is_perishable || false,
         image_url: product.image_url || '',
-        image_alt: product.image_alt || '',
+        image_alt: product.image_alt || (product.name ? `${product.name} - Official Product View` : ''),
         perspective1: product.perspective1 || '',
         perspective2: product.perspective2 || '',
         perspective3: product.perspective3 || '',
@@ -491,11 +491,12 @@ export default function AdminDashboard() {
   };
 
   const handleProductNameChange = (name: string) => {
-    setProductForm({
-      ...productForm,
+    setProductForm(prev => ({
+      ...prev,
       name,
-      slug: generateSlug(name)
-    });
+      slug: generateSlug(name),
+      image_alt: (!prev.image_alt || prev.image_alt === prev.name || prev.image_alt.endsWith(' - Official Product View')) ? `${name} - Official Product View` : prev.image_alt
+    }));
   };
 
   const addVariant = () => {
@@ -678,7 +679,11 @@ export default function AdminDashboard() {
       }
 
       if (data.results && data.results[0]?.url) {
-        setProductForm(prev => ({ ...prev, image_url: data.results[0].url }));
+        setProductForm(prev => ({ 
+          ...prev, 
+          image_url: data.results[0].url,
+          image_alt: prev.image_alt ? prev.image_alt : prev.name ? `${prev.name} - Official Product View` : 'NINOC Official Product View'
+        }));
         alert('Image uploaded successfully!');
       }
     } catch (err) {
@@ -2813,7 +2818,14 @@ export default function AdminDashboard() {
                           <input
                             type="url"
                             value={productForm.image_url}
-                            onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setProductForm(prev => ({ 
+                                ...prev, 
+                                image_url: val,
+                                image_alt: prev.image_alt ? prev.image_alt : prev.name ? `${prev.name} - Official Product View` : val ? 'NINOC Official Product View' : ''
+                              }));
+                            }}
                             placeholder="https://..."
                             className="flex-1 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
                           />
