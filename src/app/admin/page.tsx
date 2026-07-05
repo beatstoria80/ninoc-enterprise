@@ -956,6 +956,9 @@ export default function AdminDashboard() {
   const totalStock = products.reduce((sum, p) =>
     sum + (p.variants?.reduce((s, v) => s + v.stock_quantity, 0) || 0), 0
   );
+  const lowStockProductsCount = products.filter(p =>
+    (p.variants?.reduce((s, v) => s + (v.stock_quantity || 0), 0) || 0) < 5
+  ).length;
 
   // Chat - fetch from support_tickets with messages
   const fetchChatSessions = useCallback(async () => {
@@ -1777,7 +1780,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                     )}
-                    {products.filter(p => p.stock < 5).length > 0 && (
+                    {lowStockProductsCount > 0 && (
                       <div 
                         onClick={() => { setActiveTab('inventory'); setShowNotificationsModal(false); }}
                         className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
@@ -1787,11 +1790,11 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-ink">Stok Menipis</p>
-                          <p className="text-[11px] text-ink/70 mt-0.5"><span className="font-bold text-amber-600">{products.filter(p => p.stock < 5).length}</span> produk memiliki stok di bawah batas aman (5 unit).</p>
+                          <p className="text-[11px] text-ink/70 mt-0.5"><span className="font-bold text-amber-600">{lowStockProductsCount}</span> produk memiliki stok di bawah batas aman (5 unit).</p>
                         </div>
                       </div>
                     )}
-                    {pendingOrders === 0 && products.filter(p => p.stock < 5).length === 0 && (
+                    {pendingOrders === 0 && lowStockProductsCount === 0 && (
                       <div className="py-8 text-center">
                         <div className="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
                           <CheckCircle size={20} />
