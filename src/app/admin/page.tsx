@@ -416,7 +416,7 @@ export default function AdminDashboard() {
         measurements: product.measurements || [],
         model_info: product.model_info || '',
         price: product.price.toString(),
-        category: product.category,
+        category: product.sub_category || product.category,
         department_id: product.department_id || dbDepartments.find(d => {
           if (product.category === 'coffee' || product.category === 'pastry' || product.category === 'rtd' || product.category === 'snack') return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
           if (product.category === 'home' || product.category === 'kitchen' || product.category === 'utilities') return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
@@ -570,6 +570,7 @@ export default function AdminDashboard() {
         model_info: productForm.model_info || null,
         price: cleanAndParsePrice(productForm.price),
         category: productForm.category,
+        sub_category: (productForm as any).sub_category || productForm.category || null,
         department_id: (productForm as any).department_id || null,
         warehouse_id: (productForm as any).warehouse_id || null,
         weight_grams: parseInt(String((productForm as any).weight_grams)) || 500,

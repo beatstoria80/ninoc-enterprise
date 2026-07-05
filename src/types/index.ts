@@ -35,6 +35,7 @@ export interface Product {
   description_en?: string | null;
   price: number;
   category: CategoryType;
+  sub_category?: string | null;
   image_url: string | null;
   is_featured: boolean;
   department_id?: string | null;

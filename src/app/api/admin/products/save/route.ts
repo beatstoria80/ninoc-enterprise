@@ -13,6 +13,25 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const supabase = getSupabaseAdmin();
   let productId = editingProductId;
 
+  // Normalize category against Postgres enum main_category_type ('pakaian', 'aksesoris', 'utilities')
+  // while preserving specific sub-category selections (e.g. 'apparel', 'footwear', 'coffee', 'pakaian-pria')
+  if (productData && productData.category) {
+    const rawCat = String(productData.category).toLowerCase().trim();
+    const validEnums = ['pakaian', 'aksesoris', 'utilities'];
+    if (!validEnums.includes(rawCat)) {
+      if (!productData.sub_category) {
+        productData.sub_category = productData.category;
+      }
+      if (rawCat.includes('aksesoris') || rawCat.includes('accessor') || rawCat.includes('topi') || rawCat.includes('tas') || rawCat.includes('bag') || rawCat.includes('hat') || rawCat.includes('jewelry') || rawCat.includes('kalung') || rawCat.includes('gelang')) {
+        productData.category = 'aksesoris';
+      } else if (rawCat.includes('utilities') || rawCat.includes('object') || rawCat.includes('home') || rawCat.includes('kitchen') || rawCat.includes('collect') || rawCat.includes('ceramic') || rawCat.includes('art') || rawCat.includes('goods') || rawCat.includes('stationery') || rawCat.includes('alat_tulis') || rawCat.includes('keramik') || rawCat.includes('rumahtangga') || rawCat.includes('coffee') || rawCat.includes('kopi') || rawCat.includes('pastry') || rawCat.includes('snack') || rawCat.includes('rtd') || rawCat.includes('fnb') || rawCat.includes('beverage') || rawCat.includes('pantry') || rawCat.includes('food') || rawCat.includes('minuman') || rawCat.includes('makanan') || rawCat.includes('roastery') || rawCat.includes('cafe')) {
+        productData.category = 'utilities';
+      } else {
+        productData.category = 'pakaian';
+      }
+    }
+  }
+
   // 1. Insert or Update Product
   if (isEditMode && productId) {
     const { error } = await supabase
