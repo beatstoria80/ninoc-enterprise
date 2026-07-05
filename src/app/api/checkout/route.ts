@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import midtransClient from 'midtrans-client';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { rateLimit } from '@/lib/rate-limit';
 
-// Use Service Role Key to bypass RLS since this is a secure server route
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+// Use Service Role Key via singleton to bypass RLS since this is a secure server route
+const supabaseAdmin = getSupabaseAdmin();
 
 const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
 const SIZE_SURCHARGE_AMOUNT = 25000;

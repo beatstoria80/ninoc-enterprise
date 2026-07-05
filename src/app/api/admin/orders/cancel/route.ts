@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { notifyAllChannels } from '@/lib/notifications';
 import { sendEmailOrderCancelled } from '@/lib/email';
 import { sendCancelledWA, formatPhoneNumber } from '@/lib/whatsapp';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseAdmin = getSupabaseAdmin();
 
 export async function POST(req: Request) {
   try {
