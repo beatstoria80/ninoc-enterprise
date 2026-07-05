@@ -255,3 +255,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function GET() {
+  return NextResponse.json({ status: 'OK', message: 'NINOC Midtrans Webhook Endpoint is Active' }, { status: 200 });
+}
+
+export async function HEAD() {
+  return new Response(null, { status: 200 });
+}
+

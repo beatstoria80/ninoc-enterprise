@@ -308,7 +308,8 @@ export async function POST(req: Request) {
         finish: `${appUrl}/payment/success?order_id=${orderId}&courier=${shippingDetails.method}`,
         unfinish: `${appUrl}/shop`,
         error: `${appUrl}/checkout`
-      }
+      },
+      override_notification_url: [`${appUrl}/api/payments/webhook`]
     };
 
     // --- INVENTORY RACE CONDITION LOCK ---
