@@ -698,7 +698,7 @@ function HeroSequence({ dict, isReturningVisitor, scene }: any) {
                   transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
                   className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
                 >
-                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-2">Concept Mall</p>
+                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-2">Enterprise Store</p>
                   <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Curated with precision<br />Fashion · Objects · Pantry</p>
                 </motion.div>
               </div>
@@ -1102,7 +1102,7 @@ export default function Home() {
             {/* Bottom CTA */}
             <div className="mt-8 pt-6 border-t border-ink/5 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col">
-                <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em] text-rose">NINOC CONCEPT MALL</p>
+                <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.4em] text-rose">NINOC ENTERPRISE STORE</p>
                 <p className="text-base md:text-xs font-display font-medium italic text-ink mt-0.5">Style. Substance. Savor.</p>
               </div>
               <div className="flex items-center gap-3">

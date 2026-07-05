@@ -52,7 +52,7 @@ export default function SupplierTermsPage() {
       s1_title: "Ketentuan Umum & Kemitraan White-Label",
       s1_text: "Program Supplier B2B adalah kemitraan eksklusif Original Equipment Manufacturer (OEM). NINOC memegang kendali penuh atas rebrand dan distribusi akhir produk. Identitas pabrik dijaga kerahasiaannya untuk melindungi persaingan bisnis.",
       s2_title: "Standarisasi Produksi & QC Hub",
-      s2_text: "Seluruh barang wajib dikirim fisik ke NINOC Hub Bandung untuk inspeksi Quality Control (QC). Sistem Dropshipping langsung dari fasilitas Supplier sangat dilarang demi menjaga keseragaman kualitas Concept Mall.",
+      s2_text: "Seluruh barang wajib dikirim fisik ke NINOC Hub Bandung untuk inspeksi Quality Control (QC). Sistem Dropshipping langsung dari fasilitas Supplier sangat dilarang demi menjaga keseragaman kualitas Enterprise Store.",
       s3_title: "Mekanisme Pembayaran HPP",
       s3_text: "Harga Pokok Produksi (HPP) dikunci di muka pada setiap Purchase Order (PO). Payout dikreditkan ke buku besar Supplier setelah pesanan konsumen akhir selesai dan melewati batas klaim retur garansi tanpa sengketa."
     },

@@ -110,7 +110,7 @@ export default function RefundPolicyPage() {
             </h1>
           </div>
           <p className="text-xs md:text-sm text-white/60 max-w-md font-mono leading-relaxed">
-            Standar penanganan retur dan garansi yang disesuaikan dengan regulasi Google Merchant Center untuk setiap kategori produk di NINOC Concept Mall.
+            Standar penanganan retur dan garansi yang disesuaikan dengan regulasi Google Merchant Center untuk setiap kategori produk di NINOC Enterprise Store.
           </p>
         </div>
 

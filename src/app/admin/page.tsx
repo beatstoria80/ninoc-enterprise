@@ -2135,7 +2135,7 @@ export default function AdminDashboard() {
                   <div className="p-3 bg-gradient-to-r from-gray-900 via-gray-800 to-ink text-white rounded-xl shadow-sm space-y-2.5 border border-gray-700/50">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                       <h4 className="text-[11px] font-bold uppercase tracking-widest text-white flex items-center gap-1.5">
-                        <span>🏢</span> STEP 1: CONCEPT MALL PILLAR & LOKASI GUDANG ASAL
+                        <span>🏢</span> STEP 1: ENTERPRISE PILLAR & LOKASI GUDANG ASAL
                       </h4>
                       <span className="text-[9px] bg-rose/90 text-white px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
                         {isFnB ? 'F&B / Pantry Hub' : isObjects ? 'Objects & Home Goods' : 'Apparel & Archive'}

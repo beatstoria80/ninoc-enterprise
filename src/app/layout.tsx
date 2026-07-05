@@ -34,40 +34,48 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE_URL),
     title: {
-      default: isEn ? 'NINOC — Enterprise Concept Mall' : 'NINOC — Enterprise Concept Mall',
+      default: isEn ? 'NINOC — Enterprise Official Store' : 'NINOC — Enterprise Official Store',
       template: '%s | NINOC STORE',
     },
     description: isEn 
-      ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, artisan objects & homeware, and specialty coffee & pantry under one roof. Shop now!'
-      : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan & homeware, serta specialty coffee & pantry dalam satu atap. Shop now!',
-    keywords: ['concept mall indonesia', 'apparel premium', 'specialty coffee bandung', 'homeware artisan', 'ceramics bandung', 'brand lokal Indonesia', 'premium clothing', 'pantry cafe bandung', 'objects consumer goods'],
+      ? 'NINOC is an Indonesian enterprise platform curating premium apparel, artisan objects & homeware, and specialty coffee & pantry under one roof. Shop now!'
+      : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan & homeware, serta specialty coffee & pantry dalam satu atap. Shop now!',
+    keywords: ['enterprise store indonesia', 'apparel premium', 'specialty coffee bandung', 'homeware artisan', 'ceramics bandung', 'brand lokal Indonesia', 'premium clothing', 'pantry cafe bandung', 'objects consumer goods'],
     authors: [{ name: 'NINOC STORE' }],
     creator: 'NINOC STORE',
     publisher: 'NINOC STORE',
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/logo.png', type: 'image/png' },
+      ],
+      shortcut: '/favicon.ico',
+      apple: '/logo.png',
+    },
     openGraph: {
       type: 'website',
       locale: isEn ? 'en_US' : 'id_ID',
       url: BASE_URL,
       siteName: 'NINOC STORE',
-      title: 'NINOC — Enterprise Concept Mall',
+      title: 'NINOC — Enterprise Official Store',
       description: isEn
-        ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, artisan objects, and specialty coffee & pantry.'
-        : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan, serta specialty coffee & pantry.',
+        ? 'NINOC is an Indonesian enterprise platform curating premium apparel, artisan objects, and specialty coffee & pantry.'
+        : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan, serta specialty coffee & pantry.',
       images: [
         {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: 'NINOC STORE — Enterprise Concept Mall',
+          alt: 'NINOC STORE — Enterprise Official Store',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'NINOC — Enterprise Concept Mall',
+      title: 'NINOC — Enterprise Official Store',
       description: isEn
-        ? 'NINOC is an Indonesian enterprise concept mall curating premium apparel, objects, and specialty pantry.'
-        : 'NINOC adalah enterprise concept mall Indonesia yang mengkurasi apparel premium, objek artisan, dan pantry spesialti.',
+        ? 'NINOC is an Indonesian enterprise platform curating premium apparel, objects, and specialty pantry.'
+        : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan, dan pantry spesialti.',
       images: ['/og-image.png'],
       creator: '@ninocstore',
     },
