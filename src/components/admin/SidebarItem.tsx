@@ -17,8 +17,16 @@ export const SidebarItem = ({
   badge?: number;
   subItems?: { label: string; id: string; active?: boolean; onClick?: () => void; badge?: number }[];
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(Boolean(active));
+  const [prevActive, setPrevActive] = useState(Boolean(active));
   const hasSub = subItems && subItems.length > 0;
+
+  if (Boolean(active) !== prevActive) {
+    setPrevActive(Boolean(active));
+    if (active) {
+      setIsOpen(true);
+    }
+  }
 
   return (
     <div className="w-full">
@@ -46,11 +54,11 @@ export const SidebarItem = ({
             </span>
           )}
           {hasSub && (
-            (isOpen || active) ? <ChevronUp size={14} className={cn(active ? "text-white" : "text-ink/50")} /> : <ChevronDown size={14} className={cn(active ? "text-white" : "text-ink/50")} />
+            isOpen ? <ChevronUp size={14} className={cn(active ? "text-white" : "text-ink/50")} /> : <ChevronDown size={14} className={cn(active ? "text-white" : "text-ink/50")} />
           )}
         </div>
       </button>
-      {hasSub && (isOpen || active) && (
+      {hasSub && isOpen && (
         <div className="overflow-hidden bg-ink/[0.02]">
           {subItems.map((sub, i) => (
             <button
