@@ -33,35 +33,43 @@ export async function POST(req: Request) {
     // 2. Biteship Cancel Pickup (if shipped)
     if (order.status === 'shipped' && order.tracking_id) {
       const biteshipToken = process.env.BITESHIP_API_KEY;
-      if (biteshipToken) {
+      const isMockWaybill = order.tracking_id.startsWith('NNC-') || !biteshipToken || biteshipToken === 'your_biteship_api_key_here';
+
+      if (!isMockWaybill && biteshipToken) {
         try {
+          // NOTE: Biteship API v1 expects raw API key in Authorization header WITHOUT 'Bearer ' prefix
           const bRes = await fetch(`https://api.biteship.com/v1/orders/${order.tracking_id}`, {
             method: 'DELETE',
             headers: {
-              'Authorization': `Bearer ${biteshipToken}`,
+              'Authorization': biteshipToken,
               'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({ cancellation_reason: reason })
           });
           const bData = await bRes.json();
-          console.log('Biteship Cancel Response:', bData);
+          console.log('[Admin Cancel API] Biteship Cancel Response:', bData);
         } catch (err) {
-          console.error('Failed to cancel Biteship order:', err);
-          // Continue cancellation process even if Biteship fails
+          console.error('[Admin Cancel API] Failed to cancel Biteship order:', err);
+          // Continue cancellation process even if logistics partner API encounters latency/error
         }
+      } else {
+        console.log(`[Admin Cancel API] Skipped external Biteship API call for mock/sandbox waybill: ${order.tracking_id}`);
       }
     }
 
-    // 3. Midtrans Refund (if paid)
+    // 3. Midtrans Refund (if paid or shipped)
     let refundStatus = 'Not Applicable';
     if (order.status === 'paid' || order.status === 'shipped') {
       const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
       const baseUrl = isProd ? 'https://api.midtrans.com' : 'https://api.sandbox.midtrans.com';
       const serverKey = process.env.MIDTRANS_SERVER_KEY;
+      const targetTxId = order.midtrans_id || order.id;
 
-      if (serverKey) {
+      // Only attempt gateway refund if Midtrans key exists and order wasn't paid 100% via points (REDEEM) or manual COD
+      if (serverKey && (order.payment_status === 'success' || order.midtrans_id || order.snap_token)) {
         const authString = Buffer.from(serverKey + ':').toString('base64');
         try {
-          const mRes = await fetch(`${baseUrl}/v2/${order.id}/refund`, {
+          const mRes = await fetch(`${baseUrl}/v2/${targetTxId}/refund`, {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -75,28 +83,37 @@ export async function POST(req: Request) {
             })
           });
           const mData = await mRes.json();
-          console.log('Midtrans Refund Response:', mData);
+          console.log('[Admin Cancel API] Midtrans Refund Response:', mData);
           if (mData.status_code === '200') {
             refundStatus = 'Refunded via Midtrans';
           } else {
             refundStatus = `Manual Refund Required (${mData.status_message || 'Unsupported Method'})`;
           }
         } catch (err) {
-          console.error('Failed to refund via Midtrans:', err);
-          refundStatus = 'Manual Refund Required (API Error)';
+          console.error('[Admin Cancel API] Failed to refund via Midtrans:', err);
+          refundStatus = 'Manual Refund Required (Gateway API Error)';
         }
+      } else {
+        refundStatus = 'Manual Refund Required (Non-Gateway or Points Payment)';
       }
     } else if (order.status === 'pending') {
-      // If just pending, try to cancel it in Midtrans instead of refund
+      // If pending, cancel transaction in Midtrans gateway
       const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
       const baseUrl = isProd ? 'https://api.midtrans.com' : 'https://api.sandbox.midtrans.com';
       const serverKey = process.env.MIDTRANS_SERVER_KEY;
+      const targetTxId = order.midtrans_id || order.id;
       if (serverKey) {
         const authString = Buffer.from(serverKey + ':').toString('base64');
-        fetch(`${baseUrl}/v2/${order.id}/cancel`, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Basic ${authString}` }
-        }).catch(e => console.error(e));
+        try {
+          const cRes = await fetch(`${baseUrl}/v2/${targetTxId}/cancel`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Basic ${authString}` }
+          });
+          const cData = await cRes.json();
+          console.log('[Admin Cancel API] Midtrans Cancel Response:', cData);
+        } catch (e) {
+          console.error('[Admin Cancel API] Midtrans Pending Cancel Error:', e);
+        }
       }
       refundStatus = 'Cancelled before payment';
     }
