@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '@/store/useSettings';
 import { supabase } from '@/lib/supabase';
 import {
-  Store, CreditCard, Clock, Palette, Truck, HelpCircle,
+  CreditCard, Clock, Palette, Truck, HelpCircle,
   MessageSquare, Lock, Plus, X, Save, Upload,
   ChevronRight, Eye, EyeOff, Globe, Bell,
   FileText, Shield, Database, Star, MapPin, Phone, Mail, Link, Package
@@ -15,7 +15,6 @@ import Image from 'next/image';
 // ── Sub-nav items ──────────────────────────────────────────────────────
 const SETTINGS_ITEMS = [
   { id: 'api-monitor', label: 'API & Live Monitor', icon: Globe },
-  { id: 'my-store', label: 'My Store Info', icon: Store },
   { id: 'change-password', label: 'Security & Password', icon: Lock },
 ];
 
@@ -110,106 +109,6 @@ function SaveButton({ onClick, loading }: { onClick?: () => void; loading?: bool
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// SECTION: My Store
-// ─────────────────────────────────────────────────────────────────────
-function MyStoreSection() {
-  const [storeName, setStoreName] = useState('');
-  const [tagline, setTagline] = useState('');
-  const [description, setDescription] = useState('');
-  const [contactWA, setContactWA] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [logoUrl, setLogoUrl] = useState('');
-  const [faviconUrl, setFaviconUrl] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const { data } = await supabase.from('atelier_settings').select('value').eq('key', 'my_store_info').single();
-        if (data?.value) {
-          if (data.value.storeName) setStoreName(data.value.storeName);
-          if (data.value.tagline) setTagline(data.value.tagline);
-          if (data.value.description) setDescription(data.value.description);
-          if (data.value.contactWA) setContactWA(data.value.contactWA);
-          if (data.value.contactEmail) setContactEmail(data.value.contactEmail);
-          if (data.value.address) setAddress(data.value.address);
-          if (data.value.logoUrl) setLogoUrl(data.value.logoUrl);
-          if (data.value.faviconUrl) setFaviconUrl(data.value.faviconUrl);
-        }
-      } catch (err) { console.error(err); }
-    }
-    load();
-  }, []);
-
-  const handleSave = async () => {
-    setSaving(true);
-    setSaved(false);
-    try {
-      const payload = {
-        key: 'my_store_info',
-        value: { storeName, tagline, description, contactWA, contactEmail, address, logoUrl, faviconUrl }
-      };
-      await fetch('/api/admin/settings', { method: 'POST', body: JSON.stringify(payload) });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (e) { console.error(e); } finally { setSaving(false); }
-  };
-
-  return (
-    <SettingsSection
-      title="My Store"
-      subtitle="Informasi dasar toko untuk identitas brand dan pencarian"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="space-y-2">
-          <Field label="Nama Toko">
-            <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="Nama toko" />
-          </Field>
-          <Field label="Tagline">
-            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Tagline brand" />
-          </Field>
-          <Field label="Deskripsi Toko" hint="Akan muncul di halaman About dan meta description">
-            <Textarea rows={4} value={description} onChange={e => setDescription(e.target.value)} />
-          </Field>
-        </div>
-        <div className="space-y-2">
-          <Field label="Nomor WhatsApp">
-            <Input value={contactWA} onChange={e => setContactWA(e.target.value)} placeholder="08xxxxxxxxxx" />
-          </Field>
-          <Field label="Email Kontak">
-            <Input value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="email@domain.com" type="email" />
-          </Field>
-          <Field label="Alamat Toko">
-            <Textarea rows={3} value={address} onChange={e => setAddress(e.target.value)} />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Logo (Upload)">
-              <div className="border border-ink/10 rounded-sm p-2 text-center bg-ink/[0.02]">
-                <Upload size={20} className="text-ink/80 mx-auto mb-2" />
-                <p className="text-[9px] text-ink/90">Klik untuk upload</p>
-                <p className="text-[10px] md:text-[7px] text-ink/80 mt-1">PNG/JPG, max 2MB</p>
-              </div>
-            </Field>
-            <Field label="Favicon">
-              <div className="border border-ink/10 rounded-sm p-2 text-center bg-ink/[0.02]">
-                <Globe size={20} className="text-ink/80 mx-auto mb-2" />
-                <p className="text-[9px] text-ink/90">Klik untuk upload</p>
-                <p className="text-[10px] md:text-[7px] text-ink/80 mt-1">ICO/PNG, 32x32px</p>
-              </div>
-            </Field>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4 pt-4 border-t border-ink/5 flex justify-end items-center gap-3">
-        {saved && <span className="text-[9px] text-emerald-600 font-semibold">Tersimpan ✓</span>}
-        <SaveButton loading={saving} onClick={handleSave} />
-      </div>
-    </SettingsSection>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────
 // SECTION: Bank Account
@@ -2060,7 +1959,6 @@ export function SettingsTab() {
   const renderSection = () => {
     switch (activeSection) {
       case 'api-monitor': return <ApiMonitorSection />;
-      case 'my-store': return <MyStoreSection />;
       case 'change-password': return <ChangePasswordSection />;
       default: return <ApiMonitorSection />;
     }
