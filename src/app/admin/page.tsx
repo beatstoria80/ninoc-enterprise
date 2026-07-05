@@ -409,45 +409,60 @@ export default function AdminDashboard() {
     if (product) {
       setIsEditMode(true);
       setEditingProduct(product);
+      
+      const cat = (product.category || '').toLowerCase();
+      const isFnBCat = ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry'].some(k => cat.includes(k));
+      const isObjCat = !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects'].some(k => cat.includes(k));
+      const defaultSpec = isFnBCat 
+        ? { label: 'Roast Profile', value: 'Medium Roast' } 
+        : isObjCat 
+          ? { label: 'Material', value: 'Artisan Ceramic' } 
+          : { label: 'Jenis Pakaian', value: 'Kaos' };
+
       setProductForm({
-        name: product.name,
-        slug: product.slug,
+        name: product.name || '',
+        slug: product.slug || '',
         description: product.description || '',
         description_en: product.description_en || '',
-        specifications: product.specifications?.length ? product.specifications : [{ label: 'Jenis Pakaian', value: 'Kaos' }],
+        specifications: product.specifications?.length ? product.specifications : [defaultSpec],
         measurements: product.measurements || [],
         model_info: product.model_info || '',
-        price: product.price.toString(),
-        category: product.sub_category || product.category,
-        department_id: product.department_id || dbDepartments.find(d => {
-          if (product.category === 'coffee' || product.category === 'pastry' || product.category === 'rtd' || product.category === 'snack') return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
-          if (product.category === 'home' || product.category === 'kitchen' || product.category === 'utilities') return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
+        price: (product.price ?? 0).toString(),
+        category: product.sub_category || product.category || 'pakaian',
+        department_id: product.department_id || dbDepartments?.find(d => {
+          if (isFnBCat) return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
+          if (isObjCat) return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
           return d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel');
-        })?.id || dbDepartments[0]?.id || '',
-        warehouse_id: product.warehouse_id || dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
-        weight_grams: product.weight_grams || 500,
-        length_cm: product.length_cm || 20,
-        width_cm: product.width_cm || 20,
-        height_cm: product.height_cm || 5,
+        })?.id || dbDepartments?.[0]?.id || '',
+        warehouse_id: product.warehouse_id || dbWarehouses?.find(w => w.is_primary)?.id || dbWarehouses?.[0]?.id || '',
+        weight_grams: typeof product.weight_grams === 'number' && !isNaN(product.weight_grams) ? product.weight_grams : 500,
+        length_cm: typeof product.length_cm === 'number' && !isNaN(product.length_cm) ? product.length_cm : 20,
+        width_cm: typeof product.width_cm === 'number' && !isNaN(product.width_cm) ? product.width_cm : 20,
+        height_cm: typeof product.height_cm === 'number' && !isNaN(product.height_cm) ? product.height_cm : 5,
         shelf_life_days: product.shelf_life_days ? String(product.shelf_life_days) : '',
-        is_perishable: product.is_perishable || false,
+        is_perishable: Boolean(product.is_perishable),
         image_url: product.image_url || '',
         image_alt: product.image_alt || (product.name ? `${product.name} - Official Product View` : ''),
         perspective1: product.perspective1 || '',
         perspective2: product.perspective2 || '',
         perspective3: product.perspective3 || '',
         perspective4: product.perspective4 || '',
-        is_featured: product.is_featured,
-        affiliate_eligible: product.affiliate_eligible || false,
+        is_featured: Boolean(product.is_featured),
+        affiliate_eligible: Boolean(product.affiliate_eligible),
         price_tag: product.price_tag || '',
         badge_text: product.badge_text || '',
-        variants: product.variants?.length ? product.variants.map(v => ({
-          id: v.id,
-          size: v.size || '',
-          color: v.color || '',
-          stock_quantity: v.stock_quantity,
-          sku: v.sku || ''
-        })) : []
+        variants: product.variants?.length ? product.variants.map(v => {
+          const parsedStock = typeof v.stock_quantity === 'number' && !isNaN(v.stock_quantity) 
+            ? v.stock_quantity 
+            : parseInt(String(v.stock_quantity || 0), 10);
+          return {
+            id: v.id || '',
+            size: v.size || '',
+            color: v.color || '',
+            stock_quantity: isNaN(parsedStock) ? 0 : parsedStock,
+            sku: v.sku || ''
+          };
+        }) : []
       });
     } else {
       setIsEditMode(false);
@@ -462,8 +477,8 @@ export default function AdminDashboard() {
         model_info: '',
         price: '',
         category: 'pakaian',
-        department_id: dbDepartments.find(d => d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel'))?.id || dbDepartments[0]?.id || '',
-        warehouse_id: dbWarehouses.find(w => w.is_primary)?.id || dbWarehouses[0]?.id || '',
+        department_id: dbDepartments?.find(d => d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel'))?.id || dbDepartments?.[0]?.id || '',
+        warehouse_id: dbWarehouses?.find(w => w.is_primary)?.id || dbWarehouses?.[0]?.id || '',
         weight_grams: 500,
         length_cm: 20,
         width_cm: 20,
