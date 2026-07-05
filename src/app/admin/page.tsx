@@ -145,6 +145,8 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isSeoPanelOpen, setIsSeoPanelOpen] = useState(true);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [showUserMenuModal, setShowUserMenuModal] = useState(false);
 
   // Toast Notification State
   type ToastMessage = { id: number; text: string; type: 'success' | 'error' | 'info' } | null;
@@ -1710,21 +1712,109 @@ export default function AdminDashboard() {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90 group-focus-within:text-rose transition-colors" />
               <input
                 type="text"
-                placeholder="Title"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari pesanan, produk, atau menu..."
                 className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-xs md:text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/80"
               />
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-end gap-5">
-            <button className="relative p-1.5 text-ink/80 hover:text-ink transition-colors">
+          <div className="flex-1 flex items-center justify-end gap-5 relative">
+            {(showNotificationsModal || showUserMenuModal) && (
+              <div 
+                onClick={() => {
+                  setShowNotificationsModal(false);
+                  setShowUserMenuModal(false);
+                }} 
+                className="fixed inset-0 z-40" 
+              />
+            )}
+
+            <button 
+              onClick={() => {
+                setShowNotificationsModal(!showNotificationsModal);
+                setShowUserMenuModal(false);
+              }}
+              className="relative p-1.5 text-ink/80 hover:text-ink transition-colors focus:outline-none z-50"
+              title="Notifikasi Sistem"
+            >
               <Bell size={16} />
               {pendingOrders > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
               )}
             </button>
+
+            {/* Notifications Dropdown */}
+            <AnimatePresence>
+              {showNotificationsModal && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-28 top-12 w-80 bg-white border border-ink/10 rounded-xl shadow-2xl p-4 z-50 text-ink"
+                >
+                  <div className="flex items-center justify-between border-b border-ink/5 pb-2.5 mb-3">
+                    <span className="font-semibold text-xs uppercase tracking-wider flex items-center gap-1.5 text-ink">
+                      <Bell size={13} className="text-rose" /> Notifikasi Sistem
+                    </span>
+                    <button onClick={() => setShowNotificationsModal(false)} className="text-ink/40 hover:text-ink transition-colors">
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                    {pendingOrders > 0 && (
+                      <div 
+                        onClick={() => { setActiveTab('orders'); setShowNotificationsModal(false); }}
+                        className="p-3 bg-rose/5 hover:bg-rose/10 border border-rose/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
+                      >
+                        <div className="p-1.5 bg-rose/10 rounded-md text-rose mt-0.5">
+                          <Package size={15} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-ink">Pesanan Baru Tertunda</p>
+                          <p className="text-[11px] text-ink/70 mt-0.5">Terdapat <span className="font-bold text-rose">{pendingOrders}</span> pesanan menunggu untuk diproses dan dikirim.</p>
+                        </div>
+                      </div>
+                    )}
+                    {products.filter(p => p.stock < 5).length > 0 && (
+                      <div 
+                        onClick={() => { setActiveTab('inventory'); setShowNotificationsModal(false); }}
+                        className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
+                      >
+                        <div className="p-1.5 bg-amber-500/10 rounded-md text-amber-600 mt-0.5">
+                          <AlertTriangle size={15} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-ink">Stok Menipis</p>
+                          <p className="text-[11px] text-ink/70 mt-0.5"><span className="font-bold text-amber-600">{products.filter(p => p.stock < 5).length}</span> produk memiliki stok di bawah batas aman (5 unit).</p>
+                        </div>
+                      </div>
+                    )}
+                    {pendingOrders === 0 && products.filter(p => p.stock < 5).length === 0 && (
+                      <div className="py-8 text-center">
+                        <div className="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <CheckCircle size={20} />
+                        </div>
+                        <p className="text-xs font-semibold text-ink">Semua Bersih & Aman!</p>
+                        <p className="text-[11px] text-ink/60 mt-0.5">Tidak ada pesanan tertunda atau stok menipis saat ini.</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="h-6 w-px bg-ink/5 mx-1" />
-            <div className="flex items-center gap-3 cursor-pointer group">
+
+            <div 
+              onClick={() => {
+                setShowUserMenuModal(!showUserMenuModal);
+                setShowNotificationsModal(false);
+              }}
+              className="flex items-center gap-3 cursor-pointer group relative z-50"
+              title="Akun Admin"
+            >
               <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden border border-ink/5 group-hover:border-rose/20 transition-colors">
                 {adminUser?.email ? (
                   <span className="text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
@@ -1736,6 +1826,51 @@ export default function AdminDashboard() {
                 {adminUser?.email?.split('@')[0] || 'Admin User'}
               </span>
             </div>
+
+            {/* User Profile Menu Dropdown */}
+            <AnimatePresence>
+              {showUserMenuModal && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 top-12 w-56 bg-white border border-ink/10 rounded-xl shadow-2xl p-2.5 z-50 text-ink"
+                >
+                  <div className="px-3 py-2.5 bg-ink/[0.02] rounded-lg border border-ink/5 mb-2">
+                    <p className="text-xs font-bold text-ink truncate">{adminUser?.email || 'Admin User'}</p>
+                    <p className="text-[9px] text-rose font-bold mt-0.5 uppercase tracking-wider">{adminUser?.role || 'Super Admin'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <button 
+                      onClick={() => { setActiveTab('settings'); setShowUserMenuModal(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
+                    >
+                      <Settings size={14} className="text-ink/60" />
+                      <span>Pengaturan Sistem</span>
+                    </button>
+                    <button 
+                      onClick={() => { setActiveTab('overview'); setShowUserMenuModal(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
+                    >
+                      <LayoutDashboard size={14} className="text-ink/60" />
+                      <span>Ringkasan Bisnis</span>
+                    </button>
+                  </div>
+                  <div className="border-t border-ink/5 mt-2 pt-2">
+                    <button 
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        window.location.href = '/';
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose hover:bg-rose/5 rounded-lg transition-all text-left font-semibold"
+                    >
+                      <LogOut size={14} />
+                      <span>Keluar (Logout)</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </header>
 
