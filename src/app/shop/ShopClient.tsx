@@ -72,6 +72,13 @@ function matchesCategoryPillar(productCategory: string, pillar: string): boolean
   return cat === pillar.toLowerCase();
 }
 
+function getCategoryDisplayName(cat: string): string {
+  if (cat === 'Objects') return 'Home & Living';
+  if (cat === 'Pantry') return 'Pantry & Café';
+  if (cat === 'All') return 'All';
+  return cat;
+}
+
 function KithEmptyState({ selectedCategory, onReset }: { selectedCategory: string; onReset: () => void }) {
   const code = selectedCategory === 'Apparel' ? 'APR-01' : selectedCategory === 'Objects' ? 'OBJ-02' : selectedCategory === 'Pantry' ? 'PTR-03' : 'EMPTY';
   
@@ -85,12 +92,12 @@ function KithEmptyState({ selectedCategory, onReset }: { selectedCategory: strin
 
       <div className="relative z-10 max-w-lg mx-auto space-y-5">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-ink text-white font-mono text-[9px] md:text-[10px] uppercase tracking-[0.25em]">
-          <span>PORTAL STATUS // {selectedCategory.toUpperCase()}</span>
+          <span>PORTAL STATUS // {getCategoryDisplayName(selectedCategory).toUpperCase()}</span>
         </div>
 
         <h3 className="text-xl md:text-3xl font-display font-medium uppercase tracking-tight text-ink leading-tight">
           {selectedCategory === 'Apparel' && "Archive Empty — Garment Curation in Progress"}
-          {selectedCategory === 'Objects' && "No Objects Listed — Studio Edition Dropping Soon"}
+          {selectedCategory === 'Objects' && "No Home & Living Items Listed — Studio Edition Dropping Soon"}
           {selectedCategory === 'Pantry' && "Roastery Closed — Fresh Batch Roast in Progress"}
           {selectedCategory === 'All' && "Catalog Currently Empty"}
         </h3>
@@ -151,7 +158,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
                   : "bg-ink/5 text-ink/60"
               )}
             >
-              {cat}
+              {getCategoryDisplayName(cat)}
             </button>
           ))}
         </div>
@@ -291,7 +298,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
                       : "text-ink/60 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
                   )}
                 >
-                  {cat}
+                  {getCategoryDisplayName(cat)}
                 </button>
               ))}
             </div>

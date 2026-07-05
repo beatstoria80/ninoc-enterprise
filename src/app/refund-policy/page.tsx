@@ -26,7 +26,7 @@ export default function RefundPolicyPage() {
     },
     OBJECTS: {
       code: "OBJ-02",
-      name: "Objects & Goods",
+      name: "Home & Living",
       icon: Package,
       subtitle: "Homeware, Ceramics & Utility Collectibles",
       returnWindow: "2 x 24 Jam (48 Jam) sejak status paket 'Diterima'",
@@ -119,7 +119,7 @@ export default function RefundPolicyPage() {
           {[
             { id: 'ALL', label: 'SEMUA PILAR // SUMMARY', code: 'ALL-00' },
             { id: 'APPAREL', label: 'APPAREL & ARCHIVE', code: 'APR-01' },
-            { id: 'OBJECTS', label: 'OBJECTS & GOODS', code: 'OBJ-02' },
+            { id: 'OBJECTS', label: 'HOME & LIVING', code: 'OBJ-02' },
             { id: 'PANTRY', label: 'PANTRY & CAFÉ', code: 'PTR-03' },
           ].map((tab) => {
             const isActive = activePillar === tab.id;
