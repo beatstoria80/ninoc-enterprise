@@ -179,7 +179,9 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
       <div className="h-[56px]" />
 
       <div className="px-3 pt-3 space-y-4 pb-10">
-        {displayCategories.filter(c => c !== 'All' && (selectedCategory === 'All' || selectedCategory === c)).map((category) => (
+        {displayCategories
+          .filter(c => c !== 'All' && (selectedCategory === 'All' || selectedCategory === c) && (groupedProducts[c]?.length || 0) > 0)
+          .map((category) => (
           <div key={category} className="space-y-2">
             <div className="flex items-center justify-between border-b border-ink/10 pb-1">
               <h2 className="text-[10px] font-display font-medium italic uppercase tracking-wider text-ink/80">
