@@ -259,6 +259,7 @@ export async function POST(req: Request) {
     const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
+    const orderId = `NINOC-${Date.now()}`;
     const rawAppUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
     const appUrl = rawAppUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
 
