@@ -127,7 +127,6 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     }
 
     // If there is a keyword and it's not just generic sort/promo words
-    // If there is a keyword and it's not just generic sort/promo words
     const isGenericWord = ['baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah', 'termurah', 'mahal', 'termahal', 'best seller', 'terlaris', 'rekomendasi', 'paling murah', 'paling mahal', 'paling laris', 'budget', 'semua', 'all', 'produk', 'barang', 'baju'].some(w => kw === w || kw.includes(w));
     
     if (kw && !isGenericWord) {
