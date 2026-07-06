@@ -87,7 +87,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const showGlobalFooter = showGlobalHeader && !isShopPage && !isCollectionsPage;
 
   return (
-    <div className={`min-h-screen flex flex-col ${pathname === '/' ? 'bg-ink' : 'bg-cr'}`}>
+    <div className={`min-h-screen flex flex-col ${pathname === '/' ? 'bg-white' : 'bg-cr'}`}>
       {/* hidden md:block prevents SSR flash of huge desktop header on mobile screens */}
       {showGlobalHeader && <div className="print:hidden hidden md:block"><GlobalHeader /></div>}
       <div className="flex-1">

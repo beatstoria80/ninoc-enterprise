@@ -887,7 +887,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-ink relative min-h-screen overflow-hidden">
+    <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-ink'}`}>
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* SCENE 01: HERO VIDEO BANNER                                     */}
       {/* ═══════════════════════════════════════════════════════════════ */}
@@ -1029,7 +1029,7 @@ export default function Home() {
 
       {/* CONNECT SECTION */}
       <FadeUpSection delay={0.1}>
-        <section className="px-4 md:px-12 max-w-[1800px] mx-auto mb-6 md:mb-16">
+        <section className="px-4 md:px-12 max-w-[1800px] mx-auto mb-0 pb-10 md:pb-16">
           <div className="bg-white border border-ink/5 p-4 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
@@ -1052,7 +1052,7 @@ export default function Home() {
                   </svg>
                 </motion.div>
                 <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60 mb-1">Follow Us</p>
-                <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.store</p>
+                <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">@ninoc.co</p>
                 <p className="text-xs md:text-[7px] text-ink/50 uppercase tracking-widest mt-1">Instagram</p>
               </a>
 
