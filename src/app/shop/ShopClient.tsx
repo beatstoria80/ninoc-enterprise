@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
+import { useShopFilters, DesktopShopFilterBar, MobileShopFilterBar, type ShopProduct as Product, type FilterSystemType } from './_components/ShopFilterSystem';
 
 function SafeImage({ src, alt, className, sizes, priority = false, draggable }: {
   src: string; alt: string; className?: string; sizes?: string; priority?: boolean; draggable?: boolean;
@@ -45,17 +46,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  image_url: string;
-  category: string;
-  price_tag?: string | null;
-  badge_text?: string | null;
-}
+// Product type imported from ShopFilterSystem
 
 function matchesCategoryPillar(productCategory: string, pillar: string): boolean {
   if (pillar === 'All') return true;
@@ -133,14 +124,13 @@ function getProductPillar(productCategory: string): string {
   return 'Apparel';
 }
 
-function MobileShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
+function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType, dict: any }) {
   const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const pathname = usePathname();
   const isId = !pathname?.startsWith('/en');
 
-  const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
+  const { filteredProducts, selectedCategory } = filterSystem;
 
   const groupedProducts = filteredProducts.reduce((acc, product) => {
     const pillar = getProductPillar(product.category);
@@ -153,30 +143,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
 
   return (
     <div className="bg-cr min-h-screen">
-      <div 
-        className="fixed left-0 right-0 z-[350] bg-white/95 backdrop-blur-sm border-b border-ink/5"
-        style={{ top: 'calc(56px + env(safe-area-inset-top))' }}
-      >
-        <div className="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar">
-          {displayCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-4 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-wider whitespace-nowrap transition-all",
-                selectedCategory === cat
-                  ? "bg-rose text-white"
-                  : "bg-ink/5 text-ink/60"
-              )}
-            >
-              {getCategoryDisplayName(cat)}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {/* Spacer for fixed category bar */}
-      <div className="h-[56px]" />
+      <MobileShopFilterBar filterSystem={filterSystem} />
 
       <div className="px-3 pt-3 space-y-4 pb-10">
         {displayCategories
@@ -274,7 +241,7 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
         ))}
 
         {filteredProducts.length === 0 && (
-          <KithEmptyState selectedCategory={selectedCategory} onReset={() => setSelectedCategory('All')} />
+          <KithEmptyState selectedCategory={selectedCategory} onReset={() => filterSystem.resetFilters()} />
         )}
       </div>
 
@@ -287,40 +254,17 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
   );
 }
 
-function DesktopShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
-  const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
+function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemType, dict: any }) {
   const pathname = usePathname();
   const isId = !pathname?.startsWith('/en');
 
-  const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
+  const { filteredProducts, selectedCategory } = filterSystem;
 
   return (
     <main className="min-h-screen bg-cr noise pb-40">
-      <div className="fixed top-20 md:top-[80px] left-6 md:left-12 z-[90] pointer-events-none">
-        <section className="pointer-events-auto">
-          <div className="glass border border-ink/5 rounded-full p-1.5 flex items-center gap-1.5 shadow-2xl shadow-ink/5 overflow-hidden">
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-1">
-              {displayCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={cn(
-                    "px-4 py-1.5 md:px-3.5 md:py-1 rounded-full text-[11px] md:text-[9px] font-medium uppercase tracking-wider transition-all whitespace-nowrap",
-                    selectedCategory === cat
-                      ? "bg-ink text-white shadow-xl shadow-ink/20"
-                      : "text-ink/60 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
-                  )}
-                >
-                  {getCategoryDisplayName(cat)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <DesktopShopFilterBar filterSystem={filterSystem} />
 
-      <div className="pt-24 md:pt-28" />
+      <div className="pt-6" />
 
       <section className="mt-2 md:mt-4 px-6 md:px-12 max-w-[1800px] mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
@@ -426,7 +370,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
         </div>
 
         {filteredProducts.length === 0 && (
-          <KithEmptyState selectedCategory={selectedCategory} onReset={() => setSelectedCategory('All')} />
+          <KithEmptyState selectedCategory={selectedCategory} onReset={() => filterSystem.resetFilters()} />
         )}
       </section>
     </main>
@@ -450,13 +394,13 @@ function ShopClientInner({ initialCategory, isMobile, initialProducts }: { initi
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const dict = getDictionaryByLocale(lang);
 
-  const products = initialProducts;
+  const filterSystem = useShopFilters(initialProducts, initialCategory);
 
   if (isMobile) {
-    return <MobileShopView products={products} initialCategory={initialCategory} dict={dict} />;
+    return <MobileShopView filterSystem={filterSystem} dict={dict} />;
   }
 
-  return <DesktopShopView products={products} initialCategory={initialCategory} dict={dict} />;
+  return <DesktopShopView filterSystem={filterSystem} dict={dict} />;
 }
 
 export default function ShopClient({ initialProducts = [] }: { initialProducts?: Product[] }) {
