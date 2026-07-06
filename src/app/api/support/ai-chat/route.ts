@@ -11,10 +11,10 @@ const BASE_SYSTEM_PROMPT = `You are NINOC's Customer Service & Smart E-Commerce 
 Your persona: Friendly, helpful, enthusiastic, and acts like an expert human brand staff (use "aku", "kak", casual but polite Indonesian). AVOID stiff, robotic, or overly formal language (do NOT say "Mohon maaf, apakah Anda dapat memberikan detail...").
 
 CRITICAL GEN-Z BEHAVIOR & TYPO PARSING RULES:
-1. They use slang, abbreviations, and typos (e.g., "brp", "yg", "kaos item", "min", "gk", "ready ga", "spill", "pakah" / "pkh" = apakah, "ad" / "redy" = ready/ada, "sz" / "ukrn" = size/ukuran, "xxl" / "2xl"). Understand them intuitively!
+1. They use slang, abbreviations, and typos (e.g., "brp", "yg", "kaos item", "min", "gk", "ready ga", "spill", "pakah" / "pkh" = apakah, "ad" / "redy" = ready/ada, "sz" / "ukrn" = size/ukuran, "xxl" / "2xl", "atu" / "atw" = atau, "goorila" / "gorila" = gorilla, "dsn" / "desain" = design). Understand them intuitively!
 2. Zero patience: NEVER ask them to "provide more details". If their request is vague, GUESS or immediately use the search_products tool to show options!
 3. 🚨 ANTI-FALSE OUT-OF-STOCK RULE (SANGAT PENTING!): Saat customer bertanya ketersediaan ukuran/size (misal: "pakah size xxl ada?", "ready 2XL ga?", "ada ukuran L?") atau warna, PERIKSA ARRAY 'variants' pada daftar produk yang dikembalikan oleh tool search_products! Di dalam database, ukuran XXL sering ditulis sebagai "XXL" atau "2XL" (dan XXXL = 3XL). Jika di dalam array variants terdapat varian dengan ukuran/warna yang dicari DAN stock > 0, LANGSUNG JAWAB READY dan rekomendasikan produk tersebut dengan antusias! JANGAN PERNAH terkecoh oleh typo (seperti kata "pakah") dan JANGAN PERNAH bilang produk/ukuran tersebut habis jika sebenarnya ada varian yang ready stock!
-4. 🚨 ETIKA BERJUALAN (LARANGAN KATA NEGATIF): Sebagai sales profesional yang ingin customer terus merasa puas dan nyaman, JANGAN PERNAH gunakan kata-kata negatif/menolak seperti "kosong", "habis", "tidak ada", "enggak ready", atau sejenisnya! Jika produk atau size yang dicari customer memang sedang dalam proses restock atau tidak langsung tersedia, GANTI bahasa responsmu menjadi positif dan berikan saran alternatif yang relevan! Contoh cara menjawab yang benar: "Wah kak, untuk spesifikasi model/size tersebut saat ini lagi banyak banget peminatnya sehingga sedang dalam proses restock ya kak! 😊 Tapi tenang aja kak, sebagai gantinya aku punya beberapa rekomendasi koleksi NINOC lain yang sama-sama kece, bahan premium, dan ready ukuran/warna yang kakak mau nih! Yuk cek pilihan terbaiknya di bawah ini:" (Arahkan terus customer dengan saran alternatif yang setara agar mereka tetap merasa puas dan memutuskan untuk membeli produk kita!). JANGAN PERNAH mengarang link atau produk palsu!
+4. 🚨 ETIKA BERJUALAN (LARANGAN KATA NEGATIF & PENANGANAN DESAIN/MOTIF YANG TIDAK ADA): Sebagai sales profesional yang ingin customer terus merasa puas dan nyaman, JANGAN PERNAH gunakan kata-kata negatif/menolak seperti "kosong", "habis", "tidak ada", "kami tidak punya desain tersebut", atau sejenisnya! Jika customer menanyakan DESAIN / MOTIF / GAMBAR / HEWAN tertentu (misal: "design kera", "gorila", "kucing", "anime", dll) atau ukuran yang kebetulan tidak ada di katalog kita, GANTI bahasa responsmu menjadi positif dan berikan saran alternatif yang relevan! Contoh cara menjawab yang benar: "Wah kak, untuk motif/desain hewan tersebut saat ini sedang dalam proses kurasi & pengembangan oleh tim kreatif NINOC ya! 😊 Tapi tenang aja kak, biar style kakak tetap standout & makin kece, kita punya koleksi grafik & desain best seller NINOC lainnya yang enggak kalah keren dan siap kirim nih! Yuk cek pilihan terbaiknya di bawah ini:" (Arahkan terus customer dengan saran alternatif yang setara agar mereka tetap merasa puas dan memutuskan untuk membeli produk kita!). JANGAN PERNAH mengarang link atau produk palsu!
 
 GLOBAL KNOWLEDGE & E-COMMERCE STANDARD POLICIES:
 - Alamat Toko Fisik/Gudang: Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari, Bandung, Jawa Barat 40292.
@@ -146,7 +146,8 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
     });
 
     if (!response.ok) {
-      console.error('[AI-Chat] Groq API error:', response.status);
+      const errText = await response.text();
+      console.error('[AI-Chat] Groq API error:', response.status, errText);
       return null;
     }
 
@@ -163,9 +164,14 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
       // Execute each tool call
       for (const toolCall of responseMessage.tool_calls) {
         const functionName = toolCall.function.name;
-        const functionArgs = JSON.parse(toolCall.function.arguments);
-        
-        const result = await executeAiTool(functionName, functionArgs);
+        let result: any;
+        try {
+          const functionArgs = JSON.parse(toolCall.function.arguments || '{}');
+          result = await executeAiTool(functionName, functionArgs);
+        } catch (err: any) {
+          console.error(`[AI-Chat] Tool execution error for ${functionName}:`, err.message);
+          result = { error: `Failed to execute tool ${functionName}: ${err.message}` };
+        }
         
         // Push the tool result message
         payload.messages.push({
@@ -176,8 +182,10 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
         });
       }
 
-      // 2nd Request to get final answer
-      payload.tool_choice = 'none';
+      // 2nd Request to get final answer (remove tools & tool_choice to prevent schema conflict on Groq)
+      delete (payload as any).tools;
+      delete (payload as any).tool_choice;
+      
       const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -187,7 +195,11 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
         body: JSON.stringify(payload),
       });
 
-      if (!followUpResponse.ok) return null;
+      if (!followUpResponse.ok) {
+        const errText = await followUpResponse.text();
+        console.error('[AI-Chat] Groq follow-up API error:', followUpResponse.status, errText);
+        return null;
+      }
 
       const followUpData = await followUpResponse.json();
       return followUpData.choices?.[0]?.message?.content || null;

@@ -130,11 +130,13 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     const isGenericWord = ['baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah', 'termurah', 'mahal', 'termahal', 'best seller', 'terlaris', 'rekomendasi', 'paling murah', 'paling mahal', 'paling laris', 'budget', 'semua', 'all', 'produk', 'barang', 'baju'].some(w => kw === w || kw.includes(w));
     
     if (kw && !isGenericWord) {
-      // Clean keyword: remove Indonesian chat typos, abbreviations, and filler words so target sizes/colors stand out
-      // Removes: pakah, apkah, pkh, apakah, apa, ada, ad, ready, redy, redi, rdy, size, sz, ukuran, ukrn, uk, ga, gk, gak, ngga, engga, tdk, disini, di sini, harga, hrg, dll.
-      let cleanKw = kw.replace(/\b(pakah|apkah|pkh|apakah|apa|ada|ad|ready|redy|redi|rdy|size|sz|ukuran|ukrn|uk|kaos|baju|celana|hoodie|jaket|outer|gak|ga|gk|enggak|nggak|ngga|engga|tdk|disini|di sini|harga|hrg|termurah|termahal|murah|mahal|di bawah|di atas|budget|paling|brp|yg|dong|deh|kah|ya|min|spill)\b/gi, '').trim() || kw;
+      // Strip punctuation (like ?, !, ,, ., /, (,)) so PostgREST .or() never fails with syntax errors
+      const safeKw = kw.replace(/[^a-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim() || kw;
       
-      // Expand synonyms for size and color variations in database (e.g. xxl <-> 2xl, xxxl <-> 3xl, item <-> hitam)
+      // Clean keyword: remove Indonesian chat typos, abbreviations, and filler words so target motifs/sizes/colors stand out
+      let cleanKw = safeKw.replace(/\b(pakah|apkah|pkh|apakah|apa|ada|ad|ready|redy|redi|rdy|size|sz|ukuran|ukrn|uk|kaos|baju|celana|hoodie|jaket|outer|gak|ga|gk|enggak|nggak|ngga|engga|tdk|disini|di sini|harga|hrg|termurah|termahal|murah|mahal|di bawah|di atas|budget|paling|brp|yg|dong|deh|kah|ya|min|spill|atu|atau|atw|ataupun|desain|design|dsn|motif|gambar|gbr|seri|series|tipe|type|model|mdl|koleksi|collection|punya|pnya|gaada|adaa|adakah|jual|jl|nyari|cari|cri|mau|mw|pengen|pngn|beli|bli|buat|bt|untuk|utk|si|sih|nih|tuh|lah|pun|kek|kaya|kayak|yang)\b/gi, '').replace(/\s+/g, ' ').trim() || safeKw;
+      
+      // Expand synonyms for size and color variations in database
       let sizeSynonym = cleanKw;
       if (cleanKw === 'xxl' || cleanKw.includes('xxl')) sizeSynonym = '2XL';
       else if (cleanKw === '2xl' || cleanKw.includes('2xl')) sizeSynonym = 'XXL';
@@ -143,20 +145,33 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       else if (cleanKw === 'item' || cleanKw.includes('item')) sizeSynonym = 'hitam';
       else if (cleanKw === 'puti' || cleanKw === 'pti') sizeSynonym = 'putih';
 
+      // Split remaining clean keywords into individual search terms if multiple words exist
+      const wordTokens = cleanKw.split(/\s+/).filter((w: string) => w.length > 2);
+
       // 1. Check if keyword matches a variant attribute in variants table (color, size, sku)
       const { data: varData } = await supabase
         .from('variants')
         .select('product_id')
-        .or(`size.ilike.%${cleanKw}%,size.ilike.%${sizeSynonym}%,size.ilike.%${kw}%,color.ilike.%${cleanKw}%,color.ilike.%${sizeSynonym}%,color.ilike.%${kw}%,sku.ilike.%${kw}%`)
+        .or(`size.ilike.%${cleanKw}%,size.ilike.%${sizeSynonym}%,size.ilike.%${safeKw}%,color.ilike.%${cleanKw}%,color.ilike.%${sizeSynonym}%,color.ilike.%${safeKw}%,sku.ilike.%${safeKw}%`)
         .gt('stock', 0)
         .limit(30);
       
       const variantProductIds = Array.from(new Set(varData?.map(v => v.product_id).filter(Boolean) || []));
       
       if (variantProductIds.length > 0) {
-        productsQuery = productsQuery.or(`id.in.(${variantProductIds.join(',')}),name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%`);
+        productsQuery = productsQuery.or(`id.in.(${variantProductIds.join(',')}),name.ilike.%${safeKw}%,description.ilike.%${safeKw}%,category.ilike.%${safeKw}%`);
       } else {
-        productsQuery = productsQuery.or(`name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%,name.ilike.%${cleanKw}%,description.ilike.%${cleanKw}%,name.ilike.%${sizeSynonym}%,description.ilike.%${sizeSynonym}%`);
+        const orClauses = [
+          `name.ilike.%${safeKw}%`,
+          `description.ilike.%${safeKw}%`,
+          `category.ilike.%${safeKw}%`,
+          `name.ilike.%${cleanKw}%`,
+          `description.ilike.%${cleanKw}%`,
+          `name.ilike.%${sizeSynonym}%`,
+          `description.ilike.%${sizeSynonym}%`,
+          ...wordTokens.flatMap((w: string) => [`name.ilike.%${w}%`, `description.ilike.%${w}%`])
+        ];
+        productsQuery = productsQuery.or(Array.from(new Set(orClauses)).join(','));
       }
     }
 
@@ -183,7 +198,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       if (fallbackData && fallbackData.length > 0) {
         return { 
           success: true, 
-          note: `Daftar produk rekomendasi toko beserta SELURUH varian (ukuran/size S, M, L, XL, XXL, 2XL, warna, stock, harga) yang tersedia. PENTING BAGI AI: PERIKSA ARRAY 'variants' DI DALAM DAFTAR PRODUK INI SECARA TELITI! Jika customer menanyakan ukuran tertentu (seperti XXL, 2XL, XL) atau warna, JANGAN BILANG KOSONG/TIDAK ADA jika di dalam array variants di bawah ini terdapat ukuran/warna tersebut dengan stock > 0! Langsung rekomendasikan produk yang ready tersebut dengan antusias!`,
+          note: `Daftar produk rekomendasi best seller toko beserta SELURUH varian (ukuran/size S, M, L, XL, XXL, 2XL, warna, stock, harga) yang tersedia. PENTING BAGI AI - ETIKA BERJUALAN & ZERO NEGATIVITY: 1. Jika customer mencari DESAIN / MOTIF / GAMBAR / HEWAN tertentu (seperti "kera", "gorila", "kucing", "anime", dll) yang kebetulan tidak ada di katalog kita, DILARANG KERAS menjawab negatif seperti "tidak ada desain kera/gorila" atau "kosong"! LANGSUNG JAWAB DENGAN POSITIF & ANTUSIAS: "Wah kak, untuk motif/desain hewan tersebut saat ini sedang dalam proses kurasi & pengembangan oleh tim kreatif NINOC ya! 😊 Tapi tenang aja kak, biar style kakak makin kece & standout, kita punya koleksi grafik & desain best seller NINOC lainnya yang enggak kalah keren dan siap kirim nih! Yuk cek pilihan terbaiknya di bawah ini:" (lalu sebutkan rekomendasi produk di bawah lengkap dengan harga Rp dan link slug produk). 2. Jika customer mencari UKURAN (seperti XXL, 2XL, XL) atau WARNA, periksa array 'variants' secara teliti. Jika ada stock > 0, langsung tawarkan dengan antusias!`,
           products: fallbackData 
         };
       }
