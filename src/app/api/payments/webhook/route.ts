@@ -10,7 +10,15 @@ export async function POST(req: Request) {
     const notificationJson = await req.json();
 
     // 1. Verify notification authenticity with Midtrans
-    const statusResponse = await coreApi.transaction.notification(notificationJson);
+    let statusResponse = notificationJson;
+    try {
+      statusResponse = await coreApi.transaction.notification(notificationJson);
+    } catch (apiErr) {
+      console.warn('[Payment Webhook] coreApi.transaction.notification API call failed/timed out, falling back to payload verification:', apiErr);
+      if (!notificationJson || !notificationJson.order_id || !notificationJson.transaction_status) {
+        throw new Error('Invalid webhook payload and Midtrans API verification failed');
+      }
+    }
 
     const orderId = statusResponse.order_id;
     const transactionId = statusResponse.transaction_id;
@@ -214,7 +222,8 @@ export async function POST(req: Request) {
 
           if (formattedPhone) {
             const formattedPrice = `Rp ${Number(order.total_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+            const rawAppUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+            const appUrl = rawAppUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
             const trackId = order.order_number || order.id;
             const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 

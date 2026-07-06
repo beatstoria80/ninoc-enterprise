@@ -33,6 +33,11 @@ export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   const requestHeaders = new Headers(request.headers)
   
+  // 0a. Bypass middleware processing for automated server webhooks and cron jobs
+  if (pathname.startsWith('/api/payments/webhook') || pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/cron')) {
+    return NextResponse.next();
+  }
+
   // 0. Anti-DDoS / Rate Limiter Check
   const forwardedFor = request.headers.get('x-forwarded-for');
   const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : request.headers.get('x-real-ip') || 'unknown';
