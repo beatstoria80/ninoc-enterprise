@@ -82,19 +82,19 @@ export default function GlobalFooter() {
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
               <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 leading-tight">
-                Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292
+                BANDUNG, INDONESIA
               </p>
             </div>
             <div className="flex items-center gap-1.5">
-              <Mail size={9} className="text-rose flex-shrink-0" />
-              <a href="mailto:cs@ninoc.store" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                cs@ninoc.store
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose flex-shrink-0"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+              <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+                @ninoc.co
               </a>
             </div>
             <div className="flex items-center gap-1.5">
-              <Phone size={9} className="text-rose flex-shrink-0" />
-              <a href="tel:+628211983774" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                +628211983774
+              <Mail size={9} className="text-rose flex-shrink-0" />
+              <a href="mailto:beatstoria.ai@gmail.com" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+                beatstoria.ai@gmail.com
               </a>
             </div>
           </div>
