@@ -53,7 +53,25 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   // 2. Handle Variants (Batch Processing to eliminate N+1 loop bottlenecks)
   if (productId && allVariants && Array.isArray(allVariants)) {
-    const variantsWithProductId = allVariants.map((v: any) => ({ ...v, product_id: productId }));
+    const variantsWithProductId = allVariants.map((v: any) => {
+      let sku = v.sku;
+      if (!sku || typeof sku !== 'string' || sku.trim() === '') {
+        const prodName = productData?.name || 'PROD';
+        const cat = productData?.category || 'APP';
+        const catCode = cat === 'celana' ? 'CLN' : cat === 'pakaian' ? 'KAS' : cat.substring(0, 3).toUpperCase();
+        const baseName = prodName.replace(/[^A-Za-z0-9]/g, '').substring(0, 4).toUpperCase();
+        let hash = 0;
+        for (let i = 0; i < prodName.length; i++) {
+          hash = prodName.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const uniqueNum = Math.abs(hash % 900) + 100;
+        const nameCode = `${baseName}${uniqueNum}`;
+        const colorCode = (v.color || 'NON').substring(0, 3).toUpperCase();
+        const sizeCode = (v.size || 'OS').toUpperCase();
+        sku = `${catCode}-${nameCode}-${colorCode}-${sizeCode}`;
+      }
+      return { ...v, sku: sku.trim(), product_id: productId };
+    });
 
     // Fetch existing variants to identify deletions
     const { data: existingVariants } = await supabase
