@@ -524,10 +524,10 @@ export default function GlobalHeader() {
         <motion.div
           className="flex items-center gap-5 md:gap-7"
         >
-          {/* Language Toggle */}
+          {/* Language Toggle - Hidden on Desktop & Laptop/Tablet since available in menu slide bar */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, duration: DURATION.fast }}
-            className={cn("flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] px-2.5 py-1.5 rounded-full border transition-colors", isDarkBg ? "border-white/15" : "border-ink/10")}
+            className={cn("flex md:hidden items-center gap-1.5 text-[10px] font-semibold tracking-[0.15em] px-2.5 py-1.5 rounded-full border transition-colors", isDarkBg ? "border-white/15" : "border-ink/10")}
           >
             <a href={lang === 'EN' ? (pathname.replace(/^\/en/, '') || '/') : pathname} className={cn("transition-colors cursor-pointer", lang !== 'EN' ? (isDarkBg ? "text-white" : "text-ink") : (isDarkBg ? "text-white/40 hover:text-white" : "text-ink/50 hover:text-ink"))}>
               ID
@@ -537,9 +537,6 @@ export default function GlobalHeader() {
               EN
             </a>
           </motion.div>
-
-          {/* Separator */}
-          <div className={cn("w-px h-4 hidden md:block", isDarkBg ? "bg-white/15" : "bg-ink/10")} />
 
           {/* Search Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45, duration: DURATION.fast }} className="flex items-center">
