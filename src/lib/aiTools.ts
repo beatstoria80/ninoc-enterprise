@@ -3,6 +3,28 @@ import { supabase as browserSupabase } from './supabase';
 
 /**
  * ============================================================================
+ * UTILITY: BULLETPROOF TYPE COERCION FOR LLM PAYLOADS
+ * ============================================================================
+ * LLMs (Groq, OpenAI, Llama) frequently serialize numbers (like invoice IDs
+ * e.g., 1782791806880) as integers instead of strings in JSON tool arguments.
+ * Calling .trim() or .toLowerCase() directly on non-strings causes runtime
+ * TypeError crashes in serverless production environments.
+ */
+function toSafeString(val: any): string {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string') return val.trim();
+  if (typeof val === 'number' || typeof val === 'boolean' || typeof val === 'bigint') {
+    return String(val).trim();
+  }
+  try {
+    return JSON.stringify(val);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * ============================================================================
  * DATA ACCESS LAYER: DATABASE CLIENT LOADER
  * ============================================================================
  * Conditionally loads Server-Side Supabase Admin client with bypass-RLS
@@ -153,21 +175,21 @@ class IndonesianNlpEngine {
   };
 
   public static isGenericQuery(kw: string): boolean {
-    const tokens = kw.toLowerCase().split(/\s+/);
+    const tokens = toSafeString(kw).toLowerCase().split(/\s+/);
     return (
       tokens.some((w) => this.GENERIC_KEYWORDS.has(w)) ||
-      this.GENERIC_KEYWORDS.has(kw)
+      this.GENERIC_KEYWORDS.has(toSafeString(kw).toLowerCase())
     );
   }
 
-  public static parseKeyword(rawKeyword?: string): {
+  public static parseKeyword(rawKeyword?: any): {
     raw: string;
     safe: string;
     cleaned: string;
     tokens: string[];
     synonym?: string;
   } {
-    const raw = (rawKeyword || '').toLowerCase().trim();
+    const raw = toSafeString(rawKeyword).toLowerCase();
     if (!raw) {
       return { raw: '', safe: '', cleaned: '', tokens: [] };
     }
@@ -207,20 +229,20 @@ export interface AiToolHandler<TArgs = any> {
 }
 
 interface GetOrderDetailsArgs {
-  order_id: string;
+  order_id: any; // Allow integer IDs serialized by LLMs
 }
 
 interface SearchProductsArgs {
-  keyword?: string;
-  sort_by?: 'newest' | 'cheapest' | 'most_expensive' | 'popular';
+  keyword?: any;
+  sort_by?: 'newest' | 'cheapest' | 'most_expensive' | 'popular' | string;
   min_price?: number;
   max_price?: number;
-  category?: string;
+  category?: any;
 }
 
 interface EscalateToHumanArgs {
-  ticket_id: string;
-  reason: string;
+  ticket_id: any;
+  reason: any;
 }
 
 /**
@@ -232,7 +254,7 @@ class GetOrderDetailsHandler implements AiToolHandler<GetOrderDetailsArgs> {
   public readonly name = 'get_order_details';
 
   public async execute(args: GetOrderDetailsArgs, db: SupabaseClient): Promise<any> {
-    const cleanId = (args?.order_id || '').trim();
+    const cleanId = toSafeString(args?.order_id);
     if (!cleanId) {
       return { error: 'ID pesanan tidak boleh kosong.' };
     }
@@ -273,21 +295,21 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     let query = db.from('products').select(this.SELECT_FIELDS);
 
     // 1. Apply Category Filter
-    if (category && typeof category === 'string' && category.trim() !== '') {
-      const cat = category.toLowerCase().trim();
-      query = query.or(`category.ilike.%${cat}%,name.ilike.%${cat}%,description.ilike.%${cat}%`);
+    const catStr = toSafeString(category).toLowerCase();
+    if (catStr) {
+      query = query.or(`category.ilike.%${catStr}%,name.ilike.%${catStr}%,description.ilike.%${catStr}%`);
     }
 
     // 2. Apply Price Range Filters
-    if (min_price && typeof min_price === 'number' && !isNaN(min_price)) {
+    if (typeof min_price === 'number' && Number.isFinite(min_price) && min_price >= 0) {
       query = query.gte('price', min_price);
     }
-    if (max_price && typeof max_price === 'number' && !isNaN(max_price)) {
+    if (typeof max_price === 'number' && Number.isFinite(max_price) && max_price >= 0) {
       query = query.lte('price', max_price);
     }
 
     // 3. Resolve Sorting Strategy
-    const isSorted = this.applySortingStrategy(query, sort_by, parsedKw.raw);
+    const isSorted = this.applySortingStrategy(query, toSafeString(sort_by), parsedKw.raw);
 
     // 4. Apply NLP Keyword Attributes & Variant Search
     if (parsedKw.raw && !IndonesianNlpEngine.isGenericQuery(parsedKw.raw)) {
@@ -301,13 +323,13 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     const { data, error } = await query.limit(10);
 
     if (error || !data || data.length === 0) {
-      return this.executeFallbackQuery(db, sort_by, parsedKw.raw);
+      return this.executeFallbackQuery(db, toSafeString(sort_by), parsedKw.raw);
     }
 
     return { success: true, products: data };
   }
 
-  private applySortingStrategy(query: any, sortBy?: string, kwRaw: string = ''): boolean {
+  private applySortingStrategy(query: any, sortBy: string = '', kwRaw: string = ''): boolean {
     const kw = kwRaw.toLowerCase();
     if (
       sortBy === 'cheapest' ||
@@ -354,41 +376,55 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
   ): Promise<void> {
     const { safe, cleaned, tokens, synonym } = parsedKw;
 
-    // Check attribute matches in variants table with bounded limit to prevent GET overflow
-    const { data: varData } = await db
-      .from('variants')
-      .select('product_id')
-      .or(
-        `size.ilike.%${cleaned}%,size.ilike.%${synonym || cleaned}%,size.ilike.%${safe}%,color.ilike.%${cleaned}%,color.ilike.%${synonym || cleaned}%,color.ilike.%${safe}%,sku.ilike.%${safe}%`
-      )
-      .gt('stock', 0)
-      .limit(30);
-
-    const variantProductIds = Array.from(
-      new Set(varData?.map((v) => v.product_id).filter(Boolean) || [])
+    // Build unique search terms, filtering out empty strings or single-character noise
+    const validTerms = Array.from(new Set([safe, cleaned, synonym, ...tokens])).filter(
+      (t) => t && t.trim().length > 1
     );
 
-    if (variantProductIds.length > 0) {
-      // Limit to top 30 IDs to ensure clean HTTP GET parameter size
-      query.in('id', variantProductIds.slice(0, 30));
-    } else {
-      const orClauses = [
-        `name.ilike.%${safe}%`,
-        `description.ilike.%${safe}%`,
-        `category.ilike.%${safe}%`,
-        `name.ilike.%${cleaned}%`,
-        `description.ilike.%${cleaned}%`,
-        ...(synonym ? [`name.ilike.%${synonym}%`, `description.ilike.%${synonym}%`] : []),
-        // Cap token expansion to top 4 tokens to avoid expensive sequential scans
-        ...tokens.slice(0, 4).flatMap((w) => [`name.ilike.%${w}%`, `description.ilike.%${w}%`]),
-      ];
+    // If query was entirely punctuation or emojis and produced no valid search terms, return early
+    if (validTerms.length === 0) {
+      return;
+    }
+
+    try {
+      // Build variant search clause dynamically to prevent empty ilike patterns (.ilike.%%)
+      const varOrClauses = validTerms
+        .slice(0, 4)
+        .flatMap((t) => [`size.ilike.%${t}%,color.ilike.%${t}%,sku.ilike.%${t}%`]);
+
+      const { data: varData } = await db
+        .from('variants')
+        .select('product_id')
+        .or(varOrClauses.join(','))
+        .gt('stock', 0)
+        .limit(30);
+
+      const variantProductIds = Array.from(
+        new Set(varData?.map((v) => v.product_id).filter(Boolean) || [])
+      );
+
+      if (variantProductIds.length > 0) {
+        // Limit to top 30 IDs to ensure clean HTTP GET parameter size
+        query.in('id', variantProductIds.slice(0, 30));
+        return;
+      }
+    } catch (err) {
+      console.warn('[SearchProductsHandler] Variant search warning:', err);
+    }
+
+    // Fallback to name/description search without allowing empty .ilike.%% patterns
+    const orClauses = validTerms
+      .slice(0, 5)
+      .flatMap((t) => [`name.ilike.%${t}%`, `description.ilike.%${t}%`, `category.ilike.%${t}%`]);
+
+    if (orClauses.length > 0) {
       query.or(Array.from(new Set(orClauses)).join(','));
     }
   }
 
   private async executeFallbackQuery(
     db: SupabaseClient,
-    sortBy?: string,
+    sortBy: string = '',
     kwRaw: string = ''
   ): Promise<any> {
     let fallbackQuery = db.from('products').select(this.SELECT_FIELDS);
@@ -423,7 +459,9 @@ class EscalateToHumanHandler implements AiToolHandler<EscalateToHumanArgs> {
   public readonly name = 'escalate_to_human';
 
   public async execute(args: EscalateToHumanArgs, db: SupabaseClient): Promise<any> {
-    const { ticket_id, reason } = args || {};
+    const ticket_id = toSafeString(args?.ticket_id);
+    const reason = toSafeString(args?.reason);
+
     if (!ticket_id || !reason) {
       return { error: 'ticket_id dan reason wajib diisi.' };
     }
@@ -485,7 +523,7 @@ class AiToolRegistry {
 
     try {
       const db = getDbClient();
-      return await handler.execute(args, db);
+      return await handler.execute(args || {}, db);
     } catch (err: any) {
       console.error(`[AiToolRegistry] Execution error for tool '${name}':`, err?.message || err);
       return { error: `Internal tool error: ${err?.message || 'Unknown error'}` };
