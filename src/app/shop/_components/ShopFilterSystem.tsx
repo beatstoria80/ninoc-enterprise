@@ -303,8 +303,15 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
   const showSizeFilter = selectedCategory === 'Apparel' || selectedCategory === 'All';
 
   return (
-    <section className="sticky top-[68px] md:top-[76px] z-[80] bg-white/95 backdrop-blur-md border-b border-ink/10 shadow-sm transition-all duration-300">
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-3">
+    <section 
+      className={cn(
+        "sticky z-[200] border-b border-ink/10 transition-all duration-500 ease-in-out",
+        isFilterOpen 
+          ? "top-0 shadow-2xl bg-white/100 py-1" 
+          : "top-[68px] md:top-[76px] shadow-sm bg-white/95 backdrop-blur-md"
+      )}
+    >
+      <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-3 relative">
         {/* Main Toolbar Row */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           
@@ -369,20 +376,21 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
           </div>
         </div>
 
-        {/* Active Filter Tags Bar */}
-        <ActiveFilterTags filterSystem={filterSystem} />
-
-        {/* Expandable Filter Studio Drawer */}
+        {/* Expandable Filter Studio Drawer (Absolute Positioning keeps Product Cards from being pushed down) */}
         <AnimatePresence>
           {isFilterOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden"
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute top-full left-0 right-0 w-full bg-white border-b border-ink/15 shadow-2xl z-[250] overflow-hidden"
             >
-              <div className="pt-6 pb-4 mt-4 border-t border-ink/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-5 space-y-4">
+                {/* Active Filter Tags inside drawer so they vanish when closed */}
+                <ActiveFilterTags filterSystem={filterSystem} />
+
+                <div className="pt-2 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 border-t border-ink/10">
                 
                 {/* Kolom 1: Sub Kategori */}
                 <div className="space-y-2.5">
@@ -492,17 +500,19 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
               </div>
 
               {/* Drawer Footer / Status */}
-              <div className="pt-3 pb-2 border-t border-ink/10 flex items-center justify-between">
+              <div className="pt-4 pb-2 border-t border-ink/10 flex items-center justify-between">
                 <div className="text-xs font-mono uppercase tracking-widest text-ink/60">
                   Menampilkan <strong className="text-ink">{filteredProducts.length}</strong> produk dari kueri yang dipilih
                 </div>
                 <button
                   onClick={() => setIsFilterOpen(false)}
-                  className="px-5 py-1.5 bg-ink text-white text-[10px] font-mono uppercase tracking-widest hover:bg-rose transition-colors rounded-sm"
+                  className="px-6 py-2.5 bg-ink text-white text-[11px] font-mono uppercase tracking-widest hover:bg-rose transition-all duration-300 rounded-sm flex items-center gap-2 group shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
                 >
-                  Tutup Panel Filter
+                  <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
+                  <span>Tutup / Close</span>
                 </button>
               </div>
+            </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -531,10 +541,15 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
   return (
     <>
-      {/* Sticky Mobile Header */}
+      {/* Sticky Mobile Header (Elevates to top-0 when filter is open) */}
       <div 
-        className="fixed left-0 right-0 z-[350] bg-white/95 backdrop-blur-md border-b border-ink/10 shadow-sm"
-        style={{ top: 'calc(56px + env(safe-area-inset-top))' }}
+        className={cn(
+          "fixed left-0 right-0 border-b border-ink/10 transition-all duration-500 ease-in-out",
+          isFilterOpen 
+            ? "z-[550] bg-white shadow-2xl" 
+            : "z-[350] bg-white/95 backdrop-blur-md shadow-sm"
+        )}
+        style={{ top: isFilterOpen ? '0px' : 'calc(56px + env(safe-area-inset-top))' }}
       >
         <div className="flex flex-col gap-2 px-3 py-2.5">
           {/* Row 1: Category Pillars */}
@@ -594,14 +609,11 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
               )}
             </button>
           </div>
-
-          {/* Row 3: Active Filters Tags */}
-          <ActiveFilterTags filterSystem={filterSystem} />
         </div>
       </div>
 
-      {/* Spacer for fixed top bar */}
-      <div className={activeFilterCount > 0 ? "h-[148px]" : "h-[105px]"} />
+      {/* Spacer for fixed top bar (Fixed height keeps mobile product cards from pushing down when active filters exist!) */}
+      <div className="h-[105px]" />
 
       {/* Bottom Sheet Modal for Mobile Filters */}
       <AnimatePresence>
@@ -642,6 +654,8 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
               {/* Sheet Scrollable Body */}
               <div className="p-5 space-y-6 overflow-y-auto flex-grow">
+                {/* Active Filter Tags inside mobile modal */}
+                <ActiveFilterTags filterSystem={filterSystem} />
                 
                 {/* Section 1: Sub Kategori */}
                 <div className="space-y-2.5">
@@ -751,9 +765,10 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                 </button>
                 <button
                   onClick={() => setIsFilterOpen(false)}
-                  className="w-2/3 py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-colors shadow-md text-center"
+                  className="w-2/3 py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-all duration-300 shadow-md flex items-center justify-center gap-2 group active:scale-95"
                 >
-                  Tampilkan ({filteredProducts.length}) Produk
+                  <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
+                  <span>Tutup / Close ({filteredProducts.length})</span>
                 </button>
               </div>
             </motion.div>
