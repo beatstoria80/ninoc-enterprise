@@ -4,6 +4,7 @@ import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { getAppUrl } from '@/lib/utils';
 
 export async function POST(req: Request) {
   try {
@@ -222,8 +223,7 @@ export async function POST(req: Request) {
 
           if (formattedPhone) {
             const formattedPrice = `Rp ${Number(order.total_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            const rawAppUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
-            const appUrl = rawAppUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
+            const appUrl = getAppUrl();
             const trackId = order.order_number || order.id;
             const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 

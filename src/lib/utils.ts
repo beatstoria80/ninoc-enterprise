@@ -44,3 +44,13 @@ export function getProductViews(product: any): number {
   return Math.abs((product?.slug || product?.id || 'ninoc').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)) % 18 + 7;
 }
 
+/**
+ * Production-grade helper to retrieve application base URL.
+ * Automatically enforces HTTPS in production/staging and removes trailing slashes.
+ */
+export function getAppUrl(): string {
+  const rawUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase'))
+    ? process.env.NEXT_PUBLIC_APP_URL
+    : 'https://ninoc.store';
+  return rawUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
+}

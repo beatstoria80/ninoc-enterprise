@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import midtransClient from 'midtrans-client';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { rateLimit } from '@/lib/rate-limit';
+import { getSnapApi } from '@/lib/midtrans';
+import { getAppUrl } from '@/lib/utils';
 
 // Use Service Role Key via singleton to bypass RLS since this is a secure server route
 const supabaseAdmin = getSupabaseAdmin();
@@ -248,20 +249,15 @@ export async function POST(req: Request) {
       }
     }
 
-    // Initialize Midtrans Snap
-    const snap = new midtransClient.Snap({
-      isProduction: process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true',
-      serverKey: process.env.MIDTRANS_SERVER_KEY,
-      clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
-    });
+    // Initialize Midtrans Snap via centralized singleton factory
+    const snap = getSnapApi();
 
     const now = new Date();
     const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
     const orderId = `NINOC-${Date.now()}`;
-    const rawAppUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
-    const appUrl = rawAppUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
+    const appUrl = getAppUrl();
 
     const parameter = {
       transaction_details: {
