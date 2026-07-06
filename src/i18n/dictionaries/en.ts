@@ -102,20 +102,20 @@ export const en = {
   about: {
     label: "NINOC ENTERPRISE",
     title: "About Us",
-    tagline: "Born in Bandung. Made for the world.",
+    tagline: "A Lifestyle Ecosystem from Bandung. Curated for the World.",
     story: {
       heading: "Our Story",
-      body: "NINOC was founded with a simple vision: create clothing that speaks to the soul. Based in Bandung, Indonesia, we blend local craftsmanship with global aesthetics."
+      body: "NINOC was established as far more than a fashion label — we are a multidimensional creative house and lifestyle ecosystem. Rooted in Bandung, Indonesia, we merge artisanal local craftsmanship with contemporary global aesthetics across Apparel, Home & Living, and Pantry & Café."
     },
     philosophy: {
       heading: "Philosophy",
-      body: "\"Wear the art, own the day.\" Every piece is a canvas. Every wearer is an artist."
+      body: "\"Art in every dimension of living.\" Whether in the garments you wear, the objects that define your living spaces, or the flavors that fuel your daily rituals — every creation is a timeless aesthetic statement."
     },
     mission: {
       heading: "Mission",
-      body: "To deliver premium archival garments that merge industrial precision with cultural authenticity — creating pieces that endure beyond trends."
+      body: "To deliver an uncompromised curation of premium life essentials — from precision-engineered archival apparel and handcrafted homeware ceramics, to artisanal culinary offerings — elevating the contemporary lifestyle."
     },
-    image: "NINOC STUDIO — BANDUNG, INDONESIA",
+    image: "NINOC STUDIO & ECOSYSTEM — BANDUNG, INDONESIA",
     stats: {
       est: { label: "Est.", value: "2024" },
       location: { label: "Location", value: "Bandung" },
@@ -123,7 +123,7 @@ export const en = {
     },
     verified: {
       label: "Origin Verified",
-      body: "Not just clothing. These are artifacts born from the streets, the stage, and the culture."
+      body: "Not merely consumer goods. Every garment, object of living, and culinary creation is a cultural artifact born from precision, passion, and authentic creative identity."
     }
   },
   affiliate: {

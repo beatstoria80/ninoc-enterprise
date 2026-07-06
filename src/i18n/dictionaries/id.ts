@@ -102,20 +102,20 @@ export const id = {
   about: {
     label: "NINOC ENTERPRISE",
     title: "Tentang Kami",
-    tagline: "Berawal dari Bandung. Dibuat untuk dunia.",
+    tagline: "Ekosistem Gaya Hidup dari Bandung. Kurasi untuk Dunia.",
     story: {
       heading: "Cerita Kami",
-      body: "NINOC didirikan dengan visi sederhana: menciptakan pakaian yang berbicara kepada jiwa. Bermarkas di Bandung, Indonesia, kami memadukan keahlian lokal dengan estetika global."
+      body: "NINOC didirikan sebagai lebih dari sekadar jenama fesyen — kami adalah rumah kreatif dan ekosistem gaya hidup multidimensi. Bermarkas di Bandung, Indonesia, kami memadukan keahlian kriya lokal dengan estetika desain global yang mencakup Apparel, Home & Living, serta kurasi kuliner Pantry & Café."
     },
     philosophy: {
       heading: "Filosofi",
-      body: "\"Kenakan seni, kuasai hari.\" Setiap pieces adalah kanvas. Setiap pemakai adalah seniman."
+      body: "\"Seni dalam setiap dimensi kehidupan.\" Baik pada busana yang Anda kenakan, objek yang menghiasi ruang hidup Anda, hingga cita rasa yang menemani keseharian — setiap kreasi adalah pernyataan estetika yang tak lekang oleh waktu."
     },
     mission: {
       heading: "Misi",
-      body: "Menghadirkan garment archival premium yang memadukan presisi industrial dengan keaslian budaya — menciptakan pieces yang bertahan melampaui tren."
+      body: "Menghadirkan kurasi produk esensial kelas premium — mulai dari archival garments berpresisi tinggi, perabot dan keramik artisan untuk ruang hunian, hingga sajian kuliner istimewa — demi melengkapi standar gaya hidup kontemporer yang menyeluruh."
     },
-    image: "STUDIO NINOC — BANDUNG, INDONESIA",
+    image: "STUDIO & EKOSISTEM NINOC — BANDUNG, INDONESIA",
     stats: {
       est: { label: "Didirikan", value: "2024" },
       location: { label: "Lokasi", value: "Bandung" },
@@ -123,7 +123,7 @@ export const id = {
     },
     verified: {
       label: "Terverifikasi Origin",
-      body: "Bukan sekadar pakaian. Ini adalah artefak yang lahir dari jalanan, panggung, dan budaya yang membentuk siapa kami."
+      body: "Bukan sekadar produk komoditas. Setiap busana, objek hunian, dan kreasi rasa kami adalah artefak budaya yang lahir dari presisi, dedikasi, dan identitas kreatif yang autentik."
     }
   },
   affiliate: {

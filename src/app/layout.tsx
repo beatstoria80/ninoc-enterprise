@@ -218,7 +218,7 @@ export default async function RootLayout({
               '@type': 'WebSite',
               name: 'NINOC STORE',
               url: BASE_URL,
-              description: 'Premium Archival Garment Studio dari Indonesia',
+              description: 'Multidimensional Creative House & Lifestyle Ecosystem (Apparel, Objects, Pantry)',
               potentialAction: {
                 '@type': 'SearchAction',
                 target: {

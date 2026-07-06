@@ -444,7 +444,7 @@ function DecorationSection() {
               {!heroBanner && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                   <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-white/60">{storeName || 'NINOC STORE'}</p>
-                  <p className="text-[10px] md:text-[7px] text-white/30 mt-1">{tagline || 'Archival Garment Studio'}</p>
+                  <p className="text-[10px] md:text-[7px] text-white/30 mt-1">{tagline || 'Multidimensional Creative House & Lifestyle Ecosystem'}</p>
                   <button
                     className="mt-3 px-4 py-1 text-[10px] md:text-[7px] uppercase tracking-widest font-semibold rounded-sm text-white transition-colors"
                     style={{ backgroundColor: accentColor }}
@@ -530,7 +530,7 @@ function DecorationSection() {
             <Input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="NINOC STORE" className="text-[10px]" />
           </Field>
           <Field label="Tagline">
-            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Archival Garment Studio" className="text-[10px]" />
+            <Input value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Multidimensional Creative House & Lifestyle Ecosystem" className="text-[10px]" />
           </Field>
           <Field label="Accent Color (brand)">
             <div className="flex items-center gap-2">

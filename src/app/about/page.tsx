@@ -7,10 +7,10 @@ const BASE_URL = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_AP
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary();
   return {
-    title: `${dict.about.title} — Premium Archival Garment Studio`,
+    title: `${dict.about.title} — Multidimensional Creative House & Lifestyle Ecosystem`,
     description: dict.about.story.body,
     openGraph: {
-      title: `${dict.about.title} | NINOC STORE`,
+      title: `${dict.about.title} | NINOC ENTERPRISE`,
       description: dict.about.story.body,
       type: 'website',
     },

@@ -24,7 +24,7 @@ export async function getDecorationSettings(): Promise<DecorationSettings> {
 
   return {
     storeName: 'NINOC',
-    tagline: 'Archival Garment Studio',
+    tagline: 'Multidimensional Creative House & Lifestyle Ecosystem',
     accentColor: '#E8527A',
     heroBannerUrl: '',
   };

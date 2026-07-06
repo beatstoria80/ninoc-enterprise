@@ -49,7 +49,7 @@ export default function NotFound() {
 
         {/* Footer note */}
         <p className="mt-12 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/20">
-          NINOC STORE — Premium Archival Garment Studio
+          NINOC ENTERPRISE — Multidimensional Creative House & Lifestyle Ecosystem
         </p>
       </div>
     </div>

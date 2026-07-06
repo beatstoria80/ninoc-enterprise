@@ -12,7 +12,7 @@ interface SettingsStore {
 
 const DEFAULT_SETTINGS: DecorationSettings = {
   storeName: 'NINOC',
-  tagline: 'Archival Garment Studio',
+  tagline: 'Multidimensional Creative House & Lifestyle Ecosystem',
   accentColor: '#E8527A',
   heroBannerUrl: '',
 };
