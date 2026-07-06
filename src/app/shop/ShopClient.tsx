@@ -146,7 +146,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
     <div className="bg-cr min-h-screen">
       <MobileShopFilterBar filterSystem={filterSystem} />
 
-      <div className="px-3 pt-3 space-y-4 pb-10">
+      <div className="px-3 pt-6 md:pt-8 space-y-4 pb-10">
         {displayCategories
           .filter(c => c !== 'All' && (selectedCategory === 'All' || selectedCategory === c) && (groupedProducts[c]?.length || 0) > 0)
           .map((category) => (
@@ -265,9 +265,9 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
     <main className="min-h-screen bg-cr noise pb-40">
       <DesktopShopFilterBar filterSystem={filterSystem} />
 
-      <div className="pt-6" />
+      <div className="pt-10 md:pt-14" />
 
-      <section className="mt-2 md:mt-4 px-6 md:px-12 max-w-[1800px] mx-auto">
+      <section className="mt-4 md:mt-6 px-6 md:px-12 max-w-[1800px] mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => (
