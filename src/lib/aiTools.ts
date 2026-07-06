@@ -1,4 +1,12 @@
-import { supabase } from './supabase';
+import { createClient } from '@supabase/supabase-js';
+import { supabase as browserSupabase } from './supabase';
+
+function getDbClient() {
+  if (typeof window === 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  }
+  return browserSupabase;
+}
 
 export const aiToolsDeclaration = [
   {
@@ -75,16 +83,22 @@ export const aiToolsDeclaration = [
 ];
 
 export async function executeAiTool(name: string, args: Record<string, any>) {
+  const db = getDbClient();
+
   if (name === 'get_order_details') {
     const { order_id } = args;
-    const { data, error } = await supabase
+    const cleanId = (order_id || '').trim();
+    const { data, error } = await db
       .from('orders')
-      .select('id, status, total_amount, shipping_status, tracking_number, items, created_at')
-      .eq('id', order_id)
-      .single();
+      .select(`
+        id, order_number, status, payment_status, total_price, courier, tracking_id, created_at, customer_name, shipping_address,
+        order_items ( id, product_name, size, color, quantity, price )
+      `)
+      .or(`id.eq.${cleanId},order_number.eq.${cleanId}`)
+      .maybeSingle();
     
-    if (error) {
-      return { error: 'Order not found or invalid order ID.' };
+    if (error || !data) {
+      return { error: 'Pesanan tidak ditemukan atau ID pesanan/invoice tidak valid.' };
     }
     return { success: true, order: data };
   }
@@ -94,7 +108,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     const kw = (keyword || '').toLowerCase().trim();
     const selectFields = 'id, name, price, description, category, slug, variants(color, size, stock, sku)';
     
-    let productsQuery = supabase.from('products').select(selectFields);
+    let productsQuery = db.from('products').select(selectFields);
 
     // Filter by category if provided
     if (category && typeof category === 'string' && category.trim() !== '') {
@@ -149,7 +163,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       const wordTokens = cleanKw.split(/\s+/).filter((w: string) => w.length > 2);
 
       // 1. Check if keyword matches a variant attribute in variants table (color, size, sku)
-      const { data: varData } = await supabase
+      const { data: varData } = await db
         .from('variants')
         .select('product_id')
         .or(`size.ilike.%${cleanKw}%,size.ilike.%${sizeSynonym}%,size.ilike.%${safeKw}%,color.ilike.%${cleanKw}%,color.ilike.%${sizeSynonym}%,color.ilike.%${safeKw}%,sku.ilike.%${safeKw}%`)
@@ -159,7 +173,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       const variantProductIds = Array.from(new Set(varData?.map(v => v.product_id).filter(Boolean) || []));
       
       if (variantProductIds.length > 0) {
-        productsQuery = productsQuery.or(`id.in.(${variantProductIds.join(',')}),name.ilike.%${safeKw}%,description.ilike.%${safeKw}%,category.ilike.%${safeKw}%`);
+        productsQuery = productsQuery.in('id', variantProductIds);
       } else {
         const orClauses = [
           `name.ilike.%${safeKw}%`,
@@ -185,7 +199,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     
     if (error || !data || data.length === 0) {
       // Fallback: If query match fails, return products sorted according to requested sort_by or newest with ALL their sizes/variants
-      let fallbackQuery = supabase.from('products').select(selectFields);
+      let fallbackQuery = db.from('products').select(selectFields);
       if (sort_by === 'cheapest' || kw.includes('termurah') || kw.includes('murah')) {
         fallbackQuery = fallbackQuery.order('price', { ascending: true });
       } else if (sort_by === 'most_expensive' || kw.includes('termahal') || kw.includes('mahal')) {
@@ -210,7 +224,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
 
   if (name === 'escalate_to_human') {
     const { ticket_id, reason } = args;
-    const { error } = await supabase
+    const { error } = await db
       .from('support_tickets')
       .update({ status: 'escalated' })
       .eq('id', ticket_id);
@@ -220,7 +234,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     }
 
     // Add an internal system note
-    await supabase.from('support_messages').insert({
+    await db.from('support_messages').insert({
       ticket_id,
       sender_id: null,
       sender_role: 'admin',
