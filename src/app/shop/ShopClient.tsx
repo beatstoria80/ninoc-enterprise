@@ -126,6 +126,13 @@ function KithEmptyState({ selectedCategory, onReset }: { selectedCategory: strin
   );
 }
 
+function getProductPillar(productCategory: string): string {
+  if (matchesCategoryPillar(productCategory, 'Apparel')) return 'Apparel';
+  if (matchesCategoryPillar(productCategory, 'Objects')) return 'Objects';
+  if (matchesCategoryPillar(productCategory, 'Pantry')) return 'Pantry';
+  return 'Apparel';
+}
+
 function MobileShopView({ products, initialCategory, dict }: { products: Product[], initialCategory: string, dict: any }) {
   const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
@@ -136,10 +143,11 @@ function MobileShopView({ products, initialCategory, dict }: { products: Product
   const filteredProducts = products.filter(p => matchesCategoryPillar(p.category, selectedCategory));
 
   const groupedProducts = filteredProducts.reduce((acc, product) => {
-    if (!acc[product.category]) {
-      acc[product.category] = [];
+    const pillar = getProductPillar(product.category);
+    if (!acc[pillar]) {
+      acc[pillar] = [];
     }
-    acc[product.category].push(product);
+    acc[pillar].push(product);
     return acc;
   }, {} as Record<string, Product[]>);
 
