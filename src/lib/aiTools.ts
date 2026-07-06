@@ -1,19 +1,39 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { supabase as browserSupabase } from './supabase';
 
-function getDbClient() {
-  if (typeof window === 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+/**
+ * ============================================================================
+ * DATA ACCESS LAYER: DATABASE CLIENT LOADER
+ * ============================================================================
+ * Conditionally loads Server-Side Supabase Admin client with bypass-RLS
+ * capabilities when executing inside API routes, falling back to Browser client.
+ */
+function getDbClient(): SupabaseClient {
+  if (
+    typeof window === 'undefined' &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
   }
-  return browserSupabase;
+  return browserSupabase as unknown as SupabaseClient;
 }
 
+/**
+ * ============================================================================
+ * TOOL DECLARATION SCHEMA (OPENAI / GROQ COMPLIANT)
+ * ============================================================================
+ */
 export const aiToolsDeclaration = [
   {
     type: 'function',
     function: {
       name: 'get_order_details',
-      description: 'Dapatkan detail pesanan berdasarkan ID pesanan (misal: NINOC-1782791806880 atau ID Invoice). Gunakan ini saat pelanggan menanyakan status pesanan, resi, atau kendala pengiriman.',
+      description:
+        'Dapatkan detail pesanan berdasarkan ID pesanan (misal: NINOC-1782791806880 atau ID Invoice). Gunakan ini saat pelanggan menanyakan status pesanan, resi, atau kendala pengiriman.',
       parameters: {
         type: 'object',
         properties: {
@@ -24,46 +44,53 @@ export const aiToolsDeclaration = [
         },
         required: ['order_id'],
       },
-    }
+    },
   },
   {
     type: 'function',
     function: {
       name: 'search_products',
-      description: 'Cari dan urutkan produk di katalog toko (termasuk cek ukuran/size S, M, L, XL, XXL, warna, stok, harga termurah, termahal, promo, dan filter budget/harga). Gunakan selalu tool ini saat customer bertanya seputar produk, harga, diskon, atau rekomendasi.',
+      description:
+        'Cari dan urutkan produk di katalog toko (termasuk cek ukuran/size S, M, L, XL, XXL, warna, stok, harga termurah, termahal, promo, dan filter budget/harga). Gunakan selalu tool ini saat customer bertanya seputar produk, harga, diskon, atau rekomendasi.',
       parameters: {
         type: 'object',
         properties: {
           keyword: {
             type: 'string',
-            description: 'Kata kunci nama produk, ukuran (misal: "XL", "L"), warna ("hitam", "putih"), atau kategori ("kaos", "celana", "hoodie", "jaket", "totebag").',
+            description:
+              'Kata kunci nama produk, ukuran (misal: "XL", "L"), warna ("hitam", "putih"), atau kategori ("kaos", "celana", "hoodie", "jaket", "totebag").',
           },
           sort_by: {
             type: 'string',
             enum: ['newest', 'cheapest', 'most_expensive', 'popular'],
-            description: 'Urutan produk: "cheapest" (termurah/paling murah), "most_expensive" (termahal/paling mahal), "newest" (terbaru/new arrival), "popular" (terlaris/best seller/rekomendasi).',
+            description:
+              'Urutan produk: "cheapest" (termurah/paling murah), "most_expensive" (termahal/paling mahal), "newest" (terbaru/new arrival), "popular" (terlaris/best seller/rekomendasi).',
           },
           min_price: {
             type: 'number',
-            description: 'Harga minimal (misal: 100000 jika customer mencari harga di atas 100rb).',
+            description:
+              'Harga minimal (misal: 100000 jika customer mencari harga di atas 100rb).',
           },
           max_price: {
             type: 'number',
-            description: 'Harga maksimal/budget (misal: 150000 jika customer mencari harga di bawah 150rb atau budget 150rb).',
+            description:
+              'Harga maksimal/budget (misal: 150000 jika customer mencari harga di bawah 150rb atau budget 150rb).',
           },
           category: {
             type: 'string',
-            description: 'Filter kategori spesifik jika disebutkan (contoh: "pakaian", "aksesoris", "utilities", "kaos", "celana", "hoodie", "outer", "jacket").',
+            description:
+              'Filter kategori spesifik jika disebutkan (contoh: "pakaian", "aksesoris", "utilities", "kaos", "celana", "hoodie", "outer", "jacket").',
           },
         },
       },
-    }
+    },
   },
   {
     type: 'function',
     function: {
       name: 'escalate_to_human',
-      description: 'Gunakan ini jika AI tidak bisa menjawab, informasi terlalu kompleks, butuh campur tangan manusia (misal: refund, komplain keras), atau customer meminta admin manusia.',
+      description:
+        'Gunakan ini jika AI tidak bisa menjawab, informasi terlalu kompleks, butuh campur tangan manusia (misal: refund, komplain keras), atau customer meminta admin manusia.',
       parameters: {
         type: 'object',
         properties: {
@@ -78,16 +105,138 @@ export const aiToolsDeclaration = [
         },
         required: ['ticket_id', 'reason'],
       },
-    }
-  }
+    },
+  },
 ];
 
-export async function executeAiTool(name: string, args: Record<string, any>) {
-  const db = getDbClient();
+/**
+ * ============================================================================
+ * DOMAIN SERVICE: INDONESIAN NLP & QUERY SANITIZATION ENGINE
+ * ============================================================================
+ * Separates linguistic scrubbing, typo normalization, and synonym expansion
+ * from database query logic for clean maintainability and O(1) set lookups.
+ */
+class IndonesianNlpEngine {
+  private static readonly CHAT_FILLERS = new Set([
+    'pakah', 'apkah', 'pkh', 'apakah', 'apa', 'ada', 'ad', 'ready', 'redy', 'redi', 'rdy',
+    'size', 'sz', 'ukuran', 'ukrn', 'uk', 'kaos', 'baju', 'celana', 'hoodie', 'jaket',
+    'outer', 'gak', 'ga', 'gk', 'enggak', 'nggak', 'ngga', 'engga', 'tdk', 'disini',
+    'di', 'sini', 'harga', 'hrg', 'termurah', 'termahal', 'murah', 'mahal', 'bawah',
+    'atas', 'budget', 'paling', 'brp', 'yg', 'dong', 'deh', 'kah', 'ya', 'min',
+    'spill', 'atu', 'atau', 'atw', 'ataupun', 'desain', 'design', 'dsn', 'motif',
+    'gambar', 'gbr', 'seri', 'series', 'tipe', 'type', 'model', 'mdl', 'koleksi',
+    'collection', 'punya', 'pnya', 'gaada', 'adaa', 'adakah', 'jual', 'jl', 'nyari',
+    'cari', 'cri', 'mau', 'mw', 'pengen', 'pngn', 'beli', 'bli', 'buat', 'bt',
+    'untuk', 'utk', 'si', 'sih', 'nih', 'tuh', 'lah', 'pun', 'kek', 'kaya', 'kayak', 'yang',
+  ]);
 
-  if (name === 'get_order_details') {
-    const { order_id } = args;
-    const cleanId = (order_id || '').trim();
+  private static readonly PROFANITY = new Set([
+    'anjing', 'njing', 'anying', 'bangsat', 'bgst', 'tai', 'bego', 'tolol', 'goblok',
+    'babi', 'kontol', 'memek', 'jancok', 'jancuk', 'asu', 'sundala', 'pantek',
+    'bajingan', 'kampret', 'setan',
+  ]);
+
+  private static readonly GENERIC_KEYWORDS = new Set([
+    'baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah',
+    'termurah', 'mahal', 'termahal', 'best', 'seller', 'terlaris', 'rekomendasi',
+    'favorit', 'budget', 'semua', 'all', 'produk', 'barang', 'baju',
+  ]);
+
+  private static readonly SYNONYM_MAP: Record<string, string> = {
+    xxl: '2XL',
+    '2xl': 'XXL',
+    xxxl: '3XL',
+    '3xl': 'XXXL',
+    item: 'hitam',
+    puti: 'putih',
+    pti: 'putih',
+  };
+
+  public static isGenericQuery(kw: string): boolean {
+    const tokens = kw.toLowerCase().split(/\s+/);
+    return (
+      tokens.some((w) => this.GENERIC_KEYWORDS.has(w)) ||
+      this.GENERIC_KEYWORDS.has(kw)
+    );
+  }
+
+  public static parseKeyword(rawKeyword?: string): {
+    raw: string;
+    safe: string;
+    cleaned: string;
+    tokens: string[];
+    synonym?: string;
+  } {
+    const raw = (rawKeyword || '').toLowerCase().trim();
+    if (!raw) {
+      return { raw: '', safe: '', cleaned: '', tokens: [] };
+    }
+
+    // Strip special symbols to prevent PostgREST .or() comma/syntax crashes
+    const safe = raw.replace(/[^a-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim() || raw;
+    const allWords = safe.split(/\s+/);
+
+    // Filter out chat noise, filler words, and profanity
+    const meaningfulWords = allWords.filter(
+      (w) => !this.CHAT_FILLERS.has(w) && !this.PROFANITY.has(w)
+    );
+    const cleaned = meaningfulWords.join(' ').trim() || safe;
+    const tokens = meaningfulWords.filter((w) => w.length > 2);
+
+    // Lookup attribute synonyms
+    let synonym: string | undefined;
+    for (const [key, val] of Object.entries(this.SYNONYM_MAP)) {
+      if (cleaned === key || cleaned.includes(key)) {
+        synonym = val;
+        break;
+      }
+    }
+
+    return { raw, safe, cleaned, tokens, synonym };
+  }
+}
+
+/**
+ * ============================================================================
+ * INTERFACES & ARCHITECTURAL CONTRACTS
+ * ============================================================================
+ */
+export interface AiToolHandler<TArgs = any> {
+  readonly name: string;
+  execute(args: TArgs, db: SupabaseClient): Promise<any>;
+}
+
+interface GetOrderDetailsArgs {
+  order_id: string;
+}
+
+interface SearchProductsArgs {
+  keyword?: string;
+  sort_by?: 'newest' | 'cheapest' | 'most_expensive' | 'popular';
+  min_price?: number;
+  max_price?: number;
+  category?: string;
+}
+
+interface EscalateToHumanArgs {
+  ticket_id: string;
+  reason: string;
+}
+
+/**
+ * ============================================================================
+ * DOMAIN HANDLER: GET ORDER DETAILS
+ * ============================================================================
+ */
+class GetOrderDetailsHandler implements AiToolHandler<GetOrderDetailsArgs> {
+  public readonly name = 'get_order_details';
+
+  public async execute(args: GetOrderDetailsArgs, db: SupabaseClient): Promise<any> {
+    const cleanId = (args?.order_id || '').trim();
+    if (!cleanId) {
+      return { error: 'ID pesanan tidak boleh kosong.' };
+    }
+
     const { data, error } = await db
       .from('orders')
       .select(`
@@ -96,134 +245,189 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       `)
       .or(`id.eq.${cleanId},order_number.eq.${cleanId}`)
       .maybeSingle();
-    
+
     if (error || !data) {
       return { error: 'Pesanan tidak ditemukan atau ID pesanan/invoice tidak valid.' };
     }
     return { success: true, order: data };
   }
+}
 
-  if (name === 'search_products') {
-    const { keyword, sort_by, min_price, max_price, category } = args;
-    const kw = (keyword || '').toLowerCase().trim();
-    const selectFields = 'id, name, price, description, category, slug, variants(color, size, stock, sku)';
-    
-    let productsQuery = db.from('products').select(selectFields);
+/**
+ * ============================================================================
+ * DOMAIN HANDLER: SEARCH PRODUCTS (WITH ADVANCED NLP & FALLBACK ARCHITECTURE)
+ * ============================================================================
+ */
+class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
+  public readonly name = 'search_products';
+  private readonly SELECT_FIELDS =
+    'id, name, price, description, category, slug, variants(color, size, stock, sku)';
 
-    // Filter by category if provided
+  private readonly AI_ETHICS_INSTRUCTION =
+    `Daftar produk rekomendasi best seller toko beserta SELURUH varian (ukuran/size S, M, L, XL, XXL, 2XL, warna, stock, harga) yang tersedia. PENTING BAGI AI - ETIKA BERJUALAN & ZERO NEGATIVITY: 1. Jika customer mencari DESAIN / MOTIF / GAMBAR / HEWAN tertentu (seperti "kera", "gorila", "kucing", "anime", dll) yang kebetulan tidak ada di katalog kita, DILARANG KERAS menjawab negatif seperti "tidak ada desain kera/gorila" atau "kosong"! LANGSUNG JAWAB DENGAN POSITIF & ANTUSIAS: "Wah kak, untuk motif/desain hewan tersebut saat ini sedang dalam proses kurasi & pengembangan oleh tim kreatif NINOC ya! 😊 Tapi tenang aja kak, biar style kakak makin kece & standout, kita punya koleksi grafik & desain best seller NINOC lainnya yang enggak kalah keren dan siap kirim nih! Yuk cek pilihan terbaiknya di bawah ini:" (lalu sebutkan rekomendasi produk di bawah lengkap dengan harga Rp dan link slug produk). 2. Jika customer mencari UKURAN (seperti XXL, 2XL, XL) atau WARNA, periksa array 'variants' secara teliti. Jika ada stock > 0, langsung tawarkan dengan antusias! 3. Jika customer menggunakan KATA KASAR akibat frustrasi pesanan, tetap tunjukkan empati & tawarkan solusi (jangan tersinggung). Jika mengandung unsur SARA/rasisme/pelecehan, tolak dengan tegas dan sopan sesuai aturan nomor 6!`;
+
+  public async execute(args: SearchProductsArgs, db: SupabaseClient): Promise<any> {
+    const { keyword, sort_by, min_price, max_price, category } = args || {};
+    const parsedKw = IndonesianNlpEngine.parseKeyword(keyword);
+
+    let query = db.from('products').select(this.SELECT_FIELDS);
+
+    // 1. Apply Category Filter
     if (category && typeof category === 'string' && category.trim() !== '') {
       const cat = category.toLowerCase().trim();
-      productsQuery = productsQuery.or(`category.ilike.%${cat}%,name.ilike.%${cat}%,description.ilike.%${cat}%`);
+      query = query.or(`category.ilike.%${cat}%,name.ilike.%${cat}%,description.ilike.%${cat}%`);
     }
 
-    // Filter by min/max price (e.g. budget under 150rb or cheapest above 100rb)
+    // 2. Apply Price Range Filters
     if (min_price && typeof min_price === 'number' && !isNaN(min_price)) {
-      productsQuery = productsQuery.gte('price', min_price);
+      query = query.gte('price', min_price);
     }
     if (max_price && typeof max_price === 'number' && !isNaN(max_price)) {
-      productsQuery = productsQuery.lte('price', max_price);
+      query = query.lte('price', max_price);
     }
 
-    // Handle sort_by
-    let isSorted = false;
-    if (sort_by === 'cheapest' || kw.includes('termurah') || kw.includes('paling murah') || kw === 'murah') {
-      productsQuery = productsQuery.order('price', { ascending: true });
-      isSorted = true;
-    } else if (sort_by === 'most_expensive' || kw.includes('termahal') || kw.includes('paling mahal') || kw === 'mahal') {
-      productsQuery = productsQuery.order('price', { ascending: false });
-      isSorted = true;
-    } else if (sort_by === 'newest' || kw.includes('terbaru') || kw.includes('new arrival') || kw.includes('baru') || kw === '') {
-      productsQuery = productsQuery.order('created_at', { ascending: false });
-      isSorted = true;
-    } else if (sort_by === 'popular' || kw.includes('terlaris') || kw.includes('best seller') || kw.includes('paling laris') || kw.includes('rekomendasi') || kw.includes('favorit')) {
-      productsQuery = productsQuery.order('created_at', { ascending: false });
-      isSorted = true;
-    }
+    // 3. Resolve Sorting Strategy
+    const isSorted = this.applySortingStrategy(query, sort_by, parsedKw.raw);
 
-    // If there is a keyword and it's not just generic sort/promo words
-    const isGenericWord = ['baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah', 'termurah', 'mahal', 'termahal', 'best seller', 'terlaris', 'rekomendasi', 'paling murah', 'paling mahal', 'paling laris', 'budget', 'semua', 'all', 'produk', 'barang', 'baju'].some(w => kw === w || kw.includes(w));
-    
-    if (kw && !isGenericWord) {
-      // Strip punctuation (like ?, !, ,, ., /, (,)) so PostgREST .or() never fails with syntax errors
-      const safeKw = kw.replace(/[^a-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim() || kw;
-      
-      // Clean keyword: remove profanity, Indonesian chat typos, abbreviations, and filler words so target motifs/sizes/colors stand out
-      let cleanKw = safeKw.replace(/\b(pakah|apkah|pkh|apakah|apa|ada|ad|ready|redy|redi|rdy|size|sz|ukuran|ukrn|uk|kaos|baju|celana|hoodie|jaket|outer|gak|ga|gk|enggak|nggak|ngga|engga|tdk|disini|di sini|harga|hrg|termurah|termahal|murah|mahal|di bawah|di atas|budget|paling|brp|yg|dong|deh|kah|ya|min|spill|atu|atau|atw|ataupun|desain|design|dsn|motif|gambar|gbr|seri|series|tipe|type|model|mdl|koleksi|collection|punya|pnya|gaada|adaa|adakah|jual|jl|nyari|cari|cri|mau|mw|pengen|pngn|beli|bli|buat|bt|untuk|utk|si|sih|nih|tuh|lah|pun|kek|kaya|kayak|yang|anjing|njing|anying|bangsat|bgst|tai|bego|tolol|goblok|babi|kontol|memek|jancok|jancuk|asu|sundala|pantek|bajingan|kampret|setan)\b/gi, '').replace(/\s+/g, ' ').trim() || safeKw;
-      
-      // Expand synonyms for size and color variations in database
-      let sizeSynonym = cleanKw;
-      if (cleanKw === 'xxl' || cleanKw.includes('xxl')) sizeSynonym = '2XL';
-      else if (cleanKw === '2xl' || cleanKw.includes('2xl')) sizeSynonym = 'XXL';
-      else if (cleanKw === 'xxxl' || cleanKw.includes('xxxl')) sizeSynonym = '3XL';
-      else if (cleanKw === '3xl' || cleanKw.includes('3xl')) sizeSynonym = 'XXXL';
-      else if (cleanKw === 'item' || cleanKw.includes('item')) sizeSynonym = 'hitam';
-      else if (cleanKw === 'puti' || cleanKw === 'pti') sizeSynonym = 'putih';
-
-      // Split remaining clean keywords into individual search terms if multiple words exist
-      const wordTokens = cleanKw.split(/\s+/).filter((w: string) => w.length > 2);
-
-      // 1. Check if keyword matches a variant attribute in variants table (color, size, sku)
-      const { data: varData } = await db
-        .from('variants')
-        .select('product_id')
-        .or(`size.ilike.%${cleanKw}%,size.ilike.%${sizeSynonym}%,size.ilike.%${safeKw}%,color.ilike.%${cleanKw}%,color.ilike.%${sizeSynonym}%,color.ilike.%${safeKw}%,sku.ilike.%${safeKw}%`)
-        .gt('stock', 0)
-        .limit(30);
-      
-      const variantProductIds = Array.from(new Set(varData?.map(v => v.product_id).filter(Boolean) || []));
-      
-      if (variantProductIds.length > 0) {
-        productsQuery = productsQuery.in('id', variantProductIds);
-      } else {
-        const orClauses = [
-          `name.ilike.%${safeKw}%`,
-          `description.ilike.%${safeKw}%`,
-          `category.ilike.%${safeKw}%`,
-          `name.ilike.%${cleanKw}%`,
-          `description.ilike.%${cleanKw}%`,
-          `name.ilike.%${sizeSynonym}%`,
-          `description.ilike.%${sizeSynonym}%`,
-          ...wordTokens.flatMap((w: string) => [`name.ilike.%${w}%`, `description.ilike.%${w}%`])
-        ];
-        productsQuery = productsQuery.or(Array.from(new Set(orClauses)).join(','));
-      }
+    // 4. Apply NLP Keyword Attributes & Variant Search
+    if (parsedKw.raw && !IndonesianNlpEngine.isGenericQuery(parsedKw.raw)) {
+      await this.applyKeywordFilter(db, query, parsedKw);
     }
 
     if (!isSorted) {
-      productsQuery = productsQuery.order('created_at', { ascending: false });
+      query = query.order('created_at', { ascending: false });
     }
 
-    productsQuery = productsQuery.limit(10);
+    const { data, error } = await query.limit(10);
 
-    const { data, error } = await productsQuery;
-    
     if (error || !data || data.length === 0) {
-      // Fallback: If query match fails, return products sorted according to requested sort_by or newest with ALL their sizes/variants
-      let fallbackQuery = db.from('products').select(selectFields);
-      if (sort_by === 'cheapest' || kw.includes('termurah') || kw.includes('murah')) {
-        fallbackQuery = fallbackQuery.order('price', { ascending: true });
-      } else if (sort_by === 'most_expensive' || kw.includes('termahal') || kw.includes('mahal')) {
-        fallbackQuery = fallbackQuery.order('price', { ascending: false });
-      } else {
-        fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
-      }
-      
-      const { data: fallbackData } = await fallbackQuery.limit(6);
-      if (fallbackData && fallbackData.length > 0) {
-        return { 
-          success: true, 
-          note: `Daftar produk rekomendasi best seller toko beserta SELURUH varian (ukuran/size S, M, L, XL, XXL, 2XL, warna, stock, harga) yang tersedia. PENTING BAGI AI - ETIKA BERJUALAN & ZERO NEGATIVITY: 1. Jika customer mencari DESAIN / MOTIF / GAMBAR / HEWAN tertentu (seperti "kera", "gorila", "kucing", "anime", dll) yang kebetulan tidak ada di katalog kita, DILARANG KERAS menjawab negatif seperti "tidak ada desain kera/gorila" atau "kosong"! LANGSUNG JAWAB DENGAN POSITIF & ANTUSIAS: "Wah kak, untuk motif/desain hewan tersebut saat ini sedang dalam proses kurasi & pengembangan oleh tim kreatif NINOC ya! 😊 Tapi tenang aja kak, biar style kakak makin kece & standout, kita punya koleksi grafik & desain best seller NINOC lainnya yang enggak kalah keren dan siap kirim nih! Yuk cek pilihan terbaiknya di bawah ini:" (lalu sebutkan rekomendasi produk di bawah lengkap dengan harga Rp dan link slug produk). 2. Jika customer mencari UKURAN (seperti XXL, 2XL, XL) atau WARNA, periksa array 'variants' secara teliti. Jika ada stock > 0, langsung tawarkan dengan antusias! 3. Jika customer menggunakan KATA KASAR akibat frustrasi pesanan, tetap tunjukkan empati & tawarkan solusi (jangan tersinggung). Jika mengandung unsur SARA/rasisme/pelecehan, tolak dengan tegas dan sopan sesuai aturan nomor 6!`,
-          products: fallbackData 
-        };
-      }
-      return { error: 'Tidak ditemukan produk di database.' };
+      return this.executeFallbackQuery(db, sort_by, parsedKw.raw);
     }
-    
+
     return { success: true, products: data };
   }
 
-  if (name === 'escalate_to_human') {
-    const { ticket_id, reason } = args;
+  private applySortingStrategy(query: any, sortBy?: string, kwRaw: string = ''): boolean {
+    const kw = kwRaw.toLowerCase();
+    if (
+      sortBy === 'cheapest' ||
+      kw.includes('termurah') ||
+      kw.includes('paling murah') ||
+      kw === 'murah'
+    ) {
+      query.order('price', { ascending: true });
+      return true;
+    } else if (
+      sortBy === 'most_expensive' ||
+      kw.includes('termahal') ||
+      kw.includes('paling mahal') ||
+      kw === 'mahal'
+    ) {
+      query.order('price', { ascending: false });
+      return true;
+    } else if (
+      sortBy === 'newest' ||
+      kw.includes('terbaru') ||
+      kw.includes('new arrival') ||
+      kw.includes('baru')
+    ) {
+      query.order('created_at', { ascending: false });
+      return true;
+    } else if (
+      sortBy === 'popular' ||
+      kw.includes('terlaris') ||
+      kw.includes('best seller') ||
+      kw.includes('paling laris') ||
+      kw.includes('rekomendasi') ||
+      kw.includes('favorit')
+    ) {
+      query.order('created_at', { ascending: false });
+      return true;
+    }
+    return false;
+  }
+
+  private async applyKeywordFilter(
+    db: SupabaseClient,
+    query: any,
+    parsedKw: ReturnType<typeof IndonesianNlpEngine.parseKeyword>
+  ): Promise<void> {
+    const { safe, cleaned, tokens, synonym } = parsedKw;
+
+    // Check attribute matches in variants table with bounded limit to prevent GET overflow
+    const { data: varData } = await db
+      .from('variants')
+      .select('product_id')
+      .or(
+        `size.ilike.%${cleaned}%,size.ilike.%${synonym || cleaned}%,size.ilike.%${safe}%,color.ilike.%${cleaned}%,color.ilike.%${synonym || cleaned}%,color.ilike.%${safe}%,sku.ilike.%${safe}%`
+      )
+      .gt('stock', 0)
+      .limit(30);
+
+    const variantProductIds = Array.from(
+      new Set(varData?.map((v) => v.product_id).filter(Boolean) || [])
+    );
+
+    if (variantProductIds.length > 0) {
+      // Limit to top 30 IDs to ensure clean HTTP GET parameter size
+      query.in('id', variantProductIds.slice(0, 30));
+    } else {
+      const orClauses = [
+        `name.ilike.%${safe}%`,
+        `description.ilike.%${safe}%`,
+        `category.ilike.%${safe}%`,
+        `name.ilike.%${cleaned}%`,
+        `description.ilike.%${cleaned}%`,
+        ...(synonym ? [`name.ilike.%${synonym}%`, `description.ilike.%${synonym}%`] : []),
+        // Cap token expansion to top 4 tokens to avoid expensive sequential scans
+        ...tokens.slice(0, 4).flatMap((w) => [`name.ilike.%${w}%`, `description.ilike.%${w}%`]),
+      ];
+      query.or(Array.from(new Set(orClauses)).join(','));
+    }
+  }
+
+  private async executeFallbackQuery(
+    db: SupabaseClient,
+    sortBy?: string,
+    kwRaw: string = ''
+  ): Promise<any> {
+    let fallbackQuery = db.from('products').select(this.SELECT_FIELDS);
+    const kw = kwRaw.toLowerCase();
+
+    if (sortBy === 'cheapest' || kw.includes('termurah') || kw.includes('murah')) {
+      fallbackQuery = fallbackQuery.order('price', { ascending: true });
+    } else if (sortBy === 'most_expensive' || kw.includes('termahal') || kw.includes('mahal')) {
+      fallbackQuery = fallbackQuery.order('price', { ascending: false });
+    } else {
+      fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
+    }
+
+    const { data: fallbackData } = await fallbackQuery.limit(6);
+    if (fallbackData && fallbackData.length > 0) {
+      return {
+        success: true,
+        note: this.AI_ETHICS_INSTRUCTION,
+        products: fallbackData,
+      };
+    }
+    return { error: 'Tidak ditemukan produk di database.' };
+  }
+}
+
+/**
+ * ============================================================================
+ * DOMAIN HANDLER: ESCALATE TO HUMAN AGENT
+ * ============================================================================
+ */
+class EscalateToHumanHandler implements AiToolHandler<EscalateToHumanArgs> {
+  public readonly name = 'escalate_to_human';
+
+  public async execute(args: EscalateToHumanArgs, db: SupabaseClient): Promise<any> {
+    const { ticket_id, reason } = args || {};
+    if (!ticket_id || !reason) {
+      return { error: 'ticket_id dan reason wajib diisi.' };
+    }
+
     const { error } = await db
       .from('support_tickets')
       .update({ status: 'escalated' })
@@ -233,7 +437,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       return { error: 'Failed to escalate ticket.' };
     }
 
-    // Add an internal system note
+    // Insert audit log / system message
     await db.from('support_messages').insert({
       ticket_id,
       sender_id: null,
@@ -244,6 +448,57 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
 
     return { success: true, message: 'Ticket escalated.' };
   }
+}
 
-  return { error: `Unknown tool ${name}` };
+/**
+ * ============================================================================
+ * COMMAND REGISTRY & DISPATCHER (OPEN/CLOSED PRINCIPLE)
+ * ============================================================================
+ * Manages tool registrations and routes execution without procedural switch blocks.
+ */
+class AiToolRegistry {
+  private static instance: AiToolRegistry;
+  private readonly handlers = new Map<string, AiToolHandler>();
+
+  private constructor() {
+    this.register(new GetOrderDetailsHandler());
+    this.register(new SearchProductsHandler());
+    this.register(new EscalateToHumanHandler());
+  }
+
+  public static getInstance(): AiToolRegistry {
+    if (!AiToolRegistry.instance) {
+      AiToolRegistry.instance = new AiToolRegistry();
+    }
+    return AiToolRegistry.instance;
+  }
+
+  public register(handler: AiToolHandler): void {
+    this.handlers.set(handler.name, handler);
+  }
+
+  public async dispatch(name: string, args: Record<string, any>): Promise<any> {
+    const handler = this.handlers.get(name);
+    if (!handler) {
+      return { error: `Unknown tool ${name}` };
+    }
+
+    try {
+      const db = getDbClient();
+      return await handler.execute(args, db);
+    } catch (err: any) {
+      console.error(`[AiToolRegistry] Execution error for tool '${name}':`, err?.message || err);
+      return { error: `Internal tool error: ${err?.message || 'Unknown error'}` };
+    }
+  }
+}
+
+/**
+ * ============================================================================
+ * PUBLIC ENTRY POINT
+ * ============================================================================
+ * Executes the requested AI tool by name using the Command Registry.
+ */
+export async function executeAiTool(name: string, args: Record<string, any>): Promise<any> {
+  return AiToolRegistry.getInstance().dispatch(name, args);
 }
