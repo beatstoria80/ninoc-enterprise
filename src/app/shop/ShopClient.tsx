@@ -14,6 +14,7 @@ import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 import { useShopFilters, DesktopShopFilterBar, MobileShopFilterBar, type ShopProduct as Product, type FilterSystemType } from './_components/ShopFilterSystem';
+import { formatCategoryLabel } from '@/lib/departmentDomain';
 
 function SafeImage({ src, alt, className, sizes, priority = false, draggable }: {
   src: string; alt: string; className?: string; sizes?: string; priority?: boolean; draggable?: boolean;
@@ -190,7 +191,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                             {product.name}
                           </h3>
                           <p className="text-[7px] font-medium text-ink/40 uppercase tracking-widest mt-0.5">
-                            {product.category}
+                            {formatCategoryLabel(product.category)}
                           </p>
                         </div>
 
@@ -310,7 +311,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
                           {product.name}
                         </h3>
                         <p className="text-xs md:text-[9px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1">
-                          {product.category}
+                          {formatCategoryLabel(product.category)}
                         </p>
                       </div>
 

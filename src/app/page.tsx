@@ -24,7 +24,7 @@ function cn(...inputs: ClassValue[]) {
 // CONCEPT MALL PILLAR ICONS — NINOC ENTERPRISE
 // ═══════════════════════════════════════════════════════════════
 
-// Apparel & Archive — Hanger icon
+// Apparel — Hanger icon
 const ApparelIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
@@ -79,7 +79,7 @@ const DURATION = {
 // ═══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  { id: 'pakaian' as CategoryType, label: 'Apparel & Archive', sublabel: 'Fashion', icon: ApparelIcon, href: '/shop?filter=Apparel', spec: 'APR-001' },
+  { id: 'pakaian' as CategoryType, label: 'Apparel', sublabel: 'Fashion', icon: ApparelIcon, href: '/shop?filter=Apparel', spec: 'APR-001' },
   { id: 'utilities' as CategoryType, label: 'Home & Living', sublabel: 'Homeware', icon: ObjectsIcon, href: '/shop?filter=Objects', spec: 'OBJ-002' },
   { id: 'coffee' as CategoryType, label: 'Pantry & Café', sublabel: 'F&B', icon: PantryIcon, href: '/shop?filter=Pantry', spec: 'PTR-003' },
 ];

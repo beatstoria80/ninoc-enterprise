@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { Product, Collection } from '../../types';
 import Image from 'next/image';
+import { formatCategoryLabel } from '@/lib/departmentDomain';
 
 interface CollectionSettingsDrawerProps {
   isOpen: boolean;
@@ -451,7 +452,7 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-ink line-clamp-2">{product.name}</p>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider">{product.category}</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider">{formatCategoryLabel(product.category)}</p>
                           </div>
                           <p className="text-xs font-medium text-ink">
                             Rp {product.price.toLocaleString('id-ID')}

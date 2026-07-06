@@ -13,7 +13,7 @@ export async function GET() {
       if (error.code === '42P01') {
         // Table doesn't exist yet, return fallback concept mall pillars
         return NextResponse.json([
-          { id: '1', name: 'Apparel & Archive', slug: 'apparel', gpc_code: 'Apparel & Accessories > Clothing', sort_order: 1 },
+          { id: '1', name: 'Apparel', slug: 'apparel', gpc_code: 'Apparel & Accessories > Clothing', sort_order: 1 },
           { id: '2', name: 'Objects & Consumer Goods', slug: 'objects', gpc_code: 'Home & Garden > Kitchen & Dining', sort_order: 2 },
           { id: '3', name: 'Pantry & Café (F&B)', slug: 'pantry', gpc_code: 'Food, Beverages & Tobacco > Beverages > Coffee', sort_order: 3 }
         ]);

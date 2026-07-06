@@ -11,7 +11,7 @@ export default function RefundPolicyPage() {
   const pillarData = {
     APPAREL: {
       code: "APR-01",
-      name: "Apparel & Archive",
+      name: "Apparel",
       icon: Shirt,
       subtitle: "Fashion, Garment & Footwear",
       returnWindow: "2 x 24 Jam (48 Jam) sejak status paket 'Diterima'",
@@ -118,7 +118,7 @@ export default function RefundPolicyPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-10">
           {[
             { id: 'ALL', label: 'SEMUA PILAR // SUMMARY', code: 'ALL-00' },
-            { id: 'APPAREL', label: 'APPAREL & ARCHIVE', code: 'APR-01' },
+            { id: 'APPAREL', label: 'APPAREL', code: 'APR-01' },
             { id: 'OBJECTS', label: 'HOME & LIVING', code: 'OBJ-02' },
             { id: 'PANTRY', label: 'PANTRY & CAFÉ', code: 'PTR-03' },
           ].map((tab) => {

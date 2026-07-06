@@ -2138,7 +2138,7 @@ export default function AdminDashboard() {
                         <span>🏢</span> STEP 1: ENTERPRISE PILLAR & LOKASI GUDANG ASAL
                       </h4>
                       <span className="text-[9px] bg-rose/90 text-white px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
-                        {isFnB ? 'F&B / Pantry Hub' : isObjects ? 'Objects & Home Goods' : 'Apparel & Archive'}
+                        {isFnB ? 'F&B / Pantry Hub' : isObjects ? 'Objects & Home Goods' : 'Apparel'}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 pt-0.5">
@@ -2194,7 +2194,7 @@ export default function AdminDashboard() {
                           ))}
                           {!dbDepartments.length && (
                             <>
-                              <option value="1">Apparel & Archive (Garment Fashion)</option>
+                              <option value="1">Apparel (Garment Fashion)</option>
                               <option value="2">Objects & Consumer Goods (Home & Dining)</option>
                               <option value="3">Pantry & Café (F&B / Kopi / Pastry)</option>
                             </>

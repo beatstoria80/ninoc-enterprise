@@ -28,7 +28,7 @@ export default function LegalClient() {
       terms: {
         title: "TERMS & CONDITIONS (PILLAR SPECIFIC)",
         sections: [
-          { id: "01", pillar: "ALL", title: "Acceptance of Terms", text: "By accessing and purchasing from NINOC STORE, you legally agree to be bound by these Terms of Service. These terms apply across all 3 Department Pillars: Apparel & Archive, Objects & Goods, and Pantry & Café." },
+          { id: "01", pillar: "ALL", title: "Acceptance of Terms", text: "By accessing and purchasing from NINOC STORE, you legally agree to be bound by these Terms of Service. These terms apply across all 3 Department Pillars: Apparel, Objects & Goods, and Pantry & Café." },
           { id: "02", pillar: "ALL", title: "Accuracy & Pricing", text: "We reserve the right to modify prices, product availability, and specifications at any time. Pricing transparency follows Google Merchant Center (GMC) regulations without hidden checkout fees." },
           { id: "03", pillar: "ALL", title: "Shipping & Liability", text: "All purchases are made pursuant to a shipment contract (FOB Shipping Point). Risk of loss transfers upon carrier handover. All packages are sealed with double-layer tamper-evident packaging." },
           { id: "04", pillar: "APR", title: "Apparel Return Protocol (APR-01)", text: "Returns for Garment & Footwear are accepted within 48 hours (2x24 hours) of delivery confirmation. Size exchanges are allowed subject to stock. Products MUST be unworn, unwashed, perfume-free, with all woven tags and original branded ziplock intact. Requires continuous 1-shot unboxing video." },
@@ -54,7 +54,7 @@ export default function LegalClient() {
       terms: {
         title: "SYARAT & KETENTUAN (SPESIFIK PER PILAR)",
         sections: [
-          { id: "01", pillar: "ALL", title: "Persetujuan Hukum", text: "Dengan mengakses dan bertransaksi di NINOC STORE, Anda secara sah terikat dengan Syarat dan Ketentuan ini yang berlaku untuk seluruh 3 Gerbang Portal: Apparel & Archive, Objects & Goods, dan Pantry & Café." },
+          { id: "01", pillar: "ALL", title: "Persetujuan Hukum", text: "Dengan mengakses dan bertransaksi di NINOC STORE, Anda secara sah terikat dengan Syarat dan Ketentuan ini yang berlaku untuk seluruh 3 Gerbang Portal: Apparel, Objects & Goods, dan Pantry & Café." },
           { id: "02", pillar: "ALL", title: "Akurasi & Transparansi Harga", text: "NINOC memegang hak penuh mengubah harga dan spesifikasi. Seluruh kalkulasi harga patuh pada standar Google Merchant Center (GMC) tanpa biaya tersembunyi saat checkout." },
           { id: "03", pillar: "ALL", title: "Pengiriman & Risiko Logistik", text: "Pengiriman mengacu pada kontrak FOB Shipping Point. Seluruh paket dikemas dengan standar keamanan proteksi ganda (double-sealed/encrypted structure)." },
           { id: "04", pillar: "APR", title: "Protokol Retur Apparel (APR-01)", text: "Klaim pengembalian Pakaian & Sepatu dilayani maksimal 2x24 jam sejak resi 'Diterima'. Tukar ukuran diizinkan selama stok ada. Syarat mutlak: belum dipakai/dicuci, bebas bau parfum, tag woven & kemasan ziplock utuh, serta menyertakan video unboxing 1-shot tanpa jeda." },

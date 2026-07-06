@@ -30,8 +30,8 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
   APPAREL: {
     id: 'APPAREL',
     code: 'APR-01',
-    name: 'Apparel & Archive',
-    nameId: 'Pakaian & Arsip Fashion',
+    name: 'Apparel',
+    nameId: 'Pakaian & Fashion',
     subtitle: 'Fashion · Garment · Footwear',
     isPerishable: false,
     returnAllowed: true,
@@ -158,3 +158,15 @@ export function getDepartmentConfig(input?: any): DepartmentConfig {
   const pillar = classifyDepartment(input);
   return DEPARTMENT_CONFIGS[pillar];
 }
+
+/**
+ * Strips out 'Archive' and '& Archive' from category labels for clean UI display.
+ */
+export function formatCategoryLabel(cat?: string | null): string {
+  if (!cat) return 'NINOC';
+  const cleaned = String(cat)
+    .replace(/&?\s*archive\s*(mfg)?/gi, '')
+    .trim();
+  return cleaned || 'Apparel';
+}
+

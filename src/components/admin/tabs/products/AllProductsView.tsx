@@ -2,7 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import { Package, Eye, Edit2, Trash2, CheckCircle2, AlertCircle, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Product } from '../../types';
+import { Product } from '@/components/admin/types';
+import { formatCategoryLabel } from '@/lib/departmentDomain';
 
 export function AllProductsView({
   products,
@@ -108,7 +109,7 @@ export function AllProductsView({
 
                 {/* Category + Variants + SKU Status */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-widest text-gray-400">{product.category}</span>
+                  <span className="text-[9px] uppercase tracking-widest text-gray-400">{formatCategoryLabel(product.category)}</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[9px] text-rose">{product.variants?.length || 0} variants</span>
                     {product.variants && product.variants.length > 0 && product.variants.every(v => v.sku && v.sku.trim() !== '') ? (

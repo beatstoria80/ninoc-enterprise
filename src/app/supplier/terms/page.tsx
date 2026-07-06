@@ -15,7 +15,7 @@ export default function SupplierTermsPage() {
   const oemMatrix = {
     APR: {
       code: "APR-OEM",
-      name: "Apparel & Archive Mfg",
+      name: "Apparel Mfg",
       icon: Shirt,
       leadTime: "14 – 21 Hari Kerja per PO",
       qcTolerance: "Defect stitching < 2%, Toleransi ukuran ± 1.5cm, Color fastness grade 4+.",

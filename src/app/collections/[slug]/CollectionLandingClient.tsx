@@ -11,6 +11,7 @@ import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
+import { formatCategoryLabel } from '@/lib/departmentDomain';
 
 // ═══════════════════════════════════════════════════════════════
 // ANIMATION ENGINE
@@ -90,7 +91,7 @@ function ProductCard({ product }: { product: Product }) {
                 {product.name}
               </h3>
               <p className="text-xs md:text-[6px] lg:text-[6.5px] font-medium text-ink/50 uppercase tracking-[0.2em] mt-1 md:mt-0.5">
-                {product.category}
+                {formatCategoryLabel(product.category)}
               </p>
             </div>
 

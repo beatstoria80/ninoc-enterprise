@@ -938,7 +938,7 @@ export default function GlobalHeader() {
                     </span>
                   </div>
                   
-                  {/* Portal 01: Apparel & Archive */}
+                  {/* Portal 01: Apparel */}
                   <Link
                     href="/shop?filter=Apparel"
                     onClick={() => setIsMenuOpen(false)}
@@ -952,7 +952,7 @@ export default function GlobalHeader() {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs font-bold uppercase tracking-[0.15em] text-ink group-hover:text-rose transition-colors">
-                          Apparel & Archive
+                          Apparel
                         </span>
                         <span className="text-[10px] text-ink/50 font-medium">
                           Fashion · Garment · Footwear

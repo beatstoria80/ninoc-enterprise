@@ -11,8 +11,8 @@ import { getProductStock, getProductViews } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
-import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
+import { formatCategoryLabel } from '@/lib/departmentDomain';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -254,7 +254,7 @@ function ProductCard({ product }: { product: Product }) {
               {product.name}
             </h3>
             <p className="text-[9px] md:text-[6px] lg:text-[6.5px] font-semibold text-ink/60 uppercase tracking-[0.2em] mt-0.5">
-              {product.category}
+              {formatCategoryLabel(product.category)}
             </p>
           </div>
 

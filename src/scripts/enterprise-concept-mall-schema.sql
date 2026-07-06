@@ -36,10 +36,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_departments_slug_unique ON departments(slu
 
 -- Insert Default Concept Mall Pillars (Apparel, Objects, Pantry/F&B)
 INSERT INTO departments (name, slug, gpc_code, description, sort_order) VALUES
-('Apparel & Archive', 'apparel', 'Apparel & Accessories > Clothing', 'Industrial and functional garment archival studio collections.', 1),
+('Apparel', 'apparel', 'Apparel & Accessories > Clothing', 'Industrial and functional garment studio collections.', 1),
 ('Objects & Consumer Goods', 'objects', 'Home & Garden > Kitchen & Dining', 'Everyday utilitarian objects, home accessories, and industrial goods.', 2),
 ('Pantry & Café (F&B)', 'pantry', 'Food, Beverages & Tobacco > Beverages > Coffee', 'Artisan roasted coffee beans, gourmet snacks, and ready-to-drink beverages.', 3)
 ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
   gpc_code = EXCLUDED.gpc_code,
   description = EXCLUDED.description,
   sort_order = EXCLUDED.sort_order;
