@@ -297,16 +297,16 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
 
   return (
     <main className="min-h-screen bg-cr noise pb-40">
-      <div className="fixed top-24 left-6 md:left-12 z-[90] pointer-events-none">
+      <div className="fixed top-20 md:top-[80px] left-6 md:left-12 z-[90] pointer-events-none">
         <section className="pointer-events-auto">
-          <div className="glass border border-ink/5 rounded-full p-2 flex items-center gap-2 shadow-2xl shadow-ink/5 overflow-hidden">
+          <div className="glass border border-ink/5 rounded-full p-1.5 flex items-center gap-1.5 shadow-2xl shadow-ink/5 overflow-hidden">
             <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-1">
               {displayCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={cn(
-                    "px-6 py-2 rounded-full text-xs md:text-[10px] font-medium uppercase tracking-widest transition-all whitespace-nowrap",
+                    "px-4 py-1.5 md:px-3.5 md:py-1 rounded-full text-[11px] md:text-[9px] font-medium uppercase tracking-wider transition-all whitespace-nowrap",
                     selectedCategory === cat
                       ? "bg-ink text-white shadow-xl shadow-ink/20"
                       : "text-ink/60 hover:bg-ink/5 hover:text-ink backdrop-blur-sm"
@@ -320,7 +320,7 @@ function DesktopShopView({ products, initialCategory, dict }: { products: Produc
         </section>
       </div>
 
-      <div className="pt-28 md:pt-32" />
+      <div className="pt-24 md:pt-28" />
 
       <section className="mt-2 md:mt-4 px-6 md:px-12 max-w-[1800px] mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
