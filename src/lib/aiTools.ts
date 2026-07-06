@@ -127,25 +127,37 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
     }
 
     // If there is a keyword and it's not just generic sort/promo words
+    // If there is a keyword and it's not just generic sort/promo words
     const isGenericWord = ['baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah', 'termurah', 'mahal', 'termahal', 'best seller', 'terlaris', 'rekomendasi', 'paling murah', 'paling mahal', 'paling laris', 'budget', 'semua', 'all', 'produk', 'barang', 'baju'].some(w => kw === w || kw.includes(w));
     
     if (kw && !isGenericWord) {
-      // Clean keyword (remove filler words so sizes/colors stand out)
-      const cleanKw = kw.replace(/ukuran|size|ada|ready|kaos|baju|celana|apakah|gak|ga|gk|enggak|nggak|disini|di sini|harga|termurah|termahal|murah|mahal|di bawah|di atas|budget|paling/gi, '').trim() || kw;
+      // Clean keyword: remove Indonesian chat typos, abbreviations, and filler words so target sizes/colors stand out
+      // Removes: pakah, apkah, pkh, apakah, apa, ada, ad, ready, redy, redi, rdy, size, sz, ukuran, ukrn, uk, ga, gk, gak, ngga, engga, tdk, disini, di sini, harga, hrg, dll.
+      let cleanKw = kw.replace(/\b(pakah|apkah|pkh|apakah|apa|ada|ad|ready|redy|redi|rdy|size|sz|ukuran|ukrn|uk|kaos|baju|celana|hoodie|jaket|outer|gak|ga|gk|enggak|nggak|ngga|engga|tdk|disini|di sini|harga|hrg|termurah|termahal|murah|mahal|di bawah|di atas|budget|paling|brp|yg|dong|deh|kah|ya|min|spill)\b/gi, '').trim() || kw;
       
+      // Expand synonyms for size and color variations in database (e.g. xxl <-> 2xl, xxxl <-> 3xl, item <-> hitam)
+      let sizeSynonym = cleanKw;
+      if (cleanKw === 'xxl' || cleanKw.includes('xxl')) sizeSynonym = '2XL';
+      else if (cleanKw === '2xl' || cleanKw.includes('2xl')) sizeSynonym = 'XXL';
+      else if (cleanKw === 'xxxl' || cleanKw.includes('xxxl')) sizeSynonym = '3XL';
+      else if (cleanKw === '3xl' || cleanKw.includes('3xl')) sizeSynonym = 'XXXL';
+      else if (cleanKw === 'item' || cleanKw.includes('item')) sizeSynonym = 'hitam';
+      else if (cleanKw === 'puti' || cleanKw === 'pti') sizeSynonym = 'putih';
+
       // 1. Check if keyword matches a variant attribute in variants table (color, size, sku)
       const { data: varData } = await supabase
         .from('variants')
         .select('product_id')
-        .or(`size.ilike.%${cleanKw}%,size.ilike.%${kw}%,color.ilike.%${cleanKw}%,color.ilike.%${kw}%,sku.ilike.%${kw}%`)
-        .limit(20);
+        .or(`size.ilike.%${cleanKw}%,size.ilike.%${sizeSynonym}%,size.ilike.%${kw}%,color.ilike.%${cleanKw}%,color.ilike.%${sizeSynonym}%,color.ilike.%${kw}%,sku.ilike.%${kw}%`)
+        .gt('stock', 0)
+        .limit(30);
       
       const variantProductIds = Array.from(new Set(varData?.map(v => v.product_id).filter(Boolean) || []));
       
       if (variantProductIds.length > 0) {
         productsQuery = productsQuery.or(`id.in.(${variantProductIds.join(',')}),name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%`);
       } else {
-        productsQuery = productsQuery.or(`name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%,name.ilike.%${cleanKw}%,description.ilike.%${cleanKw}%`);
+        productsQuery = productsQuery.or(`name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%,name.ilike.%${cleanKw}%,description.ilike.%${cleanKw}%,name.ilike.%${sizeSynonym}%,description.ilike.%${sizeSynonym}%`);
       }
     }
 
@@ -172,7 +184,7 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
       if (fallbackData && fallbackData.length > 0) {
         return { 
           success: true, 
-          note: `Pencarian dengan spesifikasi tersebut tidak menemukan produk dengan nama yang cocok secara langsung. Berikut adalah daftar produk rekomendasi toko beserta SELURUH varian (ukuran/size, warna, stock, harga) untuk diperiksa dan direkomendasikan kepada customer:`,
+          note: `Daftar produk rekomendasi toko beserta SELURUH varian (ukuran/size S, M, L, XL, XXL, 2XL, warna, stock, harga) yang tersedia. PENTING BAGI AI: PERIKSA ARRAY 'variants' DI DALAM DAFTAR PRODUK INI SECARA TELITI! Jika customer menanyakan ukuran tertentu (seperti XXL, 2XL, XL) atau warna, JANGAN BILANG KOSONG/TIDAK ADA jika di dalam array variants di bawah ini terdapat ukuran/warna tersebut dengan stock > 0! Langsung rekomendasikan produk yang ready tersebut dengan antusias!`,
           products: fallbackData 
         };
       }
