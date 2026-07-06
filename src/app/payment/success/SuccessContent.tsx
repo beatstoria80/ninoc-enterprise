@@ -193,7 +193,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-center md:justify-center px-3 md:px-6 pt-6 md:pt-24 pb-8 md:pb-8 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-start md:justify-center px-3 md:px-6 pt-6 md:pt-16 lg:pt-20 pb-8 md:pb-12 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -202,20 +202,20 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
-          <div className="lg:col-span-3 flex flex-col space-y-1.5 md:space-y-4 order-1">
+          <div className="lg:col-span-3 flex flex-col space-y-1.5 md:space-y-5 lg:space-y-6 order-1">
             <div className="space-y-0.5 md:space-y-4">
-              <h1 className="text-lg md:text-3xl font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
+              <h1 className="text-lg md:text-3xl lg:text-4xl xl:text-[42px] font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
                 Payment Successful.
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", damping: 10, stiffness: 100 }}
-                  className="w-5 h-5 md:w-6 md:h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
+                  className="w-5 h-5 md:w-7 md:h-7 lg:w-8 lg:h-8 xl:w-9 xl:h-9 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
                 >
-                  <CheckCircle size={12} />
+                  <CheckCircle className="w-3 h-3 md:w-4 md:h-4 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5" />
                 </motion.div>
               </h1>
-              <p className="text-[10px] md:text-sm text-ink/60 font-medium leading-tight">
+              <p className="text-[10px] md:text-sm lg:text-base xl:text-lg text-ink/70 font-medium leading-relaxed">
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
@@ -225,13 +225,13 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 }}
-              className="bg-amber-50/50 border border-amber-200 p-3 md:p-3 mt-2 md:mt-4"
+              className="bg-amber-50/50 border border-amber-200 p-3 md:p-4 lg:p-5 mt-2 md:mt-4 lg:mt-6 shadow-sm"
             >
               <div className="flex items-start gap-3">
-                <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-800 mb-0.5">Simpan Bukti Pembelian</p>
-                  <p className="text-[9px] md:text-xs text-amber-700/80 leading-relaxed">
+                  <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-amber-800 mb-1">Simpan Bukti Pembelian</p>
+                  <p className="text-[9px] md:text-xs lg:text-sm text-amber-700/90 leading-relaxed">
                     Jika Anda berbelanja sebagai <strong className="font-bold">GUEST</strong>, sangat disarankan untuk <strong>Menyimpan (Screenshot/PDF)</strong> halaman ini atau mengunduh <strong>Full Invoice</strong> di bawah. Nomor Order (<strong className="font-mono">#{displayId}</strong>) ini merupakan kunci Anda untuk melacak pengiriman paket.
                   </p>
                 </div>
@@ -242,22 +242,22 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="hidden lg:flex flex-col space-y-3 pt-6 border-t border-ink/5"
+              className="hidden lg:flex flex-col space-y-3.5 lg:space-y-4 pt-6 lg:pt-8 border-t border-ink/5"
             >
-              <Link href="/shop" className="w-full bg-ink text-white px-6 py-3 text-[10px] font-medium uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/5 group">
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.25em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/10 group">
                 Continue Collecting
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 lg:w-4.5 lg:h-4.5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-3 text-[10px] font-medium uppercase tracking-widest text-ink hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/10 hover:border-rose/20 bg-white">
-                <FileText size={14} />
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white shadow-sm">
+                <FileText className="w-4 h-4 lg:w-4.5 lg:h-4.5" />
                 View Full Invoice
               </button>
-              <button onClick={() => window.print()} className="w-full px-6 py-3 text-[10px] font-medium uppercase tracking-widest text-ink/50 hover:text-rose transition-colors flex items-center justify-center gap-2 border border-ink/5 hover:border-rose/20 bg-white/50">
-                <Printer size={14} />
+              <button onClick={() => window.print()} className="w-full px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white/50 shadow-sm">
+                <Printer className="w-4 h-4 lg:w-4.5 lg:h-4.5" />
                 Save as PDF
               </button>
-              <div className="text-center pt-1">
-                <Link href="/" className="inline-block px-8 py-2 text-[9px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+              <div className="text-center pt-2">
+                <Link href="/" className="inline-block px-8 py-2.5 text-[10px] lg:text-xs font-semibold uppercase tracking-[0.25em] text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                   Return to Store
                 </Link>
               </div>
