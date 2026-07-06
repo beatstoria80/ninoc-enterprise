@@ -193,16 +193,16 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
 
   return (
     <>
-    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-start md:justify-center px-3 md:px-6 pt-6 md:pt-16 lg:pt-20 pb-8 md:pb-12 print:hidden">
+    <main className="min-h-screen bg-cr noise flex flex-col md:flex-row md:items-start md:justify-center px-3 md:px-6 pt-6 md:pt-20 lg:pt-24 xl:pt-28 pb-8 md:pb-12 print:hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-[1400px] mx-auto w-full"
+        className="max-w-[1180px] mx-auto w-full"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 xl:gap-6 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
-          <div className="lg:col-span-3 flex flex-col space-y-1.5 md:space-y-5 lg:space-y-6 order-1">
+          <div className="lg:col-span-4 flex flex-col space-y-1.5 md:space-y-4 lg:space-y-4 order-1">
             <div className="space-y-0.5 md:space-y-4">
               <h1 className="text-lg md:text-3xl lg:text-4xl xl:text-[42px] font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
                 Payment Successful.
@@ -242,22 +242,22 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="hidden lg:flex flex-col space-y-3.5 lg:space-y-4 pt-6 lg:pt-8 border-t border-ink/5"
+              className="hidden lg:flex flex-col space-y-2.5 lg:space-y-3 pt-4 lg:pt-5 border-t border-ink/5"
             >
-              <Link href="/shop" className="w-full bg-ink text-white px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.25em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/10 group">
+              <Link href="/shop" className="w-full bg-ink text-white px-6 py-2.5 lg:py-3 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.25em] flex items-center justify-center gap-3 hover:bg-rose active:scale-[0.98] transition-all shadow-xl shadow-ink/10 group">
                 Continue Collecting
                 <ArrowRight className="w-4 h-4 lg:w-4.5 lg:h-4.5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white shadow-sm">
+              <button onClick={() => setShowInvoiceModal(true)} className="w-full px-6 py-2.5 lg:py-3 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white shadow-sm">
                 <FileText className="w-4 h-4 lg:w-4.5 lg:h-4.5" />
                 View Full Invoice
               </button>
-              <button onClick={() => window.print()} className="w-full px-6 py-3.5 lg:py-4 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white/50 shadow-sm">
+              <button onClick={() => window.print()} className="w-full px-6 py-2.5 lg:py-3 text-[11px] lg:text-xs font-semibold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors flex items-center justify-center gap-2.5 border border-ink/10 hover:border-rose/20 bg-white/50 shadow-sm">
                 <Printer className="w-4 h-4 lg:w-4.5 lg:h-4.5" />
                 Save as PDF
               </button>
-              <div className="text-center pt-2">
-                <Link href="/" className="inline-block px-8 py-2.5 text-[10px] lg:text-xs font-semibold uppercase tracking-[0.25em] text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
+              <div className="text-center pt-1.5">
+                <Link href="/" className="inline-block px-8 py-2 text-[10px] lg:text-xs font-semibold uppercase tracking-[0.25em] text-ink/60 hover:text-rose transition-colors border border-transparent hover:border-rose/20">
                   Return to Store
                 </Link>
               </div>
@@ -377,14 +377,14 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
           </div>
 
           {/* Column 3: Timeline */}
-          <div className="lg:col-span-5 w-full flex flex-col order-3">
+          <div className="lg:col-span-4 w-full flex flex-col order-3">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white border border-ink/5 p-4 md:p-6 shadow-xl shadow-ink/5 relative overflow-hidden h-full flex flex-col"
+              className="bg-white border border-ink/5 p-4 md:p-5 shadow-xl shadow-ink/5 relative overflow-hidden h-full flex flex-col"
             >
-              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-ink/50 mb-3 md:mb-5 flex items-center justify-between border-b border-ink/5 pb-2 md:pb-3">
+              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-ink/50 mb-3 md:mb-4 flex items-center justify-between border-b border-ink/5 pb-2 md:pb-2.5">
                 <span>Shipment Status</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -392,7 +392,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                 </div>
               </h3>
 
-              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col gap-0 md:gap-4 flex-1 justify-center" style={{ gap: '0px' }}>
+              <div className="relative pl-7 md:pl-10 border-l-2 border-ink/5 ml-4 md:ml-8 flex flex-col space-y-3 md:space-y-3.5 flex-1 justify-center my-auto">
 
                 <motion.div
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
@@ -401,7 +401,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                     <ShieldCheck size={16} strokeWidth={2.5} className="animate-pulse" />
                   </div>
-                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-3 md:p-4 md:py-5 relative overflow-hidden">
+                  <div className="bg-emerald-50/50 border border-emerald-500/20 p-3 md:p-3.5 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
                     <div className="flex items-center gap-2 mb-1 relative">
                       <h4 className="text-[11px] md:text-xs font-semibold text-emerald-700">Payment Confirmed</h4>
@@ -420,7 +420,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/50 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                     <Package size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-3 md:p-4 md:py-5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                  <div className="p-3 md:p-3.5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                     <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">PROCESS IN NINOC</h4>
                     <p className="text-[9px] md:text-[10px] text-ink/50">Pending Quality Control</p>
                   </div>
@@ -433,7 +433,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
                   <div className="absolute -left-[36px] md:-left-[54px] p-1.5 md:p-2 bg-white rounded-full border-[3px] border-ink/10 text-ink/50 group-hover:border-ink/30 group-hover:text-ink/60 transition-colors">
                     <Truck size={16} strokeWidth={2} />
                   </div>
-                  <div className="p-3 md:p-4 md:py-5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
+                  <div className="p-3 md:p-3.5 border border-ink/5 bg-ink/[0.01] group-hover:bg-white group-hover:shadow-lg transition-all">
                     <h4 className="text-[11px] md:text-xs font-semibold text-ink/60 group-hover:text-ink/70 transition-colors mb-0.5">Handed to Logistics</h4>
                     <p className="text-[9px] md:text-[10px] text-ink/50">Courier: <span className="text-ink/50">{courierName}</span></p>
                   </div>
