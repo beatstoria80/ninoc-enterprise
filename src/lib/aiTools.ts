@@ -22,13 +22,13 @@ export const aiToolsDeclaration = [
     type: 'function',
     function: {
       name: 'search_products',
-      description: 'Cari produk di database berdasarkan kata kunci nama produk. Gunakan ini saat pelanggan menanyakan ketersediaan produk, harga. Hasil akan mengembalikan field "slug" yang wajib digunakan untuk membuat link produk dengan format https://ninoc.store/shop/[slug]',
+      description: 'Cari produk dan varian (ukuran/size seperti S, M, L, XL, XXL atau warna) di database. Gunakan ini saat pelanggan menanyakan ketersediaan produk, harga, ukuran yang ready, atau warna. Hasil akan mengembalikan daftar produk beserta field "variants" (berisi ukuran, warna, stock) dan "slug" untuk link https://ninoc.store/shop/[slug]',
       parameters: {
         type: 'object',
         properties: {
           keyword: {
             type: 'string',
-            description: 'Kata kunci pencarian nama produk (contoh: Kaos). ATAU gunakan "baru" jika pelanggan menanyakan produk terbaru/new arrival. Gunakan "promo" jika menanyakan diskon.',
+            description: 'Kata kunci pencarian (contoh: Kaos, XL, hitam, L, baru, promo). Jika menanyakan ukuran tertentu, masukkan ukuran tersebut (misal: "XL" atau "L").',
           },
         },
         required: ['keyword'],
@@ -75,26 +75,51 @@ export async function executeAiTool(name: string, args: Record<string, any>) {
 
   if (name === 'search_products') {
     const { keyword } = args;
-    const kw = (keyword || '').toLowerCase();
+    const kw = (keyword || '').toLowerCase().trim();
+    const selectFields = 'id, name, price, description, category, slug, variants(color, size, stock, sku)';
     
-    let query = supabase.from('products').select('name, price, description, category, slug');
-    
-    if (kw.includes('baru') || kw.includes('new') || kw.includes('terbaru') || kw === '') {
-      // Fetch newest products
-      query = query.order('created_at', { ascending: false }).limit(5);
-    } else if (kw.includes('promo') || kw.includes('diskon') || kw.includes('discount')) {
-      // Fetch products (you can add specific promo filter if exists, for now we fetch latest)
-      query = query.order('created_at', { ascending: false }).limit(5);
-    } else {
-      // Literal name search
-      query = query.ilike('name', `%${keyword}%`).limit(5);
+    if (kw.includes('baru') || kw.includes('new') || kw.includes('terbaru') || kw === '' || kw.includes('promo') || kw.includes('diskon') || kw.includes('discount')) {
+      const { data, error } = await supabase.from('products').select(selectFields).order('created_at', { ascending: false }).limit(5);
+      if (error || !data || data.length === 0) {
+        return { error: 'Tidak ditemukan produk di database.' };
+      }
+      return { success: true, products: data };
     }
 
-    const { data, error } = await query;
+    // Clean keyword (remove filler words so sizes/colors stand out)
+    const cleanKw = kw.replace(/ukuran|size|ada|ready|kaos|baju|celana|apakah|gak|ga|gk|enggak|nggak|disini|di sini/gi, '').trim() || kw;
+    
+    // 1. Check if keyword matches a variant attribute in variants table (color, size, sku)
+    const { data: varData } = await supabase
+      .from('variants')
+      .select('product_id')
+      .or(`size.ilike.%${cleanKw}%,size.ilike.%${kw}%,color.ilike.%${cleanKw}%,color.ilike.%${kw}%,sku.ilike.%${kw}%`)
+      .limit(20);
+    
+    const variantProductIds = Array.from(new Set(varData?.map(v => v.product_id).filter(Boolean) || []));
+    
+    let productsQuery = supabase.from('products').select(selectFields);
+    if (variantProductIds.length > 0) {
+      productsQuery = productsQuery.or(`id.in.(${variantProductIds.join(',')}),name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%`).limit(10);
+    } else {
+      productsQuery = productsQuery.or(`name.ilike.%${kw}%,description.ilike.%${kw}%,category.ilike.%${kw}%,name.ilike.%${cleanKw}%,description.ilike.%${cleanKw}%`).limit(10);
+    }
+
+    const { data, error } = await productsQuery;
     
     if (error || !data || data.length === 0) {
+      // Fallback: If literal match fails, return newest products with ALL their sizes/variants so AI can check and answer accurately!
+      const { data: fallbackData } = await supabase.from('products').select(selectFields).order('created_at', { ascending: false }).limit(5);
+      if (fallbackData && fallbackData.length > 0) {
+        return { 
+          success: true, 
+          note: `Pencarian kata kunci "${kw}" tidak menemukan kecocokan nama produk langsung. Berikut adalah daftar produk terbaru beserta SELURUH varian (ukuran/size, warna, stock) yang tersedia di gudang untuk diperiksa dan direkomendasikan kepada customer:`,
+          products: fallbackData 
+        };
+      }
       return { error: 'Tidak ditemukan produk dengan kata kunci tersebut.' };
     }
+    
     return { success: true, products: data };
   }
 
