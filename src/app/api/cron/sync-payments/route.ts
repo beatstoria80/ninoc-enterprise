@@ -8,6 +8,7 @@ const adminClient = createClient(
 );
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
+import { getAppUrl } from '@/lib/utils';
 
 /**
  * CRON: Sync Pending Payments with Midtrans
@@ -113,7 +114,7 @@ export async function GET() {
 
               if (formattedPhone) {
                 const formattedPrice = `Rp ${Number(fullOrder.total_price).toLocaleString('id-ID')}`;
-                const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+                const appUrl = getAppUrl();
                 const trackId = fullOrder.order_number || fullOrder.id;
                 const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 

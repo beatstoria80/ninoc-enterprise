@@ -7,9 +7,11 @@ const adminClient = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
+import { getAppUrl } from '@/lib/utils';
+
 // Helper to wrap the raw message in the NINOC HTML template
 function buildNewsletterHtml(subject: string, messageHtml: string) {
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+  const appUrl = getAppUrl();
   
   return `
 <!DOCTYPE html>

@@ -38,8 +38,8 @@ export async function POST(req: Request) {
       .single();
 
     if (fetchError || !existingOrder) {
-      console.error(`[Payment Webhook] Order not found: ${orderId}`);
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      console.warn(`[Payment Webhook] Order not found in database (likely test transaction or old order): ${orderId}. Returning HTTP 200 OK to prevent Midtrans retry loops.`);
+      return NextResponse.json({ status: 'OK', note: `Order ${orderId} not found in database; notification acknowledged` }, { status: 200 });
     }
 
     const previousStatus = existingOrder.status;
