@@ -198,6 +198,7 @@ export interface ChatSession {
   last_message_time: string;
   unread_count: number;
   status: 'open' | 'resolved';
+  crm_status?: 'potential' | 'active' | 'general' | 'bad' | string;
   messages: ChatMessage[];
 }
 

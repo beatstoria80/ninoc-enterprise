@@ -996,6 +996,15 @@ export default function AdminDashboard() {
           .in('ticket_id', ticketIds)
           .order('created_at', { ascending: true });
 
+        let crmMap: Record<string, string> = {};
+        try {
+          const res = await fetch('/api/admin/support/crm-status');
+          const json = await res.json();
+          if (json?.data) crmMap = json.data;
+        } catch (e) {
+          console.error('Failed to fetch CRM status map:', e);
+        }
+
         const sessions: ChatSession[] = ticketsData.map((t) => {
           const ticketMessages = allMessages?.filter(m => m.ticket_id === t.id) || [];
           return {
@@ -1006,6 +1015,7 @@ export default function AdminDashboard() {
             last_message_time: ticketMessages[ticketMessages.length - 1]?.created_at || t.created_at,
             unread_count: ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length,
             status: t.status || 'open',
+            crm_status: crmMap[t.id] || t.crm_status || 'general',
             messages: ticketMessages.map(m => ({
               id: m.id,
               sender: m.sender_role as 'customer' | 'admin',

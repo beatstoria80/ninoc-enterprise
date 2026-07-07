@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageSquare, Send, X, Search, Tag, Zap,
   Flag, AlertTriangle, ShieldAlert, CheckCircle, Clock,
-  ChevronDown, RefreshCw, TrendingUp, Clock3, MessageCircle
+  ChevronDown, RefreshCw, TrendingUp, Clock3, MessageCircle,
+  Trash2, Star, UserCheck, AlertCircle, Filter, Smile, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ChatSession } from '../types';
@@ -37,12 +38,43 @@ interface AnalyticsSummary {
   autoReplyRate: number;
   todayTickets: number;
   weekTickets: number;
- topCategories: { category: string; count: number }[];
+  topCategories: { category: string; count: number }[];
 }
 
 const SEVERITY_CONFIG = {
-  sara: { label: 'SARA', color: 'text-amber-500 bg-amber-50 border-amber-200', icon: AlertTriangle },
-  nsfw: { label: 'NSFW', color: 'text-red-500 bg-red-50 border-red-200', icon: ShieldAlert },
+  sara: { label: 'SARA', color: 'text-amber-600 bg-amber-50 border-amber-200', icon: AlertTriangle },
+  nsfw: { label: 'NSFW', color: 'text-red-600 bg-red-50 border-red-200', icon: ShieldAlert },
+};
+
+const CRM_STATUS_CONFIG: Record<string, { label: string; color: string; badgeColor: string; icon: any; desc: string }> = {
+  potential: { 
+    label: 'Potential CRM', 
+    color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30', 
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    icon: Star, 
+    desc: 'Prospek Tinggi / Siap Beli (Hot Lead)' 
+  },
+  active: { 
+    label: 'Active Customer', 
+    color: 'bg-blue-500/15 text-blue-700 border-blue-500/30', 
+    badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+    icon: UserCheck, 
+    desc: 'Pelanggan Setia / Repeat Buyer' 
+  },
+  general: { 
+    label: 'General Inquiry', 
+    color: 'bg-ink/5 text-ink/70 border-ink/10', 
+    badgeColor: 'bg-gray-50 text-gray-600 border-gray-200',
+    icon: MessageCircle, 
+    desc: 'Pertanyaan Umum / Normal' 
+  },
+  bad: { 
+    label: 'Bad Lead / Spam', 
+    color: 'bg-red-500/15 text-red-700 border-red-500/30', 
+    badgeColor: 'bg-red-50 text-red-700 border-red-200',
+    icon: AlertCircle, 
+    desc: 'Spam / Komplain / Tidak Valid (Bad Lead)' 
+  },
 };
 
 export function MessagesTab({
@@ -71,6 +103,8 @@ export function MessagesTab({
   const [flaggedSearch, setFlaggedSearch] = useState('');
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  const [crmFilter, setCrmFilter] = useState<string>('all');
+  const [updatingCrm, setUpdatingCrm] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // ─── Fetch placeholders
@@ -111,7 +145,6 @@ export function MessagesTab({
       const res = await fetch('/api/crm/analytics?period=30d');
       const data = await res.json();
 
-      // Compute from chatSessions + flagged
       const total = chatSessions.length;
       const open = chatSessions.filter(s => s.status === 'open').length;
       const resolved = chatSessions.filter(s => s.status === 'resolved').length;
@@ -140,7 +173,6 @@ export function MessagesTab({
       });
     } catch (err) {
       console.error('[MessagesTab] fetch analytics error:', err);
-      // Fallback from local data
       const total = chatSessions.length;
       const open = chatSessions.filter(s => s.status === 'open').length;
       const resolved = chatSessions.filter(s => s.status === 'resolved').length;
@@ -161,43 +193,80 @@ export function MessagesTab({
     } finally {
       setLoadingAnalytics(false);
     }
-  }, [chatSessions, flaggedTickets]);
+  }, [chatSessions, flaggedTickets.length]);
 
-  useEffect(() => {
-    const run = async () => {
-      if (subTab === 'analytics') await fetchAnalytics();
-    };
-    run();
-  }, [subTab, fetchAnalytics]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (subTab === 'analytics') fetchAnalytics(); }, [subTab, fetchAnalytics]);
 
-  // ─── Close dropdown on outside click
+  // ─── CRM Status Update Handler
+  const handleUpdateCrmStatus = async (ticketId: string, newStatus: string) => {
+    setUpdatingCrm(ticketId);
+    try {
+      await fetch('/api/admin/support/crm-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId, status: newStatus }),
+      });
+      fetchChatSessions();
+      if (activeChatSession && activeChatSession.id === ticketId) {
+        setActiveChatSession({ ...activeChatSession, crm_status: newStatus });
+      }
+    } catch (err) {
+      console.error('Failed to update CRM status:', err);
+    } finally {
+      setUpdatingCrm(null);
+    }
+  };
+
+  // ─── Purge All Chats Handler (Clear Old & New Conversations)
+  const handlePurgeAllChats = async () => {
+    if (window.confirm('⚠️ PERINGATAN KRUSIAL:\n\nApakah Anda yakin ingin MENGHAPUS SELURUH percakapan chat (lama & baru) secara permanen?\n\nTindakan ini akan membersihkan seluruh antrean pesan dan tiket support agar bersih kembali.')) {
+      try {
+        await fetch('/api/admin/support/purge', { method: 'DELETE' });
+        await supabase.from('support_messages').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('support_tickets').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        fetchChatSessions();
+        setActiveChatSession(null);
+        alert('✅ Seluruh percakapan chat telah berhasil dibersihkan!');
+      } catch (err) {
+        console.error('Failed to purge chats:', err);
+        alert('Gagal membersihkan percakapan.');
+      }
+    }
+  };
+
+  // Close placeholder dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setPlaceholderOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    if (placeholderOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [placeholderOpen]);
 
   const filteredPlaceholders = placeholders.filter(p =>
-    !placeholderSearch || p.label.toLowerCase().includes(placeholderSearch.toLowerCase()) || p.content.toLowerCase().includes(placeholderSearch.toLowerCase())
+    !placeholderSearch ||
+    p.label.toLowerCase().includes(placeholderSearch.toLowerCase()) ||
+    p.content.toLowerCase().includes(placeholderSearch.toLowerCase()) ||
+    p.category?.toLowerCase().includes(placeholderSearch.toLowerCase())
   );
 
-  const groupedPlaceholders = ['greeting', 'return', 'shipping', 'payment', 'closing', 'general'].reduce((acc, cat) => {
-    const items = filteredPlaceholders.filter(p => p.category === cat);
-    if (items.length > 0) acc[cat] = items;
+  const groupedPlaceholders = filteredPlaceholders.reduce((acc, p) => {
+    const cat = p.category || 'general';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(p);
     return acc;
-  }, {} as Record<string, typeof filteredPlaceholders>);
+  }, {} as Record<string, typeof placeholders>);
 
   const catColors: Record<string, string> = {
-    greeting: 'bg-emerald-50 text-emerald-600',
-    return: 'bg-rose/10 text-rose',
-    shipping: 'bg-blue-50 text-blue-600',
-    payment: 'bg-purple-50 text-purple-600',
-    closing: 'bg-amber-50 text-amber-600',
-    general: 'bg-gray-50 text-gray-500',
+    greeting: 'bg-blue-50 text-blue-600',
+    shipping: 'bg-amber-50 text-amber-600',
+    return: 'bg-purple-50 text-purple-600',
+    payment: 'bg-emerald-50 text-emerald-600',
+    product: 'bg-rose/10 text-rose',
+    general: 'bg-gray-50 text-gray-600',
   };
 
   const filteredFlagged = flaggedTickets.filter(t =>
@@ -223,21 +292,37 @@ export function MessagesTab({
 
   const totalUnread = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
 
+  const filteredSessions = chatSessions.filter(session => {
+    if (crmFilter === 'all') return true;
+    const currentStatus = session.crm_status || 'general';
+    return currentStatus === crmFilter;
+  });
+
   return (
-    <div className="flex-1 min-h-0 flex gap-3 pb-2">
-      {/* ─── SUB-TAB NAVIGATOR ─── */}
-      <div className="w-80 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm shrink-0">
-        <div className="p-5 border-b border-ink/5 bg-ink/[0.01]">
-          <div className="flex items-center justify-between mb-3">
+    <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-4 pb-4">
+      {/* ─── SUB-TAB NAVIGATOR & SIDEBAR ─── */}
+      <div className="w-full md:w-[400px] bg-white rounded-xl border border-ink/10 flex flex-col overflow-hidden shadow-xs shrink-0">
+        <div className="p-5 border-b border-ink/10 bg-ink/[0.01]">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">Support Center</h3>
-              <p className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-widest mt-1.5">{chatSessions.length} sessions</p>
+              <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Support Center</h3>
+              <p className="text-xs text-ink/70 mt-1 font-medium">{chatSessions.length} active sessions</p>
             </div>
-            <div className="w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handlePurgeAllChats}
+                title="Hapus Seluruh Percakapan Lama & Baru"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-xs border border-red-200 hover:border-red-500"
+              >
+                <Trash2 size={13} />
+                <span>Purge All</span>
+              </button>
+              <div className="w-2.5 h-2.5 bg-rose rounded-full animate-pulse" title="Live Connection" />
+            </div>
           </div>
 
           {/* Sub-tab switcher */}
-          <div className="flex bg-ink/5 rounded-sm p-0.5 gap-0.5">
+          <div className="flex bg-ink/5 rounded-lg p-1 gap-1">
             {[
               { key: 'chat' as SupportSubTab, label: 'Chat', icon: MessageSquare, badge: totalUnread },
               { key: 'flagged' as SupportSubTab, label: 'Flagged', icon: Flag, badge: flaggedTickets.length },
@@ -249,17 +334,17 @@ export function MessagesTab({
                   key={tab.key}
                   onClick={() => setSubTab(tab.key)}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1 py-1.5 rounded-sm text-[9px] font-semibold uppercase tracking-wider transition-all duration-200",
+                    "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all duration-200",
                     subTab === tab.key
-                      ? "bg-rose text-white shadow-sm"
-                      : "text-ink/90 hover:text-ink/80"
+                      ? "bg-rose text-white shadow-xs"
+                      : "text-ink/70 hover:text-ink hover:bg-white/50"
                   )}
                 >
-                  <Icon size={9} strokeWidth={2} />
-                  {tab.label}
+                  <Icon size={14} strokeWidth={2.2} />
+                  <span>{tab.label}</span>
                   {tab.badge !== null && tab.badge > 0 && (
                     <span className={cn(
-                      "text-[6px] font-bold px-1 py-0.5 rounded-full",
+                      "text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
                       subTab === tab.key ? "bg-white/20 text-white" : "bg-rose text-white"
                     )}>
                       {tab.badge}
@@ -269,44 +354,87 @@ export function MessagesTab({
               );
             })}
           </div>
+
+          {/* CRM Lead Status Filter Chips */}
+          {subTab === 'chat' && (
+            <div className="mt-4 pt-3 border-t border-ink/10 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
+                <Filter size={12} /> Filter:
+              </span>
+              {(['all', 'potential', 'active', 'general', 'bad'] as const).map(key => {
+                const isSelected = crmFilter === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setCrmFilter(key)}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border",
+                      isSelected
+                        ? key === 'potential' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' :
+                          key === 'active' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' :
+                          key === 'bad' ? 'bg-red-600 text-white border-red-600 shadow-xs' :
+                          'bg-ink text-white border-ink shadow-xs'
+                        : "bg-ink/[0.03] text-ink/70 border-ink/10 hover:border-ink/30 hover:text-ink"
+                    )}
+                  >
+                    {key === 'all' ? 'All Leads' : CRM_STATUS_CONFIG[key]?.label || key}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ─── CHAT LIST ─── */}
         {subTab === 'chat' && (
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {chatSessions.map((session) => (
-              <button
-                key={session.id}
-                onClick={() => setActiveChatSession(session)}
-                className={cn(
-                  "w-full p-5 text-left border-b border-ink/[0.03] transition-all duration-300 group relative",
-                  activeChatSession?.id === session.id ? "bg-ink/[0.02]" : "hover:bg-ink/[0.01]"
-                )}
-              >
-                {activeChatSession?.id === session.id && (
-                  <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-rose" />
-                )}
-                <div className="flex justify-between items-start mb-1.5">
-                  <span className="text-[9px] font-medium text-ink uppercase truncate pr-4">{session.customer_name}</span>
-                  <span className="text-[6px] text-ink/80 uppercase font-medium">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <div className="flex justify-between items-end">
-                  <p className="text-[9px] text-ink/80 truncate flex-1 leading-snug lowercase tracking-tight">{session.last_message}</p>
-                  {session.unread_count > 0 && (
-                    <span className="bg-rose text-white text-[6px] font-medium px-1.5 py-0.5 rounded-[2px] ml-2 shrink-0">{session.unread_count}</span>
+            {filteredSessions.map((session) => {
+              const crmStatus = session.crm_status || 'general';
+              const crmCfg = CRM_STATUS_CONFIG[crmStatus] || CRM_STATUS_CONFIG.general;
+              const CrmIcon = crmCfg.icon;
+
+              return (
+                <button
+                  key={session.id}
+                  onClick={() => setActiveChatSession(session)}
+                  className={cn(
+                    "w-full p-4 md:p-5 text-left border-b border-ink/10 transition-all duration-200 group relative",
+                    activeChatSession?.id === session.id ? "bg-ink/[0.04]" : "hover:bg-ink/[0.015]"
                   )}
-                </div>
-                <div className="mt-2 flex gap-1.5">
-                  <span className="text-[5px] uppercase tracking-widest text-ink/80 font-medium">SPEC: {session.customer_email}</span>
-                  <span className="text-[5px] uppercase tracking-widest text-ink/80 font-medium">•</span>
-                  <span className="text-[5px] uppercase tracking-widest text-ink/80 font-medium">ID: {session.id.split('-')[0]}</span>
-                </div>
-              </button>
-            ))}
-            {chatSessions.length === 0 && (
-              <div className="p-12 text-center flex flex-col items-center justify-center space-y-2 opacity-20">
-                <MessageSquare size={24} strokeWidth={1} />
-                <p className="text-[9px] font-medium uppercase tracking-[0.3em] italic">No active inquiries</p>
+                >
+                  {activeChatSession?.id === session.id && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose rounded-r" />
+                  )}
+                  <div className="flex justify-between items-start mb-2 gap-2">
+                    <span className="text-sm font-bold text-ink uppercase truncate pr-2 flex-1">{session.customer_name}</span>
+                    <span className="text-xs text-ink/60 font-mono shrink-0">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span className={cn("inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border", crmCfg.badgeColor)}>
+                      <CrmIcon size={12} />
+                      {crmCfg.label}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-end gap-2">
+                    <p className="text-xs text-ink/75 truncate flex-1 leading-relaxed font-normal">{session.last_message}</p>
+                    {session.unread_count > 0 && (
+                      <span className="bg-rose text-white text-xs font-bold px-2 py-0.5 rounded-full ml-2 shrink-0 shadow-xs">{session.unread_count}</span>
+                    )}
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-ink/5 flex items-center justify-between text-xs text-ink/50 font-mono">
+                    <span className="truncate">EMAIL: {session.customer_email}</span>
+                    <span className="shrink-0 ml-2">ID: {session.id.split('-')[0]}</span>
+                  </div>
+                </button>
+              );
+            })}
+            {filteredSessions.length === 0 && (
+              <div className="p-16 text-center flex flex-col items-center justify-center space-y-3 opacity-40">
+                <MessageSquare size={36} strokeWidth={1} className="text-ink/60" />
+                <p className="text-xs font-bold uppercase tracking-widest text-ink/80">No active inquiries found</p>
               </div>
             )}
           </div>
@@ -316,26 +444,26 @@ export function MessagesTab({
         {subTab === 'flagged' && (
           <div className="flex-1 overflow-y-auto no-scrollbar">
             {/* Flagged Search */}
-            <div className="p-3 border-b border-ink/5">
+            <div className="p-4 border-b border-ink/10">
               <div className="relative">
-                <Search size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/90" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/60" />
                 <input
                   type="text"
                   value={flaggedSearch}
                   onChange={e => setFlaggedSearch(e.target.value)}
-                  placeholder="Search flagged..."
-                  className="w-full pl-8 pr-3 py-1.5 bg-ink/[0.02] border border-ink/5 text-[10px] focus:outline-none focus:border-rose/40 transition-colors placeholder:text-ink/80 rounded-sm"
+                  placeholder="Search flagged tickets..."
+                  className="w-full pl-9 pr-4 py-2 bg-ink/[0.03] border border-ink/10 text-xs font-medium focus:outline-none focus:border-rose transition-colors placeholder:text-ink/50 rounded-lg"
                 />
               </div>
               {(saraCount > 0 || nsfwCount > 0) && (
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-3">
                   {saraCount > 0 && (
-                    <span className="px-2 py-0.5 text-[6px] font-bold uppercase tracking-widest rounded-sm bg-amber-50 text-amber-500 border border-amber-200">
+                    <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md bg-amber-50 text-amber-700 border border-amber-200">
                       SARA {saraCount}
                     </span>
                   )}
                   {nsfwCount > 0 && (
-                    <span className="px-2 py-0.5 text-[6px] font-bold uppercase tracking-widest rounded-sm bg-red-50 text-red-500 border border-red-200">
+                    <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md bg-red-50 text-red-700 border border-red-200">
                       NSFW {nsfwCount}
                     </span>
                   )}
@@ -344,39 +472,44 @@ export function MessagesTab({
             </div>
 
             {filteredFlagged.length === 0 ? (
-              <div className="p-12 text-center flex flex-col items-center justify-center space-y-2 opacity-20">
-                <CheckCircle size={24} strokeWidth={1} className="text-emerald-400" />
-                <p className="text-[9px] font-medium uppercase tracking-[0.3em] italic">All Clear — No Flagged</p>
+              <div className="p-16 text-center flex flex-col items-center justify-center space-y-3 opacity-40">
+                <CheckCircle size={36} strokeWidth={1} className="text-emerald-500" />
+                <p className="text-xs font-bold uppercase tracking-widest text-ink/80">All Clear — No Flagged</p>
               </div>
             ) : (
-              filteredFlagged.map((ticket) => {
-                const cfg = SEVERITY_CONFIG[ticket.flagged_severity];
-                const Icon = cfg?.icon || Flag;
+              filteredFlagged.map(ticket => {
                 const isExpanded = flaggedExpanded === ticket.id;
+                const severityCfg = SEVERITY_CONFIG[ticket.flagged_severity] || SEVERITY_CONFIG.nsfw;
+                const SeverityIcon = severityCfg.icon;
 
                 return (
-                  <div key={ticket.id} className="border-b border-ink/[0.03]">
-                    <button
+                  <div
+                    key={ticket.id}
+                    className={cn(
+                      "border-b border-ink/10 transition-colors",
+                      ticket.flagged_severity === 'nsfw' ? 'bg-red-50/20 hover:bg-red-50/40' :
+                      ticket.flagged_severity === 'sara' ? 'bg-amber-50/20 hover:bg-amber-50/40' : 'bg-white hover:bg-ink/[0.01]'
+                    )}
+                  >
+                    <div
                       onClick={() => setFlaggedExpanded(isExpanded ? null : ticket.id)}
-                      className="w-full p-2 text-left hover:bg-ink/[0.01] transition-colors"
+                      className="p-4 cursor-pointer flex items-start gap-3"
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className={cn("w-6 h-6 rounded-sm flex items-center justify-center border shrink-0", cfg?.color || 'bg-ink/5')}>
-                          <Icon size={10} strokeWidth={1.5} />
+                      <SeverityIcon size={18} className={cn("shrink-0 mt-0.5", ticket.flagged_severity === 'nsfw' ? 'text-red-600' : 'text-amber-600')} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={cn("px-2 py-0.5 text-xs font-bold uppercase tracking-wider rounded border", severityCfg.color)}>
+                            {severityCfg.label}
+                          </span>
+                          <span className="text-xs text-ink/60 font-mono ml-auto">#{ticket.id.split('-')[0]}</span>
                         </div>
-                        <span className={cn("px-1.5 py-0.5 text-[6px] font-bold uppercase tracking-widest rounded-sm border", cfg?.color || 'bg-ink/5')}>
-                          {cfg?.label || 'FLAGGED'}
-                        </span>
-                        <span className="text-[6px] text-ink/80 font-mono ml-auto">#{ticket.id.split('-')[0]}</span>
+                        <p className="text-sm font-bold text-ink uppercase tracking-wide truncate">{ticket.subject}</p>
+                        <p className="text-xs text-ink/70 mt-1 font-medium">
+                          Flagged reason: <span className="text-rose font-semibold">{ticket.flagged_reason || 'Tidak ada detail'}</span>
+                        </p>
                       </div>
-                      <p className="text-[9px] font-semibold text-ink uppercase tracking-wider truncate">{ticket.subject}</p>
-                      <p className="text-[10px] md:text-[7px] text-ink/90 mt-0.5">
-                        {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}
-                      </p>
-                      <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.15 }} className="text-ink/80 mt-1">
-                        <ChevronDown size={10} />
-                      </motion.div>
-                    </button>
+                      <ChevronDown size={16} className={cn("text-ink/40 shrink-0 transition-transform mt-1", isExpanded && "rotate-180")} />
+                    </div>
 
                     <AnimatePresence>
                       {isExpanded && (
@@ -387,25 +520,25 @@ export function MessagesTab({
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-4 pb-3 pt-0 space-y-2 border-t border-ink/5">
-                            <div className={cn("p-2.5 border rounded-sm mt-2",
-                              ticket.flagged_severity === 'nsfw' ? 'bg-red-50/50 border-red-100' :
-                              ticket.flagged_severity === 'sara' ? 'bg-amber-50/50 border-amber-100' : 'bg-ink/[0.01]'
+                          <div className="px-5 pb-4 pt-1 space-y-3 border-t border-ink/10 bg-white/50">
+                            <div className={cn("p-3 border rounded-lg mt-2",
+                              ticket.flagged_severity === 'nsfw' ? 'bg-red-50 border-red-200' :
+                              ticket.flagged_severity === 'sara' ? 'bg-amber-50 border-amber-200' : 'bg-ink/[0.02]'
                             )}>
-                              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Alasan Flag</p>
-                              <p className="text-[9px] text-ink/90 leading-relaxed">{ticket.flagged_reason || 'Tidak ada detail'}</p>
+                              <p className="text-xs font-bold uppercase tracking-wider text-ink/80 mb-1">Alasan Flag Detail</p>
+                              <p className="text-xs text-ink/90 leading-relaxed font-medium">{ticket.flagged_reason || 'Tidak ada detail'}</p>
                             </div>
-                            <div className="flex items-center gap-2 text-[10px] md:text-[7px] text-ink/90">
-                              <Clock size={8} />
+                            <div className="flex items-center gap-2 text-xs text-ink/60 font-mono">
+                              <Clock size={12} />
                               <span>Di-flag: {ticket.flagged_at ? new Date(ticket.flagged_at).toLocaleString('id-ID') : '-'}</span>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-3 pt-1">
                               <button
                                 onClick={() => clearFlag(ticket.id)}
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 text-emerald-600 text-[9px] font-semibold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-sm"
+                                className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-colors rounded-lg border border-emerald-200 shadow-xs"
                               >
-                                <CheckCircle size={9} />
-                                Clear
+                                <CheckCircle size={14} />
+                                Clear Flag
                               </button>
                               <button
                                 onClick={() => {
@@ -415,10 +548,10 @@ export function MessagesTab({
                                     setSubTab('chat');
                                   }
                                 }}
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-ink text-white text-[9px] font-semibold uppercase tracking-wider hover:bg-rose transition-colors rounded-sm"
+                                className="flex items-center gap-1.5 px-3 py-2 bg-ink text-white text-xs font-bold uppercase tracking-wider hover:bg-rose transition-colors rounded-lg shadow-xs"
                               >
-<MessageSquare size={9} />
-                                Open
+                                <MessageSquare size={14} />
+                                Open Chat
                               </button>
                             </div>
                           </div>
@@ -434,165 +567,189 @@ export function MessagesTab({
 
         {/* ─── ANALYTICS SUMMARY ─── */}
         {subTab === 'analytics' && (
-          <div className="flex-1 overflow-y-auto no-scrollbar p-2 space-y-3">
+          <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-rose/5 border border-rose/10 rounded-sm p-3 text-center">
-                <p className="text-[18px] font-display italic font-bold text-rose">{analytics?.totalTickets ?? 0}</p>
-                <p className="text-[6px] text-rose/60 uppercase tracking-widest mt-0.5">Total Tiket</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-rose/5 border border-rose/15 rounded-xl p-4 text-center">
+                <p className="text-2xl font-display italic font-bold text-rose">{analytics?.totalTickets ?? 0}</p>
+                <p className="text-xs font-bold text-rose/70 uppercase tracking-wider mt-1">Total Tiket</p>
               </div>
-              <div className="bg-amber-50 border border-amber-100 rounded-sm p-3 text-center">
-                <p className="text-[18px] font-display italic font-bold text-amber-500">{analytics?.openTickets ?? 0}</p>
-                <p className="text-[6px] text-amber-500/60 uppercase tracking-widest mt-0.5">Open</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                <p className="text-2xl font-display italic font-bold text-amber-600">{analytics?.openTickets ?? 0}</p>
+                <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mt-1">Open</p>
               </div>
-              <div className="bg-emerald-50 border border-emerald-100 rounded-sm p-3 text-center">
-                <p className="text-[18px] font-display italic font-bold text-emerald-500">{analytics?.resolvedTickets ?? 0}</p>
-                <p className="text-[6px] text-emerald-500/60 uppercase tracking-widest mt-0.5">Resolved</p>
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                <p className="text-2xl font-display italic font-bold text-emerald-600">{analytics?.resolvedTickets ?? 0}</p>
+                <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mt-1">Resolved</p>
               </div>
-              <div className="bg-red-50 border border-red-100 rounded-sm p-3 text-center">
-                <p className="text-[18px] font-display italic font-bold text-red-500">{analytics?.flaggedTickets ?? 0}</p>
-                <p className="text-[6px] text-red-500/60 uppercase tracking-widest mt-0.5">Flagged</p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+                <p className="text-2xl font-display italic font-bold text-red-600">{analytics?.flaggedTickets ?? 0}</p>
+                <p className="text-xs font-bold text-red-700 uppercase tracking-wider mt-1">Flagged</p>
               </div>
             </div>
 
             {/* Resolution Rate */}
-            <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
+            <div className="bg-white border border-ink/10 rounded-xl p-4 space-y-2.5">
               <div className="flex justify-between items-center">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Resolution Rate</p>
-                <span className="text-xs md:text-[11px] font-display italic font-bold text-ink">{analytics?.resolutionRate ?? 0}%</span>
+                <p className="text-xs font-bold uppercase tracking-wider text-ink/80">Resolution Rate</p>
+                <span className="text-sm font-display italic font-bold text-ink">{analytics?.resolutionRate ?? 0}%</span>
               </div>
-              <div className="h-1.5 bg-ink/5 rounded-full overflow-hidden">
+              <div className="h-2 bg-ink/5 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-emerald-400 rounded-full transition-all"
+                  className="h-full bg-emerald-500 rounded-full transition-all"
                   style={{ width: `${analytics?.resolutionRate ?? 0}%` }}
                 />
               </div>
             </div>
 
             {/* Activity */}
-            <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Aktivitas</p>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex items-center gap-2">
-                  <Clock3 size={10} className="text-rose/50 shrink-0" />
+            <div className="bg-white border border-ink/10 rounded-xl p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-ink/80">Aktivitas</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-3">
+                  <Clock3 size={16} className="text-rose/60 shrink-0" />
                   <div>
-                    <p className="text-[12px] font-display italic font-bold text-ink">{analytics?.todayTickets ?? 0}</p>
-                    <p className="text-[6px] text-ink/90">Hari ini</p>
+                    <p className="text-base font-display italic font-bold text-ink">{analytics?.todayTickets ?? 0}</p>
+                    <p className="text-xs text-ink/60 font-medium">Hari ini</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <MessageCircle size={10} className="text-blue-500/50 shrink-0" />
+                <div className="flex items-center gap-3">
+                  <TrendingUp size={16} className="text-ink/60 shrink-0" />
                   <div>
-                    <p className="text-[12px] font-display italic font-bold text-ink">{analytics?.weekTickets ?? 0}</p>
-                    <p className="text-[6px] text-ink/90">7 hari</p>
+                    <p className="text-base font-display italic font-bold text-ink">{analytics?.weekTickets ?? 0}</p>
+                    <p className="text-xs text-ink/60 font-medium">7 hari terakhir</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Messages Breakdown */}
-            <div className="bg-white border border-ink/5 rounded-sm p-3 space-y-2">
-              <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90">Messages</p>
+            {/* Messages breakdown */}
+            <div className="bg-white border border-ink/10 rounded-xl p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-ink/80">Balasan Pesan</p>
               <div className="space-y-2">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-[9px] text-ink/90">Auto-reply rate</span>
-                    <span className="text-[9px] font-semibold text-rose">{analytics?.autoReplyRate ?? 0}%</span>
-                  </div>
-                  <div className="h-1.5 bg-ink/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-rose rounded-full transition-all" style={{ width: `${analytics?.autoReplyRate ?? 0}%` }} />
-                  </div>
+                <div className="flex justify-between text-xs font-medium">
+                  <span className="text-ink/70">Auto-reply rate</span>
+                  <span className="font-bold text-rose">{analytics?.autoReplyRate ?? 0}%</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-rose/5 rounded-sm p-2 text-center">
-                    <p className="text-[14px] font-display italic font-bold text-rose">{analytics?.autoReplyCount ?? 0}</p>
-                    <p className="text-[6px] text-rose/60">Auto</p>
+                <div className="h-2 bg-ink/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-rose rounded-full transition-all" style={{ width: `${analytics?.autoReplyRate ?? 0}%` }} />
+                </div>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="bg-rose/5 border border-rose/10 rounded-lg p-2.5 text-center">
+                    <p className="text-lg font-display italic font-bold text-rose">{analytics?.autoReplyCount ?? 0}</p>
+                    <p className="text-xs font-bold text-rose/70">Auto Reply</p>
                   </div>
-                  <div className="bg-ink/5 rounded-sm p-2 text-center">
-                    <p className="text-[14px] font-display italic font-bold text-ink">{analytics?.manualReplyCount ?? 0}</p>
-                    <p className="text-[6px] text-ink/80">Manual</p>
+                  <div className="bg-ink/5 border border-ink/10 rounded-lg p-2.5 text-center">
+                    <p className="text-lg font-display italic font-bold text-ink">{analytics?.manualReplyCount ?? 0}</p>
+                    <p className="text-xs font-bold text-ink/80">Manual Reply</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Avg Response */}
-            {analytics?.avgResponseMinutes && analytics.avgResponseMinutes > 0 && (
-              <div className="bg-white border border-ink/5 rounded-sm p-3">
-                <p className="text-[10px] md:text-[7px] font-semibold uppercase tracking-widest text-ink/90 mb-1">Avg Response</p>
-                <p className="text-[18px] font-display italic font-bold text-ink">{analytics.avgResponseMinutes}m</p>
-                <p className="text-[6px] text-ink/90">first response time</p>
+            {analytics?.avgResponseMinutes !== undefined && (
+              <div className="bg-white border border-ink/10 rounded-xl p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-ink/80 mb-1">Avg First Response</p>
+                <p className="text-2xl font-display italic font-bold text-ink">{analytics.avgResponseMinutes}m</p>
+                <p className="text-xs text-ink/60 font-medium mt-0.5">Waktu respons pertama ke customer</p>
               </div>
             )}
 
             {/* Refresh */}
             <button
               onClick={fetchAnalytics}
-              className="w-full flex items-center justify-center gap-1.5 py-2 bg-ink/5 text-ink/80 text-[9px] font-semibold uppercase tracking-wider hover:bg-rose/10 hover:text-rose transition-colors rounded-sm"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-ink/5 text-ink/80 text-xs font-bold uppercase tracking-wider hover:bg-rose/10 hover:text-rose transition-colors rounded-lg shadow-xs"
             >
-              <RefreshCw size={9} className={cn('shrink-0', loadingAnalytics && 'animate-spin')} />
-              Refresh Stats
+              <RefreshCw size={13} className={cn('shrink-0', loadingAnalytics && 'animate-spin')} />
+              <span>Refresh Statistics</span>
             </button>
           </div>
         )}
       </div>
 
       {/* ─── CHAT AREA ─── */}
-      <div className="flex-1 bg-white rounded-[5px] border border-ink/5 flex flex-col overflow-hidden shadow-sm">
+      <div className="flex-1 bg-white rounded-xl border border-ink/10 flex flex-col overflow-hidden shadow-xs">
         {activeChatSession ? (
           <>
             {/* Chat Header */}
-            <div className="p-5 border-b border-ink/5 flex items-center justify-between bg-ink/[0.01]">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-ink rounded-[5px] flex items-center justify-center text-white text-[10px] font-medium">
+            <div className="p-4 md:p-5 border-b border-ink/10 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-ink/[0.01]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-12 h-12 bg-ink rounded-xl flex items-center justify-center text-white text-base font-bold shrink-0 shadow-xs">
                   {activeChatSession.customer_name.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <h3 className="text-[10px] font-medium text-ink uppercase tracking-[0.2em]">{activeChatSession.customer_name}</h3>
-                  <p className="text-[10px] md:text-[7px] text-ink/90 uppercase tracking-widest mt-1">Email: {activeChatSession.customer_email}</p>
+                <div className="min-w-0">
+                  <h3 className="text-base font-bold text-ink uppercase tracking-wide truncate">{activeChatSession.customer_name}</h3>
+                  <p className="text-xs text-ink/60 font-mono mt-0.5 truncate">Email: {activeChatSession.customer_email}</p>
                 </div>
               </div>
-              <div className="flex gap-2">
+
+              {/* CRM Status Tagging & Resolved Action */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1 bg-ink/5 p-1 rounded-lg">
+                  {(['potential', 'active', 'general', 'bad'] as const).map(status => {
+                    const cfg = CRM_STATUS_CONFIG[status];
+                    const Icon = cfg.icon;
+                    const isSelected = (activeChatSession.crm_status || 'general') === status;
+                    return (
+                      <button
+                        key={status}
+                        disabled={updatingCrm === activeChatSession.id}
+                        onClick={() => handleUpdateCrmStatus(activeChatSession.id, status)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-200",
+                          isSelected ? `${cfg.color} shadow-xs font-extrabold scale-[1.02]` : "text-ink/60 hover:text-ink hover:bg-white/60"
+                        )}
+                        title={cfg.desc}
+                      >
+                        <Icon size={13} />
+                        <span className="hidden sm:inline">{cfg.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <button
-                  className="px-4 py-1.5 border border-ink/10 rounded-[5px] text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/80 hover:text-rose hover:border-rose transition-all duration-300"
+                  className="px-4 py-2 border border-emerald-600/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-xs flex items-center gap-1.5 shrink-0 ml-auto xl:ml-0"
                   onClick={async () => {
                     await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', activeChatSession.id);
                     fetchChatSessions();
                     setActiveChatSession(null);
                   }}
                 >
-                  Mark Resolved
+                  <CheckCircle size={14} />
+                  <span>Mark Resolved</span>
                 </button>
               </div>
             </div>
 
             {/* Messages History */}
-            <div className="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 bg-white">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-4 md:p-6 space-y-4 bg-white">
               {activeChatSession.messages.map((msg) => (
                 <div key={msg.id} className={cn("flex", msg.sender === 'admin' ? "justify-end" : "justify-start")}>
-                  <div className={cn("max-w-[70%] group", msg.sender === 'admin' ? "items-end" : "items-start")}>
+                  <div className={cn("max-w-[80%] md:max-w-[70%] group", msg.sender === 'admin' ? "items-end" : "items-start")}>
                     <div className={cn(
-                      "p-2 rounded-[5px] text-[10px] leading-relaxed",
+                      "p-3.5 md:p-4 rounded-2xl text-sm leading-relaxed shadow-xs font-normal",
                       msg.sender === 'admin'
                         ? msg.is_auto_reply
-                          ? "bg-rose/10 border border-rose/20 text-ink shadow-sm"
-                          : "bg-ink text-white shadow-lg shadow-ink/5"
-                        : "bg-ink/[0.03] text-ink border border-ink/5"
+                          ? "bg-rose/10 border border-rose/20 text-ink rounded-tr-none"
+                          : "bg-ink text-white rounded-tr-none"
+                        : "bg-ink/[0.04] text-ink border border-ink/10 rounded-tl-none"
                     )}>
                       {msg.message}
                     </div>
-                    <div className={cn("mt-2 flex items-center gap-2", msg.sender === 'admin' ? "flex-row-reverse" : "flex-row")}>
-                      <span className="text-[6px] font-medium text-ink/80 uppercase tracking-widest">
+                    <div className={cn("mt-1.5 flex items-center gap-2 px-1", msg.sender === 'admin' ? "flex-row-reverse" : "flex-row")}>
+                      <span className="text-xs text-ink/50 font-mono">
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                       {msg.sender === 'admin' && (
-                        <span className={cn("text-[6px] font-medium uppercase tracking-widest", msg.is_read ? "text-rose" : "text-ink/10")}>
+                        <span className={cn("text-xs font-bold uppercase tracking-wider", msg.is_read ? "text-emerald-600" : "text-ink/40")}>
                           {msg.is_auto_reply ? (
-                            <span className="flex items-center gap-1">
-                              <Zap size={8} className="text-rose" strokeWidth={2} />
-                              AUTO
+                            <span className="flex items-center gap-1 text-rose">
+                              <Zap size={11} strokeWidth={2.5} />
+                              AUTO BOT
                             </span>
-                          ) : msg.is_read ? 'PROCESSED' : 'SENT'}
+                          ) : msg.is_read ? '✓ READ' : 'SENT'}
                         </span>
                       )}
                     </div>
@@ -602,7 +759,7 @@ export function MessagesTab({
             </div>
 
             {/* Input Area */}
-            <div className="p-3 border-t border-ink/5 bg-white space-y-2">
+            <div className="p-4 border-t border-ink/10 bg-white space-y-3">
               {/* Placeholder dropdown */}
               <AnimatePresence>
                 {placeholderOpen && (
@@ -612,46 +769,48 @@ export function MessagesTab({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 4, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
-                    className="bg-white border border-ink/10 rounded-sm shadow-xl overflow-hidden z-10"
+                    className="bg-white border border-ink/15 rounded-xl shadow-xl overflow-hidden z-10"
                   >
-                    <div className="px-1.5 py-1 border-b border-ink/5 bg-ink/[0.01] flex items-center gap-2">
-                      <Search size={10} className="text-ink/90 shrink-0" />
+                    <div className="px-3 py-2 border-b border-ink/10 bg-ink/[0.02] flex items-center gap-2">
+                      <Search size={14} className="text-ink/60 shrink-0" />
                       <input
                         autoFocus
                         type="text"
                         value={placeholderSearch}
                         onChange={e => setPlaceholderSearch(e.target.value)}
-                        placeholder="Search templates..."
-                        className="flex-1 text-[10px] font-medium bg-transparent outline-none placeholder:text-ink/80"
+                        placeholder="Search quick reply templates..."
+                        className="flex-1 text-xs font-semibold bg-transparent outline-none placeholder:text-ink/50"
                       />
-                      <button onClick={() => setPlaceholderOpen(false)} className="text-ink/80 hover:text-ink">
-                        <X size={10} />
+                      <button onClick={() => setPlaceholderOpen(false)} className="text-ink/60 hover:text-ink">
+                        <X size={14} />
                       </button>
                     </div>
-                    <div className="max-h-52 overflow-y-auto minimal-scroll p-1.5 space-y-1">
+                    <div className="max-h-60 overflow-y-auto minimal-scroll p-2 space-y-2">
                       {Object.keys(groupedPlaceholders).length === 0 && (
-                        <p className="text-[9px] text-ink/90 italic text-center py-1.5">No templates found</p>
+                        <p className="text-xs text-ink/60 italic text-center py-4">No templates found</p>
                       )}
                       {Object.entries(groupedPlaceholders).map(([cat, items]) => (
                         <div key={cat}>
-                          <p className={cn("px-1.5 py-0.5 text-[6px] font-bold uppercase tracking-widest rounded-sm mb-1", catColors[cat])}>
+                          <p className={cn("px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest rounded-md mb-1 inline-block", catColors[cat])}>
                             {cat}
                           </p>
-                          {items.map(p => (
-                            <button
-                              key={p.id}
-                              onClick={() => {
-                                const current = newMessage;
-                                setNewMessage(current ? `${current}\n\n${p.content}` : p.content);
-                                setPlaceholderOpen(false);
-                                setPlaceholderSearch('');
-                              }}
-                              className="w-full text-left p-2 rounded-sm hover:bg-ink/[0.02] transition-colors group"
-                            >
-                              <p className="text-[9px] font-semibold text-ink uppercase tracking-wider group-hover:text-rose transition-colors">{p.label}</p>
-                              <p className="text-[9px] text-ink/90 leading-relaxed mt-0.5 line-clamp-1">{p.content}</p>
-                            </button>
-                          ))}
+                          <div className="space-y-1">
+                            {items.map(p => (
+                              <button
+                                key={p.id}
+                                onClick={() => {
+                                  const current = newMessage;
+                                  setNewMessage(current ? `${current}\n\n${p.content}` : p.content);
+                                  setPlaceholderOpen(false);
+                                  setPlaceholderSearch('');
+                                }}
+                                className="w-full text-left p-2.5 rounded-lg hover:bg-ink/[0.03] transition-colors group border border-transparent hover:border-ink/10"
+                              >
+                                <p className="text-xs font-bold text-ink uppercase tracking-wide group-hover:text-rose transition-colors">{p.label}</p>
+                                <p className="text-xs text-ink/70 leading-relaxed mt-0.5 line-clamp-2 font-normal">{p.content}</p>
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -660,19 +819,19 @@ export function MessagesTab({
               </AnimatePresence>
 
               {/* Input row */}
-              <div className="flex items-end gap-1.5">
+              <div className="flex items-end gap-2">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => setPlaceholderOpen(prev => !prev)}
-                  title="Insert placeholder template"
+                  title="Insert quick reply template"
                   className={cn(
-                    "h-10 px-2.5 rounded-sm border text-ink/90 hover:text-rose transition-all flex items-center gap-1.5 shrink-0 mb-0.5",
-                    placeholderOpen ? "border-rose/30 bg-rose/5 text-rose" : "border-ink/10 hover:border-rose/20"
+                    "h-11 px-3.5 rounded-lg border text-ink/80 hover:text-rose transition-all flex items-center gap-1.5 shrink-0 shadow-xs",
+                    placeholderOpen ? "border-rose/40 bg-rose/10 text-rose font-bold" : "border-ink/15 hover:border-rose/30 bg-ink/[0.01]"
                   )}
                 >
-                  <Tag size={11} strokeWidth={1.5} />
-                  <span className="text-[9px] font-semibold uppercase tracking-wider hidden lg:inline">Template</span>
+                  <Tag size={14} strokeWidth={2} />
+                  <span className="text-xs font-bold uppercase tracking-wider hidden lg:inline">Template</span>
                 </motion.button>
 
                 <textarea
@@ -687,30 +846,38 @@ export function MessagesTab({
                       sendMessage();
                     }
                   }}
-                  placeholder="Type archival response..."
-                  className="flex-1 bg-ink/[0.02] text-ink py-2.5 px-3.5 rounded-sm text-xs md:text-[11px] font-medium outline-none border border-ink/[0.08] placeholder:text-ink/80 transition-all focus:bg-white focus:border-rose/30 resize-none no-scrollbar min-h-[40px]"
+                  placeholder="Ketik balasan untuk customer..."
+                  className="flex-1 bg-ink/[0.02] text-ink py-3 px-4 rounded-lg text-sm font-medium outline-none border border-ink/15 placeholder:text-ink/50 transition-all focus:bg-white focus:border-rose focus:ring-1 focus:ring-rose/20 resize-none no-scrollbar min-h-[44px]"
                 />
                 <motion.button
-                  whileHover={{ scale: 1.1, color: '#E8527A' }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.05, backgroundColor: '#E8527A', color: '#ffffff' }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => sendMessage()}
-                  className="w-7 h-10 flex items-center justify-center text-ink/10 hover:text-rose transition-all duration-300 flex-shrink-0 mb-0.5"
+                  className="h-11 px-5 rounded-lg bg-ink text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 hover:shadow-md"
                 >
-                  <Send size={12} strokeWidth={2.5} />
+                  <span>Send</span>
+                  <Send size={13} strokeWidth={2.5} />
                 </motion.button>
               </div>
-              <div className="flex justify-between items-center px-0.5">
-                <p className="text-[5.5px] font-medium uppercase tracking-[0.4em] text-ink/15 italic">Customer Support Chat</p>
-                <p className={cn("text-[5.5px] font-medium tracking-widest uppercase", newMessage.length > 450 ? "text-rose" : "text-ink/15")}>
-                  {newMessage.length}/500
+              <div className="flex justify-between items-center px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/40 flex items-center gap-1">
+                  <Sparkles size={12} /> Live Customer Support Desk
+                </p>
+                <p className={cn("text-xs font-mono font-bold tracking-wide", newMessage.length > 450 ? "text-rose" : "text-ink/40")}>
+                  {newMessage.length} / 500 chars
                 </p>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center space-y-2 opacity-20">
-            <MessageSquare size={48} strokeWidth={0.5} />
-            <p className="text-[10px] font-medium uppercase tracking-[0.5em] italic">Select inquiry to respond</p>
+          <div className="flex-1 flex flex-col items-center justify-center space-y-4 p-12 opacity-40">
+            <div className="w-20 h-20 rounded-full bg-ink/5 flex items-center justify-center">
+              <MessageSquare size={36} strokeWidth={1.5} className="text-ink/60" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-bold uppercase tracking-wider text-ink">Select an inquiry to respond</p>
+              <p className="text-xs text-ink/60 mt-1 font-normal">Pilih tiket percakapan di bilah kiri atau gunakan filter status CRM</p>
+            </div>
           </div>
         )}
       </div>
