@@ -14,7 +14,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   let productId = editingProductId;
 
   // Normalize category against Postgres enum main_category_type ('pakaian', 'aksesoris', 'utilities')
-  // while preserving specific sub-category selections (e.g. 'apparel', 'footwear', 'coffee', 'pakaian-pria')
+  // while preserving specific sub-category selections (e.g. 'apparel', 'footwear', 'coffee', 'pakaian-pria', 'unisex', 'pakaian-unisex')
   if (productData && productData.category) {
     const rawCat = String(productData.category).toLowerCase().trim();
     const validEnums = ['pakaian', 'aksesoris', 'utilities'];
