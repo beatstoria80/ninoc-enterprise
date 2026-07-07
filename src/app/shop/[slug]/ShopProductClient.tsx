@@ -1091,6 +1091,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         onClose={() => setIsReviewsDrawerOpen(false)}
         reviews={reviews}
         productName={product.name}
+        productId={product.id}
       />
     </main>
   );
