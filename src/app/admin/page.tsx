@@ -2924,6 +2924,16 @@ export default function AdminDashboard() {
                               disabled={isUploadingProductImage}
                             />
                           </label>
+                          {productForm.image_url && (
+                            <button
+                              type="button"
+                              onClick={() => setProductForm(prev => ({ ...prev, image_url: '', image_alt: '' }))}
+                              className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
+                              title="Hapus URL Gambar"
+                            >
+                              Clear
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -2995,6 +3005,27 @@ export default function AdminDashboard() {
                                 disabled={isUploadingProductImage}
                               />
                             </label>
+                            {val && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isP5) {
+                                    const newSpecs = [...(productForm.specifications || [])];
+                                    const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                    if (specIdx >= 0) {
+                                      newSpecs.splice(specIdx, 1);
+                                      setProductForm({ ...productForm, specifications: newSpecs });
+                                    }
+                                  } else {
+                                    setProductForm({ ...productForm, [field]: '' });
+                                  }
+                                }}
+                                className="flex items-center justify-center px-1.5 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
+                                title="Hapus Gambar"
+                              >
+                                X
+                              </button>
+                            )}
                           </div>
                         )})}
                       </div>
