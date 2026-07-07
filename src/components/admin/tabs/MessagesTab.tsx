@@ -553,7 +553,7 @@ export function MessagesTab({
           {subTab === 'chat' && (
             <div className="mt-4 pt-3 border-t border-ink/10 space-y-2">
               {/* Status & Realtime Active row */}
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <div className="flex items-center gap-1.5 flex-wrap pb-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
                   <SlidersHorizontal size={12} /> Status:
                 </span>
@@ -580,7 +580,7 @@ export function MessagesTab({
               </div>
 
               {/* Date & Time row */}
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <div className="flex items-center gap-1.5 flex-wrap pb-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
                   <Clock size={12} /> Waktu:
                 </span>
@@ -607,7 +607,7 @@ export function MessagesTab({
               </div>
 
               {/* Priority filter row */}
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <div className="flex items-center gap-1.5 flex-wrap pb-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
                   <Flame size={12} /> Prioritas:
                 </span>
@@ -634,7 +634,7 @@ export function MessagesTab({
               </div>
 
               {/* CRM Lead status row */}
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <div className="flex items-center gap-1.5 flex-wrap pb-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
                   <Star size={12} /> CRM Lead:
                 </span>
