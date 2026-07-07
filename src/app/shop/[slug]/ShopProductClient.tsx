@@ -332,11 +332,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-sm md:text-[11px]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
                       {displaySpecs.map((spec: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-center border-b border-ink/5 py-1">
-                          <span className="text-ink/60 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
-                          <span className="font-semibold text-right">{spec.value}</span>
+                        <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
+                          <span className="text-[12px] md:text-[11px] lg:text-[11px] font-semibold uppercase tracking-wider text-ink/90">{spec.label}</span>
+                          <span className="text-[12px] md:text-[11px] lg:text-[11px] font-bold text-ink text-right">{spec.value}</span>
                         </div>
                       ))}
                     </div>
