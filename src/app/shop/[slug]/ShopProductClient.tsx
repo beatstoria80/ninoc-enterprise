@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import type { Dictionary } from '@/lib/i18n';
+import { ProductReviewsDrawer } from '@/components/shop/ProductReviewsDrawer';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -121,6 +122,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
+  const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
 
   const { isMobile, isIPhone } = useDevice();
   const [isWidescreen, setIsWidescreen] = useState(false);
@@ -592,16 +594,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </div>
                 </motion.div>
                 <motion.h1 variants={textVariants} className="text-base md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
-                {reviews.length > 0 && (
-                  <motion.div variants={textVariants} className="flex items-center gap-1.5 mb-1.5 mt-0.5">
-                    <div className="flex text-amber-500">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={10} fill={i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
-                      ))}
-                    </div>
-                    <span className="text-[10px] md:text-[8px] font-bold text-ink/60 uppercase tracking-widest">{reviews.length} Reviews</span>
-                  </motion.div>
-                )}
+                <motion.button 
+                  variants={textVariants} 
+                  onClick={() => setIsReviewsDrawerOpen(true)}
+                  className="flex items-center gap-2 mb-1.5 mt-0.5 px-2 py-1 -ml-2 rounded-md hover:bg-ink/[0.03] transition-colors active:scale-[0.97] group"
+                >
+                  <div className="flex gap-0.5 text-amber-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={12} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] md:text-[9px] font-bold text-ink/60 uppercase tracking-widest group-hover:text-ink transition-colors underline decoration-ink/20 underline-offset-2">
+                    {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
+                  </span>
+                </motion.button>
                 <motion.div variants={textVariants} className="flex items-center gap-3 mt-0.5">
                   <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-emerald-700">
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -1030,46 +1036,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           </motion.div>
         </motion.div>
 
-        {reviews.length > 0 && (
-          <motion.div variants={staggerContainer} initial={skipAnimation ? false : "hidden"} animate="visible" className="mt-8 lg:mt-12 border-t border-ink/5 pt-6 lg:pt-8">
-            <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-2 lg:pb-3 mb-4 lg:mb-6">
-              <h2 className="text-xs md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">Customer Reviews</h2>
-              <div className="flex items-center gap-2">
-                <span className="text-xs md:text-[10px] font-bold text-ink">{reviews.length}</span>
-                <span className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.2em] text-ink/60">Verified Ratings</span>
-              </div>
-            </motion.div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {reviews.map((r) => (
-                <motion.div key={r.id} variants={textVariants} className="p-4 md:p-5 bg-ink/[0.01] border border-ink/5 rounded-sm flex flex-col gap-3">
-                  <div className="flex items-center justify-between border-b border-ink/5 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-ink/10 flex items-center justify-center text-[10px] font-bold text-ink uppercase">
-                        {r.author_name.charAt(0)}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs md:text-[10px] font-bold text-ink uppercase tracking-wider">{r.author_name}</span>
-                        {r.is_verified_purchase && (
-                          <span className="text-[9px] md:text-[7px] font-bold uppercase tracking-widest text-emerald-600 mt-0.5 flex items-center gap-0.5">
-                            <ShieldCheck size={8} /> Verified
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={10} fill={i < r.rating ? "currentColor" : "none"} className="text-amber-500" />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-xs md:text-[11px] text-ink/80 leading-relaxed italic">&quot;{r.review_text}&quot;</p>
-                  <span className="text-[9px] md:text-[7px] font-medium uppercase tracking-widest text-ink/50 mt-auto pt-2">{new Date(r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
         {relatedProducts.length > 0 && (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
@@ -1115,6 +1081,13 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         imageUrl={fullscreenImage}
         onClose={() => setFullscreenImage(null)}
         altText={product?.name || "Product Image"}
+      />
+
+      <ProductReviewsDrawer
+        isOpen={isReviewsDrawerOpen}
+        onClose={() => setIsReviewsDrawerOpen(false)}
+        reviews={reviews}
+        productName={product.name}
       />
     </main>
   );
