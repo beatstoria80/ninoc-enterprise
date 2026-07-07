@@ -2297,7 +2297,7 @@ export default function AdminDashboard() {
                               </>
                             ) : (
                               <>
-                                <option value="unisex">Pakaian Unisex (Pria & Wanita)</option>
+                                <option value="unisex">Unisex</option>
                                 <option value="pakaian">Kaos / Atasan Standar</option>
                                 <option value="pakaian-pria">Pakaian Pria</option>
                                 <option value="pakaian-wanita">Pakaian Wanita</option>
