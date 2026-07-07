@@ -399,11 +399,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {activeInfoTab === null || (localizedDescription || '').length <= 150
+                  {activeInfoTab === null || (localizedDescription || '').length <= 80
                     ? localizedDescription || 'Premium quality apparel from NINOC.'
-                    : (localizedDescription || '').slice(0, 150) + '…'}
+                    : (localizedDescription || '').slice(0, 80) + '…'}
                 </motion.p>
-                {activeInfoTab !== null && (localizedDescription || '').length > 150 && (
+                {activeInfoTab !== null && (localizedDescription || '').length > 80 && (
                   <motion.button
                     variants={textVariants}
                     onClick={() => setActiveInfoTab(null)}
@@ -440,10 +440,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   {activeInfoTab === 'specs' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-sm md:text-[11px]">
                       {displaySpecs.map((spec: any, idx: number) => (
-                        <motion.div variants={textVariants} key={idx} className="flex justify-between items-center border-b border-ink/5 py-1">
+                        <div key={idx} className="flex justify-between items-center border-b border-ink/5 py-1">
                           <span className="text-ink/60 uppercase tracking-widest text-[11px] md:text-[8px]">{spec.label}</span>
                           <span className="font-semibold text-right">{spec.value}</span>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -458,14 +458,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         const wh = getWeightAndHeight(m.size);
                         const isSelected = effectiveSize && m.size.toUpperCase() === effectiveSize.toUpperCase();
                         return (
-                          <motion.div variants={textVariants} key={idx} className={cn(
+                          <div key={idx} className={cn(
                             "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-2 border-b last:border-0 transition-colors min-w-[200px]",
                             isSelected ? "border-ink/20 bg-ink/5" : "border-ink/10 hover:border-ink/20 hover:bg-ink/[0.02]"
                           )}>
                             <span className={cn("text-sm md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
                             <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
                             <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-right", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
-                          </motion.div>
+                          </div>
                         );
                       })}
                       {displayModelInfo && (
