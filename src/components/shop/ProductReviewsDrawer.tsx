@@ -49,7 +49,7 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName }: 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[9998] bg-ink/40 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -59,7 +59,7 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName }: 
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.4, ease: easeDrawer }}
-            className="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-white z-[101] flex flex-col shadow-2xl border-l border-ink/10"
+            className="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-white z-[9999] flex flex-col shadow-2xl border-l border-ink/10"
           >
             {/* Header */}
             <div className="p-5 border-b border-ink/10 flex items-center justify-between bg-white shrink-0 z-10">
@@ -102,6 +102,15 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName }: 
                   <Star size={40} className="text-ink/20 mb-3" />
                   <p className="text-sm font-bold uppercase tracking-widest text-ink">Belum Ada Ulasan</p>
                   <p className="text-xs text-ink/60 mt-1">Jadilah yang pertama mengulas produk ini.</p>
+                  <button 
+                    onClick={() => {
+                      onClose();
+                      alert("Fitur Tulis Ulasan akan diarahkan ke form submit review setelah integrasi sistem akun selesai.");
+                    }} 
+                    className="mt-6 px-6 py-2.5 bg-rose text-white text-xs font-bold uppercase tracking-widest rounded-none shadow-md hover:bg-ink transition-colors active:scale-[0.97]"
+                  >
+                    Tulis Ulasan
+                  </button>
                 </div>
               ) : (
                 reviews.map((review, i) => (
@@ -148,9 +157,20 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName }: 
               )}
             </div>
             
-            {/* SEO Footnote (visually subtle) */}
-            <div className="p-4 bg-ink/[0.02] border-t border-ink/10 text-center shrink-0">
-              <p className="text-[10px] text-ink/40 italic">Review ratings and content are indexed for SEO.</p>
+            {/* SEO Footnote & Action (visually subtle) */}
+            <div className="p-4 bg-ink/[0.02] border-t border-ink/10 shrink-0 flex flex-col gap-3">
+              {reviews.length > 0 && (
+                <button 
+                  onClick={() => {
+                    onClose();
+                    alert("Fitur Tulis Ulasan akan diarahkan ke form submit review setelah integrasi sistem akun selesai.");
+                  }} 
+                  className="w-full py-3 bg-ink text-white text-xs font-bold uppercase tracking-widest rounded-none shadow-md hover:bg-rose transition-colors active:scale-[0.97]"
+                >
+                  Tulis Ulasan Anda
+                </button>
+              )}
+              <p className="text-[10px] text-ink/40 italic text-center">Review ratings and content are indexed for SEO.</p>
             </div>
           </motion.div>
         </>
