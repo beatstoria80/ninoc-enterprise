@@ -34,7 +34,7 @@ export function matchesCategoryPillar(productCategory: string, pillar: string): 
   if (!productCategory) return false;
   const cat = productCategory.toLowerCase().trim();
   if (pillar === 'Apparel') {
-    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi'].some(k => cat.includes(k));
+    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex'].some(k => cat.includes(k));
   }
   if (pillar === 'Objects') {
     return ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k));

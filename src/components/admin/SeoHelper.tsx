@@ -43,6 +43,14 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     'Pendant Necklace', 'Sticker Pack', 'Pin Badge', 'Keychain',
     'Gantungan Kunci', 'Aksesori Premium'
   ],
+  unisex: [
+    'Kaos Unisex', 'Oversize Tee', 'Baju Pria Wanita', 'Streetwear Unisex',
+    'Kaos Premium', 'Korean Style', 'Cotton Combed 24s', 'Graphic Tee Unisex'
+  ],
+  'pakaian-unisex': [
+    'Kaos Unisex', 'Oversize Tee', 'Baju Pria Wanita', 'Streetwear Unisex',
+    'Kaos Premium', 'Korean Style', 'Cotton Combed 24s', 'Graphic Tee Unisex'
+  ],
 };
 
 // ===== TITLE TEMPLATES =====
@@ -52,6 +60,16 @@ const TITLE_TEMPLATES: Record<string, { label: string; template: (name: string) 
     { label: 'Premium T-Shirt', template: (n) => `${n} — Premium Oversize T-Shirt Original | NINOC Store` },
     { label: 'Streetwear Style', template: (n) => `${n} | Kaos Streetwear Premium Cotton Combed 24s — NINOC` },
     { label: 'Korean Oversize', template: (n) => `Kaos Oversize Korean Style "${n}" Unisex | NINOC Indonesia` },
+  ],
+  unisex: [
+    { label: 'Unisex Oversize', template: (n) => `Kaos Oversize Unisex "${n}" Streetwear Premium | NINOC` },
+    { label: 'Unisex Graphic Tee', template: (n) => `${n} — Kaos Pria & Wanita Premium Cotton | NINOC Store` },
+    { label: 'Korean Unisex Style', template: (n) => `Baju Oversize Korean Style "${n}" Unisex | NINOC Indonesia` },
+  ],
+  'pakaian-unisex': [
+    { label: 'Unisex Oversize', template: (n) => `Kaos Oversize Unisex "${n}" Streetwear Premium | NINOC` },
+    { label: 'Unisex Graphic Tee', template: (n) => `${n} — Kaos Pria & Wanita Premium Cotton | NINOC Store` },
+    { label: 'Korean Unisex Style', template: (n) => `Baju Oversize Korean Style "${n}" Unisex | NINOC Indonesia` },
   ],
   utilities: [
     { label: 'Premium Cap', template: (n) => `${n} — Premium Archival Garment | NINOC STORE` },

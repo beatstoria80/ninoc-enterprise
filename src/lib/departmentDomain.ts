@@ -41,7 +41,7 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
     keywords: [
       'apparel', 'archive', 'fashion', 'garment', 'footwear', 'clothes', 'clothing',
       'pakaian', 'baju', 'kaos', 'celana', 'jaket', 'hoodie', 'shirt', 't-shirt',
-      'pants', 'outerwear', 'sweatshirt', 'sepatu', 'aksesoris', 'atasan', 'bawahan'
+      'pants', 'outerwear', 'sweatshirt', 'sepatu', 'aksesoris', 'atasan', 'bawahan', 'unisex'
     ] as const,
   },
   OBJECTS: {
