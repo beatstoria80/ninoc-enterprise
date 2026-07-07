@@ -174,26 +174,94 @@ class IndonesianNlpEngine {
   ]);
 
   private static readonly SYNONYM_MAP: Record<string, string> = {
+    // Ukuran / Sizes (Singkatan & Sehari-hari)
     xxl: '2XL',
     '2xl': 'XXL',
     xxxl: '3XL',
     '3xl': 'XXXL',
+    jumbo: 'XXL',
+    gedong: 'XXL',
+    smal: 'S',
+    kecil: 'S',
+    sedang: 'M',
+    med: 'M',
+    larg: 'L',
+    besar: 'L',
+    eksel: 'XL',
+
+    // Warna / Colors (Gaul, Singkatan & Typo)
     item: 'hitam',
+    htm: 'hitam',
     puti: 'putih',
     pti: 'putih',
+    pth: 'putih',
+    ijo: 'hijau',
+    ijoo: 'hijau',
+    green: 'hijau',
+    mirah: 'merah',
+    red: 'merah',
+    biru: 'biru',
+    blue: 'biru',
+    coklat: 'cokelat',
+    cklt: 'cokelat',
+    brown: 'cokelat',
+    abu: 'abu-abu',
+    grey: 'abu-abu',
+    gray: 'abu-abu',
+    kuning: 'kuning',
+    yellow: 'kuning',
+    oren: 'oranye',
+    orange: 'oranye',
+    pink: 'merah muda',
+    ungu: 'purple',
+
+    // Sasaran / Gender (Gaul & Sehari-hari)
     cewek: 'wanita',
+    cewe: 'wanita',
     cwk: 'wanita',
+    cwe: 'wanita',
     perempuan: 'wanita',
     girl: 'wanita',
     women: 'wanita',
     lady: 'wanita',
+    ciwi: 'wanita',
+    ciwi2: 'wanita',
     cowok: 'pria',
+    cowo: 'pria',
     cwok: 'pria',
+    cwo: 'pria',
     laki: 'pria',
     boy: 'pria',
     men: 'pria',
     man: 'pria',
+    cogan: 'pria',
+    kapel: 'unisex',
+    couple: 'unisex',
+    sarimbit: 'unisex',
+    netral: 'unisex',
+
+    // Jenis Pakaian & Cutting (Gaul & Sehari-hari)
     atasan: 'kaos',
+    tee: 'kaos',
+    tshirt: 'kaos',
+    bawahan: 'celana',
+    pants: 'celana',
+    kolor: 'celana pendek',
+    celpen: 'celana pendek',
+    celpan: 'celana panjang',
+    hodi: 'hoodie',
+    hudie: 'hoodie',
+    switer: 'hoodie',
+    sweater: 'hoodie',
+    luaran: 'outer',
+    gombrong: 'oversize',
+    longgar: 'oversize',
+    onggrok: 'oversize',
+    kebesaran: 'oversize',
+    ngepas: 'slim fit',
+    ketat: 'slim fit',
+    standar: 'regular',
+    biasa: 'regular',
   };
 
   public static isGenericQuery(kw: string): boolean {
@@ -227,13 +295,12 @@ class IndonesianNlpEngine {
     const cleaned = meaningfulWords.join(' ').trim() || safe;
     const tokens = meaningfulWords.filter((w) => w.length > 2);
 
-    // Lookup attribute synonyms and push to tokens
+    // Lookup attribute synonyms and push to tokens (supports multi-word slang expansion)
     let synonym: string | undefined;
     for (const [key, val] of Object.entries(this.SYNONYM_MAP)) {
-      if (cleaned === key || cleaned.includes(key) || safe.includes(key)) {
-        synonym = val;
+      if (cleaned === key || cleaned.includes(key) || safe.includes(key) || allWords.includes(key)) {
+        if (!synonym) synonym = val;
         if (!tokens.includes(val)) tokens.push(val);
-        break;
       }
     }
 
