@@ -47,7 +47,7 @@ export default function ProductGallery({
 
   return (
     <>
-      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
+      <motion.div variants={columnVariants} className="hidden lg:flex flex-col w-full shrink-0">
         <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px]">
           {images.map((img, i) => (
             <motion.button
@@ -63,6 +63,23 @@ export default function ProductGallery({
             </motion.button>
           ))}
         </div>
+
+        {/* Realtime views Desktop version (in thumbnail column) */}
+        {activeViewers !== null && (
+          <motion.div 
+            variants={textVariants} 
+            className="mt-3 flex flex-col items-center justify-center gap-1.5 px-1 py-2.5 bg-white border border-ink/10 shadow-sm w-[calc(100%-4px)]"
+          >
+            <div className="flex items-center gap-2">
+              <Eye size={14} className="text-ink/60" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+                <span className="text-xs font-bold text-ink/80 leading-none pt-[1px]">{activeViewers}</span>
+              </div>
+            </div>
+            <span className="text-[8px] font-bold text-ink/50 uppercase tracking-widest leading-none">Melihat</span>
+          </motion.div>
+        )}
       </motion.div>
 
       <motion.div variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
@@ -141,14 +158,16 @@ export default function ProductGallery({
         )}
 
         {/* Realtime views & Review Badge below Main Photo */}
-        <div className={`w-full flex ${activeViewers !== null ? 'justify-between' : 'justify-end'} items-center mt-3 lg:mt-4`}>
+        <div className={`w-full flex ${activeViewers !== null ? 'justify-between lg:justify-end' : 'justify-end'} items-center mt-3 lg:mt-4`}>
           {activeViewers !== null && (
-            <motion.div variants={textVariants} className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm h-[26px]">
-              <Eye size={12} className="text-ink/40" />
-              <span className="text-[9px] font-bold text-ink/60 uppercase tracking-widest flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
-                {activeViewers} Melihat
-              </span>
+            <motion.div variants={textVariants} className="flex lg:hidden items-center gap-2 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm h-[26px]">
+              <Eye size={12} className="text-ink/60" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+                <span className="text-[10px] font-bold text-ink/80 uppercase tracking-widest leading-none pt-[1px]">
+                  {activeViewers} Melihat
+                </span>
+              </div>
             </motion.div>
           )}
 
