@@ -46,6 +46,7 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName, pr
   // Setup form when opened
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveView('list');
       setRating(0);
       setHoveredRating(0);
