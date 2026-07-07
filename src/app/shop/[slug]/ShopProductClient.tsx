@@ -335,7 +335,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
                       {displaySpecs.map((spec: any, idx: number) => (
                         <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
-                          <span style={{ color: '#0A0A0A', opacity: 1, fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{spec.label}</span>
+                          <span style={{ color: '#0A0A0A', opacity: 0.8, fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{spec.label}</span>
                           <span style={{ color: '#0A0A0A', opacity: 1, fontWeight: 800, fontSize: '12px', textAlign: 'right' }}>{spec.value}</span>
                         </div>
                       ))}
