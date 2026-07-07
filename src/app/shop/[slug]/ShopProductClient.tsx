@@ -89,7 +89,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [addedToCart, setAddedToCart] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement'>('specs');
+  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>(null);
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
 
@@ -399,17 +399,17 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
                 <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {isExpanded || (localizedDescription || '').length <= 200
+                  {activeInfoTab === null || (localizedDescription || '').length <= 150
                     ? localizedDescription || 'Premium quality apparel from NINOC.'
-                    : (localizedDescription || '').slice(0, 200) + '…'}
+                    : (localizedDescription || '').slice(0, 150) + '…'}
                 </motion.p>
-                {(localizedDescription || '').length > 200 && (
+                {activeInfoTab !== null && (localizedDescription || '').length > 150 && (
                   <motion.button
                     variants={textVariants}
-                    onClick={() => { setIsExpanded(!isExpanded); setActiveInfoTab('specs'); }}
+                    onClick={() => setActiveInfoTab(null)}
                     className="text-xs md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
                   >
-                    {isExpanded ? 'Less' : 'More'}
+                    Read More
                   </motion.button>
                 )}
               </div>
@@ -417,7 +417,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
                 <motion.div variants={textVariants} className="flex items-center gap-3 mb-1.5">
                   <button
-                    onClick={() => setActiveInfoTab('specs')}
+                    onClick={() => setActiveInfoTab(activeInfoTab === 'specs' ? null : 'specs')}
                     className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors ${
                       activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                     }`}
@@ -426,7 +426,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </button>
                   <span className="text-ink/10">|</span>
                   <button
-                    onClick={() => { setActiveInfoTab('measurement'); setIsExpanded(false); }}
+                    onClick={() => setActiveInfoTab(activeInfoTab === 'measurement' ? null : 'measurement')}
                     className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
                       activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                     }`}
