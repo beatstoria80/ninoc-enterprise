@@ -54,7 +54,7 @@ function matchesCategoryPillar(productCategory: string, pillar: string): boolean
   if (!productCategory) return false;
   const cat = productCategory.toLowerCase().trim();
   if (pillar === 'Apparel') {
-    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex'].some(k => cat.includes(k));
+    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex', 'rok', 'skirt', 'dress', 'bawahan', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot'].some(k => cat.includes(k));
   }
   if (pillar === 'Objects') {
     return ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k));

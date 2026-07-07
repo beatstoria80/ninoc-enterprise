@@ -34,7 +34,7 @@ export function matchesCategoryPillar(productCategory: string, pillar: string): 
   if (!productCategory) return false;
   const cat = productCategory.toLowerCase().trim();
   if (pillar === 'Apparel') {
-    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex'].some(k => cat.includes(k));
+    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex', 'rok', 'skirt', 'dress', 'bawahan', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot'].some(k => cat.includes(k));
   }
   if (pillar === 'Objects') {
     return ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k));
@@ -61,7 +61,7 @@ export function getSubCategory(product: ShopProduct, pillar: string): string {
   if (pillar === 'Apparel' || pillar === 'All') {
     if (['kaos', 't-shirt', 'tee', 'shirt', 'top', 'tshirt'].some(k => combined.includes(k))) return 'T-Shirt / Kaos';
     if (['hoodie', 'outer', 'jacket', 'jaket', 'sweater', 'coat', 'cardigan', 'crewneck'].some(k => combined.includes(k))) return 'Outerwear / Hoodie';
-    if (['celana', 'pants', 'jeans', 'trouser', 'shorts', 'bottom', 'cargo', 'chores'].some(k => combined.includes(k))) return 'Bottoms / Celana';
+    if (['celana', 'pants', 'jeans', 'trouser', 'trousers', 'shorts', 'bottom', 'bottoms', 'cargo', 'chores', 'rok', 'skirt', 'dress', 'bawahan', 'kulot'].some(k => combined.includes(k))) return 'Bottoms / Celana & Rok';
     if (['topi', 'cap', 'beanie', 'totebag', 'bag', 'tas', 'gelang', 'aksesoris', 'accessory'].some(k => combined.includes(k))) return 'Accessories';
   }
   if (pillar === 'Objects') {
@@ -538,7 +538,8 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
     isFilterOpen, setIsFilterOpen,
     activeFilterCount,
     availableSubCategories,
-    filteredProducts
+    filteredProducts,
+    resetFilters
   } = filterSystem;
 
   const showSizeFilter = selectedCategory === 'Apparel' || selectedCategory === 'All';
