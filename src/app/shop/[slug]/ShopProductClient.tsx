@@ -89,7 +89,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [addedToCart, setAddedToCart] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>(null);
+  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>('specs');
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
 
