@@ -500,7 +500,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             </div>
           </motion.div>
 
-          <motion.div variants={columnVariants} className="col-span-1 relative flex items-center lg:px-0 w-full lg:self-start">
+          <motion.div variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
 
             <div
               className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
@@ -576,6 +576,23 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               </>
             )}
 
+            {/* Standard Review Badge below Main Photo */}
+            <div className="w-full flex justify-end mt-3 lg:mt-4">
+              <motion.button
+                variants={textVariants}
+                onClick={() => setIsReviewsDrawerOpen(true)}
+                className="flex items-center justify-center gap-1.5 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm hover:bg-ink/5 transition-all group active:scale-95"
+              >
+                <div className="flex gap-0.5 text-amber-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={10} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
+                  ))}
+                </div>
+                <span className="text-[8px] font-bold text-ink/70 uppercase tracking-widest group-hover:text-rose transition-colors">
+                  {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
+                </span>
+              </motion.button>
+            </div>
           </motion.div>
 
           {/* Combined Product Info & Options Column */}
@@ -598,20 +615,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
                   
-                  {/* Standard Inline Reviews Badge */}
-                  <button
-                    onClick={() => setIsReviewsDrawerOpen(true)}
-                    className="flex items-center gap-1 lg:ml-2 hover:opacity-70 transition-opacity group"
-                  >
-                    <div className="flex gap-0.5 text-amber-500">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={10} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
-                      ))}
-                    </div>
-                    <span className="text-[9px] md:text-[8px] font-medium text-ink/70 uppercase tracking-widest ml-1 group-hover:text-rose transition-colors underline decoration-ink/20 underline-offset-2">
-                      {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
-                    </span>
-                  </button>
                   {product.price_tag && (
                     <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] ml-auto">
                       <span className="text-[10px] md:text-[8px] font-medium text-rose uppercase tracking-[0.2em] flex items-center gap-1">
