@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, X, Check, RotateCcw, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Check, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getProductViews } from '@/lib/utils';
@@ -217,7 +217,6 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
     selectedSize, setSelectedSize,
     priceRange, setPriceRange,
     sortBy, setSortBy,
-    resetFilters,
     activeFilterCount
   } = filterSystem;
 
@@ -273,13 +272,6 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
           </button>
         </span>
       )}
-
-      <button
-        onClick={resetFilters}
-        className="text-[10px] font-mono uppercase tracking-wider text-rose hover:text-rose/80 underline ml-2 flex items-center gap-1 transition-colors"
-      >
-        <RotateCcw size={10} /> Hapus Semua
-      </button>
     </div>
   );
 }
@@ -531,7 +523,6 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
     priceRange, setPriceRange,
     sortBy, setSortBy,
     isFilterOpen, setIsFilterOpen,
-    resetFilters,
     activeFilterCount,
     availableSubCategories,
     filteredProducts
@@ -753,16 +744,10 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
               </div>
 
               {/* Sheet Sticky Footer */}
-              <div className="p-4 border-t border-ink/10 bg-white flex items-center gap-3 sticky bottom-0 z-10 shadow-lg">
-                <button
-                  onClick={resetFilters}
-                  className="w-1/3 py-3 border border-ink/20 rounded-md text-xs font-mono uppercase tracking-wider text-ink hover:bg-ink/5 flex items-center justify-center gap-1.5"
-                >
-                  <RotateCcw size={14} /> Reset
-                </button>
+              <div className="p-4 border-t border-ink/10 bg-white flex items-center sticky bottom-0 z-10 shadow-lg">
                 <button
                   onClick={() => setIsFilterOpen(false)}
-                  className="w-2/3 py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-all duration-300 shadow-md flex items-center justify-center gap-2 group active:scale-95"
+                  className="w-full py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-all duration-300 shadow-md flex items-center justify-center gap-2 group active:scale-95 cursor-pointer"
                 >
                   <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
                   <span>Tutup & Minimalisir / Hide ({filteredProducts.length})</span>
