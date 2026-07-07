@@ -192,9 +192,34 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
       }
 
       const data = await response.json();
-      const responseMessage = data.choices?.[0]?.message;
+      let responseMessage = data.choices?.[0]?.message;
 
       if (!responseMessage) continue;
+
+      // Fallback parser for hallucinated XML tool calls: <function=name>{...}</function>
+      if (responseMessage.content && (!responseMessage.tool_calls || responseMessage.tool_calls.length === 0)) {
+        const functionRegex = /<function=([^>]+)>(.*?)<\/function>/g;
+        let match;
+        const fallbackToolCalls = [];
+        let callIdx = 0;
+        
+        while ((match = functionRegex.exec(responseMessage.content)) !== null) {
+          fallbackToolCalls.push({
+            id: `call_fallback_${callIdx++}_${Date.now()}`,
+            type: 'function',
+            function: {
+              name: match[1],
+              arguments: match[2]
+            }
+          });
+        }
+        
+        if (fallbackToolCalls.length > 0) {
+          responseMessage.tool_calls = fallbackToolCalls;
+          // OpenAI schema expects tool calls in the array, content can keep the text before it
+          responseMessage.content = responseMessage.content.replace(/<function=([^>]+)>(.*?)<\/function>/g, '').trim() || null;
+        }
+      }
 
       if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
         payload.messages.push(responseMessage);
