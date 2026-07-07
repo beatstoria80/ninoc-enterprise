@@ -165,7 +165,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       const match = spec.label.match(/^Color(Image|P1|P2|P3|P4|P5):(.+)$/);
       if (match) {
         const type = match[1];
-        const colorName = match[2];
+        const colorName = match[2].trim().toUpperCase();
         if (!colorGalleryMap[colorName]) colorGalleryMap[colorName] = {};
         if (type === 'Image') colorGalleryMap[colorName].main = spec.value;
         if (type === 'P1') colorGalleryMap[colorName].p1 = spec.value;
@@ -177,7 +177,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     });
   }
 
-  const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor] : undefined;
+  const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor.trim().toUpperCase()] : undefined;
   const globalP5 = product?.specifications?.find((s: any) => s.label === 'GlobalP5')?.value;
 
   let rawImages: string[] = [];
