@@ -2640,10 +2640,15 @@ export default function AdminDashboard() {
                                 ...productForm,
                                 specifications: [
                                   { label: 'Origin', value: 'Priangan West Java' },
+                                  { label: 'Varietas', value: 'Arabica' },
                                   { label: 'Roast Level', value: 'Medium Roast' },
                                   { label: 'Process', value: 'Natural / Washed' },
                                   { label: 'Tasting Notes', value: 'Caramel, Dark Chocolate, Floral Hint' },
-                                  { label: 'Saran Penyajian', value: 'Suhu air 90-93°C, rasio 1:15' }
+                                  { label: 'Berat Bersih', value: '200g / 500g / 1kg' },
+                                  { label: 'Kemasan', value: 'Resealable Standing Pouch' },
+                                  { label: 'Saran Penyajian', value: 'Suhu air 90-93°C, rasio 1:15' },
+                                  { label: 'Asal Produksi', value: 'Roasted in Bandung, Indonesia' },
+                                  { label: 'Garansi Kualitas', value: '100% Original NINOC Roastery' },
                                 ]
                               });
                             } else if (isObjects) {
@@ -2653,32 +2658,56 @@ export default function AdminDashboard() {
                                   { label: 'Material', value: 'High-Grade Ceramic / Solid Wood' },
                                   { label: 'Finishing', value: 'Matte / Glazed' },
                                   { label: 'Dimensi', value: '10cm x 8cm x 12cm' },
-                                  { label: 'Perawatan', value: 'Cuci tangan disarankan, Jangan gunakan serat kasar' }
+                                  { label: 'Berat', value: '350g' },
+                                  { label: 'Perawatan', value: 'Cuci tangan disarankan, Jangan gunakan serat kasar' },
+                                  { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+                                  { label: 'Garansi Kualitas', value: '100% Original NINOC Studio' },
                                 ]
                               });
                             } else {
                               const isCelana = productForm.category === 'celana';
+                              const isHoodie = productForm.category === 'hoodie' || productForm.category === 'outer' || productForm.category === 'jaket';
                               setProductForm({
                                 ...productForm,
                                 specifications: isCelana ? [
-                                  { label: 'Bahan', value: 'Cotton Twill' },
-                                  { label: 'Fit', value: 'Straight Fit' },
+                                  { label: 'Bahan', value: 'Cotton Twill 320gsm' },
+                                  { label: 'Fit', value: 'Relaxed Fit' },
                                   { label: 'Kancing/Resleting', value: 'YKK Zipper' },
-                                  { label: 'Perawatan', value: 'Cuci mesin air dingin, Jangan gunakan pemutih' }
+                                  { label: 'Kantong', value: '2 Samping & 2 Belakang' },
+                                  { label: 'Detail', value: 'Waistband Adjustable, Belt Loop' },
+                                  { label: 'Perawatan', value: 'Cuci mesin air dingin, Jangan gunakan pemutih' },
+                                  { label: 'Jenis Produk', value: 'Celana / Trousers' },
+                                  { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+                                  { label: 'Garansi Kualitas', value: '100% Original NINOC Studio' },
+                                ] : isHoodie ? [
+                                  { label: 'Bahan', value: 'Cotton Fleece 360gsm' },
+                                  { label: 'Kerah', value: 'Hood / Hoodie' },
+                                  { label: 'Fit', value: 'Oversize Fit' },
+                                  { label: 'Design', value: 'Front & Back Graphic Artwork' },
+                                  { label: 'Sablon', value: 'High-Quality DTF' },
+                                  { label: 'Detail', value: 'Kangaroo Pocket, Drawstring Hood' },
+                                  { label: 'Perawatan', value: 'Cuci mesin air dingin, Jangan gunakan pemutih' },
+                                  { label: 'Jenis Produk', value: 'Hoodie / Outer' },
+                                  { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+                                  { label: 'Garansi Kualitas', value: '100% Original NINOC Studio' },
                                 ] : [
                                   { label: 'Bahan', value: '100% Cotton Combed 24s' },
-                                  { label: 'Fit', value: 'Regular Fit' },
                                   { label: 'Kerah', value: 'O-Neck' },
-                                  { label: 'Motif', value: 'Design Sablon Premium' },
-                                  { label: 'Sablon', value: 'DTF' },
-                                  { label: 'Perawatan', value: 'Cuci mesin air dingin, Setrika suhu sedang' }
+                                  { label: 'Fit', value: 'Regular Fit' },
+                                  { label: 'Design', value: 'Front & Back Graphic Artwork' },
+                                  { label: 'Motif', value: 'Design Art Illustration' },
+                                  { label: 'Sablon', value: 'High-Quality DTF' },
+                                  { label: 'Perawatan', value: 'Cuci mesin air dingin, Setrika suhu sedang' },
+                                  { label: 'Jenis Produk', value: 'Kaos / Graphic Tee' },
+                                  { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+                                  { label: 'Garansi Kualitas', value: '100% Original NINOC Studio' },
                                 ]
                               });
                             }
                           }}
                           className="text-[10px] px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors border border-gray-200 shadow-2xs"
                         >
-                          ⚡ Auto-Fill Preset ({isFnB ? 'F&B Roastery' : isObjects ? 'Objects & Home' : productForm.category === 'celana' ? 'Celana' : 'Atasan / Kaos'})
+                          ⚡ Auto-Fill Preset ({isFnB ? 'F&B Roastery' : isObjects ? 'Objects & Home' : productForm.category === 'celana' ? 'Celana' : productForm.category === 'hoodie' || productForm.category === 'outer' || productForm.category === 'jaket' ? 'Hoodie / Outer' : 'Atasan / Kaos'})
                         </button>
                       </div>
                     </div>

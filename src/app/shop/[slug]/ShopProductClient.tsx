@@ -202,6 +202,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const fitTypeSpec = product?.specifications?.find(s => s.label && (s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan')));
   const isOversize = Boolean(fitTypeSpec?.value && fitTypeSpec.value.toLowerCase().includes('oversize'));
   const isPants = product?.category?.toLowerCase() === 'celana';
+  const isHoodie = ['hoodie', 'outer', 'jaket', 'jacket'].includes(product?.category?.toLowerCase() || '');
 
   const DEFAULT_MODEL_INFO_STANDARD = "Model wearing Size M (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
@@ -220,11 +221,22 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
     { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
     { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
+  ] : isHoodie ? [
+    { label: 'Jenis Produk', value: 'Hoodie / Outer' },
+    { label: 'Potongan (Fit)', value: isOversize ? 'Oversize Fit' : 'Regular Fit' },
+    { label: 'Bahan Utama', value: 'Cotton Fleece 360gsm' },
+    { label: 'Teknik Sablon', value: 'High-Quality DTF' },
+    { label: 'Kerah', value: 'Hood / Hoodie' },
+    { label: 'Detail', value: 'Kangaroo Pocket, Drawstring Hood' },
+    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
+    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
   ] : [
     { label: 'Jenis Produk', value: 'Kaos / Graphic Tee' },
     { label: 'Potongan (Fit)', value: isOversize ? 'Oversize Fit' : 'Standar / Regular Fit' },
     { label: 'Bahan Utama', value: '100% Cotton Combed 24s / 30s' },
-    { label: 'Teknik Sablon', value: 'Plastisol / High Density Print' },
+    { label: 'Design', value: 'Front & Back Graphic Artwork' },
+    { label: 'Teknik Sablon', value: 'High-Quality DTF' },
     { label: 'Garis Leher', value: 'Kerah Bulat (Crewneck)' },
     { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
     { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
@@ -238,10 +250,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       if ((ex.includes('fit') || ex.includes('potongan')) && (defLabel.includes('fit') || defLabel.includes('potongan'))) return true;
       if ((ex.includes('bahan') || ex.includes('material')) && (defLabel.includes('bahan') || defLabel.includes('material'))) return true;
       if ((ex.includes('jenis') || ex.includes('atasan') || ex.includes('type')) && defLabel.includes('jenis')) return true;
-      if ((ex.includes('sablon') || ex.includes('print')) && defLabel.includes('sablon')) return true;
+      if ((ex.includes('sablon') || ex.includes('print')) && (defLabel.includes('sablon') || defLabel.includes('teknik'))) return true;
+      if ((ex.includes('design') || ex.includes('desain')) && defLabel.includes('design')) return true;
+      if ((ex.includes('motif') || ex.includes('pattern')) && defLabel.includes('motif')) return true;
+      if ((ex.includes('kerah') || ex.includes('garis leher') || ex.includes('neck')) && (defLabel.includes('kerah') || defLabel.includes('garis'))) return true;
+      if ((ex.includes('kantong') || ex.includes('pocket')) && (defLabel.includes('kantong') || defLabel.includes('pocket'))) return true;
+      if ((ex.includes('detail')) && defLabel.includes('detail')) return true;
       if ((ex.includes('perawatan') || ex.includes('care') || ex.includes('cuci')) && defLabel.includes('perawatan')) return true;
       if ((ex.includes('asal') || ex.includes('origin') || ex.includes('produksi')) && defLabel.includes('asal')) return true;
-      if ((ex.includes('jaminan') || ex.includes('kualitas') || ex.includes('quality')) && defLabel.includes('jaminan')) return true;
+      if ((ex.includes('jaminan') || ex.includes('kualitas') || ex.includes('quality') || ex.includes('garansi')) && (defLabel.includes('jaminan') || defLabel.includes('garansi'))) return true;
       if (ex === defLabel) return true;
       return false;
     });
