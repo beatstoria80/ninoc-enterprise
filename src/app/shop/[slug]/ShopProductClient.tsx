@@ -576,28 +576,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               </>
             )}
 
-            {/* Floating Reviews Badge */}
-            <motion.button
-              variants={textVariants}
-              onClick={() => setIsReviewsDrawerOpen(true)}
-              className="absolute -bottom-6 right-4 lg:-bottom-8 lg:right-6 z-[30] flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md border border-ink/10 rounded-full shadow-lg hover:bg-white hover:scale-105 transition-all group active:scale-95"
-            >
-              <div className="flex gap-0.5 text-amber-500">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={10} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
-                ))}
-              </div>
-              <span className="text-[9px] font-bold text-ink uppercase tracking-widest group-hover:text-rose transition-colors">
-                {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
-              </span>
-            </motion.button>
           </motion.div>
 
           {/* Combined Product Info & Options Column */}
-          <div
-            className={cn("col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full", !isMobile && photoHeight > 0 && "lg:overflow-y-auto minimal-scroll")}
-            style={!isMobile && photoHeight > 0 ? { maxHeight: photoHeight } : undefined}
-          >
+          <div className="col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full relative">
             {/* Column 3: Product Info */}
             <motion.div variants={columnVariants} className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
@@ -706,6 +688,24 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       )}
                     </div>
                   )}
+                </div>
+                
+                {/* Reviews Badge Fixed Below Specs */}
+                <div className="mt-4 lg:mt-6 flex justify-end">
+                  <motion.button
+                    variants={textVariants}
+                    onClick={() => setIsReviewsDrawerOpen(true)}
+                    className="flex items-center justify-center gap-1.5 px-2.5 py-1 bg-white/90 border border-ink/10 rounded-full shadow-sm hover:bg-white hover:scale-105 transition-all group active:scale-95"
+                  >
+                    <div className="flex gap-0.5 text-amber-500">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={10} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
+                      ))}
+                    </div>
+                    <span className="text-[8px] font-bold text-ink/70 uppercase tracking-widest group-hover:text-rose transition-colors">
+                      {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
+                    </span>
+                  </motion.button>
                 </div>
               </div>
             </div>
