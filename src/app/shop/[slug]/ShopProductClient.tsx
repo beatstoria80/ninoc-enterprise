@@ -1040,7 +1040,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         </motion.div>
 
         {relatedProducts.length > 0 && (
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4 lg:mt-6 space-y-1">
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="mt-4 lg:mt-6 space-y-1">
             <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
               <h2 className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
               <Link  href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
