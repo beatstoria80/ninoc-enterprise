@@ -580,7 +580,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             <motion.button
               variants={textVariants}
               onClick={() => setIsReviewsDrawerOpen(true)}
-              className="absolute bottom-4 right-4 lg:bottom-6 lg:right-6 z-[30] flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-md border border-ink/10 rounded-full shadow-lg hover:bg-white hover:scale-105 transition-all group active:scale-95"
+              className="absolute -bottom-6 right-4 lg:-bottom-8 lg:right-6 z-[30] flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md border border-ink/10 rounded-full shadow-lg hover:bg-white hover:scale-105 transition-all group active:scale-95"
             >
               <div className="flex gap-0.5 text-amber-500">
                 {[...Array(5)].map((_, i) => (
@@ -595,7 +595,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
           {/* Combined Product Info & Options Column */}
           <div
-            className={cn("col-span-1 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 w-full", !isMobile && photoHeight > 0 && "lg:overflow-y-auto minimal-scroll")}
+            className={cn("col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full", !isMobile && photoHeight > 0 && "lg:overflow-y-auto minimal-scroll")}
             style={!isMobile && photoHeight > 0 ? { maxHeight: photoHeight } : undefined}
           >
             {/* Column 3: Product Info */}
