@@ -296,11 +296,15 @@ class IndonesianNlpEngine {
     const tokens = meaningfulWords.filter((w) => w.length > 2);
 
     // Lookup attribute synonyms and push to tokens (supports multi-word slang expansion)
+    // Split multi-word synonym values (e.g. 'celana pendek') into individual tokens for PostgREST safety
     let synonym: string | undefined;
     for (const [key, val] of Object.entries(this.SYNONYM_MAP)) {
       if (cleaned === key || cleaned.includes(key) || safe.includes(key) || allWords.includes(key)) {
         if (!synonym) synonym = val;
-        if (!tokens.includes(val)) tokens.push(val);
+        const synParts = val.split(/\s+/).filter(p => p.length > 1);
+        for (const sp of synParts) {
+          if (!tokens.includes(sp)) tokens.push(sp);
+        }
       }
     }
 
@@ -399,15 +403,11 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     }
 
     // 3. Resolve Sorting Strategy
-    const isSorted = this.applySortingStrategy(query, toSafeString(sort_by), parsedKw.raw);
+    query = this.applySortingStrategy(query, toSafeString(sort_by), parsedKw.raw);
 
     // 4. Apply NLP Keyword Attributes & Variant Search
     if (parsedKw.raw && !IndonesianNlpEngine.isGenericQuery(parsedKw.raw)) {
-      await this.applyKeywordFilter(db, query, parsedKw);
-    }
-
-    if (!isSorted) {
-      query = query.order('created_at', { ascending: false });
+      query = await this.applyKeywordFilter(db, query, parsedKw);
     }
 
     const { data, error } = await query.limit(10);
@@ -419,7 +419,7 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     return { success: true, products: data };
   }
 
-  private applySortingStrategy(query: any, sortBy: string = '', kwRaw: string = ''): boolean {
+  private applySortingStrategy(query: any, sortBy: string = '', kwRaw: string = ''): any {
     const kw = kwRaw.toLowerCase();
     if (
       sortBy === 'cheapest' ||
@@ -427,24 +427,21 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
       kw.includes('paling murah') ||
       kw === 'murah'
     ) {
-      query.order('price', { ascending: true });
-      return true;
+      return query.order('price', { ascending: true });
     } else if (
       sortBy === 'most_expensive' ||
       kw.includes('termahal') ||
       kw.includes('paling mahal') ||
       kw === 'mahal'
     ) {
-      query.order('price', { ascending: false });
-      return true;
+      return query.order('price', { ascending: false });
     } else if (
       sortBy === 'newest' ||
       kw.includes('terbaru') ||
       kw.includes('new arrival') ||
       kw.includes('baru')
     ) {
-      query.order('created_at', { ascending: false });
-      return true;
+      return query.order('created_at', { ascending: false });
     } else if (
       sortBy === 'popular' ||
       kw.includes('terlaris') ||
@@ -453,17 +450,16 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
       kw.includes('rekomendasi') ||
       kw.includes('favorit')
     ) {
-      query.order('created_at', { ascending: false });
-      return true;
+      return query.order('created_at', { ascending: false });
     }
-    return false;
+    return query.order('created_at', { ascending: false });
   }
 
   private async applyKeywordFilter(
     db: SupabaseClient,
     query: any,
     parsedKw: ReturnType<typeof IndonesianNlpEngine.parseKeyword>
-  ): Promise<void> {
+  ): Promise<any> {
     const { safe, cleaned, tokens, synonym } = parsedKw;
 
     // Build unique search terms, filtering out empty strings or single-character noise
@@ -474,7 +470,7 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
 
     // If query was entirely punctuation or emojis and produced no valid search terms, return early
     if (validTerms.length === 0) {
-      return;
+      return query;
     }
 
     try {
@@ -495,9 +491,7 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
       );
 
       if (variantProductIds.length > 0) {
-        // Limit to top 30 IDs to ensure clean HTTP GET parameter size
-        query.in('id', variantProductIds.slice(0, 30));
-        return;
+        return query.in('id', variantProductIds.slice(0, 30));
       }
     } catch (err) {
       console.warn('[SearchProductsHandler] Variant search warning:', err);
@@ -509,8 +503,9 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
       .flatMap((t) => [`name.ilike.%${t}%`, `description.ilike.%${t}%`, `category.ilike.%${t}%`]);
 
     if (orClauses.length > 0) {
-      query.or(Array.from(new Set(orClauses)).join(','));
+      return query.or(Array.from(new Set(orClauses)).join(','));
     }
+    return query;
   }
 
   private async executeFallbackQuery(

@@ -1154,7 +1154,7 @@ export default function AdminDashboard() {
         .from('support_messages')
         .insert({
           ticket_id: activeChatSession.id,
-          sender_id: adminUser?.id || '00000000-0000-0000-0000-000000000000',
+          sender_id: adminUser?.id || null,
           sender_role: 'admin',
           message: messageText,
           is_read: false

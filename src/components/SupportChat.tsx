@@ -94,7 +94,8 @@ function renderMessageWithLinks(text: string, isCustomer: boolean) {
     if (part.match(urlRegex)) {
       // Membersihkan tanda baca di awal dan akhir URL jika AI memasukkannya (kurung, kutip, titik, koma, dsb)
       const cleanUrl = part.replace(/[.,;?!)\]"'`>]+$/, '').replace(/^[([{"'`<]+/, '');
-      const trailingPunc = part.slice(part.indexOf(cleanUrl) + cleanUrl.length);
+      const idx = part.lastIndexOf(cleanUrl);
+      const trailingPunc = idx !== -1 ? part.substring(idx + cleanUrl.length) : '';
       const urlStr = cleanUrl;
 
       let label = "Buka Tautan";
