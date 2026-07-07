@@ -5,6 +5,7 @@ import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/shop';
 import { ProductReview } from '@/components/admin/types';
+import { useProductViews } from '@/hooks/shop/useProductViews';
 
 interface ProductGalleryProps {
   product: Product;
@@ -33,16 +34,7 @@ export default function ProductGallery({
 }: ProductGalleryProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const photoRef = useRef<HTMLDivElement>(null);
-  const [activeViewers, setActiveViewers] = useState(0);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setActiveViewers(Math.floor(Math.random() * (115 - 25 + 1)) + 25);
-    const interval = setInterval(() => {
-      setActiveViewers(prev => Math.max(15, prev + (Math.random() > 0.5 ? 1 : -1)));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const { views: activeViewers } = useProductViews(product.slug);
 
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -149,14 +141,16 @@ export default function ProductGallery({
         )}
 
         {/* Realtime views & Review Badge below Main Photo */}
-        <div className="w-full flex justify-between items-center mt-3 lg:mt-4">
-          <motion.div variants={textVariants} className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm h-[26px]">
-            <Eye size={12} className="text-ink/40" />
-            <span className="text-[9px] font-bold text-ink/60 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
-              {activeViewers} Melihat
-            </span>
-          </motion.div>
+        <div className={`w-full flex ${activeViewers !== null ? 'justify-between' : 'justify-end'} items-center mt-3 lg:mt-4`}>
+          {activeViewers !== null && (
+            <motion.div variants={textVariants} className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm h-[26px]">
+              <Eye size={12} className="text-ink/40" />
+              <span className="text-[9px] font-bold text-ink/60 uppercase tracking-widest flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+                {activeViewers} Melihat
+              </span>
+            </motion.div>
+          )}
 
           <motion.button
             variants={textVariants}
