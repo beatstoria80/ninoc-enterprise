@@ -5,9 +5,10 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const all = searchParams.get('all') === 'true';
 
-    if (!slug) {
-      return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+    if (!slug && !all) {
+      return NextResponse.json({ error: 'Slug or all parameter is required' }, { status: 400 });
     }
 
     const propertyId = process.env.GA4_PROPERTY_ID;
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
 
     // If GA is not configured, return null gracefully so the UI can hide the counter
     if (!propertyId || !clientEmail || !privateKey) {
-      return NextResponse.json({ views: null });
+      return NextResponse.json({ views: null, allViews: null });
     }
 
     const analyticsDataClient = new BetaAnalyticsDataClient({
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
       },
     });
 
-    // Query for active users in the last 30 minutes on this specific page path
+    // Query for active users in the last 30 minutes
     const [response] = await analyticsDataClient.runRealtimeReport({
       property: `properties/${propertyId}`,
       dimensions: [
@@ -41,12 +42,24 @@ export async function GET(request: Request) {
       ],
     });
 
+    if (all) {
+      const allViews: Record<string, number> = {};
+      response.rows?.forEach((row) => {
+        const name = row.dimensionValues?.[0]?.value || '';
+        const users = parseInt(row.metricValues?.[0]?.value || '0', 10);
+        if (name && users > 0) {
+          allViews[name] = users;
+        }
+      });
+      return NextResponse.json({ allViews });
+    }
+
     let activeUsers = 0;
     
     if (response.rows && response.rows.length > 0) {
       // Find the row that matches our product page
       const row = response.rows.find(
-        (r) => r.dimensionValues?.[0]?.value?.includes(slug)
+        (r) => r.dimensionValues?.[0]?.value?.includes(slug!)
       );
       
       if (row && row.metricValues && row.metricValues.length > 0) {
@@ -54,11 +67,10 @@ export async function GET(request: Request) {
       }
     }
 
-    // fallback to pageviews if activeUsers is 0, optional, but let's just stick to activeUsers
     return NextResponse.json({ views: activeUsers });
   } catch (error) {
     console.error('Failed to fetch GA views:', error);
     // Don't leak the error, just return null to hide UI safely
-    return NextResponse.json({ views: null });
+    return NextResponse.json({ views: null, allViews: null });
   }
 }

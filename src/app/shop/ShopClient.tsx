@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
+import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 import { useShopFilters, DesktopShopFilterBar, MobileShopFilterBar, type ShopProduct as Product, type FilterSystemType } from './_components/ShopFilterSystem';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
 
@@ -130,6 +131,15 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const pathname = usePathname();
   const isId = !pathname?.startsWith('/en');
+  const { allViews } = useCatalogViews();
+
+  const getDisplayViews = (product: Product) => {
+    if (allViews) {
+      const realViews = Object.entries(allViews).find(([key]) => key.includes(product.slug))?.[1];
+      if (realViews && realViews > 0) return realViews;
+    }
+    return getProductViews(product);
+  };
 
   const { filteredProducts, selectedCategory } = filterSystem;
 
@@ -220,7 +230,13 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-end pt-1.5 border-t border-ink/5">
+                          <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+                            <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
+                              <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
+                              <span className="text-[7px] font-mono font-semibold uppercase tracking-wider">
+                                {getDisplayViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
+                              </span>
+                            </div>
                             <span className="text-[7px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
                               {getProductStock(product)} {isId ? 'STOK' : 'STOCK'}
                             </span>
@@ -252,6 +268,15 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
 function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemType, dict: any }) {
   const pathname = usePathname();
   const isId = !pathname?.startsWith('/en');
+  const { allViews } = useCatalogViews();
+
+  const getDisplayViews = (product: Product) => {
+    if (allViews) {
+      const realViews = Object.entries(allViews).find(([key]) => key.includes(product.slug))?.[1];
+      if (realViews && realViews > 0) return realViews;
+    }
+    return getProductViews(product);
+  };
 
   const { filteredProducts, selectedCategory } = filterSystem;
 
@@ -344,7 +369,13 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-end pt-2 border-t border-ink/5">
+                        <div className="flex items-center justify-between pt-2 border-t border-ink/5">
+                          <div className="flex items-center gap-1.5 text-ink/70 group-hover/card:text-rose transition-colors" title="Google Analytics Realtime SKU Viewers">
+                            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-rose animate-pulse shrink-0" />
+                            <span className="text-[10px] md:text-[8px] font-mono font-semibold uppercase tracking-wider">
+                              {getDisplayViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
+                            </span>
+                          </div>
                           <span className="text-[10px] md:text-[8px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
                             {getProductStock(product)} {isId ? 'STOK' : 'STOCK'}
                           </span>

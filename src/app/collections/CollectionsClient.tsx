@@ -13,6 +13,7 @@ import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
 import { useRouter } from 'next/navigation';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
+import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -219,6 +220,15 @@ function CollectionCard({ col, index }: {
 
 function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
+  const { allViews } = useCatalogViews();
+
+  const getDisplayViews = (prod: Product) => {
+    if (allViews) {
+      const realViews = Object.entries(allViews).find(([key]) => key.includes(prod.slug))?.[1];
+      if (realViews && realViews > 0) return realViews;
+    }
+    return getProductViews(prod);
+  };
 
   return (
     <motion.div
@@ -279,7 +289,13 @@ function ProductCard({ product }: { product: Product }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end pt-1.5 border-t border-ink/5">
+            <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
+              <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
+                <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
+                <span className="text-[7px] md:text-[6px] font-mono font-semibold uppercase tracking-wider">
+                  {getDisplayViews(product)} DILIHAT
+                </span>
+              </div>
               <span className="text-[7px] md:text-[6px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
                 {getProductStock(product)} STOK
               </span>
