@@ -199,15 +199,55 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     { size: '38', waist: '101', length: '104', leg_opening: '48' },
   ];
 
-  const fitTypeSpec = product?.specifications?.find(s => s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan'));
-  const isOversize = fitTypeSpec?.value.toLowerCase().includes('oversize');
+  const fitTypeSpec = product?.specifications?.find(s => s.label && (s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan')));
+  const isOversize = Boolean(fitTypeSpec?.value && fitTypeSpec.value.toLowerCase().includes('oversize'));
   const isPants = product?.category?.toLowerCase() === 'celana';
 
   const DEFAULT_MODEL_INFO_STANDARD = "Model wearing Size M (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
   const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
-  const displaySpecs = (product?.specifications && product.specifications.length > 0 ? product.specifications : DEFAULT_SPECS).filter(s => !/^Color(Image|P1|P2|P3|P4|P5):/.test(s.label) && s.label !== 'GlobalP5');
+  const cleanCustomSpecs = (product?.specifications || []).filter(
+    s => s.label && !/^Color(Image|P1|P2|P3|P4|P5):/.test(s.label) && s.label !== 'GlobalP5'
+  );
+
+  const BASE_DEFAULT_SPECS = isPants ? [
+    { label: 'Jenis Produk', value: 'Celana / Trousers' },
+    { label: 'Potongan (Fit)', value: 'Regular / Relaxed Fit' },
+    { label: 'Bahan Utama', value: 'High-Density Cotton / Twill' },
+    { label: 'Penutup Pinggang', value: 'Kancing & Resleting YKK' },
+    { label: 'Kantong', value: '2 Samping & 2 Belakang' },
+    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
+    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
+  ] : [
+    { label: 'Jenis Produk', value: 'Kaos / Graphic Tee' },
+    { label: 'Potongan (Fit)', value: isOversize ? 'Oversize Fit' : 'Standar / Regular Fit' },
+    { label: 'Bahan Utama', value: '100% Cotton Combed 24s / 30s' },
+    { label: 'Teknik Sablon', value: 'Plastisol / High Density Print' },
+    { label: 'Garis Leher', value: 'Kerah Bulat (Crewneck)' },
+    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
+    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
+    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
+  ];
+
+  const existingLabels = new Set(cleanCustomSpecs.map(s => s.label.toLowerCase().trim()));
+  const mergedDefaults = BASE_DEFAULT_SPECS.filter(def => {
+    const defLabel = def.label.toLowerCase();
+    return !Array.from(existingLabels).some(ex => {
+      if ((ex.includes('fit') || ex.includes('potongan')) && (defLabel.includes('fit') || defLabel.includes('potongan'))) return true;
+      if ((ex.includes('bahan') || ex.includes('material')) && (defLabel.includes('bahan') || defLabel.includes('material'))) return true;
+      if ((ex.includes('jenis') || ex.includes('atasan') || ex.includes('type')) && defLabel.includes('jenis')) return true;
+      if ((ex.includes('sablon') || ex.includes('print')) && defLabel.includes('sablon')) return true;
+      if ((ex.includes('perawatan') || ex.includes('care') || ex.includes('cuci')) && defLabel.includes('perawatan')) return true;
+      if ((ex.includes('asal') || ex.includes('origin') || ex.includes('produksi')) && defLabel.includes('asal')) return true;
+      if ((ex.includes('jaminan') || ex.includes('kualitas') || ex.includes('quality')) && defLabel.includes('jaminan')) return true;
+      if (ex === defLabel) return true;
+      return false;
+    });
+  });
+
+  const displaySpecs = [...cleanCustomSpecs, ...mergedDefaults];
   const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
   let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
   const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
