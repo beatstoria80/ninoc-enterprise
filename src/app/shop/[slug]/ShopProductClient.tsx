@@ -134,7 +134,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const isPants = product?.category?.toLowerCase() === 'celana';
 
   const cleanCustomSpecs = (product?.specifications || []).filter(
-    (s: any) => s.label && !/^Color(Image|P1|P2|P3|P4|P5):/.test(s.label) && s.label !== 'GlobalP5'
+    (s: any) => s.label && !/^color\s*(image|p1|p2|p3|p4|p5)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
   );
 
   const displaySpecs = cleanCustomSpecs;
@@ -162,12 +162,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const colorGalleryMap: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string }> = {};
   if (product?.specifications) {
     product.specifications.forEach((spec: any) => {
-      const match = spec.label.match(/^Color(Image|P1|P2|P3|P4|P5):(.+)$/);
+      const match = spec.label.match(/^color\s*(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
       if (match) {
-        const type = match[1];
+        const type = match[1].toUpperCase();
         const colorName = match[2].trim().toUpperCase();
         if (!colorGalleryMap[colorName]) colorGalleryMap[colorName] = {};
-        if (type === 'Image') colorGalleryMap[colorName].main = spec.value;
+        if (type === 'IMAGE') colorGalleryMap[colorName].main = spec.value;
         if (type === 'P1') colorGalleryMap[colorName].p1 = spec.value;
         if (type === 'P2') colorGalleryMap[colorName].p2 = spec.value;
         if (type === 'P3') colorGalleryMap[colorName].p3 = spec.value;
