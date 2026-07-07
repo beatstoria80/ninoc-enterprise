@@ -376,6 +376,9 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
           </div>
         </div>
 
+        {/* Active Filter Tags displayed directly in the sticky header */}
+        <ActiveFilterTags filterSystem={filterSystem} />
+
         {/* Expandable Filter Studio Drawer (Absolute Positioning keeps Product Cards from being pushed down) */}
         <AnimatePresence>
           {isFilterOpen && (
@@ -387,10 +390,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
               className="absolute top-full left-0 right-0 w-full bg-white border-b border-ink/15 shadow-2xl z-[250] overflow-hidden"
             >
               <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-5 space-y-4">
-                {/* Active Filter Tags inside drawer so they vanish when closed */}
-                <ActiveFilterTags filterSystem={filterSystem} />
-
-                <div className="pt-2 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 border-t border-ink/10">
+                <div className="pt-2 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 {/* Kolom 1: Sub Kategori */}
                 <div className="space-y-2.5">
@@ -509,7 +509,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                   className="px-6 py-2.5 bg-ink text-white text-[11px] font-mono uppercase tracking-widest hover:bg-rose transition-all duration-300 rounded-sm flex items-center gap-2 group shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
                 >
                   <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
-                  <span>Tutup / Close</span>
+                  <span>Tutup & Minimalisir / Hide</span>
                 </button>
               </div>
             </div>
@@ -544,7 +544,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
       {/* Sticky Mobile Header (Elevates to top-0 when filter is open) */}
       <div 
         className={cn(
-          "fixed left-0 right-0 border-b border-ink/10 transition-all duration-500 ease-in-out",
+          "sticky left-0 right-0 border-b border-ink/10 transition-all duration-500 ease-in-out",
           isFilterOpen 
             ? "z-[550] bg-white shadow-2xl" 
             : "z-[350] bg-white/95 backdrop-blur-md shadow-sm"
@@ -609,11 +609,11 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
               )}
             </button>
           </div>
+
+          {/* Active Filter Tags displayed directly in the sticky mobile header */}
+          <ActiveFilterTags filterSystem={filterSystem} />
         </div>
       </div>
-
-      {/* Spacer for fixed top bar (Fixed height keeps mobile product cards from pushing down when active filters exist!) */}
-      <div className="h-[105px]" />
 
       {/* Bottom Sheet Modal for Mobile Filters */}
       <AnimatePresence>
@@ -654,9 +654,6 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
               {/* Sheet Scrollable Body */}
               <div className="p-5 space-y-6 overflow-y-auto flex-grow">
-                {/* Active Filter Tags inside mobile modal */}
-                <ActiveFilterTags filterSystem={filterSystem} />
-                
                 {/* Section 1: Sub Kategori */}
                 <div className="space-y-2.5">
                   <h4 className="text-xs font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
@@ -768,7 +765,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                   className="w-2/3 py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-all duration-300 shadow-md flex items-center justify-center gap-2 group active:scale-95"
                 >
                   <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
-                  <span>Tutup / Close ({filteredProducts.length})</span>
+                  <span>Tutup & Minimalisir / Hide ({filteredProducts.length})</span>
                 </button>
               </div>
             </motion.div>
