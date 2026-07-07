@@ -30,16 +30,26 @@ function toSafeString(val: any): string {
  * Conditionally loads Server-Side Supabase Admin client with bypass-RLS
  * capabilities when executing inside API routes, falling back to Browser client.
  */
+// Singleton cache for server-side execution
+let cachedServerClient: SupabaseClient | null = null;
+
 function getDbClient(): SupabaseClient {
   if (
     typeof window === 'undefined' &&
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.SUPABASE_SERVICE_ROLE_KEY
   ) {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    if (!cachedServerClient) {
+      cachedServerClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY,
+        {
+          auth: { persistSession: false, autoRefreshToken: false },
+          db: { schema: 'public' }
+        }
+      );
+    }
+    return cachedServerClient;
   }
   return browserSupabase as unknown as SupabaseClient;
 }

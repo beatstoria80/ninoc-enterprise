@@ -21,24 +21,57 @@ export interface ProcessedOrderItem {
   ninoc_markup?: number;
 }
 
+export interface PricingPolicyConfig {
+  surchargeSizes: Set<string>;
+  sizeSurchargeAmount: number;
+  platformFee: number;
+  maxItemNameLength: number;
+}
+
+const DEFAULT_PRICING_POLICY: PricingPolicyConfig = {
+  surchargeSizes: new Set(['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL']),
+  sizeSurchargeAmount: 25000,
+  platformFee: 2500,
+  maxItemNameLength: 50,
+};
+
 export class PricingEngine {
-  private static readonly SURCHARGE_SIZES = new Set(['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL']);
-  private static readonly SIZE_SURCHARGE_AMOUNT = 25000;
-  private static readonly PLATFORM_FEE = 2500;
+  private static readonly SURCHARGE_SIZES = DEFAULT_PRICING_POLICY.surchargeSizes;
+  private static readonly SIZE_SURCHARGE_AMOUNT = DEFAULT_PRICING_POLICY.sizeSurchargeAmount;
+  private static readonly PLATFORM_FEE = DEFAULT_PRICING_POLICY.platformFee;
+
+  private readonly policy: PricingPolicyConfig;
+
+  constructor(policy: Partial<PricingPolicyConfig> = {}) {
+    this.policy = { ...DEFAULT_PRICING_POLICY, ...policy };
+  }
 
   /**
-   * Calculates gross amount and builds item breakdown using O(1) Map lookups.
+   * Calculates gross amount and builds item breakdown using True O(1) Map lookups
+   * for both products and variants.
    */
-  public static calculateOrderBreakdown(
+  public calculateOrderBreakdownInstance(
     items: CheckoutItem[],
     dbProducts: DatabaseProduct[],
     shipping: ShippingDetails,
     promo?: PromoDetails
   ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
-    // Build O(1) Product Lookup Map to eliminate O(N^2) inner loops
+    // Build O(1) Product Map and O(1) Composite Variant Map (productId#size#color)
     const productMap = new Map<string, DatabaseProduct>();
+    const variantMap = new Map<string, { id: string; color: string | null }>();
+
     for (const prod of dbProducts) {
       productMap.set(prod.id, prod);
+      if (prod.variants && Array.isArray(prod.variants)) {
+        for (const v of prod.variants) {
+          const normSize = (v.size || '').toUpperCase().trim();
+          const normColor = (v.color || '').toUpperCase().trim();
+          variantMap.set(`${prod.id}#${normSize}#${normColor}`, { id: v.id, color: v.color || null });
+          if (!variantMap.has(`${prod.id}#${normSize}#`)) {
+            variantMap.set(`${prod.id}#${normSize}#`, { id: v.id, color: v.color || null });
+          }
+        }
+      }
     }
 
     let calculatedGrossAmount = 0;
@@ -51,19 +84,22 @@ export class PricingEngine {
         return { grossAmount: 0, midtransItems: [], dbOrderItems: [], error: `Product not found: ${item.id}` };
       }
 
-      const isSurchargeSize = item.size ? this.SURCHARGE_SIZES.has(item.size.toUpperCase()) : false;
-      const surcharge = isSurchargeSize ? this.SIZE_SURCHARGE_AMOUNT : 0;
+      const itemSizeUpper = item.size ? item.size.toUpperCase().trim() : '';
+      const itemColorUpper = item.color ? item.color.toUpperCase().trim() : '';
+      const isSurchargeSize = itemSizeUpper ? this.policy.surchargeSizes.has(itemSizeUpper) : false;
+      const surcharge = isSurchargeSize ? this.policy.sizeSurchargeAmount : 0;
       const itemPrice = Number(dbProduct.price) + surcharge;
+      
       calculatedGrossAmount += itemPrice * item.quantity;
 
-      // Extract ledger costings securely
       const costing = Array.isArray(dbProduct.product_costings) ? dbProduct.product_costings[0] : dbProduct.product_costings;
       const supplierBasePrice = costing?.supplier_base_price || 0;
       const supplierSurchargeCost = costing?.supplier_surcharge_cost || 0;
       const finalHpp = supplierBasePrice + (isSurchargeSize ? supplierSurchargeCost : 0);
       const ninocMarkup = costing?.ninoc_markup || (itemPrice - finalHpp);
 
-      const itemName = (dbProduct.name + (surcharge > 0 ? ' (XXL+)' : '')).substring(0, 50);
+      const suffix = surcharge > 0 ? ' (XXL+)' : '';
+      const itemName = `${dbProduct.name}${suffix}`.substring(0, this.policy.maxItemNameLength);
 
       midtransItems.push({
         id: item.id,
@@ -77,16 +113,13 @@ export class PricingEngine {
         ninoc_markup: ninocMarkup,
       });
 
-      // O(1) Variant matching
-      let variantId: string | null = null;
-      let variantColor: string | null = null;
-      if (dbProduct.variants && dbProduct.variants.length > 0) {
-        const matchedVariant = dbProduct.variants.find(
-          v => v.size === item.size && (!item.color || v.color === item.color)
-        );
-        variantId = matchedVariant ? matchedVariant.id : dbProduct.variants[0].id;
-        variantColor = matchedVariant ? (matchedVariant.color || null) : null;
-      }
+      // True O(1) Variant Lookup
+      const exactKey = `${item.id}#${itemSizeUpper}#${itemColorUpper}`;
+      const sizeKey = `${item.id}#${itemSizeUpper}#`;
+      const matchedVariant = variantMap.get(exactKey) || variantMap.get(sizeKey);
+      
+      const variantId = matchedVariant?.id || (dbProduct.variants?.[0]?.id ?? null);
+      const variantColor = matchedVariant?.color || item.color || null;
 
       dbOrderItems.push({
         id: crypto.randomUUID(),
@@ -96,7 +129,7 @@ export class PricingEngine {
         quantity: item.quantity,
         price_at_purchase: itemPrice,
         size: item.size || null,
-        color: item.color || variantColor,
+        color: variantColor,
         supplier_id: dbProduct.supplier_id || null,
         supplier_hpp: finalHpp,
         ninoc_markup: ninocMarkup,
@@ -108,18 +141,20 @@ export class PricingEngine {
       id: 'SHIPPING',
       price: shipping.cost,
       quantity: 1,
-      name: `Courier: ${shipping.method.toUpperCase()}`.substring(0, 50),
+      name: `Courier: ${shipping.method.toUpperCase()}`.substring(0, this.policy.maxItemNameLength),
     });
     calculatedGrossAmount += shipping.cost;
 
     // Add Platform Fee
-    midtransItems.push({
-      id: 'PLATFORM_FEE',
-      price: this.PLATFORM_FEE,
-      quantity: 1,
-      name: 'Platform Fee',
-    });
-    calculatedGrossAmount += this.PLATFORM_FEE;
+    if (this.policy.platformFee > 0) {
+      midtransItems.push({
+        id: 'PLATFORM_FEE',
+        price: this.policy.platformFee,
+        quantity: 1,
+        name: 'Platform Fee',
+      });
+      calculatedGrossAmount += this.policy.platformFee;
+    }
 
     // Apply Promo Code
     if (promo && promo.discountAmount > 0) {
@@ -127,7 +162,7 @@ export class PricingEngine {
         id: 'PROMO',
         price: -promo.discountAmount,
         quantity: 1,
-        name: `Promo: ${promo.code}`.substring(0, 50),
+        name: `Promo: ${promo.code}`.substring(0, this.policy.maxItemNameLength),
       });
       calculatedGrossAmount -= promo.discountAmount;
     }
@@ -137,5 +172,18 @@ export class PricingEngine {
     }
 
     return { grossAmount: calculatedGrossAmount, midtransItems, dbOrderItems };
+  }
+
+  /**
+   * Static compatibility wrapper for existing route handlers
+   */
+  public static calculateOrderBreakdown(
+    items: CheckoutItem[],
+    dbProducts: DatabaseProduct[],
+    shipping: ShippingDetails,
+    promo?: PromoDetails
+  ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
+    const engine = new PricingEngine();
+    return engine.calculateOrderBreakdownInstance(items, dbProducts, shipping, promo);
   }
 }
