@@ -92,9 +92,10 @@ function renderMessageWithLinks(text: string, isCustomer: boolean) {
   
   return parts.map((part, i) => {
     if (part.match(urlRegex)) {
-      // Membersihkan tanda baca di akhir URL jika AI memasukkannya
-      const urlStr = part.replace(/[.,;?!]+$/, '');
-      const trailingPunc = part.slice(urlStr.length);
+      // Membersihkan tanda baca di awal dan akhir URL jika AI memasukkannya (kurung, kutip, titik, koma, dsb)
+      const cleanUrl = part.replace(/[.,;?!)\]"'`>]+$/, '').replace(/^[([{"'`<]+/, '');
+      const trailingPunc = part.slice(part.indexOf(cleanUrl) + cleanUrl.length);
+      const urlStr = cleanUrl;
 
       let label = "Buka Tautan";
       if (urlStr.includes('/shop/')) label = "Lihat Produk";

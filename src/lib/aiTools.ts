@@ -151,8 +151,7 @@ export const aiToolsDeclaration = [
 class IndonesianNlpEngine {
   private static readonly CHAT_FILLERS = new Set([
     'pakah', 'apkah', 'pkh', 'apakah', 'apa', 'ada', 'ad', 'ready', 'redy', 'redi', 'rdy',
-    'size', 'sz', 'ukuran', 'ukrn', 'uk', 'kaos', 'baju', 'celana', 'hoodie', 'jaket',
-    'outer', 'gak', 'ga', 'gk', 'enggak', 'nggak', 'ngga', 'engga', 'tdk', 'disini',
+    'size', 'sz', 'ukuran', 'ukrn', 'uk', 'gak', 'ga', 'gk', 'enggak', 'nggak', 'ngga', 'engga', 'tdk', 'disini',
     'di', 'sini', 'harga', 'hrg', 'termurah', 'termahal', 'murah', 'mahal', 'bawah',
     'atas', 'budget', 'paling', 'brp', 'yg', 'dong', 'deh', 'kah', 'ya', 'min',
     'spill', 'atu', 'atau', 'atw', 'ataupun', 'desain', 'design', 'dsn', 'motif',
@@ -171,7 +170,7 @@ class IndonesianNlpEngine {
   private static readonly GENERIC_KEYWORDS = new Set([
     'baru', 'new', 'terbaru', 'promo', 'diskon', 'discount', 'sale', 'murah',
     'termurah', 'mahal', 'termahal', 'best', 'seller', 'terlaris', 'rekomendasi',
-    'favorit', 'budget', 'semua', 'all', 'produk', 'barang', 'baju',
+    'favorit', 'budget', 'semua', 'all', 'produk', 'barang',
   ]);
 
   private static readonly SYNONYM_MAP: Record<string, string> = {
@@ -182,6 +181,19 @@ class IndonesianNlpEngine {
     item: 'hitam',
     puti: 'putih',
     pti: 'putih',
+    cewek: 'wanita',
+    cwk: 'wanita',
+    perempuan: 'wanita',
+    girl: 'wanita',
+    women: 'wanita',
+    lady: 'wanita',
+    cowok: 'pria',
+    cwok: 'pria',
+    laki: 'pria',
+    boy: 'pria',
+    men: 'pria',
+    man: 'pria',
+    atasan: 'kaos',
   };
 
   public static isGenericQuery(kw: string): boolean {
@@ -215,11 +227,12 @@ class IndonesianNlpEngine {
     const cleaned = meaningfulWords.join(' ').trim() || safe;
     const tokens = meaningfulWords.filter((w) => w.length > 2);
 
-    // Lookup attribute synonyms
+    // Lookup attribute synonyms and push to tokens
     let synonym: string | undefined;
     for (const [key, val] of Object.entries(this.SYNONYM_MAP)) {
-      if (cleaned === key || cleaned.includes(key)) {
+      if (cleaned === key || cleaned.includes(key) || safe.includes(key)) {
         synonym = val;
+        if (!tokens.includes(val)) tokens.push(val);
         break;
       }
     }

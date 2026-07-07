@@ -57,6 +57,7 @@ TOOLS & E-COMMERCE PRODUCT FEATURES (SUPER BRAIN):
 SALES & CONVERSION RATE HACK (TEHNIK SELLING & ETIKA BERJUALAN):
 - You are a PRO SELLER! Always aim to close the sale and increase conversion rates.
 - ETIKA SALES PROFESIONAL: Selalu arahkan customer untuk terus puas. Jika produk/size yang dicari sedang proses restock, SELALU berikan saran alternatif model terlaris yang serupa (cross-selling). Jangan biarkan customer pergi tanpa rekomendasi yang relevan!
+- 🚨 REKOMENDASI OUTFIT CEWEK / WANITA / UNISEX: Jika customer mencari kaos untuk cewek/wanita ("ada kaos buat cewek?"), INGAT bahwa sebagian besar kaos & graphic tee NINOC didesain UNISEX (cocok & nyaman banget untuk pria maupun wanita)! Gunakan tool search_products untuk mencari keyword "wanita" atau "kaos", lalu rekomendasikan produk kaos unisex/wanita best seller dari hasil search_products dengan antusias! JANGAN BILANG KOSONG / TIDAK ADA!
 - Saat merekomendasikan produk, sebutkan harganya dengan format Rupiah yang rapi (contoh: Rp 129.000) dan SELALU berikan direct clickable link lengkap: https://ninoc.store/shop/[slug]
 - Lakukan Up-selling & Cross-selling: Jika customer membeli kaos, tawarkan celana atau aksesoris yang cocok (contoh: "Kakak ambil kaos ini, pas banget kalau dipadukan sama Celana Cargo NINOC biar makin kece!").
 - Gunakan bahasa persuasif (FOMO, limited stock, best seller) agar customer segera checkout!
@@ -146,7 +147,7 @@ async function fetchGroqWithRetry(url: string, options: RequestInit, retries = 2
   return fetch(url, options);
 }
 
-// ─── Groq AI (Free — Llama 3.3 70B) ────────────────────────────────────────
+// ─── Groq AI (Free — Multi-Model Fallback Resiliency) ──────────────────────
 async function callGroq(messages: Array<any>, systemPrompt: string): Promise<string | null> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
@@ -154,73 +155,23 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
     return null;
   }
 
-  const payload: any = {
-    model: 'llama-3.3-70b-versatile',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...messages,
-    ],
-    tools: aiToolsDeclaration,
-    tool_choice: 'auto',
-    temperature: 0.7,
-    max_tokens: 1024,
-  };
+  const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'];
 
-  try {
-    // 1st Request with exponential backoff retry
-    const response = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+  for (const modelName of models) {
+    const payload: any = {
+      model: modelName,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages,
+      ],
+      tools: aiToolsDeclaration,
+      tool_choice: 'auto',
+      temperature: 0.7,
+      max_tokens: 1024,
+    };
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('[AI-Chat] Groq API error:', response.status, errText);
-      return null;
-    }
-
-    const data = await response.json();
-    const responseMessage = data.choices?.[0]?.message;
-
-    if (!responseMessage) return null;
-
-    // Handle Tool Calls
-    if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
-      // Push the assistant's tool call message
-      payload.messages.push(responseMessage);
-
-      // Execute each tool call resiliently
-      for (const toolCall of responseMessage.tool_calls) {
-        const functionName = toolCall.function.name;
-        let result: any;
-        try {
-          const rawArgs = toolCall.function.arguments || '{}';
-          const cleanedArgs = rawArgs.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
-          const functionArgs = JSON.parse(cleanedArgs || '{}');
-          result = await executeAiTool(functionName, functionArgs);
-        } catch (err: any) {
-          console.error(`[AI-Chat] Tool execution error for ${functionName}:`, err.message);
-          result = { error: `Failed to execute tool ${functionName}: ${err.message}` };
-        }
-        
-        // Push the tool result message
-        payload.messages.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          name: functionName,
-          content: JSON.stringify(result),
-        });
-      }
-
-      // 2nd Request to get final answer: set tool_choice to 'none' to prevent infinite loop
-      // while keeping tools defined in schema as required by OpenAI/Groq spec when role='tool' is in history.
-      payload.tool_choice = 'none';
-      
-      const followUpResponse = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+    try {
+      const response = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
@@ -229,23 +180,72 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
         body: JSON.stringify(payload),
       });
 
-      if (!followUpResponse.ok) {
-        const errText = await followUpResponse.text();
-        console.error('[AI-Chat] Groq follow-up API error:', followUpResponse.status, errText);
-        return null;
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`[AI-Chat] Model ${modelName} failed (${response.status}):`, errText);
+        continue;
       }
 
-      const followUpData = await followUpResponse.json();
-      return followUpData.choices?.[0]?.message?.content || null;
+      const data = await response.json();
+      const responseMessage = data.choices?.[0]?.message;
+
+      if (!responseMessage) continue;
+
+      if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
+        payload.messages.push(responseMessage);
+
+        for (const toolCall of responseMessage.tool_calls) {
+          const functionName = toolCall.function.name;
+          let result: any;
+          try {
+            const rawArgs = toolCall.function.arguments || '{}';
+            const cleanedArgs = rawArgs.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
+            const functionArgs = JSON.parse(cleanedArgs || '{}');
+            result = await executeAiTool(functionName, functionArgs);
+          } catch (err: any) {
+            console.error(`[AI-Chat] Tool execution error for ${functionName}:`, err.message);
+            result = { error: `Failed to execute tool ${functionName}: ${err.message}` };
+          }
+          
+          payload.messages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            name: functionName,
+            content: JSON.stringify(result),
+          });
+        }
+
+        payload.tool_choice = 'none';
+        
+        const followUpResponse = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!followUpResponse.ok) {
+          const errText = await followUpResponse.text();
+          console.warn(`[AI-Chat] Follow-up for model ${modelName} failed (${followUpResponse.status}):`, errText);
+          continue;
+        }
+
+        const followUpData = await followUpResponse.json();
+        const content = followUpData.choices?.[0]?.message?.content;
+        if (content) return content;
+        continue;
+      }
+
+      return responseMessage.content;
+    } catch (err: any) {
+      console.warn(`[AI-Chat] Exception with model ${modelName}:`, err.message);
+      continue;
     }
-
-    // No tool calls, just return text
-    return responseMessage.content;
-
-  } catch (error: any) {
-    console.error('[AI-Chat] Groq call failed:', error.message);
-    return null;
   }
+
+  return null;
 }
 
 // ─── Main Handler ───────────────────────────────────────────────────────────
