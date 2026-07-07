@@ -82,12 +82,34 @@ const TITLE_TEMPLATES: Record<string, { label: string; template: (name: string) 
   ],
 };
 
+// ===== CATEGORY NORMALIZER =====
+function normalizeCategoryKey(rawCat?: string | null): string {
+  if (!rawCat || typeof rawCat !== 'string') return 'pakaian';
+  const clean = rawCat.toLowerCase().trim().replace(/\s+/g, '-');
+  if (clean === 'apparel' || clean === 'fashion' || clean === 'garment' || clean === 'clothes' || clean === 'clothing') return 'pakaian';
+  if (clean === 'unisex' || clean === 'pakaian-unisex' || clean === 'baju-unisex') return 'unisex';
+  if (clean === 'utilities' || clean === 'utility' || clean === 'gear' || clean === 'objects' || clean === 'accessories') return 'utilities';
+  if (clean === 'aksesoris' || clean === 'accessory' || clean === 'acc') return 'aksesoris';
+  return clean;
+}
+
 // ===== SEO SCORING ENGINE =====
-function calculateSeoScore(name: string, slug: string, description: string, category: string, dynamicKeywords?: string[]) {
+function calculateSeoScore(
+  name?: string | null,
+  slug?: string | null,
+  description?: string | null,
+  category?: string | null,
+  dynamicKeywords?: string[] | null
+) {
+  const safeName = (name || '').trim();
+  const safeSlug = (slug || '').trim().toLowerCase();
+  const safeDesc = (description || '').trim();
+  const normCat = normalizeCategoryKey(category);
+
   const checks: { label: string; passed: boolean; tip: string; weight: number }[] = [];
 
   // 1. Title Length (50-65 chars ideal for Google)
-  const titleLen = name.length;
+  const titleLen = safeName.length;
   checks.push({
     label: 'Panjang Judul (50-65 karakter)',
     passed: titleLen >= 40 && titleLen <= 75,
@@ -99,10 +121,16 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
     weight: 20,
   });
 
-  // 2. Title contains keywords
-  const keywords = dynamicKeywords && dynamicKeywords.length > 0 ? dynamicKeywords : (CATEGORY_KEYWORDS[category] || []);
-  const titleLower = name.toLowerCase();
-  const hasKeyword = keywords.some(k => titleLower.includes(k.toLowerCase()));
+  // 2. Title contains keywords (safely filter out empty/invalid strings)
+  const validDynamic = Array.isArray(dynamicKeywords)
+    ? dynamicKeywords.filter(k => typeof k === 'string' && k.trim().length > 0)
+    : [];
+  const keywords = validDynamic.length > 0
+    ? validDynamic
+    : (CATEGORY_KEYWORDS[normCat] || CATEGORY_KEYWORDS['pakaian'] || []);
+
+  const titleLower = safeName.toLowerCase();
+  const hasKeyword = keywords.length > 0 && keywords.some(k => titleLower.includes(k.toLowerCase().trim()));
   checks.push({
     label: 'Judul mengandung kata kunci kategori',
     passed: hasKeyword,
@@ -124,18 +152,18 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
   });
 
   // 4. Slug is clean
-  const slugClean = /^[a-z0-9-]+$/.test(slug) && slug.length > 3 && slug.length <= 50;
+  const slugClean = /^[a-z0-9-]+$/.test(safeSlug) && safeSlug.length > 3 && safeSlug.length <= 50;
   checks.push({
     label: 'Slug URL bersih & SEO-friendly',
     passed: slugClean,
     tip: slugClean
-      ? `Slug "${slug}" sudah SEO-friendly.`
+      ? `Slug "${safeSlug}" sudah SEO-friendly.`
       : 'Slug harus huruf kecil, angka, dan strip saja. Panjang 4-50 karakter.',
     weight: 15,
   });
 
   // 5. Description exists & length
-  const descLen = description.length;
+  const descLen = safeDesc.length;
   checks.push({
     label: 'Deskripsi produk terisi (min 50 karakter)',
     passed: descLen >= 50,
@@ -146,8 +174,8 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
   });
 
   // 6. Description contains keywords
-  const descLower = description.toLowerCase();
-  const descHasKeyword = keywords.some(k => descLower.includes(k.toLowerCase()));
+  const descLower = safeDesc.toLowerCase();
+  const descHasKeyword = keywords.length > 0 && keywords.some(k => descLower.includes(k.toLowerCase().trim()));
   checks.push({
     label: 'Deskripsi mengandung kata kunci',
     passed: descHasKeyword,
@@ -158,7 +186,7 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
   });
 
   // 7. Title uses separator
-  const hasSeparator = name.includes('|') || name.includes('—') || name.includes('-');
+  const hasSeparator = safeName.includes('|') || safeName.includes('—') || safeName.includes('-');
   checks.push({
     label: 'Judul menggunakan pemisah (| atau —)',
     passed: hasSeparator,
@@ -170,54 +198,108 @@ function calculateSeoScore(name: string, slug: string, description: string, cate
 
   const maxScore = checks.reduce((sum, c) => sum + c.weight, 0);
   const score = checks.reduce((sum, c) => sum + (c.passed ? c.weight : 0), 0);
-  const percentage = Math.round((score / maxScore) * 100);
+  const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
 
   return { checks, score, maxScore, percentage };
 }
 
 // ===== MAIN COMPONENT =====
-export function SeoHelper({ name, slug, description, category, price, imageUrl, seoKeywords, seoTitleTemplate, onApplyTitle, onApplySlug, onApplyDescription }: SeoHelperProps) {
+export function SeoHelper({
+  name,
+  slug,
+  description,
+  category,
+  price,
+  imageUrl,
+  seoKeywords,
+  seoTitleTemplate,
+  onApplyTitle,
+  onApplySlug,
+  onApplyDescription,
+}: SeoHelperProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showKeywords, setShowKeywords] = useState(false);
   const [previewTab, setPreviewTab] = useState<'google' | 'social'>('google');
   const [originalTitle, setOriginalTitle] = useState<string | null>(null);
   const [originalDesc, setOriginalDesc] = useState<string | null>(null);
-  const templates = seoTitleTemplate 
-    ? [{ label: 'Template SEO Kategori', template: (n: string) => seoTitleTemplate.replace('{name}', n) }] 
-    : (TITLE_TEMPLATES[category] || TITLE_TEMPLATES['pakaian']);
-    
-  const keywords = seoKeywords && seoKeywords.length > 0 
-    ? seoKeywords 
-    : (CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS['pakaian']);
 
-  const seo = useMemo(() => calculateSeoScore(name, slug, description, category, keywords), [name, slug, description, category, keywords]);
+  const safeName = (name || '').trim();
+  const safeSlug = (slug || '').trim().toLowerCase();
+  const safeDesc = (description || '').trim();
+  const normCat = normalizeCategoryKey(category);
 
-  // Extract core product name (remove brand, separators etc.)
-  const coreName = name
-    .replace(/\|.*$/, '')
-    .replace(/—.*$/, '')
-    .replace(/NINOC/gi, '')
-    .replace(/Kaos Oversize Pria & Wanita/gi, '')
-    .replace(/Graphic Tee/gi, '')
-    .replace(/Premium.*$/gi, '')
-    .replace(/[""]/g, '')
-    .trim() || name;
+  const validDynamicKeywords = useMemo(() => {
+    return Array.isArray(seoKeywords)
+      ? seoKeywords.filter((k) => typeof k === 'string' && k.trim().length > 0)
+      : [];
+  }, [seoKeywords]);
 
-  const priceNum = typeof price === 'string' ? parseFloat(price.replace(/\D/g, '')) : price;
-  const formattedPrice = priceNum ? `IDR ${priceNum.toLocaleString('id-ID')}` : '';
+  const templates = useMemo(() => {
+    if (seoTitleTemplate && typeof seoTitleTemplate === 'string' && seoTitleTemplate.trim().length > 0) {
+      const tmpl = seoTitleTemplate.trim();
+      return [
+        {
+          label: 'Template SEO Kategori (DB)',
+          template: (n: string) => {
+            const cleanN = n || 'Produk';
+            if (/\{(name|title|product)\}/i.test(tmpl)) {
+              return tmpl.replace(/\{(name|title|product)\}/gi, cleanN);
+            }
+            return `${tmpl} — ${cleanN}`;
+          },
+        },
+      ];
+    }
+    return TITLE_TEMPLATES[normCat] || TITLE_TEMPLATES['pakaian'];
+  }, [seoTitleTemplate, normCat]);
 
-  // Google preview title (truncated at 60)
-  const googleTitle = name.length > 60 ? name.slice(0, 57) + '...' : name;
-  const googleDesc = description.length > 160 ? description.slice(0, 157) + '...' : (description || 'Deskripsi produk belum diisi.');
-  const googleUrl = `ninoc.store › shop › ${slug || 'product-slug'}`;
+  const keywords = useMemo(() => {
+    return validDynamicKeywords.length > 0
+      ? validDynamicKeywords
+      : CATEGORY_KEYWORDS[normCat] || CATEGORY_KEYWORDS['pakaian'] || [];
+  }, [validDynamicKeywords, normCat]);
+
+  const seo = useMemo(
+    () => calculateSeoScore(safeName, safeSlug, safeDesc, normCat, keywords),
+    [safeName, safeSlug, safeDesc, normCat, keywords]
+  );
+
+  // Extract core product name safely
+  const coreName = useMemo(() => {
+    const cleaned = safeName
+      .replace(/\|.*$/, '')
+      .replace(/—.*$/, '')
+      .replace(/NINOC/gi, '')
+      .replace(/Kaos Oversize Pria & Wanita/gi, '')
+      .replace(/Graphic Tee/gi, '')
+      .replace(/Premium.*$/gi, '')
+      .replace(/[""]/g, '')
+      .trim();
+    return cleaned || safeName || 'Produk Original';
+  }, [safeName]);
+
+  const formattedPrice = useMemo(() => {
+    if (price === null || price === undefined || price === '') return '';
+    if (typeof price === 'number') {
+      return !isNaN(price) && price > 0 ? `IDR ${price.toLocaleString('id-ID')}` : '';
+    }
+    const cleanStr = String(price).replace(/[^\d.]/g, '');
+    const num = parseFloat(cleanStr);
+    return !isNaN(num) && num > 0 ? `IDR ${num.toLocaleString('id-ID')}` : '';
+  }, [price]);
+
+  // Google preview title (truncated safely)
+  const googleTitle = safeName.length > 60 ? safeName.slice(0, 57) + '...' : safeName || 'Product Name — Premium Archival Garment';
+  const googleDesc = safeDesc.length > 160 ? safeDesc.slice(0, 157) + '...' : safeDesc || 'Deskripsi produk belum diisi.';
+  const googleUrl = `ninoc.store › shop › ${safeSlug || 'product-slug'}`;
 
   const scoreColor = seo.percentage >= 80 ? 'text-emerald-600' : seo.percentage >= 50 ? 'text-amber-500' : 'text-red-500';
   const scoreBg = seo.percentage >= 80 ? 'bg-emerald-50 border-emerald-200' : seo.percentage >= 50 ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
   const scoreBarColor = seo.percentage >= 80 ? 'bg-emerald-500' : seo.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
   const handleCopyTemplate = (text: string, idx: number) => {
-    if (originalTitle === null) setOriginalTitle(name);
+    if (originalTitle === null) setOriginalTitle(safeName);
     onApplyTitle(text);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 2000);
@@ -231,9 +313,10 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
   };
 
   const generateMetaDescription = () => {
-    if (originalDesc === null) setOriginalDesc(description);
-    const cat = category === 'pakaian' ? 'Kaos' : category === 'utilities' ? 'Aksesori' : 'Produk';
-    const desc = `Beli ${coreName} dari NINOC — Premium Archival Garment Studio. ${cat} premium berkualitas tinggi dengan desain original. ${formattedPrice}. Pengiriman cepat ke seluruh Indonesia. ✓ Original ✓ Premium Quality ✓ COD Available`;
+    if (originalDesc === null) setOriginalDesc(safeDesc);
+    const catLabel = normCat === 'pakaian' || normCat === 'unisex' ? 'Kaos' : normCat === 'utilities' ? 'Aksesori' : 'Produk';
+    const priceText = formattedPrice ? ` ${formattedPrice}.` : '';
+    const desc = `Beli ${coreName} dari NINOC — Premium Archival Garment Studio. ${catLabel} premium berkualitas tinggi dengan desain original.${priceText} Pengiriman cepat ke seluruh Indonesia. ✓ Original ✓ Premium Quality ✓ COD Available`;
     onApplyDescription(desc);
   };
 
@@ -250,7 +333,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
@@ -276,14 +359,16 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             
             <div className="flex bg-gray-100 p-1 rounded-lg mb-3">
               <button 
+                type="button"
                 onClick={() => setPreviewTab('google')}
-                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'google' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors cursor-pointer", previewTab === 'google' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
               >
                 Google
               </button>
               <button 
+                type="button"
                 onClick={() => setPreviewTab('social')}
-                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors", previewTab === 'social' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
+                className={cn("flex-1 text-xs md:text-[10px] py-1.5 rounded-md font-medium transition-colors cursor-pointer", previewTab === 'social' ? "bg-white shadow-sm text-indigo-700" : "text-gray-500 hover:text-gray-700")}
               >
                 WhatsApp / Social
               </button>
@@ -298,7 +383,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                   </div>
                 </div>
                 <h3 className="text-base text-blue-700 hover:underline cursor-default leading-snug font-normal" style={{ fontFamily: 'Arial, sans-serif' }}>
-                  {googleTitle || 'Product Name — Premium Archival Garment'}
+                  {googleTitle}
                 </h3>
                 <p className="text-[13px] text-gray-600 leading-relaxed mt-0.5" style={{ fontFamily: 'Arial, sans-serif' }}>
                   {googleDesc}
@@ -319,7 +404,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                     )}
                   </div>
                   <div className="p-3 bg-[#F0F2F5]">
-                    <h3 className="font-semibold text-[13px] text-gray-900 line-clamp-1 leading-snug">{googleTitle || 'Product Name'}</h3>
+                    <h3 className="font-semibold text-[13px] text-gray-900 line-clamp-1 leading-snug">{googleTitle}</h3>
                     <p className="text-sm md:text-[11px] text-gray-500 line-clamp-2 mt-0.5 leading-snug">{googleDesc}</p>
                     <p className="text-xs md:text-[9px] text-gray-400 mt-1.5 uppercase font-medium">NINOC.STORE</p>
                   </div>
@@ -378,8 +463,9 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
               </div>
               {originalTitle !== null && (
                 <button 
+                  type="button"
                   onClick={handleUndoTitle}
-                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded cursor-pointer"
                 >
                   Undo (Kembalikan Manual)
                 </button>
@@ -396,7 +482,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
                     key={idx}
                     type="button"
                     onClick={() => handleCopyTemplate(generated, idx)}
-                    className="w-full text-left px-3 py-2.5 rounded-md border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group"
+                    className="w-full text-left px-3 py-2.5 rounded-md border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group cursor-pointer"
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs md:text-[9px] uppercase tracking-wider font-semibold text-indigo-500">{t.label}</span>
@@ -424,8 +510,9 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
               <p className="text-xs md:text-[10px] text-gray-400 italic">Generate berdasarkan produk</p>
               {originalDesc !== null && (
                 <button 
+                  type="button"
                   onClick={handleUndoDesc}
-                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded"
+                  className="text-xs md:text-[9px] text-rose font-bold hover:underline transition-all bg-rose/10 px-2 py-0.5 rounded cursor-pointer"
                 >
                   Undo (Kembalikan Manual)
                 </button>
@@ -434,7 +521,7 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <button
               type="button"
               onClick={generateMetaDescription}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs md:text-[10px] uppercase tracking-wider font-semibold rounded-lg transition-colors shadow-sm"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs md:text-[10px] uppercase tracking-wider font-semibold rounded-lg transition-colors shadow-sm cursor-pointer"
             >
               <Sparkles size={12} />
               Generate Meta Description Otomatis
@@ -446,26 +533,29 @@ export function SeoHelper({ name, slug, description, category, price, imageUrl, 
             <button
               type="button"
               onClick={() => setShowKeywords(!showKeywords)}
-              className="flex items-center gap-1.5 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800 transition-colors"
+              className="flex items-center gap-1.5 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer"
             >
               <AlertCircle size={12} />
-              {showKeywords ? 'Sembunyikan' : 'Tampilkan'} Kata Kunci Populer ({category})
+              {showKeywords ? 'Sembunyikan' : 'Tampilkan'} Kata Kunci Populer ({normCat})
             </button>
             {showKeywords && (
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {keywords.map((kw) => (
-                  <span
-                    key={kw}
-                    className={cn(
-                      "px-2 py-1 text-xs md:text-[9px] rounded-full border transition-all",
-                      (name + description).toLowerCase().includes(kw.toLowerCase())
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
-                        : "bg-gray-50 border-gray-200 text-gray-500"
-                    )}
-                  >
-                    {(name + description).toLowerCase().includes(kw.toLowerCase()) && '✓ '}{kw}
-                  </span>
-                ))}
+                {keywords.map((kw) => {
+                  const isMatch = (safeName + ' ' + safeDesc).toLowerCase().includes(kw.toLowerCase().trim());
+                  return (
+                    <span
+                      key={kw}
+                      className={cn(
+                        "px-2 py-1 text-xs md:text-[9px] rounded-full border transition-all",
+                        isMatch
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
+                          : "bg-gray-50 border-gray-200 text-gray-500"
+                      )}
+                    >
+                      {isMatch && '✓ '}{kw}
+                    </span>
+                  );
+                })}
               </div>
             )}
           </div>
