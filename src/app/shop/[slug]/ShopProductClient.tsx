@@ -575,6 +575,22 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </button>
               </>
             )}
+
+            {/* Floating Reviews Badge */}
+            <motion.button
+              variants={textVariants}
+              onClick={() => setIsReviewsDrawerOpen(true)}
+              className="absolute bottom-4 right-4 lg:bottom-6 lg:right-6 z-[30] flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-md border border-ink/10 rounded-full shadow-lg hover:bg-white hover:scale-105 transition-all group active:scale-95"
+            >
+              <div className="flex gap-0.5 text-amber-500">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={10} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
+                ))}
+              </div>
+              <span className="text-[9px] font-bold text-ink uppercase tracking-widest group-hover:text-rose transition-colors">
+                {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
+              </span>
+            </motion.button>
           </motion.div>
 
           {/* Combined Product Info & Options Column */}
@@ -594,20 +610,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   </div>
                 </motion.div>
                 <motion.h1 variants={textVariants} className="text-base md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
-                <motion.button 
-                  variants={textVariants} 
-                  onClick={() => setIsReviewsDrawerOpen(true)}
-                  className="flex items-center gap-2 mb-1.5 mt-0.5 px-2 py-1 -ml-2 rounded-md hover:bg-ink/[0.03] transition-colors active:scale-[0.97] group"
-                >
-                  <div className="flex gap-0.5 text-amber-500">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={12} fill={reviews.length > 0 && i < Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) ? "currentColor" : "none"} className="text-amber-500" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] md:text-[9px] font-bold text-ink/60 uppercase tracking-widest group-hover:text-ink transition-colors underline decoration-ink/20 underline-offset-2">
-                    {reviews.length > 0 ? `${reviews.length} Ulasan` : 'Baca Ulasan'}
-                  </span>
-                </motion.button>
+
                 <motion.div variants={textVariants} className="flex items-center gap-3 mt-0.5">
                   <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-emerald-700">
                     IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
