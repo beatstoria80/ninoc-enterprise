@@ -996,17 +996,18 @@ export default function AdminDashboard() {
           .in('ticket_id', ticketIds)
           .order('created_at', { ascending: true });
 
-        let crmMap: Record<string, string> = {};
+        let metaMap: Record<string, any> = {};
         try {
-          const res = await fetch('/api/admin/support/crm-status');
+          const res = await fetch('/api/admin/support/ticket-meta');
           const json = await res.json();
-          if (json?.data) crmMap = json.data;
+          if (json?.data) metaMap = json.data;
         } catch (e) {
-          console.error('Failed to fetch CRM status map:', e);
+          console.error('Failed to fetch ticket metadata map:', e);
         }
 
         const sessions: ChatSession[] = ticketsData.map((t) => {
           const ticketMessages = allMessages?.filter(m => m.ticket_id === t.id) || [];
+          const meta = metaMap[t.id] || {};
           return {
             id: t.id,
             customer_name: t.subject || `Inquiry ${t.id.split('-')[0]}`,
@@ -1015,7 +1016,11 @@ export default function AdminDashboard() {
             last_message_time: ticketMessages[ticketMessages.length - 1]?.created_at || t.created_at,
             unread_count: ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length,
             status: t.status || 'open',
-            crm_status: crmMap[t.id] || t.crm_status || 'general',
+            crm_status: meta.crm_status || t.crm_status || 'general',
+            priority: meta.priority || t.priority || 'medium',
+            assigned_admin: meta.assigned_admin || t.assigned_admin || null,
+            is_taken_over: meta.is_taken_over ?? (t.is_taken_over || false),
+            created_at: t.created_at,
             messages: ticketMessages.map(m => ({
               id: m.id,
               sender: m.sender_role as 'customer' | 'admin',

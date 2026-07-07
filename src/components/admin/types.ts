@@ -199,6 +199,10 @@ export interface ChatSession {
   unread_count: number;
   status: 'open' | 'resolved';
   crm_status?: 'potential' | 'active' | 'general' | 'bad' | string;
+  priority?: 'urgent' | 'high' | 'medium' | 'low' | string;
+  assigned_admin?: string | null;
+  is_taken_over?: boolean;
+  created_at?: string;
   messages: ChatMessage[];
 }
 

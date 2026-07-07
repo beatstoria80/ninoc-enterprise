@@ -6,7 +6,8 @@ import {
   MessageSquare, Send, X, Search, Tag, Zap,
   Flag, AlertTriangle, ShieldAlert, CheckCircle, Clock,
   ChevronDown, RefreshCw, TrendingUp, Clock3, MessageCircle,
-  Trash2, Star, UserCheck, AlertCircle, Filter, Smile, Sparkles
+  Trash2, Star, UserCheck, AlertCircle, Filter, Smile, Sparkles,
+  Bot, User, Calendar, Flame, ArrowUpDown, SlidersHorizontal, UserPlus, Heart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ChatSession } from '../types';
@@ -77,6 +78,21 @@ const CRM_STATUS_CONFIG: Record<string, { label: string; color: string; badgeCol
   },
 };
 
+const PRIORITY_CONFIG: Record<string, { label: string; color: string; badgeColor: string; icon: any; desc: string }> = {
+  urgent: { label: 'Urgent (🚨)', color: 'bg-red-500/15 text-red-700 border-red-500/30', badgeColor: 'bg-red-50 text-red-700 border-red-200 font-extrabold animate-pulse', icon: Flame, desc: 'Butuh penanganan instan & darurat' },
+  high: { label: 'High (🔴)', color: 'bg-orange-500/15 text-orange-700 border-orange-500/30', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200 font-bold', icon: AlertTriangle, desc: 'Prioritas tinggi / Pelanggan VIP' },
+  medium: { label: 'Medium (🟡)', color: 'bg-amber-500/15 text-amber-700 border-amber-500/30', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock, desc: 'Prioritas normal / standar' },
+  low: { label: 'Low (🟢)', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle, desc: 'Pertanyaan ringan / minor' },
+};
+
+const FEMALE_PERSONAS = [
+  { name: 'Gita', title: 'Senior Customer Success Specialist', avatar: '🌸', desc: 'Ramah, penuh empati, spesialis resolusi pesanan & kendala umum.' },
+  { name: 'Alpin', title: 'VIP Lead Relationship Specialist', avatar: '🌺', desc: 'Profesional, elegan, spesialis konsultasi produk & pesanan VIP.' },
+  { name: 'Nadia', title: 'Logistics & Care Coordinator', avatar: '🌷', desc: 'Cepat, tanggap, spesialis pelacakan pengiriman & retur barang.' },
+  { name: 'Siti', title: 'Order & Billing Advisor', avatar: '🌹', desc: 'Teliti, solutif, spesialis kendala pembayaran, konfirmasi & refund.' },
+  { name: 'Amanda', title: 'Product & Styling Advisor', avatar: '🌼', desc: 'Kreatif, interaktif, spesialis rekomendasi busana & mix-match.' },
+];
+
 export function MessagesTab({
   chatSessions,
   activeChatSession,
@@ -103,8 +119,18 @@ export function MessagesTab({
   const [flaggedSearch, setFlaggedSearch] = useState('');
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  
+  // Filter states
+  const [statusFilter, setStatusFilter] = useState<'all' | 'realtime_active' | 'open' | 'resolved' | 'unread'>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [timeOrder, setTimeOrder] = useState<'newest' | 'oldest' | 'today' | 'yesterday' | 'week'>('newest');
   const [crmFilter, setCrmFilter] = useState<string>('all');
-  const [updatingCrm, setUpdatingCrm] = useState<string | null>(null);
+  
+  // Takeover modal state
+  const [takeoverModalOpen, setTakeoverModalOpen] = useState<boolean>(false);
+  const [selectedPersona, setSelectedPersona] = useState<string>('Gita');
+  const [updatingMeta, setUpdatingMeta] = useState<boolean>(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // ─── Fetch placeholders
@@ -200,12 +226,11 @@ export function MessagesTab({
 
   // ─── CRM Status Update Handler
   const handleUpdateCrmStatus = async (ticketId: string, newStatus: string) => {
-    setUpdatingCrm(ticketId);
     try {
-      await fetch('/api/admin/support/crm-status', {
+      await fetch('/api/admin/support/ticket-meta', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId, status: newStatus }),
+        body: JSON.stringify({ ticketId, crm_status: newStatus }),
       });
       fetchChatSessions();
       if (activeChatSession && activeChatSession.id === ticketId) {
@@ -213,8 +238,66 @@ export function MessagesTab({
       }
     } catch (err) {
       console.error('Failed to update CRM status:', err);
+    }
+  };
+
+  // ─── Priority Update Handler
+  const handleUpdatePriority = async (ticketId: string, newPriority: string) => {
+    try {
+      await fetch('/api/admin/support/ticket-meta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId, priority: newPriority }),
+      });
+      fetchChatSessions();
+      if (activeChatSession && activeChatSession.id === ticketId) {
+        setActiveChatSession({ ...activeChatSession, priority: newPriority });
+      }
+    } catch (err) {
+      console.error('Failed to update priority:', err);
+    }
+  };
+
+  // ─── Takeover Chat Handler (Female Persona Greeting)
+  const handleTakeoverChat = async (adminName: string, releaseToBot = false) => {
+    if (!activeChatSession) return;
+    setUpdatingMeta(true);
+    try {
+      const payload = {
+        ticketId: activeChatSession.id,
+        assigned_admin: releaseToBot ? null : adminName,
+        is_taken_over: !releaseToBot,
+        priority: releaseToBot ? activeChatSession.priority || 'medium' : 'high',
+        sendTakeoverMessage: !releaseToBot,
+        adminName: adminName,
+      };
+
+      const res = await fetch('/api/admin/support/ticket-meta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setActiveChatSession({
+          ...activeChatSession,
+          assigned_admin: releaseToBot ? null : adminName,
+          is_taken_over: !releaseToBot,
+          priority: payload.priority,
+        });
+        fetchChatSessions();
+        setTakeoverModalOpen(false);
+        if (!releaseToBot) {
+          alert(`✅ Berhasil mengambil alih percakapan!\n\nSalam perkenalan dari Admin ${adminName} telah otomatis dikirimkan ke dalam chat customer.`);
+        } else {
+          alert(`🤖 Percakapan telah dikembalikan ke layanan AI Chatbot otomatis.`);
+        }
+      }
+    } catch (err) {
+      console.error('Failed takeover:', err);
+      alert('Gagal mengambil alih percakapan.');
     } finally {
-      setUpdatingCrm(null);
+      setUpdatingMeta(false);
     }
   };
 
@@ -292,16 +375,145 @@ export function MessagesTab({
 
   const totalUnread = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
 
+  // ─── Filter & Sorting Logic
   const filteredSessions = chatSessions.filter(session => {
-    if (crmFilter === 'all') return true;
-    const currentStatus = session.crm_status || 'general';
-    return currentStatus === crmFilter;
+    // 1. CRM filter
+    if (crmFilter !== 'all') {
+      const currentCrm = session.crm_status || 'general';
+      if (currentCrm !== crmFilter) return false;
+    }
+
+    // 2. Priority filter
+    if (priorityFilter !== 'all') {
+      const currentPri = session.priority || 'medium';
+      if (currentPri !== priorityFilter) return false;
+    }
+
+    // 3. Status / Realtime Active filter
+    if (statusFilter === 'realtime_active') {
+      if (session.status !== 'open') return false;
+    } else if (statusFilter === 'open') {
+      if (session.status !== 'open') return false;
+    } else if (statusFilter === 'resolved') {
+      if (session.status !== 'resolved') return false;
+    } else if (statusFilter === 'unread') {
+      if (session.unread_count === 0) return false;
+    }
+
+    // 4. Time range filters
+    const msgDate = new Date(session.last_message_time);
+    const now = new Date();
+    if (timeOrder === 'today') {
+      if (msgDate.toDateString() !== now.toDateString()) return false;
+    } else if (timeOrder === 'yesterday') {
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+      if (msgDate.toDateString() !== yesterday.toDateString()) return false;
+    } else if (timeOrder === 'week') {
+      const weekAgo = new Date();
+      weekAgo.setDate(now.getDate() - 7);
+      if (msgDate < weekAgo) return false;
+    }
+
+    return true;
+  }).sort((a, b) => {
+    const timeA = new Date(a.last_message_time).getTime();
+    const timeB = new Date(b.last_message_time).getTime();
+    if (timeOrder === 'oldest') {
+      return timeA - timeB;
+    }
+    return timeB - timeA;
   });
 
   return (
     <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-4 pb-4">
+      {/* ─── TAKEOVER PERSONA SELECTION MODAL ─── */}
+      <AnimatePresence>
+        {takeoverModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-xs p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-2xl border border-ink/10 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="p-5 border-b border-ink/10 bg-gradient-to-r from-pink-50 via-rose-50 to-white flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xl font-bold">🌸</div>
+                  <div>
+                    <h3 className="text-base font-bold text-ink uppercase tracking-wider">Ambil Alih Percakapan</h3>
+                    <p className="text-xs text-ink/70 font-medium">Pilih Karakter Figur Wanita (Spesialis Admin NINOC) untuk melanjutkan chat</p>
+                  </div>
+                </div>
+                <button onClick={() => setTakeoverModalOpen(false)} className="p-2 text-ink/50 hover:text-ink rounded-lg hover:bg-ink/5">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-5 overflow-y-auto space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-ink/60 mb-2">Pilih Persona Admin Wanita:</p>
+                {FEMALE_PERSONAS.map(p => {
+                  const isSelected = selectedPersona === p.name;
+                  return (
+                    <div
+                      key={p.name}
+                      onClick={() => setSelectedPersona(p.name)}
+                      className={cn(
+                        "p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex items-start gap-3",
+                        isSelected ? "border-rose bg-rose/5 shadow-xs" : "border-ink/10 hover:border-ink/30 bg-white"
+                      )}
+                    >
+                      <div className="w-11 h-11 rounded-full bg-pink-50 border border-pink-200 flex items-center justify-center text-xl shrink-0 shadow-2xs">
+                        {p.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-extrabold text-ink uppercase tracking-wide">{p.name}</span>
+                          <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full uppercase", isSelected ? "bg-rose text-white" : "bg-ink/5 text-ink/60")}>
+                            {isSelected ? "🌸 Terpilih" : "Pilih"}
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-rose">{p.title}</p>
+                        <p className="text-xs text-ink/70 mt-1 leading-relaxed font-normal">{p.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 space-y-1">
+                  <p className="font-bold flex items-center gap-1.5">
+                    <Sparkles size={14} className="text-amber-600 shrink-0" />
+                    Pesan Otomatis yang Akan Dikirim:
+                  </p>
+                  <p className="italic text-ink/80 pl-5 border-l-2 border-amber-400 mt-1">
+                    &quot;🌸 Halo kak! Percakapan ini telah diambil alih dari layanan AI Otomatis dan sekarang akan dilanjutkan secara langsung oleh Admin <strong>{selectedPersona}</strong> ({FEMALE_PERSONAS.find(p => p.name === selectedPersona)?.title}). Ada yang bisa {selectedPersona} bantu periksa atau bantu selesaikan untuk pesanan kakak hari ini? 😊&quot;
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 border-t border-ink/10 bg-ink/[0.02] flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setTakeoverModalOpen(false)}
+                  className="px-4 py-2.5 rounded-lg border border-ink/15 text-ink/70 hover:text-ink text-xs font-bold uppercase tracking-wider"
+                >
+                  Batal
+                </button>
+                <button
+                  disabled={updatingMeta}
+                  onClick={() => handleTakeoverChat(selectedPersona, false)}
+                  className="px-5 py-2.5 rounded-lg bg-rose hover:bg-pink-600 text-white text-xs font-bold uppercase tracking-wider shadow-md flex items-center gap-2"
+                >
+                  <UserCheck size={14} />
+                  <span>🚀 Ambil Alih & Kirim Salam ({selectedPersona})</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* ─── SUB-TAB NAVIGATOR & SIDEBAR ─── */}
-      <div className="w-full md:w-[400px] bg-white rounded-xl border border-ink/10 flex flex-col overflow-hidden shadow-xs shrink-0">
+      <div className="w-full md:w-[420px] bg-white rounded-xl border border-ink/10 flex flex-col overflow-hidden shadow-xs shrink-0">
         <div className="p-5 border-b border-ink/10 bg-ink/[0.01]">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -355,32 +567,115 @@ export function MessagesTab({
             })}
           </div>
 
-          {/* CRM Lead Status Filter Chips */}
+          {/* ─── COMPACT MULTI-FILTER BAR (Status Active, Waktu/Jam, Prioritas, CRM) ─── */}
           {subTab === 'chat' && (
-            <div className="mt-4 pt-3 border-t border-ink/10 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
-                <Filter size={12} /> Filter:
-              </span>
-              {(['all', 'potential', 'active', 'general', 'bad'] as const).map(key => {
-                const isSelected = crmFilter === key;
-                return (
+            <div className="mt-4 pt-3 border-t border-ink/10 space-y-2">
+              {/* Status & Realtime Active row */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
+                  <SlidersHorizontal size={12} /> Status:
+                </span>
+                {[
+                  { key: 'all', label: 'All' },
+                  { key: 'realtime_active', label: '⚡ Realtime Active', color: 'bg-amber-500 text-white border-amber-500 shadow-xs' },
+                  { key: 'open', label: '📂 Open' },
+                  { key: 'unread', label: '🔴 Unread' },
+                  { key: 'resolved', label: '✅ Resolved' },
+                ].map(item => (
                   <button
-                    key={key}
-                    onClick={() => setCrmFilter(key)}
+                    key={item.key}
+                    onClick={() => setStatusFilter(item.key as any)}
                     className={cn(
-                      "px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border",
-                      isSelected
-                        ? key === 'potential' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' :
-                          key === 'active' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' :
-                          key === 'bad' ? 'bg-red-600 text-white border-red-600 shadow-xs' :
-                          'bg-ink text-white border-ink shadow-xs'
+                      "px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap transition-all border",
+                      statusFilter === item.key
+                        ? item.color || "bg-rose text-white border-rose shadow-xs"
                         : "bg-ink/[0.03] text-ink/70 border-ink/10 hover:border-ink/30 hover:text-ink"
                     )}
                   >
-                    {key === 'all' ? 'All Leads' : CRM_STATUS_CONFIG[key]?.label || key}
+                    {item.label}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+
+              {/* Date & Time row */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
+                  <Clock size={12} /> Waktu:
+                </span>
+                {[
+                  { key: 'newest', label: '🕒 Terbaru' },
+                  { key: 'today', label: '📅 Hari Ini' },
+                  { key: 'yesterday', label: '📆 Kemarin' },
+                  { key: 'week', label: '🗓️ Minggu Ini' },
+                  { key: 'oldest', label: '⏳ Terlama' },
+                ].map(item => (
+                  <button
+                    key={item.key}
+                    onClick={() => setTimeOrder(item.key as any)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap transition-all border",
+                      timeOrder === item.key
+                        ? "bg-ink text-white border-ink shadow-xs"
+                        : "bg-ink/[0.03] text-ink/70 border-ink/10 hover:border-ink/30 hover:text-ink"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Priority filter row */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
+                  <Flame size={12} /> Prioritas:
+                </span>
+                {(['all', 'urgent', 'high', 'medium', 'low'] as const).map(key => {
+                  const cfg = PRIORITY_CONFIG[key];
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setPriorityFilter(key)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap transition-all border",
+                        priorityFilter === key
+                          ? key === 'urgent' ? 'bg-red-600 text-white border-red-600 animate-pulse shadow-xs' :
+                            key === 'high' ? 'bg-orange-600 text-white border-orange-600 shadow-xs' :
+                            key === 'low' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' :
+                            'bg-amber-600 text-white border-amber-600 shadow-xs'
+                          : "bg-ink/[0.03] text-ink/70 border-ink/10 hover:border-ink/30 hover:text-ink"
+                      )}
+                    >
+                      {key === 'all' ? 'All Priority' : cfg?.label || key}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* CRM Lead status row */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink/60 mr-1 flex items-center gap-1 shrink-0">
+                  <Star size={12} /> CRM Lead:
+                </span>
+                {(['all', 'potential', 'active', 'general', 'bad'] as const).map(key => {
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setCrmFilter(key)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap transition-all border",
+                        crmFilter === key
+                          ? key === 'potential' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' :
+                            key === 'active' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' :
+                            key === 'bad' ? 'bg-red-600 text-white border-red-600 shadow-xs' :
+                            'bg-ink text-white border-ink shadow-xs'
+                          : "bg-ink/[0.03] text-ink/70 border-ink/10 hover:border-ink/30 hover:text-ink"
+                      )}
+                    >
+                      {key === 'all' ? 'All CRM' : CRM_STATUS_CONFIG[key]?.label || key}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -410,11 +705,29 @@ export function MessagesTab({
                     <span className="text-xs text-ink/60 font-mono shrink-0">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 mb-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+                    {/* CRM status badge */}
                     <span className={cn("inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border", crmCfg.badgeColor)}>
                       <CrmIcon size={12} />
                       {crmCfg.label}
                     </span>
+                    {/* Priority badge */}
+                    {session.priority && session.priority !== 'medium' && (
+                      <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border", PRIORITY_CONFIG[session.priority]?.badgeColor || "bg-amber-50 text-amber-700 border-amber-200")}>
+                        <Flame size={12} />
+                        {session.priority}
+                      </span>
+                    )}
+                    {/* Takeover badge */}
+                    {session.is_taken_over && session.assigned_admin ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-pink-50 text-pink-700 border border-pink-200">
+                        🌸 {session.assigned_admin}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-ink/5 text-ink/60 border border-ink/10">
+                        🤖 AI Bot
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-end gap-2">
@@ -672,6 +985,77 @@ export function MessagesTab({
       <div className="flex-1 bg-white rounded-xl border border-ink/10 flex flex-col overflow-hidden shadow-xs">
         {activeChatSession ? (
           <>
+            {/* ─── TAKEOVER BANNER (AI BOT VS HUMAN ADMIN) ─── */}
+            <div className={cn(
+              "p-3.5 md:px-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors",
+              activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                ? "bg-gradient-to-r from-pink-50/80 via-rose-50/50 to-white border-pink-200"
+                : "bg-gradient-to-r from-blue-50/60 via-indigo-50/40 to-white border-blue-200"
+            )}>
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm shrink-0 border",
+                  activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                    ? "bg-pink-100 border-pink-300 text-pink-700"
+                    : "bg-blue-100 border-blue-300 text-blue-700"
+                )}>
+                  {activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                    ? FEMALE_PERSONAS.find(p => p.name === activeChatSession.assigned_admin)?.avatar || '🌸'
+                    : '🤖'}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-xs font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border",
+                      activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                        ? "bg-pink-500 text-white border-pink-600"
+                        : "bg-blue-600 text-white border-blue-700"
+                    )}>
+                      {activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                        ? `Live Admin: ${activeChatSession.assigned_admin}`
+                        : "🤖 AI Chatbot 24/7"}
+                    </span>
+                    {activeChatSession.is_taken_over && activeChatSession.assigned_admin && (
+                      <span className="flex items-center gap-1 text-xs font-bold text-emerald-600">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live Active
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-ink/75 font-medium mt-0.5">
+                    {activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                      ? `Percakapan diambil alih & dilanjutkan oleh spesialis wanita (${FEMALE_PERSONAS.find(p => p.name === activeChatSession.assigned_admin)?.title || 'Customer Success'}).`
+                      : "Percakapan dijawab otomatis oleh sistem bot. Ambil alih untuk memberikan layanan manusia personal."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setTakeoverModalOpen(true)}
+                  className={cn(
+                    "px-3.5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition-all duration-200 border",
+                    activeChatSession.is_taken_over && activeChatSession.assigned_admin
+                      ? "bg-white text-ink border-ink/20 hover:border-pink-500 hover:text-pink-600"
+                      : "bg-rose text-white border-rose hover:bg-pink-600 shadow-md animate-bounce hover:animate-none"
+                  )}
+                >
+                  <UserPlus size={14} />
+                  <span>{activeChatSession.is_taken_over && activeChatSession.assigned_admin ? "🌸 Ganti Persona" : "🌸 Ambil Alih dengan Admin"}</span>
+                </button>
+
+                {activeChatSession.is_taken_over && activeChatSession.assigned_admin && (
+                  <button
+                    disabled={updatingMeta}
+                    onClick={() => handleTakeoverChat('Bot', true)}
+                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-ink/5 text-ink/70 hover:bg-ink hover:text-white border border-ink/10 transition-all"
+                    title="Kembalikan ke sistem AI Bot otomatis"
+                  >
+                    🤖 Release ke AI Bot
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Chat Header */}
             <div className="p-4 md:p-5 border-b border-ink/10 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-ink/[0.01]">
               <div className="flex items-center gap-3 min-w-0">
@@ -684,8 +1068,9 @@ export function MessagesTab({
                 </div>
               </div>
 
-              {/* CRM Status Tagging & Resolved Action */}
+              {/* CRM Status Tagging, Priority Selector & Resolved Action */}
               <div className="flex flex-wrap items-center gap-2">
+                {/* CRM Buttons */}
                 <div className="flex items-center gap-1 bg-ink/5 p-1 rounded-lg">
                   {(['potential', 'active', 'general', 'bad'] as const).map(status => {
                     const cfg = CRM_STATUS_CONFIG[status];
@@ -694,16 +1079,37 @@ export function MessagesTab({
                     return (
                       <button
                         key={status}
-                        disabled={updatingCrm === activeChatSession.id}
                         onClick={() => handleUpdateCrmStatus(activeChatSession.id, status)}
                         className={cn(
-                          "px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-200",
+                          "px-2.5 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all duration-200",
                           isSelected ? `${cfg.color} shadow-xs font-extrabold scale-[1.02]` : "text-ink/60 hover:text-ink hover:bg-white/60"
                         )}
                         title={cfg.desc}
                       >
-                        <Icon size={13} />
+                        <Icon size={12} />
                         <span className="hidden sm:inline">{cfg.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Priority Selector */}
+                <div className="flex items-center gap-1 bg-ink/5 p-1 rounded-lg">
+                  <span className="text-xs font-bold text-ink/50 px-1.5 flex items-center gap-1"><Flame size={12} /> Pri:</span>
+                  {(['urgent', 'high', 'medium', 'low'] as const).map(pri => {
+                    const cfg = PRIORITY_CONFIG[pri];
+                    const isSelected = (activeChatSession.priority || 'medium') === pri;
+                    return (
+                      <button
+                        key={pri}
+                        onClick={() => handleUpdatePriority(activeChatSession.id, pri)}
+                        className={cn(
+                          "px-2 py-1 rounded text-xs font-bold uppercase tracking-wider transition-all",
+                          isSelected ? `${cfg.color} shadow-xs font-extrabold` : "text-ink/60 hover:text-ink hover:bg-white/60"
+                        )}
+                        title={cfg?.desc}
+                      >
+                        {pri === 'urgent' ? '🚨 Urgent' : pri === 'high' ? '🔴 High' : pri === 'low' ? '🟢 Low' : '🟡 Med'}
                       </button>
                     );
                   })}
@@ -729,7 +1135,7 @@ export function MessagesTab({
                 <div key={msg.id} className={cn("flex", msg.sender === 'admin' ? "justify-end" : "justify-start")}>
                   <div className={cn("max-w-[80%] md:max-w-[70%] group", msg.sender === 'admin' ? "items-end" : "items-start")}>
                     <div className={cn(
-                      "p-3.5 md:p-4 rounded-2xl text-sm leading-relaxed shadow-xs font-normal",
+                      "p-3.5 md:p-4 rounded-2xl text-sm leading-relaxed shadow-xs font-normal whitespace-pre-wrap",
                       msg.sender === 'admin'
                         ? msg.is_auto_reply
                           ? "bg-rose/10 border border-rose/20 text-ink rounded-tr-none"
@@ -749,7 +1155,11 @@ export function MessagesTab({
                               <Zap size={11} strokeWidth={2.5} />
                               AUTO BOT
                             </span>
-                          ) : msg.is_read ? '✓ READ' : 'SENT'}
+                          ) : (
+                            <span className="flex items-center gap-1 text-pink-500 font-extrabold">
+                              🌸 {activeChatSession.assigned_admin || 'ADMIN'} • {msg.is_read ? '✓ READ' : 'SENT'}
+                            </span>
+                          )}
                         </span>
                       )}
                     </div>
@@ -846,7 +1256,7 @@ export function MessagesTab({
                       sendMessage();
                     }
                   }}
-                  placeholder="Ketik balasan untuk customer..."
+                  placeholder={activeChatSession.is_taken_over && activeChatSession.assigned_admin ? `Ketik balasan sebagai Admin ${activeChatSession.assigned_admin}...` : "Ketik balasan untuk customer..."}
                   className="flex-1 bg-ink/[0.02] text-ink py-3 px-4 rounded-lg text-sm font-medium outline-none border border-ink/15 placeholder:text-ink/50 transition-all focus:bg-white focus:border-rose focus:ring-1 focus:ring-rose/20 resize-none no-scrollbar min-h-[44px]"
                 />
                 <motion.button
@@ -861,7 +1271,7 @@ export function MessagesTab({
               </div>
               <div className="flex justify-between items-center px-1">
                 <p className="text-xs font-semibold uppercase tracking-wider text-ink/40 flex items-center gap-1">
-                  <Sparkles size={12} /> Live Customer Support Desk
+                  <Sparkles size={12} /> Live Customer Support Desk • {activeChatSession.assigned_admin ? `Admin: ${activeChatSession.assigned_admin}` : 'AI Bot Mode'}
                 </p>
                 <p className={cn("text-xs font-mono font-bold tracking-wide", newMessage.length > 450 ? "text-rose" : "text-ink/40")}>
                   {newMessage.length} / 500 chars
@@ -876,7 +1286,7 @@ export function MessagesTab({
             </div>
             <div className="text-center">
               <p className="text-sm font-bold uppercase tracking-wider text-ink">Select an inquiry to respond</p>
-              <p className="text-xs text-ink/60 mt-1 font-normal">Pilih tiket percakapan di bilah kiri atau gunakan filter status CRM</p>
+              <p className="text-xs text-ink/60 mt-1 font-normal">Pilih tiket percakapan di bilah kiri atau gunakan filter status CRM, Prioritas & Waktu</p>
             </div>
           </div>
         )}
