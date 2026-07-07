@@ -1011,7 +1011,8 @@ export default function AdminDashboard() {
           return {
             id: t.id,
             customer_name: t.subject || `Inquiry ${t.id.split('-')[0]}`,
-            customer_email: t.category || 'general',
+            customer_email: t.user_id ? 'Registered User' : 'Guest User',
+            category: t.category || 'general',
             last_message: ticketMessages[ticketMessages.length - 1]?.message || 'No messages',
             last_message_time: ticketMessages[ticketMessages.length - 1]?.created_at || t.created_at,
             unread_count: ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length,

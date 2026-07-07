@@ -193,6 +193,7 @@ export interface ChatSession {
   id: string;
   customer_name: string;
   customer_email: string;
+  category?: string;
   customer_avatar?: string;
   last_message: string;
   last_message_time: string;

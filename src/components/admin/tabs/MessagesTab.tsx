@@ -1097,17 +1097,24 @@ export function MessagesTab({
                   })}
                 </div>
 
-                <button
-                  className="px-4 py-2 border border-emerald-600/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-xs flex items-center gap-1.5 shrink-0 ml-auto xl:ml-0"
-                  onClick={async () => {
-                    await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', activeChatSession.id);
-                    fetchChatSessions();
-                    setActiveChatSession(null);
-                  }}
-                >
-                  <CheckCircle size={14} />
-                  <span>Mark Resolved</span>
-                </button>
+                {activeChatSession.category === 'return' ? (
+                  <div className="px-4 py-2 border border-amber-600/30 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold uppercase tracking-wider shadow-xs flex items-center gap-1.5 shrink-0 ml-auto xl:ml-0 cursor-not-allowed" title="Tiket Retur / Refund direkam permanen untuk kepentingan audit.">
+                    <ShieldAlert size={14} />
+                    <span>Audit Retained</span>
+                  </div>
+                ) : (
+                  <button
+                    className="px-4 py-2 border border-emerald-600/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-xs flex items-center gap-1.5 shrink-0 ml-auto xl:ml-0"
+                    onClick={async () => {
+                      await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', activeChatSession.id);
+                      fetchChatSessions();
+                      setActiveChatSession(null);
+                    }}
+                  >
+                    <CheckCircle size={14} />
+                    <span>Mark Resolved</span>
+                  </button>
+                )}
               </div>
             </div>
 
