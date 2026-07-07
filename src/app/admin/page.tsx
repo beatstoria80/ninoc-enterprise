@@ -2884,8 +2884,7 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
-                  {!productForm.variants.some(v => v.color) && (
-                    <>
+
                       <div>
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
                         <div className="flex items-center gap-3">
@@ -2999,8 +2998,7 @@ export default function AdminDashboard() {
                           </div>
                         )})}
                       </div>
-                    </>
-                  )}
+
 
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
