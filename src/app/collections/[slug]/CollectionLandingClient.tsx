@@ -124,13 +124,7 @@ function ProductCard({ product }: { product: Product }) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
-                <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
-                  <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
-                  <span className="text-[9px] md:text-[6px] font-mono font-semibold uppercase tracking-wider">
-                    {getProductViews(product)} DILIHAT
-                  </span>
-                </div>
+              <div className="flex items-center justify-end pt-1.5 border-t border-ink/5">
                 <span className="text-[9px] md:text-[6px] font-mono font-bold text-emerald-600 uppercase tracking-wider">
                   {getProductStock(product)} STOK
                 </span>
