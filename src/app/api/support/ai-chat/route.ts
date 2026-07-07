@@ -129,6 +129,23 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
   return messages;
 }
 
+// ─── Groq AI Retry Helper ──────────────────────────────────────────────────
+async function fetchGroqWithRetry(url: string, options: RequestInit, retries = 2): Promise<Response> {
+  for (let i = 0; i <= retries; i++) {
+    const res = await fetch(url, options);
+    if (res.ok || (res.status !== 429 && res.status < 500)) {
+      return res;
+    }
+    console.warn(`[AI-Chat] Groq API status ${res.status}, retrying ${i + 1}/${retries}...`);
+    if (i < retries) {
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+    } else {
+      return res;
+    }
+  }
+  return fetch(url, options);
+}
+
 // ─── Groq AI (Free — Llama 3.3 70B) ────────────────────────────────────────
 async function callGroq(messages: Array<any>, systemPrompt: string): Promise<string | null> {
   const apiKey = process.env.GROQ_API_KEY;
@@ -137,7 +154,7 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
     return null;
   }
 
-  const payload = {
+  const payload: any = {
     model: 'llama-3.3-70b-versatile',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -150,8 +167,8 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
   };
 
   try {
-    // 1st Request
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // 1st Request with exponential backoff retry
+    const response = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -176,12 +193,14 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
       // Push the assistant's tool call message
       payload.messages.push(responseMessage);
 
-      // Execute each tool call
+      // Execute each tool call resiliently
       for (const toolCall of responseMessage.tool_calls) {
         const functionName = toolCall.function.name;
         let result: any;
         try {
-          const functionArgs = JSON.parse(toolCall.function.arguments || '{}');
+          const rawArgs = toolCall.function.arguments || '{}';
+          const cleanedArgs = rawArgs.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
+          const functionArgs = JSON.parse(cleanedArgs || '{}');
           result = await executeAiTool(functionName, functionArgs);
         } catch (err: any) {
           console.error(`[AI-Chat] Tool execution error for ${functionName}:`, err.message);
@@ -197,11 +216,11 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
         });
       }
 
-      // 2nd Request to get final answer (remove tools & tool_choice to prevent schema conflict on Groq)
-      delete (payload as any).tools;
-      delete (payload as any).tool_choice;
+      // 2nd Request to get final answer: set tool_choice to 'none' to prevent infinite loop
+      // while keeping tools defined in schema as required by OpenAI/Groq spec when role='tool' is in history.
+      payload.tool_choice = 'none';
       
-      const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const followUpResponse = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,

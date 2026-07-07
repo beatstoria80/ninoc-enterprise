@@ -222,7 +222,7 @@ export default function SupportChat() {
 
           if (activeTab === 'chat' && activeTicket?.id === newMsg.ticket_id) {
             setChatMessages(prev => {
-              if (prev.some(m => m.id === newMsg.id)) return prev;
+              if (prev.some(m => m.id === newMsg.id || (m.sender_role === 'admin' && m.message === newMsg.message))) return prev;
               return [...prev, newMsg];
             });
             return;
@@ -353,9 +353,25 @@ export default function SupportChat() {
       }
       const responseText = data.response || 'Terima kasih telah menghubungi kami! Tim kami akan segera membalas pesan Anda. Mohon ditunggu ya! 😊';
 
-      // Note: The API route itself saves the admin message to Supabase.
-      // We rely entirely on the Supabase real-time channel to display the AI's reply.
-      // This prevents duplicate messages (optimistic + realtime).
+      // Robust UI update: Ensure AI response appears immediately upon HTTP completion
+      // even if Supabase Real-time drops, slows down, or is blocked by RLS for guest users.
+      if (responseText) {
+        setChatMessages(prev => {
+          if (prev.some(m => m.sender_role === 'admin' && m.message === responseText)) {
+            return prev;
+          }
+          const tempAiMsg: SupportMessage = {
+            id: `ai-res-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            ticket_id: ticketId,
+            sender_id: null,
+            sender_role: 'admin',
+            message: responseText,
+            is_auto_reply: true,
+            created_at: new Date().toISOString(),
+          };
+          return [...prev, tempAiMsg];
+        });
+      }
       
     } catch (error) {
       console.error('Failed to get AI reply:', error);

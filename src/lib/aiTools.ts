@@ -264,7 +264,7 @@ class GetOrderDetailsHandler implements AiToolHandler<GetOrderDetailsArgs> {
   public readonly name = 'get_order_details';
 
   public async execute(args: GetOrderDetailsArgs, db: SupabaseClient): Promise<any> {
-    const cleanId = toSafeString(args?.order_id);
+    const cleanId = toSafeString(args?.order_id).replace(/[,().%_\\/]/g, ' ').replace(/\s+/g, ' ').trim();
     if (!cleanId) {
       return { error: 'ID pesanan tidak boleh kosong.' };
     }
@@ -304,8 +304,8 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
 
     let query = db.from('products').select(this.SELECT_FIELDS);
 
-    // 1. Apply Category Filter
-    const catStr = toSafeString(category).toLowerCase();
+    // 1. Apply Category Filter securely
+    const catStr = toSafeString(category).replace(/[,().%_\\/]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
     if (catStr) {
       query = query.or(`category.ilike.%${catStr}%,name.ilike.%${catStr}%,description.ilike.%${catStr}%`);
     }
@@ -387,9 +387,10 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     const { safe, cleaned, tokens, synonym } = parsedKw;
 
     // Build unique search terms, filtering out empty strings or single-character noise
-    const validTerms = Array.from(new Set([safe, cleaned, synonym, ...tokens])).filter(
-      (t) => t && t.trim().length > 1
-    );
+    // and stripping PostgREST delimiter characters
+    const validTerms = Array.from(new Set([safe, cleaned, synonym, ...tokens]))
+      .map(t => (t || '').replace(/[,().%_\\/]/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter((t) => t && t.length > 1);
 
     // If query was entirely punctuation or emojis and produced no valid search terms, return early
     if (validTerms.length === 0) {
