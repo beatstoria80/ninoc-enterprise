@@ -89,7 +89,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [addedToCart, setAddedToCart] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>(null);
+  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>('specs');
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
 
@@ -130,116 +130,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return false;
   });
 
-  // Default fallbacks if admin does not provide data
-  const DEFAULT_SPECS = [
-    { label: 'Jenis Atasan', value: 'Kaos' },
-    { label: 'Bahan', value: 'Katun' },
-    { label: 'Gaya', value: 'Basic' },
-    { label: 'Motif', value: 'Lainnya' },
-    { label: 'Panjang Lengan', value: 'Lengan Pendek' },
-    { label: 'Garis Leher', value: 'Kerah Bulat' },
-  ];
-  type MeasurementItem = { size: string; chest?: string; waist?: string; length: string; leg_opening?: string };
-
-  const DEFAULT_MEASUREMENTS_STANDARD: MeasurementItem[] = [
-    { size: 'S', chest: '96', length: '68' },
-    { size: 'M', chest: '100', length: '70' },
-    { size: 'L', chest: '104', length: '72' },
-    { size: 'XL', chest: '108', length: '74' },
-    { size: 'XXL', chest: '112', length: '76' },
-    { size: '3XL', chest: '116', length: '78' },
-    { size: '4XL', chest: '120', length: '80' },
-  ];
-
-  const DEFAULT_MEASUREMENTS_OVERSIZE: MeasurementItem[] = [
-    { size: 'S', chest: '106', length: '70' },
-    { size: 'M', chest: '112', length: '72' },
-    { size: 'L', chest: '118', length: '74' },
-    { size: 'XL', chest: '124', length: '76' },
-    { size: 'XXL', chest: '130', length: '78' },
-    { size: '3XL', chest: '136', length: '80' },
-    { size: '4XL', chest: '142', length: '82' },
-  ];
-
-  const DEFAULT_MEASUREMENTS_CELANA: MeasurementItem[] = [
-    { size: '28', waist: '76', length: '100', leg_opening: '38' },
-    { size: '30', waist: '81', length: '100', leg_opening: '40' },
-    { size: '32', waist: '86', length: '102', leg_opening: '42' },
-    { size: '34', waist: '91', length: '102', leg_opening: '44' },
-    { size: '36', waist: '96', length: '104', leg_opening: '46' },
-    { size: '38', waist: '101', length: '104', leg_opening: '48' },
-  ];
-
-  const fitTypeSpec = product?.specifications?.find((s: any) => s.label && (s.label.toLowerCase().includes('fit') || s.label.toLowerCase().includes('potongan')));
-  const isOversize = Boolean(fitTypeSpec?.value && fitTypeSpec.value.toLowerCase().includes('oversize'));
+  // Only use data from admin/database — no hardcoded fallbacks
   const isPants = product?.category?.toLowerCase() === 'celana';
-  const isHoodie = ['hoodie', 'outer', 'jaket', 'jacket'].includes(product?.category?.toLowerCase() || '');
-
-  const DEFAULT_MODEL_INFO_STANDARD = "Model wearing Size M (175cm / 65kg)";
-  const DEFAULT_MODEL_INFO_OVERSIZE = "Model wearing Size M Oversize (175cm / 65kg)";
-  const DEFAULT_MODEL_INFO_CELANA = "Model wearing Size 30 (175cm / 65kg)";
 
   const cleanCustomSpecs = (product?.specifications || []).filter(
     (s: any) => s.label && !/^Color(Image|P1|P2|P3|P4|P5):/.test(s.label) && s.label !== 'GlobalP5'
   );
 
-  const BASE_DEFAULT_SPECS = isPants ? [
-    { label: 'Jenis Produk', value: 'Celana / Trousers' },
-    { label: 'Potongan (Fit)', value: 'Regular / Relaxed Fit' },
-    { label: 'Bahan Utama', value: 'High-Density Cotton / Twill' },
-    { label: 'Penutup Pinggang', value: 'Kancing & Resleting YKK' },
-    { label: 'Kantong', value: '2 Samping & 2 Belakang' },
-    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
-    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
-    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
-  ] : isHoodie ? [
-    { label: 'Jenis Produk', value: 'Hoodie / Outer' },
-    { label: 'Potongan (Fit)', value: isOversize ? 'Oversize Fit' : 'Regular Fit' },
-    { label: 'Bahan Utama', value: 'Cotton Fleece 360gsm' },
-    { label: 'Teknik Sablon', value: 'High-Quality DTF' },
-    { label: 'Kerah', value: 'Hood / Hoodie' },
-    { label: 'Detail', value: 'Kangaroo Pocket, Drawstring Hood' },
-    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
-    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
-    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
-  ] : [
-    { label: 'Jenis Produk', value: 'Kaos / Graphic Tee' },
-    { label: 'Potongan (Fit)', value: isOversize ? 'Oversize Fit' : 'Standar / Regular Fit' },
-    { label: 'Bahan Utama', value: '100% Cotton Combed 24s / 30s' },
-    { label: 'Design', value: 'Front & Back Graphic Artwork' },
-    { label: 'Teknik Sablon', value: 'High-Quality DTF' },
-    { label: 'Garis Leher', value: 'Kerah Bulat (Crewneck)' },
-    { label: 'Perawatan', value: 'Cuci Mesin / Air Dingin' },
-    { label: 'Asal Produksi', value: 'Made in Bandung, Indonesia' },
-    { label: 'Jaminan Kualitas', value: '100% Original NINOC Studio' },
-  ];
-
-  const existingLabels = new Set(cleanCustomSpecs.map((s: any) => s.label.toLowerCase().trim()));
-  const mergedDefaults = BASE_DEFAULT_SPECS.filter(def => {
-    const defLabel = def.label.toLowerCase();
-    return !Array.from(existingLabels).some((ex: any) => {
-      if ((ex.includes('fit') || ex.includes('potongan')) && (defLabel.includes('fit') || defLabel.includes('potongan'))) return true;
-      if ((ex.includes('bahan') || ex.includes('material')) && (defLabel.includes('bahan') || defLabel.includes('material'))) return true;
-      if ((ex.includes('jenis') || ex.includes('atasan') || ex.includes('type')) && defLabel.includes('jenis')) return true;
-      if ((ex.includes('sablon') || ex.includes('print')) && (defLabel.includes('sablon') || defLabel.includes('teknik'))) return true;
-      if ((ex.includes('design') || ex.includes('desain')) && defLabel.includes('design')) return true;
-      if ((ex.includes('motif') || ex.includes('pattern')) && defLabel.includes('motif')) return true;
-      if ((ex.includes('kerah') || ex.includes('garis leher') || ex.includes('neck')) && (defLabel.includes('kerah') || defLabel.includes('garis'))) return true;
-      if ((ex.includes('kantong') || ex.includes('pocket')) && (defLabel.includes('kantong') || defLabel.includes('pocket'))) return true;
-      if ((ex.includes('detail')) && defLabel.includes('detail')) return true;
-      if ((ex.includes('perawatan') || ex.includes('care') || ex.includes('cuci')) && defLabel.includes('perawatan')) return true;
-      if ((ex.includes('asal') || ex.includes('origin') || ex.includes('produksi')) && defLabel.includes('asal')) return true;
-      if ((ex.includes('jaminan') || ex.includes('kualitas') || ex.includes('quality') || ex.includes('garansi')) && (defLabel.includes('jaminan') || defLabel.includes('garansi'))) return true;
-      if (ex === defLabel) return true;
-      return false;
-    });
-  });
-
-  const displaySpecs = [...cleanCustomSpecs, ...mergedDefaults];
-  const fallbackMeasurements = isPants ? DEFAULT_MEASUREMENTS_CELANA : (isOversize ? DEFAULT_MEASUREMENTS_OVERSIZE : DEFAULT_MEASUREMENTS_STANDARD);
-  let displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : fallbackMeasurements;
-  const fallbackModelInfo = isPants ? DEFAULT_MODEL_INFO_CELANA : (isOversize ? DEFAULT_MODEL_INFO_OVERSIZE : DEFAULT_MODEL_INFO_STANDARD);
-  const displayModelInfo = product?.model_info || fallbackModelInfo;
+  const displaySpecs = cleanCustomSpecs;
+  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : [];
+  const displayModelInfo = product?.model_info || null;
 
   const getWeightAndHeight = (size: string) => {
     const s = size.toUpperCase();
@@ -401,22 +301,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </motion.div>
               </div>
 
-              <div className="overflow-y-auto no-scrollbar space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5 mt-1 lg:mt-1.5">
+              <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5 mt-1 lg:mt-1.5">
                 <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {activeInfoTab === null || (localizedDescription || '').length <= 80
-                    ? localizedDescription || 'Premium quality apparel from NINOC.'
-                    : (localizedDescription || '').slice(0, 80) + '…'}
+                  {localizedDescription || 'Premium quality apparel from NINOC.'}
                 </motion.p>
-                {activeInfoTab !== null && (localizedDescription || '').length > 80 && (
-                  <motion.button
-                    variants={textVariants}
-                    onClick={() => setActiveInfoTab(null)}
-                    className="text-xs md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.2em] text-rose hover:text-ink transition-colors mt-0.5 flex items-center gap-1"
-                  >
-                    Read More
-                  </motion.button>
-                )}
               </div>
 
               <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
