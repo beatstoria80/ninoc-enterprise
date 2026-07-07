@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, X, Check, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Check, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter, Minus, RotateCcw } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getProductViews } from '@/lib/utils';
@@ -378,24 +378,60 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
               initial={{ opacity: 0, y: -15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
               className="absolute top-full left-0 right-0 w-full bg-white border-b border-ink/15 shadow-2xl z-[250] overflow-hidden"
             >
-              <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-5 space-y-4">
-                <div className="pt-2 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-3.5 space-y-3">
+                {/* Drawer Header with TWO DISTINCT ICON BUTTONS */}
+                <div className="flex items-center justify-between pb-2 border-b border-ink/10">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-ink/70 flex items-center gap-2">
+                    <Filter size={13} className="text-rose" />
+                    <span>Filter Aktif (<strong className="text-ink font-bold">{activeFilterCount}</strong>) — Menampilkan <strong className="text-ink font-bold">{filteredProducts.length}</strong> Produk</span>
+                  </div>
+
+                  {/* NAVIGASI BERBEDA PERAN (ICON SAJA TANPA TEKS) */}
+                  <div className="flex items-center gap-2">
+                    {/* 1. HIDE / MINIMALISIR: Tutup panel, filter TETAP AKTIF di header */}
+                    <button
+                      onClick={() => setIsFilterOpen(false)}
+                      title="Minimalisir / Sembunyikan Panel (Filter Tetap Aktif)"
+                      className="w-7 h-7 rounded-full bg-ink/5 hover:bg-ink hover:text-white text-ink flex items-center justify-center transition-all duration-300 shadow-2xs cursor-pointer active:scale-95"
+                    >
+                      <Minus size={14} />
+                    </button>
+
+                    {/* 2. CLOSE & RESET: Tutup panel DAN RESET semua filter ke default */}
+                    <button
+                      onClick={() => {
+                        resetFilters();
+                        setIsFilterOpen(false);
+                      }}
+                      title="Tutup & Reset Semua Filter ke Default"
+                      className="w-7 h-7 rounded-full bg-rose/10 hover:bg-rose hover:text-white text-rose flex items-center justify-center transition-all duration-300 shadow-2xs cursor-pointer active:scale-95"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Compact Grid Without Wasted Whitespace */}
+                <div className={cn(
+                  "grid gap-4 pt-1 pb-1",
+                  showSizeFilter ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 md:grid-cols-3"
+                )}>
                 
                 {/* Kolom 1: Sub Kategori */}
-                <div className="space-y-2.5">
-                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-ink/80 flex items-center gap-1.5">
-                    <Layers size={12} className="text-rose" /> Kategori & Model
+                <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                    <Layers size={11} className="text-rose" /> Kategori & Model
                   </h4>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {availableSubCategories.map((sub) => (
                       <button
                         key={sub}
                         onClick={() => setSubCategory(sub)}
                         className={cn(
-                          "px-3 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-wider transition-all",
+                          "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all",
                           subCategory === sub
                             ? "bg-ink text-white font-semibold"
                             : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
@@ -408,20 +444,20 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                 </div>
 
                 {/* Kolom 2: Ukuran (Khusus Apparel) */}
-                {showSizeFilter ? (
-                  <div className="space-y-2.5">
-                    <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-ink/80 flex items-center gap-1.5">
-                      <Ruler size={12} className="text-rose" /> Ukuran Pakaian (Size)
+                {showSizeFilter && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                      <Ruler size={11} className="text-rose" /> Ukuran Pakaian (Size)
                     </h4>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1">
                       {SIZES.map((sz) => (
                         <button
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
                           className={cn(
-                            "px-3 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-wider transition-all min-w-[36px] text-center",
+                            "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all min-w-[32px] text-center",
                             selectedSize === sz
-                              ? "bg-ink text-white font-semibold shadow-sm"
+                              ? "bg-ink text-white font-semibold shadow-2xs"
                               : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
                           )}
                         >
@@ -430,79 +466,56 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                       ))}
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-2.5 opacity-50 pointer-events-none">
-                    <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-ink/80 flex items-center gap-1.5">
-                      <Ruler size={12} /> Ukuran (Tidak Berlaku)
-                    </h4>
-                    <p className="text-[11px] font-mono text-ink/40">
-                      Filter ukuran hanya berlaku untuk kategori Apparel / Pakaian.
-                    </p>
-                  </div>
                 )}
 
-                {/* Kolom 3: Rentang Harga */}
-                <div className="space-y-2.5">
-                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-ink/80 flex items-center gap-1.5">
-                    <DollarSign size={12} className="text-rose" /> Rentang Harga
+                {/* Kolom 3: Rentang Harga (Horizontal Pills Compact!) */}
+                <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                    <DollarSign size={11} className="text-rose" /> Rentang Harga
                   </h4>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {PRICE_RANGES.map((pr) => (
                       <button
                         key={pr.id}
                         onClick={() => setPriceRange(pr.id)}
                         className={cn(
-                          "px-3 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-wider text-left transition-all flex items-center justify-between",
+                          "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all flex items-center gap-1",
                           priceRange === pr.id
                             ? "bg-ink text-white font-semibold"
                             : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
                         )}
                       >
                         <span>{pr.label}</span>
-                        {priceRange === pr.id && <Check size={12} className="text-rose" />}
+                        {priceRange === pr.id && <Check size={10} className="text-rose shrink-0" />}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Kolom 4: Urutkan */}
-                <div className="space-y-2.5">
-                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-ink/80 flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-rose" /> Urutkan Produk
+                {/* Kolom 4: Urutkan Produk (Horizontal Pills Compact!) */}
+                <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                    <Sparkles size={11} className="text-rose" /> Urutkan Produk
                   </h4>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {SORT_OPTIONS.map((so) => (
                       <button
                         key={so.id}
                         onClick={() => setSortBy(so.id)}
                         className={cn(
-                          "px-3 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-wider text-left transition-all flex items-center justify-between",
+                          "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all flex items-center gap-1",
                           sortBy === so.id
                             ? "bg-ink text-white font-semibold"
                             : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
                         )}
                       >
                         <span>{so.label}</span>
-                        {sortBy === so.id && <Check size={12} className="text-rose" />}
+                        {sortBy === so.id && <Check size={10} className="text-rose shrink-0" />}
                       </button>
                     ))}
                   </div>
                 </div>
 
-              </div>
-
-              {/* Drawer Footer / Status */}
-              <div className="pt-4 pb-2 border-t border-ink/10 flex items-center justify-between">
-                <div className="text-xs font-mono uppercase tracking-widest text-ink/60">
-                  Menampilkan <strong className="text-ink">{filteredProducts.length}</strong> produk dari kueri yang dipilih
-                </div>
-                <button
-                  onClick={() => setIsFilterOpen(false)}
-                  className="px-6 py-2.5 bg-ink text-white text-[11px] font-mono uppercase tracking-widest hover:bg-rose transition-all duration-300 rounded-sm flex items-center gap-2 group shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
-                >
-                  <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
-                  <span>Tutup & Minimalisir / Hide</span>
-                </button>
               </div>
             </div>
             </motion.div>
@@ -627,38 +640,56 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="relative w-full max-h-[85vh] bg-white rounded-t-2xl shadow-2xl flex flex-col overflow-hidden z-10"
             >
-              {/* Sheet Header */}
-              <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between bg-white sticky top-0 z-10">
-                <div className="flex items-center gap-2">
-                  <Filter size={16} className="text-rose" />
-                  <h3 className="text-sm font-display font-bold uppercase tracking-widest text-ink">
-                    Filter & Urutkan ({activeFilterCount})
+              {/* Sheet Header with TWO DISTINCT ICON BUTTONS */}
+              <div className="px-4 py-3 border-b border-ink/10 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-1.5">
+                  <Filter size={14} className="text-rose" />
+                  <h3 className="text-xs font-display font-bold uppercase tracking-widest text-ink">
+                    Filter ({activeFilterCount}) · <span className="text-ink/60">{filteredProducts.length} Produk</span>
                   </h3>
                 </div>
-                <button
-                  onClick={() => setIsFilterOpen(false)}
-                  className="w-8 h-8 rounded-full bg-ink/5 flex items-center justify-center text-ink hover:bg-ink/10"
-                >
-                  <X size={16} />
-                </button>
+
+                {/* NAVIGASI BERBEDA PERAN (ICON SAJA TANPA TEKS) */}
+                <div className="flex items-center gap-2">
+                  {/* 1. HIDE / MINIMALISIR: Tutup sheet, filter TETAP AKTIF di header */}
+                  <button
+                    onClick={() => setIsFilterOpen(false)}
+                    title="Minimalisir / Sembunyikan (Filter Tetap Aktif)"
+                    className="w-8 h-8 rounded-full bg-ink/5 hover:bg-ink hover:text-white text-ink flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                  >
+                    <Minus size={16} />
+                  </button>
+
+                  {/* 2. CLOSE & RESET: Tutup sheet DAN RESET semua filter */}
+                  <button
+                    onClick={() => {
+                      resetFilters();
+                      setIsFilterOpen(false);
+                    }}
+                    title="Tutup & Reset Semua Filter ke Default"
+                    className="w-8 h-8 rounded-full bg-rose/10 hover:bg-rose hover:text-white text-rose flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
 
-              {/* Sheet Scrollable Body */}
-              <div className="p-5 space-y-6 overflow-y-auto flex-grow">
+              {/* Sheet Scrollable Body - Minimalist & Compact */}
+              <div className="p-4 space-y-4 overflow-y-auto flex-grow">
                 {/* Section 1: Sub Kategori */}
-                <div className="space-y-2.5">
-                  <h4 className="text-xs font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
-                    <Layers size={14} className="text-rose" /> Model / Kategori
+                <div className="space-y-1.5">
+                  <h4 className="text-[11px] font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
+                    <Layers size={13} className="text-rose" /> Model / Kategori
                   </h4>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {availableSubCategories.map((sub) => (
                       <button
                         key={sub}
                         onClick={() => setSubCategory(sub)}
                         className={cn(
-                          "px-3.5 py-2 rounded-md text-xs font-mono uppercase tracking-wider transition-all",
+                          "px-3 py-1.5 rounded-xs text-xs font-mono uppercase tracking-wider transition-all",
                           subCategory === sub
-                            ? "bg-ink text-white font-semibold shadow-sm"
+                            ? "bg-ink text-white font-semibold shadow-2xs"
                             : "bg-ink/[0.04] text-ink/70 hover:bg-ink/10"
                         )}
                       >
@@ -670,9 +701,9 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
                 {/* Section 2: Ukuran (Apparel Only) */}
                 {showSizeFilter && (
-                  <div className="space-y-2.5">
-                    <h4 className="text-xs font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
-                      <Ruler size={14} className="text-rose" /> Ukuran Pakaian (Size)
+                  <div className="space-y-1.5">
+                    <h4 className="text-[11px] font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
+                      <Ruler size={13} className="text-rose" /> Ukuran Pakaian (Size)
                     </h4>
                     <div className="grid grid-cols-4 gap-1.5">
                       {SIZES.map((sz) => (
@@ -680,9 +711,9 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
                           className={cn(
-                            "py-2 rounded-md text-xs font-mono uppercase tracking-wider transition-all text-center",
+                            "py-1.5 rounded-xs text-xs font-mono uppercase tracking-wider transition-all text-center",
                             selectedSize === sz
-                              ? "bg-ink text-white font-semibold shadow-sm"
+                              ? "bg-ink text-white font-semibold shadow-2xs"
                               : "bg-ink/[0.04] text-ink/70 hover:bg-ink/10"
                           )}
                         >
@@ -693,49 +724,49 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                   </div>
                 )}
 
-                {/* Section 3: Rentang Harga */}
-                <div className="space-y-2.5">
-                  <h4 className="text-xs font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
-                    <DollarSign size={14} className="text-rose" /> Rentang Harga
+                {/* Section 3: Rentang Harga (Kini Horizontal Pills Compact!) */}
+                <div className="space-y-1.5">
+                  <h4 className="text-[11px] font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
+                    <DollarSign size={13} className="text-rose" /> Rentang Harga
                   </h4>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap gap-1">
                     {PRICE_RANGES.map((pr) => (
                       <button
                         key={pr.id}
                         onClick={() => setPriceRange(pr.id)}
                         className={cn(
-                          "px-4 py-2.5 rounded-md text-xs font-mono uppercase tracking-wider text-left transition-all flex items-center justify-between",
+                          "px-3 py-1.5 rounded-xs text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5",
                           priceRange === pr.id
-                            ? "bg-ink text-white font-semibold shadow-sm"
+                            ? "bg-ink text-white font-semibold shadow-2xs"
                             : "bg-ink/[0.04] text-ink/70 hover:bg-ink/10"
                         )}
                       >
                         <span>{pr.label}</span>
-                        {priceRange === pr.id && <Check size={14} className="text-rose" />}
+                        {priceRange === pr.id && <Check size={12} className="text-rose shrink-0" />}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Section 4: Urutkan */}
-                <div className="space-y-2.5">
-                  <h4 className="text-xs font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-rose" /> Urutkan Produk
+                {/* Section 4: Urutkan (Kini Horizontal Pills Compact!) */}
+                <div className="space-y-1.5">
+                  <h4 className="text-[11px] font-display font-bold uppercase tracking-widest text-ink/80 flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-rose" /> Urutkan Produk
                   </h4>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap gap-1">
                     {SORT_OPTIONS.map((so) => (
                       <button
                         key={so.id}
                         onClick={() => setSortBy(so.id)}
                         className={cn(
-                          "px-4 py-2.5 rounded-md text-xs font-mono uppercase tracking-wider text-left transition-all flex items-center justify-between",
+                          "px-3 py-1.5 rounded-xs text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5",
                           sortBy === so.id
-                            ? "bg-ink text-white font-semibold shadow-sm"
+                            ? "bg-ink text-white font-semibold shadow-2xs"
                             : "bg-ink/[0.04] text-ink/70 hover:bg-ink/10"
                         )}
                       >
                         <span>{so.label}</span>
-                        {sortBy === so.id && <Check size={14} className="text-rose" />}
+                        {sortBy === so.id && <Check size={12} className="text-rose shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -743,15 +774,33 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
               </div>
 
-              {/* Sheet Sticky Footer */}
-              <div className="p-4 border-t border-ink/10 bg-white flex items-center sticky bottom-0 z-10 shadow-lg">
-                <button
-                  onClick={() => setIsFilterOpen(false)}
-                  className="w-full py-3 bg-ink text-white rounded-md text-xs font-mono font-bold uppercase tracking-widest hover:bg-rose transition-all duration-300 shadow-md flex items-center justify-center gap-2 group active:scale-95 cursor-pointer"
-                >
-                  <X size={15} className="text-rose group-hover:text-white transition-colors duration-300 group-hover:rotate-90" />
-                  <span>Tutup & Minimalisir / Hide ({filteredProducts.length})</span>
-                </button>
+              {/* Sheet Sticky Footer dengan Dua Icon Berbeda Peran */}
+              <div className="px-4 py-2.5 border-t border-ink/10 bg-white flex items-center justify-between sticky bottom-0 z-10 shadow-lg">
+                <div className="text-[11px] font-mono uppercase tracking-wider text-ink/70">
+                  Menampilkan <strong className="text-ink font-bold">{filteredProducts.length}</strong> produk
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* 1. HIDE / MINIMALISIR (Icon Saja) */}
+                  <button
+                    onClick={() => setIsFilterOpen(false)}
+                    title="Minimalisir / Sembunyikan (Filter Tetap Aktif)"
+                    className="w-9 h-9 rounded-full bg-ink text-white hover:bg-ink/80 flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
+                  >
+                    <Minus size={16} />
+                  </button>
+
+                  {/* 2. CLOSE & RESET (Icon Saja) */}
+                  <button
+                    onClick={() => {
+                      resetFilters();
+                      setIsFilterOpen(false);
+                    }}
+                    title="Tutup & Reset Semua Filter ke Default"
+                    className="w-9 h-9 rounded-full bg-rose text-white hover:bg-rose/80 flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
