@@ -1129,15 +1129,34 @@ export default function AdminDashboard() {
   const sendMessage = async () => {
     if (!newMessage.trim() || !activeChatSession) return;
 
+    const messageText = newMessage.trim();
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: ChatMessage = {
+      id: tempId,
+      sender: 'admin',
+      message: messageText,
+      timestamp: new Date().toISOString(),
+      is_read: false
+    };
+
+    // 1. OPTIMISTIC UI UPDATE (0ms Instant feedback):
+    setNewMessage('');
+    setChatSessions(prev => prev.map(s =>
+      s.id === activeChatSession.id
+        ? { ...s, messages: [...s.messages, optimisticMessage], last_message: messageText, last_message_time: optimisticMessage.timestamp }
+        : s
+    ));
+    setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage], last_message: messageText, last_message_time: optimisticMessage.timestamp } : null);
+
+    // 2. BACKGROUND ASYNC PERSISTENCE:
     try {
-      // Persist to product database
       const { data: savedMessage, error } = await supabase
         .from('support_messages')
         .insert({
           ticket_id: activeChatSession.id,
           sender_id: adminUser?.id || '00000000-0000-0000-0000-000000000000',
           sender_role: 'admin',
-          message: newMessage.trim(),
+          message: messageText,
           is_read: false
         })
         .select()
@@ -1145,24 +1164,16 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      const message: ChatMessage = {
-        id: savedMessage.id,
-        sender: 'admin',
-        message: newMessage.trim(),
-        timestamp: savedMessage.created_at,
-        is_read: false
-      };
-
-      // Update local state
-      setChatSessions(prev => prev.map(s =>
-        s.id === activeChatSession.id
-          ? { ...s, messages: [...s.messages, message], last_message: newMessage }
-          : s
-      ));
-      setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, message] } : null);
-      setNewMessage('');
+      if (savedMessage) {
+        setChatSessions(prev => prev.map(s =>
+          s.id === activeChatSession.id
+            ? { ...s, messages: s.messages.map(m => m.id === tempId ? { ...m, id: savedMessage.id, timestamp: savedMessage.created_at } : m) }
+            : s
+        ));
+        setActiveChatSession(prev => prev ? { ...prev, messages: prev.messages.map(m => m.id === tempId ? { ...m, id: savedMessage.id, timestamp: savedMessage.created_at } : m) } : null);
+      }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('Failed to send message asynchronously:', error);
     }
   };
 

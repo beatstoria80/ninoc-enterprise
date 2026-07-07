@@ -224,81 +224,63 @@ export function MessagesTab({
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (subTab === 'analytics') fetchAnalytics(); }, [subTab, fetchAnalytics]);
 
-  // ─── CRM Status Update Handler
-  const handleUpdateCrmStatus = async (ticketId: string, newStatus: string) => {
-    try {
-      await fetch('/api/admin/support/ticket-meta', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId, crm_status: newStatus }),
-      });
-      fetchChatSessions();
-      if (activeChatSession && activeChatSession.id === ticketId) {
-        setActiveChatSession({ ...activeChatSession, crm_status: newStatus });
-      }
-    } catch (err) {
-      console.error('Failed to update CRM status:', err);
+  // ─── CRM Status Update Handler (0ms Optimistic UI)
+  const handleUpdateCrmStatus = (ticketId: string, newStatus: string) => {
+    if (activeChatSession && activeChatSession.id === ticketId) {
+      setActiveChatSession({ ...activeChatSession, crm_status: newStatus });
     }
+    fetch('/api/admin/support/ticket-meta', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticketId, crm_status: newStatus }),
+    }).then(() => fetchChatSessions()).catch(err => console.error('Failed to update CRM status:', err));
   };
 
-  // ─── Priority Update Handler
-  const handleUpdatePriority = async (ticketId: string, newPriority: string) => {
-    try {
-      await fetch('/api/admin/support/ticket-meta', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId, priority: newPriority }),
-      });
-      fetchChatSessions();
-      if (activeChatSession && activeChatSession.id === ticketId) {
-        setActiveChatSession({ ...activeChatSession, priority: newPriority });
-      }
-    } catch (err) {
-      console.error('Failed to update priority:', err);
+  // ─── Priority Update Handler (0ms Optimistic UI)
+  const handleUpdatePriority = (ticketId: string, newPriority: string) => {
+    if (activeChatSession && activeChatSession.id === ticketId) {
+      setActiveChatSession({ ...activeChatSession, priority: newPriority });
     }
+    fetch('/api/admin/support/ticket-meta', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticketId, priority: newPriority }),
+    }).then(() => fetchChatSessions()).catch(err => console.error('Failed to update priority:', err));
   };
 
-  // ─── Takeover Chat Handler (Female Persona Greeting)
-  const handleTakeoverChat = async (adminName: string, releaseToBot = false) => {
+  // ─── Takeover Chat Handler (0ms Optimistic UI & Zero Blocking Alerts)
+  const handleTakeoverChat = (adminName: string, releaseToBot = false) => {
     if (!activeChatSession) return;
-    setUpdatingMeta(true);
-    try {
-      const payload = {
-        ticketId: activeChatSession.id,
-        assigned_admin: releaseToBot ? null : adminName,
-        is_taken_over: !releaseToBot,
-        priority: releaseToBot ? activeChatSession.priority || 'medium' : 'high',
-        sendTakeoverMessage: !releaseToBot,
-        adminName: adminName,
-      };
+    setTakeoverModalOpen(false);
+    const targetPriority = releaseToBot ? activeChatSession.priority || 'medium' : 'high';
+    setActiveChatSession({
+      ...activeChatSession,
+      assigned_admin: releaseToBot ? null : adminName,
+      is_taken_over: !releaseToBot,
+      priority: targetPriority,
+    });
 
-      const res = await fetch('/api/admin/support/ticket-meta', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    const payload = {
+      ticketId: activeChatSession.id,
+      assigned_admin: releaseToBot ? null : adminName,
+      is_taken_over: !releaseToBot,
+      priority: targetPriority,
+      sendTakeoverMessage: !releaseToBot,
+      adminName: adminName,
+    };
+
+    fetch('/api/admin/support/ticket-meta', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(async (res) => {
       const json = await res.json();
       if (json.success) {
-        setActiveChatSession({
-          ...activeChatSession,
-          assigned_admin: releaseToBot ? null : adminName,
-          is_taken_over: !releaseToBot,
-          priority: payload.priority,
-        });
         fetchChatSessions();
-        setTakeoverModalOpen(false);
-        if (!releaseToBot) {
-          alert(`✅ Berhasil mengambil alih percakapan!\n\nSalam perkenalan dari Admin ${adminName} telah otomatis dikirimkan ke dalam chat customer.`);
-        } else {
-          alert(`🤖 Percakapan telah dikembalikan ke layanan AI Chatbot otomatis.`);
-        }
       }
-    } catch (err) {
+    }).catch(err => {
       console.error('Failed takeover:', err);
-      alert('Gagal mengambil alih percakapan.');
-    } finally {
-      setUpdatingMeta(false);
-    }
+    });
   };
 
   // ─── Purge All Chats Handler (Clear Old & New Conversations)
