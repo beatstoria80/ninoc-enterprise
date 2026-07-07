@@ -10,9 +10,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
     }
 
-    const propertyId = process.env.GA_PROPERTY_ID;
-    const clientEmail = process.env.GA_CLIENT_EMAIL;
-    const privateKey = process.env.GA_PRIVATE_KEY?.replace(/\\n/g, '\n');
+    const propertyId = process.env.GA4_PROPERTY_ID;
+    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     // If GA is not configured, return null gracefully so the UI can hide the counter
     if (!propertyId || !clientEmail || !privateKey) {
