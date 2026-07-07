@@ -51,6 +51,21 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     'Kaos Unisex', 'Oversize Tee', 'Baju Pria Wanita', 'Streetwear Unisex',
     'Kaos Premium', 'Korean Style', 'Cotton Combed 24s', 'Graphic Tee Unisex'
   ],
+  celana: [
+    'Celana Panjang', 'Celana Pendek', 'Celana Cargo', 'Baggy Pants',
+    'Cargo Pants', 'Trousers', 'Streetwear Pants', 'Celana Pria',
+    'Celana Wanita', 'Celana Distro', 'Parachute Pants', 'Sweatpants', 'Shorts', 'Bawahan'
+  ],
+  bawahan: [
+    'Celana Panjang', 'Celana Pendek', 'Celana Cargo', 'Baggy Pants',
+    'Cargo Pants', 'Trousers', 'Streetwear Pants', 'Celana Pria',
+    'Celana Wanita', 'Celana Distro', 'Parachute Pants', 'Sweatpants', 'Shorts', 'Bawahan'
+  ],
+  rok: [
+    'Rok Wanita', 'Korean Skirt', 'Cargo Skirt', 'Maxi Skirt',
+    'Mini Skirt', 'Pleated Skirt', 'Dress Casual', 'Rok Streetwear',
+    'Rok Korean Style', 'A-Line Skirt', 'Bawahan Wanita'
+  ],
 };
 
 // ===== TITLE TEMPLATES =====
@@ -71,6 +86,22 @@ const TITLE_TEMPLATES: Record<string, { label: string; template: (name: string) 
     { label: 'Unisex Graphic Tee', template: (n) => `${n} — Kaos Pria & Wanita Premium Cotton | NINOC Store` },
     { label: 'Korean Unisex Style', template: (n) => `Baju Oversize Korean Style "${n}" Unisex | NINOC Indonesia` },
   ],
+  celana: [
+    { label: 'Cargo / Streetwear Pants', template: (n) => `Celana ${n} Streetwear Cargo Pants Premium | NINOC` },
+    { label: 'Korean Baggy Style', template: (n) => `${n} — Celana Baggy Korean Style Original | NINOC Store` },
+    { label: 'Premium Trousers', template: (n) => `Celana Panjang "${n}" Premium Quality Trousers | NINOC Indonesia` },
+    { label: 'Casual Shorts / Celana Pendek', template: (n) => `Celana Pendek ${n} Casual Shorts Premium | NINOC` },
+  ],
+  bawahan: [
+    { label: 'Cargo / Streetwear Pants', template: (n) => `Celana ${n} Streetwear Cargo Pants Premium | NINOC` },
+    { label: 'Korean Baggy Style', template: (n) => `${n} — Celana Baggy Korean Style Original | NINOC Store` },
+    { label: 'Premium Trousers', template: (n) => `Celana Panjang "${n}" Premium Quality Trousers | NINOC Indonesia` },
+  ],
+  rok: [
+    { label: 'Korean Style Skirt', template: (n) => `Rok ${n} Korean Style Skirt Premium Wanita | NINOC` },
+    { label: 'Streetwear Casual Skirt', template: (n) => `${n} — Rok Casual Streetwear Original | NINOC Store` },
+    { label: 'Maxi / Pleated Skirt', template: (n) => `Rok Panjang "${n}" Premium Fashion Skirt | NINOC Indonesia` },
+  ],
   utilities: [
     { label: 'Premium Cap', template: (n) => `${n} — Premium Archival Garment | NINOC STORE` },
     { label: 'Utility Accessory', template: (n) => `${n} | Utility Cap Premium Original — NINOC` },
@@ -88,6 +119,8 @@ function normalizeCategoryKey(rawCat?: string | null): string {
   const clean = rawCat.toLowerCase().trim().replace(/\s+/g, '-');
   if (clean === 'apparel' || clean === 'fashion' || clean === 'garment' || clean === 'clothes' || clean === 'clothing') return 'pakaian';
   if (clean === 'unisex' || clean === 'pakaian-unisex' || clean === 'baju-unisex') return 'unisex';
+  if (clean === 'celana' || clean === 'celana-panjang' || clean === 'celana-pendek' || clean === 'celana-cargo' || clean === 'pants' || clean === 'trousers' || clean === 'jeans' || clean === 'shorts' || clean === 'sweatpants' || clean === 'bottoms' || clean === 'bawahan' || clean === 'kulot' || clean === 'cargo') return 'celana';
+  if (clean === 'rok' || clean === 'skirt' || clean === 'dress' || clean === 'cargo-skirt' || clean === 'maxi-skirt' || clean === 'mini-skirt') return 'rok';
   if (clean === 'utilities' || clean === 'utility' || clean === 'gear' || clean === 'objects' || clean === 'accessories') return 'utilities';
   if (clean === 'aksesoris' || clean === 'accessory' || clean === 'acc') return 'aksesoris';
   return clean;
