@@ -158,18 +158,25 @@ function calculateSeoScore(
   const validDynamic = Array.isArray(dynamicKeywords)
     ? dynamicKeywords.filter(k => typeof k === 'string' && k.trim().length > 0)
     : [];
-  const keywords = validDynamic.length > 0
+  const baseKeywords = validDynamic.length > 0
     ? validDynamic
     : (CATEGORY_KEYWORDS[normCat] || CATEGORY_KEYWORDS['pakaian'] || []);
 
+  const productWords = safeName.split(/\s+/).filter(w => w.length > 3);
+  const allKeywords = Array.from(new Set([
+    ...baseKeywords,
+    ...(category ? [category] : []),
+    ...productWords
+  ]));
+
   const titleLower = safeName.toLowerCase();
-  const hasKeyword = keywords.length > 0 && keywords.some(k => titleLower.includes(k.toLowerCase().trim()));
+  const hasKeyword = allKeywords.length > 0 && allKeywords.some(k => titleLower.includes(k.toLowerCase().trim()));
   checks.push({
-    label: 'Judul mengandung kata kunci kategori',
+    label: 'Judul mengandung kata kunci relevan',
     passed: hasKeyword,
     tip: hasKeyword
       ? 'Bagus! Judul sudah mengandung kata kunci relevan.'
-      : `Tambahkan kata kunci seperti: ${keywords.slice(0, 3).join(', ')}`,
+      : `Tambahkan kata kunci deskriptif (misal: nama kategori atau bahan).`,
     weight: 20,
   });
 
@@ -208,13 +215,13 @@ function calculateSeoScore(
 
   // 6. Description contains keywords
   const descLower = safeDesc.toLowerCase();
-  const descHasKeyword = keywords.length > 0 && keywords.some(k => descLower.includes(k.toLowerCase().trim()));
+  const descHasKeyword = allKeywords.length > 0 && allKeywords.some(k => descLower.includes(k.toLowerCase().trim()));
   checks.push({
     label: 'Deskripsi mengandung kata kunci',
     passed: descHasKeyword,
     tip: descHasKeyword
       ? 'Deskripsi sudah mengandung kata kunci.'
-      : `Sisipkan kata kunci kategori di deskripsi: ${keywords.slice(0, 2).join(', ')}`,
+      : `Sisipkan kata kunci relevan dengan produk/kategori Anda di deskripsi.`,
     weight: 10,
   });
 
