@@ -89,7 +89,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [addedToCart, setAddedToCart] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>('specs');
+  const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>(null);
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
 
@@ -360,14 +360,19 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             columnVariants={columnVariants}
             imageVariants={imageVariants}
             textVariants={textVariants}
+            photoRef={photoRef}
           />
 
           {/* Combined Product Info & Options Column */}
           <div className="col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full relative">
             {/* Column 3: Product Info */}
-            <motion.div variants={columnVariants} className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0">
+            <motion.div 
+              variants={columnVariants} 
+              className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0"
+              style={!isMobile && photoHeight > 0 ? { height: `${photoHeight}px` } : undefined}
+            >
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
-              <div className="space-y-0.5 lg:space-y-1 shrink-0">
+              <div className="shrink-0 space-y-0.5 lg:space-y-1">
                 <motion.div variants={textVariants} className="flex items-center gap-2 mb-0.5 lg:mb-1">
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-ink text-white rounded-none w-fit shadow-md">
                     <span className="text-[8px] md:text-[9px] lg:text-[9px] font-medium uppercase tracking-[0.3em]">
@@ -396,7 +401,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </motion.div>
               </div>
 
-              <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5">
+              <div className="flex-1 overflow-y-auto no-scrollbar space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5 mt-1 lg:mt-1.5">
                 <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
                 <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
                   {activeInfoTab === null || (localizedDescription || '').length <= 80
@@ -414,7 +419,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 )}
               </div>
 
-              <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
+              <div className="shrink-0 pt-1 border-t border-ink/5 mt-auto bg-white z-10">
                 <motion.div variants={textVariants} className="flex items-center gap-3 mb-1.5">
                   <button
                     onClick={() => setActiveInfoTab(activeInfoTab === 'specs' ? null : 'specs')}

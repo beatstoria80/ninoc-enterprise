@@ -18,6 +18,7 @@ interface ProductGalleryProps {
   columnVariants: any;
   imageVariants: any;
   textVariants: any;
+  photoRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function ProductGallery({
@@ -30,10 +31,10 @@ export default function ProductGallery({
   setFullscreenImage,
   columnVariants,
   imageVariants,
-  textVariants
+  textVariants,
+  photoRef
 }: ProductGalleryProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const photoRef = useRef<HTMLDivElement>(null);
   const { views: activeViewers } = useProductViews(product.slug);
 
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
@@ -65,7 +66,7 @@ export default function ProductGallery({
         </div>
       </motion.div>
 
-      <motion.div variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
+      <motion.div ref={photoRef} variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
         <div
           className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
           onTouchStart={handleTouchStart}
