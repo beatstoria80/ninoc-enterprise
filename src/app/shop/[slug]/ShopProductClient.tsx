@@ -193,7 +193,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         activeGallery.p5
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     } else {
-      rawImages = []; // No fallback if specific color has no images
+      rawImages = [
+        product.image_url,
+        product.perspective1,
+        product.perspective2,
+        product.perspective3,
+        product.perspective4,
+        globalP5
+      ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     }
   } else {
     rawImages = [
