@@ -561,15 +561,14 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
   return (
     <>
       {/* Fixed Mobile Filter Bar — Part of Global Header, unaffected by scroll */}
+      {!isFilterOpen && (
       <div 
         ref={filterBarRef}
         className={cn(
           "fixed left-0 right-0 border-b border-ink/10 transition-all duration-300 ease-in-out",
-          isFilterOpen 
-            ? "z-[550] bg-white shadow-2xl" 
-            : "z-[390] bg-white/95 backdrop-blur-md shadow-sm"
+          "z-[390] bg-white/95 backdrop-blur-md shadow-sm"
         )}
-        style={{ top: isFilterOpen ? '0px' : 'calc(56px + env(safe-area-inset-top))' }}
+        style={{ top: 'calc(56px + env(safe-area-inset-top))' }}
       >
         <div className="flex flex-col gap-1.5 px-3 pt-1 pb-2">
           {/* Row 1: Category Pillars */}
@@ -634,6 +633,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
           <ActiveFilterTags filterSystem={filterSystem} />
         </div>
       </div>
+      )}
 
       {/* Spacer to push content below the fixed filter bar */}
       <div style={{ height: `${filterBarHeight}px` }} />
