@@ -70,6 +70,10 @@ export default function ClientPlatformManager({ children }: { children: React.Re
 
   // Removed !mounted return to ensure `children` (e.g. video) renders instantly on SSR!
 
+  const isShopPage = pathname === '/shop';
+  const isCollectionsPage = pathname?.startsWith('/collections');
+  const showGlobalFooter = showGlobalHeader && !isShopPage && !isCollectionsPage;
+
   if (mounted && isMobile) {
     return (
       <MobileLayout
@@ -81,10 +85,6 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       </MobileLayout>
     );
   }
-
-  const isShopPage = pathname === '/shop';
-  const isCollectionsPage = pathname?.startsWith('/collections');
-  const showGlobalFooter = showGlobalHeader && !isShopPage && !isCollectionsPage;
 
   return (
     <div className={`min-h-screen flex flex-col ${pathname === '/' ? 'bg-white' : 'bg-cr'}`}>
