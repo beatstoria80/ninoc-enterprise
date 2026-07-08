@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, X, Check, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter, Minus, RotateCcw } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
