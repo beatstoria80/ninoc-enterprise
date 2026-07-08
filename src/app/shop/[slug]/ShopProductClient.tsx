@@ -17,7 +17,7 @@ import type { Dictionary } from '@/lib/i18n';
 import { ProductReviewsDrawer } from '@/components/shop/ProductReviewsDrawer';
 import { useProductSelection } from '@/hooks/shop/useProductSelection';
 import ProductGallery from '@/components/shop/ProductGallery';
-import { CartSidebar } from './_components/CartSidebar';
+import { CartSidebar } from '../_components/CartSidebar';
 import { RelatedProductsList } from '../_components/RelatedProductsList';
 
 export function getWeightAndHeight(size: string) {
