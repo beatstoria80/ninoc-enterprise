@@ -17,6 +17,21 @@ import type { Dictionary } from '@/lib/i18n';
 import { ProductReviewsDrawer } from '@/components/shop/ProductReviewsDrawer';
 import { useProductSelection } from '@/hooks/shop/useProductSelection';
 import ProductGallery from '@/components/shop/ProductGallery';
+import { CartSidebar } from './_components/CartSidebar';
+import { RelatedProductsList } from './_components/RelatedProductsList';
+
+export function getWeightAndHeight(size: string) {
+  const s = size.toUpperCase();
+  if (s === 'S' || s === '28') return { w: '45-55kg', h: '150-160cm' };
+  if (s === 'M' || s === '30') return { w: '55-65kg', h: '160-170cm' };
+  if (s === 'L' || s === '32') return { w: '65-75kg', h: '170-175cm' };
+  if (s === 'XL' || s === '34') return { w: '75-85kg', h: '175-180cm' };
+  if (s === 'XXL' || s === '36') return { w: '85-95kg', h: '180-185cm' };
+  if (s === '3XL' || s === '38') return { w: '95-105kg', h: '185-190cm' };
+  if (s === '4XL' || s === '40') return { w: '105-115kg', h: '190-195cm' };
+  if (s === '5XL' || s === '42') return { w: '115-125kg', h: '195-200cm' };
+  return { w: '-', h: '-' };
+}
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -130,106 +145,91 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return false;
   });
 
-  // Only use data from admin/database — no hardcoded fallbacks
-  const isPants = product?.category?.toLowerCase() === 'celana';
+  // Memoized Derived State
+  const isPants = React.useMemo(() => product?.category?.toLowerCase() === 'celana', [product]);
 
-  const cleanCustomSpecs = (product?.specifications || []).filter(
-    (s: any) => s.label && !/^color\s*(image|p1|p2|p3|p4|p5)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
-  );
+  const displaySpecs = React.useMemo(() => {
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    return safeSpecs.filter(
+      (s: any) => s?.label && typeof s.label === 'string' && !/^color\s*(image|p1|p2|p3|p4|p5)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
+    );
+  }, [product]);
 
-  const displaySpecs = cleanCustomSpecs;
-  const displayMeasurements = product?.measurements && product.measurements.length > 0 ? product.measurements : [];
-  const displayModelInfo = product?.model_info || null;
+  const displayMeasurements = React.useMemo(() => {
+    const safeMeasurements = Array.isArray(product?.measurements) ? product.measurements : [];
+    return safeMeasurements.length > 0 ? safeMeasurements : [];
+  }, [product]);
 
-  const getWeightAndHeight = (size: string) => {
-    const s = size.toUpperCase();
-    if (s === 'S' || s === '28') return { w: '45-55kg', h: '150-160cm' };
-    if (s === 'M' || s === '30') return { w: '55-65kg', h: '160-170cm' };
-    if (s === 'L' || s === '32') return { w: '65-75kg', h: '170-175cm' };
-    if (s === 'XL' || s === '34') return { w: '75-85kg', h: '175-180cm' };
-    if (s === 'XXL' || s === '36') return { w: '85-95kg', h: '180-185cm' };
-    if (s === '3XL' || s === '38') return { w: '95-105kg', h: '185-190cm' };
-    if (s === '4XL' || s === '40') return { w: '105-115kg', h: '190-195cm' };
-    if (s === '5XL' || s === '42') return { w: '115-125kg', h: '195-200cm' };
-    return { w: '-', h: '-' };
-  };
+  const displayModelInfo = React.useMemo(() => product?.model_info || null, [product]);
 
-
-
-  if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
-  if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
-
-  const colorGalleryMap: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string }> = {};
-  if (product?.specifications) {
-    product.specifications.forEach((spec: any) => {
-      const match = spec.label.match(/^color\s*(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
-      if (match) {
-        const type = match[1].toUpperCase();
-        const colorName = match[2].trim().toUpperCase();
-        if (!colorGalleryMap[colorName]) colorGalleryMap[colorName] = {};
-        if (type === 'IMAGE') colorGalleryMap[colorName].main = spec.value;
-        if (type === 'P1') colorGalleryMap[colorName].p1 = spec.value;
-        if (type === 'P2') colorGalleryMap[colorName].p2 = spec.value;
-        if (type === 'P3') colorGalleryMap[colorName].p3 = spec.value;
-        if (type === 'P4') colorGalleryMap[colorName].p4 = spec.value;
-        if (type === 'P5') colorGalleryMap[colorName].p5 = spec.value;
+  const colorGalleryMap = React.useMemo(() => {
+    const map: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string }> = {};
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    safeSpecs.forEach((spec: any) => {
+      if (typeof spec?.label === 'string') {
+        const match = spec.label.match(/^color\s*(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
+        if (match) {
+          const type = match[1].toUpperCase();
+          const colorName = match[2].trim().toUpperCase();
+          if (!map[colorName]) map[colorName] = {};
+          if (type === 'IMAGE') map[colorName].main = spec?.value;
+          if (type === 'P1') map[colorName].p1 = spec?.value;
+          if (type === 'P2') map[colorName].p2 = spec?.value;
+          if (type === 'P3') map[colorName].p3 = spec?.value;
+          if (type === 'P4') map[colorName].p4 = spec?.value;
+          if (type === 'P5') map[colorName].p5 = spec?.value;
+        }
       }
     });
-  }
+    return map;
+  }, [product]);
 
-  const activeGallery = effectiveColor ? colorGalleryMap[effectiveColor.trim().toUpperCase()] : undefined;
-  const globalP5 = product?.specifications?.find((s: any) => s.label === 'GlobalP5')?.value;
-
-  let rawImages: string[] = [];
-
-  if (effectiveColor) {
-    if (activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
+  const images = React.useMemo(() => {
+    if (!product) return [''];
+    const safeColor = effectiveColor?.trim()?.toUpperCase();
+    const activeGallery = safeColor ? colorGalleryMap[safeColor] : undefined;
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    const globalP5 = safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value;
+    
+    let rawImages: string[] = [];
+    if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
       rawImages = [
-        activeGallery.main || '',
-        activeGallery.p1,
-        activeGallery.p2,
-        activeGallery.p3,
-        activeGallery.p4,
-        activeGallery.p5
+        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     } else {
       rawImages = [
-        product.image_url,
-        product.perspective1,
-        product.perspective2,
-        product.perspective3,
-        product.perspective4,
-        globalP5
+        product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     }
-  } else {
-    rawImages = [
-      product.image_url,
-      product.perspective1,
-      product.perspective2,
-      product.perspective3,
-      product.perspective4,
-      globalP5
-    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
-  }
+    return rawImages.length > 0 ? rawImages : [''];
+  }, [product, effectiveColor, colorGalleryMap]);
 
-  const images = rawImages.length > 0 ? rawImages : [''];
+  const localizedDescription = React.useMemo(() => {
+    return dict.locale === 'EN' && product?.description_en ? product.description_en : product?.description;
+  }, [dict.locale, product]);
 
-  const localizedDescription = dict.locale === 'EN' && product.description_en ? product.description_en : product.description;
+  const availableColors = React.useMemo(() => {
+    const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
+    return Array.from<string>(new Set(
+      safeVariants.filter((v: any) => (!hasSizes || v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && v?.color).map((v: any) => v.color as string)
+    ));
+  }, [product, hasSizes, effectiveSize]);
 
-  const availableColors = Array.from<string>(new Set(
-    product?.variants?.filter((v: any) => (!hasSizes || v.size?.toUpperCase() === effectiveSize.toUpperCase()) && v.color).map((v: any) => v.color as string) || []
-  ));
+  const selectedVariant = React.useMemo(() => {
+    const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
+    return safeVariants.find((v: any) => 
+      (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
+      (!effectiveColor ? !v?.color : v?.color?.toUpperCase() === effectiveColor?.toUpperCase())
+    );
+  }, [product, hasSizes, effectiveSize, effectiveColor]);
 
-  const selectedVariant = product?.variants?.find((v: any) => 
-    (!hasSizes ? !v.size : v.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
-    (!effectiveColor ? !v.color : v.color?.toUpperCase() === effectiveColor.toUpperCase())
-  );
+  if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
+  if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
   
-  const availableStock = selectedVariant ? selectedVariant.stock_quantity : 0;
+  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : 0;
   const displayQuantity = availableStock === 0 ? 0 : Math.min(quantity, availableStock);
 
-  const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s.toUpperCase() === size.toUpperCase());
+  const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s?.toUpperCase() === size?.toUpperCase());
   const currentSurcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
 
   const handleAddToCart = () => {
@@ -532,219 +532,23 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           </motion.div>
           </div>
 
-          <motion.div 
-            variants={columnVariants}
-            className={cn(
-              "col-span-2 2xl:col-span-1 flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
-              isMobile 
-                ? (items.length === 0 ? "hidden" : "flex") 
-                : "hidden 2xl:flex"
-            )}
-          >
-            <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
-              <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
-                <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{dict.product.yourCart}</span>
-                <span className="text-xs md:text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
-              </motion.div>
-
-              {items.length === 0 ? (
-                <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-4 md:py-10 px-4">
-                  <ShoppingCart size={28} className="mb-3 text-ink" />
-                  <span className="text-xs md:text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
-                  <span className="text-[11px] md:text-[8px] text-ink/60 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
-                </motion.div>
-              ) : (
-                <>
-                  <div className="flex-1 overflow-y-auto divide-y divide-ink/5 minimal-scroll">
-                      {items.map((item) => (
-                        <motion.div
-                          variants={textVariants}
-                          key={`${item.id}-${item.size}-${item.color}`}
-                          className="flex gap-3 items-start px-4 py-3 group/item hover:bg-ink/[0.01] transition-colors relative"
-                        >
-                          <div
-                            className="w-14 h-16 bg-ink/[0.02] border border-ink/5 relative overflow-hidden flex-shrink-0 cursor-pointer flex items-center justify-center"
-                            onClick={() => {
-                              if (item.slug) {
-                                router.push(`/shop/${item.slug}`);
-                              }
-                            }}
-                          >
-                            {item.image_url && <SafeImage src={item.image_url} alt={item.name} sizes="56px" />}
-                          </div>
-
-                          <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
-                            <div className="flex justify-between items-start gap-2">
-                              <span className="text-xs md:text-[10px] font-medium uppercase leading-tight text-ink line-clamp-2 pt-0.5">{item.name}</span>
-                              <button
-                                onClick={() => removeItem(item.id, item.size, item.color)}
-                                className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-sm text-ink/25 hover:text-white hover:bg-rose border border-transparent hover:border-rose transition-all -mt-0.5 -mr-1"
-                                title="Remove from cart"
-                              >
-                                <Trash2 size={12} strokeWidth={2} />
-                              </button>
-                            </div>
-                            <div className="flex items-center gap-1 mb-auto mt-0.5 relative">
-                              <span className="text-[11px] md:text-[8px] font-medium text-ink/60 uppercase tracking-wider">
-                                {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
-                              </span>
-                              {displayMeasurements.length > 0 && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const key = `${item.id}-${item.size}-${item.color}`;
-                                    setMeasurementPopupItemKey(prev => prev === key ? null : key);
-                                  }}
-                                  className="text-rose/50 hover:text-rose transition-colors"
-                                  title="View size chart"
-                                >
-                                  <Ruler size={10} />
-                                </button>
-                              )}
-                              {(item.size_surcharge || 0) > 0 && (
-                                <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
-                              )}
-                              {/* Measurement Popover */}
-                              {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
-                                <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[200px] animate-in fade-in zoom-in-95 duration-200">
-                                  <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/10">
-                                    <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-rose">{dict.product.sizeChart}</span>
-                                    <button onClick={() => setMeasurementPopupItemKey(null)} className="text-white/40 hover:text-white">
-                                      <X size={10} />
-                                    </button>
-                                  </div>
-                                  <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[10px] md:text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1 border-b border-white/10 pb-1">
-                                    <span>Size</span>
-                                    <span className="text-center">{isPants ? 'W/L/Leg' : 'Chest/L'}</span>
-                                    <span className="text-right">Wght/Hght</span>
-                                  </div>
-                                  {displayMeasurements.map((m: any, idx: number) => {
-                                    const wh = getWeightAndHeight(m.size);
-                                    return (
-                                      <div key={idx} className={cn(
-                                        "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[11px] md:text-[8px] font-medium py-1 border-b border-white/5",
-                                        m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
-                                      )}>
-                                        <span className="font-bold">{m.size}</span>
-                                        <span className="text-center">{isPants ? `${m.waist || '-'} / ${m.length} / ${m.leg_opening || '-'}` : `${m.chest || '-'} / ${m.length}`}</span>
-                                        <span className="text-right text-white/50">{wh.w} / {wh.h}</span>
-                                      </div>
-                                    );
-                                  })}
-                                  {displayModelInfo && (
-                                    <p className="text-[10px] md:text-[7px] text-white/30 mt-1.5 italic">* {displayModelInfo}</p>
-                                  )}
-                                  <div className="absolute -top-1.5 left-4 w-3 h-3 bg-ink rotate-45 border-l border-t border-ink" />
-                                </div>
-                              )}
-                            </div>
-
-                            <motion.div variants={textVariants} className="flex items-center justify-between mt-2 pt-2 border-t border-ink/5">
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => {
-                                    if (item.quantity <= 1) {
-                                      removeItem(item.id, item.size, item.color);
-                                    } else {
-                                      updateQuantity(item.id, item.quantity - 1, item.size, item.color);
-                                    }
-                                  }}
-                                  className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
-                                >
-                                  <Minus size={12} />
-                                </button>
-                                <span className="text-sm md:text-[11px] font-medium w-5 text-center">{item.quantity}</span>
-                                <button
-                                  onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
-                                  className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
-                                >
-                                  <Plus size={12} />
-                                </button>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                <span className="text-xs md:text-[9px] font-medium text-rose">
-                                  IDR {((item.price + (item.size_surcharge || 0)) * item.quantity).toLocaleString('id-ID')}
-                                </span>
-                                {(item.size_surcharge || 0) > 0 && (
-                                  <span className="text-[10px] md:text-[7px] text-ink/50 font-medium">
-                                    incl. +{(item.size_surcharge * item.quantity).toLocaleString('id-ID')} surcharge
-                                  </span>
-                                )}
-                              </div>
-                            </motion.div>
-                          </div>
-                        </motion.div>
-                      ))}
-                  </div>
-
-                  <motion.div variants={textVariants} className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/60">{dict.product.total}</span>
-                      <span className="text-sm md:text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <motion.button
-                        variants={textVariants}
-                        onClick={() => router.push('/checkout')}
-                        className="active:scale-[0.97] w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase font-medium tracking-[0.2em] hover:bg-ink transition-all text-center shadow-md shadow-rose/20"
-                      >
-                        {dict.product.checkout}
-                      </motion.button>
-                      <motion.button
-                        variants={textVariants}
-                        onClick={() => clearCart()}
-                        className="active:scale-[0.97] w-full py-2.5 bg-transparent text-ink/60 text-xs md:text-[9px] uppercase font-medium tracking-[0.2em] hover:text-rose hover:bg-rose/5 transition-all text-center border border-ink/5 flex items-center justify-center gap-1.5"
-                      >
-                        <Trash2 size={12} />
-                        {dict.product.clearCart}
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                </>
-              )}
-            </div>
-          </motion.div>
+          <CartSidebar
+            dict={dict}
+            isMobile={isMobile}
+            displayMeasurements={displayMeasurements}
+            isPants={isPants}
+            getWeightAndHeight={getWeightAndHeight}
+            textVariants={textVariants}
+            columnVariants={columnVariants}
+          />
         </motion.div>
 
-        {relatedProducts.length > 0 && (
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="mt-4 lg:mt-6 space-y-1">
-            <motion.div variants={textVariants} className="flex justify-between items-end border-b border-ink/5 pb-1 lg:pb-1.5">
-              <h2 className="text-xs md:text-[9px] md:text-[10px] font-display font-medium italic tracking-tight text-ink uppercase">{dict.product.relatedProducts}</h2>
-              <Link  href="/shop" className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] text-ink/50 hover:text-rose transition-colors flex items-center gap-1 group mb-0.5">
-                {dict.product.viewFullCollection} <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
-
-            <div className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-4 pt-1">
-              {relatedProducts.map((p) => (
-                <motion.div
-                  variants={textVariants}
-                  key={p.id}
-                  className="flex-shrink-0 w-[110px] md:w-[130px]"
-                >
-                  <Link href={`/shop/${p.slug}`} className="group block space-y-1">
-                    <div className="aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
-                      <div className="absolute inset-3">
-                        <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
-                      </div>
-                      <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    </div>
-                    <div className="space-y-1 px-1">
-                      <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
-                      {p.price_tag && (
-                        <div className="text-[6px] font-medium uppercase tracking-[0.2em] text-rose mb-0.5">
-                          {p.price_tag}
-                        </div>
-                      )}
-                      <p className="text-xs md:text-[9px] font-medium text-rose">IDR {p.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
+        <RelatedProductsList
+          relatedProducts={relatedProducts}
+          dict={dict}
+          staggerContainer={staggerContainer}
+          textVariants={textVariants}
+        />
       </div>
 
       <ImageLightbox
