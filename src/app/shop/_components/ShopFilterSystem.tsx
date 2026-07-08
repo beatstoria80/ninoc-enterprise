@@ -568,7 +568,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
           "fixed left-0 right-0 border-b border-ink/10 transition-all duration-300 ease-in-out",
           "z-[390] bg-white/95 backdrop-blur-md shadow-sm"
         )}
-        style={{ top: 'calc(56px + env(safe-area-inset-top))' }}
+        style={{ top: 'env(safe-area-inset-top)' }}
       >
         <div className="flex flex-col gap-1.5 px-3 pt-1 pb-2">
           {/* Row 1: Category Pillars */}
