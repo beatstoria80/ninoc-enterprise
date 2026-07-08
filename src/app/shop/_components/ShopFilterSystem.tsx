@@ -223,13 +223,13 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
   if (activeFilterCount === 0) return null;
 
   return (
-    <div className="flex items-center flex-wrap gap-2 pt-3 border-t border-ink/5 mt-3 animate-fadeIn">
-      <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 mr-1 flex items-center gap-1">
-        <Tag size={10} className="text-rose" /> Filter Aktif:
+    <div className="flex items-center flex-nowrap md:flex-wrap overflow-x-auto md:overflow-visible no-scrollbar gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-ink/5 mt-1.5 md:mt-3 pb-0.5 md:pb-0 animate-fadeIn">
+      <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 mr-1 flex items-center gap-1 shrink-0">
+        <Tag size={10} className="text-rose" /> <span className="hidden md:inline">Filter Aktif:</span>
       </span>
 
       {searchQuery.trim() !== '' && (
-        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm">
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
           <span>&ldquo;{searchQuery}&rdquo;</span>
           <button onClick={() => setSearchQuery('')} className="hover:text-rose transition-colors">
             <X size={10} />
@@ -238,8 +238,8 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
       )}
 
       {subCategory !== 'All' && (
-        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm">
-          <span>Model: {subCategory}</span>
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
+          <span>{subCategory}</span>
           <button onClick={() => setSubCategory('All')} className="hover:text-rose transition-colors">
             <X size={10} />
           </button>
@@ -247,7 +247,7 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
       )}
 
       {selectedSize !== 'All' && (
-        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm">
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
           <span>Size: {selectedSize}</span>
           <button onClick={() => setSelectedSize('All')} className="hover:text-rose transition-colors">
             <X size={10} />
@@ -256,8 +256,8 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
       )}
 
       {priceRange !== 'all' && (
-        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm">
-          <span>Harga: {PRICE_RANGES.find(p => p.id === priceRange)?.label}</span>
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
+          <span>{PRICE_RANGES.find(p => p.id === priceRange)?.label}</span>
           <button onClick={() => setPriceRange('all')} className="hover:text-rose transition-colors">
             <X size={10} />
           </button>
@@ -265,8 +265,8 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
       )}
 
       {sortBy !== 'newest' && (
-        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm">
-          <span>Urutkan: {SORT_OPTIONS.find(s => s.id === sortBy)?.label}</span>
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
+          <span>{SORT_OPTIONS.find(s => s.id === sortBy)?.label}</span>
           <button onClick={() => setSortBy('newest')} className="hover:text-rose transition-colors">
             <X size={10} />
           </button>
