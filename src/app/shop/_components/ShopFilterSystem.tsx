@@ -210,7 +210,7 @@ const SORT_OPTIONS = [
   { id: 'popular', label: 'Terpopuler & Banyak Dilihat' },
 ];
 
-function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) {
+function ActiveFilterTags({ filterSystem, isMobileTopRow = false }: { filterSystem: FilterSystemType, isMobileTopRow?: boolean }) {
   const {
     searchQuery, setSearchQuery,
     subCategory, setSubCategory,
@@ -223,7 +223,12 @@ function ActiveFilterTags({ filterSystem }: { filterSystem: FilterSystemType }) 
   if (activeFilterCount === 0) return null;
 
   return (
-    <div className="flex items-center flex-nowrap md:flex-wrap overflow-x-auto md:overflow-visible no-scrollbar gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-ink/5 mt-1.5 md:mt-3 pb-0.5 md:pb-0 animate-fadeIn">
+    <div className={cn(
+      "flex items-center animate-fadeIn no-scrollbar",
+      isMobileTopRow 
+        ? "flex-nowrap overflow-x-auto gap-1.5 pb-0.5" 
+        : "flex-nowrap md:flex-wrap overflow-x-auto md:overflow-visible gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-ink/5 mt-1.5 md:mt-3 pb-0.5 md:pb-0"
+    )}>
       <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 mr-1 flex items-center gap-1 shrink-0">
         <Tag size={10} className="text-rose" /> <span className="hidden md:inline">Filter Aktif:</span>
       </span>
@@ -571,66 +576,91 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
         style={{ top: 'env(safe-area-inset-top)' }}
       >
         <div className="flex flex-col gap-1.5 px-3 pt-1 pb-2">
-          {/* Row 1: Category Pillars */}
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-            {displayCategories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[11px] font-display font-medium uppercase tracking-wider whitespace-nowrap transition-all",
-                  selectedCategory === cat
-                    ? "bg-ink text-white shadow-sm"
-                    : "bg-ink/5 text-ink/60 hover:bg-ink/10"
-                )}
-              >
-                {getCategoryDisplayName(cat)}
-              </button>
-            ))}
-          </div>
-
-          {/* Row 2: Search & Filter Button */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink/40 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari produk apparel/kode..."
-                className="w-full pl-8 pr-7 py-1.5 bg-ink/[0.04] border border-ink/10 rounded-full text-xs font-mono placeholder:text-ink/40 focus:outline-none focus:bg-white transition-all"
-              />
-              {searchQuery && (
+          {activeFilterCount > 0 ? (
+            /* ── COMPACT MODE: Only active filter tags + filter button ── */
+            <div className="flex items-center gap-2">
+              <div className="flex-1 overflow-hidden">
+                <ActiveFilterTags filterSystem={filterSystem} isMobileTopRow />
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink/40 hover:text-rose"
+                  onClick={() => resetFilters()}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-mono uppercase tracking-wider text-ink/50 hover:text-rose border border-ink/10 transition-all"
                 >
-                  <X size={12} />
+                  <X size={10} />
+                  <span>Reset</span>
                 </button>
-              )}
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-mono uppercase tracking-wider bg-ink text-white transition-all shrink-0"
+                >
+                  <SlidersHorizontal size={11} className="text-rose" />
+                  <span>{activeFilterCount}</span>
+                </button>
+              </div>
             </div>
+          ) : (
+            /* ── FULL MODE: Category pillars + Search + Filter ── */
+            <>
+              {/* Row 1: Category Pillars */}
+              <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                {displayCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-full text-[11px] font-display font-medium uppercase tracking-wider whitespace-nowrap transition-all",
+                      selectedCategory === cat
+                        ? "bg-ink text-white shadow-sm"
+                        : "bg-ink/5 text-ink/60 hover:bg-ink/10"
+                    )}
+                  >
+                    {getCategoryDisplayName(cat)}
+                  </button>
+                ))}
+              </div>
 
-            <button
-              onClick={() => setIsFilterOpen(true)}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all shrink-0",
-                activeFilterCount > 0
-                  ? "bg-ink text-white font-semibold"
-                  : "bg-white text-ink border border-ink/20"
-              )}
-            >
-              <SlidersHorizontal size={13} className={activeFilterCount > 0 ? "text-rose" : ""} />
-              <span>Filter</span>
-              {activeFilterCount > 0 && (
-                <span className="bg-rose text-white px-1.5 py-0.2 rounded-full text-[9px] font-bold leading-none">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-          </div>
+              {/* Row 2: Search & Filter Button */}
+              <div className="flex items-center gap-2">
+                <div className="relative flex-grow">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink/40 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Cari produk apparel/kode..."
+                    className="w-full pl-8 pr-7 py-1.5 bg-ink/[0.04] border border-ink/10 rounded-full text-xs font-mono placeholder:text-ink/40 focus:outline-none focus:bg-white transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink/40 hover:text-rose"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
 
-          {/* Active Filter Tags displayed directly in the fixed mobile header */}
-          <ActiveFilterTags filterSystem={filterSystem} />
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all shrink-0",
+                    activeFilterCount > 0
+                      ? "bg-ink text-white font-semibold"
+                      : "bg-white text-ink border border-ink/20"
+                  )}
+                >
+                  <SlidersHorizontal size={13} className={activeFilterCount > 0 ? "text-rose" : ""} />
+                  <span>Filter</span>
+                  {activeFilterCount > 0 && (
+                    <span className="bg-rose text-white px-1.5 py-0.2 rounded-full text-[9px] font-bold leading-none">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
       )}
