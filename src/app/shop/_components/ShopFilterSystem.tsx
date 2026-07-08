@@ -96,6 +96,7 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
   const [priceRange, setPriceRange] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const isHydrated = React.useRef(false);
 
   // Restore state from sessionStorage on mount (prevents hydration mismatch by running only on client)
   useEffect(() => {
@@ -123,11 +124,14 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     } catch (e) {
       console.warn("Failed to restore filters from session", e);
     }
+    // Mark hydration as complete so the save effect can start writing
+    isHydrated.current = true;
   }, []);
 
-  // Save state to sessionStorage whenever it changes
+  // Save state to sessionStorage whenever it changes (only after hydration to prevent overwriting saved values with defaults)
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (!isHydrated.current) return;
     sessionStorage.setItem('ninoc_filter_category', selectedCategory);
     sessionStorage.setItem('ninoc_filter_search', searchQuery);
     sessionStorage.setItem('ninoc_filter_sub', subCategory);
@@ -150,7 +154,14 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     setSelectedSize('All');
     setPriceRange('all');
     setSortBy('newest');
-    // We intentionally do not reset selectedCategory here as it acts as the primary tab.
+    // Also clear sessionStorage so filters don't zombie-restore on next visit
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('ninoc_filter_search');
+      sessionStorage.removeItem('ninoc_filter_sub');
+      sessionStorage.removeItem('ninoc_filter_size');
+      sessionStorage.removeItem('ninoc_filter_price');
+      sessionStorage.removeItem('ninoc_filter_sort');
+    }
   };
 
   const activeFilterCount = useMemo(() => {
