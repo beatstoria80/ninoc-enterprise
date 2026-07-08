@@ -544,19 +544,34 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
 
   const showSizeFilter = selectedCategory === 'Apparel' || selectedCategory === 'All';
 
+  const filterBarRef = React.useRef<HTMLDivElement>(null);
+  const [filterBarHeight, setFilterBarHeight] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!filterBarRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setFilterBarHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(filterBarRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
-      {/* Sticky Mobile Header (Elevates to top-0 when filter is open) */}
+      {/* Fixed Mobile Filter Bar — Part of Global Header, unaffected by scroll */}
       <div 
+        ref={filterBarRef}
         className={cn(
-          "sticky left-0 right-0 border-b border-ink/10 transition-all duration-500 ease-in-out",
+          "fixed left-0 right-0 border-b border-ink/10 transition-all duration-300 ease-in-out",
           isFilterOpen 
             ? "z-[550] bg-white shadow-2xl" 
-            : "z-[350] bg-white/95 backdrop-blur-md shadow-sm"
+            : "z-[390] bg-white/95 backdrop-blur-md shadow-sm"
         )}
         style={{ top: isFilterOpen ? '0px' : 'calc(56px + env(safe-area-inset-top))' }}
       >
-        <div className="flex flex-col gap-1.5 px-3 pt-0 pb-2">
+        <div className="flex flex-col gap-1.5 px-3 pt-1 pb-2">
           {/* Row 1: Category Pillars */}
           <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
             {displayCategories.map((cat) => (
@@ -615,10 +630,13 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
             </button>
           </div>
 
-          {/* Active Filter Tags displayed directly in the sticky mobile header */}
+          {/* Active Filter Tags displayed directly in the fixed mobile header */}
           <ActiveFilterTags filterSystem={filterSystem} />
         </div>
       </div>
+
+      {/* Spacer to push content below the fixed filter bar */}
+      <div style={{ height: `${filterBarHeight}px` }} />
 
       {/* Bottom Sheet Modal for Mobile Filters */}
       <AnimatePresence>
