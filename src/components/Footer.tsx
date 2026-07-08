@@ -82,7 +82,7 @@ export default function GlobalFooter() {
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
               <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 leading-tight">
-                Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292
+                Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya<br/>Kota Bandung Jawa Barat 40292<br/>Indonesia
               </p>
             </div>
             <div className="flex items-center gap-1.5">
