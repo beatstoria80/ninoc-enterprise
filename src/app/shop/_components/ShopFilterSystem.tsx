@@ -97,6 +97,45 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
   const [sortBy, setSortBy] = useState<string>('newest');
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
+  // Restore state from sessionStorage on mount (prevents hydration mismatch by running only on client)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      /* eslint-disable react-hooks/set-state-in-effect */
+      const savedCategory = sessionStorage.getItem('ninoc_filter_category');
+      if (savedCategory) setSelectedCategory(savedCategory);
+      
+      const savedSearch = sessionStorage.getItem('ninoc_filter_search');
+      if (savedSearch) setSearchQuery(savedSearch);
+      
+      const savedSub = sessionStorage.getItem('ninoc_filter_sub');
+      if (savedSub) setSubCategory(savedSub);
+      
+      const savedSize = sessionStorage.getItem('ninoc_filter_size');
+      if (savedSize) setSelectedSize(savedSize);
+      
+      const savedPrice = sessionStorage.getItem('ninoc_filter_price');
+      if (savedPrice) setPriceRange(savedPrice);
+      
+      const savedSort = sessionStorage.getItem('ninoc_filter_sort');
+      if (savedSort) setSortBy(savedSort);
+      /* eslint-enable react-hooks/set-state-in-effect */
+    } catch (e) {
+      console.warn("Failed to restore filters from session", e);
+    }
+  }, []);
+
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem('ninoc_filter_category', selectedCategory);
+    sessionStorage.setItem('ninoc_filter_search', searchQuery);
+    sessionStorage.setItem('ninoc_filter_sub', subCategory);
+    sessionStorage.setItem('ninoc_filter_size', selectedSize);
+    sessionStorage.setItem('ninoc_filter_price', priceRange);
+    sessionStorage.setItem('ninoc_filter_sort', sortBy);
+  }, [selectedCategory, searchQuery, subCategory, selectedSize, priceRange, sortBy]);
+
   const handleSetCategory = (cat: string) => {
     setSelectedCategory(cat);
     setSubCategory('All');
@@ -111,6 +150,7 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     setSelectedSize('All');
     setPriceRange('all');
     setSortBy('newest');
+    // We intentionally do not reset selectedCategory here as it acts as the primary tab.
   };
 
   const activeFilterCount = useMemo(() => {
