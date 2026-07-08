@@ -2128,7 +2128,6 @@ export default function AdminDashboard() {
               
               {/* MAIN PRODUCT MODAL */}
               <motion.div
-                layout
                 initial={{ scale: 0.95, opacity: 0, y: 10 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -2144,6 +2143,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-3">
                     {!isSeoPanelOpen && (
                       <button 
+                        type="button"
                         onClick={() => setIsSeoPanelOpen(true)}
                         className="px-3 py-1.5 text-rose bg-rose/5 hover:bg-rose/10 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition-colors"
                       >
@@ -2151,13 +2151,13 @@ export default function AdminDashboard() {
                         SEO Helper
                       </button>
                     )}
-                    <button onClick={() => setIsProductModalOpen(false)} className="p-2 text-ink/50 hover:text-ink hover:bg-ink/5 rounded-full transition-colors">
+                    <button type="button" onClick={() => setIsProductModalOpen(false)} className="p-2 text-ink/50 hover:text-ink hover:bg-ink/5 rounded-full transition-colors">
                       <X size={18} />
                     </button>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-3 space-y-4">
+                <div className="flex-1 overflow-y-auto p-3 space-y-4 min-h-0">
                   {/* STEP 1: CONCEPT MALL PILLAR & ORIGIN WAREHOUSE (VERY TOP HIERARCHY) */}
                   <div className="p-3 bg-gradient-to-r from-gray-900 via-gray-800 to-ink text-white rounded-xl shadow-sm space-y-2.5 border border-gray-700/50">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
@@ -3335,10 +3335,12 @@ export default function AdminDashboard() {
                           ))}
                           
                           <button
+                            type="button"
                             onClick={() => {
+                              const uniqueSuffix = Date.now().toString().slice(-4);
                               setProductForm({
                                 ...productForm,
-                                variants: [...productForm.variants, { id: '', size: isFnB ? '250G' : isObjects ? 'REGULAR' : 'New Size', color: isFnB ? 'Original Blend' : isObjects ? 'Standard' : 'New Color', stock_quantity: 0 }]
+                                variants: [...productForm.variants, { id: '', size: isFnB ? '250G' : isObjects ? 'REGULAR' : 'New Size', color: isFnB ? `Blend ${uniqueSuffix}` : isObjects ? `Model ${uniqueSuffix}` : `Color ${uniqueSuffix}`, stock_quantity: 0 }]
                               });
                             }}
                             className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-gray-500 hover:border-rose/50 hover:text-rose transition-colors bg-white font-medium"
@@ -3352,14 +3354,16 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 bg-white px-2 py-1.5 border-t border-gray-100 flex items-center justify-end gap-3">
+              <div className="flex-shrink-0 bg-white px-2 py-1.5 border-t border-gray-100 flex items-center justify-end gap-3 z-10">
                 <button
+                  type="button"
                   onClick={() => setIsProductModalOpen(false)}
                   className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={saveProduct}
                   className="px-2 py-1 text-xs bg-rose text-white rounded hover:bg-rose/90 flex items-center gap-2"
                 >
