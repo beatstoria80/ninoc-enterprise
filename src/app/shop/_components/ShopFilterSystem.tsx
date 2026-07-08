@@ -579,7 +579,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
           {activeFilterCount > 0 ? (
             /* ── COMPACT MODE: Only active filter tags + filter button ── */
             <div className="flex items-center gap-2">
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-x-auto no-scrollbar">
                 <ActiveFilterTags filterSystem={filterSystem} isMobileTopRow />
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
