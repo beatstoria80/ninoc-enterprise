@@ -156,7 +156,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
     <div className="bg-cr min-h-screen">
       <MobileShopFilterBar filterSystem={filterSystem} />
 
-      <div className="px-3 pt-6 md:pt-8 space-y-4 pb-10">
+      <div className="px-3 pt-1 md:pt-8 space-y-4 pb-10">
         {displayCategories
           .filter(c => c !== 'All' && (selectedCategory === 'All' || selectedCategory === c) && (groupedProducts[c]?.length || 0) > 0)
           .map((category) => (

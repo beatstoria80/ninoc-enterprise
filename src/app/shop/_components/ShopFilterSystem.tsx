@@ -556,7 +556,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
         )}
         style={{ top: isFilterOpen ? '0px' : 'calc(56px + env(safe-area-inset-top))' }}
       >
-        <div className="flex flex-col gap-2 px-3 pt-1 pb-2.5">
+        <div className="flex flex-col gap-1.5 px-3 pt-0 pb-2">
           {/* Row 1: Category Pillars */}
           <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
             {displayCategories.map((cat) => (
