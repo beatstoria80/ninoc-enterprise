@@ -109,12 +109,12 @@ export default function ImmersiveProductView({
           </button>
 
           {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
-          <div className="hidden lg:flex w-1/4 h-full bg-white flex-col justify-center pl-12 lg:pl-20 pr-8 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex w-1/4 h-full bg-white flex-col justify-center pl-16 lg:pl-32 pr-4 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="space-y-6"
+              className="space-y-4"
             >
               <div>
                 <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
@@ -123,14 +123,14 @@ export default function ImmersiveProductView({
                 <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter leading-none mb-1.5">
                   {product.name}
                 </h1>
-                <p className="text-xs font-medium italic text-ink/60">
+                <p className="text-xs font-bold italic text-ink/80">
                   IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
                 </p>
               </div>
 
               {localizedDescription && (
                 <div 
-                  className="text-[11px] leading-relaxed text-ink/70"
+                  className="text-xs leading-relaxed text-ink/70"
                   dangerouslySetInnerHTML={{ __html: localizedDescription }} 
                 />
               )}
@@ -189,7 +189,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
-          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
+          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white flex flex-col pl-6 pr-12 lg:pl-10 lg:pr-32 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
