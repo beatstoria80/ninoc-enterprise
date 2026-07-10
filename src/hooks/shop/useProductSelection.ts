@@ -125,24 +125,14 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       sizeSurcharge = SIZE_SURCHARGE_AMOUNT;
     }
 
+    // Single atomic call — no loop, no race condition, one storage write
     addItem({
       id: product.id,
       name: product.name,
       slug: product.slug,
       price: product.price,
       image_url: product.image_url,
-    }, effectiveSize, effectiveColor, sizeSurcharge);
-    
-    // Additional quantity beyond 1
-    for (let i = 1; i < quantity; i++) {
-      addItem({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: product.price,
-        image_url: product.image_url,
-      }, effectiveSize, effectiveColor, sizeSurcharge);
-    }
+    }, effectiveSize, effectiveColor, sizeSurcharge, quantity);
     
     setQuantity(1);
     return true;

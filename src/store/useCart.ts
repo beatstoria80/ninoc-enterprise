@@ -19,7 +19,7 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number) => void;
+  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number) => void;
   removeItem: (id: string, size?: string, color?: string) => void;
   updateQuantity: (id: string, quantity: number, size?: string, color?: string) => void;
   clearCart: () => void;
@@ -94,7 +94,7 @@ export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product, size, color, sizeSurcharge = 0) => {
+      addItem: (product, size, color, sizeSurcharge = 0, qty = 1) => {
         const currentItems = get().items;
         const existingItem = currentItems.find(item => item.id === product.id && item.size === size && item.color === color);
 
@@ -102,12 +102,12 @@ export const useCart = create<CartStore>()(
           set({
             items: currentItems.map(item =>
               (item.id === product.id && item.size === size && item.color === color)
-                ? { ...item, quantity: item.quantity + 1 }
+                ? { ...item, quantity: item.quantity + qty }
                 : item
             )
           });
         } else {
-          set({ items: [...currentItems, { ...product, quantity: 1, size, color, size_surcharge: sizeSurcharge }] });
+          set({ items: [...currentItems, { ...product, quantity: qty, size, color, size_surcharge: sizeSurcharge }] });
         }
       },
       removeItem: (id, size, color) => set({

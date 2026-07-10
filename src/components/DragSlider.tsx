@@ -71,7 +71,7 @@ export default function DragSlider({ children, className = '', style = {}, direc
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
     };
-  }, []);
+  }, [direction]);
 
   return (
     <div
