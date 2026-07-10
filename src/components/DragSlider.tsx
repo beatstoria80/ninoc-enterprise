@@ -12,11 +12,12 @@ interface DragSliderProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  direction?: 'horizontal' | 'vertical';
 }
 
-export default function DragSlider({ children, className = '', style = {} }: DragSliderProps) {
+export default function DragSlider({ children, className = '', style = {}, direction = 'horizontal' }: DragSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
+  const dragRef = useRef({ active: false, start: 0, startScroll: 0 });
 
   useEffect(() => {
     const el = containerRef.current;
@@ -29,7 +30,11 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
       const ev = e as PointerEvent;
       if (ev.pointerType === 'touch') return; 
       
-      dragRef.current = { active: true, startX: ev.clientX, startScroll: el.scrollLeft };
+      dragRef.current = { 
+        active: true, 
+        start: direction === 'horizontal' ? ev.clientX : ev.clientY, 
+        startScroll: direction === 'horizontal' ? el.scrollLeft : el.scrollTop 
+      };
       document.body.style.userSelect = 'none';
       document.body.style.cursor = 'grabbing';
     };
@@ -39,8 +44,14 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
       const ev = e as PointerEvent;
       if (ev.pointerType === 'touch') return;
       
-      const delta = ev.clientX - dragRef.current.startX;
-      el.scrollLeft = dragRef.current.startScroll - delta;
+      const currentPos = direction === 'horizontal' ? ev.clientX : ev.clientY;
+      const delta = currentPos - dragRef.current.start;
+      
+      if (direction === 'horizontal') {
+        el.scrollLeft = dragRef.current.startScroll - delta;
+      } else {
+        el.scrollTop = dragRef.current.startScroll - delta;
+      }
     };
 
     const onUp = () => {
@@ -65,7 +76,7 @@ export default function DragSlider({ children, className = '', style = {} }: Dra
   return (
     <div
       ref={containerRef}
-      className={`overflow-x-auto no-scrollbar ${className}`}
+      className={`${direction === 'horizontal' ? 'overflow-x-auto' : 'overflow-y-auto'} no-scrollbar ${className}`}
       style={{
         cursor: 'grab',
         scrollbarWidth: 'none',

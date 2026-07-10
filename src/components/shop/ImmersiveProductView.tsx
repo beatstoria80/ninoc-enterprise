@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
 import DragSlider from '@/components/DragSlider';
@@ -95,7 +95,7 @@ export default function ImmersiveProductView({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '100%' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] bg-cr flex flex-col lg:flex-row overflow-hidden"
+          className="fixed inset-0 z-[9999] bg-cr flex flex-col lg:flex-row overflow-hidden"
         >
           {/* Close Button - Global */}
           <button
@@ -106,43 +106,30 @@ export default function ImmersiveProductView({
           </button>
 
           {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
-          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col p-10 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col p-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="space-y-8"
+              className="space-y-6"
             >
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-ink/40 mb-2">
+                <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
                   {product.category || 'Apparel'}
                 </div>
-                <h1 className="text-2xl font-display font-medium uppercase italic tracking-tighter leading-none mb-2">
+                <h1 className="text-xl font-display font-medium uppercase italic tracking-tighter leading-none mb-1.5">
                   {product.name}
                 </h1>
-                <p className="text-sm font-medium italic text-ink/60">
+                <p className="text-xs font-medium italic text-ink/60">
                   IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
                 </p>
               </div>
 
               {localizedDescription && (
-                <div className="prose prose-sm prose-p:text-ink/60 prose-p:leading-relaxed prose-headings:font-display">
-                  <div dangerouslySetInnerHTML={{ __html: localizedDescription }} />
-                </div>
-              )}
-
-              {displaySpecs.length > 0 && (
-                <div className="space-y-3 pt-6 border-t border-ink/5">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Specifications</h3>
-                  <div className="grid grid-cols-1 gap-y-2">
-                    {displaySpecs.map((spec, idx) => (
-                      <div key={idx} className="flex flex-col">
-                        <span className="text-[9px] uppercase tracking-widest text-ink/40">{spec.label}</span>
-                        <span className="text-xs font-medium">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <div 
+                  className="text-[11px] leading-relaxed text-ink/70"
+                  dangerouslySetInnerHTML={{ __html: localizedDescription }} 
+                />
               )}
             </motion.div>
           </div>
@@ -156,7 +143,7 @@ export default function ImmersiveProductView({
                </h1>
              </div>
 
-             <DragSlider className="w-full h-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
+             <DragSlider direction="vertical" className="w-full h-full flex flex-col overflow-y-auto snap-y snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
                {images.map((img, idx) => (
                  <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-4 lg:p-12">
                    <div className="relative w-full h-full max-w-4xl mx-auto">
@@ -172,10 +159,10 @@ export default function ImmersiveProductView({
              </DragSlider>
              
              {/* Drag indicator */}
-             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full pointer-events-none opacity-50">
-               <ChevronLeft size={14} />
-               <span className="text-[10px] uppercase tracking-widest font-bold">Swipe to view</span>
-               <ChevronRight size={14} />
+             <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 py-4 px-2 bg-white/80 backdrop-blur-sm rounded-full pointer-events-none opacity-50">
+               <ChevronUp size={14} />
+               <span className="text-[9px] uppercase tracking-widest font-bold rotate-90 my-6">Swipe</span>
+               <ChevronDown size={14} />
              </div>
           </div>
 
@@ -208,7 +195,7 @@ export default function ImmersiveProductView({
                           onClick={() => !isOutOfStock && setSelectedSize(size)}
                           disabled={isOutOfStock}
                           className={cn(
-                            "py-3 text-xs font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
+                            "py-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
                             isSelected 
                               ? "bg-ink text-white" 
                               : "bg-ink/5 text-ink hover:bg-ink/10",
@@ -240,7 +227,7 @@ export default function ImmersiveProductView({
                           key={color}
                           onClick={() => setSelectedColor(color)}
                           className={cn(
-                            "px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300",
+                            "px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",
                             isSelected 
                               ? "bg-ink text-white" 
                               : "bg-ink/5 text-ink hover:bg-ink/10"
