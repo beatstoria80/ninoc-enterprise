@@ -163,10 +163,8 @@ export default function ImmersiveProductView({
                      <SafeImage
                        src={img}
                        alt={`${product.name} view ${idx + 1}`}
-                       fill
                        className="object-contain drop-shadow-2xl"
                        priority={idx === 0}
-                       quality={100}
                      />
                    </div>
                  </div>
