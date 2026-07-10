@@ -88,7 +88,7 @@ export default function ImmersiveProductView({
   );
   const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' 
     ? selectedVariant.stock_quantity 
-    : 0; // Use real database stock, no hardcoded fallbacks
+    : (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : 999);
 
   return (
     <AnimatePresence>
@@ -238,8 +238,31 @@ export default function ImmersiveProductView({
                 </div>
               )}
 
-              {/* COLOR SELECTION REMOVED */}
-              {/* Product variants will automatically be visible via dragging the photo gallery */}
+              {/* COLOR SELECTION */}
+              {availableColors.length > 0 && (
+                <div className="space-y-4">
+                  <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Select Color</span>
+                  <div className="flex flex-wrap gap-2">
+                    {availableColors.map(color => {
+                      const isSelected = selectedColor === color;
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={cn(
+                            "px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",
+                            isSelected 
+                              ? "bg-ink text-white" 
+                              : "bg-ink/5 text-ink hover:bg-ink/10"
+                          )}
+                        >
+                          {color}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* QUANTITY & STOCK */}
               <div className="space-y-4">
@@ -249,7 +272,7 @@ export default function ImmersiveProductView({
                     "text-[10px] uppercase tracking-widest font-bold",
                     availableStock > 0 ? "text-emerald-500" : "text-rose"
                   )}>
-                    {availableStock > 0 ? `${availableStock} IN STOCK` : 'OUT OF STOCK'}
+                    {availableStock === 999 ? 'In Stock' : availableStock > 0 ? `${availableStock} Available` : 'Out of Stock'}
                   </span>
                 </div>
                 
