@@ -112,8 +112,8 @@ export default function ImmersiveProductView({
             <X strokeWidth={1.5} size={24} />
           </button>
 
-          {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
-          <div className="hidden lg:flex w-1/4 h-full bg-white flex-col justify-center pl-16 lg:pl-32 pr-4 overflow-y-auto no-scrollbar">
+          {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
+          <div className="hidden lg:flex flex-1 h-full bg-white flex-col justify-center pl-12 lg:pl-24 pr-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -141,8 +141,8 @@ export default function ImmersiveProductView({
             </motion.div>
           </div>
 
-          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Main Focus) */}
-          <div className="flex-1 h-full bg-white relative flex items-center justify-center overflow-hidden">
+          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfect 4:5 Aspect Ratio) */}
+          <div className="w-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-white relative flex items-center justify-center overflow-hidden">
              {/* Mobile Header Overlay */}
              <div className="lg:hidden absolute top-6 left-6 z-[110]">
                <h1 className="text-base font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
@@ -193,7 +193,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
-          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white flex flex-col pl-6 pr-12 lg:pl-10 lg:pr-32 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
+          <div className="w-full lg:flex-1 h-auto lg:h-full bg-white flex flex-col pl-8 pr-12 lg:pr-24 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
