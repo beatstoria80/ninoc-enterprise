@@ -143,7 +143,7 @@ export default function ProductGallery({
 
         {/* Realtime views & Review Badge below Main Photo */}
         <div className="w-full relative mt-3 lg:mt-4 h-[26px]">
-          {activeViewers !== null && (
+          {activeViewers !== null && activeViewers > 0 && (
             <motion.div 
               variants={textVariants} 
               className="absolute top-0 left-0 lg:left-[calc(-85px-1.5rem)] xl:left-[calc(-85px-2rem)] flex items-center gap-1.5 px-2.5 py-1 bg-white border border-ink/10 rounded-full shadow-sm h-[26px] z-10 whitespace-nowrap w-max"
