@@ -66,7 +66,11 @@ export default function GlobalCursor() {
 
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-xl mix-blend-difference"
+      className={`pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full transition-colors duration-300 ${
+        isHovering
+          ? 'bg-white/20 backdrop-blur-md backdrop-saturate-150 backdrop-contrast-125 border border-white/30 shadow-[inset_0_0_15px_rgba(255,255,255,0.3)] shadow-xl'
+          : 'bg-white/80 backdrop-blur-sm mix-blend-difference'
+      }`}
       style={{
         x: cursorX,
         y: cursorY,
@@ -74,11 +78,11 @@ export default function GlobalCursor() {
         translateY: '-50%',
       }}
       animate={{
-        width: isHovering ? 48 : 12,
-        height: isHovering ? 48 : 12,
+        width: isHovering ? 64 : 12,
+        height: isHovering ? 64 : 12,
         opacity: 1,
       }}
-      transition={{ type: "spring", stiffness: 500, damping: 28 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
     />
   );
 }
