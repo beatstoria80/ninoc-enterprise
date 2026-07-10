@@ -189,7 +189,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
-          <div className="w-full lg:w-[400px] h-auto lg:h-full bg-white flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
+          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
