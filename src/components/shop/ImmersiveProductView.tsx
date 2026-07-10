@@ -1,0 +1,318 @@
+"use client";
+
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import Image from 'next/image';
+import { Product } from '@/types/shop';
+import DragSlider from '@/components/DragSlider';
+import { PressScale } from '@/components/shop/ProductGallery';
+import { SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import SafeImage from '@/components/SafeImage';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+interface ImmersiveProductViewProps {
+  isOpen: boolean;
+  onClose: () => void;
+  product: Product;
+  images: string[];
+  selectedSize: string;
+  setSelectedSize: (s: string) => void;
+  selectedColor: string;
+  setSelectedColor: (c: string) => void;
+  quantity: number;
+  setQuantity: (q: number) => void;
+  hasSizes: boolean;
+  availableSizes: string[];
+  availableColors: string[];
+  handleAddToCart: () => void;
+  localizedDescription?: string;
+  displaySpecs?: any[];
+}
+
+export default function ImmersiveProductView({
+  isOpen,
+  onClose,
+  product,
+  images,
+  selectedSize,
+  setSelectedSize,
+  selectedColor,
+  setSelectedColor,
+  quantity,
+  setQuantity,
+  hasSizes,
+  availableSizes,
+  availableColors,
+  handleAddToCart,
+  localizedDescription,
+  displaySpecs = []
+}: ImmersiveProductViewProps) {
+  
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Lock body scroll
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s?.toUpperCase() === size?.toUpperCase());
+  const currentSurcharge = isSurchargeSize(selectedSize) ? SIZE_SURCHARGE_AMOUNT : 0;
+  
+  // Use product variants to check stock
+  const effectiveSize = selectedSize || (hasSizes ? '' : 'ALL');
+  const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
+  const selectedVariant = safeVariants.find((v: any) => 
+    (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
+    (!selectedColor ? !v?.color : v?.color?.toUpperCase() === selectedColor?.toUpperCase())
+  );
+  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : 0;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: '100%' }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: '100%' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[100] bg-cr flex flex-col lg:flex-row overflow-hidden"
+        >
+          {/* Close Button - Global */}
+          <button
+            onClick={onClose}
+            className="absolute top-6 right-6 z-[110] w-12 h-12 bg-white flex items-center justify-center rounded-full shadow-lg border border-ink/5 hover:bg-rose hover:text-white transition-colors"
+          >
+            <X strokeWidth={1.5} size={24} />
+          </button>
+
+          {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
+          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col p-10 overflow-y-auto no-scrollbar">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-8"
+            >
+              <div>
+                <div className="text-[10px] uppercase tracking-widest text-ink/40 mb-2">
+                  {product.category || 'Apparel'} / {product.sub_category || 'Tee'}
+                </div>
+                <h1 className="text-2xl font-display font-medium uppercase italic tracking-tighter leading-none mb-2">
+                  {product.name}
+                </h1>
+                <p className="text-sm font-medium italic text-ink/60">
+                  IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                </p>
+              </div>
+
+              {localizedDescription && (
+                <div className="prose prose-sm prose-p:text-ink/60 prose-p:leading-relaxed prose-headings:font-display">
+                  <div dangerouslySetInnerHTML={{ __html: localizedDescription }} />
+                </div>
+              )}
+
+              {displaySpecs.length > 0 && (
+                <div className="space-y-3 pt-6 border-t border-ink/5">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Specifications</h3>
+                  <div className="grid grid-cols-1 gap-y-2">
+                    {displaySpecs.map((spec, idx) => (
+                      <div key={idx} className="flex flex-col">
+                        <span className="text-[9px] uppercase tracking-widest text-ink/40">{spec.label}</span>
+                        <span className="text-xs font-medium">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
+          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (2/4 Width on Desktop, full width on mobile) */}
+          <div className="flex-1 h-full bg-ink/5 relative flex items-center justify-center overflow-hidden">
+             {/* Mobile Header Overlay */}
+             <div className="lg:hidden absolute top-6 left-6 z-[110]">
+               <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
+                 {product.name}
+               </h1>
+             </div>
+
+             <DragSlider className="w-full h-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
+               {images.map((img, idx) => (
+                 <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-4 lg:p-12">
+                   <div className="relative w-full h-full max-w-4xl mx-auto">
+                     <SafeImage
+                       src={img}
+                       alt={`${product.name} view ${idx + 1}`}
+                       fill
+                       className="object-contain drop-shadow-2xl"
+                       priority={idx === 0}
+                       quality={100}
+                     />
+                   </div>
+                 </div>
+               ))}
+             </DragSlider>
+             
+             {/* Drag indicator */}
+             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full pointer-events-none opacity-50">
+               <ChevronLeft size={14} />
+               <span className="text-[10px] uppercase tracking-widest font-bold">Swipe to view</span>
+               <ChevronRight size={14} />
+             </div>
+          </div>
+
+          {/* RIGHT COLUMN: ACTION PANEL (1/4 Width on Desktop) */}
+          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white lg:border-l border-ink/5 flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="w-full max-w-sm mx-auto space-y-8"
+            >
+              {/* SIZE SELECTION */}
+              {hasSizes && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Select Size</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {availableSizes.map(size => {
+                      const isSelected = selectedSize === size;
+                      const sizeVariant = safeVariants.find((v: any) => 
+                        v?.size?.toUpperCase() === size?.toUpperCase() && 
+                        (!selectedColor ? true : v?.color?.toUpperCase() === selectedColor?.toUpperCase())
+                      );
+                      const isOutOfStock = sizeVariant && typeof sizeVariant.stock_quantity === 'number' && sizeVariant.stock_quantity === 0;
+
+                      return (
+                        <button
+                          key={size}
+                          onClick={() => !isOutOfStock && setSelectedSize(size)}
+                          disabled={isOutOfStock}
+                          className={cn(
+                            "py-3 text-xs font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
+                            isSelected 
+                              ? "bg-ink text-white" 
+                              : "bg-ink/5 text-ink hover:bg-ink/10",
+                            isOutOfStock && "opacity-30 cursor-not-allowed"
+                          )}
+                        >
+                          {size}
+                          {isOutOfStock && (
+                            <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                              <div className="w-full h-px bg-current rotate-45 transform origin-center" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* COLOR SELECTION */}
+              {availableColors.length > 0 && (
+                <div className="space-y-4">
+                  <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Select Color</span>
+                  <div className="flex flex-wrap gap-2">
+                    {availableColors.map(color => {
+                      const isSelected = selectedColor === color;
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={cn(
+                            "px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300",
+                            isSelected 
+                              ? "bg-ink text-white" 
+                              : "bg-ink/5 text-ink hover:bg-ink/10"
+                          )}
+                        >
+                          {color}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* QUANTITY & STOCK */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Quantity</span>
+                  <span className={cn(
+                    "text-[10px] uppercase tracking-widest font-bold",
+                    availableStock > 0 ? "text-emerald-500" : "text-rose"
+                  )}>
+                    {availableStock > 0 ? `${availableStock} Available` : 'Out of Stock'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="flex items-center bg-ink/5">
+                    <button 
+                      onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                      disabled={quantity <= 1 || availableStock === 0}
+                      className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="w-12 text-center text-sm font-bold">{quantity}</span>
+                    <button 
+                      onClick={() => quantity < availableStock && setQuantity(quantity + 1)}
+                      disabled={quantity >= availableStock || availableStock === 0}
+                      className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ADD TO CART */}
+              <button
+                onClick={handleAddToCart}
+                disabled={availableStock === 0 || (hasSizes && !selectedSize)}
+                className={cn(
+                  "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
+                  availableStock === 0 || (hasSizes && !selectedSize)
+                    ? "bg-ink/10 text-ink/40 cursor-not-allowed"
+                    : "bg-ink text-white hover:bg-rose"
+                )}
+              >
+                {availableStock === 0 
+                  ? 'Out of Stock' 
+                  : (hasSizes && !selectedSize) 
+                    ? 'Select Size' 
+                    : 'Add to Cart'
+                }
+              </button>
+
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

@@ -224,10 +224,10 @@ function ProductCard({ product }: { product: Product }) {
 
   const getDisplayViews = (prod: Product) => {
     if (allViews) {
-      const realViews = Object.entries(allViews).find(([key]) => key.includes(prod.slug))?.[1];
+      const realViews = allViews[prod.slug];
       if (realViews && realViews > 0) return realViews;
     }
-    return getProductViews(prod);
+    return 0;
   };
 
   return (

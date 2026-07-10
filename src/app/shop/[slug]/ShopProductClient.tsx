@@ -17,6 +17,7 @@ import type { Dictionary } from '@/lib/i18n';
 import { ProductReviewsDrawer } from '@/components/shop/ProductReviewsDrawer';
 import { useProductSelection } from '@/hooks/shop/useProductSelection';
 import ProductGallery from '@/components/shop/ProductGallery';
+import ImmersiveProductView from '@/components/shop/ImmersiveProductView';
 import { CartSidebar } from '../_components/CartSidebar';
 import { RelatedProductsList } from '../_components/RelatedProductsList';
 
@@ -107,6 +108,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>('specs');
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
+  const [isImmersiveOpen, setIsImmersiveOpen] = useState(false);
 
   const { isMobile, isIPhone } = useDevice();
   const [isWidescreen, setIsWidescreen] = useState(false);
@@ -268,6 +270,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             imageVariants={imageVariants}
             textVariants={textVariants}
             photoRef={photoRef}
+            onExpand={() => setIsImmersiveOpen(true)}
           />
 
           {/* Combined Product Info & Options Column */}
@@ -564,6 +567,25 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         reviews={reviews}
         productName={product.name}
         productId={product.id}
+      />
+
+      <ImmersiveProductView
+        isOpen={isImmersiveOpen}
+        onClose={() => setIsImmersiveOpen(false)}
+        product={product}
+        images={images}
+        selectedSize={selectedSize}
+        setSelectedSize={setSelectedSize}
+        selectedColor={selectedColor}
+        setSelectedColor={setSelectedColor}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        hasSizes={hasSizes}
+        availableSizes={availableSizes}
+        availableColors={availableColors}
+        handleAddToCart={handleAddToCart}
+        localizedDescription={localizedDescription}
+        displaySpecs={displaySpecs}
       />
     </main>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Eye, Maximize2 } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/shop';
@@ -19,6 +19,7 @@ interface ProductGalleryProps {
   imageVariants: any;
   textVariants: any;
   photoRef?: React.RefObject<HTMLDivElement | null>;
+  onExpand?: () => void;
 }
 
 export default function ProductGallery({
@@ -32,7 +33,8 @@ export default function ProductGallery({
   columnVariants,
   imageVariants,
   textVariants,
-  photoRef
+  photoRef,
+  onExpand
 }: ProductGalleryProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const { views: activeViewers } = useProductViews(product.slug);
@@ -103,7 +105,7 @@ export default function ProductGallery({
           })}
         </div>
 
-        <motion.div ref={photoRef} variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center">
+        <motion.div ref={photoRef} variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group">
           <motion.div 
             initial={{ scale: 1.1, filter: 'blur(10px)' }}
             animate={{ scale: 1, filter: 'blur(0px)' }}
@@ -116,6 +118,18 @@ export default function ProductGallery({
               priority
             />
           </motion.div>
+          {onExpand && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onExpand();
+              }}
+              className="absolute top-4 left-4 z-10 w-10 h-10 bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-ink/10 hover:bg-ink hover:text-white"
+              title="Immersive View"
+            >
+              <Maximize2 size={18} strokeWidth={1.5} />
+            </button>
+          )}
         </motion.div>
 
         {images.length > 1 && (
