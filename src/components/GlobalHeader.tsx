@@ -180,30 +180,11 @@ function CartItem({
             }}
           />
         )}
-        {/* Remove button overlay */}
-        <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0, pointerEvents: isHovered ? 'auto' : 'none' }}
-          transition={{ duration: DURATION.fast }}
-          className="absolute inset-0 bg-ink/20 flex items-center justify-center"
-        >
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="w-8 h-8 bg-rose flex items-center justify-center"
-          >
-            <Trash2 size={14} className="text-white" />
-          </motion.div>
-        </motion.button>
       </motion.div>
 
       <div className="flex-1 flex flex-col justify-between py-0.5">
         <div className="space-y-1">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-start gap-2">
             <motion.h3
               className="text-xs font-display font-medium italic uppercase tracking-tight"
               animate={isHovered ? brandColor : darkColor}
@@ -211,6 +192,16 @@ function CartItem({
             >
               {item.name}
             </motion.h3>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+              className="text-ink/40 hover:text-rose p-1 -mt-1 -mr-1 transition-colors flex-shrink-0"
+              title="Remove item"
+            >
+              <Trash2 size={14} />
+            </button>
           </div>
           <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/50 italic">Ref: #{item.id.slice(0, 8)}</p>
         </div>
