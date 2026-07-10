@@ -99,6 +99,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     verification: {
       google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
+      other: {
+        'facebook-domain-verification': 'mdawcs7lu6md33d800mlxjv6t62aq0',
+      },
     },
   };
 }
@@ -130,7 +133,6 @@ export default async function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#111111" />
-        <meta name="facebook-domain-verification" content="mdawcs7lu6md33d800mlxjv6t62aq0" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- loaded via <link> for Turbopack compatibility, next/font/google causes build issues */}
