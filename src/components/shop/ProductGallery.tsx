@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star, Eye, Maximize2 } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,24 @@ export default function ProductGallery({
     if (distance > 40) setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
     if (distance < -40) setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
     setTouchStart(null);
+  };
+
+  const [isHovering, setIsHovering] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+  
+  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (photoRef.current) {
+      const rect = photoRef.current.getBoundingClientRect();
+      mouseX.set(e.clientX - rect.left);
+      mouseY.set(e.clientY - rect.top);
+    }
   };
 
   return (
@@ -108,11 +126,17 @@ export default function ProductGallery({
         <motion.div 
           ref={photoRef} 
           variants={imageVariants} 
-          className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-grab active:cursor-grabbing"
+          className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-none"
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => { setIsHovering(false); setIsDragging(false); }}
+          onMouseDown={() => setIsDragging(true)}
+          onMouseUp={() => setIsDragging(false)}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
           onDragEnd={(e, { offset }) => {
+            setIsDragging(false);
             const swipe = offset.x;
             if (swipe < -50) {
               setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
@@ -132,6 +156,28 @@ export default function ProductGallery({
               alt={product.image_alt || product.name}
               priority
             />
+          </motion.div>
+          
+          {/* Custom Glassmorphism Cursor */}
+          <motion.div
+            className="pointer-events-none absolute z-50 flex items-center justify-center rounded-full bg-white/30 backdrop-blur-md border border-white/50 shadow-xl text-ink font-display"
+            style={{
+              x: cursorX,
+              y: cursorY,
+              translateX: '-50%',
+              translateY: '-50%',
+            }}
+            animate={{
+              width: isDragging ? 56 : 72,
+              height: isDragging ? 56 : 72,
+              opacity: isHovering ? 1 : 0,
+              scale: isHovering ? 1 : 0.8
+            }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <span className="text-[9px] font-bold tracking-widest uppercase select-none mix-blend-difference text-white">
+              {isDragging ? 'Drag' : 'Swipe'}
+            </span>
           </motion.div>
           {onExpand && (
             <button
