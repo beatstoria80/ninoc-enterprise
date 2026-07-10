@@ -61,12 +61,27 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     
     const fetchRelated = async () => {
       try {
-        const { data: related } = await supabase
+        let { data: related } = await supabase
           .from('products')
           .select('*')
           .eq('category', product.category)
           .neq('id', product.id)
-          .limit(4);
+          .limit(14);
+
+        if (!related || related.length < 10) {
+          const { data: allOther } = await supabase
+            .from('products')
+            .select('*')
+            .neq('id', product.id)
+            .limit(16);
+
+          if (allOther) {
+            const existingIds = new Set((related || []).map(p => p.id));
+            const extra = allOther.filter(p => !existingIds.has(p.id));
+            related = [...(related || []), ...extra].slice(0, 14);
+          }
+        }
+
         setRelatedProducts(related || []);
       } catch (e) {
         console.error('Failed to fetch related', e);

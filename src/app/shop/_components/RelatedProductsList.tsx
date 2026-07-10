@@ -32,12 +32,12 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
           <motion.div
             variants={textVariants}
             key={p.id}
-            className="flex-shrink-0 w-[110px] md:w-[130px]"
+            className="flex-shrink-0 w-[120px] md:w-[145px] lg:w-[160px]"
           >
             <Link href={`/shop/${p.slug}`} className="group block space-y-1">
               <div className="aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-sm group-hover:shadow-lg transition-all duration-500 relative">
                 <div className="absolute inset-3">
-                  <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="130px" />
+                  <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 768px) 120px, 160px" />
                 </div>
                 <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               </div>
