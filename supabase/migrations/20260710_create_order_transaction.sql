@@ -74,6 +74,24 @@ BEGIN
             UPDATE public.variants
             SET stock_quantity = v_new_stock, updated_at = NOW()
             WHERE id = (v_item->>'variant_id')::UUID;
+            
+        -- Fallback: If no variant_id is provided, try to match by size
+        ELSIF v_item->>'size' IS NOT NULL AND v_item->>'size' != '' THEN
+            SELECT id, stock_quantity INTO v_variant
+            FROM public.variants
+            WHERE product_id = (v_item->>'product_id')::TEXT AND size = v_item->>'size'
+            FOR UPDATE;
+
+            IF v_variant IS NOT NULL THEN
+                v_new_stock := v_variant.stock_quantity - (v_item->>'quantity')::INT;
+                IF v_new_stock < 0 THEN
+                    RAISE EXCEPTION 'Out of stock for product % size %', v_item->>'product_id', v_item->>'size';
+                END IF;
+
+                UPDATE public.variants
+                SET stock_quantity = v_new_stock, updated_at = NOW()
+                WHERE id = v_variant.id;
+            END IF;
         END IF;
     END LOOP;
 
