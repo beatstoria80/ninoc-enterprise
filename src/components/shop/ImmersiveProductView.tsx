@@ -52,6 +52,7 @@ export default function ImmersiveProductView({
   localizedDescription,
   displaySpecs = []
 }: ImmersiveProductViewProps) {
+  const [activeImage, setActiveImage] = React.useState(0);
   
   // Close on Escape key
   useEffect(() => {
@@ -143,20 +144,38 @@ export default function ImmersiveProductView({
                </h1>
              </div>
 
-             <DragSlider direction="vertical" className="w-full h-full flex flex-col overflow-y-auto snap-y snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
-               {images.map((img, idx) => (
-                 <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-4 lg:p-12">
+             <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+               <AnimatePresence mode="wait" initial={false}>
+                 <motion.div
+                   key={activeImage}
+                   initial={{ opacity: 0, y: 100 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   exit={{ opacity: 0, y: -100 }}
+                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                   drag="y"
+                   dragConstraints={{ top: 0, bottom: 0 }}
+                   dragElastic={0.2}
+                   onDragEnd={(e, { offset }) => {
+                     const swipe = offset.y;
+                     if (swipe < -50 && activeImage < images.length - 1) {
+                       setActiveImage(prev => prev + 1);
+                     } else if (swipe > 50 && activeImage > 0) {
+                       setActiveImage(prev => prev - 1);
+                     }
+                   }}
+                   className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
+                 >
                    <div className="relative w-full h-full max-w-4xl mx-auto">
                      <SafeImage
-                       src={img}
-                       alt={`${product.name} view ${idx + 1}`}
+                       src={images[activeImage]}
+                       alt={`${product.name} view ${activeImage + 1}`}
                        className="object-contain drop-shadow-2xl"
-                       priority={idx === 0}
+                       priority={activeImage === 0}
                      />
                    </div>
-                 </div>
-               ))}
-             </DragSlider>
+                 </motion.div>
+               </AnimatePresence>
+             </div>
              
              {/* Drag indicator */}
              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 py-4 px-2 bg-white/80 backdrop-blur-sm rounded-full pointer-events-none opacity-50">
