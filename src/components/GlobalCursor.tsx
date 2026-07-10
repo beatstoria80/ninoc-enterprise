@@ -66,9 +66,9 @@ export default function GlobalCursor() {
 
   return (
     <motion.div
-      className={`pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full transition-colors duration-300 ${
+      className={`pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full transition-all duration-300 ${
         isHovering
-          ? 'bg-white/10 backdrop-blur-sm backdrop-saturate-150 backdrop-contrast-125 border border-white/20 shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] shadow-lg'
+          ? 'bg-white/20 backdrop-blur-md mix-blend-difference border border-white/30 shadow-[inset_0_0_20px_rgba(255,255,255,0.5)] shadow-2xl'
           : 'bg-white/80 backdrop-blur-sm mix-blend-difference'
       }`}
       style={{
