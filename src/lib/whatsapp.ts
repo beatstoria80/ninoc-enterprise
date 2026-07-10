@@ -109,7 +109,7 @@ export async function sendTemplateMessage(
 ): Promise<WASendResult> {
   if (!to) return { success: false, error: 'Missing recipient phone' };
 
-  return callWhatsAppAPI({
+  const firstAttempt = await callWhatsAppAPI({
     messaging_product: 'whatsapp',
     to,
     recipient_type: 'individual',
@@ -120,6 +120,23 @@ export async function sendTemplateMessage(
       components,
     },
   });
+
+  // If template expects 0 parameters (e.g. static template), automatically retry without components
+  if (!firstAttempt.success && firstAttempt.error_code === '132000' && components.length > 0) {
+    console.warn(`[WhatsApp] Template ${templateName} parameter mismatch (132000). Retrying without components...`);
+    return callWhatsAppAPI({
+      messaging_product: 'whatsapp',
+      to,
+      recipient_type: 'individual',
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: 'id' },
+      },
+    });
+  }
+
+  return firstAttempt;
 }
 
 // ─── Public Message Functions ──────────────────────────────────────────────────
