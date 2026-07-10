@@ -107,7 +107,7 @@ export default function ImmersiveProductView({
           </button>
 
           {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
-          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col p-8 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col justify-center p-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -136,7 +136,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (2/4 Width on Desktop, full width on mobile) */}
-          <div className="flex-1 h-full bg-ink/5 relative flex items-center justify-center overflow-hidden">
+          <div className="flex-1 h-full bg-white relative flex items-center justify-center overflow-hidden">
              {/* Mobile Header Overlay */}
              <div className="lg:hidden absolute top-6 left-6 z-[110]">
                <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
@@ -145,43 +145,44 @@ export default function ImmersiveProductView({
              </div>
 
              <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
-               <AnimatePresence mode="wait" initial={false}>
-                 <motion.div
-                   key={activeImage}
-                   initial={{ opacity: 0, y: 100 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   exit={{ opacity: 0, y: -100 }}
-                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                   drag="y"
-                   dragConstraints={{ top: 0, bottom: 0 }}
-                   dragElastic={0.2}
-                   onDragEnd={(e, { offset }) => {
-                     const swipe = offset.y;
-                     if (swipe < -50 && activeImage < images.length - 1) {
-                       setActiveImage(prev => prev + 1);
-                     } else if (swipe > 50 && activeImage > 0) {
-                       setActiveImage(prev => prev - 1);
-                     }
-                   }}
-                   className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
-                 >
-                   <div className="relative w-full h-full max-w-4xl mx-auto">
-                     <SafeImage
-                       src={images[activeImage]}
-                       alt={`${product.name} view ${activeImage + 1}`}
-                       className="object-contain drop-shadow-2xl"
-                       priority={activeImage === 0}
-                     />
-                   </div>
-                 </motion.div>
-               </AnimatePresence>
-             </div>
-             
-             {/* Drag indicator */}
-             <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 py-4 px-2 bg-white/80 backdrop-blur-sm rounded-full pointer-events-none opacity-50">
-               <ChevronUp size={14} />
-               <span className="text-[9px] uppercase tracking-widest font-bold rotate-90 my-6">Swipe</span>
-               <ChevronDown size={14} />
+               {images.map((img, idx) => {
+                 const offset = idx - activeImage;
+                 const yOffset = offset * 250;
+                 const scale = offset === 0 ? 1 : 0.85;
+                 const opacity = offset === 0 ? 1 : 0.3;
+                 const zIndex = 10 - Math.abs(offset);
+
+                 return (
+                   <motion.div
+                     key={idx}
+                     animate={{ y: yOffset, scale, opacity, zIndex }}
+                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                     drag={offset === 0 ? "y" : false}
+                     dragConstraints={{ top: 0, bottom: 0 }}
+                     dragElastic={0.2}
+                     onDragEnd={(e, { offset: dragOffset }) => {
+                       if (offset !== 0) return;
+                       const swipe = dragOffset.y;
+                       if (swipe < -50 && activeImage < images.length - 1) {
+                         setActiveImage(prev => prev + 1);
+                       } else if (swipe > 50 && activeImage > 0) {
+                         setActiveImage(prev => prev - 1);
+                       }
+                     }}
+                     className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
+                     style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
+                   >
+                     <div className="relative w-full h-full max-w-4xl mx-auto">
+                       <SafeImage
+                         src={img}
+                         alt={`${product.name} view ${idx + 1}`}
+                         className="object-contain drop-shadow-2xl"
+                         priority={idx === 0}
+                       />
+                     </div>
+                   </motion.div>
+                 );
+               })}
              </div>
           </div>
 
@@ -191,7 +192,7 @@ export default function ImmersiveProductView({
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="w-full max-w-sm mx-auto space-y-8"
+              className="w-full max-w-sm mx-auto space-y-4"
             >
               {/* SIZE SELECTION */}
               {hasSizes && (
