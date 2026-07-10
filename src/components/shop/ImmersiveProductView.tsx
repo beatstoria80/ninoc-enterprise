@@ -115,7 +115,7 @@ export default function ImmersiveProductView({
             >
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-ink/40 mb-2">
-                  {product.category || 'Apparel'} / {product.sub_category || 'Tee'}
+                  {product.category || 'Apparel'}
                 </div>
                 <h1 className="text-2xl font-display font-medium uppercase italic tracking-tighter leading-none mb-2">
                   {product.name}
