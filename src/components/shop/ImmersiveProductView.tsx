@@ -306,20 +306,30 @@ export default function ImmersiveProductView({
                   </div>
 
                   {/* CART INDICATOR */}
-                  <div className="flex items-center justify-center w-[46px] h-[46px] border border-ink/10 relative shrink-0" title="Items in Cart">
+                  <button 
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new CustomEvent('open-cart'));
+                    }}
+                    className="flex items-center justify-center w-[46px] h-[46px] border border-ink/10 relative shrink-0 hover:bg-ink/5 transition-colors" 
+                    title="View Cart"
+                  >
                     <ShoppingBag size={16} className="text-ink/80" strokeWidth={1.5} />
                     {cartTotalItems > 0 && (
                       <span className="absolute top-2.5 right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
                         {cartTotalItems}
                       </span>
                     )}
-                  </div>
+                  </button>
                 </div>
               </div>
 
               {/* ADD TO CART */}
               <button
-                onClick={handleAddToCart}
+                onClick={() => {
+                  handleAddToCart();
+                  onClose();
+                }}
                 disabled={availableStock === 0 || (hasSizes && !selectedSize)}
                 className={cn(
                   "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
