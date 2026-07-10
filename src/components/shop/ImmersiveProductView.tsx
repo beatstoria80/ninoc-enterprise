@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Minus, Plus } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Minus, Plus, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
 import DragSlider from '@/components/DragSlider';
@@ -54,6 +54,10 @@ export default function ImmersiveProductView({
 }: ImmersiveProductViewProps) {
   const [activeImage, setActiveImage] = React.useState(0);
   
+  // Get cart items to show global checkout quantity
+  const items = useCart(state => state.items);
+  const cartTotalItems = items.reduce((total, item) => total + item.quantity, 0);
+
   // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
@@ -248,7 +252,13 @@ export default function ImmersiveProductView({
                       return (
                         <button
                           key={color}
-                          onClick={() => setSelectedColor(color)}
+                          onClick={() => {
+                            setSelectedColor(color);
+                            const colorIndex = availableColors.indexOf(color);
+                            if (colorIndex !== -1 && colorIndex < images.length) {
+                              setActiveImage(colorIndex);
+                            }
+                          }}
                           className={cn(
                             "px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",
                             isSelected 
@@ -276,7 +286,7 @@ export default function ImmersiveProductView({
                   </span>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="flex items-center gap-3">
                   <div className="flex items-center bg-ink/5">
                     <button 
                       onClick={() => quantity > 1 && setQuantity(quantity - 1)}
@@ -293,6 +303,16 @@ export default function ImmersiveProductView({
                     >
                       <Plus size={14} />
                     </button>
+                  </div>
+
+                  {/* CART INDICATOR */}
+                  <div className="flex items-center justify-center w-[46px] h-[46px] border border-ink/10 relative shrink-0" title="Items in Cart">
+                    <ShoppingBag size={16} className="text-ink/80" strokeWidth={1.5} />
+                    {cartTotalItems > 0 && (
+                      <span className="absolute top-2.5 right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
+                        {cartTotalItems}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
