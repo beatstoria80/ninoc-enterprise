@@ -86,7 +86,9 @@ export default function ImmersiveProductView({
     (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
     (!selectedColor ? !v?.color : v?.color?.toUpperCase() === selectedColor?.toUpperCase())
   );
-  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : 0;
+  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' 
+    ? selectedVariant.stock_quantity 
+    : (typeof product.stock_quantity === 'number' ? product.stock_quantity : 999);
 
   return (
     <AnimatePresence>
@@ -106,40 +108,13 @@ export default function ImmersiveProductView({
             <X strokeWidth={1.5} size={24} />
           </button>
 
-          {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
-          <div className="hidden lg:flex w-1/4 h-full bg-white border-r border-ink/5 flex-col justify-center p-8 overflow-y-auto no-scrollbar">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-6"
-            >
-              <div>
-                <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
-                  {product.category || 'Apparel'}
-                </div>
-                <h1 className="text-xl font-display font-medium uppercase italic tracking-tighter leading-none mb-1.5">
-                  {product.name}
-                </h1>
-                <p className="text-xs font-medium italic text-ink/60">
-                  IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
-                </p>
-              </div>
+          {/* The Left Column (Title/Desc) has been moved to the Right Action Panel for a more unified, minimal layout */}
 
-              {localizedDescription && (
-                <div 
-                  className="text-[11px] leading-relaxed text-ink/70"
-                  dangerouslySetInnerHTML={{ __html: localizedDescription }} 
-                />
-              )}
-            </motion.div>
-          </div>
-
-          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (2/4 Width on Desktop, full width on mobile) */}
+          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Main Focus) */}
           <div className="flex-1 h-full bg-white relative flex items-center justify-center overflow-hidden">
              {/* Mobile Header Overlay */}
              <div className="lg:hidden absolute top-6 left-6 z-[110]">
-               <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
+               <h1 className="text-base font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
                  {product.name}
                </h1>
              </div>
@@ -186,14 +161,38 @@ export default function ImmersiveProductView({
              </div>
           </div>
 
-          {/* RIGHT COLUMN: ACTION PANEL (1/4 Width on Desktop) */}
-          <div className="w-full lg:w-1/4 h-auto lg:h-full bg-white lg:border-l border-ink/5 flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0">
+          {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
+          <div className="w-full lg:w-[400px] h-auto lg:h-full bg-white flex flex-col p-6 lg:p-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="w-full max-w-sm mx-auto space-y-4"
+              className="w-full max-w-sm mx-auto space-y-6"
             >
+              {/* TITLE & PRICE (Moved from left) */}
+              <div className="hidden lg:block space-y-4">
+                <div>
+                  <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
+                    {product.category || 'Apparel'}
+                  </div>
+                  <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter leading-tight mb-1.5">
+                    {product.name}
+                  </h1>
+                  <p className="text-xs font-medium italic text-ink/60">
+                    IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                  </p>
+                </div>
+                {localizedDescription && (
+                  <div 
+                    className="text-[11px] leading-relaxed text-ink/70"
+                    dangerouslySetInnerHTML={{ __html: localizedDescription }} 
+                  />
+                )}
+              </div>
+
+              {/* DIVIDER */}
+              <div className="hidden lg:block w-full h-px bg-ink/5" />
+
               {/* SIZE SELECTION */}
               {hasSizes && (
                 <div className="space-y-4">
@@ -269,7 +268,7 @@ export default function ImmersiveProductView({
                     "text-[10px] uppercase tracking-widest font-bold",
                     availableStock > 0 ? "text-emerald-500" : "text-rose"
                   )}>
-                    {availableStock > 0 ? `${availableStock} Available` : 'Out of Stock'}
+                    {availableStock === 999 ? 'In Stock' : availableStock > 0 ? `${availableStock} Available` : 'Out of Stock'}
                   </span>
                 </div>
                 
