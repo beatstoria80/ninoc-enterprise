@@ -105,12 +105,27 @@ export default function ProductGallery({
           })}
         </div>
 
-        <motion.div ref={photoRef} variants={imageVariants} className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group">
+        <motion.div 
+          ref={photoRef} 
+          variants={imageVariants} 
+          className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-grab active:cursor-grabbing"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(e, { offset }) => {
+            const swipe = offset.x;
+            if (swipe < -50) {
+              setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+            } else if (swipe > 50) {
+              setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+            }
+          }}
+        >
           <motion.div 
             initial={{ scale: 1.1, filter: 'blur(10px)' }}
             animate={{ scale: 1, filter: 'blur(0px)' }}
             transition={{ duration: 3, ease: [0.23, 1, 0.32, 1], delay: 0.5 }}
-            className="w-full h-full relative"
+            className="w-full h-full relative pointer-events-none"
           >
             <SafeImage
               src={images[activeImageIndex]}
@@ -124,36 +139,15 @@ export default function ProductGallery({
                 e.stopPropagation();
                 onExpand();
               }}
-              className="absolute top-4 left-4 z-10 w-10 h-10 bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-ink/10 hover:bg-ink hover:text-white"
+              className="absolute top-4 left-4 z-10 w-8 h-8 bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-100 transition-opacity border border-ink/10 hover:bg-ink hover:text-white"
               title="Immersive View"
             >
-              <Maximize2 size={18} strokeWidth={1.5} />
+              <Maximize2 size={14} strokeWidth={1.5} />
             </button>
           )}
         </motion.div>
 
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-              }}
-              className="absolute left-0 lg:-left-6 top-1/2 -translate-y-1/2 text-ink/50 hover:text-rose transition-colors z-10"
-            >
-              <ChevronLeft size={24} strokeWidth={2} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-              }}
-              className="absolute right-0 lg:-right-6 top-1/2 -translate-y-1/2 text-ink/50 hover:text-rose transition-colors z-10"
-            >
-              <ChevronRight size={24} strokeWidth={2} />
-            </button>
-          </>
-        )}
+
 
         {/* Realtime views & Review Badge below Main Photo */}
         <div className="w-full relative mt-3 lg:mt-4 h-[26px]">
