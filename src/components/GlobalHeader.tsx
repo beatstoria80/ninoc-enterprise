@@ -671,11 +671,11 @@ export default function GlobalHeader() {
                   <AnimatePresence mode="popLayout">
                     {items.map((item, index) => (
                       <CartItem
-                        key={`${item.id}-${item.size}`}
+                        key={`${item.id}-${item.size}-${item.color}`}
                         item={item}
                         index={index}
-                        onRemove={() => removeItem(item.id, item.size)}
-                        onQuantityChange={(delta) => updateQuantity(item.id, item.quantity + delta, item.size)}
+                        onRemove={() => removeItem(item.id, item.size, item.color)}
+                        onQuantityChange={(delta) => updateQuantity(item.id, item.quantity + delta, item.size, item.color)}
                         onImageClick={() => item.image_url && setFullscreenImage(item.image_url)}
                       />
                     ))}
