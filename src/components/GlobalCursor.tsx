@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { motion, useMotionValue } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function GlobalCursor() {
   const [isHovering, setIsHovering] = useState(false);
@@ -9,6 +9,11 @@ export default function GlobalCursor() {
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
+
+  // Ultra-snappy spring to prevent stuttering during main-thread drops
+  const springConfig = { damping: 40, stiffness: 1000, mass: 0.1 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     // Only run on desktop/devices with a precise mouse
@@ -68,11 +73,10 @@ export default function GlobalCursor() {
           : 'bg-ink/90 shadow-sm'
       }`}
       style={{
-        x: mouseX,
-        y: mouseY,
+        x: cursorX,
+        y: cursorY,
         translateX: '-50%',
         translateY: '-50%',
-        willChange: 'transform, width, height'
       }}
       animate={{
         width: isHovering ? 48 : 12,
