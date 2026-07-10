@@ -232,7 +232,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
 
                           <div className="flex items-center justify-between pt-1.5 border-t border-ink/5">
                             <div className="flex items-center gap-1 text-ink/70" title="Google Analytics Realtime SKU Viewers">
-                              <Eye className="w-2.5 h-2.5 text-rose animate-pulse shrink-0" />
+                              <Eye className="w-2.5 h-2.5 text-rose shrink-0" />
                               <span className="text-[7px] font-mono font-semibold uppercase tracking-wider">
                                 {getDisplayViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
                               </span>
@@ -371,7 +371,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
 
                         <div className="flex items-center justify-between pt-2 border-t border-ink/5">
                           <div className="flex items-center gap-1.5 text-ink/70 group-hover/card:text-rose transition-colors" title="Google Analytics Realtime SKU Viewers">
-                            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-rose animate-pulse shrink-0" />
+                            <Eye className="w-3 h-3 md:w-3.5 md:h-3.5 text-rose shrink-0" />
                             <span className="text-[10px] md:text-[8px] font-mono font-semibold uppercase tracking-wider">
                               {getDisplayViews(product)} {isId ? 'DILIHAT' : 'VIEWS'}
                             </span>

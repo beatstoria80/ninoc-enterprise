@@ -80,12 +80,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // If GA4 returns 0 (due to propagation delay or low sample), use live dynamic fallback
-    if (activeUsers === 0 && slug) {
-      activeUsers = getDynamicLiveViewers(slug);
-    }
-
-    return NextResponse.json({ views: activeUsers, source: activeUsers > 0 ? 'ga4' : 'fallback' });
+    return NextResponse.json({ views: activeUsers, source: 'ga4' });
   } catch (error) {
     console.error('Failed to fetch GA views:', error);
     const fallbackViews = slug ? getDynamicLiveViewers(slug) : 5;
