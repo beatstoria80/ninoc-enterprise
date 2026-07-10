@@ -16,9 +16,10 @@ function getDynamicLiveViewers(slug: string): number {
 }
 
 export async function GET(request: Request) {
+  let slug: string | null = null;
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get('slug');
+    slug = searchParams.get('slug');
     const all = searchParams.get('all') === 'true';
 
     if (!slug && !all) {
@@ -87,7 +88,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ views: activeUsers, source: activeUsers > 0 ? 'ga4' : 'fallback' });
   } catch (error) {
     console.error('Failed to fetch GA views:', error);
-    const fallbackViews = searchParams.get('slug') ? getDynamicLiveViewers(searchParams.get('slug')!) : 5;
+    const fallbackViews = slug ? getDynamicLiveViewers(slug) : 5;
     return NextResponse.json({ views: fallbackViews, source: 'fallback' });
   }
 }
