@@ -59,7 +59,7 @@ export default function ProductGallery({
   const cursorY = useSpring(mouseY, springConfig);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (photoRef.current) {
+    if (photoRef && photoRef.current) {
       const rect = photoRef.current.getBoundingClientRect();
       mouseX.set(e.clientX - rect.left);
       mouseY.set(e.clientY - rect.top);
