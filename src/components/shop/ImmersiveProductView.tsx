@@ -88,7 +88,7 @@ export default function ImmersiveProductView({
   );
   const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' 
     ? selectedVariant.stock_quantity 
-    : (typeof product.stock_quantity === 'number' ? product.stock_quantity : 999);
+    : (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : 999);
 
   return (
     <AnimatePresence>
