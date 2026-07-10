@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, Variants, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ShieldCheck, Paperclip, ChevronRight, ChevronDown, Grid3X3, ArrowRight, ShoppingCart } from 'lucide-react';
+import { ShieldCheck, Paperclip, ChevronRight, ChevronDown, Grid3X3, ArrowRight, ShoppingBag } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { useCart } from '@/store/useCart';
 import Image from 'next/image';
@@ -414,7 +414,7 @@ function ProductCard({ product, index }: ProductCardProps) {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <ShoppingCart className="w-4 h-4" />
+                  <ShoppingBag className="w-4 h-4" />
                 </motion.div>
                 <motion.div
                   role="button"

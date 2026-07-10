@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowLeft, Package, Calendar, ShoppingCart, Eye } from 'lucide-react';
+import { ArrowLeft, Package, Calendar, ShoppingBag, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { getProductStock, getProductViews } from '@/lib/utils';
@@ -131,7 +131,7 @@ function ProductCard({ product }: { product: Product }) {
                   }}
                   className="w-8 h-8 md:w-8 md:h-8 lg:w-6 lg:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
                 >
-                  <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 lg:w-3.5 lg:h-3.5 pointer-events-none" />
+                  <ShoppingBag className="w-4 h-4 md:w-4 md:h-4 lg:w-3.5 lg:h-3.5 pointer-events-none" />
                 </div>
               </div>
 

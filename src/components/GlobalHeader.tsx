@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingCart, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut, Bell } from 'lucide-react';
+import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut, Bell } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -583,7 +583,7 @@ export default function GlobalHeader() {
             <PressScale onClick={() => setIsCartOpen(true)} className="group p-2 -m-2 flex items-center justify-center">
               <div className="relative flex items-center justify-center">
                 <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
-                  <ShoppingCart size={18} strokeWidth={1.5} />
+                  <ShoppingBag size={18} strokeWidth={1.5} />
                 </div>
                 <AnimatePresence>
                   {items.length > 0 && (
@@ -683,7 +683,7 @@ export default function GlobalHeader() {
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-auto py-12">
                     <div className="text-ink/20">
-                      <ShoppingCart size={48} strokeWidth={1.5} />
+                      <ShoppingBag size={48} strokeWidth={1.5} />
                     </div>
                     <div className="space-y-1">
                       <p className="text-[11px] font-medium uppercase tracking-[0.4em]">Empty Selection</p>
