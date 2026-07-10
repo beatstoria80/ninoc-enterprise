@@ -134,7 +134,14 @@ body {
   @apply text-[10px] font-medium uppercase tracking-[0.2em] transition-all;
 }
 
-/* Scrollbar hide */
+/* Scrollbar hide globally (Requested by UI/UX logic for modern cursor) */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
