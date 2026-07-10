@@ -8,6 +8,8 @@ export default function GlobalCursor() {
   const [isVisible, setIsVisible] = useState(false);
 
   const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
   const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
