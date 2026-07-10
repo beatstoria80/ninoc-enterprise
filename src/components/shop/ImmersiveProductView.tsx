@@ -108,7 +108,34 @@ export default function ImmersiveProductView({
             <X strokeWidth={1.5} size={24} />
           </button>
 
-          {/* The Left Column (Title/Desc) has been moved to the Right Action Panel for a more unified, minimal layout */}
+          {/* LEFT COLUMN: DESCRIPTION (1/4 Width on Desktop) */}
+          <div className="hidden lg:flex w-1/4 h-full bg-white flex-col justify-center pl-12 lg:pl-20 pr-8 overflow-y-auto no-scrollbar">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-6"
+            >
+              <div>
+                <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
+                  {product.category || 'Apparel'}
+                </div>
+                <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter leading-none mb-1.5">
+                  {product.name}
+                </h1>
+                <p className="text-xs font-medium italic text-ink/60">
+                  IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                </p>
+              </div>
+
+              {localizedDescription && (
+                <div 
+                  className="text-[11px] leading-relaxed text-ink/70"
+                  dangerouslySetInnerHTML={{ __html: localizedDescription }} 
+                />
+              )}
+            </motion.div>
+          </div>
 
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Main Focus) */}
           <div className="flex-1 h-full bg-white relative flex items-center justify-center overflow-hidden">
@@ -169,29 +196,6 @@ export default function ImmersiveProductView({
               transition={{ delay: 0.4 }}
               className="w-full max-w-sm mx-auto space-y-6"
             >
-              {/* TITLE & PRICE (Moved from left) */}
-              <div className="hidden lg:block space-y-4">
-                <div>
-                  <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
-                    {product.category || 'Apparel'}
-                  </div>
-                  <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter leading-tight mb-1.5">
-                    {product.name}
-                  </h1>
-                  <p className="text-xs font-medium italic text-ink/60">
-                    IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
-                  </p>
-                </div>
-                {localizedDescription && (
-                  <div 
-                    className="text-[11px] leading-relaxed text-ink/70"
-                    dangerouslySetInnerHTML={{ __html: localizedDescription }} 
-                  />
-                )}
-              </div>
-
-              {/* DIVIDER */}
-              <div className="hidden lg:block w-full h-px bg-ink/5" />
 
               {/* SIZE SELECTION */}
               {hasSizes && (
