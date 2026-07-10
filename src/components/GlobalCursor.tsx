@@ -8,10 +8,7 @@ export default function GlobalCursor() {
   const [isVisible, setIsVisible] = useState(false);
 
   const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
-
-  // Ultra-snappy spring to prevent stuttering during main-thread drops
-  const springConfig = { damping: 40, stiffness: 1000, mass: 0.1 };
+  const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
@@ -67,11 +64,7 @@ export default function GlobalCursor() {
 
   return (
     <motion.div
-      className={`pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full transition-all duration-300 ${
-        isHovering
-          ? 'bg-white/5 backdrop-blur-md border border-ink/20 shadow-[inset_0_0_15px_rgba(0,0,0,0.05)] shadow-xl'
-          : 'bg-ink/90 shadow-sm'
-      }`}
+      className="pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full"
       style={{
         x: cursorX,
         y: cursorY,
@@ -81,7 +74,10 @@ export default function GlobalCursor() {
       animate={{
         width: isHovering ? 48 : 12,
         height: isHovering ? 48 : 12,
-        opacity: 1,
+        backgroundColor: isHovering ? 'rgba(255, 255, 255, 0.05)' : 'rgba(15, 23, 42, 0.9)', // 5% white on hover, dark ink on default
+        backdropFilter: isHovering ? 'blur(8px)' : 'blur(0px)',
+        border: isHovering ? '1px solid rgba(15, 23, 42, 0.2)' : '0px solid transparent',
+        boxShadow: isHovering ? 'inset 0 0 15px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1)' : '0 1px 2px 0 rgba(0,0,0,0.05)'
       }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     />
