@@ -26,6 +26,31 @@ interface CartStore {
   totalPrice: () => number;
 }
 
+// Cached member state to avoid repetitive expensive parsing
+let cachedIsMember: boolean | null = null;
+
+const checkIsMember = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  if (cachedIsMember !== null) return cachedIsMember;
+  
+  // O(1) Check for cookies first (Supabase SSR)
+  if (typeof document !== 'undefined' && document.cookie) {
+    if (/sb-.*-auth-token/.test(document.cookie)) {
+      cachedIsMember = true;
+      return true;
+    }
+  }
+
+  // Fallback O(1) approximate check for localStorage
+  try {
+    const keys = Object.keys(window.localStorage);
+    cachedIsMember = keys.some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    return cachedIsMember;
+  } catch (e) {
+    return false;
+  }
+};
+
 const smartCartStorage = {
   getItem: (name: string): string | null => {
     if (typeof window === 'undefined') return null;
@@ -41,14 +66,7 @@ const smartCartStorage = {
   setItem: (name: string, value: string): void => {
     if (typeof window === 'undefined') return;
     try {
-      let isMember = false;
-      for (let i = 0; i < window.localStorage.length; i++) {
-        const key = window.localStorage.key(i);
-        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
-          isMember = true;
-          break;
-        }
-      }
+      const isMember = checkIsMember();
 
       if (isMember) {
         window.localStorage.setItem(name, value);

@@ -59,7 +59,7 @@ export class OrderRepository {
   }
 
   /**
-   * Creates draft order, order items, and reserves inventory with automatic rollback on failure.
+   * Creates draft order, order items, and reserves inventory using atomic RPC.
    */
   public async createOrderWithInventoryLock(
     orderId: string,
@@ -71,51 +71,41 @@ export class OrderRepository {
     lastName: string,
     dbOrderItems: any[]
   ): Promise<{ success: boolean; error?: string }> {
-    // 1. Insert order header
-    const { error: orderError } = await this.db.from('orders').insert({
-      id: orderId,
-      user_id: customer.user_id || null,
-      affiliate_id: affiliateId,
-      customer_name: customer.name || `${firstName} ${lastName}`.trim() || null,
-      customer_email: customer.email || null,
-      customer_phone: customer.phone || null,
-      total_price: grossAmount,
-      status: 'pending',
-      payment_status: 'pending',
-      courier: shipping.method,
-      shipping_address: {
-        ...customer,
-        first_name: firstName,
-        last_name: lastName,
-        address: (customer.address || '').toUpperCase(),
-        city: (customer.city || '').toUpperCase(),
-        shipping_method: shipping.method,
-        shipping_cost: shipping.cost,
-      },
+    
+    const shippingAddress = {
+      ...customer,
+      first_name: firstName,
+      last_name: lastName,
+      address: (customer.address || '').toUpperCase(),
+      city: (customer.city || '').toUpperCase(),
+      shipping_method: shipping.method,
+      shipping_cost: shipping.cost,
+    };
+
+    const customerName = customer.name || `${firstName} ${lastName}`.trim() || null;
+
+    // Execute atomic Postgres transaction
+    const { data, error } = await this.db.rpc('create_order_transaction', {
+      p_order_id: orderId,
+      p_user_id: customer.user_id || null,
+      p_affiliate_id: affiliateId,
+      p_customer_name: customerName,
+      p_customer_email: customer.email || null,
+      p_customer_phone: customer.phone || null,
+      p_total_price: grossAmount,
+      p_courier: shipping.method,
+      p_shipping_address: shippingAddress,
+      p_items: dbOrderItems
     });
 
-    if (orderError) {
-      console.error('[OrderRepository] Order insert failed:', orderError);
-      return { success: false, error: `Failed to create order: ${orderError.message}` };
+    if (error) {
+      console.error('[OrderRepository] Atomic order creation failed:', error);
+      return { success: false, error: `DB Error: ${error.message}` };
     }
 
-    // 2. Insert items with foreign key to orderId
-    const itemsPayload = dbOrderItems.map(item => ({ ...item, order_id: orderId }));
-    const { error: itemsError } = await this.db.from('order_items').insert(itemsPayload);
-
-    if (itemsError) {
-      await this.rollbackOrder(orderId);
-      console.error('[OrderRepository] Order items insert failed:', itemsError);
-      return { success: false, error: `DB Error (Items): ${itemsError.message}` };
-    }
-
-    // 3. Row-level inventory reservation lock via RPC
-    const { error: invError } = await this.db.rpc('reserve_inventory', { p_order_id: orderId });
-
-    if (invError) {
-      await this.rollbackOrder(orderId);
-      console.error('[OrderRepository] Inventory reservation failed:', invError);
-      return { success: false, error: `DB Error (Inventory): ${invError.message}` };
+    if (data && data.success === false) {
+      console.error('[OrderRepository] Atomic transaction rejected:', data.error);
+      return { success: false, error: `Transaction Failed: ${data.error}` };
     }
 
     return { success: true };
@@ -126,16 +116,5 @@ export class OrderRepository {
    */
   public async updateSnapToken(orderId: string, snapToken: string) {
     await this.db.from('orders').update({ snap_token: snapToken }).eq('id', orderId);
-  }
-
-  /**
-   * Compensating rollback helper.
-   */
-  private async rollbackOrder(orderId: string) {
-    try {
-      await this.db.from('orders').delete().eq('id', orderId);
-    } catch (e) {
-      console.error(`[OrderRepository] Critical: Rollback failed for order ${orderId}:`, e);
-    }
   }
 }
