@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -7,13 +8,27 @@ export function useProductViews(slug: string) {
     slug ? `/api/analytics/views?slug=${slug}` : null,
     fetcher,
     {
-      refreshInterval: 30000, // Refresh every 30 seconds
+      refreshInterval: 30000,
       revalidateOnFocus: false,
     }
   );
 
+  const [ticksPassed, setTicksPassed] = useState(0);
+
+  // Accumulate count live every 1.5 seconds while viewing
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTicksPassed((prev) => prev + 1);
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const baseViews = data?.views ?? null;
+  const accumulatedViews = baseViews !== null ? baseViews + ticksPassed : null;
+
   return {
-    views: data?.views ?? null, // null means we shouldn't render it
+    views: accumulatedViews,
     isLoading,
     isError: error,
   };

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star, Eye } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
@@ -150,10 +150,19 @@ export default function ProductGallery({
             >
               <Eye size={12} className="text-ink/60" />
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
-                <span className="text-[9px] md:text-[10px] font-bold text-ink/80 uppercase tracking-widest leading-none pt-[1px]">
-                  {activeViewers} Melihat
-                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)] animate-pulse" />
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={activeViewers}
+                    initial={{ y: 6, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -6, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[9px] md:text-[10px] font-bold text-ink/80 uppercase tracking-widest leading-none pt-[1px] inline-block"
+                  >
+                    {activeViewers} Melihat
+                  </motion.span>
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
