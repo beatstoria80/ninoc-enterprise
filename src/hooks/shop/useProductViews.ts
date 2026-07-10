@@ -7,8 +7,8 @@ export function useProductViews(slug: string) {
     slug ? `/api/analytics/views?slug=${slug}` : null,
     fetcher,
     {
-      refreshInterval: 30000,
-      revalidateOnFocus: false,
+      refreshInterval: 15000, // Refresh every 15 seconds for near-realtime
+      revalidateOnFocus: true,
     }
   );
 

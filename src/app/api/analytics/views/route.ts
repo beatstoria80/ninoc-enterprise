@@ -1,20 +1,6 @@
 import { NextResponse } from 'next/server';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
-// Helper to generate realistic live social proof based on product slug and current time
-function getDynamicLiveViewers(slug: string): number {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) {
-    hash = (hash << 5) - hash + slug.charCodeAt(i);
-    hash |= 0;
-  }
-  const baseCount = Math.abs(hash) % 11 + 4; // Base between 4 and 14
-  // Vary slightly based on 2-minute time window to simulate real live fluctuation
-  const timeWindow = Math.floor(Date.now() / (120 * 1000));
-  const variance = (Math.abs(hash ^ timeWindow) % 5) - 2; // -2 to +2
-  return Math.max(3, baseCount + variance);
-}
-
 export async function GET(request: Request) {
   let slug: string | null = null;
   try {
@@ -30,10 +16,8 @@ export async function GET(request: Request) {
     const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
     const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-    // If GA is not configured or missing, return intelligent live viewer fallback
     if (!propertyId || !clientEmail || !privateKey) {
-      const fallbackViews = slug ? getDynamicLiveViewers(slug) : 5;
-      return NextResponse.json({ views: fallbackViews, allViews: null, source: 'fallback' });
+      return NextResponse.json({ views: 0, allViews: null, source: 'no-config' });
     }
 
     const analyticsDataClient = new BetaAnalyticsDataClient({
@@ -43,47 +27,55 @@ export async function GET(request: Request) {
       },
     });
 
-    const [response] = await analyticsDataClient.runRealtimeReport({
+    // Use runReport to get ACCUMULATED total screenPageViews (not just active users)
+    const [response] = await analyticsDataClient.runReport({
       property: `properties/${propertyId}`,
+      dateRanges: [
+        { startDate: '2024-01-01', endDate: 'today' },
+      ],
       dimensions: [
-        { name: 'unifiedScreenName' },
+        { name: 'pagePath' },
       ],
       metrics: [
-        { name: 'activeUsers' },
+        { name: 'screenPageViews' },
       ],
     });
 
     if (all) {
+      // Return accumulated views for ALL product pages
       const allViews: Record<string, number> = {};
       response.rows?.forEach((row) => {
-        const name = row.dimensionValues?.[0]?.value || '';
-        const users = parseInt(row.metricValues?.[0]?.value || '0', 10);
-        if (name && users > 0) {
-          allViews[name] = users;
+        const pagePath = row.dimensionValues?.[0]?.value || '';
+        const views = parseInt(row.metricValues?.[0]?.value || '0', 10);
+        if (pagePath && views > 0) {
+          // Extract slug from path like /shop/product-slug
+          const pathSlug = pagePath.replace(/^\/shop\//, '').replace(/\/$/, '');
+          if (pathSlug && pagePath.startsWith('/shop/') && pathSlug !== '' && !pathSlug.includes('/')) {
+            // Accumulate views for same slug (could have trailing slash variants)
+            allViews[pathSlug] = (allViews[pathSlug] || 0) + views;
+          }
         }
       });
-      return NextResponse.json({ allViews });
+      return NextResponse.json({ allViews, source: 'ga4' });
     }
 
-    let activeUsers = 0;
-    
+    // Single product: find accumulated views matching the slug
+    let totalViews = 0;
+
     if (response.rows && response.rows.length > 0) {
-      // Clean slug formatting for fuzzy matching against page title or path
-      const cleanSlug = slug!.replace(/-/g, ' ').toLowerCase();
-      const row = response.rows.find((r) => {
-        const val = (r.dimensionValues?.[0]?.value || '').toLowerCase();
-        return val.includes(slug!.toLowerCase()) || val.includes(cleanSlug);
+      response.rows.forEach((row) => {
+        const pagePath = (row.dimensionValues?.[0]?.value || '').toLowerCase();
+        const views = parseInt(row.metricValues?.[0]?.value || '0', 10);
+        // Match /shop/slug or /shop/slug/ or paths containing the slug
+        if (pagePath.includes(slug!.toLowerCase())) {
+          totalViews += views;
+        }
       });
-      
-      if (row && row.metricValues && row.metricValues.length > 0) {
-        activeUsers = parseInt(row.metricValues[0].value || '0', 10);
-      }
     }
 
-    return NextResponse.json({ views: activeUsers, source: 'ga4' });
+    return NextResponse.json({ views: totalViews, source: 'ga4' });
   } catch (error) {
-    console.error('Failed to fetch GA views:', error);
-    const fallbackViews = slug ? getDynamicLiveViewers(slug) : 5;
-    return NextResponse.json({ views: fallbackViews, source: 'fallback' });
+    console.error('[GA4 Analytics Error]:', error);
+    return NextResponse.json({ views: 0, source: 'error' });
   }
 }

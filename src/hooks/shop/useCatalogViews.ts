@@ -7,8 +7,8 @@ export function useCatalogViews() {
     '/api/analytics/views?all=true',
     fetcher,
     {
-      refreshInterval: 30000, // Refresh every 30 seconds
-      revalidateOnFocus: false,
+      refreshInterval: 15000, // Refresh every 15 seconds for near-realtime
+      revalidateOnFocus: true,
     }
   );
 

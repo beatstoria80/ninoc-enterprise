@@ -135,10 +135,11 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
 
   const getDisplayViews = (product: Product) => {
     if (allViews) {
-      const realViews = Object.entries(allViews).find(([key]) => key.includes(product.slug))?.[1];
+      // Direct slug key lookup (API now returns slug-keyed accumulated views)
+      const realViews = allViews[product.slug];
       if (realViews && realViews > 0) return realViews;
     }
-    return getProductViews(product);
+    return 0;
   };
 
   const { filteredProducts, selectedCategory } = filterSystem;
@@ -272,10 +273,11 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
 
   const getDisplayViews = (product: Product) => {
     if (allViews) {
-      const realViews = Object.entries(allViews).find(([key]) => key.includes(product.slug))?.[1];
+      // Direct slug key lookup (API now returns slug-keyed accumulated views)
+      const realViews = allViews[product.slug];
       if (realViews && realViews > 0) return realViews;
     }
-    return getProductViews(product);
+    return 0;
   };
 
   const { filteredProducts, selectedCategory } = filterSystem;
