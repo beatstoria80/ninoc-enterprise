@@ -100,7 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
     verification: {
       google: 'So4rS9Ld3dPQAhPV2Jh0AUPpPQnwiLoxQkj5gM2JlIM',
       other: {
-        'facebook-domain-verification': 'mdawcs7lu6md33d800mlxjv6t62aq0',
+        'facebook-domain-verification': 'mdawcs7lo6md33d800mlxjv6t62aq0',
       },
     },
   };
