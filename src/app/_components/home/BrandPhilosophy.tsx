@@ -14,7 +14,14 @@ export default function BrandPhilosophy() {
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0, 1, 1, 0]);
   
   return (
-    <section ref={ref} className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden bg-ink py-20">
+    <section 
+      ref={ref} 
+      className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden bg-ink py-32 md:py-40"
+      style={{ 
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+        maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' 
+      }}
+    >
       {/* Abstract background noise/texture */}
       <div className="absolute inset-0 opacity-20 pointer-events-none noise" />
       
@@ -22,20 +29,20 @@ export default function BrandPhilosophy() {
         <motion.div style={{ y: y1, opacity }} className="space-y-8 md:space-y-12">
           
           <div className="flex items-center justify-center gap-3">
-            <div className="h-[1px] w-8 md:w-16 bg-rose/50" />
-            <p className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] text-rose">
+            <div className="h-[1px] w-8 md:w-16 bg-white/40" />
+            <p className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] text-white/80 font-semibold">
               Manifesto
             </p>
-            <div className="h-[1px] w-8 md:w-16 bg-rose/50" />
+            <div className="h-[1px] w-8 md:w-16 bg-white/40" />
           </div>
 
           <h2 className="text-3xl md:text-5xl lg:text-7xl font-display font-medium italic uppercase tracking-tighter text-white leading-[0.9]">
             Functionality<br />
-            <span className="text-white/40">through absolute</span><br />
+            <span className="text-white/70">through absolute</span><br />
             Simplicity.
           </h2>
 
-          <p className="text-sm md:text-lg text-white/60 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-sm md:text-lg text-white/90 max-w-2xl mx-auto font-medium leading-relaxed">
             NINOC is more than a store. It is a multidimensional creative house curating 
             premium apparel, artisanal objects, and specialty pantry essentials. 
             We strip away the non-essential to deliver raw, uncompromised quality.
@@ -43,9 +50,6 @@ export default function BrandPhilosophy() {
 
         </motion.div>
       </div>
-      
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent pointer-events-none" />
     </section>
   );
 }
