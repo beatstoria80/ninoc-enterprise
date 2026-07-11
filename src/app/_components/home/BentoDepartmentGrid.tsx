@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, Variants } from 'framer-motion';
 import { DURATION, EASING } from '@/lib/animations';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
@@ -24,7 +24,7 @@ function FadeUpSection({ children, delay = 0, className = '' }: { children: Reac
 }
 
 export default function BentoDepartmentGrid() {
-  const headerVariants = {
+  const headerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -32,7 +32,7 @@ export default function BentoDepartmentGrid() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
     visible: { 
       opacity: 1, 
