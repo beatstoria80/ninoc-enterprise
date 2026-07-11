@@ -10,22 +10,35 @@ export default function CookieConsent() {
 
   useEffect(() => {
     // Check if the user has already consented
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
-      // Small delay for better UX
-      const timer = setTimeout(() => setShow(true), 1500);
-      return () => clearTimeout(timer);
+    try {
+      const consent = localStorage.getItem('cookie-consent');
+      if (!consent) {
+        // Small delay for better UX
+        const timer = setTimeout(() => setShow(true), 1500);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      // Ignore localStorage errors (e.g., if cookies are blocked by browser)
+      console.warn("localStorage is not available.");
     }
   }, []);
 
   const acceptAll = () => {
-    localStorage.setItem('cookie-consent', 'accepted');
+    try {
+      localStorage.setItem('cookie-consent', 'accepted');
+    } catch (e) {
+      console.warn("Could not save cookie preference.");
+    }
     setShow(false);
     // You could also initialize Google Analytics / Tag Manager here if strict privacy is required
   };
 
   const manageCookies = () => {
-    localStorage.setItem('cookie-consent', 'managed');
+    try {
+      localStorage.setItem('cookie-consent', 'managed');
+    } catch (e) {
+      console.warn("Could not save cookie preference.");
+    }
     setShow(false);
   };
 
