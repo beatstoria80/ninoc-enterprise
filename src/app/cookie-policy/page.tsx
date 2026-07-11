@@ -28,7 +28,7 @@ export default function CookiePolicyPage() {
         <div className="prose prose-neutral prose-lg max-w-none text-neutral-600">
           
           <p>
-            Di <strong>NINOC Enterprise</strong> (selanjutnya disebut "NINOC", "kami", "milik kami"), kami menghargai privasi Anda dan berkomitmen untuk melindunginya. Kebijakan Cookie ini menjelaskan apa itu cookie, bagaimana kami menggunakannya di situs web kami (<code>ninoc.store</code>), dan pilihan yang Anda miliki terkait penggunaannya.
+            Di <strong>NINOC Enterprise</strong> (selanjutnya disebut &quot;NINOC&quot;, &quot;kami&quot;, &quot;milik kami&quot;), kami menghargai privasi Anda dan berkomitmen untuk melindunginya. Kebijakan Cookie ini menjelaskan apa itu cookie, bagaimana kami menggunakannya di situs web kami (<code>ninoc.store</code>), dan pilihan yang Anda miliki terkait penggunaannya.
           </p>
 
           <h2 className="text-xl font-bold text-neutral-900 mt-10 mb-4 uppercase tracking-wide text-sm border-b pb-2">1. Apa itu Cookie?</h2>
