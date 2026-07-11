@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import Image from 'next/image';
 import { getDictionaryByLocale } from '@/lib/i18n';
+import { ShoppingBag } from 'lucide-react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,13 +27,7 @@ const HomeIcon = ({ active }: { active: boolean }) => (
 );
 
 const CartIcon = ({ active }: { active: boolean }) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4H5L6.5 15H18.5L20 6H5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M6.5 15L5.5 9H3" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="9" cy="20" r="1" />
-    <circle cx="19" cy="20" r="1" />
-    <path d="M9 20L7.5 15" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+  <ShoppingBag size={22} strokeWidth={1.5} />
 );
 
 // SUPPORT — headphones icon (familiar customer service symbol)
