@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.SMTP_EMAIL, // e.g., ninoc.archive@gmail.com
+    user: process.env.SMTP_EMAIL, // e.g., ninocenterprise@gmail.com
     pass: process.env.SMTP_PASSWORD, // Google App Password
   },
 });
@@ -231,7 +231,7 @@ export async function sendEmailReturConfirmation(returRequest: any, order: any, 
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `Konfirmasi Retur Pesanan #${orderIdShort}`,
       html: emailHtml,
@@ -313,7 +313,7 @@ export async function sendEmailReturStatusUpdate(returRequest: any, order: any, 
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[${statusText}] Status Retur Pesanan #${orderIdShort}`,
       html: emailHtml,
@@ -381,7 +381,7 @@ export async function sendEmailReminder(order: any, customerEmail: string) {
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Menunggu Pembayaran] Pesanan #${orderIdShort}`,
       html: emailHtml,
@@ -448,7 +448,7 @@ export async function sendEmailShipping(order: any, customerEmail: string, track
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Pesanan Dikirim] Paket Anda dari NINOC sedang dalam perjalanan`,
       html: emailHtml,
@@ -514,7 +514,7 @@ export async function sendEmailDelivered(order: any, customerEmail: string) {
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Pesanan Tiba] Paket NINOC Anda telah sampai di tujuan`,
       html: emailHtml,
@@ -627,7 +627,7 @@ export async function sendEmailOrderCancelled(order: any, customerEmail: string,
 
   try {
     await transporter.sendMail({
-      from: '"NINOC STORE" <ninoc.archive@gmail.com>',
+      from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Dibatalkan] Pesanan #${orderNumber} & Informasi Pengembalian Dana`,
       html: emailHtml,

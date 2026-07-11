@@ -84,7 +84,7 @@ export default function CookiePolicyPage() {
             Jika Anda memiliki pertanyaan mengenai penggunaan Cookie ini atau bagaimana kami menangani privasi data Anda, silakan hubungi tim dukungan kami:
           </p>
           <ul className="list-none pl-0 space-y-2 mt-4">
-            <li><strong>Email:</strong> ninoc.archive@gmail.com</li>
+            <li><strong>Email:</strong> ninocenterprise@gmail.com</li>
             <li><strong>WhatsApp (CS):</strong> +62 821-1983-774</li>
             <li><strong>Alamat Kantor:</strong> Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, Bandung, Jawa Barat 40292, Indonesia</li>
           </ul>
