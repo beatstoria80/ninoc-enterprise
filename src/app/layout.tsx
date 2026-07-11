@@ -299,7 +299,9 @@ export default async function RootLayout({
           />
           <SecurityEnforcer />
           <GlobalDragScroll />
-          <AffiliateTracker />
+          <Suspense fallback={null}>
+            <AffiliateTracker />
+          </Suspense>
           <ClientPlatformManager>
             <BrandProvider>
               <main id="main-content">
