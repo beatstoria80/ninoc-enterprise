@@ -220,9 +220,9 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
 export default function HomeProductSlider({ products, isLoading }: { products: Product[], isLoading: boolean }) {
   // Removed min-h-screen bug here!
   return (
-    <section id="archive-catalog" className="mt-1 md:mt-2 lg:mt-1 px-4 md:px-12 max-w-[1800px] mx-auto pt-4 pb-8 md:pt-6 md:pb-12">
-      <div className="flex items-center justify-between mb-3 md:mb-4 border-b border-ink/5 pb-2">
-        <h2 className="text-lg md:text-xl font-display font-medium italic uppercase tracking-tighter text-ink">
+    <section id="archive-catalog" className="mt-0 px-4 md:px-12 max-w-[1800px] mx-auto pt-1 md:pt-2 pb-8 md:pb-12">
+      <div className="flex items-center justify-between mb-2 md:mb-2 border-b border-ink/5 pb-1">
+        <h2 className="text-base md:text-lg font-display font-medium italic uppercase tracking-tighter text-ink leading-none">
           New Arrivals
         </h2>
         <Link href="/shop" className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors">
