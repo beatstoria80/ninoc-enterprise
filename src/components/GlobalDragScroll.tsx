@@ -6,6 +6,7 @@ export default function GlobalDragScroll() {
   const state = useRef({
     isMouseDown: false,
     isDragging: false,
+    wasDragging: false, // Tracks if a drag occurred to block the subsequent click
     startY: 0,
     startX: 0,
     scrollTop: 0,
@@ -14,22 +15,22 @@ export default function GlobalDragScroll() {
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
-      // 1. Check for default prevented by other components (e.g. DragSlider)
       if (e.defaultPrevented) return;
-      
-      // 2. Only allow left click
       if (e.button !== 0) return;
 
       const target = e.target as HTMLElement;
       
-      // 3. Ignore interactive elements or explicitly marked non-draggable areas
-      if (target.closest('button, a, input, textarea, select, [role="button"], [role="link"], [role="tab"], .no-drag')) {
+      // Ignore explicitly marked non-draggable areas (like DragSlider)
+      // Removed restrictions on <a> and <button> so users can drag anywhere!
+      if (target.closest('.no-drag')) {
         return;
       }
 
       state.current = {
+        ...state.current,
         isMouseDown: true,
-        isDragging: false, // We don't know if it's a drag until they move past the threshold
+        isDragging: false,
+        wasDragging: false,
         startY: e.clientY,
         startX: e.clientX,
         scrollTop: window.scrollY || document.documentElement.scrollTop,
@@ -43,26 +44,24 @@ export default function GlobalDragScroll() {
       const y = e.clientY - state.current.startY;
       const x = e.clientX - state.current.startX;
 
-      // 4. Implement a Drag Threshold (Deadzone) to allow normal text selection
       if (!state.current.isDragging) {
         const distance = Math.sqrt(x * x + y * y);
         if (distance > 5) {
           state.current.isDragging = true;
-          // Apply grabbing styles only when drag is confirmed
+          state.current.wasDragging = true;
           document.body.style.cursor = 'grabbing';
           document.body.style.userSelect = 'none';
         } else {
-          return; // Still within deadzone
+          return;
         }
       }
 
-      // 5. If we reach here, we are actively dragging
-      e.preventDefault(); // Prevent text highlight only during actual drag
+      e.preventDefault();
 
       window.scrollTo({
         top: state.current.scrollTop - y,
         left: state.current.scrollLeft - x,
-        behavior: 'auto' // Instant scroll
+        behavior: 'auto'
       });
     };
 
@@ -72,22 +71,41 @@ export default function GlobalDragScroll() {
         state.current.isDragging = false;
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
+        
+        // Reset wasDragging shortly after to allow the click blocker to fire
+        setTimeout(() => {
+          state.current.wasDragging = false;
+        }, 50);
       }
     };
 
     const handleMouseUp = () => cleanupDragState();
     const handleMouseLeave = () => cleanupDragState();
 
+    // Global Click Interceptor (Capture Phase)
+    // Runs before any standard click event on the page
+    const handleClickCapture = (e: MouseEvent) => {
+      if (state.current.wasDragging) {
+        e.preventDefault();
+        e.stopPropagation();
+        state.current.wasDragging = false; // Consume the flag
+      }
+    };
+
     window.addEventListener('mousedown', handleMouseDown, { passive: false });
     window.addEventListener('mousemove', handleMouseMove, { passive: false });
     window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Add click capture listener to the window
+    window.addEventListener('click', handleClickCapture, true);
 
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('click', handleClickCapture, true);
       cleanupDragState();
     };
   }, []);
