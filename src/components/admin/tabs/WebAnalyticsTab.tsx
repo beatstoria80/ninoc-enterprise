@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingBag, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingCart, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { getWebAnalyticsData, type WebAnalyticsData } from '@/actions/webAnalytics';
 import { cn } from '@/lib/utils';
 
@@ -823,7 +823,7 @@ export function WebAnalyticsTab() {
                   <div>
                     <div className="flex items-center justify-between">
                       <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <ShoppingBag size={14} className="text-purple-600 group-hover:scale-110 transition-transform" /> Item Terjual ({getTimeLabel()})
+                        <ShoppingCart size={14} className="text-purple-600 group-hover:scale-110 transition-transform" /> Item Terjual ({getTimeLabel()})
                       </p>
                       <span className="w-2 h-2 rounded-full bg-purple-600"></span>
                     </div>

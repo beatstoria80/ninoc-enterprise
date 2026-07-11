@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Package, ShoppingBag, Plus, Search,
+  LayoutDashboard, Package, ShoppingCart, Plus, Search,
   TrendingUp, Box, LogOut, X, Save, Menu,
   Truck, Trash2, Edit2, Eye, ToggleLeft, ToggleRight,
   Clock, Minus,
@@ -1191,7 +1191,7 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'transaction', icon: ShoppingBag, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (actionableOrders || 0) + (pendingReturns || 0) > 0 ? (actionableOrders || 0) + (pendingReturns || 0) : undefined,
+      id: 'transaction', icon: ShoppingCart, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (actionableOrders || 0) + (pendingReturns || 0) > 0 ? (actionableOrders || 0) + (pendingReturns || 0) : undefined,
       roles: ['super_admin', 'outbound_logistics'],
       subItems: [
         { id: 'orders', label: 'Online Orders', badge: actionableOrders > 0 ? actionableOrders : undefined },

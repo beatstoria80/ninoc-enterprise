@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-import { ShoppingBag, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X, ImageOff } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, ShieldCheck, Truck, RefreshCw, ChevronRight, ChevronLeft, Ruler, Plus, Minus, Trash2, X, ImageOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Link from '@/components/LocalizedLink';
@@ -497,7 +497,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       ) : (
                         <div className="flex items-center gap-3">
                           <div className="relative flex items-center justify-center">
-                            <ShoppingBag size={16} />
+                            <ShoppingCart size={16} />
                             {items.length > 0 && (
                               <motion.div 
                                 initial={{ scale: 0 }}

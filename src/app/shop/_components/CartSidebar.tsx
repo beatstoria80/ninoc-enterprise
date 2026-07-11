@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ShoppingBag, Trash2, Ruler, X, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Trash2, Ruler, X, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SafeImage from '@/components/SafeImage';
 import { useCart } from '@/store/useCart';
@@ -50,7 +50,7 @@ export function CartSidebar({
 
         {items.length === 0 ? (
           <motion.div variants={textVariants} className="flex-1 flex flex-col items-center justify-center text-center opacity-20 py-4 md:py-10 px-4">
-            <ShoppingBag size={28} className="mb-3 text-ink" />
+            <ShoppingCart size={28} className="mb-3 text-ink" />
             <span className="text-xs md:text-[9px] uppercase tracking-widest text-ink font-medium">{dict.product.cartEmpty}</span>
             <span className="text-[11px] md:text-[8px] text-ink/60 font-medium mt-1">{dict.product.selectSizeToAdd}</span>
           </motion.div>

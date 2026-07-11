@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Layers, ChevronRight, ArrowLeft, Package, ShoppingBag, Eye } from 'lucide-react';
+import { Layers, ChevronRight, ArrowLeft, Package, ShoppingCart, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
@@ -285,7 +285,7 @@ function ProductCard({ product }: { product: Product }) {
                 }}
                 className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
               >
-                <ShoppingBag className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
+                <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
               </div>
             </div>
 

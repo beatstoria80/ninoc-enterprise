@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Eye, ShoppingBag, TrendingUp, Package, BarChart2, TrendingDown } from 'lucide-react';
+import { Eye, ShoppingCart, TrendingUp, Package, BarChart2, TrendingDown } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -132,7 +132,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
 
         {/* Total Orders */}
         <MetricCard
-          icon={<ShoppingBag size={14} className="text-rose" />}
+          icon={<ShoppingCart size={14} className="text-rose" />}
           iconBg="bg-rose/10"
           iconColor="text-rose"
           label="Total Orders"
