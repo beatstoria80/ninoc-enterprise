@@ -20,7 +20,7 @@ export default function CookiePolicyPage() {
           </Link>
           <h1 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl font-display uppercase">Cookie Policy</h1>
           <p className="mt-4 text-base text-neutral-500">
-            Pembaruan Terakhir: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+            Pembaruan Terakhir: 11 Juli 2026
           </p>
         </div>
 
