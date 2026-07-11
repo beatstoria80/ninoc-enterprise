@@ -16,16 +16,21 @@ export default function BrandPhilosophy() {
   return (
     <section 
       ref={ref} 
-      className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden bg-ink py-32 md:py-40"
-      style={{ 
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.05) 5%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.8) 20%, black 25%, black 75%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0.05) 95%, transparent 100%)',
-        maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.05) 5%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.8) 20%, black 25%, black 75%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0.05) 95%, transparent 100%)' 
-      }}
+      className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden py-32 md:py-40"
     >
-      {/* Abstract background noise/texture */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none noise" />
+      {/* Masked Background - Applies the feather effect only to the black bg, not the text */}
+      <div 
+        className="absolute inset-0 bg-ink"
+        style={{ 
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.013) 2%, rgba(0,0,0,0.049) 4%, rgba(0,0,0,0.104) 6%, rgba(0,0,0,0.175) 8%, rgba(0,0,0,0.259) 10%, rgba(0,0,0,0.352) 12%, rgba(0,0,0,0.45) 14%, rgba(0,0,0,0.55) 16%, rgba(0,0,0,0.648) 18%, rgba(0,0,0,0.741) 20%, rgba(0,0,0,0.825) 22%, rgba(0,0,0,0.896) 24%, rgba(0,0,0,0.951) 26%, rgba(0,0,0,0.987) 28%, black 30%, black 70%, rgba(0,0,0,0.987) 72%, rgba(0,0,0,0.951) 74%, rgba(0,0,0,0.896) 76%, rgba(0,0,0,0.825) 78%, rgba(0,0,0,0.741) 80%, rgba(0,0,0,0.648) 82%, rgba(0,0,0,0.55) 84%, rgba(0,0,0,0.45) 86%, rgba(0,0,0,0.352) 88%, rgba(0,0,0,0.259) 90%, rgba(0,0,0,0.175) 92%, rgba(0,0,0,0.104) 94%, rgba(0,0,0,0.049) 96%, rgba(0,0,0,0.013) 98%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.013) 2%, rgba(0,0,0,0.049) 4%, rgba(0,0,0,0.104) 6%, rgba(0,0,0,0.175) 8%, rgba(0,0,0,0.259) 10%, rgba(0,0,0,0.352) 12%, rgba(0,0,0,0.45) 14%, rgba(0,0,0,0.55) 16%, rgba(0,0,0,0.648) 18%, rgba(0,0,0,0.741) 20%, rgba(0,0,0,0.825) 22%, rgba(0,0,0,0.896) 24%, rgba(0,0,0,0.951) 26%, rgba(0,0,0,0.987) 28%, black 30%, black 70%, rgba(0,0,0,0.987) 72%, rgba(0,0,0,0.951) 74%, rgba(0,0,0,0.896) 76%, rgba(0,0,0,0.825) 78%, rgba(0,0,0,0.741) 80%, rgba(0,0,0,0.648) 82%, rgba(0,0,0,0.55) 84%, rgba(0,0,0,0.45) 86%, rgba(0,0,0,0.352) 88%, rgba(0,0,0,0.259) 90%, rgba(0,0,0,0.175) 92%, rgba(0,0,0,0.104) 94%, rgba(0,0,0,0.049) 96%, rgba(0,0,0,0.013) 98%, transparent 100%)' 
+        }}
+      />
       
-      <div className="max-w-[1200px] mx-auto px-4 md:px-12 relative z-10 w-full text-center">
+      {/* Abstract background noise/texture - Placed OUTSIDE the mask to naturally dither the gradient banding */}
+      <div className="absolute inset-0 opacity-[0.25] pointer-events-none noise z-10 mix-blend-overlay" />
+      
+      <div className="max-w-[1200px] mx-auto px-4 md:px-12 relative z-20 w-full text-center">
         <motion.div style={{ y: y1, opacity }} className="space-y-8 md:space-y-12">
           
           <div className="flex items-center justify-center gap-3">
