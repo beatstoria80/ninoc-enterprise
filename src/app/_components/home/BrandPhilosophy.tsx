@@ -18,8 +18,8 @@ export default function BrandPhilosophy() {
       ref={ref} 
       className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden bg-ink py-32 md:py-40"
       style={{ 
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
-        maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' 
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.05) 5%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.8) 20%, black 25%, black 75%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0.05) 95%, transparent 100%)',
+        maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.05) 5%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.8) 20%, black 25%, black 75%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0.05) 95%, transparent 100%)' 
       }}
     >
       {/* Abstract background noise/texture */}
