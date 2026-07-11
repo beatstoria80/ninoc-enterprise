@@ -14,7 +14,7 @@
     "@marsidev/react-turnstile": "^1.5.3",
     "@next/third-parties": "^16.2.9",
     "@supabase/ssr": "^0.10.3",
-    "@supabase/supabase-js": "^2.105.3",
+    "@supabase/supabase-js": "^2.110.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
