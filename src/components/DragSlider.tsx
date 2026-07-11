@@ -76,7 +76,7 @@ export default function DragSlider({ children, className = '', style = {}, direc
   return (
     <div
       ref={containerRef}
-      className={`${direction === 'horizontal' ? 'overflow-x-auto' : 'overflow-y-auto'} no-scrollbar ${className}`}
+      className={`${direction === 'horizontal' ? 'overflow-x-auto' : 'overflow-y-auto'} no-scrollbar no-drag ${className}`}
       style={{
         cursor: 'grab',
         scrollbarWidth: 'none',
