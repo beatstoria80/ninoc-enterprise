@@ -150,7 +150,7 @@ export default function ImmersiveProductView({
                </h1>
              </div>
 
-             <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+             <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
                {images.map((img, idx) => {
                  const offset = idx - activeImage;
                  const yOffset = offset * 250;
