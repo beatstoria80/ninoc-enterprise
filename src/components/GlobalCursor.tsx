@@ -29,6 +29,7 @@ export default function GlobalCursor() {
     const timeout = setTimeout(() => setIsVisible(true), 0);
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (document.documentElement.classList.contains('drawer-open')) return;
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
@@ -56,9 +57,10 @@ export default function GlobalCursor() {
     // Hide native cursor for interactive elements globally by injecting CSS
     const style = document.createElement('style');
     style.innerHTML = `
-      * { cursor: none !important; }
-      input, textarea, [contenteditable="true"] { cursor: text !important; }
-      .cursor-none { cursor: none !important; }
+      html:not(.drawer-open) * { cursor: none !important; }
+      html.drawer-open * { cursor: auto !important; }
+      html:not(.drawer-open) input, html:not(.drawer-open) textarea, html:not(.drawer-open) [contenteditable="true"] { cursor: text !important; }
+      html.drawer-open #ninoc-global-cursor { display: none !important; }
     `;
     document.head.appendChild(style);
 
@@ -76,6 +78,7 @@ export default function GlobalCursor() {
 
   return (
     <motion.div
+      id="ninoc-global-cursor"
       className="pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full"
       style={{
         x: cursorX,

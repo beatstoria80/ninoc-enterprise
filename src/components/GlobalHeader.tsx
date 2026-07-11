@@ -416,6 +416,18 @@ export default function GlobalHeader() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Global overlay state manager
+  useEffect(() => {
+    if (isCartOpen || isMenuOpen || isSearchOpen) {
+      document.documentElement.classList.add('drawer-open');
+    } else {
+      document.documentElement.classList.remove('drawer-open');
+    }
+    return () => {
+      document.documentElement.classList.remove('drawer-open');
+    };
+  }, [isCartOpen, isMenuOpen, isSearchOpen]);
+
   // Search debounce
   useEffect(() => {
     const performSearch = async () => {
