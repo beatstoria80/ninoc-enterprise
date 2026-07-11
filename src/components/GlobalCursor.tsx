@@ -64,32 +64,10 @@ export default function GlobalCursor() {
     `;
     document.head.appendChild(style);
 
-    // Universal Modal/Drawer detector
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          if (document.body.style.overflow === 'hidden') {
-            document.documentElement.classList.add('drawer-open');
-          } else if (!document.querySelector('.drawer-open-forced')) { // Allow manual overrides to still work
-            // Only remove if not explicitly forced by another component
-            document.documentElement.classList.remove('drawer-open');
-          }
-        }
-      });
-    });
-    
-    // Initial check just in case
-    if (document.body.style.overflow === 'hidden') {
-      document.documentElement.classList.add('drawer-open');
-    }
-
-    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
       clearTimeout(timeout);
-      observer.disconnect();
       if (document.head.contains(style)) {
         document.head.removeChild(style);
       }

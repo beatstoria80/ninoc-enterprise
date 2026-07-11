@@ -13,7 +13,6 @@ import { Suspense } from "react";
 import ClientOverlays from "@/components/ClientOverlays";
 import PushNotificationManager from "@/components/PushNotificationManager";
 import GlobalDragScroll from "@/components/GlobalDragScroll";
-import CookieConsent from "@/components/CookieConsent";
 
 const inter = {
   variable: "--font-sans",
@@ -311,7 +310,6 @@ export default async function RootLayout({
           </ClientPlatformManager>
           <ClientOverlays />
           <PushNotificationManager />
-          <CookieConsent />
         </SmoothScrollProvider>
       </body>
     </html>
