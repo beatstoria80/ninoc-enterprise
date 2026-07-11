@@ -12,6 +12,7 @@ import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
 import ClientOverlays from "@/components/ClientOverlays";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import GlobalDragScroll from "@/components/GlobalDragScroll";
 
 const inter = {
   variable: "--font-sans",
@@ -296,6 +297,7 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
           <SecurityEnforcer />
+          <GlobalDragScroll />
           <Suspense fallback={null}>
             <AffiliateTracker />
           </Suspense>
