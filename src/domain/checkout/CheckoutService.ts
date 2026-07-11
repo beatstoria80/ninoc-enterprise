@@ -94,10 +94,6 @@ export class CheckoutService {
     const appUrl = getAppUrl();
     const parameter = {
       transaction_details: { order_id: orderId, gross_amount: pricing.grossAmount },
-      enabled_payments: [
-        'credit_card', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'other_va',
-        'gopay', 'shopeepay', 'qris', 'indomaret', 'alfamart', 'echannel'
-      ],
       customer_details: {
         first_name: firstName,
         last_name: lastName,
