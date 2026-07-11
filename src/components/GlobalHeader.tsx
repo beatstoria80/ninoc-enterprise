@@ -339,6 +339,13 @@ export default function GlobalHeader() {
   const [profileName, setProfileName] = useState<string | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const cartItemsCount = isHydrated ? items.length : 0;
 
 
   // Scroll handler with debounce
@@ -598,16 +605,16 @@ export default function GlobalHeader() {
                   <ShoppingBag size={18} strokeWidth={1.5} />
                 </div>
                 <AnimatePresence>
-                  {items.length > 0 && (
+                  {cartItemsCount > 0 && (
                     <motion.div
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0.9, opacity: 0 }}
                       transition={{ duration: DURATION.micro, ease: EASING.out }}
-                      key={items.length}
+                      key={cartItemsCount}
                       className="absolute -top-1.5 -right-1.5 w-[14px] h-[14px] bg-emerald-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full shadow-sm"
                     >
-                      {items.length}
+                      {cartItemsCount}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -670,7 +677,7 @@ export default function GlobalHeader() {
                     Active Selection
                   </span>
                   <span className="h-4 w-[1px] bg-ink/10" />
-                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink/60">{items.length} Units</span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink/60">{cartItemsCount} Units</span>
                 </div>
                 <PressScale onClick={() => setIsCartOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
                   <X size={14} />
@@ -679,7 +686,7 @@ export default function GlobalHeader() {
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto no-scrollbar py-6 px-6 space-y-4">
-                {items.length > 0 ? (
+                {isHydrated && cartItemsCount > 0 ? (
                   <AnimatePresence mode="popLayout">
                     {items.map((item, index) => (
                       <CartItem
@@ -712,7 +719,7 @@ export default function GlobalHeader() {
               </div>
 
               {/* Footer (only if items > 0) */}
-              {items.length > 0 && (
+              {cartItemsCount > 0 && (
                 <div className="px-6 py-6 border-t border-ink/5 bg-white space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
@@ -1125,3 +1132,4 @@ export default function GlobalHeader() {
     </>
   );
 }
+

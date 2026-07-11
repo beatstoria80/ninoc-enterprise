@@ -309,7 +309,9 @@ export default async function RootLayout({
               </main>
             </BrandProvider>
           </ClientPlatformManager>
-          <ClientOverlays />
+          <Suspense fallback={null}>
+            <ClientOverlays />
+          </Suspense>
           <PushNotificationManager />
           <CookieConsent />
         </SmoothScrollProvider>
