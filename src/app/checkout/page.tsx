@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ShoppingCart, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2 } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2 } from 'lucide-react';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -805,7 +805,7 @@ export default function CheckoutPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: DURATION.medium, ease: EASING.out }}
         >
-          <ShoppingCart size={48} strokeWidth={1} className="text-ink/15 mx-auto mb-4" />
+          <ShoppingBag size={48} strokeWidth={1} className="text-ink/15 mx-auto mb-4" />
           <h2 className="text-2xl font-display font-medium italic uppercase">{dict.checkout.empty}</h2>
         </motion.div>
         <motion.div
@@ -1225,7 +1225,7 @@ export default function CheckoutPage() {
               <div className="bg-white border border-ink/20 rounded-none p-6 space-y-6 shadow-sm">
                 <div className="flex justify-between items-center border-b border-ink/20 pb-2">
                   <div className="flex items-center gap-3">
-                     <ShoppingCart size={12} className="text-ink/60" />
+                     <ShoppingBag size={12} className="text-ink/60" />
                      <h3 className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink">{dict.checkout.finalSelection}</h3>
                   </div>
                   <span className="text-[11px] md:text-[8px] font-medium text-ink/50 italic">{items.length} {dict.checkout.pieces}</span>

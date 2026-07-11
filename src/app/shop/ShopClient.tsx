@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingCart, ArrowRight, ImageOff, Eye } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, ImageOff, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
@@ -227,7 +227,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                               }}
                               className="w-8 h-8 md:w-6 md:h-6 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors cursor-pointer relative z-20"
                             >
-                                                          <ShoppingCart className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
+                                                          <ShoppingBag className="w-4 h-4 md:w-3.5 md:h-3.5 pointer-events-none" />
                             </div>
                           </div>
 
@@ -367,7 +367,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
                             }}
                             className="w-8 h-8 md:w-8 md:h-8 bg-ink/5 flex items-center justify-center border border-transparent hover:border-ink/20 hover:bg-ink hover:text-white transition-colors duration-200 cursor-pointer relative z-20"
                           >
-                            <ShoppingCart className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
+                            <ShoppingBag className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
                           </div>
                         </div>
 

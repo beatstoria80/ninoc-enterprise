@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { ShoppingCart, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { productCardVariants, cardImageVariants, cardContentVariants, DURATION, EASING } from '@/lib/animations';
@@ -193,7 +193,7 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
-                  <ShoppingCart className="w-4 h-4" />
+                  <ShoppingBag className="w-4 h-4" />
                 </motion.div>
                 <motion.div
                   role="button"

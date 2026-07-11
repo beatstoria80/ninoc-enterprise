@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 
@@ -71,7 +71,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
         {/* Quick Add Button (appears on touch) */}
         <div className="absolute bottom-2 right-2 z-10">
           <button onClick={handleQuickBuy} className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-none flex items-center justify-center border border-ink/10 shadow-sm active:scale-90 transition-all text-ink hover:text-white hover:bg-ink">
-            <ShoppingCart size={14} strokeWidth={1.5} />
+            <ShoppingBag size={14} strokeWidth={1.5} />
           </button>
         </div>
       </div>
