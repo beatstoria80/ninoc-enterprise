@@ -1,29 +1,37 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function GlobalDragScroll() {
+  const pathname = usePathname();
   const state = useRef({
     isMouseDown: false,
     isDragging: false,
-    wasDragging: false, // Tracks if a drag occurred to block the subsequent click
+    wasDragging: false,
     startY: 0,
     startX: 0,
     scrollTop: 0,
     scrollLeft: 0,
   });
 
+  // Nonaktifkan drag scroll untuk rute admin atau dashboard
+  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
+
   useEffect(() => {
+    // Kelola class global pada html untuk mengembalikan UI/UX normal (scrollbar & native scroll)
+    if (isDashboardRoute) {
+      document.documentElement.classList.add('admin-route');
+      return;
+    } else {
+      document.documentElement.classList.remove('admin-route');
+    }
+
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.defaultPrevented) return;
-      if (e.button !== 0) return;
+      if (e.defaultPrevented || e.button !== 0) return;
 
       const target = e.target as HTMLElement;
-      
-      // Ignore explicitly marked non-draggable areas (like DragSlider)
-      if (target.closest('.no-drag')) {
-        return;
-      }
+      if (target.closest('.no-drag')) return;
 
       state.current = {
         ...state.current,
@@ -50,9 +58,6 @@ export default function GlobalDragScroll() {
           state.current.wasDragging = true;
           document.body.style.cursor = 'grabbing';
           document.body.style.userSelect = 'none';
-          
-          // CRITICAL FIX: Nonaktifkan semua interaksi pointer pada body children
-          // Ini mencegah event pointerup/click mengenai elemen seperti <Link> atau tombol
           document.body.style.pointerEvents = 'none';
         } else {
           return;
@@ -75,9 +80,6 @@ export default function GlobalDragScroll() {
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
         
-        // Jeda waktu yang sedikit lebih lama untuk memastikan semua event ghost 
-        // (click, pointerup) selesai diproses (swallowed) oleh window sebelum 
-        // interaksi pada body diaktifkan kembali.
         setTimeout(() => {
           document.body.style.pointerEvents = '';
           state.current.wasDragging = false;
@@ -88,18 +90,14 @@ export default function GlobalDragScroll() {
     const handleMouseUp = () => cleanupDragState();
     const handleMouseLeave = () => cleanupDragState();
 
-    // Global Click Interceptor (Capture Phase)
-    // Sebagai lapis keamanan tambahan jika ada event click yang masih tembus
     const handleClickCapture = (e: MouseEvent) => {
       if (state.current.wasDragging) {
         e.preventDefault();
         e.stopPropagation();
-        state.current.wasDragging = false; // Consume the flag
+        state.current.wasDragging = false;
       }
     };
 
-    // Global PointerUp Interceptor (Capture Phase)
-    // Framer Motion dan UI libraries sering menggunakan onPointerUp daripada onClick
     const handlePointerUpCapture = (e: PointerEvent) => {
       if (state.current.wasDragging) {
         e.preventDefault();
@@ -111,8 +109,6 @@ export default function GlobalDragScroll() {
     window.addEventListener('mousemove', handleMouseMove, { passive: false });
     window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
-    
-    // Interceptors for both click and pointerup
     window.addEventListener('click', handleClickCapture, true);
     window.addEventListener('pointerup', handlePointerUpCapture, true);
 
@@ -125,7 +121,9 @@ export default function GlobalDragScroll() {
       window.removeEventListener('pointerup', handlePointerUpCapture, true);
       cleanupDragState();
     };
-  }, []);
+  }, [isDashboardRoute]);
+
+  if (isDashboardRoute) return null;
 
   return null;
 }
