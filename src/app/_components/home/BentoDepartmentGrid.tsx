@@ -24,23 +24,47 @@ function FadeUpSection({ children, delay = 0, className = '' }: { children: Reac
 }
 
 export default function BentoDepartmentGrid() {
+  const headerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15, delayChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: { type: 'spring', damping: 20, stiffness: 150 }
+    }
+  };
+
   return (
-    <section className="px-4 md:px-12 max-w-[1800px] mx-auto py-12 md:py-20">
-      <FadeUpSection>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4 border-b border-ink/5 pb-4">
-          <div>
-            <h2 className="text-2xl md:text-4xl font-display font-medium italic uppercase tracking-tighter text-ink leading-none">
-              Shop by Category
-            </h2>
-            <p className="text-xs md:text-sm text-ink/60 mt-2 tracking-wide uppercase font-medium">
-              Curated collections of the NINOC lifestyle
-            </p>
-          </div>
+    <section className="px-4 md:px-12 max-w-[1800px] mx-auto pb-12 md:pb-20 pt-4 md:pt-6 relative z-30 -mt-8 md:-mt-16">
+      <motion.div 
+        variants={headerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+        className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4 border-b border-ink/5 pb-4"
+      >
+        <div>
+          <motion.h2 variants={itemVariants} className="text-2xl md:text-4xl font-display font-medium italic uppercase tracking-tighter text-ink leading-none">
+            Shop by Category
+          </motion.h2>
+          <motion.p variants={itemVariants} className="text-xs md:text-sm text-ink/60 mt-2 tracking-wide uppercase font-medium">
+            Curated collections of the NINOC lifestyle
+          </motion.p>
+        </div>
+        <motion.div variants={itemVariants}>
           <Link href="/shop" className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center gap-2">
             View All Catalog <ArrowRight size={14} />
           </Link>
-        </div>
-      </FadeUpSection>
+        </motion.div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
         {/* Pillar 1: Apparel (Large Left) */}
