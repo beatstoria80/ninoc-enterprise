@@ -342,6 +342,7 @@ export default function GlobalHeader() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setIsHydrated(true);
   }, []);
 
