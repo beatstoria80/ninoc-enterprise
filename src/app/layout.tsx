@@ -299,9 +299,7 @@ export default async function RootLayout({
           />
           <SecurityEnforcer />
           <GlobalDragScroll />
-          <Suspense fallback={null}>
-            <AffiliateTracker />
-          </Suspense>
+          <AffiliateTracker />
           <ClientPlatformManager>
             <BrandProvider>
               <main id="main-content">
@@ -309,9 +307,7 @@ export default async function RootLayout({
               </main>
             </BrandProvider>
           </ClientPlatformManager>
-          <Suspense fallback={null}>
-            <ClientOverlays />
-          </Suspense>
+          <ClientOverlays />
           <PushNotificationManager />
           <CookieConsent />
         </SmoothScrollProvider>
