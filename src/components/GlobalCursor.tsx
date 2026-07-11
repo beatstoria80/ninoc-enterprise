@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function GlobalCursor() {
   const [isHovering, setIsHovering] = useState(false);
@@ -14,7 +15,14 @@ export default function GlobalCursor() {
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
+  const pathname = usePathname();
+  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
+
   useEffect(() => {
+    // Nonaktifkan custom cursor di area admin dashboard untuk menghindari lag (loncat-loncat)
+    // dan mengembalikan hardware cursor bawaan agar lebih responsif.
+    if (isDashboardRoute) return;
+
     // Only run on desktop/devices with a precise mouse
     if (window.matchMedia('(pointer: coarse)').matches) return;
     // Defer state update to avoid cascading render warning
@@ -58,11 +66,13 @@ export default function GlobalCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
       clearTimeout(timeout);
-      document.head.removeChild(style);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isDashboardRoute]);
 
-  if (!isVisible) return null;
+  if (isDashboardRoute || !isVisible) return null;
 
   return (
     <motion.div
