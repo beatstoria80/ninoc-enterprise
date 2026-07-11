@@ -280,7 +280,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col minimal-scroll">
+      <body className="min-h-full flex flex-col minimal-scroll" suppressHydrationWarning>
         <NextTopLoader color="#e8527a" showSpinner={false} height={3} />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
