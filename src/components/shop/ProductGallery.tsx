@@ -70,7 +70,7 @@ export default function ProductGallery({
 
       <motion.div ref={photoRef} variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
         <div
-          className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
+          className="no-drag flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -108,7 +108,7 @@ export default function ProductGallery({
         <motion.div 
           ref={photoRef} 
           variants={imageVariants} 
-          className="hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-pointer"
+          className="no-drag hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-pointer"
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
