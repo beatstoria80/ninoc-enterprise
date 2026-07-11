@@ -42,7 +42,7 @@ BEGIN
         ) VALUES (
             (v_item->>'id')::UUID,
             p_order_id,
-            (v_item->>'product_id')::TEXT,
+            (v_item->>'product_id')::UUID,
             NULLIF(v_item->>'variant_id', '')::UUID,
             v_item->>'product_name',
             (v_item->>'quantity')::INT,
@@ -79,7 +79,7 @@ BEGIN
         ELSIF v_item->>'size' IS NOT NULL AND v_item->>'size' != '' THEN
             SELECT id, stock_quantity INTO v_variant
             FROM public.variants
-            WHERE product_id = (v_item->>'product_id')::TEXT AND size = v_item->>'size'
+            WHERE product_id = (v_item->>'product_id')::UUID AND size = v_item->>'size'
             FOR UPDATE;
 
             IF v_variant IS NOT NULL THEN
