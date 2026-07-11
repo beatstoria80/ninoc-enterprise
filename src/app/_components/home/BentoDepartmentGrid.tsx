@@ -30,10 +30,10 @@ export default function BentoDepartmentGrid() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4 border-b border-ink/5 pb-4">
           <div>
             <h2 className="text-2xl md:text-4xl font-display font-medium italic uppercase tracking-tighter text-ink leading-none">
-              Shop by Department
+              Shop by Category
             </h2>
             <p className="text-xs md:text-sm text-ink/60 mt-2 tracking-wide uppercase font-medium">
-              Curated pillars of the NINOC lifestyle
+              Curated collections of the NINOC lifestyle
             </p>
           </div>
           <Link href="/shop" className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-ink/50 hover:text-rose transition-colors flex items-center gap-2">
