@@ -53,6 +53,22 @@ async function getOriginPostalCode(): Promise<number> {
   return defaultOrigin;
 }
 
+function applyGeographicRestrictions(pricing: any[], destName: string = '') {
+  if (!pricing || !Array.isArray(pricing)) return pricing;
+  
+  const isBandungArea = destName.toLowerCase().includes('bandung') || destName.toLowerCase().includes('cimahi');
+  
+  if (isBandungArea) {
+    return pricing;
+  }
+  
+  // If outside Bandung, strictly strip out Grab and Gojek
+  return pricing.filter((rate: any) => {
+    const comp = String(rate.company || '').toLowerCase();
+    return comp !== 'grab' && comp !== 'gojek';
+  });
+}
+
 function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
   const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
     return Boolean(it.is_perishable) || isFnBDepartment(it);
@@ -138,14 +154,16 @@ export async function POST(req: Request) {
 
         // If success, return real data
         if (response.ok && data.success !== false) {
-          const fnbResult = applyFnBRestrictions(data.pricing || [], items, destination_area_name);
+          const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
+          const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
           return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
         }
 
         // If rates API error (no balance), fall back to mock
         if (!response.ok || data.success === false) {
           console.warn(`[Biteship Rates] API returned error, using fallback mock data: ${JSON.stringify(data)}`);
-          const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, items, destination_area_name);
+          const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
+          const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
           return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: data.error || 'API unavailable' });
         }
 
@@ -156,7 +174,8 @@ export async function POST(req: Request) {
     }
 
     // Fallback mock data — works without API activation
-    const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, items, destination_area_name);
+    const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
+    const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
     return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice });
 
   } catch (err) {
