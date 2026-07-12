@@ -86,7 +86,7 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-function renderMessageWithLinks(text: string, isCustomer: boolean) {
+function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?: () => void) {
   if (!text) return null;
   const parts = text.split(urlRegex);
   
@@ -115,11 +115,11 @@ function renderMessageWithLinks(text: string, isCustomer: boolean) {
       return (
         <span key={i}>
           {isInternal ? (
-            <Link href={href} className={linkClass}>
+            <Link href={href} className={linkClass} onClick={onLinkClick}>
               {label} <ChevronRight size={12} strokeWidth={2.5} />
             </Link>
           ) : (
-            <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+            <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass} onClick={onLinkClick}>
               {label} <ChevronRight size={12} strokeWidth={2.5} />
             </a>
           )}
@@ -831,7 +831,11 @@ export default function SupportChat() {
                       >
                         <div className="max-w-[85%]">
                           <div className={`px-4 py-3 rounded-xl text-sm md:text-xs leading-relaxed whitespace-pre-wrap ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-ink/5 border border-ink/10 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
-                            {renderMessageWithLinks(m.message, m.sender_role === 'customer')}
+                            {renderMessageWithLinks(m.message, m.sender_role === 'customer', () => {
+                              if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                                setIsOpen(false);
+                              }
+                            })}
                           </div>
                           {(m.sender_role === 'admin' || m.is_auto_reply) && (
                             <div className={`flex items-center gap-1 mt-0.5 ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}>
