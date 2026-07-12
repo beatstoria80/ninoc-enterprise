@@ -47,3 +47,25 @@ It is NOT enough to just change the `.env` file. The agent must:
 2. **Webhooks & CRONs**: Ensure all webhook receivers (`/api/webhooks/*`) and CRON jobs are properly validating signatures using the **Production** secrets, not relying on bypassed Sandbox logic.
 3. **Third-Party Features**: Validate that any flows reliant on external Sandbox environments (like testing accounts or dummy data generators) are completely stripped out or disabled in the Production flow.
 4. **Agent Action**: If asked to transition to production, immediately list out all deep root configurations that will be affected and ask for confirmation before modifying core logic.
+
+# History Case: Global 500 Error Outage on Vercel (12 July 2026)
+
+**Background & Symptoms:**
+The user reported a global 500 Server Error ("This page couldn't load. A server error occurred.") on Vercel production after requesting a new "Cookie Policy" UI to be added. 
+The error affected ALL pages globally on `ninoc.store` and the Vercel edge returned an Error Digest hash (e.g. `4274333635`). 
+Crucially, the website worked perfectly when running `npm run build` and `npm run start` locally.
+
+**Root Causes Discovered:**
+1. **Vercel Hobby Plan Build Failures (`vercel.json`)**: An agent previously set `"maxDuration": 120` in `vercel.json` for Serverless Functions. Since the user was on the Vercel Hobby plan (which enforces a strict 60s maximum limit), this caused the deployment to silently fail on Vercel's end. As a result, critical code fixes were never actually deployed to production, and Vercel continued serving broken cached code.
+2. **Next.js `new URL()` Crash (`NEXT_PUBLIC_APP_URL`)**: In `src/app/layout.tsx`, the `generateMetadata` function passed `process.env.NEXT_PUBLIC_APP_URL` directly into `new URL()`. On Vercel, this variable was configured without a protocol (e.g., `ninoc.store` instead of `https://ninoc.store`). Node.js strictly throws `TypeError: Invalid URL` if a protocol is missing, which caused Next.js to fatally crash during Server-Side Rendering (SSR) for every single page.
+
+**Resolution & Rules for Future Agents:**
+To prevent this exact scenario from happening again, you MUST observe the following rules:
+- **Vercel Limits**: NEVER set `"maxDuration"` greater than `60` in `vercel.json` unless the user explicitly confirms they are on a Vercel Pro/Enterprise plan.
+- **URL Parsing**: NEVER pass raw environment variables directly into `new URL()` without validating or prepending a protocol (`http://` or `https://`). Always use a fallback and safety check, e.g.:
+  ```typescript
+  let rawUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+  if (!rawUrl.startsWith('http')) rawUrl = `https://${rawUrl}`;
+  ```
+- **Hydration Mismatches**: When implementing browser-only APIs (like `window` or `localStorage`) inside Client Components, always wrap them in `useEffect` to prevent hydration mismatches, OR import the component using `next/dynamic` with `{ ssr: false }`.
+- **Debugging Vercel Errors**: If the user reports a production error that cannot be replicated locally, always check if the Vercel deployment actually succeeded, and check for missing or malformed Environment Variables in Vercel.
