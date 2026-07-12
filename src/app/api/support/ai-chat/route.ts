@@ -311,6 +311,51 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
   return null;
 }
 
+// ─── Gemini AI (Robust Fallback System) ─────────────────────────────────────
+async function callGemini(messages: Array<any>, systemPrompt: string): Promise<string | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn('[AI-Chat] GEMINI_API_KEY not set.');
+    return null;
+  }
+
+  // Convert OpenAI format messages to Gemini format
+  const geminiMessages = messages.map(msg => ({
+    role: msg.role === 'assistant' || msg.role === 'tool' ? 'model' : 'user',
+    parts: [{ text: msg.content || '' }]
+  }));
+
+  const payload = {
+    system_instruction: {
+      parts: [{ text: systemPrompt }]
+    },
+    contents: geminiMessages,
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 1024,
+    }
+  };
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      console.warn('[AI-Chat] Gemini API failed:', await res.text());
+      return null;
+    }
+
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+  } catch (err: any) {
+    console.warn(`[AI-Chat] Exception with Gemini fallback:`, err.message);
+    return null;
+  }
+}
+
 // ─── Main Handler ───────────────────────────────────────────────────────────
 export async function POST(req: Request) {
   try {
@@ -343,14 +388,19 @@ ${ticketData.order_id ? `- ID Pesanan Customer: ${ticketData.order_id} (PENTING:
     const finalSystemPrompt = BASE_SYSTEM_PROMPT + storeContext + ticketContext;
     const chatMessages = await fetchChatHistory(ticketId, message);
 
-    // Call Groq AI
+    // Call Groq AI First
     let aiResponse = await callGroq(chatMessages, finalSystemPrompt);
 
     if (!aiResponse) {
+      console.warn('[AI-Chat] Groq failed, switching to GEMINI fallback...');
+      aiResponse = await callGemini(chatMessages, finalSystemPrompt);
+    }
+
+    if (!aiResponse) {
       aiResponse = FALLBACK_RESPONSE;
-      console.warn('[AI-Chat] Groq failed, using fallback.');
+      console.warn('[AI-Chat] ALL providers failed. Emitting static fallback.');
     } else {
-      console.log(`[AI-Chat] ✅ Groq response (${aiResponse.length} chars)`);
+      console.log(`[AI-Chat] ✅ AI Response generated (${aiResponse.length} chars)`);
     }
 
     // Save to Supabase
