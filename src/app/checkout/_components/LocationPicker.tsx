@@ -38,7 +38,19 @@ function LocationMarker({ position, setPosition, onSelect }: { position: L.LatLn
   });
 
   return position === null ? null : (
-    <Marker position={position} icon={customIcon}></Marker>
+    <Marker 
+      position={position} 
+      icon={customIcon}
+      draggable={true}
+      eventHandlers={{
+        dragend(e) {
+          const marker = e.target;
+          const pos = marker.getLatLng();
+          setPosition(pos);
+          onSelect(pos.lat, pos.lng);
+        },
+      }}
+    ></Marker>
   );
 }
 

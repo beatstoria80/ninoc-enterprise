@@ -1103,7 +1103,7 @@ export default function CheckoutPage() {
                 <LocationPicker 
                   initialLat={formData.latitude}
                   initialLng={formData.longitude}
-                  searchQuery={formData.kecamatan && formData.city ? `${formData.kecamatan}, ${formData.city}, Indonesia` : undefined}
+                  searchQuery={[formData.kelurahan, formData.kecamatan, formData.city, 'Indonesia'].filter(Boolean).join(', ')}
                   onLocationSelect={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
                 />
               </div>
