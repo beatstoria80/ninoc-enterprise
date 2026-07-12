@@ -25,22 +25,28 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await req.json();
-    const {
-      shipping_receipt_url,
-      customer_bank_code,
-      customer_bank_account,
-      customer_bank_account_name,
-      reimburse_amount,
-    } = body;
+    
+    // 1. Sanitasi & Type Casting Awal
+    const shipping_receipt_url = String(body.shipping_receipt_url || '').trim();
+    const customer_bank_code = String(body.customer_bank_code || '').trim().toUpperCase();
+    const raw_bank_account = String(body.customer_bank_account || '').trim();
+    const customer_bank_account_name = String(body.customer_bank_account_name || '').trim().toUpperCase();
+    const reimburse_amount = parseInt(String(body.reimburse_amount), 10) || 0;
 
-    if (!shipping_receipt_url || !customer_bank_code || !customer_bank_account || !customer_bank_account_name || !reimburse_amount) {
-      return NextResponse.json({ error: 'Data reimburse tidak lengkap. Pastikan nama pemilik rekening dicantumkan.' }, { status: 400 });
+    // 2. Bersihkan karakter non-digit (menghilangkan spasi/strip hasil copy-paste)
+    const clean_bank_account = raw_bank_account.replace(/\D/g, '');
+
+    if (!shipping_receipt_url || !customer_bank_code || !clean_bank_account || !customer_bank_account_name) {
+      return NextResponse.json({ error: 'Data reimburse tidak lengkap. Pastikan form diisi dengan benar.' }, { status: 400 });
     }
 
-    // Verify retur request exists
+    if (reimburse_amount <= 0) {
+      return NextResponse.json({ error: 'Nominal reimburse tidak valid.' }, { status: 400 });
+    }
+
     const { data: returReq, error: fetchErr } = await adminClient
       .from('retur_requests')
-      .select('id, user_id, order_id, status, guest_email, order:orders(shipping_address, customer_name)')
+      .select('id, user_id, order_id, status')
       .eq('id', id)
       .single();
 
@@ -52,7 +58,6 @@ export async function POST(
       return NextResponse.json({ error: 'Status retur belum disetujui, tidak dapat mengajukan reimburse' }, { status: 400 });
     }
 
-    // Auth check (ensure the user submitting is the owner, or allow guest if no user_id)
     const serverClient = await createServerClient();
     const { data: { user } } = await serverClient.auth.getUser();
 
@@ -60,22 +65,22 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized. Ini bukan pengajuan Anda.' }, { status: 403 });
     }
 
-    // STRICT SECURITY: Remove mock validation.
-    // Instead, rely on customer input and force manual verification status.
-    const rule = BANK_RULES[customer_bank_code.toUpperCase()];
-    if (rule && !rule.len.includes(customer_bank_account.length)) {
-      return NextResponse.json({ error: `Format nomor rekening ${customer_bank_code} tidak valid (harus ${rule.len.join(' atau ')} digit)` }, { status: 400 });
+    // 3. Validasi Bank yang Tahan Banting (Robust)
+    const rule = BANK_RULES[customer_bank_code];
+    if (rule && !rule.len.includes(clean_bank_account.length)) {
+      return NextResponse.json({ 
+        error: `Format nomor rekening ${customer_bank_code} tidak valid. Terdeteksi ${clean_bank_account.length} digit (harus ${rule.len.join(' atau ')} digit).` 
+      }, { status: 400 });
     }
 
-    // Update the retur request
     const { data: updatedData, error: updateErr } = await adminClient
       .from('retur_requests')
       .update({
         shipping_receipt_url,
         customer_bank_code,
-        customer_bank_account,
-        customer_bank_account_name: String(customer_bank_account_name).trim().toUpperCase(),
-        reimburse_amount: parseInt(reimburse_amount) || 0,
+        customer_bank_account: clean_bank_account,
+        customer_bank_account_name,
+        reimburse_amount,
         reimburse_status: 'pending_manual_validation'
       })
       .eq('id', id)
@@ -84,18 +89,20 @@ export async function POST(
 
     if (updateErr) throw updateErr;
 
-    // Log Activity
-    await adminClient.from('customer_activity_log').insert({
-      user_id: returReq.user_id,
-      activity_type: 'reimburse_submitted',
-      description: `Klaim reimburse ongkir diajukan sebesar IDR ${reimburse_amount}`,
-      metadata: { retur_id: id, bank: customer_bank_code },
-    });
+    // 4. Mencegah Silent Error saat Guest Checkout
+    if (returReq.user_id) {
+      await adminClient.from('customer_activity_log').insert({
+        user_id: returReq.user_id,
+        activity_type: 'reimburse_submitted',
+        description: `Klaim reimburse diajukan sebesar IDR ${reimburse_amount}`,
+        metadata: { retur_id: id, bank: customer_bank_code },
+      });
+    }
 
     return NextResponse.json({ success: true, reimburse_status: 'pending_manual_validation', data: updatedData }, { status: 200 });
 
   } catch (err: any) {
     console.error('[POST /api/retur/[id]/reimburse]', err);
-    return NextResponse.json({ error: err.message || 'Failed to submit reimburse' }, { status: 500 });
+    return NextResponse.json({ error: 'Terjadi kesalahan sistem saat mengajukan klaim.' }, { status: 500 });
   }
 }
