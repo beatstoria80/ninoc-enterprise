@@ -122,21 +122,21 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between px-4 py-3 border rounded-sm transition-all duration-300 ${
-          position && !isOpen 
-            ? 'border-green-600/30 bg-green-50' 
+          position 
+            ? 'border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 shadow-sm' 
             : isOpen 
               ? 'border-ink/20 bg-ink/5'
               : 'border-ink/20 bg-white hover:bg-ink/5'
         }`}
       >
         <div className="flex items-center gap-2">
-          <MapPin size={16} className={position && !isOpen ? 'text-green-600' : 'text-ink/60'} />
-          <span className={`text-[11px] uppercase tracking-widest font-medium ${position && !isOpen ? 'text-green-800' : 'text-ink/80'}`}>
-            {position && !isOpen ? '✓ Lokasi Tersimpan (Edit)' : 'Set Pin Lokasi (Wajib Gojek/Grab)'}
+          <MapPin size={16} className={position ? 'text-emerald-600 fill-emerald-100' : 'text-ink/60'} />
+          <span className={`text-[11px] uppercase tracking-widest font-medium ${position ? 'text-emerald-700' : 'text-ink/80'}`}>
+            {position ? '✓ Titik Lokasi Tersimpan' : 'Set Pin Lokasi (Wajib Gojek/Grab)'}
           </span>
         </div>
-        <span className="text-[10px] uppercase tracking-widest text-ink/40">
-          {isOpen ? 'Tutup' : 'Buka Peta'}
+        <span className={`text-[10px] uppercase tracking-widest ${position ? 'text-emerald-600 font-semibold hover:text-emerald-700' : 'text-ink/40'}`}>
+          {isOpen ? 'Tutup Peta' : position ? 'Ubah PIN' : 'Buka Peta'}
         </span>
       </button>
 
@@ -196,9 +196,13 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 bg-ink text-white text-[10px] uppercase tracking-widest hover:bg-ink/90 transition-colors rounded-sm"
+                className={`px-4 py-2 text-[10px] uppercase tracking-widest transition-colors rounded-sm font-semibold shadow-sm ${
+                  position 
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
+                    : 'bg-ink text-white hover:bg-ink/90'
+                }`}
               >
-                Simpan & Tutup
+                {position ? '✓ Simpan & Tutup' : 'Tutup Peta'}
               </button>
             </div>
           </motion.div>
