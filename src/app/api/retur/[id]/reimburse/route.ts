@@ -18,21 +18,6 @@ const BANK_RULES: Record<string, { len: number[]; name: string }> = {
   'CIMB': { len: [13], name: 'PT Bank CIMB Niaga Tbk' },
 };
 
-function validateBankAccountMock(bankCode: string, accountNo: string) {
-  const rule = BANK_RULES[bankCode.toUpperCase()];
-  if (!rule) {
-    // If not a standard bank, just assume it's valid for mock purposes
-    return { valid: true, accountName: 'GUEST CUSTOMER' };
-  }
-  
-  if (!rule.len.includes(accountNo.length)) {
-    return { valid: false, error: `Format nomor rekening ${bankCode} tidak valid (harus ${rule.len.join(' atau ')} digit)` };
-  }
-
-  // Mock valid account name based on order
-  return { valid: true, accountName: 'CUSTOMER NINOC' }; 
-}
-
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -44,11 +29,12 @@ export async function POST(
       shipping_receipt_url,
       customer_bank_code,
       customer_bank_account,
+      customer_bank_account_name,
       reimburse_amount,
     } = body;
 
-    if (!shipping_receipt_url || !customer_bank_code || !customer_bank_account || !reimburse_amount) {
-      return NextResponse.json({ error: 'Data reimburse tidak lengkap' }, { status: 400 });
+    if (!shipping_receipt_url || !customer_bank_code || !customer_bank_account || !customer_bank_account_name || !reimburse_amount) {
+      return NextResponse.json({ error: 'Data reimburse tidak lengkap. Pastikan nama pemilik rekening dicantumkan.' }, { status: 400 });
     }
 
     // Verify retur request exists
@@ -74,17 +60,11 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized. Ini bukan pengajuan Anda.' }, { status: 403 });
     }
 
-    // Mock Validation
-    const validation = validateBankAccountMock(customer_bank_code, customer_bank_account);
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
-    }
-
-    // Extract actual customer name from order for mock
-    let mockAccountName = validation.accountName;
-    const orderData = Array.isArray(returReq.order) ? returReq.order[0] : returReq.order;
-    if (orderData) {
-        mockAccountName = orderData.customer_name || (orderData.shipping_address as any)?.name || mockAccountName;
+    // STRICT SECURITY: Remove mock validation.
+    // Instead, rely on customer input and force manual verification status.
+    const rule = BANK_RULES[customer_bank_code.toUpperCase()];
+    if (rule && !rule.len.includes(customer_bank_account.length)) {
+      return NextResponse.json({ error: `Format nomor rekening ${customer_bank_code} tidak valid (harus ${rule.len.join(' atau ')} digit)` }, { status: 400 });
     }
 
     // Update the retur request
@@ -94,9 +74,9 @@ export async function POST(
         shipping_receipt_url,
         customer_bank_code,
         customer_bank_account,
-        customer_bank_account_name: mockAccountName,
+        customer_bank_account_name: String(customer_bank_account_name).trim().toUpperCase(),
         reimburse_amount: parseInt(reimburse_amount) || 0,
-        reimburse_status: 'validated'
+        reimburse_status: 'pending_manual_validation'
       })
       .eq('id', id)
       .select()
@@ -112,7 +92,7 @@ export async function POST(
       metadata: { retur_id: id, bank: customer_bank_code },
     });
 
-    return NextResponse.json({ success: true, reimburse_status: 'validated', data: updatedData }, { status: 200 });
+    return NextResponse.json({ success: true, reimburse_status: 'pending_manual_validation', data: updatedData }, { status: 200 });
 
   } catch (err: any) {
     console.error('[POST /api/retur/[id]/reimburse]', err);
