@@ -43,6 +43,8 @@ export interface BiteshipActivationSettings {
   has_insurance: boolean;
   has_cod: boolean;
   uses_own_resi: boolean;
+  warehouse_latitude: number;
+  warehouse_longitude: number;
 }
 
 export async function getBiteshipActivationSettings(): Promise<BiteshipActivationSettings> {
@@ -70,6 +72,8 @@ export async function getBiteshipActivationSettings(): Promise<BiteshipActivatio
     has_insurance: false,
     has_cod: false,
     uses_own_resi: false,
+    warehouse_latitude: -6.9147, // Default Bandung
+    warehouse_longitude: 107.6098,
   };
 }
 

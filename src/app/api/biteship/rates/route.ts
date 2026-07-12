@@ -132,8 +132,8 @@ export async function POST(req: Request) {
         if (destination_latitude && destination_longitude) {
           bodyPayload.destination_latitude = destination_latitude;
           bodyPayload.destination_longitude = destination_longitude;
-          bodyPayload.origin_latitude = -6.273763212850901;
-          bodyPayload.origin_longitude = 106.79153549642674;
+          bodyPayload.origin_latitude = settings?.warehouse_latitude || -6.9147;
+          bodyPayload.origin_longitude = settings?.warehouse_longitude || 107.6098;
         }
 
         // Dynamically fetch Origin Hub (NINOC Central Warehouse) with in-memory TTL cache
@@ -161,19 +161,31 @@ export async function POST(req: Request) {
 
         // If rates API error (no balance), fall back to mock
         if (!response.ok || data.success === false) {
-          console.warn(`[Biteship Rates] API returned error, using fallback mock data: ${JSON.stringify(data)}`);
+          console.warn(`[Biteship Rates] API returned error: ${JSON.stringify(data)}`);
+          
+          if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+            return NextResponse.json({ success: false, error: data.error || 'Shipping API unavailable', source: 'biteship' }, { status: 500 });
+          }
+
           const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
           const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
           return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: data.error || 'API unavailable' });
         }
 
       } catch (apiErr) {
-        // Network or other error — fall back to mock
-        console.warn('[Biteship Rates] API call failed, using fallback mock:', (apiErr as Error).message);
+        // Network or other error
+        console.error('[Biteship Rates] API call failed:', (apiErr as Error).message);
+        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+          return NextResponse.json({ success: false, error: 'Internal Shipping Server Error' }, { status: 500 });
+        }
       }
     }
 
     // Fallback mock data — works without API activation
+    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+      return NextResponse.json({ success: false, error: 'Shipping API Key Not Configured' }, { status: 500 });
+    }
+
     const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
     const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
     return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice });
@@ -181,6 +193,10 @@ export async function POST(req: Request) {
   } catch (err) {
     const error = err as Error;
     console.error('[Biteship Rates] Error:', error.message);
+    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+      return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    }
+    
     // Still return mock data on unexpected error
     const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, []);
     return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: error.message });

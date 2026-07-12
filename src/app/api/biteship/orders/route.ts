@@ -256,12 +256,23 @@ export async function POST(req: Request) {
           });
         }
 
-        // API error (not activated / no balance) — fall back to mock
-        console.warn(`[Biteship Create Order] API error, using mock: ${JSON.stringify(data)}`);
+        // API error (not activated / no balance)
+        console.warn(`[Biteship Create Order] API error: ${JSON.stringify(data)}`);
+        
+        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+          return NextResponse.json({ error: 'Shipping provider is currently unavailable. Please contact support.' }, { status: 500 });
+        }
 
       } catch (apiErr) {
-        console.warn('[Biteship Create Order] API call failed, using mock:', (apiErr as Error).message);
+        console.error('[Biteship Create Order] API call failed:', (apiErr as Error).message);
+        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+          return NextResponse.json({ error: 'Internal Shipping Server Error.' }, { status: 500 });
+        }
       }
+    }
+
+    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
+      return NextResponse.json({ error: 'Shipping API Key Not Configured.' }, { status: 500 });
     }
 
     // ── FALLBACK: Generate mock waybill ──
