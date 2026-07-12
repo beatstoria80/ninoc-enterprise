@@ -79,7 +79,7 @@ export default function GlobalCursor() {
   return (
     <motion.div
       id="ninoc-global-cursor"
-      className="pointer-events-none fixed top-0 left-0 z-[99999] flex items-center justify-center rounded-full"
+      className="pointer-events-none fixed top-0 left-0 z-[999999] flex items-center justify-center rounded-full"
       style={{
         x: cursorX,
         y: cursorY,
