@@ -76,6 +76,11 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
             const lat = parseFloat(data[0].lat);
             const lon = parseFloat(data[0].lon);
             setMapCenter([lat, lon]);
+            
+            // Automatically drop pin at the geocoded location
+            const newPos = new L.LatLng(lat, lon);
+            setPosition(newPos);
+            onLocationSelect(lat, lon);
           }
         } catch (error) {
           console.error("Geocoding failed:", error);
@@ -176,7 +181,7 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
               </MapContainer>
               
               {!position && (
-                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-white/40 backdrop-blur-[1px]" style={{ zIndex: 1000 }}>
+                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-white/20" style={{ zIndex: 1000 }}>
                   <MapPin size={24} className="text-rose mb-2 animate-bounce" />
                   <span className="text-[10px] font-medium uppercase tracking-widest text-ink bg-white/90 px-3 py-1 rounded-sm shadow-sm pointer-events-auto cursor-pointer" onClick={() => alert('Silakan klik di mana saja pada peta')}>
                     {isLocating ? 'Mencari Alamat Anda...' : 'Klik untuk pasang PIN'}
