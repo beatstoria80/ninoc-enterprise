@@ -2,41 +2,11 @@ import React, { useState } from 'react';
 import { Plus, Settings, Users, FileText, Search } from 'lucide-react';
 import { CatalogSettingsDrawer } from './CatalogSettingsDrawer';
 
-const MOCK_CATALOGS = [
-  {
-    id: '1',
-    name: 'Retail Global (Default)',
-    type: 'B2C',
-    currency: 'IDR',
-    priceAdjustment: 'None',
-    customerCount: 'All',
-    productCount: 1450,
-    status: 'Active'
-  },
-  {
-    id: '2',
-    name: 'Wholesale Tier 1',
-    type: 'B2B',
-    currency: 'IDR',
-    priceAdjustment: '-20%',
-    customerCount: 15,
-    productCount: 1450,
-    status: 'Active'
-  },
-  {
-    id: '3',
-    name: 'International USD',
-    type: 'B2C',
-    currency: 'USD',
-    priceAdjustment: 'Fixed List',
-    customerCount: 'All (US)',
-    productCount: 850,
-    status: 'Draft'
-  }
-];
-
 export function CatalogsView() {
   const [selectedCatalog, setSelectedCatalog] = useState<any>(null);
+  
+  // TO DO: Fetch from Supabase via `atelier_settings` or dedicated Catalogs table.
+  const catalogs: any[] = [];
 
   return (
     <div className="flex flex-col h-full space-y-2 relative">
@@ -68,45 +38,53 @@ export function CatalogsView() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {MOCK_CATALOGS.map(catalog => (
-              <tr key={catalog.id} className="hover:bg-gray-50/50 transition-colors group">
-                <td className="px-2 py-1.5">
-                  <div className="flex items-center gap-2">
-                    <FileText size={14} className="text-gray-400" />
-                    <div>
-                      <div className="font-medium text-xs text-ink">{catalog.name}</div>
-                      <div className="text-[10px] text-gray-500">Currency: {catalog.currency}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-2 py-1.5">
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-sm font-medium">
-                    {catalog.type}
-                  </span>
-                </td>
-                <td className="px-2 py-1.5 text-xs text-gray-600">
-                  {catalog.priceAdjustment}
-                </td>
-                <td className="px-2 py-1.5">
-                  <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                    <Users size={12} className="text-gray-400" />
-                    {catalog.customerCount}
-                  </div>
-                </td>
-                <td className="px-2 py-1.5 text-xs text-gray-600">
-                  {catalog.productCount}
-                </td>
-                <td className="px-2 py-1.5 text-right">
-                  <button 
-                    onClick={() => setSelectedCatalog(catalog)}
-                    className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded transition-all"
-                    title="Settings"
-                  >
-                    <Settings size={14} />
-                  </button>
+            {catalogs.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-xs text-gray-500">
+                  No catalogs configured yet. Create a new catalog to override default pricing.
                 </td>
               </tr>
-            ))}
+            ) : (
+              catalogs.map(catalog => (
+                <tr key={catalog.id} className="hover:bg-gray-50/50 transition-colors group">
+                  <td className="px-2 py-1.5">
+                    <div className="flex items-center gap-2">
+                      <FileText size={14} className="text-gray-400" />
+                      <div>
+                        <div className="font-medium text-xs text-ink">{catalog.name}</div>
+                        <div className="text-[10px] text-gray-500">Currency: {catalog.currency}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-sm font-medium">
+                      {catalog.type}
+                    </span>
+                  </td>
+                  <td className="px-2 py-1.5 text-xs text-gray-600">
+                    {catalog.priceAdjustment}
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                      <Users size={12} className="text-gray-400" />
+                      {catalog.customerCount}
+                    </div>
+                  </td>
+                  <td className="px-2 py-1.5 text-xs text-gray-600">
+                    {catalog.productCount}
+                  </td>
+                  <td className="px-2 py-1.5 text-right">
+                    <button 
+                      onClick={() => setSelectedCatalog(catalog)}
+                      className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-100 rounded transition-all"
+                      title="Settings"
+                    >
+                      <Settings size={14} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

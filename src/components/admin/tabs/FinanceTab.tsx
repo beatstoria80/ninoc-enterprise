@@ -26,6 +26,18 @@ export function FinanceTab({
   setIsCostingModalOpen: (b: boolean) => void;
 }) {
   const [ledgers, setLedgers] = useState<any[]>([]);
+  const [financeConfig, setFinanceConfig] = useState<any>({
+    cogs_percentage: 0,
+    marketing_percentage: 0,
+    salary: 0,
+    server: 0,
+    misc: 0,
+    cash: 0,
+    inventory: 0,
+    payables: 0,
+    paidInCapital: 0
+  });
+  const [isConfiguring, setIsConfiguring] = useState(false);
 
   useEffect(() => {
     if (financeTab === 'ledger') {
@@ -34,16 +46,27 @@ export function FinanceTab({
     }
   }, [financeTab]);
 
-  // Accounting Mocks
+  useEffect(() => {
+    fetch('/api/admin/settings?key=finance_config')
+      .then(res => res.json())
+      .then(res => {
+        if (res.data?.value) {
+          setFinanceConfig((prev: any) => ({ ...prev, ...res.data.value }));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  // Accounting Configuration
   const grossRevenue = finance.totalRevenue;
-  const cogs = grossRevenue * 0.3;
+  const cogs = grossRevenue * ((financeConfig.cogs_percentage || 0) / 100);
   const grossProfit = grossRevenue - cogs;
   
   const opex = {
-    marketing: grossRevenue * 0.05,
-    salary: 15000000,
-    server: 500000,
-    misc: 2000000
+    marketing: grossRevenue * ((financeConfig.marketing_percentage || 0) / 100),
+    salary: financeConfig.salary || 0,
+    server: financeConfig.server || 0,
+    misc: financeConfig.misc || 0
   };
   const totalOpex = Object.values(opex).reduce((a, b) => a + b, 0);
   
@@ -52,23 +75,36 @@ export function FinanceTab({
   const netIncomeAfterTax = netIncomeBeforeTax - pphFinalTax;
 
   const assets = {
-    cash: 50000000 + netIncomeAfterTax,
-    inventory: 45000000,
-    receivables: finance.pendingPayments * 500000
+    cash: (financeConfig.cash || 0) + netIncomeAfterTax,
+    inventory: (financeConfig.inventory || 0),
+    receivables: finance.pendingPayments * 500000 // approx average order value
   };
   const totalAssets = Object.values(assets).reduce((a, b) => a + b, 0);
 
   const liabilities = {
-    payables: 10000000,
+    payables: financeConfig.payables || 0,
     taxPayable: pphFinalTax
   };
   const totalLiabilities = Object.values(liabilities).reduce((a, b) => a + b, 0);
 
   const equity = {
-    paidInCapital: 80000000,
-    retainedEarnings: totalAssets - totalLiabilities - 80000000
+    paidInCapital: financeConfig.paidInCapital || 0,
+    retainedEarnings: totalAssets - totalLiabilities - (financeConfig.paidInCapital || 0)
   };
   const totalEquity = Object.values(equity).reduce((a, b) => a + b, 0);
+
+  const saveFinanceConfig = async () => {
+    try {
+      await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'finance_config', value: financeConfig })
+      });
+      setIsConfiguring(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <motion.div
@@ -103,8 +139,67 @@ export function FinanceTab({
               {tab.label}
             </button>
           ))}
+          <div className="flex-1" />
+          <button
+            onClick={() => setIsConfiguring(true)}
+            className="px-2 py-1 text-[10px] font-medium uppercase tracking-wider transition-colors border bg-white text-ink/80 border-ink/10 hover:border-ink/30 hover:text-ink flex items-center gap-1"
+          >
+            Configure
+          </button>
         </div>
       </div>
+
+      {isConfiguring && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4">
+          <div className="bg-white border border-ink/10 shadow-2xl p-4 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-4 border-b border-ink/10 pb-2">Finance Configurations</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">COGS %</label>
+                <input type="number" value={financeConfig.cogs_percentage} onChange={e => setFinanceConfig({...financeConfig, cogs_percentage: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Marketing %</label>
+                <input type="number" value={financeConfig.marketing_percentage} onChange={e => setFinanceConfig({...financeConfig, marketing_percentage: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Fixed Salary (IDR)</label>
+                <input type="number" value={financeConfig.salary} onChange={e => setFinanceConfig({...financeConfig, salary: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Server Costs (IDR)</label>
+                <input type="number" value={financeConfig.server} onChange={e => setFinanceConfig({...financeConfig, server: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Misc OPEX (IDR)</label>
+                <input type="number" value={financeConfig.misc} onChange={e => setFinanceConfig({...financeConfig, misc: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div className="border-t border-ink/10 my-2 pt-2">
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Base Cash (IDR)</label>
+                <input type="number" value={financeConfig.cash} onChange={e => setFinanceConfig({...financeConfig, cash: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Inventory Value (IDR)</label>
+                <input type="number" value={financeConfig.inventory} onChange={e => setFinanceConfig({...financeConfig, inventory: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Payables (IDR)</label>
+                <input type="number" value={financeConfig.payables} onChange={e => setFinanceConfig({...financeConfig, payables: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-ink/70 mb-1">Paid in Capital (IDR)</label>
+                <input type="number" value={financeConfig.paidInCapital} onChange={e => setFinanceConfig({...financeConfig, paidInCapital: Number(e.target.value)})} className="w-full border p-1 text-xs" />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button onClick={() => setIsConfiguring(false)} className="px-3 py-1.5 border border-ink/10 text-xs font-medium">Cancel</button>
+              <button onClick={saveFinanceConfig} className="px-3 py-1.5 bg-ink text-white text-xs font-medium">Save Settings</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto py-2 custom-scrollbar">
         {/* OVERVIEW */}
