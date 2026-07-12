@@ -78,7 +78,7 @@ function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '
 
 export async function POST(req: Request) {
   try {
-    const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, items, couriers } = await req.json();
+    const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, destination_latitude, destination_longitude, items, couriers } = await req.json();
     const apiKey = process.env.BITESHIP_API_KEY;
 
     // Try real Biteship API if key is configured
@@ -109,6 +109,13 @@ export async function POST(req: Request) {
 
         if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
         else if (final_dest_id) bodyPayload.destination_area_id = final_dest_id;
+
+        if (destination_latitude && destination_longitude) {
+          bodyPayload.destination_latitude = destination_latitude;
+          bodyPayload.destination_longitude = destination_longitude;
+          bodyPayload.origin_latitude = -6.273763212850901;
+          bodyPayload.origin_longitude = 106.79153549642674;
+        }
 
         // Dynamically fetch Origin Hub (NINOC Central Warehouse) with in-memory TTL cache
         const defaultOrigin = await getOriginPostalCode();

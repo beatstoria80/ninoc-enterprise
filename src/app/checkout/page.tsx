@@ -16,6 +16,8 @@ import { useDictionary } from '@/hooks/useDictionary';
 import CourierLogo from '@/components/CourierLogo';
 import { toast } from 'sonner';
 import { useRef } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { LocationPicker } from './_components/LocationPicker';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,6 +96,8 @@ interface CheckoutFormData {
   postal_code: string;
   referral_code: string;
   address_type: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 function getEstimatedDeliveryDate(durationStr: string, isLateForInstant: boolean, courierName: string): string {
@@ -573,8 +577,10 @@ export default function CheckoutPage() {
             body: JSON.stringify({
               destination_area_name: `${formData.city} ${formData.kecamatan}`,
               destination_area_id: formData.kecamatan,
+              destination_latitude: formData.latitude,
+              destination_longitude: formData.longitude,
               items: biteshipItems,
-              couriers: 'jne,grab,gojek',
+              couriers: 'jne,jnt,sicepat,anteraja,paxel,grab,gojek',
             })
           });
           const data = await res.json();
@@ -592,7 +598,7 @@ export default function CheckoutPage() {
       };
       fetchRates();
     }
-  }, [formData.kecamatan, formData.city, items]);
+  }, [formData.kecamatan, formData.city, items, formData.latitude, formData.longitude]);
 
   const displayOptions = dynamicShippingOptions;
 
@@ -1029,6 +1035,14 @@ export default function CheckoutPage() {
                     Kantor / Office
                   </button>
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <LocationPicker 
+                  initialLat={formData.latitude}
+                  initialLng={formData.longitude}
+                  onLocationSelect={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+                />
               </div>
 
               <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>

@@ -12,12 +12,21 @@ export async function POST(request: Request) {
       return NextResponse.json(getMockRates());
     }
 
-    const payload = {
+    const payload: any = {
       origin_area_id,
       destination_area_id,
       couriers: "jne,jnt,sicepat,anteraja,paxel",
       items: items
     };
+
+    if (body.destination_latitude && body.destination_longitude) {
+       payload.destination_latitude = body.destination_latitude;
+       payload.destination_longitude = body.destination_longitude;
+       // We MUST provide origin lat/long for Gojek/Grab. Let's provide warehouse default
+       payload.origin_latitude = -6.273763212850901;
+       payload.origin_longitude = 106.79153549642674;
+       payload.couriers = "jne,jnt,sicepat,anteraja,paxel,gojek,grab";
+    }
 
     const res = await fetch('https://api.biteship.com/v1/rates/couriers', {
       method: 'POST',

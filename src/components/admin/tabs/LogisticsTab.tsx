@@ -152,14 +152,20 @@ export function LogisticsTab({
           contact_phone: order.shipping_address?.phone || '0800000000',
           address: order.shipping_address?.address || 'Alamat tidak diketahui',
           postal_code: order.shipping_address?.postal_code || 12345,
-          note: `Pesanan NINOC #${order.id}`
+          note: `Pesanan NINOC #${order.id}`,
+          ...(order.shipping_address?.latitude && {
+            latitude: order.shipping_address.latitude,
+            longitude: order.shipping_address.longitude
+          })
         },
         origin: {
           contact_name: "NINOC Warehouse",
           contact_phone: "081234567890",
           address: "Jalan Contoh Gudang No. 1",
           postal_code: 12345,
-          note: "Gudang Utama NINOC"
+          note: "Gudang Utama NINOC",
+          latitude: -6.273763212850901,
+          longitude: 106.79153549642674
         },
         items: order.order_items?.map(item => ({
           name: item.product_name || 'Garment Item',
