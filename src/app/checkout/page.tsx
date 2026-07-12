@@ -585,8 +585,7 @@ export default function CheckoutPage() {
               destination_postal_code: formData.postal_code,
               destination_latitude: formData.latitude,
               destination_longitude: formData.longitude,
-              items: biteshipItems,
-              couriers: 'jne,jnt,sicepat,anteraja,paxel,grab,gojek',
+              items: biteshipItems
             })
           });
           const data = await res.json();

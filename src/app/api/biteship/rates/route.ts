@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { isFnBDepartment } from '@/lib/departmentDomain';
+import { getBiteshipActivationSettings } from '@/lib/settings';
 
 const MOCK_RATES = {
   success: true,
@@ -84,10 +85,12 @@ export async function POST(req: Request) {
     // Try real Biteship API if key is configured
     if (apiKey && apiKey !== 'your_biteship_api_key_here') {
       try {
+        const settings = await getBiteshipActivationSettings();
+        const activeCouriersString = settings?.activated_couriers?.join(',') || 'jne,grab,gojek';
 
         const bodyPayload: any = {
           items: items || [],
-          couriers: couriers || 'jne,grab,gojek',
+          couriers: activeCouriersString,
         };
 
         let final_dest_id = destination_area_id;

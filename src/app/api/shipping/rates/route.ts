@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBiteshipActivationSettings } from '@/lib/settings';
 
 export async function POST(request: Request) {
   try {
@@ -12,10 +13,13 @@ export async function POST(request: Request) {
       return NextResponse.json(getMockRates());
     }
 
+    const settings = await getBiteshipActivationSettings();
+    const baseCouriers = settings?.activated_couriers?.join(',') || 'jne,jnt';
+
     const payload: any = {
       origin_area_id,
       destination_area_id,
-      couriers: "jne,jnt,sicepat,anteraja,paxel",
+      couriers: baseCouriers,
       items: items
     };
 
@@ -25,7 +29,8 @@ export async function POST(request: Request) {
        // We MUST provide origin lat/long for Gojek/Grab. Let's provide warehouse default
        payload.origin_latitude = -6.273763212850901;
        payload.origin_longitude = 106.79153549642674;
-       payload.couriers = "jne,jnt,sicepat,anteraja,paxel,gojek,grab";
+       // We let the activated_couriers rule here. If grab/gojek is active, they will be sent.
+       payload.couriers = baseCouriers;
     }
 
     const res = await fetch('https://api.biteship.com/v1/rates/couriers', {
