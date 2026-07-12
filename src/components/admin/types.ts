@@ -131,6 +131,8 @@ export interface ShippingAddress {
   address_type?: string;
   shipping_method?: string;
   shipping_cost?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface FinanceSummary {

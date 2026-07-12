@@ -6,11 +6,7 @@ import { MapPin, Target } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Dynamic import of react-leaflet components to avoid SSR issues
-const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
-const useMapEvents = dynamic(() => import('react-leaflet').then((mod) => mod.useMapEvents), { ssr: false });
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 
 // Fix Leaflet default icon issue
 const customIcon = new L.Icon({

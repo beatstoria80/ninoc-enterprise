@@ -16,8 +16,13 @@ import { useDictionary } from '@/hooks/useDictionary';
 import CourierLogo from '@/components/CourierLogo';
 import { toast } from 'sonner';
 import { useRef } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { LocationPicker } from './_components/LocationPicker';
+
+import dynamic from 'next/dynamic';
+
+const LocationPicker = dynamic(() => import('./_components/LocationPicker').then(mod => mod.LocationPicker), { 
+  ssr: false, 
+  loading: () => <div className="h-[250px] w-full bg-ink/5 animate-pulse rounded-sm border border-ink/10 flex items-center justify-center"><span className="text-[10px] uppercase tracking-widest text-ink/40">Memuat Peta...</span></div> 
+});
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -577,6 +582,7 @@ export default function CheckoutPage() {
             body: JSON.stringify({
               destination_area_name: `${formData.city} ${formData.kecamatan}`,
               destination_area_id: formData.kecamatan,
+              destination_postal_code: formData.postal_code,
               destination_latitude: formData.latitude,
               destination_longitude: formData.longitude,
               items: biteshipItems,
