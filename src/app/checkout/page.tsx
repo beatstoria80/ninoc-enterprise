@@ -1043,14 +1043,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <LocationPicker 
-                  initialLat={formData.latitude}
-                  initialLng={formData.longitude}
-                  onLocationSelect={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
-                />
-              </div>
-
               <div className={cn("grid gap-[1px] bg-ink/5 border border-ink/5 rounded-none", isMobile ? "grid-cols-1" : "grid-cols-6")}>
                 <div className={cn("bg-white", isMobile ? "col-span-1 px-2 py-1.5" : "col-span-6 p-2.5")}>
                   <label htmlFor="street" className={labelClass}>{dict.checkout.street}</label>
@@ -1105,6 +1097,16 @@ export default function CheckoutPage() {
                   <label htmlFor="postal_code" className={labelClass}>Kode Pos / Postal Code</label>
                   <input id="postal_code" required type="text" value={formData.postal_code} onChange={(e) => setFormData({...formData, postal_code: e.target.value.replace(/[^0-9]/g, '')})} className={inputClass} placeholder="12345" maxLength={5} />
                 </div>
+              </div>
+
+              {/* LOCATION PICKER (Gojek/Grab requirement) */}
+              <div className="mt-4">
+                <LocationPicker 
+                  initialLat={formData.latitude}
+                  initialLng={formData.longitude}
+                  searchQuery={formData.kecamatan && formData.city ? `${formData.kecamatan}, ${formData.city}, Indonesia` : undefined}
+                  onLocationSelect={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+                />
               </div>
             </motion.section>
 

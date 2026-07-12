@@ -24,6 +24,7 @@ const customIcon = new L.Icon({
 interface LocationPickerProps {
   initialLat?: number;
   initialLng?: number;
+  searchQuery?: string;
   onLocationSelect: (lat: number, lng: number) => void;
 }
 
@@ -41,16 +42,56 @@ function LocationMarker({ position, setPosition, onSelect }: { position: L.LatLn
   );
 }
 
-export function LocationPicker({ initialLat, initialLng, onLocationSelect }: LocationPickerProps) {
+function MapUpdater({ center }: { center: [number, number] }) {
+  const map = useMapEvents({});
+  useEffect(() => {
+    map.setView(center, 14, { animate: true });
+  }, [center, map]);
+  return null;
+}
+
+export function LocationPicker({ initialLat, initialLng, searchQuery, onLocationSelect }: LocationPickerProps) {
   const [position, setPosition] = useState<L.LatLng | null>(
     initialLat && initialLng ? new L.LatLng(initialLat, initialLng) : null
   );
   
   const [isOpen, setIsOpen] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   
   // Default center (Jakarta)
   const defaultCenter: [number, number] = [-6.2088, 106.8456];
-  const center = position ? [position.lat, position.lng] : defaultCenter;
+  const [mapCenter, setMapCenter] = useState<[number, number]>(
+    position ? [position.lat, position.lng] : defaultCenter
+  );
+
+  // Geocoding effect
+  useEffect(() => {
+    if (isOpen && !position && searchQuery) {
+      const fetchLocation = async () => {
+        setIsLocating(true);
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+          const data = await res.json();
+          if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            setMapCenter([lat, lon]);
+          }
+        } catch (error) {
+          console.error("Geocoding failed:", error);
+        } finally {
+          setIsLocating(false);
+        }
+      };
+      
+      // Debounce slightly to prevent double fetching
+      const timeoutId = setTimeout(() => {
+        fetchLocation();
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen, position, searchQuery]);
 
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -122,7 +163,7 @@ export function LocationPicker({ initialLat, initialLng, onLocationSelect }: Loc
             
             <div className="h-[250px] w-full border border-ink/10 rounded-sm relative overflow-hidden bg-ink/5" style={{ zIndex: 1 }}>
               <MapContainer 
-                center={center as [number, number]} 
+                center={mapCenter} 
                 zoom={14} 
                 style={{ height: '100%', width: '100%', zIndex: 1 }}
               >
@@ -130,6 +171,7 @@ export function LocationPicker({ initialLat, initialLng, onLocationSelect }: Loc
                   attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
                   url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
+                <MapUpdater center={mapCenter} />
                 <LocationMarker position={position} setPosition={setPosition} onSelect={onLocationSelect} />
               </MapContainer>
               
@@ -137,7 +179,7 @@ export function LocationPicker({ initialLat, initialLng, onLocationSelect }: Loc
                 <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-white/40 backdrop-blur-[1px]" style={{ zIndex: 1000 }}>
                   <MapPin size={24} className="text-rose mb-2 animate-bounce" />
                   <span className="text-[10px] font-medium uppercase tracking-widest text-ink bg-white/90 px-3 py-1 rounded-sm shadow-sm pointer-events-auto cursor-pointer" onClick={() => alert('Silakan klik di mana saja pada peta')}>
-                    Klik untuk pasang PIN
+                    {isLocating ? 'Mencari Alamat Anda...' : 'Klik untuk pasang PIN'}
                   </span>
                 </div>
               )}
