@@ -2,9 +2,11 @@
 
 import { Toaster } from "sonner";
 
-import SupportChat from "@/components/SupportChat";
-import QuickBuyModal from "@/components/QuickBuyModal";
-import GlobalCursor from "@/components/GlobalCursor";
+import dynamic from "next/dynamic";
+
+const SupportChat = dynamic(() => import("@/components/SupportChat"), { ssr: false });
+const QuickBuyModal = dynamic(() => import("@/components/QuickBuyModal"), { ssr: false });
+const GlobalCursor = dynamic(() => import("@/components/GlobalCursor"), { ssr: false });
 
 export default function ClientOverlays() {
   return (
