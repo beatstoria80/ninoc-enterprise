@@ -108,7 +108,7 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
       
       return () => clearTimeout(timeoutId);
     }
-  }, [isOpen, position, searchQuery]);
+  }, [isOpen, position, searchQuery, onLocationSelect]);
 
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {

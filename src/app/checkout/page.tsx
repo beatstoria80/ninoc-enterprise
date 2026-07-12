@@ -603,7 +603,7 @@ export default function CheckoutPage() {
       };
       fetchRates();
     }
-  }, [formData.kecamatan, formData.city, items, formData.latitude, formData.longitude]);
+  }, [formData.kecamatan, formData.city, items, formData.latitude, formData.longitude, formData.postal_code]);
 
   const displayOptions = dynamicShippingOptions;
 
