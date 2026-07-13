@@ -150,6 +150,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   // Memoized Derived State
   const isPants = React.useMemo(() => product?.category?.toLowerCase() === 'celana', [product]);
 
+  const isFnBCat = React.useMemo(() => {
+    const cat = (product?.category || '').toLowerCase();
+    return ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry'].some(k => cat.includes(k));
+  }, [product]);
+
+  const isObjectsCat = React.useMemo(() => {
+    const cat = (product?.category || '').toLowerCase();
+    return !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects', 'collectibles'].some(k => cat.includes(k));
+  }, [product, isFnBCat]);
+
   const displaySpecs = React.useMemo(() => {
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
     return safeSpecs.filter(
@@ -424,7 +434,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               {availableColors.length > 0 && (
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">{product?.variant_label ? `Pilih ${product.variant_label}` : dict.product.selectColor}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">
+                    {product?.variant_label
+                      ? `Pilih ${product.variant_label}`
+                      : isObjectsCat
+                        ? 'Pilih Varian / Series'
+                        : isFnBCat
+                          ? 'Pilih Varian / Blend'
+                          : dict.product.selectColor}
+                  </motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
                       const colorGallery = colorGalleryMap[color];

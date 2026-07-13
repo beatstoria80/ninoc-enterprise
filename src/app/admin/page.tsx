@@ -3180,11 +3180,11 @@ export default function AdminDashboard() {
                           {colorGroups.map((group) => (
                             <div key={group.originalIndices[0]} className="bg-gray-50 rounded-xl p-2 space-y-2 border border-gray-100">
                               <div className="flex items-center justify-between pb-3 border-b border-gray-200 flex-wrap gap-3">
-                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">{isFnB ? 'Varian / Blend:' : isObjects ? 'Varian Model / Warna:' : 'Color:'}</span>
+                                  <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">{productForm.variant_label ? `${productForm.variant_label}:` : isFnB ? 'Varian / Blend:' : isObjects ? 'Varian Model / Series:' : 'Color / Warna:'}</span>
                                   <input
                                     type="text"
                                     value={group.color}
-                                    placeholder="e.g. Black"
+                                    placeholder="e.g. Black or Series Name"
                                     onChange={(e) => {
                                       const newVariants = [...productForm.variants];
                                       group.originalIndices.forEach(idx => {
@@ -3202,7 +3202,7 @@ export default function AdminDashboard() {
                                   }}
                                   className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
                                 >
-                                  Remove Color
+                                  Remove {productForm.variant_label || (isFnB ? 'Blend' : isObjects ? 'Varian' : 'Color')}
                                 </button>
 
                                 <div className="mt-2 space-y-2">
