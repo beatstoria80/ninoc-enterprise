@@ -69,3 +69,18 @@ To prevent this exact scenario from happening again, you MUST observe the follow
   ```
 - **Hydration Mismatches**: When implementing browser-only APIs (like `window` or `localStorage`) inside Client Components, always wrap them in `useEffect` to prevent hydration mismatches, OR import the component using `next/dynamic` with `{ ssr: false }`.
 - **Debugging Vercel Errors**: If the user reports a production error that cannot be replicated locally, always check if the Vercel deployment actually succeeded, and check for missing or malformed Environment Variables in Vercel.
+
+# History Case: Biteship Courier Rates Bug & Hardcoded Values (13 July 2026)
+
+**Background & Symptoms:**
+The user reported that the courier prices were inaccurate, complaining that prices were "too expensive" or didn't meet their target of 12,000 IDR for regular shipping, and raised concerns about weight aggregation.
+
+**Root Causes Discovered:**
+1. **Silent Data Loss in Cart (`weight_grams` & `is_perishable`)**: When adding items to the cart, the hook `useProductSelection.ts` was not passing `weight_grams`, `department_id`, and `is_perishable` to the Zustand `useCart.ts` store. This caused all cart items to fall back to a hardcoded `100g` weight during checkout. It also caused perishable F&B products to bypass the Instant/Sameday courier restrictions because the `is_perishable` flag was lost.
+2. **Hardcoded Origin Postal Code Typo (`api/biteship/rates/route.ts`)**: The fallback origin postal code for the primary warehouse (Griya Saluyu, Bandung) was hardcoded to `41254` (Subang) instead of `40292` (Bandung). This caused Grab/Gojek Instant rates to either fail or become astronomically expensive for users in Bandung whenever the database query failed to fetch the real origin.
+3. **Misleading Mock Rates (`MOCK_RATES`)**: The fallback/dummy prices for shipping were arbitrarily set to 15,000 IDR for JNE Reguler. When testing without a live API key, the user was confused why the target price (12,000 IDR) was not showing. 
+
+**Resolution & Rules for Future Agents:**
+- **State Management & Interfaces**: When adding new fields to a database schema (like `weight_grams` or `is_perishable`), ALWAYS trace the data flow all the way to the frontend state management (like Zustand `CartItem` interfaces) to ensure the data is not being silently stripped out before it reaches critical APIs (like Checkout or Shipping calculations).
+- **Hardcoded Geolocation / Magic Numbers**: NEVER use "magic numbers" for critical geolocations (like postal codes or coordinates) without verification. If you must use a fallback, triple-check that it accurately reflects the real-world location (e.g., Bandung is `402xx`, not `412xx`).
+- **Mock Rates Alignment**: If the system is running in Sandbox/Mock mode, ensure the dummy data reflects the user's target business goals (e.g., JNE Reguler = 12,000 IDR). Do NOT use generic numbers that might cause confusion during user QA or demos.
