@@ -629,6 +629,8 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
     isFilterOpen, setIsFilterOpen,
     activeFilterCount,
     availableSubCategories,
+    availablePriceRanges,
+    availableSizes,
     filteredProducts,
     resetFilters
   } = filterSystem;
