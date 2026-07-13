@@ -63,6 +63,7 @@ export interface Product {
   departments?: Department | null;
   warehouses?: Warehouse | null;
   created_at: string;
+  variant_label?: string | null;
   variants?: Variant[];
 }
 

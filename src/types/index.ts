@@ -50,6 +50,7 @@ export interface Product {
   warehouses?: Warehouse | null;
   created_at: string;
   updated_at: string;
+  variant_label?: string | null;
 }
 
 export interface Variant {

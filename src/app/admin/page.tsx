@@ -240,6 +240,7 @@ export default function AdminDashboard() {
     affiliate_eligible: false,
     price_tag: '',
     badge_text: '',
+    variant_label: '',
     variants: [] as { id: string; size: string; color: string; stock_quantity: number; sku?: string }[]
   });
 
@@ -451,6 +452,7 @@ export default function AdminDashboard() {
         affiliate_eligible: Boolean(product.affiliate_eligible),
         price_tag: product.price_tag || '',
         badge_text: product.badge_text || '',
+        variant_label: product.variant_label || '',
         variants: product.variants?.length ? product.variants.map(v => {
           const parsedStock = typeof v.stock_quantity === 'number' && !isNaN(v.stock_quantity) 
             ? v.stock_quantity 
@@ -495,6 +497,7 @@ export default function AdminDashboard() {
         affiliate_eligible: false,
         price_tag: '',
         badge_text: '',
+        variant_label: '',
         variants: []
       });
     }
@@ -607,6 +610,7 @@ export default function AdminDashboard() {
         affiliate_eligible: productForm.affiliate_eligible,
         price_tag: productForm.price_tag || null,
         badge_text: productForm.badge_text || null,
+        variant_label: productForm.variant_label || null,
         updated_at: new Date().toISOString()
       };
 
@@ -2565,6 +2569,50 @@ export default function AdminDashboard() {
                           className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all ml-auto"
                         >
                           Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* CUSTOM VARIANT LABEL (untuk mengganti "Pilih Warna" pada halaman produk) */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Label Varian Kustom (Opsional)</label>
+                        <span className="text-[9px] text-gray-400 italic">Ganti teks &ldquo;Pilih Warna&rdquo; di halaman toko</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={productForm.variant_label || ''}
+                        onChange={(e) => setProductForm({ ...productForm, variant_label: e.target.value })}
+                        placeholder="Kosongkan untuk default (Pilih Warna). Contoh: Tech Deck Series, Motif, Aksen..."
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 mb-2"
+                      />
+                      <div className="flex flex-wrap gap-1.5">
+                        {(isFnB
+                          ? ['Blend', 'Roast Profile', 'Varian Rasa', 'Origin']
+                          : isObjects
+                          ? ['Series', 'Motif', 'Aksen', 'Varian Model', 'Edisi']
+                          : ['Warna', 'Motif', 'Series', 'Edisi', 'Aksen']
+                        ).map(preset => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => setProductForm({ ...productForm, variant_label: preset })}
+                            className={cn(
+                              "px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all",
+                              productForm.variant_label === preset
+                                ? "bg-rose text-white border-rose shadow-sm"
+                                : "bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
+                            )}
+                          >
+                            {preset}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setProductForm({ ...productForm, variant_label: '' })}
+                          className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all ml-auto"
+                        >
+                          Reset Default
                         </button>
                       </div>
                     </div>

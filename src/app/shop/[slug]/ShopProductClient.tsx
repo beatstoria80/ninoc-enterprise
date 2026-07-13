@@ -424,7 +424,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
               {availableColors.length > 0 && (
                 <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">{dict.product.selectColor}</motion.h4>
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">{product?.variant_label ? `Pilih ${product.variant_label}` : dict.product.selectColor}</motion.h4>
                   <div className="flex gap-2 flex-wrap">
                     {availableColors.map((color) => {
                       const colorGallery = colorGalleryMap[color];

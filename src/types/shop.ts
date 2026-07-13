@@ -18,4 +18,5 @@ export interface Product {
   specifications?: { label: string; value: string }[] | null;
   measurements?: { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[] | null;
   model_info?: string | null;
+  variant_label?: string | null;
 }
