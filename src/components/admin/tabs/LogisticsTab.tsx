@@ -143,13 +143,13 @@ export function LogisticsTab({
           })
         },
         origin: {
-          contact_name: "NINOC Warehouse",
-          contact_phone: "081234567890",
-          address: "Jalan Contoh Gudang No. 1",
-          postal_code: 12345,
-          note: "Gudang Utama NINOC",
-          latitude: -6.273763212850901,
-          longitude: 106.79153549642674
+          contact_name: "NINOC Logistics",
+          contact_phone: "+628211983774",
+          address: "Kompleks Griya Saluyu, Blok AA No.87",
+          postal_code: 40292,
+          note: "Gudang Utama NINOC (Bandung)",
+          latitude: -6.953531, // coordinates around Rancasari/Griya Saluyu Bandung
+          longitude: 107.665518
         },
         items: order.order_items?.map(item => ({
           name: item.product_name || 'Garment Item',
