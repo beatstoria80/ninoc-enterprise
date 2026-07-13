@@ -2297,18 +2297,25 @@ export default function AdminDashboard() {
                           onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
                         >
-                          {dbCategories.length > 0 ? (
-                            dbCategories
-                              .filter(c => {
-                                if (isFnB) return c.slug.includes('coffee') || c.slug.includes('kopi') || c.slug.includes('pastry') || c.slug.includes('snack') || c.slug.includes('rtd') || c.slug.includes('fnb') || c.slug.includes('beverage');
-                                if (isObjects) return c.slug.includes('home') || c.slug.includes('kitchen') || c.slug.includes('utilities') || c.slug.includes('objects') || c.slug.includes('collectibles') || c.slug.includes('art');
-                                return !c.slug.includes('coffee') && !c.slug.includes('kopi') && !c.slug.includes('pastry') && !c.slug.includes('snack') && !c.slug.includes('rtd') && !c.slug.includes('home') && !c.slug.includes('kitchen');
-                              })
-                              .map(c => (
+                          {(() => {
+                            let filtered = dbCategories.length > 0 ? dbCategories.filter(c => {
+                              if (isFnB) return c.slug.includes('coffee') || c.slug.includes('kopi') || c.slug.includes('pastry') || c.slug.includes('snack') || c.slug.includes('rtd') || c.slug.includes('fnb') || c.slug.includes('beverage');
+                              if (isObjects) return c.slug.includes('home') || c.slug.includes('kitchen') || c.slug.includes('utilities') || c.slug.includes('objects') || c.slug.includes('collectibles') || c.slug.includes('art');
+                              return !c.slug.includes('coffee') && !c.slug.includes('kopi') && !c.slug.includes('pastry') && !c.slug.includes('snack') && !c.slug.includes('rtd') && !c.slug.includes('home') && !c.slug.includes('kitchen');
+                            }) : [];
+                            
+                            // If we have categories but none match the strict filters, fallback to showing all categories
+                            if (dbCategories.length > 0 && filtered.length === 0) {
+                              filtered = dbCategories;
+                            }
+
+                            if (filtered.length > 0) {
+                              return filtered.map(c => (
                                 <option key={c.id} value={c.slug}>{c.name}</option>
-                              ))
-                          ) : (
-                            isFnB ? (
+                              ));
+                            }
+
+                            return isFnB ? (
                               <>
                                 <option value="coffee">Biji Kopi / Roasted Beans</option>
                                 <option value="pastry">Pastry & Bakery</option>
@@ -2333,8 +2340,8 @@ export default function AdminDashboard() {
                                 <option value="aksesoris">Aksesoris</option>
                                 <option value="archive">Arsip / Studio Edition</option>
                               </>
-                            )
-                          )}
+                            );
+                          })()}
                         </select>
                       </div>
                     </div>
