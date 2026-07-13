@@ -5,6 +5,7 @@ import { motion, Variants } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import SafeImage from '@/components/SafeImage';
+import DragSlider from '@/components/DragSlider';
 import type { Dictionary } from '@/lib/i18n';
 import { Product } from '@/types/shop';
 
@@ -27,7 +28,7 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
         </Link>
       </motion.div>
 
-      <div className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-4 pt-1">
+      <DragSlider className="flex gap-3 md:gap-4 pb-4 pt-1">
         {relatedProducts.map((p) => (
           <motion.div
             variants={textVariants}
@@ -53,7 +54,7 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
             </Link>
           </motion.div>
         ))}
-      </div>
+      </DragSlider>
     </motion.div>
   );
 }
