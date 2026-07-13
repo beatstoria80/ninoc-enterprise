@@ -121,8 +121,8 @@ function normalizeCategoryKey(rawCat?: string | null): string {
   if (clean === 'unisex' || clean === 'pakaian-unisex' || clean === 'baju-unisex') return 'unisex';
   if (clean === 'celana' || clean === 'celana-panjang' || clean === 'celana-pendek' || clean === 'celana-cargo' || clean === 'pants' || clean === 'trousers' || clean === 'jeans' || clean === 'shorts' || clean === 'sweatpants' || clean === 'bottoms' || clean === 'bawahan' || clean === 'kulot' || clean === 'cargo') return 'celana';
   if (clean === 'rok' || clean === 'skirt' || clean === 'dress' || clean === 'cargo-skirt' || clean === 'maxi-skirt' || clean === 'mini-skirt') return 'rok';
-  if (clean === 'utilities' || clean === 'utility' || clean === 'gear' || clean === 'objects' || clean === 'accessories') return 'utilities';
-  if (clean === 'aksesoris' || clean === 'accessory' || clean === 'acc') return 'aksesoris';
+  if (clean === 'utilities' || clean === 'utility' || clean === 'gear' || clean === 'objects') return 'utilities';
+  if (clean === 'aksesoris' || clean === 'accessory' || clean === 'accessories' || clean === 'accesories' || clean === 'acc') return 'aksesoris';
   return clean;
 }
 

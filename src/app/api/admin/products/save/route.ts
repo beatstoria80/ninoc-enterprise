@@ -22,7 +22,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       if (!productData.sub_category) {
         productData.sub_category = productData.category;
       }
-      if (rawCat.includes('aksesoris') || rawCat.includes('accessor') || rawCat.includes('topi') || rawCat.includes('tas') || rawCat.includes('bag') || rawCat.includes('hat') || rawCat.includes('jewelry') || rawCat.includes('kalung') || rawCat.includes('gelang')) {
+      if (rawCat.includes('aksesoris') || rawCat.includes('accessor') || rawCat.includes('accesories') || rawCat.includes('topi') || rawCat.includes('tas') || rawCat.includes('bag') || rawCat.includes('hat') || rawCat.includes('jewelry') || rawCat.includes('kalung') || rawCat.includes('gelang')) {
         productData.category = 'aksesoris';
       } else if (rawCat.includes('utilities') || rawCat.includes('object') || rawCat.includes('home') || rawCat.includes('kitchen') || rawCat.includes('collect') || rawCat.includes('ceramic') || rawCat.includes('art') || rawCat.includes('goods') || rawCat.includes('stationery') || rawCat.includes('alat_tulis') || rawCat.includes('keramik') || rawCat.includes('rumahtangga') || rawCat.includes('coffee') || rawCat.includes('kopi') || rawCat.includes('pastry') || rawCat.includes('snack') || rawCat.includes('rtd') || rawCat.includes('fnb') || rawCat.includes('beverage') || rawCat.includes('pantry') || rawCat.includes('food') || rawCat.includes('minuman') || rawCat.includes('makanan') || rawCat.includes('roastery') || rawCat.includes('cafe')) {
         productData.category = 'utilities';
