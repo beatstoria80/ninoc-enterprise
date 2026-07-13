@@ -2299,6 +2299,7 @@ export default function AdminDashboard() {
                         >
                           {(() => {
                             let filtered = dbCategories.length > 0 ? dbCategories.filter(c => {
+                              if (c.slug === 'pakaian-unisex' || c.slug === 'baju-unisex') return false;
                               if (isFnB) return c.slug.includes('coffee') || c.slug.includes('kopi') || c.slug.includes('pastry') || c.slug.includes('snack') || c.slug.includes('rtd') || c.slug.includes('fnb') || c.slug.includes('beverage');
                               if (isObjects) return c.slug.includes('home') || c.slug.includes('kitchen') || c.slug.includes('utilities') || c.slug.includes('objects') || c.slug.includes('collectibles') || c.slug.includes('art');
                               return !c.slug.includes('coffee') && !c.slug.includes('kopi') && !c.slug.includes('pastry') && !c.slug.includes('snack') && !c.slug.includes('rtd') && !c.slug.includes('home') && !c.slug.includes('kitchen');
