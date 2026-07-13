@@ -32,6 +32,14 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     }
   }
 
+  // Normalize sub_category for 'unisex' consistency
+  if (productData && productData.sub_category) {
+    const rawSubCat = String(productData.sub_category).toLowerCase().trim();
+    if (rawSubCat === 'pakaian-unisex' || rawSubCat === 'baju-unisex' || rawSubCat === 'pakaian unisex') {
+      productData.sub_category = 'unisex';
+    }
+  }
+
   // 1. Insert or Update Product
   if (isEditMode && productId) {
     const { error } = await supabase
