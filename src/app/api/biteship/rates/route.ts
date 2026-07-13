@@ -32,7 +32,7 @@ async function getOriginPostalCode(): Promise<number> {
     return cachedOriginHub.postalCode;
   }
 
-  let defaultOrigin = 41254; // Fallback Griya Saluyu
+  let defaultOrigin = 40292; // Fallback Griya Saluyu (Bandung)
   try {
     const { data: hubData } = await supabaseAdmin
       .from('warehouses')

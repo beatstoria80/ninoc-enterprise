@@ -15,6 +15,10 @@ export interface CartItem {
   size?: string;
   color?: string;
   size_surcharge: number; // extra charge for XXL+ sizes
+  weight_grams?: number;
+  department_id?: string | null;
+  category?: string;
+  is_perishable?: boolean;
 }
 
 interface CartStore {

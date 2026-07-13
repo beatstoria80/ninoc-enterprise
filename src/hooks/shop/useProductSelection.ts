@@ -132,6 +132,10 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       slug: product.slug,
       price: product.price,
       image_url: product.image_url,
+      weight_grams: product.weight_grams,
+      department_id: product.department_id,
+      category: product.category,
+      is_perishable: product.is_perishable,
     }, effectiveSize, effectiveColor, sizeSurcharge, quantity);
     
     setQuantity(1);
