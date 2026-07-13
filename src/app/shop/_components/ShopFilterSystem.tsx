@@ -427,17 +427,17 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
         {/* Active Filter Tags displayed directly in the sticky header */}
         <ActiveFilterTags filterSystem={filterSystem} />
 
-        {/* Expandable Filter Studio Drawer (Absolute Positioning keeps Product Cards from being pushed down) */}
+        {/* Expandable Filter Studio Drawer (Pushes Product Cards down instead of overlapping) */}
         <AnimatePresence>
           {isFilterOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              className="absolute top-full left-0 right-0 w-full bg-white border-b border-ink/15 shadow-2xl z-[250] overflow-hidden"
+              className="w-full bg-white border-t mt-3 border-ink/10 overflow-hidden"
             >
-              <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-3.5 space-y-3">
+              <div className="pt-3 pb-1 space-y-3">
                 {/* Drawer Header with TWO DISTINCT ICON BUTTONS */}
                 <div className="flex items-center justify-between pb-2 border-b border-ink/10">
                   <div className="text-[11px] font-mono uppercase tracking-widest text-ink/70 flex items-center gap-2">
