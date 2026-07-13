@@ -3277,6 +3277,42 @@ export default function AdminDashboard() {
                                   })}
                                 </div>
 
+                                {/* Deskripsi Khusus Varian/Series ini */}
+                                {(() => {
+                                  const descSpecLabel = `ColorDesc:${group.color}`;
+                                  const descSpec = productForm.specifications?.find(s => s.label === descSpecLabel);
+                                  const descValue = descSpec?.value || '';
+                                  return (
+                                    <div className="mt-2.5 bg-white p-2.5 border border-gray-200 rounded-lg">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                          Deskripsi / Catatan Khusus {productForm.variant_label || 'Varian/Series'} &ldquo;{group.color}&rdquo; (Opsional)
+                                        </label>
+                                        <span className="text-[8px] text-gray-400 italic">Muncul saat pembeli memilih varian ini di halaman toko</span>
+                                      </div>
+                                      <input
+                                        type="text"
+                                        value={descValue}
+                                        placeholder="Contoh: Set 2pcs grafis Primitive api & Stereo skater biru lengkap dengan trucks & wheels..."
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          const newSpecs = [...(productForm.specifications || [])];
+                                          const specIdx = newSpecs.findIndex(s => s.label === descSpecLabel);
+                                          if (val.trim() === '') {
+                                            if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                          } else if (specIdx >= 0) {
+                                            newSpecs[specIdx] = { label: descSpecLabel, value: val };
+                                          } else {
+                                            newSpecs.push({ label: descSpecLabel, value: val });
+                                          }
+                                          setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                        }}
+                                        className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 focus:bg-white transition-all text-ink"
+                                      />
+                                    </div>
+                                  );
+                                })()}
+
                               <div className="pt-1">
                                 <div className="flex flex-wrap items-center gap-2">
                                   {Array.from(new Set([

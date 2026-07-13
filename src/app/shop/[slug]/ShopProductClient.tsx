@@ -163,7 +163,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const displaySpecs = React.useMemo(() => {
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
     return safeSpecs.filter(
-      (s: any) => s?.label && typeof s.label === 'string' && !/^color\s*(image|p1|p2|p3|p4|p5)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
+      (s: any) => s?.label && typeof s.label === 'string' && !/^color\s*(image|p1|p2|p3|p4|p5|desc)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
     );
   }, [product]);
 
@@ -190,6 +190,20 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           if (type === 'P3') map[colorName].p3 = spec?.value;
           if (type === 'P4') map[colorName].p4 = spec?.value;
           if (type === 'P5') map[colorName].p5 = spec?.value;
+        }
+      }
+    });
+    return map;
+  }, [product]);
+
+  const colorDescMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    safeSpecs.forEach((spec: any) => {
+      if (typeof spec?.label === 'string') {
+        const match = spec.label.match(/^colordesc\s*:\s*(.+)$/i);
+        if (match && spec.value) {
+          map[match[1].trim().toUpperCase()] = spec.value;
         }
       }
     });
@@ -469,6 +483,18 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       );
                     })}
                   </div>
+                  {effectiveColor && colorDescMap[effectiveColor.toUpperCase()] && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2.5 p-2.5 rounded bg-gray-50/90 border border-ink/10 text-xs text-ink/80 leading-relaxed"
+                    >
+                      <div className="font-semibold text-[9px] uppercase tracking-wider text-ink/50 mb-0.5">
+                        {product?.variant_label || (isObjectsCat ? 'Catatan Series/Model' : isFnBCat ? 'Catatan Blend' : 'Catatan Varian')}: {effectiveColor}
+                      </div>
+                      <p className="text-ink/80 text-xs leading-relaxed">{colorDescMap[effectiveColor.toUpperCase()]}</p>
+                    </motion.div>
+                  )}
                 </div>
               )}
 
