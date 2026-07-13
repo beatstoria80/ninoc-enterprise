@@ -61,14 +61,34 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     
     const fetchRelated = async () => {
       try {
-        let { data: related } = await supabase
+        // 1. Prioritaskan produk dengan sub_category yang persis sama (misal: sesama Unisex)
+        let { data: exactMatches } = await supabase
           .from('products')
           .select('*')
-          .eq('category', product.category)
+          .eq('sub_category', product.sub_category || product.category)
           .neq('id', product.id)
           .limit(14);
+          
+        let related = exactMatches || [];
 
-        if (!related || related.length < 10) {
+        // 2. Jika produk kurang dari 10, isi kekurangannya dengan produk dari kategori utama (misal: sesama pakaian)
+        if (related.length < 10) {
+          const { data: categoryMatches } = await supabase
+            .from('products')
+            .select('*')
+            .eq('category', product.category)
+            .neq('id', product.id)
+            .limit(14);
+            
+          if (categoryMatches) {
+            const existingIds = new Set(related.map(p => p.id));
+            const extra = categoryMatches.filter(p => !existingIds.has(p.id));
+            related = [...related, ...extra].slice(0, 14);
+          }
+        }
+
+        // 3. Jika masih kurang dari 10, ambil produk acak dari seluruh katalog agar rak tidak kosong
+        if (related.length < 10) {
           const { data: allOther } = await supabase
             .from('products')
             .select('*')
@@ -76,13 +96,13 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
             .limit(16);
 
           if (allOther) {
-            const existingIds = new Set((related || []).map(p => p.id));
+            const existingIds = new Set(related.map(p => p.id));
             const extra = allOther.filter(p => !existingIds.has(p.id));
-            related = [...(related || []), ...extra].slice(0, 14);
+            related = [...related, ...extra].slice(0, 14);
           }
         }
 
-        setRelatedProducts(related || []);
+        setRelatedProducts(related);
       } catch (e) {
         console.error('Failed to fetch related', e);
       }
