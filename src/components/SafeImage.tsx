@@ -24,6 +24,7 @@ export default function SafeImage({ src, alt, className, sizes, priority = false
       sizes={sizes || "(max-width: 768px) 50vw, 30vw"}
       priority={priority}
       unoptimized
+      draggable={false}
       onError={() => setFailed(true)}
     />
   );
