@@ -100,28 +100,12 @@ export function LogisticsTab({
     }
 
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ status: 'shipped' })
-        .eq('id', targetOrder.id)
-        .eq('status', 'paid')
-        .select();
-        
-      if (error) throw error;
-      if (!data || data.length === 0) {
-        throw new Error('Pesanan ini sudah diproses oleh staf lain!');
-      }
-
+      await handleRequestPickup(targetOrder);
       setScanStatus('success');
       setScanMessage(`Success! Order #${targetOrder.id.slice(0,8).toUpperCase()} Dispatched.`);
-      
-      // Optimistic update
-      targetOrder.status = 'shipped';
-      if (onOrderUpdated) onOrderUpdated({ ...targetOrder });
-      
     } catch (err: any) {
       setScanStatus('error');
-      setScanMessage(err.message || 'Failed to communicate with archive server.');
+      setScanMessage(err.message || 'Failed to dispatch via Biteship.');
     }
     
     setScanInput('');
@@ -187,17 +171,16 @@ export function LogisticsTab({
         throw new Error(data.error || 'Failed to dispatch order via Biteship');
       }
 
-      // Optimistic Update (TEST SCENARIO: Jump directly to 'delivered')
+      // Optimistic Update
       const updatedOrder = {
         ...order,
-        status: 'delivered' as const,
+        status: 'shipped' as const,
         tracking_id: data.tracking_id || data.waybill_id,
         print_count: (order.print_count || 0) + 1,
         courier: `${data.courier_company} ${data.courier_type}`.toUpperCase()
       };
-      
-      // Update DB directly to 'delivered' for testing purposes
-      await supabase.from('orders').update({ status: 'delivered' }).eq('id', order.id);
+
+      if (onOrderUpdated) onOrderUpdated(updatedOrder);
 
       setLogisticsSelectedOrder(updatedOrder);
       if (onOrderUpdated) onOrderUpdated(updatedOrder);

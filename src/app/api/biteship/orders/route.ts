@@ -96,49 +96,54 @@ async function saveOrderToSupabase(
 
       // 1. WhatsApp Notification
       if (phone && !fullOrder.wa_shipping_sent) {
-        const waResult = await sendShippingWA({
+        // ATOMIC FIX: Set flag before slow network I/O
+        await adminClient.from('orders').update({
+          wa_shipping_sent: true,
+          wa_shipping_sent_at: new Date().toISOString(),
+        }).eq('id', fullOrder.id);
+
+        sendShippingWA({
           phone,
           customer_name: customerName,
           order_id: fullOrder.id,
           tracking_id: trackingId,
           courier_name: courierFormatted,
-        });
+        }).then(async (waResult) => {
+          await adminClient.from('wa_send_log').insert({
+            type: 'shipping',
+            order_id: fullOrder.id,
+            phone,
+            customer_name: customerName,
+            template_name: 'shipping_update',
+            status: waResult.success ? 'sent' : 'failed',
+            whatsapp_message_id: waResult.message_id || null,
+            error_message: waResult.error || null,
+            sent_at: waResult.success ? new Date().toISOString() : null,
+          });
 
-        await adminClient.from('wa_send_log').insert({
-          type: 'shipping',
-          order_id: fullOrder.id,
-          phone,
-          customer_name: customerName,
-          template_name: 'shipping_update',
-          status: waResult.success ? 'sent' : 'failed',
-          whatsapp_message_id: waResult.message_id || null,
-          error_message: waResult.error || null,
-          sent_at: waResult.success ? new Date().toISOString() : null,
-        });
-
-        if (waResult.success) {
-          await adminClient.from('orders').update({
-            wa_shipping_sent: true,
-            wa_shipping_sent_at: new Date().toISOString(),
-            wa_tracking_message_id: waResult.message_id || null,
-          }).eq('id', fullOrder.id);
-        }
+          if (waResult.success && waResult.message_id) {
+            await adminClient.from('orders').update({
+              wa_tracking_message_id: waResult.message_id,
+            }).eq('id', fullOrder.id);
+          }
+        }).catch(err => console.error('[Biteship Create Order] Async WA Error:', err));
       }
 
       // 2. Email Shipping Notification
       if (customerEmail) {
         console.log(`[Biteship Create Order] Sending shipping email to ${customerEmail} for order ${fullOrder.id}`);
-        await sendEmailShipping(fullOrder, customerEmail, trackingId, courierFormatted);
+        sendEmailShipping(fullOrder, customerEmail, trackingId, courierFormatted)
+          .catch(err => console.error('[Biteship Create Order] Async Email Error:', err));
       }
 
       // 3. Push & In-App Notification
       if (fullOrder.user_id) {
-        await notifyAllChannels({
+        notifyAllChannels({
           userId: fullOrder.user_id,
           title: 'Pesanan Dalam Pengiriman',
           message: `Pesanan #${fullOrder.order_number || fullOrder.id} sedang dalam perjalanan via ${courierFormatted}. Resi: ${trackingId}`,
           actionLink: `/profile/orders/${fullOrder.id}`,
-        });
+        }).catch(err => console.error('[Biteship Create Order] Async Push Error:', err));
       }
     }
   } catch (notifErr) {
