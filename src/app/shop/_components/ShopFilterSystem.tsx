@@ -221,6 +221,37 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     return ['All', ...Array.from(subs)];
   }, [initialProducts, selectedCategory]);
 
+  const availablePriceRanges = useMemo(() => {
+    const pillarProducts = initialProducts.filter(p => matchesCategoryPillar(p.category, selectedCategory));
+    const ranges = new Set<string>(['all']);
+    pillarProducts.forEach(p => {
+      const pr = p.price || 0;
+      if (pr < 150000) ranges.add('under_150');
+      else if (pr >= 150000 && pr <= 300000) ranges.add('150_300');
+      else if (pr > 300000) ranges.add('above_300');
+    });
+    return Array.from(ranges);
+  }, [initialProducts, selectedCategory]);
+
+  const availableSizes = useMemo(() => {
+    const pillarProducts = initialProducts.filter(p => matchesCategoryPillar(p.category, selectedCategory));
+    const sizes = new Set<string>(['All']);
+    pillarProducts.forEach(p => {
+      if (p.variants && p.variants.length > 0) {
+        p.variants.forEach(v => {
+          if (v.size) {
+            const vs = v.size.toUpperCase().trim();
+            if (vs === 'XXXL' || vs === '3XL') sizes.add('3XL');
+            else if (vs === 'XXL' || vs === '2XL') sizes.add('XXL');
+            else if (vs === 'OS' || vs === 'ALL SIZE' || vs === 'ALL' || vs === 'FREESIZE') sizes.add('All Size');
+            else if (['S', 'M', 'L', 'XL'].includes(vs)) sizes.add(vs);
+          }
+        });
+      }
+    });
+    return Array.from(sizes);
+  }, [initialProducts, selectedCategory]);
+
   return {
     selectedCategory,
     setSelectedCategory: handleSetCategory,
@@ -240,6 +271,8 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     activeFilterCount,
     filteredProducts,
     availableSubCategories,
+    availablePriceRanges,
+    availableSizes,
   };
 }
 
@@ -345,6 +378,8 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
     resetFilters,
     activeFilterCount,
     availableSubCategories,
+    availablePriceRanges,
+    availableSizes,
     filteredProducts
   } = filterSystem;
 
@@ -506,7 +541,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                       <Ruler size={11} className="text-rose" /> Ukuran Pakaian (Size)
                     </h4>
                     <div className="flex flex-wrap gap-1">
-                      {SIZES.map((sz) => (
+                      {SIZES.filter(sz => availableSizes.includes(sz)).map((sz) => (
                         <button
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
@@ -530,7 +565,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                     <DollarSign size={11} className="text-rose" /> Rentang Harga
                   </h4>
                   <div className="flex flex-wrap gap-1">
-                    {PRICE_RANGES.map((pr) => (
+                    {PRICE_RANGES.filter(pr => availablePriceRanges.includes(pr.id)).map((pr) => (
                       <button
                         key={pr.id}
                         onClick={() => setPriceRange(pr.id)}
@@ -806,7 +841,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                       <Ruler size={14} className="text-rose" /> Ukuran Pakaian (Size)
                     </h4>
                     <div className="grid grid-cols-4 gap-2">
-                      {SIZES.map((sz) => (
+                      {SIZES.filter(sz => availableSizes.includes(sz)).map((sz) => (
                         <button
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
@@ -830,7 +865,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                     <DollarSign size={14} className="text-rose" /> Rentang Harga
                   </h4>
                   <div className="flex flex-col gap-2">
-                    {PRICE_RANGES.map((pr) => (
+                    {PRICE_RANGES.filter(pr => availablePriceRanges.includes(pr.id)).map((pr) => (
                       <button
                         key={pr.id}
                         onClick={() => setPriceRange(pr.id)}
