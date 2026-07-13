@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +14,7 @@ export async function POST(req: Request) {
     const isAuthorized = username?.toLowerCase() === correctUsername.toLowerCase() && password === correctPassword;
 
     if (isAuthorized) {
-      // Set HttpOnly cookie
+      // Set HttpOnly cookie for legacy checks
       const cookieStore = await cookies();
       cookieStore.set({
         name: 'admin_session',
@@ -22,6 +24,58 @@ export async function POST(req: Request) {
         secure: req.url.startsWith('https://'),
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 1 week
+      });
+
+      // SYNC WITH SUPABASE AUTH (RLS BYPASS FIX)
+      // 1. Force the admin@ninoc.store password to be the global secret (guarantees we can log in)
+      const adminClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      
+      const email = 'admin@ninoc.store';
+      
+      // Find the admin user
+      const { data: adminUsers } = await adminClient.auth.admin.listUsers();
+      const existingAdmin = adminUsers?.users?.find(u => u.email === email);
+      
+      if (!existingAdmin) {
+        await adminClient.auth.admin.createUser({
+          email,
+          password: correctPassword,
+          email_confirm: true,
+        });
+      } else {
+        await adminClient.auth.admin.updateUserById(existingAdmin.id, {
+          password: correctPassword
+        });
+      }
+      
+      // 2. Sign in via SSR client so cookies are properly attached to the response
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            getAll() {
+              return cookieStore.getAll();
+            },
+            setAll(cookiesToSet) {
+              try {
+                cookiesToSet.forEach(({ name, value, options }) => {
+                  cookieStore.set(name, value, options);
+                });
+              } catch (error) {
+                // Ignore
+              }
+            },
+          },
+        }
+      );
+      
+      await supabase.auth.signInWithPassword({
+        email,
+        password: correctPassword
       });
 
       return NextResponse.json({ success: true });
