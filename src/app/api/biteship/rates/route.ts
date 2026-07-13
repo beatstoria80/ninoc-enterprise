@@ -13,12 +13,12 @@ const MOCK_RATES = {
   object: 'rates',
   source: 'fallback',
   pricing: [
-    { id: 'rate_jne_reg', company: 'jne', courier_name: 'JNE', courier_service_name: 'REGULER', courier_service_code: 'reg', description: 'Layanan reguler JNE - 2-3 hari kerja', duration: '2-3 Days', price: 15000 },
-    { id: 'rate_jne_yes', company: 'jne', courier_name: 'JNE', courier_service_name: 'YES', courier_service_code: 'yes', description: 'Layanan besok JNE - 1 hari kerja', duration: '1 Day', price: 25000 },
-    { id: 'rate_grab_instant', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GrabExpress Instant', duration: '1-3 Hours', price: 35000 },
-    { id: 'rate_grab_sameday', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GrabExpress Same Day', duration: '6-8 Hours', price: 20000 },
-    { id: 'rate_gojek_instant', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GoSend Instant', duration: '1-3 Hours', price: 36000 },
-    { id: 'rate_gojek_sameday', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GoSend Same Day', duration: '6-8 Hours', price: 21000 },
+    { id: 'rate_jne_reg', company: 'jne', courier_name: 'JNE', courier_service_name: 'REGULER', courier_service_code: 'reg', description: 'Layanan reguler JNE - 2-3 hari kerja', duration: '2-3 Days', price: 12000 },
+    { id: 'rate_jne_yes', company: 'jne', courier_name: 'JNE', courier_service_name: 'YES', courier_service_code: 'yes', description: 'Layanan besok JNE - 1 hari kerja', duration: '1 Day', price: 18000 },
+    { id: 'rate_grab_instant', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GrabExpress Instant', duration: '1-3 Hours', price: 25000 },
+    { id: 'rate_grab_sameday', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GrabExpress Same Day', duration: '6-8 Hours', price: 15000 },
+    { id: 'rate_gojek_instant', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GoSend Instant', duration: '1-3 Hours', price: 26000 },
+    { id: 'rate_gojek_sameday', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GoSend Same Day', duration: '6-8 Hours', price: 16000 },
   ],
   available_couriers: ['jne', 'grab', 'gojek'],
 };
