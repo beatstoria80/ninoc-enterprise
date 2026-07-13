@@ -16,7 +16,7 @@ export function InventoryTab({ products }: { products: Product[] }) {
       totalSkus += p.variants.length;
       p.variants.forEach(v => {
         if (v.stock_quantity === 0) outOfStockCount++;
-        else if (v.stock_quantity < 5) lowStockCount++;
+        else if (v.stock_quantity <= 2) lowStockCount++;
       });
     }
   });

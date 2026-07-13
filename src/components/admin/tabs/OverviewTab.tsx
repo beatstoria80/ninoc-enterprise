@@ -62,7 +62,7 @@ export function OverviewTab({
       {/* Low Stock Alerts */}
       {(() => {
         const lowStockItems = products.flatMap(p => 
-          (p.variants || []).filter(v => v.stock_quantity <= (v.reorder_point || 5))
+          (p.variants || []).filter(v => v.stock_quantity > 0 && v.stock_quantity <= (v.reorder_point ?? 2))
             .map(v => ({ productName: p.name, size: v.size, qty: v.stock_quantity, sku: v.sku }))
         );
         if (lowStockItems.length === 0) return null;
@@ -76,7 +76,7 @@ export function OverviewTab({
             <div className="flex flex-wrap gap-2">
               {lowStockItems.slice(0, 5).map((item, idx) => (
                 <span key={idx} className="bg-white/50 border border-rose/10 px-2 py-1 text-xs text-rose font-medium rounded-sm">
-                  {item.productName} ({item.size}) - <span className="font-bold">Sisa {item.qty}</span>
+                  {item.productName} {item.size && item.size !== 'N/A' && item.size !== '-' ? `(${item.size})` : ''} - <span className="font-bold">Sisa {item.qty}</span>
                 </span>
               ))}
               {lowStockItems.length > 5 && (
