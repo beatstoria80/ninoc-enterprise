@@ -17,9 +17,12 @@ export function ProductCostingTab() {
   async function loadData() {
     try {
       setLoading(true);
-      // Fetch Products & Costings
+      // Fetch Products (Public) & Costings (Admin API)
       const { data: productsData } = await supabase.from('products').select('id, name, price, variants(sku)');
-      const { data: costingsData } = await supabase.from('product_costings').select('*');
+      
+      const costingsRes = await fetch('/api/admin/costings');
+      const costingsJson = await costingsRes.json();
+      const costingsData = costingsJson.success ? costingsJson.data : [];
       
       const mergedCostings = productsData?.map(p => {
         const c = costingsData?.find((cc: any) => cc.product_id === p.id) || {};

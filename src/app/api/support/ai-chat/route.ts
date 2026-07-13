@@ -110,29 +110,40 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     .order('created_at', { ascending: true })
     .limit(10);
 
-  const messages: Array<any> = [];
+  const rawMessages: Array<any> = [];
   if (historyData) {
     for (const msg of historyData) {
-      messages.push({
+      rawMessages.push({
         role: msg.sender_role === 'customer' ? 'user' : 'assistant',
         content: msg.message,
       });
     }
   }
 
-  if (!messages.length || messages[messages.length - 1].content !== currentMessage) {
-    messages.push({ role: 'user', content: currentMessage });
+  if (!rawMessages.length || rawMessages[rawMessages.length - 1].content !== currentMessage) {
+    rawMessages.push({ role: 'user', content: currentMessage });
   }
 
-  while (messages.length > 0 && messages[0].role === 'assistant') {
-    messages.shift();
+  // Combine consecutive messages with the same role to prevent API errors (Groq/Gemini require alternating roles)
+  const mergedMessages: Array<any> = [];
+  for (const msg of rawMessages) {
+    if (mergedMessages.length > 0 && mergedMessages[mergedMessages.length - 1].role === msg.role) {
+      mergedMessages[mergedMessages.length - 1].content += `\n${msg.content}`;
+    } else {
+      mergedMessages.push({ role: msg.role, content: msg.content });
+    }
   }
 
-  if (messages.length === 0) {
-    messages.push({ role: 'user', content: currentMessage });
+  // Ensure the history starts with a user message
+  while (mergedMessages.length > 0 && mergedMessages[0].role === 'assistant') {
+    mergedMessages.shift();
   }
 
-  return messages;
+  if (mergedMessages.length === 0) {
+    mergedMessages.push({ role: 'user', content: currentMessage });
+  }
+
+  return mergedMessages;
 }
 
 // ─── Groq AI Retry Helper ──────────────────────────────────────────────────
