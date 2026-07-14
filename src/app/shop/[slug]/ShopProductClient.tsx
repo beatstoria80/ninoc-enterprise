@@ -290,6 +290,33 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return rawImages.length > 0 ? rawImages : [''];
   }, [product, effectiveColor, colorGalleryMap]);
 
+  // Sync selected model/series automatically when user swipes or selects a photo in ProductGallery
+  useEffect(() => {
+    if (!images || images.length === 0 || activeImageIndex >= images.length) return;
+    const currentImg = images[activeImageIndex];
+    if (!currentImg) return;
+
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5].includes(currentImg);
+    });
+
+    if (matchedEntry) {
+      const [matchedColor, g] = matchedEntry;
+      if (matchedColor && matchedColor !== effectiveColor?.toUpperCase()) {
+        const colorSpecific = [g.main || '', g.p1, g.p2, g.p3, g.p4, g.p5].filter(
+          (img): img is string => typeof img === 'string' && img.length > 0
+        );
+        const newIdx = colorSpecific.indexOf(currentImg);
+        requestAnimationFrame(() => {
+          setSelectedColor(matchedColor);
+          if (newIdx !== -1 && newIdx !== activeImageIndex) {
+            setActiveImageIndex(newIdx);
+          }
+        });
+      }
+    }
+  }, [activeImageIndex, images, colorGalleryMap, effectiveColor, setSelectedColor]);
+
   const localizedDescription = React.useMemo(() => {
     return dict.locale === 'EN' && product?.description_en ? product.description_en : product?.description;
   }, [dict.locale, product]);
