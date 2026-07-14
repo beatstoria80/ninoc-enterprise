@@ -176,16 +176,28 @@ export default function ImmersiveProductView({
                     <div className="p-3 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">View #{activeImage + 1} Detail</span>
+                        <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">
+                          {selectedColor || `${product?.variant_label || 'Series'} #${activeImage + 1}`}
+                        </span>
                       </div>
-                      <p className="text-xs leading-relaxed text-ink/80 font-medium">
+                      <p className="text-xs leading-relaxed text-ink/80 font-medium whitespace-pre-wrap">
                         {currentImmersiveDesc}
                       </p>
                     </div>
                   ) : localizedDescription ? (
-                    <p className="text-xs leading-relaxed text-ink/70">
-                      {localizedDescription}
-                    </p>
+                    <div className="space-y-1.5">
+                      {selectedColor && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">
+                            {selectedColor}
+                          </span>
+                        </div>
+                      )}
+                      <p className="text-xs leading-relaxed text-ink/70 whitespace-pre-wrap">
+                        {localizedDescription}
+                      </p>
+                    </div>
                   ) : null}
                 </motion.div>
               </AnimatePresence>
