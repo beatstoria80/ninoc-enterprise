@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star, Eye, Maximize2 } from 'lucide-react';
+import { Eye, Maximize2, Star } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/shop';
@@ -36,43 +36,113 @@ export default function ProductGallery({
   photoRef,
   onExpand
 }: ProductGalleryProps) {
-  const [touchStart, setTouchStart] = useState<number | null>(null);
   const { views: activeViewers } = useProductViews(product.slug);
 
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
-    const distance = touchStart - e.changedTouches[0].clientX;
-    if (distance > 40) setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-    if (distance < -40) setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-    setTouchStart(null);
+  // Desktop vertical drag scroll state
+  const desktopThumbRef = useRef<HTMLDivElement>(null);
+  const isDraggingDesktop = useRef(false);
+  const startYDesktop = useRef(0);
+  const scrollTopDesktop = useRef(0);
+  const hasDraggedDesktop = useRef(false);
+
+  // Mobile horizontal drag scroll state
+  const mobileThumbRef = useRef<HTMLDivElement>(null);
+  const isDraggingMobile = useRef(false);
+  const startXMobile = useRef(0);
+  const scrollLeftMobile = useRef(0);
+  const hasDraggedMobile = useRef(false);
+
+  const handleDesktopPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingDesktop.current = true;
+    hasDraggedDesktop.current = false;
+    startYDesktop.current = e.clientY;
+    if (desktopThumbRef.current) {
+      scrollTopDesktop.current = desktopThumbRef.current.scrollTop;
+    }
+  };
+
+  const handleDesktopPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingDesktop.current || !desktopThumbRef.current) return;
+    const dy = e.clientY - startYDesktop.current;
+    if (Math.abs(dy) > 5) {
+      hasDraggedDesktop.current = true;
+    }
+    desktopThumbRef.current.scrollTop = scrollTopDesktop.current - dy;
+  };
+
+  const handleDesktopPointerUp = () => {
+    isDraggingDesktop.current = false;
+  };
+
+  const handleMobilePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingMobile.current = true;
+    hasDraggedMobile.current = false;
+    startXMobile.current = e.clientX;
+    if (mobileThumbRef.current) {
+      scrollLeftMobile.current = mobileThumbRef.current.scrollLeft;
+    }
+  };
+
+  const handleMobilePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingMobile.current || !mobileThumbRef.current) return;
+    const dx = e.clientX - startXMobile.current;
+    if (Math.abs(dx) > 5) {
+      hasDraggedMobile.current = true;
+    }
+    mobileThumbRef.current.scrollLeft = scrollLeftMobile.current - dx;
+  };
+
+  const handleMobilePointerUp = () => {
+    isDraggingMobile.current = false;
   };
 
   return (
     <>
-      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0">
-        <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px]">
+      {/* DESKTOP VERTICAL THUMBNAIL LIST — Cursor Drag Swipeable */}
+      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0 select-none">
+        <div
+          ref={desktopThumbRef}
+          onPointerDown={handleDesktopPointerDown}
+          onPointerMove={handleDesktopPointerMove}
+          onPointerUp={handleDesktopPointerUp}
+          onPointerLeave={handleDesktopPointerUp}
+          className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px] cursor-grab active:cursor-grabbing"
+        >
           {images.map((img, i) => (
             <motion.button
               variants={textVariants}
               key={i}
-              onClick={() => setActiveImageIndex(i)}
+              type="button"
+              onClick={() => {
+                if (hasDraggedDesktop.current) return;
+                setActiveImageIndex(i);
+              }}
               className={cn(
                 "w-full aspect-square rounded-none overflow-hidden border-2 transition-all relative group bg-white flex-shrink-0",
                 activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/5 opacity-50 hover:opacity-100 hover:border-ink/15"
               )}
             >
-              <SafeImage src={img} alt={product.image_alt || product.name} className="object-contain p-1.5" sizes="100px" />
+              <SafeImage src={img} alt={`${product.image_alt || product.name} thumb ${i}`} className="object-contain p-1.5 pointer-events-none" sizes="100px" />
             </motion.button>
           ))}
         </div>
       </motion.div>
 
       <motion.div ref={photoRef} variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
-        <div
-          className="no-drag flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 touch-pan-y mt-0"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+        {/* MOBILE MAIN CAROUSEL — Universal Pointer / Global Cursor Swipeable */}
+        <motion.div
+          className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 mt-0 cursor-grab active:cursor-grabbing select-none"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(_, { offset }) => {
+            const swipe = offset.x;
+            if (swipe < -40) {
+              setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+            } else if (swipe > 40) {
+              setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+            }
+          }}
         >
           <div className="w-[75%] aspect-[4/5] invisible pointer-events-none" />
 
@@ -99,20 +169,50 @@ export default function ProductGallery({
                   positionClass
                 )}
               >
-                <SafeImage src={img} alt={`${product.image_alt || product.name} ${idx}`} className="object-contain p-4" sizes="(max-width: 768px) 65vw, 30vw" />
+                <SafeImage src={img} alt={`${product.image_alt || product.name} ${idx}`} className="object-contain p-4 pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
               </div>
             );
           })}
-        </div>
+        </motion.div>
 
+        {/* MOBILE HORIZONTAL THUMBNAIL STRIP — Global Cursor Swipeable */}
+        {images.length > 1 && (
+          <div
+            ref={mobileThumbRef}
+            onPointerDown={handleMobilePointerDown}
+            onPointerMove={handleMobilePointerMove}
+            onPointerUp={handleMobilePointerUp}
+            onPointerLeave={handleMobilePointerUp}
+            className="flex lg:hidden w-full overflow-x-auto no-scrollbar gap-2 mt-2 px-1 select-none cursor-grab active:cursor-grabbing"
+          >
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  if (hasDraggedMobile.current) return;
+                  setActiveImageIndex(i);
+                }}
+                className={cn(
+                  "w-14 h-14 shrink-0 rounded-none overflow-hidden border-2 transition-all relative bg-white",
+                  activeImageIndex === i ? "border-rose opacity-100 shadow-sm" : "border-ink/10 opacity-60"
+                )}
+              >
+                <SafeImage src={img} alt={`${product.image_alt || product.name} mobile thumb ${i}`} className="object-contain p-1 pointer-events-none" sizes="60px" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* DESKTOP MAIN VIEWER — Drag Swipeable */}
         <motion.div 
           ref={photoRef} 
           variants={imageVariants} 
-          className="no-drag hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-pointer"
+          className="no-drag hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-pointer select-none"
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
-          onDragEnd={(e, { offset }) => {
+          onDragEnd={(_, { offset }) => {
             const swipe = offset.x;
             if (swipe < -50) {
               setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
@@ -146,8 +246,6 @@ export default function ProductGallery({
             </button>
           )}
         </motion.div>
-
-
 
         {/* Realtime views & Review Badge below Main Photo */}
         <div className="w-full relative mt-3 lg:mt-4 h-[26px]">
