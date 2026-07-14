@@ -2940,6 +2940,16 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
+                  {isObjects && (
+                        <div className="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-lg space-y-1">
+                          <div className="flex items-center gap-1.5 text-emerald-800 font-semibold text-xs">
+                            <span>🎯 Object & Consumer Goods — Deskripsi Khusus Per Gambar</span>
+                          </div>
+                          <p className="text-[10px] text-emerald-700 leading-relaxed">
+                            Setiap foto/angle di bawah dapat memiliki deskripsi berbeda. Saat pembeli mengklik foto di halaman website, deskripsi akan berubah otomatis sesuai foto yang diklik.
+                          </p>
+                        </div>
+                      )}
 
                       <div>
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-2">Image URL</label>
@@ -2991,6 +3001,33 @@ export default function AdminDashboard() {
                             </button>
                           )}
                         </div>
+                        {isObjects && (
+                          <div className="mt-2 pl-3 border-l-2 border-emerald-500/50 space-y-1">
+                            <label className="block text-[9px] uppercase tracking-wider text-emerald-700 font-semibold">
+                              Deskripsi Gambar Utama / Angle #1 (Muncul saat foto utama diklik di website)
+                            </label>
+                            <input
+                              type="text"
+                              value={productForm.specifications?.find(s => s.label === 'ImageDesc_Main' || s.label === 'ImageDesc_0')?.value || ''}
+                              onChange={(e) => {
+                                const descLabel = 'ImageDesc_Main';
+                                const val = e.target.value;
+                                const newSpecs = [...(productForm.specifications || [])];
+                                const specIdx = newSpecs.findIndex(s => s.label === descLabel || s.label === 'ImageDesc_0');
+                                if (val.trim() === '') {
+                                  if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                } else if (specIdx >= 0) {
+                                  newSpecs[specIdx] = { label: descLabel, value: val };
+                                } else {
+                                  newSpecs.push({ label: descLabel, value: val });
+                                }
+                                setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                              }}
+                              placeholder="Contoh: Tampak depan produk keramik stoneware berdiameter 22 cm dengan finishing matte glaze..."
+                              className="w-full px-2.5 py-1.5 bg-emerald-50/40 border border-emerald-200/60 rounded-lg text-xs focus:outline-none focus:border-emerald-500 focus:bg-white text-ink transition-colors"
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* Additional Images — for product gallery navigation */}
@@ -2999,91 +3036,117 @@ export default function AdminDashboard() {
                         {(['perspective1','perspective2','perspective3','perspective4', 'GlobalP5'] as const).map((field, idx) => {
                           const isP5 = field === 'GlobalP5';
                           const val = isP5 ? productForm.specifications?.find(s => s.label === 'GlobalP5')?.value || '' : (productForm as any)[field] || '';
+                          const descLabel = `ImageDesc_P${idx + 1}`;
                           return (
-                          <div key={field} className="flex items-center gap-2">
-                            <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
-                            <input
-                              type="url"
-                              value={val}
-                              onChange={(e) => {
-                                if (isP5) {
-                                  const newSpecs = [...(productForm.specifications || [])];
-                                  const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
-                                  if (specIdx >= 0) newSpecs[specIdx].value = e.target.value;
-                                  else newSpecs.push({ label: 'GlobalP5', value: e.target.value });
-                                  setProductForm({ ...productForm, specifications: newSpecs });
-                                } else {
-                                  setProductForm({ ...productForm, [field]: e.target.value });
-                                }
-                              }}
-                              placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
-                              className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
-                            />
-                            <label className="relative flex items-center justify-center px-1.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
-                              <span>Upload</span>
+                          <div key={field} className="flex flex-col gap-1.5 w-full bg-gray-50/40 p-2 rounded-lg border border-gray-100">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
                               <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  setIsUploadingProductImage(true);
-                                  try {
-                                    const compressedFile = await compressImage(file);
-                                    // Use API route (server-side with service role key)
-                                    const formData = new FormData();
-                                    formData.append('files', compressedFile);
-                                    formData.append('bucket', 'products');
-                                    const res = await fetch('/api/admin/upload-images', {
-                                      method: 'POST',
-                                      body: formData
-                                    });
-                                    const data = await res.json();
-                                    if (!res.ok || data.error || !data.results?.[0]?.url) {
-                                      throw new Error(data.error || 'Upload failed');
-                                    }
-                                    if (isP5) {
-                                      const newSpecs = [...(productForm.specifications || [])];
-                                      const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
-                                      if (specIdx >= 0) newSpecs[specIdx].value = data.results[0].url;
-                                      else newSpecs.push({ label: 'GlobalP5', value: data.results[0].url });
-                                      setProductForm({ ...productForm, specifications: newSpecs });
-                                    } else {
-                                      setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
-                                    }
-                                  } catch (err) {
-                                    alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
-                                  } finally {
-                                    setIsUploadingProductImage(false);
-                                  }
-                                }}
-                                disabled={isUploadingProductImage}
-                              />
-                            </label>
-                            {val && (
-                              <button
-                                type="button"
-                                onClick={() => {
+                                type="url"
+                                value={val}
+                                onChange={(e) => {
                                   if (isP5) {
                                     const newSpecs = [...(productForm.specifications || [])];
                                     const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
-                                    if (specIdx >= 0) {
-                                      newSpecs.splice(specIdx, 1);
-                                      setProductForm({ ...productForm, specifications: newSpecs });
-                                    }
+                                    if (specIdx >= 0) newSpecs[specIdx].value = e.target.value;
+                                    else newSpecs.push({ label: 'GlobalP5', value: e.target.value });
+                                    setProductForm({ ...productForm, specifications: newSpecs });
                                   } else {
-                                    setProductForm({ ...productForm, [field]: '' });
+                                    setProductForm({ ...productForm, [field]: e.target.value });
                                   }
                                 }}
-                                className="flex items-center justify-center px-1.5 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
-                                title="Hapus Gambar"
-                              >
-                                X
-                              </button>
+                                placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
+                                className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
+                              />
+                              <label className="relative flex items-center justify-center px-1.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                                <span>Upload</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    setIsUploadingProductImage(true);
+                                    try {
+                                      const compressedFile = await compressImage(file);
+                                      const formData = new FormData();
+                                      formData.append('files', compressedFile);
+                                      formData.append('bucket', 'products');
+                                      const res = await fetch('/api/admin/upload-images', {
+                                        method: 'POST',
+                                        body: formData
+                                      });
+                                      const data = await res.json();
+                                      if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                        throw new Error(data.error || 'Upload failed');
+                                      }
+                                      if (isP5) {
+                                        const newSpecs = [...(productForm.specifications || [])];
+                                        const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                        if (specIdx >= 0) newSpecs[specIdx].value = data.results[0].url;
+                                        else newSpecs.push({ label: 'GlobalP5', value: data.results[0].url });
+                                        setProductForm({ ...productForm, specifications: newSpecs });
+                                      } else {
+                                        setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
+                                      }
+                                    } catch (err) {
+                                      alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                    } finally {
+                                      setIsUploadingProductImage(false);
+                                    }
+                                  }}
+                                  disabled={isUploadingProductImage}
+                                />
+                              </label>
+                              {val && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (isP5) {
+                                      const newSpecs = [...(productForm.specifications || [])];
+                                      const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                      if (specIdx >= 0) {
+                                        newSpecs.splice(specIdx, 1);
+                                        setProductForm({ ...productForm, specifications: newSpecs });
+                                      }
+                                    } else {
+                                      setProductForm({ ...productForm, [field]: '' });
+                                    }
+                                  }}
+                                  className="flex items-center justify-center px-1.5 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
+                                  title="Hapus Gambar"
+                                >
+                                  X
+                                </button>
+                              )}
+                            </div>
+                            {isObjects && (
+                              <div className="w-full pl-8">
+                                <input
+                                  type="text"
+                                  value={productForm.specifications?.find(s => s.label === descLabel || s.label === `ImageDesc_${idx + 1}`)?.value || ''}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const newSpecs = [...(productForm.specifications || [])];
+                                    const specIdx = newSpecs.findIndex(s => s.label === descLabel || s.label === `ImageDesc_${idx + 1}`);
+                                    if (val.trim() === '') {
+                                      if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                    } else if (specIdx >= 0) {
+                                      newSpecs[specIdx] = { label: descLabel, value: val };
+                                    } else {
+                                      newSpecs.push({ label: descLabel, value: val });
+                                    }
+                                    setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                  }}
+                                  placeholder={`Deskripsi khusus gambar P${idx + 1} (contoh: Tampak atas / detail tekstur / kemasan box)...`}
+                                  className="w-full px-2.5 py-1 bg-emerald-50/40 border border-emerald-200/60 rounded text-[10px] focus:outline-none focus:border-emerald-500 focus:bg-white text-ink transition-colors"
+                                />
+                              </div>
                             )}
                           </div>
-                        )})}
+                          );
+                        })}
                       </div>
 
 

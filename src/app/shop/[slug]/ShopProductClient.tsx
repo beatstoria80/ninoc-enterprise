@@ -234,6 +234,43 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return dict.locale === 'EN' && product?.description_en ? product.description_en : product?.description;
   }, [dict.locale, product]);
 
+  const imageDescriptionItems = React.useMemo(() => {
+    if (!product) return [];
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    const getDesc = (keys: string[]) => {
+      for (const key of keys) {
+        const found = safeSpecs.find((s: any) => s?.label && s.label.toLowerCase() === key.toLowerCase());
+        if (found && found.value?.trim()) return found.value.trim();
+      }
+      return undefined;
+    };
+
+    return [
+      { url: product.image_url, desc: getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0']) },
+      { url: product.perspective1, desc: getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1']) },
+      { url: product.perspective2, desc: getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2']) },
+      { url: product.perspective3, desc: getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3']) },
+      { url: product.perspective4, desc: getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4']) },
+      { url: safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value, desc: getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5']) }
+    ];
+  }, [product]);
+
+  const currentImageDesc = React.useMemo(() => {
+    if (!product || !images || images.length === 0) return null;
+    const currentUrl = images[activeImageIndex];
+    if (!currentUrl) return null;
+
+    // 1. Match by URL first
+    const matchByUrl = imageDescriptionItems.find(item => item.url && item.url === currentUrl && item.desc);
+    if (matchByUrl?.desc) return matchByUrl.desc;
+
+    // 2. Fallback match by index
+    const matchByIndex = imageDescriptionItems[activeImageIndex]?.desc;
+    if (matchByIndex) return matchByIndex;
+
+    return null;
+  }, [product, images, activeImageIndex, imageDescriptionItems]);
+
   const availableColors = React.useMemo(() => {
     const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
     return Array.from<string>(new Set(
@@ -335,11 +372,48 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 </motion.div>
               </div>
 
-              <div className="space-y-0.5 lg:space-y-1 pt-1 lg:pt-1.5 border-t border-ink/5 mt-1 lg:mt-1.5">
-                <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.description}</motion.h4>
-                <motion.p variants={textVariants} className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
-                  {localizedDescription || 'Premium quality apparel from NINOC.'}
-                </motion.p>
+              <div className="space-y-1.5 pt-1.5 lg:pt-2 border-t border-ink/5 mt-1.5 lg:mt-2">
+                <div className="flex items-center justify-between">
+                  <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">
+                    {dict.product.description}
+                  </motion.h4>
+                  {currentImageDesc && (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded text-[9px] font-bold uppercase tracking-widest">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      View #{activeImageIndex + 1} Angle Detail
+                    </span>
+                  )}
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`img-desc-${activeImageIndex}`}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="space-y-2.5"
+                  >
+                    {currentImageDesc ? (
+                      <div className="space-y-2">
+                        <div className="p-3 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
+                          <p className="text-sm md:text-xs lg:text-sm leading-relaxed text-ink font-semibold whitespace-pre-wrap">
+                            {currentImageDesc}
+                          </p>
+                        </div>
+                        {localizedDescription && localizedDescription.trim() !== currentImageDesc.trim() && (
+                          <p className="text-xs md:text-xs lg:text-xs leading-relaxed text-ink/70 font-normal whitespace-pre-wrap">
+                            {localizedDescription}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
+                        {localizedDescription || 'Premium quality product from NINOC.'}
+                      </p>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
 
               <div className="pt-1 border-t border-ink/5 mt-1 lg:mt-1.5 sticky top-0 bg-white z-10">
@@ -628,7 +702,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         availableSizes={availableSizes}
         availableColors={availableColors}
         handleAddToCart={handleAddToCart}
-        localizedDescription={localizedDescription}
+        localizedDescription={currentImageDesc || localizedDescription}
         displaySpecs={displaySpecs}
       />
     </main>
