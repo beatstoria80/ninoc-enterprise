@@ -287,7 +287,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     let rawImages: string[] = [];
     if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5 || activeGallery.p6 || activeGallery.p7 || activeGallery.p8 || activeGallery.p9 || activeGallery.p10 || activeGallery.p11 || activeGallery.p12 || activeGallery.p13 || activeGallery.p14 || activeGallery.p15)) {
       const colorSpecific = [
-        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5, activeGallery.p6, activeGallery.p7, activeGallery.p8, activeGallery.p9, activeGallery.p10, activeGallery.p11, activeGallery.p12, activeGallery.p13, activeGallery.p14, activeGallery.p15
+        activeGallery.main || product.image_url || defaultGallery[0] || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5, activeGallery.p6, activeGallery.p7, activeGallery.p8, activeGallery.p9, activeGallery.p10, activeGallery.p11, activeGallery.p12, activeGallery.p13, activeGallery.p14, activeGallery.p15
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
       // Append all other variant & gallery images so left thumbnails always show all photos and global cursor can swipe
@@ -320,13 +320,13 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (!currentImg) return;
 
     const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
-      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5].includes(currentImg);
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentImg);
     });
 
     if (matchedEntry) {
       const [matchedColor, g] = matchedEntry;
       if (matchedColor && matchedColor !== effectiveColor?.toUpperCase()) {
-        const colorSpecific = [g.main || '', g.p1, g.p2, g.p3, g.p4, g.p5].filter(
+        const colorSpecific = [g.main || product?.image_url || '', g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].filter(
           (img): img is string => typeof img === 'string' && img.length > 0
         );
         const newIdx = colorSpecific.indexOf(currentImg);
@@ -338,7 +338,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         });
       }
     }
-  }, [activeImageIndex, images, colorGalleryMap, effectiveColor, setSelectedColor]);
+  }, [activeImageIndex, images, colorGalleryMap, effectiveColor, setSelectedColor, product?.image_url]);
 
   const localizedDescription = React.useMemo(() => {
     return dict.locale === 'EN' && product?.description_en ? product.description_en : product?.description;

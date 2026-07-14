@@ -562,15 +562,20 @@ export default function AdminDashboard() {
       let finalSpecs = [...(productForm.specifications || [])];
 
       if (hasColors && finalSpecs) {
-        const firstColor = productForm.variants.find(v => v.color)?.color;
+        const rawFirstColor = productForm.variants.find(v => v.color)?.color;
+        const firstColor = rawFirstColor ? rawFirstColor.split(',')[0].trim() : null;
         if (firstColor) {
-           finalImageUrl = finalSpecs.find(s => s.label === `ColorImage:${firstColor}`)?.value || null;
-           finalP1 = finalSpecs.find(s => s.label === `ColorP1:${firstColor}`)?.value || null;
-           finalP2 = finalSpecs.find(s => s.label === `ColorP2:${firstColor}`)?.value || null;
-           finalP3 = finalSpecs.find(s => s.label === `ColorP3:${firstColor}`)?.value || null;
-           finalP4 = finalSpecs.find(s => s.label === `ColorP4:${firstColor}`)?.value || null;
+           finalImageUrl = finalSpecs.find(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)?.value || productForm.image_url || null;
+           finalP1 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP1:${firstColor.toUpperCase()}`)?.value || productForm.perspective1 || null;
+           finalP2 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP2:${firstColor.toUpperCase()}`)?.value || productForm.perspective2 || null;
+           finalP3 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP3:${firstColor.toUpperCase()}`)?.value || productForm.perspective3 || null;
+           finalP4 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP4:${firstColor.toUpperCase()}`)?.value || productForm.perspective4 || null;
            
-           const firstP5 = finalSpecs.find(s => s.label === `ColorP5:${firstColor}`)?.value;
+           if (finalImageUrl && !finalSpecs.some(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)) {
+             finalSpecs.push({ label: `ColorImage:${firstColor}`, value: finalImageUrl });
+           }
+
+           const firstP5 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP5:${firstColor.toUpperCase()}`)?.value;
            const existingGlobalP5Idx = finalSpecs.findIndex(s => s.label === 'GlobalP5');
            if (firstP5) {
              if (existingGlobalP5Idx >= 0) finalSpecs[existingGlobalP5Idx].value = firstP5;
