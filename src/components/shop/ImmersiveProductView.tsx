@@ -33,7 +33,7 @@ interface ImmersiveProductViewProps {
   localizedDescription?: string;
   displaySpecs?: any[];
   imageDescriptionItems?: { url?: string; desc?: string }[];
-  colorGalleryMap?: Record<string, { main?: string }>;
+  colorGalleryMap?: Record<string, { main?: string; p1?: string; p2?: string; p3?: string; p4?: string; p5?: string; }>;
 }
 
 export default function ImmersiveProductView({
