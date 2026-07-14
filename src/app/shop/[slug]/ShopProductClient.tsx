@@ -183,11 +183,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const displayModelInfo = React.useMemo(() => product?.model_info || null, [product]);
 
   const colorGalleryMap = React.useMemo(() => {
-    const map: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string }> = {};
+    const map: Record<string, { main?: string, p1?: string, p2?: string, p3?: string, p4?: string, p5?: string, p6?: string, p7?: string, p8?: string, p9?: string, p10?: string, p11?: string, p12?: string, p13?: string, p14?: string, p15?: string }> = {};
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
     safeSpecs.forEach((spec: any) => {
       if (typeof spec?.label === 'string') {
-        const match = spec.label.match(/^color\s*(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
+        const match = spec.label.match(/^color\s*(image|p10|p11|p12|p13|p14|p15|p1|p2|p3|p4|p5|p6|p7|p8|p9)\s*:\s*(.+)$/i);
         if (match) {
           const type = match[1].toUpperCase();
           const colorName = match[2].trim().toUpperCase();
@@ -198,6 +198,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           if (type === 'P3') map[colorName].p3 = spec?.value;
           if (type === 'P4') map[colorName].p4 = spec?.value;
           if (type === 'P5') map[colorName].p5 = spec?.value;
+          if (type === 'P6') map[colorName].p6 = spec?.value;
+          if (type === 'P7') map[colorName].p7 = spec?.value;
+          if (type === 'P8') map[colorName].p8 = spec?.value;
+          if (type === 'P9') map[colorName].p9 = spec?.value;
+          if (type === 'P10') map[colorName].p10 = spec?.value;
+          if (type === 'P11') map[colorName].p11 = spec?.value;
+          if (type === 'P12') map[colorName].p12 = spec?.value;
+          if (type === 'P13') map[colorName].p13 = spec?.value;
+          if (type === 'P14') map[colorName].p14 = spec?.value;
+          if (type === 'P15') map[colorName].p15 = spec?.value;
         }
       }
     });
@@ -223,7 +233,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
     safeSpecs.forEach((spec: any) => {
       if (typeof spec?.label === 'string') {
-        const match = spec.label.match(/^color(image|p1|p2|p3|p4|p5)desc\s*:\s*(.+)$/i);
+        const match = spec.label.match(/^color(image|p10|p11|p12|p13|p14|p15|p1|p2|p3|p4|p5|p6|p7|p8|p9)desc\s*:\s*(.+)$/i);
         if (match && spec.value) {
           const type = match[1].toUpperCase();
           const colorName = match[2].trim().toUpperCase();
@@ -234,6 +244,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           if (type === 'P3') map[colorName].p3 = spec.value;
           if (type === 'P4') map[colorName].p4 = spec.value;
           if (type === 'P5') map[colorName].p5 = spec.value;
+          if (type === 'P6') map[colorName].p6 = spec.value;
+          if (type === 'P7') map[colorName].p7 = spec.value;
+          if (type === 'P8') map[colorName].p8 = spec.value;
+          if (type === 'P9') map[colorName].p9 = spec.value;
+          if (type === 'P10') map[colorName].p10 = spec.value;
+          if (type === 'P11') map[colorName].p11 = spec.value;
+          if (type === 'P12') map[colorName].p12 = spec.value;
+          if (type === 'P13') map[colorName].p13 = spec.value;
+          if (type === 'P14') map[colorName].p14 = spec.value;
+          if (type === 'P15') map[colorName].p15 = spec.value;
         }
       }
     });
@@ -261,13 +281,13 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
     const allVariantImages = Object.values(colorGalleryMap).flatMap(g => [
-      g.main, g.p1, g.p2, g.p3, g.p4, g.p5
+      g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15
     ]).filter((img): img is string => typeof img === 'string' && img.length > 0);
 
     let rawImages: string[] = [];
-    if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
+    if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5 || activeGallery.p6 || activeGallery.p7 || activeGallery.p8 || activeGallery.p9 || activeGallery.p10 || activeGallery.p11 || activeGallery.p12 || activeGallery.p13 || activeGallery.p14 || activeGallery.p15)) {
       const colorSpecific = [
-        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5
+        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5, activeGallery.p6, activeGallery.p7, activeGallery.p8, activeGallery.p9, activeGallery.p10, activeGallery.p11, activeGallery.p12, activeGallery.p13, activeGallery.p14, activeGallery.p15
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
       // Append all other variant & gallery images so left thumbnails always show all photos and global cursor can swipe

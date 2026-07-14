@@ -33,7 +33,7 @@ interface ImmersiveProductViewProps {
   localizedDescription?: string;
   displaySpecs?: any[];
   imageDescriptionItems?: { url?: string; desc?: string }[];
-  colorGalleryMap?: Record<string, { main?: string; p1?: string; p2?: string; p3?: string; p4?: string; p5?: string; }>;
+  colorGalleryMap?: Record<string, { main?: string; p1?: string; p2?: string; p3?: string; p4?: string; p5?: string; p6?: string; p7?: string; p8?: string; p9?: string; p10?: string; p11?: string; p12?: string; p13?: string; p14?: string; p15?: string; }>;
 }
 
 export default function ImmersiveProductView({
@@ -97,7 +97,7 @@ export default function ImmersiveProductView({
     if (!currentUrl) return selectedColor;
 
     const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
-      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5].includes(currentUrl);
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentUrl);
     });
 
     if (matchedEntry) {

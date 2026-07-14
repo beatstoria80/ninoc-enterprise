@@ -99,14 +99,15 @@ export default function ProductGallery({
   return (
     <>
       {/* DESKTOP VERTICAL THUMBNAIL LIST — Cursor Drag Swipeable */}
-      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0 select-none">
+      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0 select-none relative h-full">
         <div
           ref={desktopThumbRef}
           onPointerDown={handleDesktopPointerDown}
           onPointerMove={handleDesktopPointerMove}
           onPointerUp={handleDesktopPointerUp}
           onPointerLeave={handleDesktopPointerUp}
-          className="flex flex-col gap-2 overflow-y-auto no-scrollbar pt-2 pb-2 pr-1 max-h-[600px] cursor-grab active:cursor-grabbing"
+          className="absolute inset-0 flex flex-col gap-2 overflow-y-auto no-scrollbar pt-4 pb-4 pr-1 cursor-grab active:cursor-grabbing"
+          style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)' }}
         >
           {images.map((img, i) => (
             <motion.button

@@ -3340,17 +3340,17 @@ export default function AdminDashboard() {
                                   />
                                 </div>
                                 <button
-                                  onClick={() => {
-                                    const newVariants = productForm.variants.filter((_, i) => !group.originalIndices.includes(i));
-                                    setProductForm({ ...productForm, variants: newVariants });
-                                  }}
-                                  className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
-                                >
-                                  Remove {productForm.variant_label || (isFnB ? 'Blend' : isObjects ? 'Varian' : 'Color')}
-                                </button>
+                                    onClick={() => {
+                                      const newVariants = productForm.variants.filter((_, i) => !group.originalIndices.includes(i));
+                                      setProductForm({ ...productForm, variants: newVariants });
+                                    }}
+                                    className="text-[10px] uppercase tracking-wider text-red-500 hover:text-red-700 font-medium"
+                                  >
+                                    Remove {productForm.variant_label || (isFnB ? 'Blend' : isObjects ? 'Varian' : 'Color')}
+                                  </button>
 
                                 <div className="mt-2 space-y-2">
-                                  {['Image', 'P1', 'P2', 'P3', 'P4', 'P5'].map((imgType) => {
+                                  {(isFnB ? ['Image', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] : ['Image', 'P1', 'P2', 'P3', 'P4', 'P5']).map((imgType) => {
                                     const colorSpecLabel = `Color${imgType}:${group.color}`;
                                     const colorDescLabel = `Color${imgType}Desc:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s =>
