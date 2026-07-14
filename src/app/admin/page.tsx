@@ -2940,13 +2940,13 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
-                  {isObjects && (
+                  {(isObjects || isFnB) && (
                         <div className="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-lg space-y-1">
                           <div className="flex items-center gap-1.5 text-emerald-800 font-semibold text-xs">
-                            <span>🎯 Object & Consumer Goods — Deskripsi Khusus Per Gambar</span>
+                            <span>🎯 {isObjects ? 'Object & Consumer Goods' : 'Pantry & Cafe (F&B)'} — Unlimited Upload & Deskripsi Per Gambar</span>
                           </div>
                           <p className="text-[10px] text-emerald-700 leading-relaxed">
-                            Setiap foto/angle di bawah dapat memiliki deskripsi berbeda. Saat pembeli mengklik foto di halaman website, deskripsi akan berubah otomatis sesuai foto yang diklik.
+                            Kategori ini mendukung upload foto tambahan tak terhingga (Unlimited Upload) DAN deskripsi berbeda untuk setiap foto/angle. Saat pengunjung mengklik foto di halaman website, deskripsi akan berubah otomatis.
                           </p>
                         </div>
                       )}
@@ -3001,7 +3001,7 @@ export default function AdminDashboard() {
                             </button>
                           )}
                         </div>
-                        {isObjects && (
+                        {(isObjects || isFnB) && (
                           <div className="mt-2 pl-3 border-l-2 border-emerald-500/50 space-y-1">
                             <label className="block text-[9px] uppercase tracking-wider text-emerald-700 font-semibold">
                               Deskripsi Gambar Utama / Angle #1 (Muncul saat foto utama diklik di website)
@@ -3121,7 +3121,7 @@ export default function AdminDashboard() {
                                 </button>
                               )}
                             </div>
-                            {isObjects && (
+                            {(isObjects || isFnB) && (
                               <div className="w-full pl-8">
                                 <input
                                   type="text"
@@ -3148,6 +3148,145 @@ export default function AdminDashboard() {
                           );
                         })}
                       </div>
+
+                      {/* ===== UNLIMITED EXTRA GALLERY IMAGES (OBJECTS & F&B) ===== */}
+                      {(isObjects || isFnB) && (
+                        <div className="space-y-3 pt-3 border-t border-emerald-100 mt-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="block text-[10px] uppercase tracking-wider text-emerald-800 font-bold">
+                                Foto Tambahan Tak Terhingga (Unlimited Gallery & Descriptions)
+                              </label>
+                              <p className="text-[9px] text-gray-500">
+                                Tambahkan foto sebanyak yang diperlukan untuk detail lengkap produk.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentSpecs = [...(productForm.specifications || [])];
+                                const existingIndices = currentSpecs
+                                  .filter(s => s.label && s.label.startsWith('ExtraImage_'))
+                                  .map(s => parseInt(s.label.replace('ExtraImage_', ''), 10) || 0);
+                                const nextIdx = existingIndices.length > 0 ? Math.max(...existingIndices) + 1 : 1;
+                                currentSpecs.push({ label: `ExtraImage_${nextIdx}`, value: '' });
+                                setProductForm(prev => ({ ...prev, specifications: currentSpecs }));
+                              }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm"
+                            >
+                              + Tambah Foto Tak Terhingga
+                            </button>
+                          </div>
+
+                          <div className="space-y-3">
+                            {(productForm.specifications || [])
+                              .filter(s => s.label && s.label.startsWith('ExtraImage_'))
+                              .sort((a, b) => {
+                                const numA = parseInt(a.label.replace('ExtraImage_', ''), 10) || 0;
+                                const numB = parseInt(b.label.replace('ExtraImage_', ''), 10) || 0;
+                                return numA - numB;
+                              })
+                              .map((spec, index) => {
+                                const idxNum = spec.label.replace('ExtraImage_', '');
+                                const descSpec = productForm.specifications?.find(s => s.label === `ExtraImageDesc_${idxNum}`);
+                                return (
+                                  <div key={spec.label} className="flex flex-col gap-1.5 w-full bg-emerald-50/30 p-2.5 rounded-lg border border-emerald-200/50">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[9px] font-bold text-emerald-800 w-14 shrink-0">
+                                        Extra #{index + 1}
+                                      </span>
+                                      <input
+                                        type="url"
+                                        value={spec.value || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          const newSpecs = [...(productForm.specifications || [])];
+                                          const idx = newSpecs.findIndex(s => s.label === spec.label);
+                                          if (idx >= 0) newSpecs[idx].value = val;
+                                          setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                        }}
+                                        placeholder="https://... URL Foto Tambahan"
+                                        className="flex-1 px-2 py-1 bg-white border border-gray-200 rounded text-[10px] focus:outline-none focus:border-emerald-500"
+                                      />
+                                      <label className="relative flex items-center justify-center px-2 py-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                                        <span>Upload</span>
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          className="hidden"
+                                          onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+                                            setIsUploadingProductImage(true);
+                                            try {
+                                              const compressedFile = await compressImage(file);
+                                              const formData = new FormData();
+                                              formData.append('files', compressedFile);
+                                              formData.append('bucket', 'products');
+                                              const res = await fetch('/api/admin/upload-images', {
+                                                method: 'POST',
+                                                body: formData
+                                              });
+                                              const data = await res.json();
+                                              if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                                throw new Error(data.error || 'Upload failed');
+                                              }
+                                              const newSpecs = [...(productForm.specifications || [])];
+                                              const idx = newSpecs.findIndex(s => s.label === spec.label);
+                                              if (idx >= 0) newSpecs[idx].value = data.results[0].url;
+                                              setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                            } catch (err) {
+                                              alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                            } finally {
+                                              setIsUploadingProductImage(false);
+                                            }
+                                          }}
+                                          disabled={isUploadingProductImage}
+                                        />
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newSpecs = (productForm.specifications || []).filter(
+                                            s => s.label !== spec.label && s.label !== `ExtraImageDesc_${idxNum}`
+                                          );
+                                          setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                        }}
+                                        className="flex items-center justify-center px-2 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
+                                        title="Hapus Foto Ini"
+                                      >
+                                        Hapus
+                                      </button>
+                                    </div>
+
+                                    <div className="w-full pl-16">
+                                      <input
+                                        type="text"
+                                        value={descSpec?.value || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          const newSpecs = [...(productForm.specifications || [])];
+                                          const descLabel = `ExtraImageDesc_${idxNum}`;
+                                          const idx = newSpecs.findIndex(s => s.label === descLabel);
+                                          if (val.trim() === '') {
+                                            if (idx >= 0) newSpecs.splice(idx, 1);
+                                          } else if (idx >= 0) {
+                                            newSpecs[idx] = { label: descLabel, value: val };
+                                          } else {
+                                            newSpecs.push({ label: descLabel, value: val });
+                                          }
+                                          setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                        }}
+                                        placeholder={`Deskripsi khusus foto Extra #${index + 1} saat diklik di website...`}
+                                        className="w-full px-2.5 py-1 bg-white border border-emerald-200/60 rounded text-[10px] focus:outline-none focus:border-emerald-500 text-ink"
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      )}
 
 
                   <div className="flex flex-col gap-3">

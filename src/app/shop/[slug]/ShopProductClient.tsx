@@ -217,14 +217,23 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
     const globalP5 = safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value;
     
+    const extraImages = safeSpecs
+      .filter((s: any) => typeof s?.label === 'string' && s.label.startsWith('ExtraImage_') && s.value?.trim())
+      .sort((a: any, b: any) => {
+        const numA = parseInt(a.label.replace('ExtraImage_', ''), 10) || 0;
+        const numB = parseInt(b.label.replace('ExtraImage_', ''), 10) || 0;
+        return numA - numB;
+      })
+      .map((s: any) => s.value.trim());
+
     let rawImages: string[] = [];
     if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
       rawImages = [
-        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5
+        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5, ...extraImages
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     } else {
       rawImages = [
-        product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5
+        product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5, ...extraImages
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
     }
     return rawImages.length > 0 ? rawImages : [''];
@@ -245,7 +254,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       return undefined;
     };
 
-    return [
+    const baseSlots = [
       { url: product.image_url, desc: getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0']) },
       { url: product.perspective1, desc: getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1']) },
       { url: product.perspective2, desc: getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2']) },
@@ -253,6 +262,25 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       { url: product.perspective4, desc: getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4']) },
       { url: safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value, desc: getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5']) }
     ];
+
+    const extraSlots = safeSpecs
+      .filter((s: any) => typeof s?.label === 'string' && s.label.startsWith('ExtraImage_') && s.value?.trim())
+      .sort((a: any, b: any) => {
+        const numA = parseInt(a.label.replace('ExtraImage_', ''), 10) || 0;
+        const numB = parseInt(b.label.replace('ExtraImage_', ''), 10) || 0;
+        return numA - numB;
+      })
+      .map((s: any, idx: number) => {
+        const idxNum = s.label.replace('ExtraImage_', '');
+        const desc = getDesc([
+          `extraimagedesc_${idxNum}`,
+          `imagedesc_${6 + idx}`,
+          `deskripsi_gambar_${6 + idx}`
+        ]);
+        return { url: s.value.trim(), desc };
+      });
+
+    return [...baseSlots, ...extraSlots];
   }, [product]);
 
   const currentImageDesc = React.useMemo(() => {
