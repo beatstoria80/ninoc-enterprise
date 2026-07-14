@@ -146,13 +146,13 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
       (!effectiveColor ? !v?.color : v?.color?.toUpperCase() === effectiveColor?.toUpperCase())
     );
-    if (selectedVariant && typeof selectedVariant.stock_quantity === 'number') {
-      return selectedVariant.stock_quantity;
+    if (selectedVariant) {
+      return typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : (parseInt(selectedVariant.stock_quantity) || 0);
     }
-    if (typeof (product as any)?.stock_quantity === 'number') {
-      return (product as any).stock_quantity;
+    if (product && 'stock_quantity' in product) {
+      return typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : (parseInt((product as any).stock_quantity) || 0);
     }
-    return 999;
+    return 0; // Default to 0 instead of 999 to prevent overselling of null-stock items
   }, [product, hasSizes, effectiveSize, effectiveColor]);
 
   const itemInCartQty = useMemo(() => {

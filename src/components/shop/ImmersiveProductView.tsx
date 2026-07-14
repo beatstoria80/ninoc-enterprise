@@ -122,9 +122,9 @@ export default function ImmersiveProductView({
     (!effectiveSize ? true : v?.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
     (!effectiveColor ? true : v?.color?.toUpperCase() === effectiveColor.toUpperCase())
   );
-  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' 
-    ? selectedVariant.stock_quantity 
-    : (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : 999);
+  const availableStock = selectedVariant 
+    ? (typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : (parseInt(selectedVariant.stock_quantity) || 0))
+    : (product && 'stock_quantity' in product ? (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : (parseInt((product as any).stock_quantity) || 0)) : 0);
 
   const itemInCartQty = items
     .filter(item => item.id === product?.id && item.size === effectiveSize && item.color === effectiveColor)

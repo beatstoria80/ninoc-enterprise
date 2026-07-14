@@ -54,7 +54,7 @@ export class CheckoutService {
         (!item.color || v.color?.toUpperCase() === item.color?.toUpperCase())
       );
       
-      const currentStock = variant?.stock_quantity ?? dbProd.stock_quantity ?? 999;
+      const currentStock = (variant?.stock_quantity != null) ? variant.stock_quantity : ((dbProd.stock_quantity != null) ? dbProd.stock_quantity : 0);
       if (item.quantity > currentStock) {
         return { status: 409, payload: { 
           error: `Stok "${item.name}" ${item.size ? `(${item.size})` : ''} hanya tersisa ${currentStock} unit`,
