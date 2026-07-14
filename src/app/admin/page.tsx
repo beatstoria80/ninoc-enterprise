@@ -3388,11 +3388,26 @@ export default function AdminDashboard() {
                                     value={group.color}
                                     placeholder="e.g. Black or Series Name"
                                     onChange={(e) => {
+                                      const oldColor = group.color;
+                                      const newColor = e.target.value;
                                       const newVariants = [...productForm.variants];
                                       group.originalIndices.forEach(idx => {
-                                        newVariants[idx] = { ...newVariants[idx], color: e.target.value };
+                                        newVariants[idx] = { ...newVariants[idx], color: newColor };
                                       });
-                                      setProductForm({ ...productForm, variants: newVariants });
+
+                                      const newSpecs = [...(productForm.specifications || [])];
+                                      if (oldColor && oldColor !== newColor) {
+                                        newSpecs.forEach((s) => {
+                                          if (s && typeof s.label === 'string') {
+                                            const parts = s.label.split(':');
+                                            if (parts.length >= 2 && parts.slice(1).join(':').trim().toLowerCase() === oldColor.trim().toLowerCase()) {
+                                              s.label = `${parts[0]}:${newColor}`;
+                                            }
+                                          }
+                                        });
+                                      }
+
+                                      setProductForm({ ...productForm, variants: newVariants, specifications: newSpecs });
                                     }}
                                     className="px-3 py-1.5 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 font-medium text-ink w-48"
                                   />
