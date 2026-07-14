@@ -511,14 +511,25 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-1 gap-y-2 pt-1">
-                      {displaySpecs.map((spec: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
-                          <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
-                          <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
-                        </div>
-                      ))}
-                    </div>
+                    !isObjectsCat && !isFnBCat ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+                        {displaySpecs.map((spec: any, idx: number) => (
+                          <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
+                            <span className="text-[12px] md:text-[11px] font-bold uppercase tracking-wider text-ink/80">{spec.label}</span>
+                            <span className="text-[12px] md:text-[11px] font-normal text-right text-ink">{spec.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-y-2 pt-1">
+                        {displaySpecs.map((spec: any, idx: number) => (
+                          <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
+                            <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
+                            <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
