@@ -138,7 +138,7 @@ function CartItem({
   onQuantityChange,
   onImageClick
 }: {
-  item: { id: string; name: string; price: number; quantity: number; size?: string; image_url?: string | null };
+  item: { id: string; name: string; price: number; quantity: number; size?: string; image_url?: string | null; maxStock?: number };
   index: number;
   onRemove: () => void;
   onQuantityChange: (delta: number) => void;
@@ -228,7 +228,7 @@ function CartItem({
               >
                 {item.quantity}
               </motion.span>
-              <PressScale onClick={() => onQuantityChange(1)} className="text-ink/50 hover:text-rose p-0.5">
+              <PressScale onClick={() => onQuantityChange(1)} disabled={item.maxStock ? item.quantity >= item.maxStock : false} className="text-ink/50 hover:text-rose p-0.5 disabled:opacity-30 disabled:pointer-events-none">
                 <Plus size={12} strokeWidth={2} />
               </PressScale>
             </motion.div>

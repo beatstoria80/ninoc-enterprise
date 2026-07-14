@@ -19,6 +19,7 @@ export interface CartItem {
   department_id?: string | null;
   category?: string;
   is_perishable?: boolean;
+  maxStock?: number; // inventory limit for this variant
 }
 
 interface CartStore {
@@ -107,22 +108,22 @@ export const useCart = create<CartStore>()(
           set({
             items: currentItems.map(item =>
               (item.id === product.id && item.size === size && item.color === color)
-                ? { ...item, quantity: newQty }
+                ? { ...item, quantity: newQty, maxStock }
                 : item
             )
           });
         } else {
           const initialQty = Math.min(maxStock, qty);
-          set({ items: [...currentItems, { ...product, quantity: initialQty, size, color, size_surcharge: sizeSurcharge }] });
+          set({ items: [...currentItems, { ...product, quantity: initialQty, size, color, size_surcharge: sizeSurcharge, maxStock }] });
         }
       },
       removeItem: (id, size, color) => set({
         items: get().items.filter(item => !(item.id === id && item.size === size && item.color === color))
       }),
-      updateQuantity: (id, quantity, size, color, maxStock = 999) => set({
+      updateQuantity: (id, quantity, size, color, maxStock) => set({
         items: get().items.map(item =>
           (item.id === id && item.size === size && item.color === color)
-            ? { ...item, quantity: Math.min(maxStock, Math.max(1, quantity)) }
+            ? { ...item, quantity: Math.min(maxStock ?? item.maxStock ?? 999, Math.max(1, quantity)) }
             : item
         )
       }),

@@ -154,7 +154,8 @@ export function CartSidebar({
                           <span className="text-sm md:text-[11px] font-medium w-5 text-center">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
-                            className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm"
+                            disabled={item.maxStock ? item.quantity >= item.maxStock : false}
+                            className="w-6 h-6 flex items-center justify-center text-ink/60 hover:text-rose hover:bg-rose/5 transition-colors rounded-sm disabled:opacity-30 disabled:pointer-events-none"
                           >
                             <Plus size={12} />
                           </button>
