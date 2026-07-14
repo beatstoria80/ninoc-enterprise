@@ -122,6 +122,16 @@ export default function QuickBuyModal() {
     const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s.toUpperCase() === size.toUpperCase());
     const surcharge = selectedSize ? (isSurchargeSize(selectedSize) ? SIZE_SURCHARGE_AMOUNT : 0) : 0;
     
+    // Calculate available stock for the selected variant
+    const safeVariants = Array.isArray(quickBuyProduct.variants) ? quickBuyProduct.variants : [];
+    const selectedVariantObj = safeVariants.find((v: any) => 
+      (!selectedSize ? true : v?.size?.toUpperCase() === selectedSize.toUpperCase()) && 
+      (!selectedColor ? true : v?.color?.toUpperCase() === selectedColor.toUpperCase())
+    );
+    const availableStock = selectedVariantObj 
+      ? (typeof selectedVariantObj.stock_quantity === 'number' ? selectedVariantObj.stock_quantity : (parseInt(selectedVariantObj.stock_quantity) || 0))
+      : (quickBuyProduct && 'stock_quantity' in quickBuyProduct ? (typeof (quickBuyProduct as any).stock_quantity === 'number' ? (quickBuyProduct as any).stock_quantity : (parseInt((quickBuyProduct as any).stock_quantity) || 0)) : 0);
+
     addItem(
       {
         id: quickBuyProduct.id,
@@ -132,7 +142,9 @@ export default function QuickBuyModal() {
       },
       selectedSize || undefined,
       selectedColor || undefined,
-      surcharge
+      surcharge,
+      1,
+      availableStock
     );
     setQuickBuyProduct(null);
     router.push('/checkout');
