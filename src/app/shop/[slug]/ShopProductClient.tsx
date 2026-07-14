@@ -97,6 +97,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     availableSizes,
     effectiveSize,
     effectiveColor,
+    availableStock,
+    itemInCartQty,
+    remainingStock,
     handleAddToCart: hookHandleAddToCart,
   } = useProductSelection(initialProduct, initialReviews);
 
@@ -408,15 +411,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
   
-  const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : 0;
-  const displayQuantity = availableStock === 0 ? 0 : Math.min(quantity, availableStock);
+  const displayQuantity = remainingStock === 0 ? 0 : Math.min(quantity, remainingStock);
 
   const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s?.toUpperCase() === size?.toUpperCase());
   const currentSurcharge = isSurchargeSize(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0;
 
   const handleAddToCart = () => {
     if (!product) return;
-    if (availableStock === 0) return;
+    if (remainingStock <= 0) return;
     const success = hookHandleAddToCart();
     if (success) {
       setAddedToCart(true);
@@ -677,7 +679,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <h4 className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">{dict.product.quantity}</h4>
                   {availableStock > 0 ? (
                     <span className="text-xs md:text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 uppercase tracking-wider">
-                      {availableStock} {dict.product.inStock}
+                      {itemInCartQty > 0 ? `TERSISA ${remainingStock} DARI ${availableStock} STOK` : `${availableStock} ${dict.product.inStock}`}
                     </span>
                   ) : (
                     <span className="text-xs md:text-[10px] font-medium text-rose bg-rose/5 px-1.5 py-0.5 uppercase tracking-wider">
@@ -686,54 +688,57 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   )}
                 </motion.div>
                 <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
-                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={availableStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={remainingStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
                   <span className="text-sm md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={availableStock === 0 || displayQuantity >= availableStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
+                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={remainingStock === 0 || displayQuantity >= remainingStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
                 </motion.div>
               </div>
 
-              {availableStock > 0 && (
-                <div className="mt-4 w-full">
-                  <motion.button
-                    variants={textVariants}
-                    onClick={() => {
-                      handleAddToCart();
-                      if (!isMobile && window.innerWidth < 1536) {
-                        router.push('/checkout');
-                      }
-                    }}
-                    disabled={addedToCart}
-                    className={cn(
-                      "active:scale-[0.97] w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
-                      addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
-                    )}
-                  >
-                      {addedToCart ? (
-                        <span className="flex items-center gap-2">
-                          <ShieldCheck size={16} /> {dict.product.added}
-                        </span>
-                      ) : (
-                        <div className="flex items-center gap-3">
-                          <div className="relative flex items-center justify-center">
-                            <ShoppingBag size={16} />
-                            {items.length > 0 && (
-                              <motion.div 
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute -top-2 -right-2.5 w-3.5 h-3.5 bg-emerald-500 text-white text-[8px] font-bold flex items-center justify-center rounded-none"
-                              >
-                                {items.reduce((sum, item) => sum + item.quantity, 0)}
-                              </motion.div>
-                            )}
-                          </div>
-                          <span>
-                            Add to Cart
-                          </span>
-                        </div>
-                      )}
-                  </motion.button>
-                </div>
-              )}
+              <div className="mt-4 w-full">
+                <motion.button
+                  variants={textVariants}
+                  onClick={() => {
+                    if (remainingStock <= 0) return;
+                    handleAddToCart();
+                    if (!isMobile && window.innerWidth < 1536) {
+                      router.push('/checkout');
+                    }
+                  }}
+                  disabled={addedToCart || remainingStock === 0}
+                  className={cn(
+                    "active:scale-[0.97] w-full py-2.5 lg:py-2.5 rounded-none font-medium text-xs md:text-sm lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.2em] flex items-center justify-center gap-2 lg:gap-4 transition-all relative overflow-hidden group shadow-xl shadow-ink/5",
+                    remainingStock === 0 ? "bg-ink/30 text-white cursor-not-allowed" : addedToCart ? "bg-emerald-500 text-white" : "bg-ink text-white hover:bg-rose"
+                  )}
+                >
+                  {remainingStock === 0 ? (
+                    <span>
+                      {availableStock === 0 ? dict.product.outOfStock : `STOK MAKSIMUM DI KERANJANG (${itemInCartQty}/${availableStock})`}
+                    </span>
+                  ) : addedToCart ? (
+                    <span className="flex items-center gap-2">
+                      <ShieldCheck size={16} /> {dict.product.added}
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex items-center justify-center">
+                        <ShoppingBag size={16} />
+                        {items.length > 0 && (
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2.5 w-3.5 h-3.5 bg-emerald-500 text-white text-[8px] font-bold flex items-center justify-center rounded-none"
+                          >
+                            {items.reduce((sum, item) => sum + item.quantity, 0)}
+                          </motion.div>
+                        )}
+                      </div>
+                      <span>
+                        Add to Cart
+                      </span>
+                    </div>
+                  )}
+                </motion.button>
+              </div>
 
               {!isMobile && (
                 <div className="grid grid-cols-3 gap-3 pt-6 border-t border-ink/5 mt-6">

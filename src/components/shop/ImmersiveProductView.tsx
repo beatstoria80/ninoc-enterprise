@@ -126,6 +126,13 @@ export default function ImmersiveProductView({
     ? selectedVariant.stock_quantity 
     : (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : 999);
 
+  const itemInCartQty = items
+    .filter(item => item.id === product?.id && item.size === effectiveSize && item.color === effectiveColor)
+    .reduce((sum, item) => sum + item.quantity, 0);
+
+  const remainingStock = Math.max(0, availableStock - itemInCartQty);
+  const displayQuantity = remainingStock === 0 ? 0 : Math.min(quantity, remainingStock);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -367,23 +374,23 @@ export default function ImmersiveProductView({
                     "text-[10px] uppercase tracking-widest font-bold",
                     availableStock > 0 ? "text-emerald-500" : "text-rose"
                   )}>
-                    {availableStock === 999 ? 'In Stock' : availableStock > 0 ? `${availableStock} Available` : 'Out of Stock'}
+                    {availableStock === 999 ? 'In Stock' : availableStock > 0 ? (itemInCartQty > 0 ? `Tersisa ${remainingStock} dari ${availableStock} Available` : `${availableStock} Available`) : 'Out of Stock'}
                   </span>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <div className="flex items-center bg-ink/5">
                     <button 
-                      onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                      disabled={quantity <= 1 || availableStock === 0}
+                      onClick={() => setQuantity(Math.max(1, displayQuantity - 1))}
+                      disabled={displayQuantity <= 1 || remainingStock === 0}
                       className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
                       <Minus size={14} />
                     </button>
-                    <span className="w-12 text-center text-sm font-bold">{quantity}</span>
+                    <span className="w-12 text-center text-sm font-bold">{displayQuantity}</span>
                     <button 
-                      onClick={() => quantity < availableStock && setQuantity(quantity + 1)}
-                      disabled={quantity >= availableStock || availableStock === 0}
+                      onClick={() => setQuantity(displayQuantity + 1)}
+                      disabled={displayQuantity >= remainingStock || remainingStock === 0}
                       className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
                       <Plus size={14} />
@@ -412,18 +419,19 @@ export default function ImmersiveProductView({
               {/* ADD TO CART */}
               <button
                 onClick={() => {
+                  if (remainingStock <= 0) return;
                   handleAddToCart();
                   onClose();
                 }}
-                disabled={availableStock === 0}
+                disabled={remainingStock === 0}
                 className={cn(
                   "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
-                  availableStock === 0
+                  remainingStock === 0
                     ? "bg-ink/10 text-ink/40 cursor-not-allowed"
                     : "bg-ink text-white hover:bg-rose"
                 )}
               >
-                {availableStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {remainingStock === 0 ? (availableStock === 0 ? 'Out of Stock' : `Max Stock in Cart (${itemInCartQty}/${availableStock})`) : 'Add to Cart'}
               </button>
 
             </motion.div>

@@ -23,9 +23,9 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number) => void;
+  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number, maxStock?: number) => void;
   removeItem: (id: string, size?: string, color?: string) => void;
-  updateQuantity: (id: string, quantity: number, size?: string, color?: string) => void;
+  updateQuantity: (id: string, quantity: number, size?: string, color?: string, maxStock?: number) => void;
   clearCart: () => void;
   totalPrice: () => number;
 }
@@ -98,29 +98,31 @@ export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product, size, color, sizeSurcharge = 0, qty = 1) => {
+      addItem: (product, size, color, sizeSurcharge = 0, qty = 1, maxStock = 999) => {
         const currentItems = get().items;
         const existingItem = currentItems.find(item => item.id === product.id && item.size === size && item.color === color);
 
         if (existingItem) {
+          const newQty = Math.min(maxStock, existingItem.quantity + qty);
           set({
             items: currentItems.map(item =>
               (item.id === product.id && item.size === size && item.color === color)
-                ? { ...item, quantity: item.quantity + qty }
+                ? { ...item, quantity: newQty }
                 : item
             )
           });
         } else {
-          set({ items: [...currentItems, { ...product, quantity: qty, size, color, size_surcharge: sizeSurcharge }] });
+          const initialQty = Math.min(maxStock, qty);
+          set({ items: [...currentItems, { ...product, quantity: initialQty, size, color, size_surcharge: sizeSurcharge }] });
         }
       },
       removeItem: (id, size, color) => set({
         items: get().items.filter(item => !(item.id === id && item.size === size && item.color === color))
       }),
-      updateQuantity: (id, quantity, size, color) => set({
+      updateQuantity: (id, quantity, size, color, maxStock = 999) => set({
         items: get().items.map(item =>
           (item.id === id && item.size === size && item.color === color)
-            ? { ...item, quantity: Math.max(1, quantity) }
+            ? { ...item, quantity: Math.min(maxStock, Math.max(1, quantity)) }
             : item
         )
       }),

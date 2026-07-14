@@ -138,14 +138,44 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     };
   }, [product, product?.id, product?.category]);
 
+  const addItem = useCart(state => state.addItem);
+  const cartItems = useCart(state => state.items);
+
+  const availableStock = useMemo(() => {
+    const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
+    const selectedVariant = safeVariants.find((v: any) => 
+      (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
+      (!effectiveColor ? !v?.color : v?.color?.toUpperCase() === effectiveColor?.toUpperCase())
+    );
+    if (selectedVariant && typeof selectedVariant.stock_quantity === 'number') {
+      return selectedVariant.stock_quantity;
+    }
+    if (typeof (product as any)?.stock_quantity === 'number') {
+      return (product as any).stock_quantity;
+    }
+    return 999;
+  }, [product, hasSizes, effectiveSize, effectiveColor]);
+
+  const itemInCartQty = useMemo(() => {
+    return cartItems
+      .filter(item => item.id === product?.id && item.size === effectiveSize && item.color === effectiveColor)
+      .reduce((sum, item) => sum + item.quantity, 0);
+  }, [cartItems, product?.id, effectiveSize, effectiveColor]);
+
+  const remainingStock = Math.max(0, availableStock - itemInCartQty);
+
   const handleAddToCart = () => {
     if (!product) return false;
+    if (remainingStock <= 0) return false;
+
     let sizeSurcharge = 0;
     if (SURCHARGE_SIZES.includes(effectiveSize.toUpperCase())) {
       sizeSurcharge = SIZE_SURCHARGE_AMOUNT;
     }
 
-    // Single atomic call — no loop, no race condition, one storage write
+    const qtyToAdd = Math.min(quantity, remainingStock);
+
+    // Single atomic call — passing availableStock so cart store enforces max limit
     addItem({
       id: product.id,
       name: product.name,
@@ -156,7 +186,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       department_id: product.department_id,
       category: product.category,
       is_perishable: product.is_perishable,
-    }, effectiveSize, effectiveColor, sizeSurcharge, quantity);
+    }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
     setQuantity(1);
     return true;
@@ -176,6 +206,9 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     availableSizes,
     effectiveSize,
     effectiveColor,
+    availableStock,
+    itemInCartQty,
+    remainingStock,
     handleAddToCart,
   };
 }
