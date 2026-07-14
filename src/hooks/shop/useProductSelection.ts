@@ -138,7 +138,6 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     };
   }, [product, product?.id, product?.category]);
 
-  const addItem = useCart(state => state.addItem);
   const cartItems = useCart(state => state.items);
 
   const availableStock = useMemo(() => {
