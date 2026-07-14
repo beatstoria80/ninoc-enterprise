@@ -511,27 +511,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    !isObjectsCat && !isFnBCat ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
-                        {displaySpecs.map((spec: any, idx: number) => (
-                          <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
-                            <span className="text-[12px] md:text-[11px] font-bold uppercase tracking-wider text-ink/80">{spec.label}</span>
-                            <span className="text-[12px] md:text-[11px] font-normal text-right text-ink">{spec.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="max-h-[400px] overflow-y-auto">
-                        <div className="grid grid-cols-1 gap-y-2 pt-1">
-                          {displaySpecs.map((spec: any, idx: number) => (
-                            <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
-                              <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
-                              <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
-                            </div>
-                          ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+                      {displaySpecs.map((spec: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
+                          <span className="text-[12px] md:text-[11px] font-bold uppercase tracking-wider text-ink/80">{spec.label}</span>
+                          <span className="text-[12px] md:text-[11px] font-normal text-right text-ink">{spec.value}</span>
                         </div>
-                      </div>
-                    )
+                      ))}
+                    </div>
                   )}
                   {activeInfoTab === 'measurement' && (
                     <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
@@ -605,8 +592,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
               )}
 
               {availableColors.length > 0 && (
-                <div className="space-y-2 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
-                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-2">
+                <div className="space-y-1.5 border-t border-ink/5 lg:border-none pt-2 lg:pt-0">
+                  <motion.h4 variants={textVariants} className="text-xs md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 border-b border-ink/5 pb-1 lg:pb-1.5">
                     {product?.variant_label
                       ? `Pilih ${product.variant_label}`
                       : isObjectsCat
@@ -615,9 +602,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                           ? 'Pilih Varian / Blend'
                           : dict.product.selectColor}
                   </motion.h4>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-1.5 flex-wrap">
                     {availableColors.map((color) => {
-                      const colorGallery = colorGalleryMap[color];
+                      const colorGallery = colorGalleryMap[color.toUpperCase()];
                       const colorImg = colorGallery?.main;
                       return (
                       <motion.button
@@ -625,15 +612,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         key={color}
                         onClick={() => { setSelectedColor(color); setQuantity(1); setActiveImageIndex(0); }}
                         className={cn(
-                          "active:scale-[0.97] flex items-center gap-2 px-3 py-1.5 rounded-none text-xs md:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider border transition-all",
+                          "active:scale-[0.97] flex items-center gap-1.5 px-2 py-1 rounded-none text-[9px] md:text-[8px] lg:text-[9px] font-medium uppercase tracking-wider border transition-all",
                           effectiveColor === color
                             ? "bg-ink text-white border-ink"
                             : "bg-white text-ink/60 border-ink/10 hover:border-ink/30"
                         )}
                       >
                         {colorImg && (
-                          <div className="w-4 h-4 md:w-3 md:h-3 lg:w-4 lg:h-4 rounded-full overflow-hidden shrink-0 border border-current">
-                            <Image src={colorImg} alt={color} width={16} height={16} className="w-full h-full object-cover" unoptimized />
+                          <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 border border-current">
+                            <Image src={colorImg} alt={color} width={14} height={14} className="w-full h-full object-cover" unoptimized />
                           </div>
                         )}
                         <span>{color}</span>
@@ -641,26 +628,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       );
                     })}
                   </div>
-                  {effectiveColor && colorDescMap[effectiveColor.toUpperCase()] && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2.5 p-3 rounded bg-ink/[0.02] border border-ink/10 text-xs text-ink/80 leading-relaxed space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-[9px] uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {product?.variant_label || (isObjectsCat ? 'Selected Series/Model' : isFnBCat ? 'Selected Blend/Flavor' : 'Selected Variant')}:
-                        </span>
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-ink bg-white px-2 py-0.5 border border-ink/10 shadow-2xs">
-                          {effectiveColor}
-                        </span>
-                      </div>
-                      <p className="text-ink/80 text-xs leading-relaxed pt-1 border-t border-ink/5">
-                        {colorDescMap[effectiveColor.toUpperCase()]}
-                      </p>
-                    </motion.div>
-                  )}
                 </div>
               )}
 
