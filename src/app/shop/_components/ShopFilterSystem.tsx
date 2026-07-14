@@ -103,8 +103,15 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     if (typeof window === 'undefined') return;
     try {
       /* eslint-disable react-hooks/set-state-in-effect */
-      const savedCategory = sessionStorage.getItem('ninoc_filter_category');
-      if (savedCategory) setSelectedCategory(savedCategory);
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlFilter = urlParams.get('filter');
+      
+      if (urlFilter && ['All', 'Apparel', 'Objects', 'Pantry'].includes(urlFilter)) {
+        setSelectedCategory(urlFilter);
+      } else {
+        const savedCategory = sessionStorage.getItem('ninoc_filter_category');
+        if (savedCategory) setSelectedCategory(savedCategory);
+      }
       
       const savedSearch = sessionStorage.getItem('ninoc_filter_search');
       if (savedSearch) setSearchQuery(savedSearch);
