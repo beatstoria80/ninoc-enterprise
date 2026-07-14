@@ -90,6 +90,23 @@ export default function ImmersiveProductView({
     return null;
   }, [images, activeImage, imageDescriptionItems]);
 
+  // Determine variant name for the active image
+  const currentImmersiveVariantName = React.useMemo(() => {
+    if (!images || images.length === 0) return selectedColor;
+    const currentUrl = images[activeImage];
+    if (!currentUrl) return selectedColor;
+
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5].includes(currentUrl);
+    });
+
+    if (matchedEntry) {
+      return matchedEntry[0];
+    }
+    
+    return selectedColor || `${product?.variant_label || 'Series'} #${activeImage + 1}`;
+  }, [images, activeImage, colorGalleryMap, selectedColor, product]);
+
   // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
@@ -112,22 +129,22 @@ export default function ImmersiveProductView({
     };
   }, [isOpen]);
 
-  const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s?.toUpperCase() === size?.toUpperCase());
-  const currentSurcharge = isSurchargeSize(selectedSize) ? SIZE_SURCHARGE_AMOUNT : 0;
+  if (!product) return null;
+
+  const currentSurcharge = hasSizes && selectedSize && SURCHARGE_SIZES.some(s => s?.toUpperCase() === selectedSize?.toUpperCase()) ? SIZE_SURCHARGE_AMOUNT : 0;
   
-  const effectiveSize = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : '');
-  const effectiveColor = selectedColor || (availableColors.length > 0 ? availableColors[0] : '');
+  // Resolve stock safely for cart limits
   const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
   const selectedVariant = safeVariants.find((v: any) => 
-    (!effectiveSize ? true : v?.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
-    (!effectiveColor ? true : v?.color?.toUpperCase() === effectiveColor.toUpperCase())
+    (!selectedSize ? true : v?.size?.toUpperCase() === selectedSize.toUpperCase()) && 
+    (!selectedColor ? true : v?.color?.toUpperCase() === selectedColor.toUpperCase())
   );
   const availableStock = selectedVariant 
     ? (typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : (parseInt(selectedVariant.stock_quantity) || 0))
     : (product && 'stock_quantity' in product ? (typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : (parseInt((product as any).stock_quantity) || 0)) : 0);
 
   const itemInCartQty = items
-    .filter(item => item.id === product?.id && item.size === effectiveSize && item.color === effectiveColor)
+    .filter(item => item.id === product?.id && item.size === selectedSize && item.color === selectedColor)
     .reduce((sum, item) => sum + item.quantity, 0);
 
   const remainingStock = Math.max(0, availableStock - itemInCartQty);
@@ -140,13 +157,13 @@ export default function ImmersiveProductView({
           initial={{ opacity: 0, y: '100%' }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '100%' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ type: "spring", stiffness: 200, damping: 30 }}
           className="fixed inset-0 z-[9999] bg-cr flex flex-col lg:flex-row overflow-hidden"
         >
-          {/* Close Button - Global */}
-          <button
+          {/* Close Button */}
+          <button 
             onClick={onClose}
-            className="absolute top-6 right-6 z-[110] w-12 h-12 bg-white flex items-center justify-center rounded-full shadow-lg border border-ink/5 hover:bg-rose hover:text-white transition-colors"
+            className="absolute top-6 right-6 z-[100] w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-ink hover:bg-white hover:text-rose transition-colors border border-ink/10"
           >
             <X strokeWidth={1.5} size={24} />
           </button>
@@ -184,7 +201,7 @@ export default function ImmersiveProductView({
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">
-                          {selectedColor || `${product?.variant_label || 'Series'} #${activeImage + 1}`}
+                          {currentImmersiveVariantName}
                         </span>
                       </div>
                       <p className="text-xs leading-relaxed text-ink/80 font-medium whitespace-pre-wrap">
