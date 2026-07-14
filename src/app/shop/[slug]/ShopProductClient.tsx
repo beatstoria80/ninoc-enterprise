@@ -765,9 +765,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         onClose={() => setIsImmersiveOpen(false)}
         product={product}
         images={images}
-        selectedSize={selectedSize}
+        selectedSize={effectiveSize}
         setSelectedSize={setSelectedSize}
-        selectedColor={selectedColor}
+        selectedColor={effectiveColor}
         setSelectedColor={setSelectedColor}
         quantity={quantity}
         setQuantity={setQuantity}

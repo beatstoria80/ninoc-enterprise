@@ -115,12 +115,12 @@ export default function ImmersiveProductView({
   const isSurchargeSize = (size: string) => SURCHARGE_SIZES.some(s => s?.toUpperCase() === size?.toUpperCase());
   const currentSurcharge = isSurchargeSize(selectedSize) ? SIZE_SURCHARGE_AMOUNT : 0;
   
-  // Use product variants to check stock
-  const effectiveSize = selectedSize || (hasSizes ? '' : 'ALL');
+  const effectiveSize = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : '');
+  const effectiveColor = selectedColor || (availableColors.length > 0 ? availableColors[0] : '');
   const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
   const selectedVariant = safeVariants.find((v: any) => 
-    (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
-    (!selectedColor ? !v?.color : v?.color?.toUpperCase() === selectedColor?.toUpperCase())
+    (!effectiveSize ? true : v?.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
+    (!effectiveColor ? true : v?.color?.toUpperCase() === effectiveColor.toUpperCase())
   );
   const availableStock = selectedVariant && typeof selectedVariant.stock_quantity === 'number' 
     ? selectedVariant.stock_quantity 
@@ -415,22 +415,15 @@ export default function ImmersiveProductView({
                   handleAddToCart();
                   onClose();
                 }}
-                disabled={availableStock === 0 || (hasSizes && !selectedSize) || (availableColors.length > 0 && !selectedColor)}
+                disabled={availableStock === 0}
                 className={cn(
                   "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
-                  availableStock === 0 || (hasSizes && !selectedSize) || (availableColors.length > 0 && !selectedColor)
+                  availableStock === 0
                     ? "bg-ink/10 text-ink/40 cursor-not-allowed"
                     : "bg-ink text-white hover:bg-rose"
                 )}
               >
-                {availableStock === 0 
-                  ? 'Out of Stock' 
-                  : (hasSizes && !selectedSize) 
-                    ? 'Select Size' 
-                    : (availableColors.length > 0 && !selectedColor)
-                      ? (isObjectsCat ? 'Select Series / Model' : isFnBCat ? 'Select Variant / Blend' : 'Select Variant')
-                      : 'Add to Cart'
-                }
+                {availableStock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
 
             </motion.div>
