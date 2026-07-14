@@ -2943,10 +2943,10 @@ export default function AdminDashboard() {
                   {(isObjects || isFnB) && (
                         <div className="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-lg space-y-1">
                           <div className="flex items-center gap-1.5 text-emerald-800 font-semibold text-xs">
-                            <span>🎯 {isObjects ? 'Object & Consumer Goods' : 'Pantry & Cafe (F&B)'} — Unlimited Upload & Deskripsi Per Gambar</span>
+                            <span>🎯 {isObjects ? 'Object & Consumer Goods' : 'Pantry & Cafe (F&B)'} — Unlimited Upload Gallery</span>
                           </div>
                           <p className="text-[10px] text-emerald-700 leading-relaxed">
-                            Kategori ini mendukung upload foto tambahan tak terhingga (Unlimited Upload) DAN deskripsi berbeda untuk setiap foto/angle. Saat pengunjung mengklik foto di halaman website, deskripsi akan berubah otomatis.
+                            Kategori ini mendukung upload foto tambahan tak terhingga (Unlimited Upload) untuk galeri produk secara lengkap.
                           </p>
                         </div>
                       )}
@@ -3001,33 +3001,6 @@ export default function AdminDashboard() {
                             </button>
                           )}
                         </div>
-                        {(isObjects || isFnB) && (
-                          <div className="mt-2 pl-3 border-l-2 border-emerald-500/50 space-y-1">
-                            <label className="block text-[9px] uppercase tracking-wider text-emerald-700 font-semibold">
-                              Deskripsi Gambar Utama / Angle #1 (Muncul saat foto utama diklik di website)
-                            </label>
-                            <input
-                              type="text"
-                              value={productForm.specifications?.find(s => s.label === 'ImageDesc_Main' || s.label === 'ImageDesc_0')?.value || ''}
-                              onChange={(e) => {
-                                const descLabel = 'ImageDesc_Main';
-                                const val = e.target.value;
-                                const newSpecs = [...(productForm.specifications || [])];
-                                const specIdx = newSpecs.findIndex(s => s.label === descLabel || s.label === 'ImageDesc_0');
-                                if (val.trim() === '') {
-                                  if (specIdx >= 0) newSpecs.splice(specIdx, 1);
-                                } else if (specIdx >= 0) {
-                                  newSpecs[specIdx] = { label: descLabel, value: val };
-                                } else {
-                                  newSpecs.push({ label: descLabel, value: val });
-                                }
-                                setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                              }}
-                              placeholder="Contoh: Tampak depan produk keramik stoneware berdiameter 22 cm dengan finishing matte glaze..."
-                              className="w-full px-2.5 py-1.5 bg-emerald-50/40 border border-emerald-200/60 rounded-lg text-xs focus:outline-none focus:border-emerald-500 focus:bg-white text-ink transition-colors"
-                            />
-                          </div>
-                        )}
                       </div>
 
                       {/* Additional Images — for product gallery navigation */}
@@ -3121,29 +3094,6 @@ export default function AdminDashboard() {
                                 </button>
                               )}
                             </div>
-                            {(isObjects || isFnB) && (
-                              <div className="w-full pl-8">
-                                <input
-                                  type="text"
-                                  value={productForm.specifications?.find(s => s.label === descLabel || s.label === `ImageDesc_${idx + 1}`)?.value || ''}
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    const newSpecs = [...(productForm.specifications || [])];
-                                    const specIdx = newSpecs.findIndex(s => s.label === descLabel || s.label === `ImageDesc_${idx + 1}`);
-                                    if (val.trim() === '') {
-                                      if (specIdx >= 0) newSpecs.splice(specIdx, 1);
-                                    } else if (specIdx >= 0) {
-                                      newSpecs[specIdx] = { label: descLabel, value: val };
-                                    } else {
-                                      newSpecs.push({ label: descLabel, value: val });
-                                    }
-                                    setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                                  }}
-                                  placeholder={`Deskripsi khusus gambar P${idx + 1} (contoh: Tampak atas / detail tekstur / kemasan box)...`}
-                                  className="w-full px-2.5 py-1 bg-emerald-50/40 border border-emerald-200/60 rounded text-[10px] focus:outline-none focus:border-emerald-500 focus:bg-white text-ink transition-colors"
-                                />
-                              </div>
-                            )}
                           </div>
                           );
                         })}
@@ -3257,29 +3207,6 @@ export default function AdminDashboard() {
                                       >
                                         Hapus
                                       </button>
-                                    </div>
-
-                                    <div className="w-full pl-16">
-                                      <input
-                                        type="text"
-                                        value={descSpec?.value || ''}
-                                        onChange={(e) => {
-                                          const val = e.target.value;
-                                          const newSpecs = [...(productForm.specifications || [])];
-                                          const descLabel = `ExtraImageDesc_${idxNum}`;
-                                          const idx = newSpecs.findIndex(s => s.label === descLabel);
-                                          if (val.trim() === '') {
-                                            if (idx >= 0) newSpecs.splice(idx, 1);
-                                          } else if (idx >= 0) {
-                                            newSpecs[idx] = { label: descLabel, value: val };
-                                          } else {
-                                            newSpecs.push({ label: descLabel, value: val });
-                                          }
-                                          setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                                        }}
-                                        placeholder={`Deskripsi khusus foto Extra #${index + 1} saat diklik di website...`}
-                                        className="w-full px-2.5 py-1 bg-white border border-emerald-200/60 rounded text-[10px] focus:outline-none focus:border-emerald-500 text-ink"
-                                      />
                                     </div>
                                   </div>
                                 );
