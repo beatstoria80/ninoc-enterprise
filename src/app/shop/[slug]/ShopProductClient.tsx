@@ -162,9 +162,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
   const displaySpecs = React.useMemo(() => {
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
-    return safeSpecs.filter(
-      (s: any) => s?.label && typeof s.label === 'string' && !/^color\s*(image|p1|p2|p3|p4|p5|desc)\s*:/i.test(s.label) && s.label !== 'GlobalP5'
-    );
+    return safeSpecs.filter((s: any) => {
+      if (!s?.label || typeof s.label !== 'string') return false;
+      const lbl = s.label.trim();
+      if (/^color(image|p1|p2|p3|p4|p5|desc|imagedesc|p1desc|p2desc|p3desc|p4desc|p5desc)\s*:/i.test(lbl)) return false;
+      if (/^(extraimage|extraimagedesc|imagedesc|deskripsi_gambar)_/i.test(lbl)) return false;
+      if (lbl.toLowerCase() === 'globalp5') return false;
+      return true;
+    });
   }, [product]);
 
   const displayMeasurements = React.useMemo(() => {
@@ -468,17 +473,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     className="space-y-2.5"
                   >
                     {currentImageDesc ? (
-                      <div className="space-y-2">
-                        <div className="p-3 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
-                          <p className="text-sm md:text-xs lg:text-sm leading-relaxed text-ink font-semibold whitespace-pre-wrap">
-                            {currentImageDesc}
-                          </p>
-                        </div>
-                        {localizedDescription && localizedDescription.trim() !== currentImageDesc.trim() && (
-                          <p className="text-xs md:text-xs lg:text-xs leading-relaxed text-ink/70 font-normal whitespace-pre-wrap">
-                            {localizedDescription}
-                          </p>
-                        )}
+                      <div className="p-3.5 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
+                        <p className="text-sm md:text-xs lg:text-sm leading-relaxed text-ink font-medium whitespace-pre-wrap">
+                          {currentImageDesc}
+                        </p>
                       </div>
                     ) : (
                       <p className="text-base md:text-sm lg:text-sm leading-relaxed text-ink/90 font-medium whitespace-pre-wrap">
