@@ -3426,9 +3426,30 @@ export default function AdminDashboard() {
                                   {['Image', 'P1', 'P2', 'P3', 'P4', 'P5'].map((imgType) => {
                                     const colorSpecLabel = `Color${imgType}:${group.color}`;
                                     const colorDescLabel = `Color${imgType}Desc:${group.color}`;
-                                    const colorSpec = productForm.specifications?.find(s => s.label === colorSpecLabel);
-                                    const descSpec = productForm.specifications?.find(s => s.label === colorDescLabel);
-                                    const colorImage = colorSpec?.value;
+                                    const colorSpec = productForm.specifications?.find(s =>
+                                      s.label && s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase()
+                                    ) || (
+                                      colorGroups.length === 1
+                                        ? productForm.specifications?.find(s => s.label && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
+                                        : undefined
+                                    );
+                                    const descSpec = productForm.specifications?.find(s =>
+                                      s.label && s.label.trim().toLowerCase() === colorDescLabel.trim().toLowerCase()
+                                    ) || (
+                                      colorGroups.length === 1
+                                        ? productForm.specifications?.find(s => s.label && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}desc:`))
+                                        : undefined
+                                    );
+
+                                    const fallbackImage = colorGroups.length === 1 ? (
+                                      imgType === 'Image' ? productForm.image_url :
+                                      imgType === 'P1' ? productForm.perspective1 :
+                                      imgType === 'P2' ? productForm.perspective2 :
+                                      imgType === 'P3' ? productForm.perspective3 :
+                                      imgType === 'P4' ? productForm.perspective4 : undefined
+                                    ) : undefined;
+
+                                    const colorImage = colorSpec?.value || fallbackImage;
                                     const descValue = descSpec?.value || '';
                                     const labelDisplay = imgType === 'Image' ? 'Main Image' : `Gallery ${imgType}`;
                                     
