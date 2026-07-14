@@ -3410,70 +3410,94 @@ export default function AdminDashboard() {
                                 <div className="mt-2 space-y-2">
                                   {['Image', 'P1', 'P2', 'P3', 'P4', 'P5'].map((imgType) => {
                                     const colorSpecLabel = `Color${imgType}:${group.color}`;
+                                    const colorDescLabel = `Color${imgType}Desc:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s => s.label === colorSpecLabel);
+                                    const descSpec = productForm.specifications?.find(s => s.label === colorDescLabel);
                                     const colorImage = colorSpec?.value;
+                                    const descValue = descSpec?.value || '';
                                     const labelDisplay = imgType === 'Image' ? 'Main Image' : `Gallery ${imgType}`;
                                     
                                     return (
-                                      <div key={imgType} className="flex items-center gap-3 w-full bg-white px-2 py-1.5 border border-gray-200 rounded text-xs">
-                                        <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium w-20">{labelDisplay}:</span>
-                                        {colorImage && (
-                                          <Image src={colorImage} alt={`${group.color} ${imgType}`} width={24} height={24} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" unoptimized />
-                                        )}
-                                        <label className="relative flex items-center justify-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap ml-auto">
-                                          <span>Upload</span>
-                                          <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={async (e) => {
-                                              const file = e.target.files?.[0];
-                                              if (!file) return;
-                                              setIsUploadingProductImage(true);
-                                              try {
-                                                const compressedFile = await compressImage(file);
-                                                const formData = new FormData();
-                                                formData.append('files', compressedFile);
-                                                formData.append('bucket', 'products');
-                                                const res = await fetch('/api/admin/upload-images', {
-                                                  method: 'POST',
-                                                  body: formData
-                                                });
-                                                const data = await res.json();
-                                                if (!res.ok || data.error || !data.results?.[0]?.url) {
-                                                  throw new Error(data.error || 'Upload failed');
+                                      <div key={imgType} className="flex flex-col gap-1.5 w-full bg-white p-2 border border-gray-200 rounded text-xs">
+                                        <div className="flex items-center gap-3 w-full">
+                                          <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium w-20">{labelDisplay}:</span>
+                                          {colorImage && (
+                                            <Image src={colorImage} alt={`${group.color} ${imgType}`} width={24} height={24} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" unoptimized />
+                                          )}
+                                          <label className="relative flex items-center justify-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap ml-auto">
+                                            <span>Upload</span>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                setIsUploadingProductImage(true);
+                                                try {
+                                                  const compressedFile = await compressImage(file);
+                                                  const formData = new FormData();
+                                                  formData.append('files', compressedFile);
+                                                  formData.append('bucket', 'products');
+                                                  const res = await fetch('/api/admin/upload-images', {
+                                                    method: 'POST',
+                                                    body: formData
+                                                  });
+                                                  const data = await res.json();
+                                                  if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                                    throw new Error(data.error || 'Upload failed');
+                                                  }
+                                                  
+                                                  const newSpecs = [...(productForm.specifications || [])];
+                                                  const specIdx = newSpecs.findIndex(s => s.label === colorSpecLabel);
+                                                  if (specIdx >= 0) {
+                                                    newSpecs[specIdx].value = data.results[0].url;
+                                                  } else {
+                                                    newSpecs.push({ label: colorSpecLabel, value: data.results[0].url });
+                                                  }
+                                                  setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                                } catch (err) {
+                                                  alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                                } finally {
+                                                  setIsUploadingProductImage(false);
                                                 }
-                                                
-                                                const newSpecs = [...(productForm.specifications || [])];
-                                                const specIdx = newSpecs.findIndex(s => s.label === colorSpecLabel);
-                                                if (specIdx >= 0) {
-                                                  newSpecs[specIdx].value = data.results[0].url;
-                                                } else {
-                                                  newSpecs.push({ label: colorSpecLabel, value: data.results[0].url });
-                                                }
+                                              }}
+                                              disabled={isUploadingProductImage}
+                                            />
+                                          </label>
+                                          {colorImage && (
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                const newSpecs = productForm.specifications?.filter(s => s.label !== colorSpecLabel) || [];
                                                 setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                                              } catch (err) {
-                                                alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
-                                              } finally {
-                                                setIsUploadingProductImage(false);
-                                              }
-                                            }}
-                                            disabled={isUploadingProductImage}
-                                          />
-                                        </label>
-                                        {colorImage && (
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              const newSpecs = productForm.specifications?.filter(s => s.label !== colorSpecLabel) || [];
-                                              setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                                            }}
-                                            className="p-1 text-gray-400 hover:text-rose transition-colors"
-                                            title="Remove image"
-                                          >
-                                            <X size={14} />
-                                          </button>
-                                        )}
+                                              }}
+                                              className="p-1 text-gray-400 hover:text-rose transition-colors"
+                                              title="Remove image"
+                                            >
+                                              <X size={14} />
+                                            </button>
+                                          )}
+                                        </div>
+                                        <input
+                                          type="text"
+                                          value={descValue}
+                                          placeholder={`Deskripsi khusus foto ${labelDisplay} (opsional)`}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            const newSpecs = [...(productForm.specifications || [])];
+                                            const specIdx = newSpecs.findIndex(s => s.label === colorDescLabel);
+                                            if (val.trim() === '') {
+                                              if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                            } else if (specIdx >= 0) {
+                                              newSpecs[specIdx] = { label: colorDescLabel, value: val };
+                                            } else {
+                                              newSpecs.push({ label: colorDescLabel, value: val });
+                                            }
+                                            setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                          }}
+                                          className="w-full px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50 text-ink"
+                                        />
                                       </div>
                                     );
                                   })}

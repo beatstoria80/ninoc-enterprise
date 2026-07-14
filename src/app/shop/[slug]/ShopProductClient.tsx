@@ -210,6 +210,28 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return map;
   }, [product]);
 
+  const colorImageDescMap = React.useMemo(() => {
+    const map: Record<string, Record<string, string>> = {};
+    const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    safeSpecs.forEach((spec: any) => {
+      if (typeof spec?.label === 'string') {
+        const match = spec.label.match(/^color(image|p1|p2|p3|p4|p5)desc\s*:\s*(.+)$/i);
+        if (match && spec.value) {
+          const type = match[1].toUpperCase();
+          const colorName = match[2].trim().toUpperCase();
+          if (!map[colorName]) map[colorName] = {};
+          if (type === 'IMAGE') map[colorName].main = spec.value;
+          if (type === 'P1') map[colorName].p1 = spec.value;
+          if (type === 'P2') map[colorName].p2 = spec.value;
+          if (type === 'P3') map[colorName].p3 = spec.value;
+          if (type === 'P4') map[colorName].p4 = spec.value;
+          if (type === 'P5') map[colorName].p5 = spec.value;
+        }
+      }
+    });
+    return map;
+  }, [product]);
+
   const images = React.useMemo(() => {
     if (!product) return [''];
     const safeColor = effectiveColor?.trim()?.toUpperCase();
@@ -246,6 +268,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const imageDescriptionItems = React.useMemo(() => {
     if (!product) return [];
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    const safeColor = effectiveColor?.trim()?.toUpperCase();
+    const activeGallery = safeColor ? colorGalleryMap[safeColor] : undefined;
+    const activeDescGallery = safeColor ? colorImageDescMap[safeColor] : undefined;
+    const variantFallbackDesc = safeColor ? colorDescMap[safeColor] : undefined;
+
     const getDesc = (keys: string[]) => {
       for (const key of keys) {
         const found = safeSpecs.find((s: any) => s?.label && s.label.toLowerCase() === key.toLowerCase());
@@ -255,12 +282,30 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     };
 
     const baseSlots = [
-      { url: product.image_url, desc: getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0']) },
-      { url: product.perspective1, desc: getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1']) },
-      { url: product.perspective2, desc: getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2']) },
-      { url: product.perspective3, desc: getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3']) },
-      { url: product.perspective4, desc: getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4']) },
-      { url: safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value, desc: getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5']) }
+      {
+        url: activeGallery?.main || product.image_url,
+        desc: activeDescGallery?.main || variantFallbackDesc || getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0'])
+      },
+      {
+        url: activeGallery?.p1 || product.perspective1,
+        desc: activeDescGallery?.p1 || variantFallbackDesc || getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1'])
+      },
+      {
+        url: activeGallery?.p2 || product.perspective2,
+        desc: activeDescGallery?.p2 || variantFallbackDesc || getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2'])
+      },
+      {
+        url: activeGallery?.p3 || product.perspective3,
+        desc: activeDescGallery?.p3 || variantFallbackDesc || getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3'])
+      },
+      {
+        url: activeGallery?.p4 || product.perspective4,
+        desc: activeDescGallery?.p4 || variantFallbackDesc || getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4'])
+      },
+      {
+        url: activeGallery?.p5 || safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value,
+        desc: activeDescGallery?.p5 || variantFallbackDesc || getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5'])
+      }
     ];
 
     const extraSlots = safeSpecs
@@ -281,7 +326,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       });
 
     return [...baseSlots, ...extraSlots];
-  }, [product]);
+  }, [product, effectiveColor, colorGalleryMap, colorImageDescMap, colorDescMap]);
 
   const currentImageDesc = React.useMemo(() => {
     if (!product || !images || images.length === 0) return null;
@@ -585,16 +630,26 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       );
                     })}
                   </div>
-                  {effectiveColor && colorDescMap[effectiveColor.toUpperCase()] && (
+                  {effectiveColor && (
                     <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-2.5 p-2.5 rounded bg-gray-50/90 border border-ink/10 text-xs text-ink/80 leading-relaxed"
+                      className="mt-2.5 p-3 rounded bg-ink/[0.02] border border-ink/10 text-xs text-ink/80 leading-relaxed space-y-1.5"
                     >
-                      <div className="font-semibold text-[9px] uppercase tracking-wider text-ink/50 mb-0.5">
-                        {product?.variant_label || (isObjectsCat ? 'Catatan Series/Model' : isFnBCat ? 'Catatan Blend' : 'Catatan Varian')}: {effectiveColor}
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[9px] uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          {product?.variant_label || (isObjectsCat ? 'Selected Series/Model' : isFnBCat ? 'Selected Blend/Flavor' : 'Selected Variant')}:
+                        </span>
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-ink bg-white px-2 py-0.5 border border-ink/10 shadow-2xs">
+                          {effectiveColor}
+                        </span>
                       </div>
-                      <p className="text-ink/80 text-xs leading-relaxed">{colorDescMap[effectiveColor.toUpperCase()]}</p>
+                      {colorDescMap[effectiveColor.toUpperCase()] && (
+                        <p className="text-ink/80 text-xs leading-relaxed pt-1 border-t border-ink/5">
+                          {colorDescMap[effectiveColor.toUpperCase()]}
+                        </p>
+                      )}
                     </motion.div>
                   )}
                 </div>
