@@ -710,6 +710,14 @@ export default function CheckoutPage() {
 
       // Handle non-OK responses
       if (!response.ok) {
+        if (response.status === 409) {
+          const errData = await response.json();
+          alert(errData.error || 'Stok produk telah habis. Silakan perbarui keranjang Anda.');
+          setIsProcessing(false);
+          isProcessingRef.current = false;
+          return;
+        }
+        
         const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
         throw new Error(errorData.error || `Request failed with status ${response.status}`);
       }

@@ -92,6 +92,17 @@ BEGIN
                 SET stock_quantity = v_new_stock, updated_at = NOW()
                 WHERE id = v_variant.id;
             END IF;
+        ELSE
+            -- No variant, no size — use product-level stock
+            UPDATE public.products
+            SET stock_quantity = stock_quantity - (v_item->>'quantity')::INT,
+                updated_at = NOW()
+            WHERE id = (v_item->>'product_id')::UUID
+              AND stock_quantity >= (v_item->>'quantity')::INT;
+            
+            IF NOT FOUND THEN
+                RAISE EXCEPTION 'Stok habis untuk produk %', v_item->>'product_name';
+            END IF;
         END IF;
     END LOOP;
 

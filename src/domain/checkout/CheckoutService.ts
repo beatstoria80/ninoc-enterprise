@@ -44,6 +44,25 @@ export class CheckoutService {
       return { status: 400, payload: { error: pricing.error } };
     }
 
+    // 4.5 Pre-validate stock availability
+    for (const item of items) {
+      const dbProd = dbProducts.find((p: any) => p.id === item.id);
+      if (!dbProd) continue;
+      
+      const variant = dbProd.variants?.find((v: any) => 
+        (!item.size || v.size?.toUpperCase() === item.size?.toUpperCase()) &&
+        (!item.color || v.color?.toUpperCase() === item.color?.toUpperCase())
+      );
+      
+      const currentStock = variant?.stock_quantity ?? dbProd.stock_quantity ?? 999;
+      if (item.quantity > currentStock) {
+        return { status: 409, payload: { 
+          error: `Stok "${item.name}" ${item.size ? `(${item.size})` : ''} hanya tersisa ${currentStock} unit`,
+          out_of_stock_item: item.id 
+        }};
+      }
+    }
+
     // 5. Resolve Affiliate Tracking
     let affiliateId: string | null = null;
     try {

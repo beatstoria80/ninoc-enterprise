@@ -11,9 +11,9 @@ export class OrderRepository {
     return await this.db
       .from('products')
       .select(`
-        id, price, name, supplier_id,
+        id, price, name, supplier_id, stock_quantity,
         product_costings ( supplier_base_price, supplier_surcharge_cost, ninoc_markup ),
-        variants ( id, size, color )
+        variants ( id, size, color, stock_quantity )
       `)
       .in('id', productIds);
   }
