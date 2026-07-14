@@ -84,3 +84,40 @@ The user reported that the courier prices were inaccurate, complaining that pric
 - **State Management & Interfaces**: When adding new fields to a database schema (like `weight_grams` or `is_perishable`), ALWAYS trace the data flow all the way to the frontend state management (like Zustand `CartItem` interfaces) to ensure the data is not being silently stripped out before it reaches critical APIs (like Checkout or Shipping calculations).
 - **Hardcoded Geolocation / Magic Numbers**: NEVER use "magic numbers" for critical geolocations (like postal codes or coordinates) without verification. If you must use a fallback, triple-check that it accurately reflects the real-world location (e.g., Bandung is `402xx`, not `412xx`).
 - **Mock Rates Alignment**: If the system is running in Sandbox/Mock mode, ensure the dummy data reflects the user's target business goals (e.g., JNE Reguler = 12,000 IDR). Do NOT use generic numbers that might cause confusion during user QA or demos.
+
+# Architecture Audit & System Reference Guide (14 July 2026)
+
+This section serves as the authoritative architectural blueprint and reference guide for any future agent or engineer modifying `ninoc-enterprise`.
+
+## 1. Core Architectural Layers & Stack
+- **Framework & Routing**: Next.js 15 (App Router). Dynamic routes include `/shop/[slug]` (product detail) and `/collections/[department]`.
+- **Global State & Storage Layer**:
+  - `useCart.ts` (`src/store/useCart.ts`): Managed via **Zustand** with synchronous local storage persistence. Always check `isHydrated` before rendering client cart counts to prevent React Hydration Mismatch warnings.
+  - `useProductSelection.ts` (`src/hooks/shop/useProductSelection.ts`): The Single Source of Truth for product variant selection (`effectiveSize`, `effectiveColor`, surcharge calculations, and category-specific attributes like `SET OF 2`).
+- **Database & Integrations Layer**:
+  - **Supabase**: PostgreSQL DB, Authentication, RLS policies, and Realtime notification subscriptions (`user_notifications`).
+  - **Midtrans API (`/api/midtrans/`)**: Snap Token generation and HMAC-SHA512 webhook signature verification.
+  - **Biteship API (`/api/biteship/`)**: Courier rate engine. Primary warehouse origin postal code is `40292` (Bandung Griya Saluyu).
+
+## 2. Mandatory Rules for UI Interaction & Global Listeners
+- **Global Drag Scroll & Pointer Events (`GlobalDragScroll.tsx`)**:
+  - NEVER intercept or block mouse/pointer events on semantic interactive elements. Always enforce exclusion selectors:
+    ```typescript
+    const target = e.target as HTMLElement;
+    if (target.closest('.no-drag, nav, header, a, button, input, select, textarea, [role="button"]')) return;
+    ```
+- **Navigation & Sticky Headers (`GlobalHeader.tsx`)**:
+  - Ensure header navigation containers (`<nav>`, navigation link wrappers, and `<NavLink />`) explicitly declare `no-drag pointer-events-auto` so they retain top-level click precedence.
+
+## 3. Product Variant & Add-to-Cart Standard Pattern
+When resolving product stock or variant state in modals or views (`ImmersiveProductView`, `QuickBuyModal`, `ShopProductClient`), ALWAYS normalize and match case-insensitively:
+```typescript
+const effectiveSize = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : '');
+const effectiveColor = selectedColor || (availableColors.length > 0 ? availableColors[0] : '');
+
+const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
+const selectedVariant = safeVariants.find((v: any) => 
+  (!effectiveSize ? true : v?.size?.toUpperCase() === effectiveSize.toUpperCase()) && 
+  (!effectiveColor ? true : v?.color?.toUpperCase() === effectiveColor.toUpperCase())
+);
+```
