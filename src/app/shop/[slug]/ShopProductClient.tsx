@@ -521,13 +521,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 gap-y-2 pt-1">
-                        {displaySpecs.map((spec: any, idx: number) => (
-                          <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
-                            <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
-                            <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
-                          </div>
-                        ))}
+                      <div className="max-h-[400px] overflow-y-auto">
+                        <div className="grid grid-cols-1 gap-y-2 pt-1">
+                          {displaySpecs.map((spec: any, idx: number) => (
+                            <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
+                              <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
+                              <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )
                   )}
@@ -792,8 +794,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         availableSizes={availableSizes}
         availableColors={availableColors}
         handleAddToCart={handleAddToCart}
-        localizedDescription={currentImageDesc || localizedDescription}
+        localizedDescription={localizedDescription || undefined}
         displaySpecs={displaySpecs}
+        imageDescriptionItems={imageDescriptionItems}
+        colorGalleryMap={colorGalleryMap}
       />
     </main>
   );

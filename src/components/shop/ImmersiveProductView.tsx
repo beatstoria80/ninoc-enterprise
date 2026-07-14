@@ -32,6 +32,8 @@ interface ImmersiveProductViewProps {
   handleAddToCart: () => void;
   localizedDescription?: string;
   displaySpecs?: any[];
+  imageDescriptionItems?: { url?: string; desc?: string }[];
+  colorGalleryMap?: Record<string, { main?: string }>;
 }
 
 export default function ImmersiveProductView({
@@ -50,13 +52,43 @@ export default function ImmersiveProductView({
   availableColors,
   handleAddToCart,
   localizedDescription,
-  displaySpecs = []
+  displaySpecs = [],
+  imageDescriptionItems = [],
+  colorGalleryMap = {}
 }: ImmersiveProductViewProps) {
   const [activeImage, setActiveImage] = React.useState(0);
   
   // Get cart items to show global checkout quantity
   const items = useCart(state => state.items);
   const cartTotalItems = items.reduce((total, item) => total + item.quantity, 0);
+
+  // Category detection for context-aware labels
+  const isFnBCat = React.useMemo(() => {
+    const cat = (product?.category || '').toLowerCase();
+    return ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry'].some(k => cat.includes(k));
+  }, [product]);
+
+  const isObjectsCat = React.useMemo(() => {
+    const cat = (product?.category || '').toLowerCase();
+    return !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects', 'collectibles'].some(k => cat.includes(k));
+  }, [product, isFnBCat]);
+
+  // Dynamic description per active image (changes on swipe)
+  const currentImmersiveDesc = React.useMemo(() => {
+    if (!images || images.length === 0) return null;
+    const currentUrl = images[activeImage];
+    if (!currentUrl) return null;
+
+    // Match by URL first
+    const matchByUrl = imageDescriptionItems.find(item => item.url && item.url === currentUrl && item.desc);
+    if (matchByUrl?.desc) return matchByUrl.desc;
+
+    // Fallback match by index
+    const matchByIndex = imageDescriptionItems[activeImage]?.desc;
+    if (matchByIndex) return matchByIndex;
+
+    return null;
+  }, [images, activeImage, imageDescriptionItems]);
 
   // Close on Escape key
   useEffect(() => {
@@ -132,12 +164,31 @@ export default function ImmersiveProductView({
                 </p>
               </div>
 
-              {localizedDescription && (
-                <div 
-                  className="text-xs leading-relaxed text-ink/70"
-                  dangerouslySetInnerHTML={{ __html: localizedDescription }} 
-                />
-              )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`immersive-desc-${activeImage}`}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                >
+                  {currentImmersiveDesc ? (
+                    <div className="p-3 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">View #{activeImage + 1} Detail</span>
+                      </div>
+                      <p className="text-xs leading-relaxed text-ink/80 font-medium">
+                        {currentImmersiveDesc}
+                      </p>
+                    </div>
+                  ) : localizedDescription ? (
+                    <p className="text-xs leading-relaxed text-ink/70">
+                      {localizedDescription}
+                    </p>
+                  ) : null}
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           </div>
 
@@ -242,35 +293,57 @@ export default function ImmersiveProductView({
                 </div>
               )}
 
-              {/* COLOR SELECTION */}
+              {/* VARIANT / SERIES / COLOR SELECTION */}
               {availableColors.length > 0 && (
                 <div className="space-y-4">
-                  <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Select Color</span>
+                  <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">
+                    {product?.variant_label
+                      ? `Select ${product.variant_label}`
+                      : isObjectsCat
+                        ? 'Select Variant / Series'
+                        : isFnBCat
+                          ? 'Select Variant / Blend'
+                          : 'Select Color'}
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {availableColors.map(color => {
                       const isSelected = selectedColor === color;
+                      const colorImg = colorGalleryMap[color.toUpperCase()]?.main;
                       return (
                         <button
                           key={color}
                           onClick={() => {
                             setSelectedColor(color);
-                            const colorIndex = availableColors.indexOf(color);
-                            if (colorIndex !== -1 && colorIndex < images.length) {
-                              setActiveImage(colorIndex);
-                            }
+                            setActiveImage(0);
                           }}
                           className={cn(
-                            "px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",
+                            "flex items-center gap-2 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",
                             isSelected 
                               ? "bg-ink text-white" 
                               : "bg-ink/5 text-ink hover:bg-ink/10"
                           )}
                         >
-                          {color}
+                          {colorImg && (
+                            <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 border border-current">
+                              <Image src={colorImg} alt={color} width={16} height={16} className="w-full h-full object-cover" unoptimized />
+                            </div>
+                          )}
+                          <span>{color}</span>
                         </button>
                       );
                     })}
                   </div>
+                  {selectedColor && (isObjectsCat || isFnBCat) && (
+                    <div className="flex items-center gap-2 p-2.5 bg-ink/[0.02] border border-ink/10 rounded">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-700">
+                        {product?.variant_label || (isObjectsCat ? 'Selected Series/Model' : 'Selected Blend/Flavor')}:
+                      </span>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-ink ml-auto bg-white px-2 py-0.5 border border-ink/10">
+                        {selectedColor}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -330,10 +403,10 @@ export default function ImmersiveProductView({
                   handleAddToCart();
                   onClose();
                 }}
-                disabled={availableStock === 0 || (hasSizes && !selectedSize)}
+                disabled={availableStock === 0 || (hasSizes && !selectedSize) || (availableColors.length > 0 && !selectedColor)}
                 className={cn(
                   "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
-                  availableStock === 0 || (hasSizes && !selectedSize)
+                  availableStock === 0 || (hasSizes && !selectedSize) || (availableColors.length > 0 && !selectedColor)
                     ? "bg-ink/10 text-ink/40 cursor-not-allowed"
                     : "bg-ink text-white hover:bg-rose"
                 )}
@@ -342,7 +415,9 @@ export default function ImmersiveProductView({
                   ? 'Out of Stock' 
                   : (hasSizes && !selectedSize) 
                     ? 'Select Size' 
-                    : 'Add to Cart'
+                    : (availableColors.length > 0 && !selectedColor)
+                      ? (isObjectsCat ? 'Select Series / Model' : isFnBCat ? 'Select Variant / Blend' : 'Select Variant')
+                      : 'Add to Cart'
                 }
               </button>
 
