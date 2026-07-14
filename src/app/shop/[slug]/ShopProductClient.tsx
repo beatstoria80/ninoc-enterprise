@@ -257,15 +257,19 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5, ...extraImages
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
+    const allVariantImages = Object.values(colorGalleryMap).flatMap(g => [
+      g.main, g.p1, g.p2, g.p3, g.p4, g.p5
+    ]).filter((img): img is string => typeof img === 'string' && img.length > 0);
+
     let rawImages: string[] = [];
     if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
       const colorSpecific = [
         activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
-      // Append remaining gallery images so thumbnails always show on the left and global cursor can swipe across all photos
+      // Append all other variant & gallery images so left thumbnails always show all photos and global cursor can swipe
       const set = new Set(colorSpecific);
-      defaultGallery.forEach(img => {
+      [...allVariantImages, ...defaultGallery].forEach(img => {
         if (!set.has(img)) {
           set.add(img);
           colorSpecific.push(img);
@@ -273,7 +277,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       });
       rawImages = colorSpecific;
     } else {
-      rawImages = defaultGallery;
+      const combined = [...defaultGallery];
+      const set = new Set(combined);
+      allVariantImages.forEach(img => {
+        if (!set.has(img)) {
+          set.add(img);
+          combined.push(img);
+        }
+      });
+      rawImages = combined;
     }
     return rawImages.length > 0 ? rawImages : [''];
   }, [product, effectiveColor, colorGalleryMap]);
@@ -457,10 +469,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">
                     {dict.product.description}
                   </motion.h4>
-                  {currentImageDesc && (
+                  {(effectiveColor || currentImageDesc) && (
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded text-[9px] font-bold uppercase tracking-widest">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      View #{activeImageIndex + 1} Angle Detail
+                      {effectiveColor || `${product?.variant_label || 'Series'} #${activeImageIndex + 1}`}
                     </span>
                   )}
                 </div>
@@ -513,11 +525,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                       {displaySpecs.map((spec: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
-                          <span className="text-[12px] md:text-[11px] font-bold uppercase tracking-wider text-ink/80">{spec.label}</span>
-                          <span className="text-[12px] md:text-[11px] font-normal text-right text-ink">{spec.value}</span>
+                        <div key={idx} className="flex justify-between items-start border-b border-ink/10 py-1.5 gap-3">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-ink/70 shrink-0 min-w-[95px]">{spec.label}</span>
+                          <span className="text-[11px] font-normal text-right text-ink leading-relaxed break-words">{spec.value}</span>
                         </div>
                       ))}
                     </div>
