@@ -442,12 +442,12 @@ export default function AdminDashboard() {
         height_cm: typeof product.height_cm === 'number' && !isNaN(product.height_cm) ? product.height_cm : 5,
         shelf_life_days: product.shelf_life_days ? String(product.shelf_life_days) : '',
         is_perishable: Boolean(product.is_perishable),
-        image_url: product.image_url || '',
+        image_url: product.image_url || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:'))?.value || '',
         image_alt: product.image_alt || (product.name ? `${product.name} - Official Product View` : ''),
-        perspective1: product.perspective1 || '',
-        perspective2: product.perspective2 || '',
-        perspective3: product.perspective3 || '',
-        perspective4: product.perspective4 || '',
+        perspective1: product.perspective1 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp1:'))?.value || '',
+        perspective2: product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp2:'))?.value || '',
+        perspective3: product.perspective3 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp3:'))?.value || '',
+        perspective4: product.perspective4 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp4:'))?.value || '',
         is_featured: Boolean(product.is_featured),
         affiliate_eligible: Boolean(product.affiliate_eligible),
         price_tag: product.price_tag || '',
@@ -552,28 +552,49 @@ export default function AdminDashboard() {
   const saveProduct = async () => {
     try {
       const hasColors = productForm.variants.some(v => v.color);
-      let finalImageUrl = productForm.image_url || null;
-      let finalImageAlt = productForm.image_alt || productForm.name || null;
-      let finalP1 = productForm.perspective1 || null;
-      let finalP2 = productForm.perspective2 || null;
-      let finalP3 = productForm.perspective3 || null;
-      let finalP4 = productForm.perspective4 || null;
+      let finalSpecs = (productForm.specifications || []).filter(s => {
+        if (!s || typeof s.label !== 'string') return false;
+        if (typeof s.value !== 'string' || s.value.trim() === '' || s.value === 'null' || s.value === 'undefined') {
+          if (s.label.toLowerCase().startsWith('colorimage:') || s.label.toLowerCase().startsWith('colorp')) {
+            return false;
+          }
+        }
+        return true;
+      });
 
-      let finalSpecs = [...(productForm.specifications || [])];
+      let finalImageUrl = productForm.image_url?.trim() || null;
+      let finalImageAlt = productForm.image_alt?.trim() || productForm.name || null;
+      let finalP1 = productForm.perspective1?.trim() || null;
+      let finalP2 = productForm.perspective2?.trim() || null;
+      let finalP3 = productForm.perspective3?.trim() || null;
+      let finalP4 = productForm.perspective4?.trim() || null;
 
       if (hasColors && finalSpecs) {
         const rawFirstColor = productForm.variants.find(v => v.color)?.color;
         const firstColor = rawFirstColor ? rawFirstColor.split(',')[0].trim() : null;
         if (firstColor) {
-           finalImageUrl = finalSpecs.find(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)?.value || productForm.image_url || null;
-           finalP1 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP1:${firstColor.toUpperCase()}`)?.value || productForm.perspective1 || null;
-           finalP2 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP2:${firstColor.toUpperCase()}`)?.value || productForm.perspective2 || null;
-           finalP3 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP3:${firstColor.toUpperCase()}`)?.value || productForm.perspective3 || null;
-           finalP4 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP4:${firstColor.toUpperCase()}`)?.value || productForm.perspective4 || null;
+           finalImageUrl = finalSpecs.find(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)?.value || finalImageUrl;
+           finalP1 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP1:${firstColor.toUpperCase()}`)?.value || finalP1;
+           finalP2 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP2:${firstColor.toUpperCase()}`)?.value || finalP2;
+           finalP3 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP3:${firstColor.toUpperCase()}`)?.value || finalP3;
+           finalP4 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP4:${firstColor.toUpperCase()}`)?.value || finalP4;
            
-           if (finalImageUrl && !finalSpecs.some(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)) {
-             finalSpecs.push({ label: `ColorImage:${firstColor}`, value: finalImageUrl });
+           if (!finalImageUrl) {
+             finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
            }
+
+           const syncSpec = (prefix: string, val: string | null) => {
+             if (!val) return;
+             const label = `${prefix}:${firstColor}`;
+             const idx = finalSpecs.findIndex(s => s.label.toUpperCase() === label.toUpperCase());
+             if (idx >= 0) finalSpecs[idx].value = val;
+             else finalSpecs.push({ label, value: val });
+           };
+           syncSpec('ColorImage', finalImageUrl);
+           syncSpec('ColorP1', finalP1);
+           syncSpec('ColorP2', finalP2);
+           syncSpec('ColorP3', finalP3);
+           syncSpec('ColorP4', finalP4);
 
            const firstP5 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP5:${firstColor.toUpperCase()}`)?.value;
            const existingGlobalP5Idx = finalSpecs.findIndex(s => s.label === 'GlobalP5');
@@ -584,6 +605,8 @@ export default function AdminDashboard() {
              finalSpecs.splice(existingGlobalP5Idx, 1);
            }
         }
+      } else if (!finalImageUrl) {
+        finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
       }
 
       const productData = {

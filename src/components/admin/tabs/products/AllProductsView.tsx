@@ -45,18 +45,21 @@ export function AllProductsView({
           {filteredProducts.map((product) => (
             <div key={product.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden group">
               <div className="aspect-square bg-gray-50 relative">
-                {product.image_url ? (
-                  <Image
-                    src={product.image_url}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Package size={40} className="text-gray-200" />
-                  </div>
-                )}
+                {(() => {
+                  const displayImg = product.image_url || product.perspective1 || product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || '';
+                  return displayImg ? (
+                    <Image
+                      src={displayImg}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package size={40} className="text-gray-200" />
+                    </div>
+                  );
+                })()}
                 <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => toggleFeatured(product)}

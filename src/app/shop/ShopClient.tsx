@@ -185,7 +185,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                     <div className="bg-white border border-ink/5 h-full flex flex-col justify-between p-2 relative group overflow-hidden">
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02] mb-2">
                         <SafeImage
-                          src={product.image_url}
+                          src={product.image_url || product.perspective1 || product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || ''}
                           alt={product.name}
                           className="object-cover transition-transform duration-500 group-hover:scale-105 select-none pointer-events-none"
                           sizes="50vw"
@@ -306,7 +306,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
 
                     <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02]">
                       <SafeImage
-                        src={product.image_url}
+                        src={product.image_url || product.perspective1 || product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || ''}
                         alt={product.name}
                         className="transition-transform duration-700 group-hover/card:scale-105 select-none pointer-events-none"
                         sizes="(max-width: 1280px) 25vw, 20vw"
