@@ -253,15 +253,27 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       })
       .map((s: any) => s.value.trim());
 
+    const defaultGallery = [
+      product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5, ...extraImages
+    ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+
     let rawImages: string[] = [];
     if (effectiveColor && activeGallery && (activeGallery.main || activeGallery.p1 || activeGallery.p2 || activeGallery.p3 || activeGallery.p4 || activeGallery.p5)) {
-      rawImages = [
-        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5, ...extraImages
+      const colorSpecific = [
+        activeGallery.main || '', activeGallery.p1, activeGallery.p2, activeGallery.p3, activeGallery.p4, activeGallery.p5
       ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+
+      // Append remaining gallery images so thumbnails always show on the left and global cursor can swipe across all photos
+      const set = new Set(colorSpecific);
+      defaultGallery.forEach(img => {
+        if (!set.has(img)) {
+          set.add(img);
+          colorSpecific.push(img);
+        }
+      });
+      rawImages = colorSpecific;
     } else {
-      rawImages = [
-        product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5, ...extraImages
-      ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+      rawImages = defaultGallery;
     }
     return rawImages.length > 0 ? rawImages : [''];
   }, [product, effectiveColor, colorGalleryMap]);
@@ -273,6 +285,25 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const imageDescriptionItems = React.useMemo(() => {
     if (!product) return [];
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
+    
+    // Build map from image URL to specific description (e.g. ColorImage/ColorDesc)
+    const urlToDescMap: Record<string, string> = {};
+    safeSpecs.forEach((spec: any) => {
+      if (typeof spec?.label === 'string' && spec.value) {
+        const matchImg = spec.label.match(/^color(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
+        if (matchImg) {
+          const slot = matchImg[1].toUpperCase();
+          const colorName = matchImg[2].trim().toUpperCase();
+          const descSpec = safeSpecs.find((s: any) => 
+            typeof s?.label === 'string' && s.label.toUpperCase() === `COLOR${slot}DESC:${colorName}`
+          );
+          if (descSpec?.value) {
+            urlToDescMap[spec.value.trim()] = descSpec.value.trim();
+          }
+        }
+      }
+    });
+
     const safeColor = effectiveColor?.trim()?.toUpperCase();
     const activeGallery = safeColor ? colorGalleryMap[safeColor] : undefined;
     const activeDescGallery = safeColor ? colorImageDescMap[safeColor] : undefined;
@@ -286,52 +317,23 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       return undefined;
     };
 
-    const baseSlots = [
-      {
-        url: activeGallery?.main || product.image_url,
-        desc: activeDescGallery?.main || variantFallbackDesc || getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0'])
-      },
-      {
-        url: activeGallery?.p1 || product.perspective1,
-        desc: activeDescGallery?.p1 || variantFallbackDesc || getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1'])
-      },
-      {
-        url: activeGallery?.p2 || product.perspective2,
-        desc: activeDescGallery?.p2 || variantFallbackDesc || getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2'])
-      },
-      {
-        url: activeGallery?.p3 || product.perspective3,
-        desc: activeDescGallery?.p3 || variantFallbackDesc || getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3'])
-      },
-      {
-        url: activeGallery?.p4 || product.perspective4,
-        desc: activeDescGallery?.p4 || variantFallbackDesc || getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4'])
-      },
-      {
-        url: activeGallery?.p5 || safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value,
-        desc: activeDescGallery?.p5 || variantFallbackDesc || getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5'])
-      }
-    ];
+    return images.map((url, idx) => {
+      const descFromUrl = urlToDescMap[url];
+      const descFromSlot =
+        idx === 0 ? (activeDescGallery?.main || variantFallbackDesc || getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0'])) :
+        idx === 1 ? (activeDescGallery?.p1 || variantFallbackDesc || getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1'])) :
+        idx === 2 ? (activeDescGallery?.p2 || variantFallbackDesc || getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2'])) :
+        idx === 3 ? (activeDescGallery?.p3 || variantFallbackDesc || getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3'])) :
+        idx === 4 ? (activeDescGallery?.p4 || variantFallbackDesc || getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4'])) :
+        idx === 5 ? (activeDescGallery?.p5 || variantFallbackDesc || getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5'])) :
+        undefined;
 
-    const extraSlots = safeSpecs
-      .filter((s: any) => typeof s?.label === 'string' && s.label.startsWith('ExtraImage_') && s.value?.trim())
-      .sort((a: any, b: any) => {
-        const numA = parseInt(a.label.replace('ExtraImage_', ''), 10) || 0;
-        const numB = parseInt(b.label.replace('ExtraImage_', ''), 10) || 0;
-        return numA - numB;
-      })
-      .map((s: any, idx: number) => {
-        const idxNum = s.label.replace('ExtraImage_', '');
-        const desc = getDesc([
-          `extraimagedesc_${idxNum}`,
-          `imagedesc_${6 + idx}`,
-          `deskripsi_gambar_${6 + idx}`
-        ]);
-        return { url: s.value.trim(), desc };
-      });
-
-    return [...baseSlots, ...extraSlots];
-  }, [product, effectiveColor, colorGalleryMap, colorImageDescMap, colorDescMap]);
+      return {
+        url,
+        desc: descFromUrl || descFromSlot
+      };
+    });
+  }, [product, images, effectiveColor, colorGalleryMap, colorImageDescMap, colorDescMap]);
 
   const currentImageDesc = React.useMemo(() => {
     if (!product || !images || images.length === 0) return null;
