@@ -511,11 +511,11 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5">
+                    <div className="grid grid-cols-1 gap-y-2 pt-1">
                       {displaySpecs.map((spec: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-center border-b border-ink/10 py-1.5">
-                          <span className="text-[12px] md:text-[11px]" style={{ color: '#0A0A0A', opacity: 0.8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{spec.label}</span>
-                          <span className="text-[12px] md:text-[11px]" style={{ color: '#0A0A0A', opacity: 1, fontWeight: 400, textAlign: 'right' }}>{spec.value}</span>
+                        <div key={idx} className="flex justify-between items-start border-b border-ink/10 pb-2 gap-4">
+                          <span className="text-xs md:text-[11px] min-w-[130px] font-bold uppercase tracking-wider text-ink/70">{spec.label}</span>
+                          <span className="text-xs md:text-[11px] font-normal text-right text-ink leading-relaxed">{spec.value}</span>
                         </div>
                       ))}
                     </div>
@@ -628,7 +628,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                       );
                     })}
                   </div>
-                  {effectiveColor && (
+                  {effectiveColor && colorDescMap[effectiveColor.toUpperCase()] && (
                     <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -643,11 +643,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                           {effectiveColor}
                         </span>
                       </div>
-                      {colorDescMap[effectiveColor.toUpperCase()] && (
-                        <p className="text-ink/80 text-xs leading-relaxed pt-1 border-t border-ink/5">
-                          {colorDescMap[effectiveColor.toUpperCase()]}
-                        </p>
-                      )}
+                      <p className="text-ink/80 text-xs leading-relaxed pt-1 border-t border-ink/5">
+                        {colorDescMap[effectiveColor.toUpperCase()]}
+                      </p>
                     </motion.div>
                   )}
                 </div>
