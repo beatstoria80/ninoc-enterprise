@@ -1,6 +1,6 @@
--- Migration: Atomic Checkout Transaction
--- Replaces non-atomic multiple client requests with a single atomic PostgreSQL transaction
--- ensuring Orders, Items, and Inventory Locks succeed or fail together.
+-- Migration: Atomic Checkout Transaction (Hardened Production Build)
+-- Replaces vulnerable multi-row queries with precise, case-insensitive LIMIT 1 FOR UPDATE locks
+-- and human-readable exception formatting.
 
 CREATE OR REPLACE FUNCTION public.create_order_transaction(
     p_order_id TEXT,
@@ -31,7 +31,7 @@ BEGIN
         p_courier, p_shipping_address
     );
 
-    -- 2. Insert Order Items & Lock Inventory
+    -- 2. Iterate Order Items & Lock Inventory atomically
     FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
     LOOP
         -- Insert Item
@@ -45,70 +45,93 @@ BEGIN
             (v_item->>'product_id')::UUID,
             NULLIF(v_item->>'variant_id', '')::UUID,
             v_item->>'product_name',
-            (v_item->>'quantity')::INT,
-            (v_item->>'price_at_purchase')::NUMERIC,
+            COALESCE((v_item->>'quantity')::INT, 1),
+            COALESCE((v_item->>'price_at_purchase')::NUMERIC, 0),
             NULLIF(v_item->>'size', ''),
             NULLIF(v_item->>'color', ''),
             NULLIF(v_item->>'supplier_id', '')::UUID,
-            (v_item->>'supplier_hpp')::NUMERIC,
-            (v_item->>'ninoc_markup')::NUMERIC
+            COALESCE((v_item->>'supplier_hpp')::NUMERIC, 0),
+            COALESCE((v_item->>'ninoc_markup')::NUMERIC, 0)
         );
 
-        -- Lock Inventory
-        IF v_item->>'variant_id' IS NOT NULL AND v_item->>'variant_id' != '' THEN
-            SELECT stock_quantity INTO v_variant
+        -- Branch A: Exact Variant ID provided
+        IF v_item->>'variant_id' IS NOT NULL AND v_item->>'variant_id' != '' AND v_item->>'variant_id' != 'null' THEN
+            SELECT id, stock_quantity INTO v_variant
             FROM public.variants
             WHERE id = (v_item->>'variant_id')::UUID
             FOR UPDATE;
 
             IF v_variant IS NULL THEN
-                RAISE EXCEPTION 'Variant not found for product %', v_item->>'product_id';
+                RAISE EXCEPTION 'Varian produk "%" tidak ditemukan di database.', v_item->>'product_name';
             END IF;
 
-            v_new_stock := v_variant.stock_quantity - (v_item->>'quantity')::INT;
+            v_new_stock := COALESCE(v_variant.stock_quantity, 0) - COALESCE((v_item->>'quantity')::INT, 1);
 
             IF v_new_stock < 0 THEN
-                RAISE EXCEPTION 'Out of stock for variant %', v_item->>'variant_id';
+                RAISE EXCEPTION 'Stok "%" % tidak mencukupi (sisa stok: % unit).', 
+                    v_item->>'product_name', 
+                    COALESCE(CONCAT('(', v_item->>'size', ')'), ''), 
+                    COALESCE(v_variant.stock_quantity, 0);
             END IF;
 
             UPDATE public.variants
             SET stock_quantity = v_new_stock, updated_at = NOW()
-            WHERE id = (v_item->>'variant_id')::UUID;
+            WHERE id = v_variant.id;
             
-        -- Fallback: If no variant_id is provided, try to match by size
-        ELSIF v_item->>'size' IS NOT NULL AND v_item->>'size' != '' THEN
+        -- Branch B: Fallback exact match by size and color (with LIMIT 1 protection against TOO_MANY_ROWS)
+        ELSIF v_item->>'size' IS NOT NULL AND v_item->>'size' != '' AND v_item->>'size' != 'null' THEN
             SELECT id, stock_quantity INTO v_variant
             FROM public.variants
-            WHERE product_id = (v_item->>'product_id')::UUID AND size = v_item->>'size'
+            WHERE product_id = (v_item->>'product_id')::UUID 
+              AND UPPER(TRIM(size)) = UPPER(TRIM(v_item->>'size'))
+              AND (
+                  v_item->>'color' IS NULL OR v_item->>'color' = '' OR v_item->>'color' = 'null' OR
+                  UPPER(TRIM(color)) = UPPER(TRIM(v_item->>'color'))
+              )
+            LIMIT 1
             FOR UPDATE;
 
             IF v_variant IS NOT NULL THEN
-                v_new_stock := v_variant.stock_quantity - (v_item->>'quantity')::INT;
+                v_new_stock := COALESCE(v_variant.stock_quantity, 0) - COALESCE((v_item->>'quantity')::INT, 1);
                 IF v_new_stock < 0 THEN
-                    RAISE EXCEPTION 'Out of stock for product % size %', v_item->>'product_id', v_item->>'size';
+                    RAISE EXCEPTION 'Stok "%" (%) tidak mencukupi (sisa stok: % unit).', 
+                        v_item->>'product_name', 
+                        v_item->>'size', 
+                        COALESCE(v_variant.stock_quantity, 0);
                 END IF;
 
                 UPDATE public.variants
                 SET stock_quantity = v_new_stock, updated_at = NOW()
                 WHERE id = v_variant.id;
+            ELSE
+                -- If size variant not tracked in variants table, deduct from main products table
+                UPDATE public.products
+                SET stock_quantity = COALESCE(stock_quantity, 0) - COALESCE((v_item->>'quantity')::INT, 1),
+                    updated_at = NOW()
+                WHERE id = (v_item->>'product_id')::UUID
+                  AND COALESCE(stock_quantity, 0) >= COALESCE((v_item->>'quantity')::INT, 1);
+                
+                IF NOT FOUND THEN
+                    RAISE EXCEPTION 'Stok "%" tidak mencukupi atau habis.', v_item->>'product_name';
+                END IF;
             END IF;
         ELSE
-            -- No variant, no size — use product-level stock
+            -- Branch C: No variant, no size — deduct directly from product-level stock
             UPDATE public.products
-            SET stock_quantity = stock_quantity - (v_item->>'quantity')::INT,
+            SET stock_quantity = COALESCE(stock_quantity, 0) - COALESCE((v_item->>'quantity')::INT, 1),
                 updated_at = NOW()
             WHERE id = (v_item->>'product_id')::UUID
-              AND stock_quantity >= (v_item->>'quantity')::INT;
+              AND COALESCE(stock_quantity, 0) >= COALESCE((v_item->>'quantity')::INT, 1);
             
             IF NOT FOUND THEN
-                RAISE EXCEPTION 'Stok habis untuk produk %', v_item->>'product_name';
+                RAISE EXCEPTION 'Stok produk "%" tidak mencukupi atau telah habis.', v_item->>'product_name';
             END IF;
         END IF;
     END LOOP;
 
     RETURN jsonb_build_object('success', true);
 EXCEPTION WHEN OTHERS THEN
-    -- Postgres automatically rolls back the entire transaction here
+    -- Automatically rolls back all header and item insertions, plus stock deductions
     RETURN jsonb_build_object('success', false, 'error', SQLERRM);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

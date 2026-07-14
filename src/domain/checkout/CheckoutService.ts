@@ -44,17 +44,30 @@ export class CheckoutService {
       return { status: 400, payload: { error: pricing.error } };
     }
 
-    // 4.5 Pre-validate stock availability
+    // 4.5 Pre-validate stock availability strictly and case-insensitively per AGENTS.md Rule #3
     for (const item of items) {
       const dbProd = dbProducts.find((p: any) => p.id === item.id);
       if (!dbProd) continue;
       
-      const variant = dbProd.variants?.find((v: any) => 
-        (!item.size || v.size?.toUpperCase() === item.size?.toUpperCase()) &&
-        (!item.color || v.color?.toUpperCase() === item.color?.toUpperCase())
-      );
+      const effectiveSize = (item.size || '').toUpperCase().trim();
+      const effectiveColor = (item.color || '').toUpperCase().trim();
+      const safeVariants = Array.isArray(dbProd.variants) ? dbProd.variants : [];
       
-      const currentStock = (variant?.stock_quantity != null) ? variant.stock_quantity : ((dbProd.stock_quantity != null) ? dbProd.stock_quantity : 0);
+      let variant = undefined;
+      if (effectiveSize || effectiveColor) {
+        variant = safeVariants.find((v: any) => 
+          (!effectiveSize ? true : (v?.size || '').toUpperCase().trim() === effectiveSize) &&
+          (!effectiveColor ? true : (v?.color || '').toUpperCase().trim() === effectiveColor)
+        );
+        if (!variant && effectiveSize) {
+          variant = safeVariants.find((v: any) => (v?.size || '').toUpperCase().trim() === effectiveSize);
+        }
+      }
+      
+      const currentStock = variant && variant.stock_quantity != null 
+        ? variant.stock_quantity 
+        : (dbProd.stock_quantity != null ? dbProd.stock_quantity : 0);
+
       if (item.quantity > currentStock) {
         return { status: 409, payload: { 
           error: `Stok "${item.name}" ${item.size ? `(${item.size})` : ''} hanya tersisa ${currentStock} unit`,
@@ -66,7 +79,7 @@ export class CheckoutService {
     // 5. Resolve Affiliate Tracking
     let affiliateId: string | null = null;
     try {
-      let targetRefCode = customerDetails.referral_code || affiliateCookieValue;
+      const targetRefCode = customerDetails.referral_code || affiliateCookieValue;
       if (targetRefCode) {
         const { data: affData } = await this.supabaseAdmin
           .from('affiliates')

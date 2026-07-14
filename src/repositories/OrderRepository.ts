@@ -105,7 +105,7 @@ export class OrderRepository {
 
     if (data && data.success === false) {
       console.error('[OrderRepository] Atomic transaction rejected:', data.error);
-      return { success: false, error: `Transaction Failed: ${data.error}` };
+      return { success: false, error: data.error || 'Gagal memproses transaksi pesanan.' };
     }
 
     return { success: true };

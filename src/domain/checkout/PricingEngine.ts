@@ -47,8 +47,8 @@ export class PricingEngine {
   }
 
   /**
-   * Calculates gross amount and builds item breakdown using True O(1) Map lookups
-   * for both products and variants.
+   * Calculates gross amount and builds item breakdown using exact case-insensitive O(1) Map lookups.
+   * Eliminates arbitrary variants[0] assignment when variant_id is unmatched.
    */
   public calculateOrderBreakdownInstance(
     items: CheckoutItem[],
@@ -56,7 +56,6 @@ export class PricingEngine {
     shipping: ShippingDetails,
     promo?: PromoDetails
   ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
-    // Build O(1) Product Map and O(1) Composite Variant Map (productId#size#color)
     const productMap = new Map<string, DatabaseProduct>();
     const variantMap = new Map<string, { id: string; color: string | null }>();
 
@@ -113,12 +112,14 @@ export class PricingEngine {
         ninoc_markup: ninocMarkup,
       });
 
-      // True O(1) Variant Lookup
+      // True O(1) Variant Lookup — strictly resolve exact or size-only match
       const exactKey = `${item.id}#${itemSizeUpper}#${itemColorUpper}`;
       const sizeKey = `${item.id}#${itemSizeUpper}#`;
-      const matchedVariant = variantMap.get(exactKey) || variantMap.get(sizeKey);
+      const matchedVariant = variantMap.get(exactKey) || (itemSizeUpper ? variantMap.get(sizeKey) : undefined);
       
-      const variantId = matchedVariant?.id || (dbProduct.variants?.[0]?.id ?? null);
+      // Do NOT fallback to dbProduct.variants[0].id if variant is unmatched or unselected.
+      // Passing null allows PostgreSQL to match accurately by size/color or fallback safely to product stock.
+      const variantId = matchedVariant?.id || null;
       const variantColor = matchedVariant?.color || item.color || null;
 
       dbOrderItems.push({
@@ -135,6 +136,14 @@ export class PricingEngine {
         ninoc_markup: ninocMarkup,
       });
     }
+
+    // Sort dbOrderItems by product_id and variant_id to guarantee deterministic row-level lock ordering
+    // and prevent PostgreSQL deadlock situations (SQLSTATE 40P01) during concurrent checkouts.
+    dbOrderItems.sort((a, b) => {
+      const pCompare = a.product_id.localeCompare(b.product_id);
+      if (pCompare !== 0) return pCompare;
+      return (a.variant_id || '').localeCompare(b.variant_id || '');
+    });
 
     // Add Shipping Cost
     midtransItems.push({
@@ -174,9 +183,6 @@ export class PricingEngine {
     return { grossAmount: calculatedGrossAmount, midtransItems, dbOrderItems };
   }
 
-  /**
-   * Static compatibility wrapper for existing route handlers
-   */
   public static calculateOrderBreakdown(
     items: CheckoutItem[],
     dbProducts: DatabaseProduct[],
