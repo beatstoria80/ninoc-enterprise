@@ -21,6 +21,11 @@ export interface ShopProduct {
   category: string;
   price_tag?: string | null;
   badge_text?: string | null;
+  perspective1?: string | null;
+  perspective2?: string | null;
+  perspective3?: string | null;
+  perspective4?: string | null;
+  specifications?: Array<{ label: string; value: string }> | null;
   variants?: Array<{
     id?: string;
     size?: string;
