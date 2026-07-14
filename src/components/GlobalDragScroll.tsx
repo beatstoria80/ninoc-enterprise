@@ -31,7 +31,7 @@ export default function GlobalDragScroll() {
       if (e.defaultPrevented || e.button !== 0) return;
 
       const target = e.target as HTMLElement;
-      if (target.closest('.no-drag')) return;
+      if (target.closest('.no-drag, nav, header, a, button, input, select, textarea, [role="button"]')) return;
 
       state.current = {
         ...state.current,

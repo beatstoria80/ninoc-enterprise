@@ -111,7 +111,7 @@ function NavLink({ href, children, isDark, index = 0 }: { href: string; children
         
         href={href}
         className={cn(
-          "text-sm md:text-[10px] lg:text-[9.5px] xl:text-[11px] font-medium uppercase tracking-[0.18em] lg:tracking-[0.18em] xl:tracking-[0.28em] whitespace-nowrap relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
+          "no-drag pointer-events-auto cursor-pointer text-sm md:text-[10px] lg:text-[9.5px] xl:text-[11px] font-medium uppercase tracking-[0.18em] lg:tracking-[0.18em] xl:tracking-[0.28em] whitespace-nowrap relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
           isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
         )}
         onMouseEnter={() => setIsHovered(true)}
@@ -471,7 +471,7 @@ export default function GlobalHeader() {
       {!isSupplierApply ? (
         <nav
           className={cn(
-            "fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 transition-colors duration-700",
+            "no-drag pointer-events-auto fixed top-0 inset-x-0 z-[150] px-3 md:px-12 py-3 md:py-5 transition-colors duration-700",
             isScrolled ? "bg-white border-b border-ink/5" : "bg-transparent"
           )}
         >
@@ -522,7 +522,7 @@ export default function GlobalHeader() {
 
         {/* Navigation Links - Hidden on mobile, shown on lg */}
         <motion.div
-          className="hidden lg:flex items-center gap-4 lg:gap-5 xl:gap-10 2xl:gap-14 absolute left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.18em] whitespace-nowrap"
+          className="no-drag pointer-events-auto z-20 hidden lg:flex items-center gap-4 lg:gap-5 xl:gap-10 2xl:gap-14 absolute left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.18em] whitespace-nowrap"
         >
           <NavLink index={0} isDark={isDarkBg} href="/shop?filter=Apparel">Apparel</NavLink>
           <NavLink index={1} isDark={isDarkBg} href="/shop?filter=Objects">Home & Living</NavLink>
