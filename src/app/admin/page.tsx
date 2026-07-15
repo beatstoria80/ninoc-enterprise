@@ -585,23 +585,48 @@ export default function AdminDashboard() {
       let finalP4 = productForm.perspective4?.trim() || null;
 
       if (hasColors && finalSpecs) {
-        const rawFirstColor = productForm.variants.find(v => v.color)?.color;
+        const rawFirstColor = productForm.variants.find(v => Boolean(v.color))?.color;
         const firstColor = rawFirstColor ? rawFirstColor.split(',')[0].trim() : null;
         if (firstColor) {
-           finalImageUrl = finalSpecs.find(s => s.label.toUpperCase() === `COLORIMAGE:${firstColor.toUpperCase()}`)?.value || finalImageUrl;
-           finalP1 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP1:${firstColor.toUpperCase()}`)?.value || finalP1;
-           finalP2 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP2:${firstColor.toUpperCase()}`)?.value || finalP2;
-           finalP3 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP3:${firstColor.toUpperCase()}`)?.value || finalP3;
-           finalP4 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP4:${firstColor.toUpperCase()}`)?.value || finalP4;
+           const findSpecVal = (prefix: string) => {
+             return finalSpecs.find(s => 
+               s && typeof s.label === 'string' && (
+                 s.label.trim().toLowerCase() === `${prefix.toLowerCase()}:${firstColor.toLowerCase()}` ||
+                 (productForm.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1 &&
+                  s.label.trim().toLowerCase().startsWith(`${prefix.toLowerCase()}:`))
+               )
+             )?.value || null;
+           };
+
+           const specImageUrl = findSpecVal('ColorImage');
+           const specP1 = findSpecVal('ColorP1');
+           const specP2 = findSpecVal('ColorP2');
+           const specP3 = findSpecVal('ColorP3');
+           const specP4 = findSpecVal('ColorP4');
+
+           if (specImageUrl !== null) finalImageUrl = specImageUrl;
+           if (specP1 !== null) finalP1 = specP1;
+           if (specP2 !== null) finalP2 = specP2;
+           if (specP3 !== null) finalP3 = specP3;
+           if (specP4 !== null) finalP4 = specP4;
            
            if (!finalImageUrl) {
              finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
            }
 
            const syncSpec = (prefix: string, val: string | null) => {
-             if (!val) return;
              const label = `${prefix}:${firstColor}`;
-             const idx = finalSpecs.findIndex(s => s.label.toUpperCase() === label.toUpperCase());
+             const idx = finalSpecs.findIndex(s => 
+               s && typeof s.label === 'string' && (
+                 s.label.trim().toLowerCase() === label.trim().toLowerCase() ||
+                 (productForm.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1 &&
+                  s.label.trim().toLowerCase().startsWith(`${prefix.toLowerCase()}:`))
+               )
+             );
+             if (!val || val.trim() === '') {
+               if (idx >= 0) finalSpecs.splice(idx, 1);
+               return;
+             }
              if (idx >= 0) finalSpecs[idx].value = val;
              else finalSpecs.push({ label, value: val });
            };
@@ -741,11 +766,23 @@ export default function AdminDashboard() {
       }
 
       if (data.results && data.results[0]?.url) {
-        setProductForm(prev => ({ 
-          ...prev, 
-          image_url: data.results[0].url,
-          image_alt: prev.image_alt ? prev.image_alt : prev.name ? `${prev.name} - Official Product View` : 'NINOC Official Product View'
-        }));
+        setProductForm(prev => {
+          const newUrl = data.results[0].url;
+          const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
+          const newSpecs = [...(prev.specifications || [])];
+          if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
+             const label = `ColorImage:${firstColor}`;
+             const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith('colorimage:'));
+             if (idx >= 0) newSpecs[idx] = { label, value: newUrl };
+             else newSpecs.push({ label, value: newUrl });
+          }
+          return {
+            ...prev,
+            image_url: newUrl,
+            image_alt: prev.image_alt ? prev.image_alt : prev.name ? `${prev.name} - Official Product View` : 'NINOC Official Product View',
+            specifications: newSpecs
+          };
+        });
         alert('Image uploaded successfully!');
       }
     } catch (err) {
@@ -3113,7 +3150,10 @@ export default function AdminDashboard() {
                           {productForm.image_url && (
                             <button
                               type="button"
-                              onClick={() => setProductForm(prev => ({ ...prev, image_url: '', image_alt: '' }))}
+                              onClick={() => setProductForm(prev => {
+                                const newSpecs = (prev.specifications || []).filter(s => !s?.label?.toLowerCase().startsWith('colorimage:'));
+                                return { ...prev, image_url: '', image_alt: '', specifications: newSpecs };
+                              })}
                               className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
                               title="Hapus URL Gambar"
                             >
@@ -3181,7 +3221,19 @@ export default function AdminDashboard() {
                                         else newSpecs.push({ label: 'GlobalP5', value: data.results[0].url });
                                         setProductForm({ ...productForm, specifications: newSpecs });
                                       } else {
-                                        setProductForm(prev => ({ ...prev, [field]: data.results[0].url }));
+                                        const newUrl = data.results[0].url;
+                                        setProductForm(prev => {
+                                          const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
+                                          const newSpecs = [...(prev.specifications || [])];
+                                          if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
+                                             const prefix = field === 'perspective1' ? 'ColorP1' : field === 'perspective2' ? 'ColorP2' : field === 'perspective3' ? 'ColorP3' : 'ColorP4';
+                                             const label = `${prefix}:${firstColor}`;
+                                             const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith(`${prefix.toLowerCase()}:`));
+                                             if (idx >= 0) newSpecs[idx] = { label, value: newUrl };
+                                             else newSpecs.push({ label, value: newUrl });
+                                          }
+                                          return { ...prev, [field]: newUrl, specifications: newSpecs };
+                                        });
                                       }
                                     } catch (err) {
                                       alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
@@ -3204,7 +3256,16 @@ export default function AdminDashboard() {
                                         setProductForm({ ...productForm, specifications: newSpecs });
                                       }
                                     } else {
-                                      setProductForm({ ...productForm, [field]: '' });
+                                      setProductForm(prev => {
+                                        const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
+                                        const newSpecs = [...(prev.specifications || [])];
+                                        if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
+                                           const prefix = field === 'perspective1' ? 'ColorP1' : field === 'perspective2' ? 'ColorP2' : field === 'perspective3' ? 'ColorP3' : 'ColorP4';
+                                           const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith(`${prefix.toLowerCase()}:`));
+                                           if (idx >= 0) newSpecs.splice(idx, 1);
+                                        }
+                                        return { ...prev, [field]: '', specifications: newSpecs };
+                                      });
                                     }
                                   }}
                                   className="flex items-center justify-center px-1.5 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
@@ -3531,14 +3592,28 @@ export default function AdminDashboard() {
                                                     throw new Error(data.error || 'Upload failed');
                                                   }
                                                   
+                                                  const newUrl = data.results[0].url;
                                                   const newSpecs = [...(productForm.specifications || [])];
-                                                  const specIdx = newSpecs.findIndex(s => s.label === colorSpecLabel);
+                                                  const specIdx = newSpecs.findIndex(s => 
+                                                    s && typeof s.label === 'string' && (
+                                                      s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase() ||
+                                                      (colorGroups.length === 1 && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
+                                                    )
+                                                  );
                                                   if (specIdx >= 0) {
-                                                    newSpecs[specIdx].value = data.results[0].url;
+                                                    newSpecs[specIdx] = { label: colorSpecLabel, value: newUrl };
                                                   } else {
-                                                    newSpecs.push({ label: colorSpecLabel, value: data.results[0].url });
+                                                    newSpecs.push({ label: colorSpecLabel, value: newUrl });
                                                   }
-                                                  setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                                  const updates: any = { specifications: newSpecs };
+                                                  if (colorGroups.length === 1) {
+                                                    if (imgType === 'Image') updates.image_url = newUrl;
+                                                    else if (imgType === 'P1') updates.perspective1 = newUrl;
+                                                    else if (imgType === 'P2') updates.perspective2 = newUrl;
+                                                    else if (imgType === 'P3') updates.perspective3 = newUrl;
+                                                    else if (imgType === 'P4') updates.perspective4 = newUrl;
+                                                  }
+                                                  setProductForm(prev => ({ ...prev, ...updates }));
                                                 } catch (err) {
                                                   alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
                                                 } finally {
@@ -3552,8 +3627,22 @@ export default function AdminDashboard() {
                                             <button
                                               type="button"
                                               onClick={() => {
-                                                const newSpecs = productForm.specifications?.filter(s => s.label !== colorSpecLabel) || [];
-                                                setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                                const newSpecs = (productForm.specifications || []).filter(s => {
+                                                  if (!s || typeof s.label !== 'string') return true;
+                                                  const lbl = s.label.trim().toLowerCase();
+                                                  if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
+                                                  if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
+                                                  return true;
+                                                });
+                                                const updates: any = { specifications: newSpecs };
+                                                if (colorGroups.length === 1) {
+                                                  if (imgType === 'Image') updates.image_url = '';
+                                                  else if (imgType === 'P1') updates.perspective1 = '';
+                                                  else if (imgType === 'P2') updates.perspective2 = '';
+                                                  else if (imgType === 'P3') updates.perspective3 = '';
+                                                  else if (imgType === 'P4') updates.perspective4 = '';
+                                                }
+                                                setProductForm(prev => ({ ...prev, ...updates }));
                                               }}
                                               className="p-1 text-gray-400 hover:text-rose transition-colors"
                                               title="Remove image"
