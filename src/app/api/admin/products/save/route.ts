@@ -34,9 +34,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
   // Normalize sub_category for 'unisex' consistency and extract from specifications if needed
   if (productData) {
-    if (!productData.sub_category && Array.isArray(productData.specifications)) {
+    if ((!productData.sub_category || productData.sub_category === 'pakaian' || productData.sub_category === 'atasan' || productData.sub_category === 'bawahan') && Array.isArray(productData.specifications)) {
       const specJenis = productData.specifications.find((s: any) => s.label === 'Jenis Pakaian' || s.label === 'Sub Category');
-      if (specJenis && specJenis.value) {
+      if (specJenis && specJenis.value && specJenis.value !== 'pakaian') {
         productData.sub_category = String(specJenis.value).toLowerCase().replace(/\s+/g, '-');
       }
     }

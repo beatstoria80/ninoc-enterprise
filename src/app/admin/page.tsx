@@ -2326,7 +2326,13 @@ export default function AdminDashboard() {
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Kategori Spesifik Pillar</label>
                         <select
                           value={productForm.category}
-                          onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const newSpecs = [...(productForm.specifications || [])];
+                            const jenisIdx = newSpecs.findIndex(s => s.label === 'Jenis Pakaian');
+                            if (jenisIdx >= 0) newSpecs[jenisIdx].value = val;
+                            setProductForm({ ...productForm, category: val, sub_category: val, specifications: newSpecs } as any);
+                          }}
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
                         >
                           {(() => {
