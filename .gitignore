@@ -46,5 +46,6 @@ qa-*.png
 # tools
 .gemini/
 .vscode/settings.json
+scratch/
 
 cool-ascent-*.json

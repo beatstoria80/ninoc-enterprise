@@ -636,13 +636,18 @@ export default function AdminDashboard() {
            syncSpec('ColorP3', finalP3);
            syncSpec('ColorP4', finalP4);
 
-           const firstP5 = finalSpecs.find(s => s.label.toUpperCase() === `COLORP5:${firstColor.toUpperCase()}`)?.value;
-           const existingGlobalP5Idx = finalSpecs.findIndex(s => s.label === 'GlobalP5');
+           const firstP5 = finalSpecs.find(s => s && s.label && typeof s.label === 'string' && s.label.toUpperCase() === `COLORP5:${firstColor.toUpperCase()}`)?.value;
+           const existingGlobalP5Idx = finalSpecs.findIndex(s => s && s.label === 'GlobalP5');
            if (firstP5) {
              if (existingGlobalP5Idx >= 0) finalSpecs[existingGlobalP5Idx].value = firstP5;
              else finalSpecs.push({ label: 'GlobalP5', value: firstP5 });
            } else if (existingGlobalP5Idx >= 0) {
-             finalSpecs.splice(existingGlobalP5Idx, 1);
+             const formGlobalP5 = productForm.specifications?.find(s => s && s.label === 'GlobalP5')?.value;
+             if (!formGlobalP5 || formGlobalP5.trim() === '') {
+               finalSpecs.splice(existingGlobalP5Idx, 1);
+             } else {
+               finalSpecs[existingGlobalP5Idx].value = formGlobalP5.trim();
+             }
            }
         }
       } else if (!finalImageUrl) {
