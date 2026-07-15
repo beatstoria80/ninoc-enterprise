@@ -81,14 +81,28 @@ export default function ImmersiveProductView({
     return !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects', 'collectibles'].some(k => cat.includes(k));
   }, [product, isFnBCat]);
 
-  // Sync activeImage with parent when modal opens
+  const prevIsOpenRef = React.useRef(isOpen);
+
+  // Sync activeImage with parent exactly once when modal transitions from closed to open
   useEffect(() => {
-    if (isOpen && typeof activeImageIndex === 'number' && activeImageIndex < images.length) {
+    if (isOpen && !prevIsOpenRef.current) {
+      if (typeof activeImageIndex === 'number' && activeImageIndex >= 0 && activeImageIndex < images.length) {
+        requestAnimationFrame(() => {
+          setActiveImage(activeImageIndex);
+        });
+      }
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, activeImageIndex, images.length]);
+
+  // Ensure activeImage is clamped safely if images array shrinks after switching color variant
+  useEffect(() => {
+    if (isOpen && images && images.length > 0 && activeImage >= images.length) {
       requestAnimationFrame(() => {
-        setActiveImage(activeImageIndex);
+        setActiveImage(images.length - 1);
       });
     }
-  }, [isOpen, activeImageIndex, images.length]);
+  }, [isOpen, images, activeImage]);
 
   // Sync selected color automatically when user swipes or drags photo in ImmersiveProductView
   useEffect(() => {
@@ -109,20 +123,23 @@ export default function ImmersiveProductView({
         const newIdx = colorSpecific.indexOf(currentImg);
         requestAnimationFrame(() => {
           setSelectedColor(matchedColor);
-          if (newIdx !== -1 && newIdx !== activeImage) {
-            setActiveImage(newIdx);
-            if (setActiveImageIndex) setActiveImageIndex(newIdx);
-          } else {
-            if (setActiveImageIndex) setActiveImageIndex(activeImage);
+          const targetIdx = newIdx !== -1 ? newIdx : activeImage;
+          if (targetIdx !== activeImage && targetIdx >= 0 && targetIdx < images.length) {
+            setActiveImage(targetIdx);
           }
+          if (setActiveImageIndex) setActiveImageIndex(targetIdx);
         });
-      } else {
-        if (setActiveImageIndex) setActiveImageIndex(activeImage);
+      } else if (setActiveImageIndex && activeImageIndex !== activeImage) {
+        requestAnimationFrame(() => {
+          setActiveImageIndex(activeImage);
+        });
       }
-    } else {
-      if (setActiveImageIndex) setActiveImageIndex(activeImage);
+    } else if (setActiveImageIndex && activeImageIndex !== activeImage) {
+      requestAnimationFrame(() => {
+        setActiveImageIndex(activeImage);
+      });
     }
-  }, [isOpen, activeImage, images, colorGalleryMap, selectedColor, setSelectedColor, setActiveImageIndex, product?.image_url]);
+  }, [isOpen, activeImage, images, colorGalleryMap, selectedColor, setSelectedColor, setActiveImageIndex, activeImageIndex, product?.image_url]);
 
   // Determine variant name for the active image
   const currentImmersiveVariantName = React.useMemo(() => {

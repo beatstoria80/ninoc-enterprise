@@ -313,6 +313,15 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return rawImages.length > 0 ? rawImages : [''];
   }, [product, effectiveColor, colorGalleryMap]);
 
+  // Clamping activeImageIndex if images array shrinks below index after changing variant
+  useEffect(() => {
+    if (images && images.length > 0 && activeImageIndex >= images.length) {
+      requestAnimationFrame(() => {
+        setActiveImageIndex(images.length - 1);
+      });
+    }
+  }, [images, activeImageIndex]);
+
   // Sync selected model/series automatically when user swipes or selects a photo in ProductGallery
   useEffect(() => {
     if (!images || images.length === 0 || activeImageIndex >= images.length) return;
@@ -332,7 +341,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         const newIdx = colorSpecific.indexOf(currentImg);
         requestAnimationFrame(() => {
           setSelectedColor(matchedColor);
-          if (newIdx !== -1 && newIdx !== activeImageIndex) {
+          if (newIdx !== -1 && newIdx !== activeImageIndex && newIdx >= 0 && newIdx < images.length) {
             setActiveImageIndex(newIdx);
           }
         });
