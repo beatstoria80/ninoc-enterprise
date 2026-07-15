@@ -791,14 +791,24 @@ export default function CheckoutPage() {
           }
         };
 
-        if (typeof snapObj.embed === 'function') {
-          snapObj.embed(paymentToken, { embedId: 'snap-container', ...callbacks });
-        } else if (typeof snapObj.pay === 'function') {
-          snapObj.pay(paymentToken, callbacks);
+        try {
+          if (typeof snapObj.embed === 'function') {
+            snapObj.embed(paymentToken, { embedId: 'snap-container', ...callbacks });
+          } else if (typeof snapObj.pay === 'function') {
+            snapObj.pay(paymentToken, callbacks);
+          }
+        } catch (err) {
+          console.error('[Snap SDK Error] Failed to initialize payment interface:', err);
+          isProcessingRef.current = false;
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentToken(null);
+          }, 0);
+          toast.error('Payment gateway interface failed to load. Please try again.');
         }
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, isMobile, userId]);
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, userId]);
 
   if (!mounted) return null;
 
