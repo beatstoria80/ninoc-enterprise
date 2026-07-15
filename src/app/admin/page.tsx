@@ -222,6 +222,7 @@ export default function AdminDashboard() {
     model_info: '',
     price: '',
     category: 'pakaian',
+    sub_category: 'kaos',
     department_id: '',
     warehouse_id: '',
     weight_grams: 500,
@@ -513,7 +514,7 @@ export default function AdminDashboard() {
         badge_text: '',
         variant_label: '',
         variants: []
-      });
+      } as any);
     }
     setIsProductModalOpen(true);
   };
