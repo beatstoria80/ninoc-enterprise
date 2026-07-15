@@ -4,6 +4,10 @@
 -- into public.categories with SEO metadata and anti-duplication conflict resolution.
 -- ==============================================================================
 
+-- 1. Safely add updated_at column if it does not already exist in production
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+
+-- 2. Insert canonical fashion taxonomy
 INSERT INTO public.categories (id, name, slug, seo_keywords, seo_title_template)
 VALUES 
     -- TOPS (ATASAN)
