@@ -627,8 +627,8 @@ export default function AdminDashboard() {
                if (idx >= 0) finalSpecs.splice(idx, 1);
                return;
              }
-             if (idx >= 0) finalSpecs[idx].value = val;
-             else finalSpecs.push({ label, value: val });
+             if (idx >= 0) finalSpecs[idx].value = val.trim();
+             else finalSpecs.push({ label, value: val.trim() });
            };
            syncSpec('ColorImage', finalImageUrl);
            syncSpec('ColorP1', finalP1);
@@ -638,19 +638,28 @@ export default function AdminDashboard() {
 
            (['P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] as const).forEach(pKey => {
              const globalLabel = `Global${pKey}`;
-             const firstPVal = finalSpecs.find(s => s && s.label && typeof s.label === 'string' && s.label.toUpperCase() === `COLOR${pKey}:${firstColor.toUpperCase()}`)?.value;
-             const existingGlobalIdx = finalSpecs.findIndex(s => s && s.label === globalLabel);
-             if (firstPVal) {
-               if (existingGlobalIdx >= 0) finalSpecs[existingGlobalIdx].value = firstPVal;
-               else finalSpecs.push({ label: globalLabel, value: firstPVal });
-             } else if (existingGlobalIdx >= 0) {
-               const formGlobalVal = productForm.specifications?.find(s => s && s.label === globalLabel)?.value;
-               if (!formGlobalVal || formGlobalVal.trim() === '') {
-                 finalSpecs.splice(existingGlobalIdx, 1);
+             const colorLabel = `Color${pKey}:${firstColor}`;
+             
+             const firstPVal = finalSpecs.find(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === colorLabel.toLowerCase())?.value
+                            || productForm.specifications?.find(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === colorLabel.toLowerCase())?.value;
+             const formGlobalVal = finalSpecs.find(s => s && s.label === globalLabel)?.value
+                                || productForm.specifications?.find(s => s && s.label === globalLabel)?.value;
+             
+             const effectiveVal = (firstPVal && firstPVal.trim() !== '') ? firstPVal.trim() 
+                                : (formGlobalVal && formGlobalVal.trim() !== '') ? formGlobalVal.trim() : null;
+
+             const updateOrRemoveSpec = (targetLabel: string, val: string | null) => {
+               const idx = finalSpecs.findIndex(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === targetLabel.toLowerCase());
+               if (!val) {
+                 if (idx >= 0) finalSpecs.splice(idx, 1);
                } else {
-                 finalSpecs[existingGlobalIdx].value = formGlobalVal.trim();
+                 if (idx >= 0) finalSpecs[idx].value = val;
+                 else finalSpecs.push({ label: targetLabel, value: val });
                }
-             }
+             };
+
+             updateOrRemoveSpec(globalLabel, effectiveVal);
+             updateOrRemoveSpec(colorLabel, effectiveVal);
            });
         }
       } else if (!finalImageUrl) {
