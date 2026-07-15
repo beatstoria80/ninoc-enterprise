@@ -39,7 +39,7 @@ export function matchesCategoryPillar(productCategory: string, pillar: string): 
   if (!productCategory) return false;
   const cat = productCategory.toLowerCase().trim();
   if (pillar === 'Apparel') {
-    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'aksesoris', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex', 'rok', 'skirt', 'dress', 'bawahan', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot'].some(k => cat.includes(k));
+    return ['pakaian', 'apparel', 'fashion', 'garment', 'footwear', 'archive', 'shirts', 'outerwear', 'bottoms', 'accessories', 'aksesoris', 'tops', 'jacket', 'coat', 'pants', 'shoes', 'baju', 'celana', 'sepatu', 'topi', 'unisex', 'rok', 'skirt', 'dress', 'bawahan', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot', 'hoodie', 'sweater', 'crewneck', 'pullover', 'kemeja', 'flannel', 'celana-panjang', 'celana-pendek', 'boxers'].some(k => cat.includes(k));
   }
   if (pillar === 'Objects') {
     return ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => cat.includes(k));
@@ -57,16 +57,22 @@ export function getCategoryDisplayName(cat: string): string {
   return cat;
 }
 
-export function getSubCategory(product: ShopProduct, pillar: string): string {
+export function getSubCategory(product: ShopProduct & { sub_category?: string | null }, pillar: string): string {
+  const subCat = (product.sub_category || '').toLowerCase().trim();
   const cat = (product.category || '').toLowerCase();
   const name = (product.name || '').toLowerCase();
   const desc = (product.description || '').toLowerCase();
-  const combined = `${cat} ${name} ${desc}`;
+  const combined = `${subCat} ${cat} ${name} ${desc}`;
 
   if (pillar === 'Apparel' || pillar === 'All') {
-    if (['kaos', 't-shirt', 'tee', 'shirt', 'top', 'tshirt'].some(k => combined.includes(k))) return 'T-Shirt / Kaos';
-    if (['hoodie', 'outer', 'jacket', 'jaket', 'sweater', 'coat', 'cardigan', 'crewneck'].some(k => combined.includes(k))) return 'Outerwear / Hoodie';
-    if (['celana', 'pants', 'jeans', 'trouser', 'trousers', 'shorts', 'bottom', 'bottoms', 'cargo', 'chores', 'rok', 'skirt', 'dress', 'bawahan', 'kulot'].some(k => combined.includes(k))) return 'Bottoms / Celana & Rok';
+    if (['hoodie', 'hodi', 'pullover'].some(k => combined.includes(k))) return 'Hoodie / Pullover';
+    if (['sweater', 'switer', 'crewneck', 'cardigan'].some(k => combined.includes(k))) return 'Sweater / Crewneck';
+    if (['kaos', 't-shirt', 'tee', 'top', 'tshirt'].some(k => combined.includes(k))) return 'Kaos / T-Shirt';
+    if (['kemeja', 'flannel', 'shirt'].some(k => combined.includes(k))) return 'Kemeja / Flannel';
+    if (['outer', 'jacket', 'jaket', 'coat', 'windbreaker'].some(k => combined.includes(k))) return 'Jaket & Outerwear';
+    if (['celana-pendek', 'shorts', 'boxer', 'kolor'].some(k => combined.includes(k))) return 'Celana Pendek / Shorts';
+    if (['celana-panjang', 'celana', 'pants', 'jeans', 'trouser', 'trousers', 'cargo', 'chores', 'kulot'].some(k => combined.includes(k))) return 'Celana Panjang / Cargo';
+    if (['rok', 'skirt', 'dress', 'bawahan'].some(k => combined.includes(k))) return 'Rok & Dress';
     if (['topi', 'cap', 'beanie', 'totebag', 'bag', 'tas', 'gelang', 'aksesoris', 'accessory'].some(k => combined.includes(k))) return 'Accessories';
   }
   if (pillar === 'Objects') {

@@ -2342,11 +2342,42 @@ export default function AdminDashboard() {
                               filtered = dbCategories;
                             }
 
-                            if (filtered.length > 0) {
-                              return filtered.map(c => (
-                                <option key={c.id} value={c.slug}>{c.name}</option>
-                              ));
-                            }
+                            const presets = isFnB ? [
+                              { slug: 'coffee', name: 'Biji Kopi / Roasted Beans' },
+                              { slug: 'pastry', name: 'Pastry & Bakery' },
+                              { slug: 'rtd', name: 'Minuman RTD / Beverages' },
+                              { slug: 'snack', name: 'Camilan / Gourmet Snacks' }
+                            ] : isObjects ? [
+                              { slug: 'utilities', name: 'Utilities & Alat Tulis' },
+                              { slug: 'home', name: 'Peralatan Rumah / Home Goods' },
+                              { slug: 'kitchen', name: 'Kitchen & Dining' },
+                              { slug: 'collectibles', name: 'Seni / Collectibles' }
+                            ] : [
+                              { slug: 'unisex', name: 'Unisex' },
+                              { slug: 'kaos', name: 'Kaos / T-Shirt' },
+                              { slug: 'hoodie', name: 'Hoodie / Pullover' },
+                              { slug: 'sweater', name: 'Sweater / Crewneck' },
+                              { slug: 'kemeja', name: 'Kemeja / Flannel' },
+                              { slug: 'jaket', name: 'Jaket & Outerwear' },
+                              { slug: 'celana-panjang', name: 'Celana Panjang / Trousers / Cargo' },
+                              { slug: 'celana-pendek', name: 'Celana Pendek / Shorts' },
+                              { slug: 'pakaian', name: 'Atasan Standar / Regular' },
+                              { slug: 'pakaian-pria', name: 'Pakaian Pria' },
+                              { slug: 'pakaian-wanita', name: 'Pakaian Wanita' },
+                              { slug: 'celana', name: 'Celana / Bawahan (Umum)' },
+                              { slug: 'outerwear', name: 'Outerwear / Jaket (Umum)' },
+                              { slug: 'aksesoris', name: 'Aksesoris' },
+                              { slug: 'archive', name: 'Arsip / Studio Edition' }
+                            ];
+                            const combined = [...filtered];
+                            presets.forEach(p => {
+                              if (!combined.some(c => c.slug === p.slug)) {
+                                combined.push({ id: p.slug as any, slug: p.slug, name: p.name });
+                              }
+                            });
+                            return combined.map(c => (
+                              <option key={c.id || c.slug} value={c.slug}>{c.name}</option>
+                            ));
 
                             return isFnB ? (
                               <>
@@ -2365,11 +2396,18 @@ export default function AdminDashboard() {
                             ) : (
                               <>
                                 <option value="unisex">Unisex</option>
-                                <option value="pakaian">Kaos / Atasan Standar</option>
+                                <option value="kaos">Kaos / T-Shirt</option>
+                                <option value="hoodie">Hoodie / Pullover</option>
+                                <option value="sweater">Sweater / Crewneck</option>
+                                <option value="kemeja">Kemeja / Flannel</option>
+                                <option value="jaket">Jaket & Outerwear</option>
+                                <option value="celana-panjang">Celana Panjang / Trousers / Cargo</option>
+                                <option value="celana-pendek">Celana Pendek / Shorts</option>
+                                <option value="pakaian">Atasan Standar / Regular</option>
                                 <option value="pakaian-pria">Pakaian Pria</option>
                                 <option value="pakaian-wanita">Pakaian Wanita</option>
-                                <option value="celana">Celana / Bawahan</option>
-                                <option value="outerwear">Outerwear / Jaket</option>
+                                <option value="celana">Celana / Bawahan (Umum)</option>
+                                <option value="outerwear">Outerwear / Jaket (Umum)</option>
                                 <option value="aksesoris">Aksesoris</option>
                                 <option value="archive">Arsip / Studio Edition</option>
                               </>
@@ -2531,29 +2569,69 @@ export default function AdminDashboard() {
                             </select>
                           </>
                         ) : (
-                          <>
-                            <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Tipe Potongan / Fit Type (Fashion)</label>
-                            <select
-                              value={productForm.specifications?.find(s => s.label === 'Fit' || s.label === 'Jenis Pakaian')?.value.includes('Oversize') ? 'Oversize' : 'Standar'}
-                              onChange={(e) => {
-                                const newSpecs = [...(productForm.specifications || [])];
-                                const fitIndex = newSpecs.findIndex(s => s.label === 'Fit' || s.label === 'Jenis Pakaian');
-                                if (fitIndex >= 0) {
-                                  newSpecs[fitIndex].value = e.target.value;
-                                  newSpecs[fitIndex].label = 'Fit';
-                                } else {
-                                  newSpecs.push({ label: 'Fit', value: e.target.value });
-                                }
-                                setProductForm({ ...productForm, specifications: newSpecs });
-                              }}
-                              className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
-                            >
-                              <option value="Standar">Standar / Regular Fit</option>
-                              <option value="Oversize">Oversize</option>
-                              <option value="Boxy Fit">Boxy Fit</option>
-                              <option value="Slim Fit">Slim Fit</option>
-                            </select>
-                          </>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Tipe Potongan / Fit Type (Fashion)</label>
+                              <select
+                                value={productForm.specifications?.find(s => s.label === 'Fit')?.value || 'Standar / Regular Fit'}
+                                onChange={(e) => {
+                                  const newSpecs = [...(productForm.specifications || [])];
+                                  const fitIndex = newSpecs.findIndex(s => s.label === 'Fit');
+                                  if (fitIndex >= 0) {
+                                    newSpecs[fitIndex].value = e.target.value;
+                                  } else {
+                                    newSpecs.push({ label: 'Fit', value: e.target.value });
+                                  }
+                                  setProductForm({ ...productForm, specifications: newSpecs });
+                                }}
+                                className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
+                              >
+                                <option value="Standar / Regular Fit">Standar / Regular Fit</option>
+                                <option value="Oversize / Relaxed Fit">Oversize / Relaxed Fit</option>
+                                <option value="Boxy Fit / Drop Shoulder">Boxy Fit / Drop Shoulder</option>
+                                <option value="Slim Fit / Tapered">Slim Fit / Tapered</option>
+                                <option value="Cropped Fit">Cropped Fit</option>
+                                <option value="Athletic / Muscle Fit">Athletic / Muscle Fit</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Jenis Pakaian / Sub-Category (Atasan & Bawahan)</label>
+                              <select
+                                value={(productForm as any).sub_category || productForm.category || 'kaos'}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const newSpecs = [...(productForm.specifications || [])];
+                                  const jenisIndex = newSpecs.findIndex(s => s.label === 'Jenis Pakaian');
+                                  if (jenisIndex >= 0) {
+                                    newSpecs[jenisIndex].value = val;
+                                  } else {
+                                    newSpecs.push({ label: 'Jenis Pakaian', value: val });
+                                  }
+                                  setProductForm({
+                                    ...productForm,
+                                    category: val,
+                                    sub_category: val,
+                                    specifications: newSpecs
+                                  } as any);
+                                }}
+                                className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
+                              >
+                                <option value="kaos">Kaos / T-Shirt (Atasan)</option>
+                                <option value="hoodie">Hoodie / Pullover (Atasan)</option>
+                                <option value="sweater">Sweater / Crewneck (Atasan)</option>
+                                <option value="kemeja">Kemeja / Flannel (Atasan)</option>
+                                <option value="jaket">Jaket & Outerwear (Atasan)</option>
+                                <option value="celana-panjang">Celana Panjang / Trousers / Cargo (Bawahan)</option>
+                                <option value="celana-pendek">Celana Pendek / Shorts (Bawahan)</option>
+                                <option value="unisex">Unisex / Couple Set</option>
+                                <option value="pakaian-pria">Pakaian Pria (General)</option>
+                                <option value="pakaian-wanita">Pakaian Wanita (General)</option>
+                                <option value="celana">Celana / Bawahan (General)</option>
+                                <option value="outerwear">Outerwear / Jaket (General)</option>
+                                <option value="aksesoris">Aksesoris</option>
+                              </select>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>

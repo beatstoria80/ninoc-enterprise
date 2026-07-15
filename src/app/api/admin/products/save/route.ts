@@ -32,11 +32,19 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     }
   }
 
-  // Normalize sub_category for 'unisex' consistency
-  if (productData && productData.sub_category) {
-    const rawSubCat = String(productData.sub_category).toLowerCase().trim();
-    if (rawSubCat === 'pakaian-unisex' || rawSubCat === 'baju-unisex' || rawSubCat === 'pakaian unisex') {
-      productData.sub_category = 'unisex';
+  // Normalize sub_category for 'unisex' consistency and extract from specifications if needed
+  if (productData) {
+    if (!productData.sub_category && Array.isArray(productData.specifications)) {
+      const specJenis = productData.specifications.find((s: any) => s.label === 'Jenis Pakaian' || s.label === 'Sub Category');
+      if (specJenis && specJenis.value) {
+        productData.sub_category = String(specJenis.value).toLowerCase().replace(/\s+/g, '-');
+      }
+    }
+    if (productData.sub_category) {
+      const rawSubCat = String(productData.sub_category).toLowerCase().trim();
+      if (rawSubCat === 'pakaian-unisex' || rawSubCat === 'baju-unisex' || rawSubCat === 'pakaian unisex') {
+        productData.sub_category = 'unisex';
+      }
     }
   }
 

@@ -22,7 +22,8 @@ export function AllProductsView({
 }) {
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (product.sub_category && product.sub_category.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -112,7 +113,7 @@ export function AllProductsView({
 
                 {/* Category + Variants + SKU Status */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-widest text-gray-400">{formatCategoryLabel(product.category)}</span>
+                  <span className="text-[9px] uppercase tracking-widest text-gray-400">{formatCategoryLabel(product.sub_category || product.category)}</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[9px] text-rose">{product.variants?.length || 0} variants</span>
                     {product.variants && product.variants.length > 0 && product.variants.every(v => v.sku && v.sku.trim() !== '') ? (

@@ -41,8 +41,9 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
     keywords: [
       'apparel', 'archive', 'fashion', 'garment', 'footwear', 'clothes', 'clothing',
       'pakaian', 'baju', 'kaos', 'celana', 'jaket', 'hoodie', 'shirt', 't-shirt',
-      'pants', 'outerwear', 'sweatshirt', 'sepatu', 'aksesoris', 'atasan', 'bawahan', 'unisex',
-      'rok', 'skirt', 'dress', 'bottoms', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot'
+      'pants', 'outerwear', 'sweatshirt', 'sweater', 'crewneck', 'pullover', 'sepatu', 'aksesoris', 'atasan', 'bawahan', 'unisex',
+      'rok', 'skirt', 'dress', 'bottoms', 'jeans', 'trousers', 'shorts', 'cargo', 'kulot',
+      'kemeja', 'flannel', 'celana-panjang', 'celana-pendek', 'boxers'
     ] as const,
   },
   OBJECTS: {
@@ -167,7 +168,9 @@ export function formatCategoryLabel(cat?: string | null): string {
   if (!cat) return 'NINOC';
   const cleaned = String(cat)
     .replace(/&?\s*archive\s*(mfg)?/gi, '')
+    .replace(/-/g, ' ')
     .trim();
-  return cleaned || 'Apparel';
+  if (!cleaned) return 'Apparel';
+  return cleaned.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
