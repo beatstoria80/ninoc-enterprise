@@ -2359,23 +2359,22 @@ export default function AdminDashboard() {
                               { slug: 'kitchen', name: 'Kitchen & Dining' },
                               { slug: 'collectibles', name: 'Seni / Collectibles' }
                             ] : [
-                              { slug: 'unisex', name: 'Unisex' },
-                              { slug: 'kaos', name: 'Kaos / T-Shirt' },
-                              { slug: 'hoodie', name: 'Hoodie / Pullover' },
-                              { slug: 'sweater', name: 'Sweater / Crewneck' },
-                              { slug: 'kemeja', name: 'Kemeja / Flannel' },
-                              { slug: 'jaket', name: 'Jaket & Outerwear' },
-                              { slug: 'celana-panjang', name: 'Celana Panjang / Trousers / Cargo' },
-                              { slug: 'celana-pendek', name: 'Celana Pendek / Shorts' },
-                              { slug: 'pakaian', name: 'Atasan Standar / Regular' },
-                              { slug: 'pakaian-pria', name: 'Pakaian Pria' },
-                              { slug: 'pakaian-wanita', name: 'Pakaian Wanita' },
-                              { slug: 'celana', name: 'Celana / Bawahan (Umum)' },
-                              { slug: 'outerwear', name: 'Outerwear / Jaket (Umum)' },
-                              { slug: 'aksesoris', name: 'Aksesoris' },
+                              { slug: 'kaos', name: 'Kaos / T-Shirt (Atasan)' },
+                              { slug: 'hoodie', name: 'Hoodie / Pullover (Atasan)' },
+                              { slug: 'sweater', name: 'Sweater / Crewneck (Atasan)' },
+                              { slug: 'kemeja', name: 'Kemeja / Flannel (Atasan)' },
+                              { slug: 'jaket', name: 'Jaket & Outerwear (Atasan)' },
+                              { slug: 'celana-panjang', name: 'Celana Panjang / Cargo / Trousers (Bawahan)' },
+                              { slug: 'celana-pendek', name: 'Celana Pendek / Shorts (Bawahan)' },
+                              { slug: 'rok-dress', name: 'Rok & Dress (Bawahan)' },
+                              { slug: 'aksesoris', name: 'Aksesoris / Headwear & Bags' },
+                              { slug: 'unisex', name: 'Unisex / Couple Set' },
                               { slug: 'archive', name: 'Arsip / Studio Edition' }
                             ];
-                            const combined = [...filtered];
+                            // Deduplicate semantic overlaps between dbCategories and presets
+                            const combined = [...filtered.filter(c => 
+                              !['outerwear', 'celana', 'pakaian', 'pakaian-pria', 'pakaian-wanita'].includes(c.slug)
+                            )];
                             presets.forEach(p => {
                               if (!combined.some(c => c.slug === p.slug)) {
                                 combined.push({ id: p.slug as any, slug: p.slug, name: p.name });
@@ -2627,14 +2626,12 @@ export default function AdminDashboard() {
                                 <option value="sweater">Sweater / Crewneck (Atasan)</option>
                                 <option value="kemeja">Kemeja / Flannel (Atasan)</option>
                                 <option value="jaket">Jaket & Outerwear (Atasan)</option>
-                                <option value="celana-panjang">Celana Panjang / Trousers / Cargo (Bawahan)</option>
+                                <option value="celana-panjang">Celana Panjang / Cargo / Trousers (Bawahan)</option>
                                 <option value="celana-pendek">Celana Pendek / Shorts (Bawahan)</option>
+                                <option value="rok-dress">Rok & Dress (Bawahan)</option>
+                                <option value="aksesoris">Aksesoris / Headwear & Bags</option>
                                 <option value="unisex">Unisex / Couple Set</option>
-                                <option value="pakaian-pria">Pakaian Pria (General)</option>
-                                <option value="pakaian-wanita">Pakaian Wanita (General)</option>
-                                <option value="celana">Celana / Bawahan (General)</option>
-                                <option value="outerwear">Outerwear / Jaket (General)</option>
-                                <option value="aksesoris">Aksesoris</option>
+                                <option value="archive">Arsip / Studio Edition</option>
                               </select>
                             </div>
                           </div>
