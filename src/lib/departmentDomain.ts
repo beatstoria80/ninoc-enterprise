@@ -60,7 +60,8 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
     keywords: [
       'objects', 'consumer', 'home', 'kitchen', 'utilities', 'collectibles',
       'ceramics', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas',
-      'botol', 'alat', 'rumah', 'mug', 'cup', 'tableware', 'decor', 'dekorasi', '2'
+      'botol', 'alat', 'rumah', 'mug', 'cup', 'tableware', 'decor', 'dekorasi',
+      'art', 'seni', 'stationery', 'cutlery', 'dining', '2'
     ] as const,
   },
   PANTRY: {
@@ -77,7 +78,8 @@ export const DEPARTMENT_CONFIGS: Record<DepartmentPillar, DepartmentConfig> = {
     keywords: [
       'pantry', 'f&b', 'fnb', 'cafe', 'roastery', 'coffee', 'pastry', 'rtd', 'snack',
       'beverage', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast', 'food',
-      'drinks', 'beans 250g', 'arabica', 'robusta', 'espresso', 'brew', '3'
+      'drinks', 'beans 250g', 'arabica', 'robusta', 'espresso', 'brew',
+      'camilan', 'gourmet', 'bakery', 'croissant', 'beverages', 'tea', 'bottle', '3'
     ] as const,
   },
 } as const;

@@ -18,10 +18,15 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   if (productData && productData.category) {
     const rawCat = String(productData.category).toLowerCase().trim();
     const validEnums = ['pakaian', 'aksesoris', 'utilities'];
-    if (!validEnums.includes(rawCat)) {
-      if (!productData.sub_category) {
-        productData.sub_category = productData.category;
+    
+    // If sub_category is not explicitly set, store the raw category selection (e.g. 'coffee', 'pastry', 'hoodie', 'home') before normalizing
+    if (!productData.sub_category || productData.sub_category === 'pakaian' || productData.sub_category === 'utilities') {
+      if (!validEnums.includes(rawCat)) {
+        productData.sub_category = rawCat;
       }
+    }
+
+    if (!validEnums.includes(rawCat)) {
       if (rawCat.includes('aksesoris') || rawCat.includes('accessor') || rawCat.includes('accesories') || rawCat.includes('topi') || rawCat.includes('tas') || rawCat.includes('bag') || rawCat.includes('hat') || rawCat.includes('jewelry') || rawCat.includes('kalung') || rawCat.includes('gelang')) {
         productData.category = 'aksesoris';
       } else if (rawCat.includes('utilities') || rawCat.includes('object') || rawCat.includes('home') || rawCat.includes('kitchen') || rawCat.includes('collect') || rawCat.includes('ceramic') || rawCat.includes('art') || rawCat.includes('goods') || rawCat.includes('stationery') || rawCat.includes('alat_tulis') || rawCat.includes('keramik') || rawCat.includes('rumahtangga') || rawCat.includes('coffee') || rawCat.includes('kopi') || rawCat.includes('pastry') || rawCat.includes('snack') || rawCat.includes('rtd') || rawCat.includes('fnb') || rawCat.includes('beverage') || rawCat.includes('pantry') || rawCat.includes('food') || rawCat.includes('minuman') || rawCat.includes('makanan') || rawCat.includes('roastery') || rawCat.includes('cafe')) {
@@ -32,13 +37,18 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     }
   }
 
-  // Normalize sub_category for 'unisex' consistency and extract from specifications if needed
+  // Normalize sub_category across all pillars and extract from specifications if needed
   if (productData) {
-    if ((!productData.sub_category || productData.sub_category === 'pakaian' || productData.sub_category === 'atasan' || productData.sub_category === 'bawahan') && Array.isArray(productData.specifications)) {
-      const specJenis = productData.specifications.find((s: any) => s.label === 'Jenis Pakaian' || s.label === 'Sub Category');
-      if (specJenis && specJenis.value && specJenis.value !== 'pakaian') {
-        productData.sub_category = String(specJenis.value).toLowerCase().replace(/\s+/g, '-');
+    if ((!productData.sub_category || ['pakaian', 'atasan', 'bawahan', 'utilities'].includes(productData.sub_category)) && Array.isArray(productData.specifications)) {
+      const specSub = productData.specifications.find((s: any) => 
+        ['Jenis Pakaian', 'Sub Category', 'Kategori Spesifik', 'Kategori'].includes(s?.label)
+      );
+      if (specSub && specSub.value && !['pakaian', 'utilities'].includes(String(specSub.value).toLowerCase())) {
+        productData.sub_category = String(specSub.value).toLowerCase().replace(/\s+/g, '-');
       }
+    }
+    if (!productData.sub_category) {
+      productData.sub_category = productData.category;
     }
     if (productData.sub_category) {
       const rawSubCat = String(productData.sub_category).toLowerCase().trim();
