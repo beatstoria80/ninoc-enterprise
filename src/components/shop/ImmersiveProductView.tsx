@@ -34,6 +34,10 @@ interface ImmersiveProductViewProps {
   displaySpecs?: any[];
   imageDescriptionItems?: { url?: string; desc?: string }[];
   colorGalleryMap?: Record<string, { main?: string; p1?: string; p2?: string; p3?: string; p4?: string; p5?: string; p6?: string; p7?: string; p8?: string; p9?: string; p10?: string; p11?: string; p12?: string; p13?: string; p14?: string; p15?: string; }>;
+  activeImageIndex?: number;
+  setActiveImageIndex?: (idx: number) => void;
+  colorDescMap?: Record<string, string>;
+  colorImageDescMap?: Record<string, Record<string, string>>;
 }
 
 export default function ImmersiveProductView({
@@ -54,7 +58,11 @@ export default function ImmersiveProductView({
   localizedDescription,
   displaySpecs = [],
   imageDescriptionItems = [],
-  colorGalleryMap = {}
+  colorGalleryMap = {},
+  activeImageIndex,
+  setActiveImageIndex,
+  colorDescMap = {},
+  colorImageDescMap = {}
 }: ImmersiveProductViewProps) {
   const [activeImage, setActiveImage] = React.useState(0);
   
@@ -73,22 +81,48 @@ export default function ImmersiveProductView({
     return !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects', 'collectibles'].some(k => cat.includes(k));
   }, [product, isFnBCat]);
 
-  // Dynamic description per active image (changes on swipe)
-  const currentImmersiveDesc = React.useMemo(() => {
-    if (!images || images.length === 0) return null;
-    const currentUrl = images[activeImage];
-    if (!currentUrl) return null;
+  // Sync activeImage with parent when modal opens
+  useEffect(() => {
+    if (isOpen && typeof activeImageIndex === 'number' && activeImageIndex < images.length) {
+      requestAnimationFrame(() => {
+        setActiveImage(activeImageIndex);
+      });
+    }
+  }, [isOpen, activeImageIndex, images.length]);
 
-    // Match by URL first
-    const matchByUrl = imageDescriptionItems.find(item => item.url && item.url === currentUrl && item.desc);
-    if (matchByUrl?.desc) return matchByUrl.desc;
+  // Sync selected color automatically when user swipes or drags photo in ImmersiveProductView
+  useEffect(() => {
+    if (!isOpen || !images || images.length === 0 || activeImage >= images.length) return;
+    const currentImg = images[activeImage];
+    if (!currentImg) return;
 
-    // Fallback match by index
-    const matchByIndex = imageDescriptionItems[activeImage]?.desc;
-    if (matchByIndex) return matchByIndex;
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentImg);
+    });
 
-    return null;
-  }, [images, activeImage, imageDescriptionItems]);
+    if (matchedEntry) {
+      const [matchedColor, g] = matchedEntry;
+      if (matchedColor && matchedColor !== selectedColor?.toUpperCase()) {
+        const colorSpecific = [g.main || product?.image_url || '', g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].filter(
+          (img): img is string => typeof img === 'string' && img.length > 0
+        );
+        const newIdx = colorSpecific.indexOf(currentImg);
+        requestAnimationFrame(() => {
+          setSelectedColor(matchedColor);
+          if (newIdx !== -1 && newIdx !== activeImage) {
+            setActiveImage(newIdx);
+            if (setActiveImageIndex) setActiveImageIndex(newIdx);
+          } else {
+            if (setActiveImageIndex) setActiveImageIndex(activeImage);
+          }
+        });
+      } else {
+        if (setActiveImageIndex) setActiveImageIndex(activeImage);
+      }
+    } else {
+      if (setActiveImageIndex) setActiveImageIndex(activeImage);
+    }
+  }, [isOpen, activeImage, images, colorGalleryMap, selectedColor, setSelectedColor, setActiveImageIndex, product?.image_url]);
 
   // Determine variant name for the active image
   const currentImmersiveVariantName = React.useMemo(() => {
@@ -106,6 +140,29 @@ export default function ImmersiveProductView({
     
     return selectedColor || `${product?.variant_label || 'Series'} #${activeImage + 1}`;
   }, [images, activeImage, colorGalleryMap, selectedColor, product]);
+
+  // Dynamic description per active image (changes on swipe)
+  const currentImmersiveDesc = React.useMemo(() => {
+    if (!images || images.length === 0) return null;
+    const currentUrl = images[activeImage];
+    if (!currentUrl) return null;
+
+    // 1. Match by URL first from imageDescriptionItems
+    const matchByUrl = imageDescriptionItems.find(item => item.url && item.url === currentUrl && item.desc);
+    if (matchByUrl?.desc) return matchByUrl.desc;
+
+    // 2. Fallback match by index in imageDescriptionItems
+    const matchByIndex = imageDescriptionItems[activeImage]?.desc;
+    if (matchByIndex) return matchByIndex;
+
+    // 3. Fallback match by colorDescMap for active image color if available
+    const activeColorName = currentImmersiveVariantName || selectedColor;
+    if (activeColorName && colorDescMap && colorDescMap[activeColorName.toUpperCase()]) {
+      return colorDescMap[activeColorName.toUpperCase()];
+    }
+
+    return null;
+  }, [images, activeImage, imageDescriptionItems, currentImmersiveVariantName, selectedColor, colorDescMap]);
 
   // Close on Escape key
   useEffect(() => {
@@ -351,6 +408,7 @@ export default function ImmersiveProductView({
                           onClick={() => {
                             setSelectedColor(color);
                             setActiveImage(0);
+                            if (setActiveImageIndex) setActiveImageIndex(0);
                           }}
                           className={cn(
                             "flex items-center gap-2 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-300",

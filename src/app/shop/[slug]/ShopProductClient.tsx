@@ -352,7 +352,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const urlToDescMap: Record<string, string> = {};
     safeSpecs.forEach((spec: any) => {
       if (typeof spec?.label === 'string' && spec.value) {
-        const matchImg = spec.label.match(/^color(image|p1|p2|p3|p4|p5)\s*:\s*(.+)$/i);
+        const matchImg = spec.label.match(/^color(image|p10|p11|p12|p13|p14|p15|p1|p2|p3|p4|p5|p6|p7|p8|p9)\s*:\s*(.+)$/i);
         if (matchImg) {
           const slot = matchImg[1].toUpperCase();
           const colorName = matchImg[2].trim().toUpperCase();
@@ -381,14 +381,22 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
     return images.map((url, idx) => {
       const descFromUrl = urlToDescMap[url];
+      
+      const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+        return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(url);
+      });
+      const imgColorName = matchedEntry ? matchedEntry[0] : safeColor;
+      const imgColorDesc = imgColorName ? colorDescMap[imgColorName.toUpperCase()] : variantFallbackDesc;
+      const imgDescGallery = imgColorName ? colorImageDescMap[imgColorName.toUpperCase()] : activeDescGallery;
+
       const descFromSlot =
-        idx === 0 ? (activeDescGallery?.main || variantFallbackDesc || getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0'])) :
-        idx === 1 ? (activeDescGallery?.p1 || variantFallbackDesc || getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1'])) :
-        idx === 2 ? (activeDescGallery?.p2 || variantFallbackDesc || getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2'])) :
-        idx === 3 ? (activeDescGallery?.p3 || variantFallbackDesc || getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3'])) :
-        idx === 4 ? (activeDescGallery?.p4 || variantFallbackDesc || getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4'])) :
-        idx === 5 ? (activeDescGallery?.p5 || variantFallbackDesc || getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5'])) :
-        undefined;
+        idx === 0 ? (imgDescGallery?.main || imgColorDesc || getDesc(['imagedesc_main', 'imagedesc_0', 'deskripsi_gambar_0'])) :
+        idx === 1 ? (imgDescGallery?.p1 || imgColorDesc || getDesc(['imagedesc_p1', 'imagedesc_1', 'deskripsi_gambar_1'])) :
+        idx === 2 ? (imgDescGallery?.p2 || imgColorDesc || getDesc(['imagedesc_p2', 'imagedesc_2', 'deskripsi_gambar_2'])) :
+        idx === 3 ? (imgDescGallery?.p3 || imgColorDesc || getDesc(['imagedesc_p3', 'imagedesc_3', 'deskripsi_gambar_3'])) :
+        idx === 4 ? (imgDescGallery?.p4 || imgColorDesc || getDesc(['imagedesc_p4', 'imagedesc_4', 'deskripsi_gambar_4'])) :
+        idx === 5 ? (imgDescGallery?.p5 || imgColorDesc || getDesc(['imagedesc_p5', 'imagedesc_5', 'deskripsi_gambar_5'])) :
+        imgColorDesc;
 
       return {
         url,
@@ -410,8 +418,17 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const matchByIndex = imageDescriptionItems[activeImageIndex]?.desc;
     if (matchByIndex) return matchByIndex;
 
+    // 3. Fallback match by colorDescMap for active color if available
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentUrl);
+    });
+    const activeColorName = matchedEntry ? matchedEntry[0] : effectiveColor;
+    if (activeColorName && colorDescMap[activeColorName.toUpperCase()]) {
+      return colorDescMap[activeColorName.toUpperCase()];
+    }
+
     return null;
-  }, [product, images, activeImageIndex, imageDescriptionItems]);
+  }, [product, images, activeImageIndex, imageDescriptionItems, colorGalleryMap, effectiveColor, colorDescMap]);
 
   const availableColors = React.useMemo(() => {
     const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
@@ -832,6 +849,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         displaySpecs={displaySpecs}
         imageDescriptionItems={imageDescriptionItems}
         colorGalleryMap={colorGalleryMap}
+        activeImageIndex={activeImageIndex}
+        setActiveImageIndex={setActiveImageIndex}
+        colorDescMap={colorDescMap}
+        colorImageDescMap={colorImageDescMap}
       />
     </main>
   );
