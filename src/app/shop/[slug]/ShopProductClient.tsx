@@ -472,6 +472,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             imageVariants={imageVariants}
             textVariants={textVariants}
             photoRef={photoRef}
+            photoHeight={photoHeight}
             onExpand={() => setIsImmersiveOpen(true)}
           />
 

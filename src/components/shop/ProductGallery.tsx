@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Maximize2, Star } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
@@ -19,6 +19,7 @@ interface ProductGalleryProps {
   imageVariants: any;
   textVariants: any;
   photoRef?: React.RefObject<HTMLDivElement | null>;
+  photoHeight?: number;
   onExpand?: () => void;
 }
 
@@ -34,6 +35,7 @@ export default function ProductGallery({
   imageVariants,
   textVariants,
   photoRef,
+  photoHeight,
   onExpand
 }: ProductGalleryProps) {
   const { views: activeViewers } = useProductViews(product.slug);
@@ -44,6 +46,25 @@ export default function ProductGallery({
   const startYDesktop = useRef(0);
   const scrollTopDesktop = useRef(0);
   const hasDraggedDesktop = useRef(false);
+
+  const mainBoxRef = useRef<HTMLDivElement | null>(null);
+  const [internalPhotoHeight, setInternalPhotoHeight] = useState(0);
+
+  useEffect(() => {
+    const target = mainBoxRef.current || (photoRef && photoRef.current);
+    if (!target) return;
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.contentRect.height > 0) {
+          setInternalPhotoHeight(entry.contentRect.height);
+        }
+      }
+    });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [photoRef]);
+
+  const effectiveHeight = (photoHeight && photoHeight > 0) ? photoHeight : internalPhotoHeight;
 
   // Mobile horizontal drag scroll state
   const mobileThumbRef = useRef<HTMLDivElement>(null);
@@ -99,15 +120,22 @@ export default function ProductGallery({
   return (
     <>
       {/* DESKTOP VERTICAL THUMBNAIL LIST — Cursor Drag Swipeable */}
-      <motion.div variants={columnVariants} className="hidden lg:block w-full shrink-0 select-none relative h-full">
+      <motion.div 
+        variants={columnVariants} 
+        className={cn(
+          "hidden lg:block w-full shrink-0 select-none relative lg:self-start transition-[height] duration-200",
+          effectiveHeight <= 0 && "aspect-[4/5]"
+        )}
+        style={{ height: effectiveHeight > 0 ? `${effectiveHeight}px` : undefined }}
+      >
         <div
           ref={desktopThumbRef}
           onPointerDown={handleDesktopPointerDown}
           onPointerMove={handleDesktopPointerMove}
           onPointerUp={handleDesktopPointerUp}
           onPointerLeave={handleDesktopPointerUp}
-          className="absolute inset-0 flex flex-col gap-2 overflow-y-auto no-scrollbar pt-4 pb-4 pr-1 cursor-grab active:cursor-grabbing"
-          style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)' }}
+          className="absolute inset-0 flex flex-col gap-2 overflow-y-auto no-scrollbar py-0 pr-1 cursor-grab active:cursor-grabbing"
+          style={{ maskImage: 'linear-gradient(to bottom, black 0%, black 88%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 88%, transparent 100%)' }}
         >
           {images.map((img, i) => (
             <motion.button
@@ -129,7 +157,7 @@ export default function ProductGallery({
         </div>
       </motion.div>
 
-      <motion.div ref={photoRef} variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
+      <motion.div variants={columnVariants} className="col-span-1 relative flex flex-col lg:px-0 w-full lg:self-start">
         {/* MOBILE MAIN CAROUSEL — Universal Pointer / Global Cursor Swipeable */}
         <motion.div
           className="flex lg:hidden relative w-full justify-center items-center overflow-hidden py-0 mt-0 cursor-grab active:cursor-grabbing select-none"
@@ -207,7 +235,12 @@ export default function ProductGallery({
 
         {/* DESKTOP MAIN VIEWER — Drag Swipeable */}
         <motion.div 
-          ref={photoRef} 
+          ref={(node) => {
+            mainBoxRef.current = node;
+            if (photoRef && typeof photoRef === 'object' && photoRef !== null) {
+              (photoRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            }
+          }}
           variants={imageVariants} 
           className="no-drag hidden lg:flex w-full relative aspect-[4/5] rounded-none overflow-hidden bg-white border border-ink/5 shadow-2xl items-center justify-center group cursor-pointer select-none"
           drag="x"
