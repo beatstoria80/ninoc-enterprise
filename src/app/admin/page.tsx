@@ -2358,11 +2358,6 @@ export default function AdminDashboard() {
                               if (isObjects) return c.slug.includes('home') || c.slug.includes('kitchen') || c.slug.includes('utilities') || c.slug.includes('objects') || c.slug.includes('collectibles') || c.slug.includes('art');
                               return !c.slug.includes('coffee') && !c.slug.includes('kopi') && !c.slug.includes('pastry') && !c.slug.includes('snack') && !c.slug.includes('rtd') && !c.slug.includes('home') && !c.slug.includes('kitchen');
                             }) : [];
-                            
-                            // If we have categories but none match the strict filters, fallback to showing all categories
-                            if (dbCategories.length > 0 && filtered.length === 0) {
-                              filtered = dbCategories;
-                            }
 
                             const presets = isFnB ? [
                               { slug: 'coffee', name: 'Biji Kopi / Roasted Beans' },

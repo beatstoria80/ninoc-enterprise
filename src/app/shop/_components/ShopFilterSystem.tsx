@@ -75,14 +75,19 @@ export function getSubCategory(product: ShopProduct & { sub_category?: string | 
     if (['rok', 'skirt', 'dress', 'bawahan'].some(k => combined.includes(k))) return 'Rok & Dress';
     if (['topi', 'cap', 'beanie', 'totebag', 'bag', 'tas', 'gelang', 'aksesoris', 'accessory'].some(k => combined.includes(k))) return 'Accessories';
   }
-  if (pillar === 'Objects') {
+  if (pillar === 'Objects' || (pillar === 'All' && ['utilities', 'home', 'kitchen', 'ceramics', 'collectibles', 'objects', 'goods', 'homeware', 'lifestyle', 'keramik', 'piring', 'gelas', 'botol', 'alat', 'rumah'].some(k => combined.includes(k)))) {
     if (['keramik', 'ceramic', 'piring', 'gelas', 'mug', 'cup'].some(k => combined.includes(k))) return 'Ceramics / Tableware';
     if (['home', 'living', 'decor', 'dekorasi'].some(k => combined.includes(k))) return 'Homeware & Decor';
-    return 'Utilities';
+    if (['kitchen', 'dining', 'dapur', 'masak', 'cutlery'].some(k => combined.includes(k))) return 'Kitchen & Dining';
+    if (['art', 'seni', 'collectible', 'collectibles', 'studio'].some(k => combined.includes(k))) return 'Art & Collectibles';
+    return 'Utilities & Alat Tulis';
   }
-  if (pillar === 'Pantry') {
+  if (pillar === 'Pantry' || (pillar === 'All' && ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry', 'cafe', 'roastery', 'food', 'drinks', 'kopi', 'kue', 'makanan', 'minuman', 'beans', 'roast'].some(k => combined.includes(k)))) {
     if (['kopi', 'coffee', 'beans', 'roast', 'arabica', 'robusta'].some(k => combined.includes(k))) return 'Coffee Beans / Roast';
-    return 'Snack & RTD';
+    if (['pastry', 'bakery', 'croissant', 'cake', 'kue', 'roti'].some(k => combined.includes(k))) return 'Pastry & Bakery';
+    if (['rtd', 'beverage', 'beverages', 'minuman', 'tea', 'drink', 'bottle'].some(k => combined.includes(k))) return 'Beverages / RTD';
+    if (['snack', 'camilan', 'keripik', 'gourmet', 'biscuit'].some(k => combined.includes(k))) return 'Gourmet Snacks';
+    return 'Pantry Specialties';
   }
   return 'Other';
 }
