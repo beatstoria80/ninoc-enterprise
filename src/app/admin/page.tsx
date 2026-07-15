@@ -429,7 +429,12 @@ export default function AdminDashboard() {
         measurements: product.measurements || [],
         model_info: product.model_info || '',
         price: (product.price ?? 0).toString(),
-        category: product.sub_category || product.category || 'pakaian',
+        category: (product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
+          ? product.sub_category 
+          : (product.category === 'pakaian' ? 'kaos' : (product.category || 'kaos')),
+        sub_category: (product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
+          ? product.sub_category 
+          : 'kaos',
         department_id: product.department_id || dbDepartments?.find(d => {
           if (isFnBCat) return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
           if (isObjCat) return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
@@ -465,7 +470,7 @@ export default function AdminDashboard() {
             sku: v.sku || ''
           };
         }) : []
-      });
+      } as any);
     } else {
       setIsEditMode(false);
       setEditingProduct(null);
@@ -474,11 +479,12 @@ export default function AdminDashboard() {
         slug: '',
         description: '',
         description_en: '',
-        specifications: [{ label: 'Fit', value: 'Standar' }],
+        specifications: [{ label: 'Fit', value: 'Standar / Regular Fit' }, { label: 'Jenis Pakaian', value: 'kaos' }],
         measurements: [],
         model_info: '',
         price: '',
-        category: 'pakaian',
+        category: 'kaos',
+        sub_category: 'kaos',
         department_id: dbDepartments?.find(d => d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel'))?.id || dbDepartments?.[0]?.id || '',
         warehouse_id: dbWarehouses?.find(w => w.is_primary)?.id || dbWarehouses?.[0]?.id || '',
         weight_grams: 500,
