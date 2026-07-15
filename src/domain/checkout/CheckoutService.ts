@@ -33,9 +33,21 @@ export class CheckoutService {
     const productIds = Array.from(new Set(items.map((i: any) => i.id))) as string[];
     const { data: dbProducts, error: dbError } = await orderRepo.getProductsByIds(productIds);
 
-    if (dbError || !dbProducts || dbProducts.length === 0) {
-      console.error('[CheckoutService] Product verification failed:', dbError);
-      return { status: 500, payload: { error: 'Failed to verify products' } };
+    if (dbError) {
+      console.error('[CheckoutService] Database error during product verification:', dbError);
+      return { status: 500, payload: { error: 'Gangguan koneksi database saat memverifikasi produk. Tim teknis sedang menangani.' } };
+    }
+
+    if (!dbProducts || dbProducts.length === 0) {
+      console.warn(`[CheckoutService] Product verification failed: requested IDs [${productIds.join(', ')}] not found in active catalog.`);
+      return { status: 400, payload: { error: 'Produk di dalam keranjang Anda sudah tidak tersedia atau telah diperbarui di katalog LIVE. Silakan hapus item di keranjang dan pilih ulang dari halaman Shop.' } };
+    }
+
+    if (dbProducts.length !== productIds.length) {
+      const foundIds = new Set(dbProducts.map((p: any) => p.id));
+      const missingIds = productIds.filter(id => !foundIds.has(id));
+      console.warn(`[CheckoutService] Partial product mismatch. Missing IDs: [${missingIds.join(', ')}]`);
+      return { status: 400, payload: { error: 'Beberapa produk di dalam keranjang Anda sudah tidak tersedia di katalog LIVE. Silakan perbarui keranjang Anda dan coba kembali.' } };
     }
 
     // 4. Calculate Prices & Build Breakdown via O(1) Pricing Engine
