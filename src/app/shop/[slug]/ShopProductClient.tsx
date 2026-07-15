@@ -168,9 +168,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     return safeSpecs.filter((s: any) => {
       if (!s?.label || typeof s.label !== 'string') return false;
       const lbl = s.label.trim();
-      if (/^color(image|p1|p2|p3|p4|p5|desc|imagedesc|p1desc|p2desc|p3desc|p4desc|p5desc)\s*:/i.test(lbl)) return false;
+      if (/^color(image|p10|p11|p12|p13|p14|p15|p1|p2|p3|p4|p5|p6|p7|p8|p9|desc|imagedesc|p10desc|p11desc|p12desc|p13desc|p14desc|p15desc|p1desc|p2desc|p3desc|p4desc|p5desc|p6desc|p7desc|p8desc|p9desc)\s*:/i.test(lbl)) return false;
       if (/^(extraimage|extraimagedesc|imagedesc|deskripsi_gambar)_/i.test(lbl)) return false;
-      if (lbl.toLowerCase() === 'globalp5') return false;
+      if (/^globalp([5-9]|1[0-5])$/i.test(lbl)) return false;
       return true;
     });
   }, [product]);
@@ -265,7 +265,9 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const safeColor = effectiveColor?.trim()?.toUpperCase();
     const activeGallery = safeColor ? colorGalleryMap[safeColor] : undefined;
     const safeSpecs = Array.isArray(product?.specifications) ? product.specifications : [];
-    const globalP5 = safeSpecs.find((s: any) => s?.label === 'GlobalP5')?.value;
+    const globalPImages = ['GlobalP5', 'GlobalP6', 'GlobalP7', 'GlobalP8', 'GlobalP9', 'GlobalP10', 'GlobalP11', 'GlobalP12', 'GlobalP13', 'GlobalP14', 'GlobalP15'].map(
+      label => safeSpecs.find((s: any) => s?.label === label)?.value
+    );
     
     const extraImages = safeSpecs
       .filter((s: any) => typeof s?.label === 'string' && s.label.startsWith('ExtraImage_') && s.value?.trim())
@@ -277,7 +279,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
       .map((s: any) => s.value.trim());
 
     const defaultGallery = [
-      product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, globalP5, ...extraImages
+      product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4, ...globalPImages, ...extraImages
     ].filter((img): img is string => typeof img === 'string' && img.length > 0);
 
     const allVariantImages = Object.values(colorGalleryMap).flatMap(g => [

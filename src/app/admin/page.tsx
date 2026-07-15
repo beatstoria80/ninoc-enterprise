@@ -636,19 +636,22 @@ export default function AdminDashboard() {
            syncSpec('ColorP3', finalP3);
            syncSpec('ColorP4', finalP4);
 
-           const firstP5 = finalSpecs.find(s => s && s.label && typeof s.label === 'string' && s.label.toUpperCase() === `COLORP5:${firstColor.toUpperCase()}`)?.value;
-           const existingGlobalP5Idx = finalSpecs.findIndex(s => s && s.label === 'GlobalP5');
-           if (firstP5) {
-             if (existingGlobalP5Idx >= 0) finalSpecs[existingGlobalP5Idx].value = firstP5;
-             else finalSpecs.push({ label: 'GlobalP5', value: firstP5 });
-           } else if (existingGlobalP5Idx >= 0) {
-             const formGlobalP5 = productForm.specifications?.find(s => s && s.label === 'GlobalP5')?.value;
-             if (!formGlobalP5 || formGlobalP5.trim() === '') {
-               finalSpecs.splice(existingGlobalP5Idx, 1);
-             } else {
-               finalSpecs[existingGlobalP5Idx].value = formGlobalP5.trim();
+           (['P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] as const).forEach(pKey => {
+             const globalLabel = `Global${pKey}`;
+             const firstPVal = finalSpecs.find(s => s && s.label && typeof s.label === 'string' && s.label.toUpperCase() === `COLOR${pKey}:${firstColor.toUpperCase()}`)?.value;
+             const existingGlobalIdx = finalSpecs.findIndex(s => s && s.label === globalLabel);
+             if (firstPVal) {
+               if (existingGlobalIdx >= 0) finalSpecs[existingGlobalIdx].value = firstPVal;
+               else finalSpecs.push({ label: globalLabel, value: firstPVal });
+             } else if (existingGlobalIdx >= 0) {
+               const formGlobalVal = productForm.specifications?.find(s => s && s.label === globalLabel)?.value;
+               if (!formGlobalVal || formGlobalVal.trim() === '') {
+                 finalSpecs.splice(existingGlobalIdx, 1);
+               } else {
+                 finalSpecs[existingGlobalIdx].value = formGlobalVal.trim();
+               }
              }
-           }
+           });
         }
       } else if (!finalImageUrl) {
         finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
@@ -3171,32 +3174,38 @@ export default function AdminDashboard() {
                       {/* Additional Images — for product gallery navigation */}
                       <div className="space-y-3">
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500">Additional Images (Gallery)</label>
-                        {(['perspective1','perspective2','perspective3','perspective4', 'GlobalP5'] as const).map((field, idx) => {
-                          const isP5 = field === 'GlobalP5';
-                          const val = isP5 ? productForm.specifications?.find(s => s.label === 'GlobalP5')?.value || '' : (productForm as any)[field] || '';
-                          const descLabel = `ImageDesc_P${idx + 1}`;
+                        {(['perspective1','perspective2','perspective3','perspective4', 'GlobalP5', 'GlobalP6', 'GlobalP7', 'GlobalP8', 'GlobalP9', 'GlobalP10', 'GlobalP11', 'GlobalP12', 'GlobalP13', 'GlobalP14', 'GlobalP15'] as const).map((field, idx) => {
+                          const isGlobalP = field.startsWith('GlobalP');
+                          const val = isGlobalP ? productForm.specifications?.find(s => s.label === field)?.value || '' : (productForm as any)[field] || '';
                           return (
-                          <div key={field} className="flex flex-col gap-1.5 w-full bg-gray-50/40 p-2 rounded-lg border border-gray-100">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[9px] text-gray-400 w-6 shrink-0 text-right">P{idx + 1}</span>
+                          <div key={field} className="flex flex-col gap-2 w-full bg-gray-50/40 p-2.5 rounded-lg border border-gray-100 shadow-sm">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] text-gray-500 font-bold w-7 shrink-0 text-right">P{idx + 1}</span>
+                              {val ? (
+                                <Image src={val} alt={`P${idx + 1}`} width={48} height={48} className="w-12 h-12 object-cover rounded-md shadow-sm border border-gray-200 shrink-0 bg-white" unoptimized />
+                              ) : (
+                                <div className="w-12 h-12 rounded-md border border-dashed border-gray-200 bg-white flex items-center justify-center text-gray-300 text-[9px] shrink-0 font-medium">
+                                  No Foto
+                                </div>
+                              )}
                               <input
                                 type="url"
                                 value={val}
                                 onChange={(e) => {
-                                  if (isP5) {
+                                  if (isGlobalP) {
                                     const newSpecs = [...(productForm.specifications || [])];
-                                    const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                    const specIdx = newSpecs.findIndex(s => s.label === field);
                                     if (specIdx >= 0) newSpecs[specIdx].value = e.target.value;
-                                    else newSpecs.push({ label: 'GlobalP5', value: e.target.value });
+                                    else newSpecs.push({ label: field, value: e.target.value });
                                     setProductForm({ ...productForm, specifications: newSpecs });
                                   } else {
                                     setProductForm({ ...productForm, [field]: e.target.value });
                                   }
                                 }}
-                                placeholder={`https://... (${idx + 1}/${idx + 2}/front/back)`}
-                                className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50"
+                                placeholder={`https://... (URL Foto P${idx + 1})`}
+                                className="flex-1 px-2 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 bg-white font-mono text-ink"
                               />
-                              <label className="relative flex items-center justify-center px-1.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap">
+                              <label className="relative flex items-center justify-center px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-semibold rounded cursor-pointer transition-colors whitespace-nowrap shrink-0">
                                 <span>Upload</span>
                                 <input
                                   type="file"
@@ -3219,11 +3228,11 @@ export default function AdminDashboard() {
                                       if (!res.ok || data.error || !data.results?.[0]?.url) {
                                         throw new Error(data.error || 'Upload failed');
                                       }
-                                      if (isP5) {
+                                      if (isGlobalP) {
                                         const newSpecs = [...(productForm.specifications || [])];
-                                        const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                        const specIdx = newSpecs.findIndex(s => s.label === field);
                                         if (specIdx >= 0) newSpecs[specIdx].value = data.results[0].url;
-                                        else newSpecs.push({ label: 'GlobalP5', value: data.results[0].url });
+                                        else newSpecs.push({ label: field, value: data.results[0].url });
                                         setProductForm({ ...productForm, specifications: newSpecs });
                                       } else {
                                         const newUrl = data.results[0].url;
@@ -3253,9 +3262,9 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    if (isP5) {
+                                    if (isGlobalP) {
                                       const newSpecs = [...(productForm.specifications || [])];
-                                      const specIdx = newSpecs.findIndex(s => s.label === 'GlobalP5');
+                                      const specIdx = newSpecs.findIndex(s => s.label === field);
                                       if (specIdx >= 0) {
                                         newSpecs.splice(specIdx, 1);
                                         setProductForm({ ...productForm, specifications: newSpecs });
@@ -3273,7 +3282,7 @@ export default function AdminDashboard() {
                                       });
                                     }
                                   }}
-                                  className="flex items-center justify-center px-1.5 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[9px] uppercase tracking-wider font-medium rounded transition-colors whitespace-nowrap"
+                                  className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap shrink-0"
                                   title="Hapus Gambar"
                                 >
                                   X
@@ -3536,7 +3545,7 @@ export default function AdminDashboard() {
                                   </button>
 
                                 <div className="mt-2 space-y-2">
-                                  {(isFnB ? ['Image', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] : ['Image', 'P1', 'P2', 'P3', 'P4', 'P5']).map((imgType) => {
+                                  {(['Image', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] as const).map((imgType) => {
                                     const colorSpecLabel = `Color${imgType}:${group.color}`;
                                     const colorDescLabel = `Color${imgType}Desc:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s =>
@@ -3567,37 +3576,114 @@ export default function AdminDashboard() {
                                     const labelDisplay = imgType === 'Image' ? 'Main Image' : `Gallery ${imgType}`;
                                     
                                     return (
-                                      <div key={imgType} className="flex flex-col gap-1.5 w-full bg-white p-2 border border-gray-200 rounded text-xs">
-                                        <div className="flex items-center gap-3 w-full">
-                                          <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium w-20">{labelDisplay}:</span>
-                                          {colorImage && (
-                                            <Image src={colorImage} alt={`${group.color} ${imgType}`} width={24} height={24} className="w-6 h-6 object-cover rounded shadow-sm border border-gray-100" unoptimized />
-                                          )}
-                                          <label className="relative flex items-center justify-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] uppercase tracking-wider font-medium rounded cursor-pointer transition-colors whitespace-nowrap ml-auto">
-                                            <span>Upload</span>
-                                            <input
-                                              type="file"
-                                              accept="image/*"
-                                              className="hidden"
-                                              onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (!file) return;
-                                                setIsUploadingProductImage(true);
-                                                try {
-                                                  const compressedFile = await compressImage(file);
-                                                  const formData = new FormData();
-                                                  formData.append('files', compressedFile);
-                                                  formData.append('bucket', 'products');
-                                                  const res = await fetch('/api/admin/upload-images', {
-                                                    method: 'POST',
-                                                    body: formData
-                                                  });
-                                                  const data = await res.json();
-                                                  if (!res.ok || data.error || !data.results?.[0]?.url) {
-                                                    throw new Error(data.error || 'Upload failed');
+                                      <div key={imgType} className="flex flex-col gap-2 w-full bg-white p-2.5 border border-gray-200 rounded-lg text-xs shadow-sm">
+                                        <div className="flex items-center justify-between gap-2 border-b border-gray-100 pb-1.5">
+                                          <span className="text-xs uppercase tracking-wider text-gray-700 font-bold">{labelDisplay}</span>
+                                          <div className="flex items-center gap-1.5">
+                                            <label className="relative flex items-center justify-center px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-semibold rounded cursor-pointer transition-colors whitespace-nowrap">
+                                              <span>Upload File</span>
+                                              <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={async (e) => {
+                                                  const file = e.target.files?.[0];
+                                                  if (!file) return;
+                                                  setIsUploadingProductImage(true);
+                                                  try {
+                                                    const compressedFile = await compressImage(file);
+                                                    const formData = new FormData();
+                                                    formData.append('files', compressedFile);
+                                                    formData.append('bucket', 'products');
+                                                    const res = await fetch('/api/admin/upload-images', {
+                                                      method: 'POST',
+                                                      body: formData
+                                                    });
+                                                    const data = await res.json();
+                                                    if (!res.ok || data.error || !data.results?.[0]?.url) {
+                                                      throw new Error(data.error || 'Upload failed');
+                                                    }
+                                                    
+                                                    const newUrl = data.results[0].url;
+                                                    const newSpecs = [...(productForm.specifications || [])];
+                                                    const specIdx = newSpecs.findIndex(s => 
+                                                      s && typeof s.label === 'string' && (
+                                                        s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase() ||
+                                                        (colorGroups.length === 1 && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
+                                                      )
+                                                    );
+                                                    if (specIdx >= 0) {
+                                                      newSpecs[specIdx] = { label: colorSpecLabel, value: newUrl };
+                                                    } else {
+                                                      newSpecs.push({ label: colorSpecLabel, value: newUrl });
+                                                    }
+                                                    const updates: any = { specifications: newSpecs };
+                                                    if (colorGroups.length === 1) {
+                                                      if (imgType === 'Image') updates.image_url = newUrl;
+                                                      else if (imgType === 'P1') updates.perspective1 = newUrl;
+                                                      else if (imgType === 'P2') updates.perspective2 = newUrl;
+                                                      else if (imgType === 'P3') updates.perspective3 = newUrl;
+                                                      else if (imgType === 'P4') updates.perspective4 = newUrl;
+                                                    }
+                                                    setProductForm(prev => ({ ...prev, ...updates }));
+                                                  } catch (err) {
+                                                    alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                                                  } finally {
+                                                    setIsUploadingProductImage(false);
                                                   }
-                                                  
-                                                  const newUrl = data.results[0].url;
+                                                }}
+                                                disabled={isUploadingProductImage}
+                                              />
+                                            </label>
+                                            {colorImage && (
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  const newSpecs = (productForm.specifications || []).filter(s => {
+                                                    if (!s || typeof s.label !== 'string') return true;
+                                                    const lbl = s.label.trim().toLowerCase();
+                                                    if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
+                                                    if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
+                                                    return true;
+                                                  });
+                                                  const updates: any = { specifications: newSpecs };
+                                                  if (colorGroups.length === 1) {
+                                                    if (imgType === 'Image') updates.image_url = '';
+                                                    else if (imgType === 'P1') updates.perspective1 = '';
+                                                    else if (imgType === 'P2') updates.perspective2 = '';
+                                                    else if (imgType === 'P3') updates.perspective3 = '';
+                                                    else if (imgType === 'P4') updates.perspective4 = '';
+                                                  }
+                                                  setProductForm(prev => ({ ...prev, ...updates }));
+                                                }}
+                                                className="px-2 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap"
+                                                title="Remove image"
+                                              >
+                                                Hapus
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="flex items-start gap-3 pt-1">
+                                          {colorImage ? (
+                                            <div className="relative shrink-0">
+                                              <Image src={colorImage} alt={`${group.color} ${imgType}`} width={56} height={56} className="w-14 h-14 object-cover rounded-md shadow border border-gray-200 bg-gray-50" unoptimized />
+                                            </div>
+                                          ) : (
+                                            <div className="w-14 h-14 rounded-md border border-dashed border-gray-200 bg-gray-50 flex items-center justify-center text-gray-400 text-[10px] shrink-0 font-medium">
+                                              No Foto
+                                            </div>
+                                          )}
+                                          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                                            <div>
+                                              <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-semibold mb-0.5">URL Gambar (atau Upload di atas):</label>
+                                              <input
+                                                type="url"
+                                                value={colorImage || ''}
+                                                placeholder={`https://... (Link foto ${labelDisplay})`}
+                                                onChange={(e) => {
+                                                  const newUrl = e.target.value;
                                                   const newSpecs = [...(productForm.specifications || [])];
                                                   const specIdx = newSpecs.findIndex(s => 
                                                     s && typeof s.label === 'string' && (
@@ -3605,7 +3691,9 @@ export default function AdminDashboard() {
                                                       (colorGroups.length === 1 && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
                                                     )
                                                   );
-                                                  if (specIdx >= 0) {
+                                                  if (newUrl.trim() === '') {
+                                                    if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                                  } else if (specIdx >= 0) {
                                                     newSpecs[specIdx] = { label: colorSpecLabel, value: newUrl };
                                                   } else {
                                                     newSpecs.push({ label: colorSpecLabel, value: newUrl });
@@ -3619,62 +3707,33 @@ export default function AdminDashboard() {
                                                     else if (imgType === 'P4') updates.perspective4 = newUrl;
                                                   }
                                                   setProductForm(prev => ({ ...prev, ...updates }));
-                                                } catch (err) {
-                                                  alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
-                                                } finally {
-                                                  setIsUploadingProductImage(false);
-                                                }
-                                              }}
-                                              disabled={isUploadingProductImage}
-                                            />
-                                          </label>
-                                          {colorImage && (
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                const newSpecs = (productForm.specifications || []).filter(s => {
-                                                  if (!s || typeof s.label !== 'string') return true;
-                                                  const lbl = s.label.trim().toLowerCase();
-                                                  if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
-                                                  if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
-                                                  return true;
-                                                });
-                                                const updates: any = { specifications: newSpecs };
-                                                if (colorGroups.length === 1) {
-                                                  if (imgType === 'Image') updates.image_url = '';
-                                                  else if (imgType === 'P1') updates.perspective1 = '';
-                                                  else if (imgType === 'P2') updates.perspective2 = '';
-                                                  else if (imgType === 'P3') updates.perspective3 = '';
-                                                  else if (imgType === 'P4') updates.perspective4 = '';
-                                                }
-                                                setProductForm(prev => ({ ...prev, ...updates }));
-                                              }}
-                                              className="p-1 text-gray-400 hover:text-rose transition-colors"
-                                              title="Remove image"
-                                            >
-                                              <X size={14} />
-                                            </button>
-                                          )}
+                                                }}
+                                                className="w-full px-2 py-1 bg-gray-50/50 border border-gray-200 rounded text-[11px] focus:outline-none focus:border-rose/50 text-ink font-mono"
+                                              />
+                                            </div>
+                                            <div>
+                                              <input
+                                                type="text"
+                                                value={descValue}
+                                                placeholder={`Deskripsi khusus foto ${labelDisplay} (Alt Text / SEO)`}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  const newSpecs = [...(productForm.specifications || [])];
+                                                  const specIdx = newSpecs.findIndex(s => s.label === colorDescLabel);
+                                                  if (val.trim() === '') {
+                                                    if (specIdx >= 0) newSpecs.splice(specIdx, 1);
+                                                  } else if (specIdx >= 0) {
+                                                    newSpecs[specIdx] = { label: colorDescLabel, value: val };
+                                                  } else {
+                                                    newSpecs.push({ label: colorDescLabel, value: val });
+                                                  }
+                                                  setProductForm(prev => ({ ...prev, specifications: newSpecs }));
+                                                }}
+                                                className="w-full px-2 py-1 bg-gray-50/50 border border-gray-200 rounded text-[11px] focus:outline-none focus:border-rose/50 text-ink"
+                                              />
+                                            </div>
+                                          </div>
                                         </div>
-                                        <input
-                                          type="text"
-                                          value={descValue}
-                                          placeholder={`Deskripsi khusus foto ${labelDisplay} (opsional)`}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            const newSpecs = [...(productForm.specifications || [])];
-                                            const specIdx = newSpecs.findIndex(s => s.label === colorDescLabel);
-                                            if (val.trim() === '') {
-                                              if (specIdx >= 0) newSpecs.splice(specIdx, 1);
-                                            } else if (specIdx >= 0) {
-                                              newSpecs[specIdx] = { label: colorDescLabel, value: val };
-                                            } else {
-                                              newSpecs.push({ label: colorDescLabel, value: val });
-                                            }
-                                            setProductForm(prev => ({ ...prev, specifications: newSpecs }));
-                                          }}
-                                          className="w-full px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] focus:outline-none focus:border-rose/50 text-ink"
-                                        />
                                       </div>
                                     );
                                   })}
