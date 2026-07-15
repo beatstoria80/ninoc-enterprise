@@ -729,15 +729,6 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Payment token not received from server');
       }
 
-      // MOBILE FIX: Use native redirect instead of snap.pay iframe to avoid browser block/bugs
-      if (isMobile && data.redirect_url) {
-        if (!userId) clearCart(); // Keep cart if member, like in desktop callbacks
-        try { sessionStorage.removeItem('ninoc_checkout_form'); } catch {}
-        // Redirect immediately — no state update delay
-        window.location.href = data.redirect_url;
-        return;
-      }
-
       setPaymentToken(data.token);
       if (data.orderId) setCreatedOrderId(data.orderId);
       if (data.orderNumber) setCreatedOrderNumber(data.orderNumber);
@@ -800,10 +791,10 @@ export default function CheckoutPage() {
           }
         };
 
-        if (isMobile && typeof snapObj.pay === 'function') {
-          snapObj.pay(paymentToken, callbacks);
-        } else if (typeof snapObj.embed === 'function') {
+        if (typeof snapObj.embed === 'function') {
           snapObj.embed(paymentToken, { embedId: 'snap-container', ...callbacks });
+        } else if (typeof snapObj.pay === 'function') {
+          snapObj.pay(paymentToken, callbacks);
         }
       }
     }
@@ -1404,9 +1395,9 @@ export default function CheckoutPage() {
       )}
 
       {/* CUSTOM MIDTRANS EMBED OVERLAY */}
-      {paymentToken && !isRedirecting && !isMobile && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
-          <div className="w-full max-w-[420px] lg:max-w-[520px] bg-white border border-ink/10 shadow-2xl rounded-md flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[90vh] lg:max-h-[95vh] overflow-hidden">
+      {paymentToken && !isRedirecting && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-cr/90 backdrop-blur-md p-2 sm:p-4 md:p-8 animate-in fade-in duration-300">
+          <div className="w-full max-w-[420px] lg:max-w-[520px] bg-white border border-ink/10 shadow-2xl rounded-md flex flex-col relative animate-in zoom-in-95 duration-500 max-h-[92vh] sm:max-h-[90vh] lg:max-h-[95vh] overflow-hidden">
             <div className="flex justify-between items-center p-3 md:p-4 border-b border-ink/5 bg-ink/[0.02] shrink-0">
               <div className="flex items-center gap-3">
                 <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
@@ -1417,9 +1408,11 @@ export default function CheckoutPage() {
               </div>
               <div className="flex gap-2">
                 <button 
+                  type="button"
                   onClick={() => {
                     setPaymentToken(null);
                     setIsProcessing(false);
+                    isProcessingRef.current = false;
                   }} 
                   className="px-3 py-1.5 border border-ink/10 text-[10px] md:text-[8px] font-semibold uppercase tracking-widest text-ink hover:bg-rose hover:text-white hover:border-rose transition-colors rounded-sm"
                 >
@@ -1428,7 +1421,7 @@ export default function CheckoutPage() {
               </div>
             </div>
             {/* Snap Container */}
-            <div id="snap-container" className="w-full h-[460px] lg:h-[700px] overflow-y-auto bg-white scrollbar-thin"></div>
+            <div id="snap-container" className="w-full h-[500px] sm:h-[550px] lg:h-[700px] overflow-y-auto bg-white scrollbar-thin"></div>
           </div>
         </div>
       )}
