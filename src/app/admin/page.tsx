@@ -429,12 +429,20 @@ export default function AdminDashboard() {
         measurements: product.measurements || [],
         model_info: product.model_info || '',
         price: (product.price ?? 0).toString(),
-        category: (product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
-          ? product.sub_category 
-          : (product.category === 'pakaian' ? 'kaos' : (product.category || 'kaos')),
-        sub_category: (product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
-          ? product.sub_category 
-          : 'kaos',
+        category: isFnBCat 
+          ? (product.category || 'coffee') 
+          : isObjCat 
+            ? (product.category || 'utilities') 
+            : ((product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
+                ? product.sub_category 
+                : (product.category === 'pakaian' ? 'kaos' : (product.category || 'kaos'))),
+        sub_category: isFnBCat 
+          ? (product.sub_category || product.category || 'coffee') 
+          : isObjCat 
+            ? (product.sub_category || product.category || 'utilities') 
+            : ((product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
+                ? product.sub_category 
+                : 'kaos'),
         department_id: product.department_id || dbDepartments?.find(d => {
           if (isFnBCat) return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
           if (isObjCat) return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
@@ -2237,19 +2245,20 @@ export default function AdminDashboard() {
                               newPerishable = false;
                               newSpecs = [{ label: 'Material', value: 'High-Grade Ceramic' }];
                             } else {
-                              newCat = 'pakaian';
+                              newCat = 'kaos';
                               newWh = mainWh;
                               newPerishable = false;
-                              newSpecs = [{ label: 'Fit', value: 'Standar' }];
+                              newSpecs = [{ label: 'Fit', value: 'Standar / Regular Fit' }, { label: 'Jenis Pakaian', value: 'kaos' }];
                             }
                             setProductForm({
                               ...productForm,
                               department_id: newDept,
                               category: newCat,
+                              sub_category: newCat,
                               warehouse_id: newWh,
                               is_perishable: newPerishable,
                               specifications: newSpecs
-                            });
+                            } as any);
                           }}
                           className="w-full px-2 py-1.5 border border-white/20 rounded-lg text-xs focus:outline-none focus:border-rose bg-gray-900 text-white font-medium shadow-inner"
                         >
