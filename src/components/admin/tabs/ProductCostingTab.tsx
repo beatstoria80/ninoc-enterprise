@@ -128,20 +128,20 @@ export function ProductCostingTab() {
         {/* Scrollable Container with sticky first column & sticky header */}
         <div className="overflow-auto max-h-[75vh] border-b border-ink/5">
           <table className="w-full min-w-[1200px] text-left">
-            <thead className="bg-ink/[0.03] border-b border-ink/10 sticky top-0 z-10">
+            <thead className="bg-[#F4F4F5] border-b border-ink/10 sticky top-0 z-20 shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
               <tr>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 sticky left-0 bg-[#F9F9F9] z-20 min-w-[250px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Product</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px]">Selling Price (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[140px]">HPP Pabrik (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-indigo-600 uppercase tracking-wide border-r border-ink/5 min-w-[160px] bg-indigo-50/50">HPP Surcharge (XXL - 5XL)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px]">Packaging (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-rose uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-rose/5">Biaya Retur (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px]">Operational (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px]">Target Margin (%)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10 min-w-[130px]">Target ROAS (x)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02] border-r border-ink/5 min-w-[120px]">Total COGS</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02] border-r border-ink/5 min-w-[140px]">Max CPA (Ad Spend)</th>
-                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-ink/[0.02] min-w-[140px]">Est. Net Profit</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 sticky left-0 top-0 bg-[#EAEAEC] z-30 min-w-[250px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Product</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#F4F4F5]">Selling Price (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[140px] bg-[#F4F4F5]">HPP Pabrik (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-indigo-700 uppercase tracking-wide border-r border-ink/5 min-w-[160px] bg-[#EEF2FF]">HPP Surcharge (XXL - 5XL)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#F4F4F5]">Packaging (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-rose uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#FFF1F2]">Biaya Retur (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#F4F4F5]">Operational (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#F4F4F5]">Target Margin (%)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10 min-w-[130px] bg-[#F4F4F5]">Target ROAS (x)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-[#EAEAEC] border-r border-ink/5 min-w-[120px]">Total COGS</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-[#EAEAEC] border-r border-ink/5 min-w-[140px]">Max CPA (Ad Spend)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-[#EAEAEC] min-w-[140px]">Est. Net Profit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">

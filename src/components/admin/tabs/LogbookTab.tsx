@@ -202,13 +202,13 @@ export function LogbookTab() {
           </div>
         ) : (
           <table className="w-full text-left border-collapse">
-            <thead className="bg-ink/[0.02] sticky top-0 z-10 backdrop-blur-md">
+            <thead className="bg-[#F4F4F5] sticky top-0 z-10 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               <tr>
-                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">ID</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Date</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Category</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5">Title</th>
-                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/5 text-right">Actions</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/10 bg-[#F4F4F5]">ID</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/10 bg-[#F4F4F5]">Date</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/10 bg-[#F4F4F5]">Category</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/10 bg-[#F4F4F5]">Title</th>
+                <th className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-ink/80 border-b border-ink/10 bg-[#F4F4F5] text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
