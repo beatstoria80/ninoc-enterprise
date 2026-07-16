@@ -114,12 +114,12 @@ export function CartSidebar({
                                 <X size={10} />
                               </button>
                             </div>
-                            <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-1 text-[9px] md:text-[7px] font-semibold text-white/50 uppercase tracking-wider mb-1 border-b border-white/10 pb-1 min-w-[210px]">
+                            <div className="grid grid-cols-[26px_0.6fr_0.6fr_0.9fr_max-content] gap-1.5 text-[9px] md:text-[7px] font-semibold text-white/50 uppercase tracking-wider mb-1 border-b border-white/10 pb-1 min-w-[240px]">
                               <span>Size</span>
                               <span className="text-center">{isPants ? 'Waist' : 'Chest'}</span>
                               <span className="text-center">Length</span>
                               <span className="text-center">{isPants ? 'Thgh/Hp' : 'Shldr/Slv'}</span>
-                              <span className="text-right">Fit Rec</span>
+                              <span className="text-right whitespace-nowrap">Fit Rec</span>
                             </div>
                             {displayMeasurements.map((m: any, idx: number) => {
                               const wh = getWeightAndHeight(m.size);
@@ -128,14 +128,14 @@ export function CartSidebar({
                                 : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
                               return (
                                 <div key={idx} className={cn(
-                                  "grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-1 text-[10px] md:text-[8px] font-medium py-1 border-b border-white/5 min-w-[210px]",
+                                  "grid grid-cols-[26px_0.6fr_0.6fr_0.9fr_max-content] gap-1.5 text-[10px] md:text-[8px] font-medium py-1 border-b border-white/5 min-w-[240px]",
                                   m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose font-bold" : "text-white/80"
                                 )}>
                                   <span className="font-bold">{m.size}</span>
                                   <span className="text-center font-mono">{isPants ? (m.waist || '-') : (m.chest || '-')}</span>
                                   <span className="text-center font-mono">{m.length || '-'}</span>
                                   <span className="text-center font-mono text-[9px]">{col3}</span>
-                                  <span className="text-right text-white/50 font-mono text-[9px]">{wh.w} / {wh.h}</span>
+                                  <span className="text-right text-white/50 font-mono text-[9px] whitespace-nowrap">{wh.w} / {wh.h}</span>
                                 </div>
                               );
                             })}
