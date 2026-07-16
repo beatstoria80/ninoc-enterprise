@@ -96,10 +96,36 @@ function PressButton({ children, className = '', onClick, disabled }: {
 function NavLink({ href, children, isDark, index = 0 }: { href: string; children: React.ReactNode; isDark?: boolean; index?: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const scaleX = useSpring(0, EASING.springSnappy);
+  const pathname = usePathname() || '';
+
+  const isActive = React.useMemo(() => {
+    const cleanPath = pathname.replace(/^\/en/, '') || '/';
+    const targetPath = href.split('?')[0];
+    const targetQuery = href.includes('?') ? href.split('?')[1] : '';
+
+    if (targetPath === '/logbook') {
+      return cleanPath.startsWith('/logbook');
+    }
+    if (targetPath === '/about') {
+      return cleanPath.startsWith('/about');
+    }
+    if (targetPath === '/shop') {
+      if (cleanPath.startsWith('/shop') || cleanPath.startsWith('/collections')) {
+        if (typeof window !== 'undefined' && targetQuery) {
+          const queryVal = targetQuery.split('=')[1]?.toLowerCase();
+          const searchVal = window.location.search.toLowerCase();
+          if (searchVal.includes(queryVal)) return true;
+          if (cleanPath.toLowerCase().includes(queryVal)) return true;
+        }
+        return false;
+      }
+    }
+    return cleanPath === targetPath && targetPath !== '/';
+  }, [pathname, href]);
 
   useEffect(() => {
-    scaleX.set(isHovered ? 1 : 0);
-  }, [isHovered, scaleX]);
+    scaleX.set(isActive || isHovered ? 1 : 0);
+  }, [isActive, isHovered, scaleX]);
 
   return (
     <motion.div
@@ -108,18 +134,25 @@ function NavLink({ href, children, isDark, index = 0 }: { href: string; children
       transition={{ delay: 0.2 + (index * 0.05), duration: DURATION.medium, ease: EASING.out }}
     >
       <Link
-        
         href={href}
         className={cn(
-          "no-drag pointer-events-auto cursor-pointer text-sm md:text-[10px] lg:text-[9.5px] xl:text-[11px] font-medium uppercase tracking-[0.18em] lg:tracking-[0.18em] xl:tracking-[0.28em] whitespace-nowrap relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-colors block",
-          isDark ? "text-white/80 hover:text-white" : "text-ink/50 hover:text-rose"
+          "no-drag pointer-events-auto cursor-pointer text-sm md:text-[10px] lg:text-[9.5px] xl:text-[11px] uppercase tracking-[0.18em] lg:tracking-[0.18em] xl:tracking-[0.28em] whitespace-nowrap relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 rounded-md transition-all duration-200 block py-1",
+          isActive
+            ? (isDark ? "font-bold text-white drop-shadow-sm" : "font-bold text-ink drop-shadow-[0_0.5px_0_rgba(20,20,20,1)]")
+            : (isDark ? "font-medium text-white/80 hover:text-white" : "font-medium text-ink/50 hover:text-rose")
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <span className="inline-block transition-transform duration-150 ease-out active:scale-[0.97]">{children}</span>
         <motion.span
-          className={cn("absolute -bottom-2 left-0 right-0 h-[1px] origin-left", isDark ? "bg-white" : "bg-rose")}
+          className={cn(
+            "absolute -bottom-1.5 left-0 right-0 origin-left transition-colors",
+            isActive ? "h-[2px]" : "h-[1px]",
+            isActive
+              ? (isDark ? "bg-white" : "bg-ink")
+              : (isDark ? "bg-white/60" : "bg-rose")
+          )}
           style={{ scaleX }}
         />
       </Link>
@@ -1035,23 +1068,32 @@ export default function GlobalHeader() {
                     { label: dict.header.collections, href: '/collections' },
                     { label: dict.header.logbook, href: '/logbook' },
                     { label: dict.header.about, href: '/about' },
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsMenuOpen(false)}
-                        className="text-xs font-bold uppercase tracking-[0.2em] text-ink/70 hover:text-rose transition-colors flex items-center justify-between"
+                  ].map((item, idx) => {
+                    const cleanPath = (pathname || '').replace(/^\/en/, '') || '/';
+                    const isItemActive = item.href === '/logbook' ? cleanPath.startsWith('/logbook') : item.href === '/about' ? cleanPath.startsWith('/about') : item.href === '/collections' ? cleanPath.startsWith('/collections') : cleanPath === '/shop';
+                    return (
+                      <motion.div
+                        key={item.label}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + (idx * 0.05), duration: DURATION.medium, ease: EASING.out }}
                       >
-                        <span>{item.label}</span>
-                        <span className="text-ink/20">→</span>
-                      </Link>
-                    </motion.div>
-                  ))}
+                        <Link
+                          href={item.href}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={cn(
+                            "text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-between py-1.5 px-2 rounded-sm",
+                            isItemActive
+                              ? "font-black text-ink bg-ink/5 border-l-2 border-ink pl-3"
+                              : "font-bold text-ink/70 hover:text-rose"
+                          )}
+                        >
+                          <span>{item.label}</span>
+                          <span className={isItemActive ? "text-ink font-bold" : "text-ink/20"}>→</span>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
                 </div>
 
                 {/* ══ SECTION 3: SERVICES, SUPPLIER & POLICIES ══ */}

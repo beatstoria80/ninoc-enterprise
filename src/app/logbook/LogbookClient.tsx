@@ -144,7 +144,7 @@ export default function LogbookClient({ initialEntries = [] }: { initialEntries?
   }, [entries, selectedCategory, searchQuery, dict.locale]);
 
   return (
-    <main className="min-h-screen bg-[#F8F7F4] pt-8 md:pt-24 px-4 md:px-12 pb-[140px] text-ink selection:bg-rose selection:text-white">
+    <main className="min-h-screen bg-[#F8F7F4] pt-24 md:pt-36 px-4 md:px-12 pb-[140px] text-ink selection:bg-rose selection:text-white">
       <div className="max-w-[1200px] mx-auto">
         {/* Header Navigation & Title */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-ink/15 pb-6 gap-6">

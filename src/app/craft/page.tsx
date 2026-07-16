@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function Craft() {
   return (
-    <main className="min-h-screen bg-cr noise pt-4 md:pt-24 px-4 md:px-12">
+    <main className="min-h-screen bg-cr noise pt-24 md:pt-36 px-4 md:px-12">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-4 md:mb-12">
           <span className="text-xs md:text-[9px] font-medium uppercase tracking-[0.5em] text-rose">NINOC</span>

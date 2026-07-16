@@ -107,7 +107,7 @@ export default function LogbookDetailClient({
   };
 
   return (
-    <main className="min-h-screen bg-[#F8F7F4] pt-6 md:pt-16 pb-28 text-ink selection:bg-rose selection:text-white">
+    <main className="min-h-screen bg-[#F8F7F4] pt-24 md:pt-36 pb-28 text-ink selection:bg-rose selection:text-white">
       {/* Top Hairline Reading Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[3px] bg-rose z-50 origin-left"
