@@ -149,15 +149,15 @@ export async function POST(req: Request) {
           // A. Fetch order items for supplier ledgers & affiliate commissions
           const { data: orderItems } = await supabaseAdmin
             .from('order_items')
-            .select('id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( affiliate_eligible )')
+            .select('id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( supplier_id, affiliate_eligible )')
             .eq('order_id', orderId);
 
-          // B. Supplier Ledgers Distribution (Idempotent check)
+          // B. Supplier Ledgers Distribution (Idempotent check with product supplier fallback)
           if (orderItems && orderItems.length > 0) {
             const ledgerEntries = orderItems
-              .filter((item: any) => item.supplier_id && Number(item.supplier_hpp) > 0)
+              .filter((item: any) => (item.supplier_id || item.products?.supplier_id) && Number(item.supplier_hpp) > 0)
               .map((item: any) => ({
-                supplier_id: item.supplier_id,
+                supplier_id: item.supplier_id || item.products?.supplier_id,
                 order_id: orderId,
                 order_item_id: item.id,
                 hpp_amount: item.supplier_hpp,
