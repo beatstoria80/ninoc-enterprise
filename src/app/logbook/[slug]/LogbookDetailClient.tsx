@@ -55,7 +55,26 @@ export default function LogbookDetailClient({
   const excerpt = dict.locale === 'EN' && entry.excerpt_en ? entry.excerpt_en : entry.excerpt;
   const rawContent = dict.locale === 'EN' && entry.content_en ? entry.content_en : entry.content;
 
-  const paragraphs = rawContent.split(/\n+/).filter(Boolean);
+  const blocks = React.useMemo(() => {
+    const rawBlocks = rawContent.split(/\n+/).map(b => b.trim()).filter(Boolean);
+    const firstRegularIdx = rawBlocks.findIndex((block) => {
+      const isHeading2 = block.startsWith('## ');
+      const isHeading3 = block.startsWith('### ');
+      const isQuote = block.startsWith('>');
+      const isList = block.startsWith('- ') || block.startsWith('* ');
+      return !isHeading2 && !isHeading3 && !isQuote && !isList;
+    });
+
+    return rawBlocks.map((block, idx) => {
+      const isHeading2 = block.startsWith('## ');
+      const isHeading3 = block.startsWith('### ');
+      const isQuote = block.startsWith('>');
+      const isList = block.startsWith('- ') || block.startsWith('* ');
+      const isRegular = !isHeading2 && !isHeading3 && !isQuote && !isList;
+      const isFirstRegular = idx === firstRegularIdx;
+      return { block, isHeading2, isHeading3, isQuote, isList, isRegular, isFirstRegular, id: idx };
+    });
+  }, [rawContent]);
 
   // Calculate word count and estimated reading time
   const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
@@ -217,15 +236,36 @@ export default function LogbookDetailClient({
           transition={{ duration: DURATION.slow, delay: 0.2 }}
           className={`space-y-6 md:space-y-8 font-sans text-ink/90 border-b border-ink/10 pb-16 ${getFontSizeClass()}`}
         >
-          {paragraphs.map((para, idx) => {
-            const isFirst = idx === 0;
-            const isQuote = para.trim().startsWith('>');
+          {blocks.map((item) => {
+            if (item.isHeading2) {
+              const headingText = item.block.replace(/^##\s*/, '');
+              return (
+                <h2
+                  key={item.id}
+                  className="text-xl md:text-2xl lg:text-3xl font-display font-medium uppercase tracking-tight text-ink mt-12 mb-4 pt-6 border-t border-ink/15"
+                >
+                  {headingText}
+                </h2>
+              );
+            }
 
-            if (isQuote) {
-              const quoteText = para.replace(/^>\s*/, '').replace(/"/g, '');
+            if (item.isHeading3) {
+              const headingText = item.block.replace(/^###\s*/, '');
+              return (
+                <h3
+                  key={item.id}
+                  className="text-lg md:text-xl lg:text-2xl font-display font-medium uppercase tracking-tight text-ink mt-8 mb-3"
+                >
+                  {headingText}
+                </h3>
+              );
+            }
+
+            if (item.isQuote) {
+              const quoteText = item.block.replace(/^>\s*/, '').replace(/"/g, '');
               return (
                 <blockquote
-                  key={idx}
+                  key={item.id}
                   className="my-8 md:my-10 bg-white border border-ink/15 border-l-4 border-l-rose p-6 md:p-8 shadow-sm font-display italic text-lg md:text-2xl text-ink tracking-tight leading-relaxed"
                 >
                   <p>&ldquo;{quoteText}&rdquo;</p>
@@ -236,16 +276,31 @@ export default function LogbookDetailClient({
               );
             }
 
+            if (item.isList) {
+              const listText = item.block.replace(/^[-*]\s*/, '');
+              return (
+                <div
+                  key={item.id}
+                  className="my-4 bg-white border border-ink/10 p-4 md:p-5 shadow-sm flex items-start gap-3"
+                >
+                  <span className="text-rose font-mono font-bold mt-0.5">•</span>
+                  <span className="text-sm md:text-base font-mono leading-relaxed text-ink/90">
+                    {listText}
+                  </span>
+                </div>
+              );
+            }
+
             return (
               <p
-                key={idx}
+                key={item.id}
                 className={`${
-                  isFirst
+                  item.isFirstRegular
                     ? 'text-base md:text-lg lg:text-xl font-medium leading-[1.8] text-ink first-letter:text-3xl first-letter:md:text-4xl first-letter:font-display first-letter:font-bold first-letter:mr-1.5 first-letter:float-left first-letter:leading-none first-letter:pt-1 first-letter:text-rose'
-                    : ''
+                    : 'leading-[1.85] text-ink/90'
                 }`}
               >
-                {para}
+                {item.block}
               </p>
             );
           })}
