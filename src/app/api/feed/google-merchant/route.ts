@@ -105,7 +105,7 @@ export async function GET() {
           const queryString = queryParams.toString();
           const link = `${domain}/shop/${product.slug}${queryString ? `?${queryString}` : ''}`;
 
-          const gId = `${escapeXml(product.id)}_${escapeXml(v.id)}`;
+          const gId = escapeXml(v.id); // 36 characters UUID (within Google 50 char limit)
           const itemGroupId = escapeXml(product.id);
 
           xml += `
