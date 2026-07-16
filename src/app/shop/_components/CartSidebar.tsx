@@ -114,21 +114,28 @@ export function CartSidebar({
                                 <X size={10} />
                               </button>
                             </div>
-                            <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[10px] md:text-[7px] font-medium text-white/40 uppercase tracking-wider mb-1 border-b border-white/10 pb-1">
+                            <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-1 text-[9px] md:text-[7px] font-semibold text-white/50 uppercase tracking-wider mb-1 border-b border-white/10 pb-1 min-w-[210px]">
                               <span>Size</span>
-                              <span className="text-center">{isPants ? 'W/L/Leg' : 'Chest/L'}</span>
-                              <span className="text-right">Wght/Hght</span>
+                              <span className="text-center">{isPants ? 'Waist' : 'Chest'}</span>
+                              <span className="text-center">Length</span>
+                              <span className="text-center">{isPants ? 'Thgh/Hp' : 'Shldr/Slv'}</span>
+                              <span className="text-right">Fit Rec</span>
                             </div>
                             {displayMeasurements.map((m: any, idx: number) => {
                               const wh = getWeightAndHeight(m.size);
+                              const col3 = isPants 
+                                ? `${m.thigh || '-'} / ${m.hip || '-'}`
+                                : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
                               return (
                                 <div key={idx} className={cn(
-                                  "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-1 text-[11px] md:text-[8px] font-medium py-1 border-b border-white/5",
-                                  m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose" : "text-white/80"
+                                  "grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-1 text-[10px] md:text-[8px] font-medium py-1 border-b border-white/5 min-w-[210px]",
+                                  m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose font-bold" : "text-white/80"
                                 )}>
                                   <span className="font-bold">{m.size}</span>
-                                  <span className="text-center">{isPants ? `${m.waist || '-'} / ${m.length} / ${m.leg_opening || '-'}` : `${m.chest || '-'} / ${m.length}`}</span>
-                                  <span className="text-right text-white/50">{wh.w} / {wh.h}</span>
+                                  <span className="text-center font-mono">{isPants ? (m.waist || '-') : (m.chest || '-')}</span>
+                                  <span className="text-center font-mono">{m.length || '-'}</span>
+                                  <span className="text-center font-mono text-[9px]">{col3}</span>
+                                  <span className="text-right text-white/50 font-mono text-[9px]">{wh.w} / {wh.h}</span>
                                 </div>
                               );
                             })}

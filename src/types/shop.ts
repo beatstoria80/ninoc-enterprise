@@ -16,7 +16,7 @@ export interface Product {
   badge_text?: string | null;
   variants?: { id: string; size: string | null; color: string | null; stock_quantity: number }[];
   specifications?: { label: string; value: string }[] | null;
-  measurements?: { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[] | null;
+  measurements?: { size: string; chest?: string; shoulder?: string; sleeve?: string; waist?: string; length: string; leg_opening?: string; thigh?: string; hip?: string }[] | null;
   model_info?: string | null;
   variant_label?: string | null;
 }

@@ -613,28 +613,36 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
-                    <div className="space-y-1 w-full overflow-x-auto no-scrollbar pb-1">
-                      <div className="grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[11px] md:text-xs font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[200px]">
+                    <div className="space-y-1.5 w-full overflow-x-auto no-scrollbar pb-1">
+                      <div className={cn("grid gap-1 text-[10px] md:text-xs font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[280px]", isPants ? "grid-cols-[38px_1fr_1fr_1.2fr_1.1fr]" : "grid-cols-[38px_1fr_1fr_1.2fr_1.1fr]")}>
                         <span className="text-ink/80">SIZE</span>
-                        <span className="text-ink/80 text-center">{isPants ? 'WAIST/LENGTH' : 'CHEST/LENGTH'}</span>
-                        <span className="text-ink/80 text-right">WEIGHT/HEIGHT</span>
+                        <span className="text-ink/80 text-center">{isPants ? 'WAIST' : 'CHEST'}</span>
+                        <span className="text-ink/80 text-center">LENGTH</span>
+                        <span className="text-ink/80 text-center">{isPants ? 'THIGH/HIP' : 'SHLDR/SLV'}</span>
+                        <span className="text-ink/80 text-right">FIT REC.</span>
                       </div>
                       {displayMeasurements.map((m: any, idx: number) => {
                         const wh = getWeightAndHeight(m.size);
                         const isSelected = effectiveSize && m.size.toUpperCase() === effectiveSize.toUpperCase();
+                        const col3 = isPants 
+                          ? `${m.thigh || '-'} / ${m.hip || '-'}`
+                          : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
                         return (
                           <div key={idx} className={cn(
-                            "grid grid-cols-[30px_minmax(0,1fr)_minmax(0,1fr)] gap-2 items-center py-2 border-b last:border-0 transition-colors min-w-[200px]",
+                            "grid gap-1 items-center py-2 border-b last:border-0 transition-colors min-w-[280px]",
+                            isPants ? "grid-cols-[38px_1fr_1fr_1.2fr_1.1fr]" : "grid-cols-[38px_1fr_1fr_1.2fr_1.1fr]",
                             isSelected ? "border-ink/20 bg-ink/5" : "border-ink/10 hover:border-ink/20 hover:bg-ink/[0.02]"
                           )}>
-                            <span className={cn("text-sm md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
-                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? `${m.waist || '-'} / ${m.length}` : `${m.chest || '-'} / ${m.length}`}</span>
-                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-right", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
+                            <span className={cn("text-xs md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? (m.waist || '-') : (m.chest || '-')}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{m.length || '-'}</span>
+                            <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{col3}</span>
+                            <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-right", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
                           </div>
                         );
                       })}
                       {displayModelInfo && (
-                        <p className="text-[11px] md:text-[8px] text-ink/60 mt-0.5 uppercase font-medium italic">* {displayModelInfo}</p>
+                        <p className="text-[11px] md:text-[9px] text-ink/60 mt-1 uppercase font-medium italic">* {displayModelInfo}</p>
                       )}
                     </div>
                   )}

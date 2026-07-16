@@ -218,7 +218,7 @@ export default function AdminDashboard() {
     description: '',
     description_en: '',
     specifications: [] as { label: string; value: string }[],
-    measurements: [] as { size: string; chest?: string; waist?: string; length: string; leg_opening?: string }[],
+    measurements: [] as { size: string; chest?: string; shoulder?: string; sleeve?: string; waist?: string; length: string; leg_opening?: string; thigh?: string; hip?: string }[],
     model_info: '',
     price: '',
     category: 'pakaian',
@@ -2948,37 +2948,130 @@ export default function AdminDashboard() {
                   {isFashion && (
                     <div className="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-sm space-y-3">
                       <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <label className="block text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Measurement / Size Chart Garment (CM)</label>
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-2.5">
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-gray-700 font-bold">Measurement / Size Chart Garment (CM)</label>
+                            <p className="text-[10px] text-gray-500">Standar spesifikasi industri apparel (Lebar Dada, Panjang Badan, Bahu, Lengan / Pinggang & Paha)</p>
+                          </div>
                           <button
                             type="button"
-                            onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: '', chest: '', length: '' }] })}
-                            className="text-[10px] uppercase tracking-wider text-rose hover:text-rose/80 font-bold"
+                            onClick={() => {
+                              const isCelana = productForm.category === 'celana';
+                              setProductForm({
+                                ...productForm,
+                                measurements: [
+                                  ...(productForm.measurements || []),
+                                  isCelana
+                                    ? { size: '', waist: '', length: '', thigh: '', hip: '', leg_opening: '' }
+                                    : { size: '', chest: '', length: '', shoulder: '', sleeve: '' }
+                                ]
+                              });
+                            }}
+                            className="text-[10px] uppercase tracking-wider text-white bg-rose hover:bg-rose/90 px-3 py-1.5 rounded-lg font-bold shadow-2xs self-start md:self-auto transition-all"
                           >
                             + Add Size Row
                           </button>
                         </div>
+
+                        {/* ===== INSTANT INDUSTRY PRESETS ===== */}
+                        <div className="bg-gray-50/80 border border-gray-200/70 rounded-lg p-2.5 mb-3 space-y-1.5">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-gray-600 block">⚡ One-Click Industry Standard Presets (Auto-Fill Table):</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setProductForm({
+                                ...productForm,
+                                measurements: [
+                                  { size: 'S', chest: '56', length: '66', shoulder: '54', sleeve: '60' },
+                                  { size: 'M', chest: '58', length: '68', shoulder: '56', sleeve: '61' },
+                                  { size: 'L', chest: '60', length: '70', shoulder: '58', sleeve: '62' },
+                                  { size: 'XL', chest: '63', length: '72', shoulder: '60', sleeve: '63' },
+                                  { size: 'XXL', chest: '66', length: '74', shoulder: '62', sleeve: '64' },
+                                  { size: '3XL', chest: '69', length: '76', shoulder: '64', sleeve: '65' }
+                                ]
+                              })}
+                              className="px-2 py-1 bg-white hover:bg-rose/10 hover:text-rose hover:border-rose/30 text-gray-700 text-[9px] font-semibold border border-gray-200 rounded transition-all shadow-2xs"
+                            >
+                              🧥 Hoodie / Outer (Boxy Oversize Fit)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setProductForm({
+                                ...productForm,
+                                measurements: [
+                                  { size: 'S', chest: '54', length: '68', shoulder: '50', sleeve: '23' },
+                                  { size: 'M', chest: '56', length: '70', shoulder: '52', sleeve: '24' },
+                                  { size: 'L', chest: '58', length: '72', shoulder: '54', sleeve: '25' },
+                                  { size: 'XL', chest: '61', length: '74', shoulder: '56', sleeve: '26' },
+                                  { size: 'XXL', chest: '64', length: '76', shoulder: '58', sleeve: '27' },
+                                  { size: '3XL', chest: '67', length: '78', shoulder: '60', sleeve: '28' }
+                                ]
+                              })}
+                              className="px-2 py-1 bg-white hover:bg-rose/10 hover:text-rose hover:border-rose/30 text-gray-700 text-[9px] font-semibold border border-gray-200 rounded transition-all shadow-2xs"
+                            >
+                              👕 Kaos / Tee (Boxy Oversize Fit)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setProductForm({
+                                ...productForm,
+                                measurements: [
+                                  { size: 'S', chest: '48', length: '68', shoulder: '43', sleeve: '21' },
+                                  { size: 'M', chest: '50', length: '70', shoulder: '45', sleeve: '22' },
+                                  { size: 'L', chest: '52', length: '72', shoulder: '47', sleeve: '23' },
+                                  { size: 'XL', chest: '55', length: '74', shoulder: '49', sleeve: '24' },
+                                  { size: 'XXL', chest: '58', length: '76', shoulder: '51', sleeve: '25' },
+                                  { size: '3XL', chest: '61', length: '78', shoulder: '53', sleeve: '26' }
+                                ]
+                              })}
+                              className="px-2 py-1 bg-white hover:bg-rose/10 hover:text-rose hover:border-rose/30 text-gray-700 text-[9px] font-semibold border border-gray-200 rounded transition-all shadow-2xs"
+                            >
+                              👕 Kaos / Tee (Standar Regular Fit)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setProductForm({
+                                ...productForm,
+                                measurements: [
+                                  { size: '28 (S)', waist: '76', length: '98', thigh: '62', hip: '100', leg_opening: '38' },
+                                  { size: '30 (M)', waist: '81', length: '100', thigh: '64', hip: '104', leg_opening: '40' },
+                                  { size: '32 (L)', waist: '86', length: '102', thigh: '66', hip: '108', leg_opening: '42' },
+                                  { size: '34 (XL)', waist: '91', length: '104', thigh: '69', hip: '113', leg_opening: '44' },
+                                  { size: '36 (XXL)', waist: '96', length: '106', thigh: '72', hip: '118', leg_opening: '46' }
+                                ]
+                              })}
+                              className="px-2 py-1 bg-white hover:bg-rose/10 hover:text-rose hover:border-rose/30 text-gray-700 text-[9px] font-semibold border border-gray-200 rounded transition-all shadow-2xs"
+                            >
+                              👖 Celana / Trousers (Relaxed Fit)
+                            </button>
+                          </div>
+                        </div>
+
                         {(productForm.measurements?.length || 0) > 0 && (
-                          <div className="space-y-2">
+                          <div className="space-y-2 overflow-x-auto">
                             {productForm.category === 'celana' ? (
-                              <div className="grid grid-cols-[1fr_1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_36px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[520px]">
                                 <span>Size</span>
-                                <span>Waist (cm)</span>
-                                <span>Length (cm)</span>
-                                <span>Leg (cm)</span>
+                                <span>Waist</span>
+                                <span>Length</span>
+                                <span>Thigh</span>
+                                <span>Hip</span>
+                                <span>Leg</span>
                                 <span></span>
                               </div>
                             ) : (
-                              <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-medium px-1">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_36px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[500px]">
                                 <span>Size</span>
-                                <span>Chest (cm)</span>
-                                <span>Length (cm)</span>
+                                <span>Chest</span>
+                                <span>Length</span>
+                                <span>Shoulder</span>
+                                <span>Sleeve</span>
                                 <span></span>
                               </div>
                             )}
                             
                             {productForm.measurements?.map((m, idx) => (
-                              <div key={idx} className={cn("grid gap-2 items-center", productForm.category === 'celana' ? "grid-cols-[1fr_1fr_1fr_1fr_40px]" : "grid-cols-[1fr_1fr_1fr_40px]")}>
+                              <div key={idx} className={cn("grid gap-2 items-center min-w-[500px]", productForm.category === 'celana' ? "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_36px] min-w-[520px]" : "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_36px]")}>
                                 <input
                                   type="text"
                                   placeholder="e.g. S / 32"
@@ -2988,7 +3081,7 @@ export default function AdminDashboard() {
                                     newM[idx] = { ...newM[idx], size: e.target.value };
                                     setProductForm({ ...productForm, measurements: newM });
                                   }}
-                                  className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 font-medium"
+                                  className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60 font-bold bg-gray-50/50"
                                 />
                                 {productForm.category === 'celana' ? (
                                   <>
@@ -3001,7 +3094,7 @@ export default function AdminDashboard() {
                                         newM[idx] = { ...newM[idx], waist: e.target.value };
                                         setProductForm({ ...productForm, measurements: newM });
                                       }}
-                                      className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
                                     />
                                     <input
                                       type="text"
@@ -3012,7 +3105,29 @@ export default function AdminDashboard() {
                                         newM[idx] = { ...newM[idx], length: e.target.value };
                                         setProductForm({ ...productForm, measurements: newM });
                                       }}
-                                      className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Thigh"
+                                      value={m.thigh || ''}
+                                      onChange={(e) => {
+                                        const newM = [...productForm.measurements];
+                                        newM[idx] = { ...newM[idx], thigh: e.target.value };
+                                        setProductForm({ ...productForm, measurements: newM });
+                                      }}
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Hip"
+                                      value={m.hip || ''}
+                                      onChange={(e) => {
+                                        const newM = [...productForm.measurements];
+                                        newM[idx] = { ...newM[idx], hip: e.target.value };
+                                        setProductForm({ ...productForm, measurements: newM });
+                                      }}
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
                                     />
                                     <input
                                       type="text"
@@ -3023,7 +3138,7 @@ export default function AdminDashboard() {
                                         newM[idx] = { ...newM[idx], leg_opening: e.target.value };
                                         setProductForm({ ...productForm, measurements: newM });
                                       }}
-                                      className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
                                     />
                                   </>
                                 ) : (
@@ -3037,7 +3152,7 @@ export default function AdminDashboard() {
                                         newM[idx] = { ...newM[idx], chest: e.target.value };
                                         setProductForm({ ...productForm, measurements: newM });
                                       }}
-                                      className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
                                     />
                                     <input
                                       type="text"
@@ -3048,7 +3163,29 @@ export default function AdminDashboard() {
                                         newM[idx] = { ...newM[idx], length: e.target.value };
                                         setProductForm({ ...productForm, measurements: newM });
                                       }}
-                                      className="px-2 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50"
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Shoulder"
+                                      value={m.shoulder || ''}
+                                      onChange={(e) => {
+                                        const newM = [...productForm.measurements];
+                                        newM[idx] = { ...newM[idx], shoulder: e.target.value };
+                                        setProductForm({ ...productForm, measurements: newM });
+                                      }}
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Sleeve"
+                                      value={m.sleeve || ''}
+                                      onChange={(e) => {
+                                        const newM = [...productForm.measurements];
+                                        newM[idx] = { ...newM[idx], sleeve: e.target.value };
+                                        setProductForm({ ...productForm, measurements: newM });
+                                      }}
+                                      className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/60"
                                     />
                                   </>
                                 )}
@@ -3058,44 +3195,60 @@ export default function AdminDashboard() {
                                     const newM = productForm.measurements.filter((_, i) => i !== idx);
                                     setProductForm({ ...productForm, measurements: newM });
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-rose hover:bg-rose/5 rounded transition-colors"
+                                  className="p-1.5 text-gray-400 hover:text-rose hover:bg-rose/10 rounded-lg transition-colors flex items-center justify-center"
                                 >
-                                  <Trash2 size={16} />
+                                  <Trash2 size={15} />
                                 </button>
                               </div>
                             ))}
                           </div>
                         )}
-                        <div className="mt-2 flex flex-wrap gap-1.5">
+                        <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
+                          <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mr-1">Quick Add Row:</span>
                           {productForm.category === 'celana' 
-                            ? [['28','76','100','38'],['30','81','100','40'],['32','86','102','42'],['34','91','102','44'],['36','96','104','46'],['38','101','104','48']].map(([sz, w, l, leg]) => {
-                                const exists = productForm.measurements?.some(m => m.size === sz);
+                            ? [['28','76','98','62','100','38'],['30','81','100','64','104','40'],['32','86','102','66','108','42'],['34','91','104','69','113','44'],['36','96','106','72','118','46']].map(([sz, w, l, th, hp, leg]) => {
+                                const exists = productForm.measurements?.some(m => m.size === sz || m.size.startsWith(sz));
                                 return (
                                   <button
                                     key={sz}
                                     type="button"
                                     disabled={!!exists}
-                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, waist: w, length: l, leg_opening: leg }] })}
-                                    className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed"
+                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: `${sz} (${sz === '28' ? 'S' : sz === '30' ? 'M' : sz === '32' ? 'L' : sz === '34' ? 'XL' : 'XXL'})`, waist: w, length: l, thigh: th, hip: hp, leg_opening: leg }] })}
+                                    className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
                                   >
                                     + {sz}
                                   </button>
                                 );
                               })
-                            : [['S','94','68'],['M','100','70'],['L','106','72'],['XL','112','74'],['XXL','118','76']].map(([sz, ch, ln]) => {
-                                const exists = productForm.measurements?.some(m => m.size === sz);
-                                return (
-                                  <button
-                                    key={sz}
-                                    type="button"
-                                    disabled={!!exists}
-                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln }] })}
-                                    className="px-2 py-1 text-[9px] uppercase tracking-wider font-medium rounded border transition-all bg-gray-50 text-gray-500 border-gray-200 hover:border-rose hover:text-rose disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed"
-                                  >
-                                    + {sz}
-                                  </button>
-                                );
-                              })
+                            : (productForm.category === 'hoodie' || productForm.category === 'outer' || productForm.category === 'jaket')
+                              ? [['S','56','66','54','60'],['M','58','68','56','61'],['L','60','70','58','62'],['XL','63','72','60','63'],['XXL','66','74','62','64'],['3XL','69','76','64','65']].map(([sz, ch, ln, sh, sl]) => {
+                                  const exists = productForm.measurements?.some(m => m.size === sz);
+                                  return (
+                                    <button
+                                      key={sz}
+                                      type="button"
+                                      disabled={!!exists}
+                                      onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
+                                      className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
+                                    >
+                                      + {sz}
+                                    </button>
+                                  );
+                                })
+                              : [['S','52','68','46','22'],['M','54','70','48','23'],['L','56','72','50','24'],['XL','58','74','52','25'],['XXL','61','76','54','26'],['3XL','64','78','56','27']].map(([sz, ch, ln, sh, sl]) => {
+                                  const exists = productForm.measurements?.some(m => m.size === sz);
+                                  return (
+                                    <button
+                                      key={sz}
+                                      type="button"
+                                      disabled={!!exists}
+                                      onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
+                                      className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
+                                    >
+                                      + {sz}
+                                    </button>
+                                  );
+                                })
                           }
                         </div>
                       </div>
