@@ -3206,44 +3206,56 @@ export default function AdminDashboard() {
                         <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
                           <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mr-1">Quick Add Row:</span>
                           {productForm.category === 'celana' 
-                            ? [['28','76','98','62','100','38'],['30','81','100','64','104','40'],['32','86','102','66','108','42'],['34','91','104','69','113','44'],['36','96','106','72','118','46']].map(([sz, w, l, th, hp, leg]) => {
+                            ? [['28','76','98','62','100','38'],['30','81','100','64','104','40'],['32','86','102','66','108','42'],['34','91','104','69','113','44'],['36','96','106','72','118','46'],['38','101','108','75','123','48'],['40','106','110','78','128','50'],['ALL SIZE','86','102','66','108','42']].map(([sz, w, l, th, hp, leg]) => {
                                 const exists = productForm.measurements?.some(m => m.size === sz || m.size.startsWith(sz));
                                 return (
                                   <button
                                     key={sz}
                                     type="button"
-                                    disabled={!!exists}
-                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: `${sz} (${sz === '28' ? 'S' : sz === '30' ? 'M' : sz === '32' ? 'L' : sz === '34' ? 'XL' : 'XXL'})`, waist: w, length: l, thigh: th, hip: hp, leg_opening: leg }] })}
-                                    className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
+                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: `${sz}${sz === '28' ? ' (S)' : sz === '30' ? ' (M)' : sz === '32' ? ' (L)' : sz === '34' ? ' (XL)' : sz === '36' ? ' (XXL)' : sz === '38' ? ' (3XL)' : sz === '40' ? ' (4XL)' : ''}`, waist: w, length: l, thigh: th, hip: hp, leg_opening: leg }] })}
+                                    className={cn(
+                                      "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                      exists
+                                        ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                        : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
+                                    )}
                                   >
                                     + {sz}
                                   </button>
                                 );
                               })
                             : (productForm.category === 'hoodie' || productForm.category === 'outer' || productForm.category === 'jaket')
-                              ? [['S','56','66','54','60'],['M','58','68','56','61'],['L','60','70','58','62'],['XL','63','72','60','63'],['XXL','66','74','62','64'],['3XL','69','76','64','65']].map(([sz, ch, ln, sh, sl]) => {
+                              ? [['S','56','66','54','60'],['M','58','68','56','61'],['L','60','70','58','62'],['XL','63','72','60','63'],['XXL','66','74','62','64'],['3XL','69','76','64','65'],['4XL','72','78','66','66'],['5XL','75','80','68','67'],['ALL SIZE','62','71','59','63']].map(([sz, ch, ln, sh, sl]) => {
                                   const exists = productForm.measurements?.some(m => m.size === sz);
                                   return (
                                     <button
                                       key={sz}
                                       type="button"
-                                      disabled={!!exists}
                                       onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
-                                      className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
+                                      className={cn(
+                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                        exists
+                                          ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                          : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
+                                      )}
                                     >
                                       + {sz}
                                     </button>
                                   );
                                 })
-                              : [['S','52','68','46','22'],['M','54','70','48','23'],['L','56','72','50','24'],['XL','58','74','52','25'],['XXL','61','76','54','26'],['3XL','64','78','56','27']].map(([sz, ch, ln, sh, sl]) => {
+                              : [['S','52','68','46','22'],['M','54','70','48','23'],['L','56','72','50','24'],['XL','58','74','52','25'],['XXL','61','76','54','26'],['3XL','64','78','56','27'],['4XL','67','80','58','28'],['5XL','70','82','60','29'],['ALL SIZE','58','74','52','25']].map(([sz, ch, ln, sh, sl]) => {
                                   const exists = productForm.measurements?.some(m => m.size === sz);
                                   return (
                                     <button
                                       key={sz}
                                       type="button"
-                                      disabled={!!exists}
                                       onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
-                                      className="px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5 disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-100 disabled:cursor-not-allowed shadow-2xs"
+                                      className={cn(
+                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                        exists
+                                          ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                          : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
+                                      )}
                                     >
                                       + {sz}
                                     </button>
