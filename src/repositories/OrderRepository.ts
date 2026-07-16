@@ -5,10 +5,12 @@ export class OrderRepository {
   constructor(private readonly db: SupabaseClient) {}
 
   /**
-   * Fetches product catalog with costings and variants in a single query.
+   * Fetches product catalog with costings and variants in a single query,
+   * falling back to split independent queries if embedded relationships or columns error out.
    */
   public async getProductsByIds(productIds: string[]) {
-    return await this.db
+    // 1. Try primary embedded query first
+    let { data: products, error } = await this.db
       .from('products')
       .select(`
         id, price, name, supplier_id, stock_quantity,
@@ -16,6 +18,81 @@ export class OrderRepository {
         variants ( id, size, color, stock_quantity )
       `)
       .in('id', productIds);
+
+    // 2. If embedded query fails (e.g. schema differences, missing columns, or PostgREST relationship error),
+    // automatically fallback to independent queries so checkout verification never fails.
+    if (error || !products) {
+      console.warn('[OrderRepository] Embedded getProductsByIds query failed, falling back to split queries:', error?.message || error);
+
+      const { data: baseProducts, error: baseError } = await this.db
+        .from('products')
+        .select('id, price, name, supplier_id, stock_quantity')
+        .in('id', productIds);
+
+      let rawProducts: any[] = [];
+      if (baseError || !baseProducts) {
+        console.warn('[OrderRepository] Base products query failed, trying wildcard select:', baseError?.message || baseError);
+        const { data: wildcardProducts, error: wildcardError } = await this.db
+          .from('products')
+          .select('*')
+          .in('id', productIds);
+
+        if (wildcardError || !wildcardProducts) {
+          console.error('[OrderRepository] Fatal product verification failure:', wildcardError || baseError);
+          return { data: null, error: wildcardError || baseError || error };
+        }
+        rawProducts = wildcardProducts;
+      } else {
+        rawProducts = baseProducts;
+      }
+
+      // Independent fetch for variants
+      const variantsMap = new Map<string, any[]>();
+      try {
+        const { data: variantsData } = await this.db
+          .from('variants')
+          .select('id, product_id, size, color, stock_quantity')
+          .in('product_id', productIds);
+        if (variantsData) {
+          for (const v of variantsData) {
+            if (!variantsMap.has(v.product_id)) variantsMap.set(v.product_id, []);
+            variantsMap.get(v.product_id)!.push(v);
+          }
+        }
+      } catch (e) {
+        console.warn('[OrderRepository] Fallback variants fetch skipped/failed:', e);
+      }
+
+      // Independent fetch for product_costings
+      const costingsMap = new Map<string, any>();
+      try {
+        const { data: costingsData } = await this.db
+          .from('product_costings')
+          .select('*')
+          .in('product_id', productIds);
+        if (costingsData) {
+          for (const c of costingsData) {
+            costingsMap.set(c.product_id, {
+              supplier_base_price: c.supplier_base_price ?? c.supplier_cost ?? 0,
+              supplier_surcharge_cost: c.supplier_surcharge_cost ?? 0,
+              ninoc_markup: c.ninoc_markup ?? 0,
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('[OrderRepository] Fallback costings fetch skipped/failed:', err);
+      }
+
+      const stitchedProducts = rawProducts.map((p: any) => ({
+        ...p,
+        variants: variantsMap.get(p.id) || p.variants || [],
+        product_costings: costingsMap.get(p.id) ? [costingsMap.get(p.id)] : (p.product_costings || []),
+      }));
+
+      return { data: stitchedProducts, error: null };
+    }
+
+    return { data: products, error };
   }
 
   /**
