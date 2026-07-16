@@ -312,44 +312,48 @@ export default function ImmersiveProductView({
              </div>
 
              <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
-               {images.map((img, idx) => {
-                 const offset = idx - activeImage;
-                 const yOffset = offset * 250;
-                 const scale = offset === 0 ? 1 : 0.85;
-                 const opacity = offset === 0 ? 1 : 0.3;
-                 const zIndex = 10 - Math.abs(offset);
+               <AnimatePresence>
+                 {images.map((img, idx) => {
+                   const offset = idx - activeImage;
+                   const yOffset = offset * 250;
+                   const scale = offset === 0 ? 1 : 0.85;
+                   const opacity = offset === 0 ? 1 : 0.3;
+                   const zIndex = 10 - Math.abs(offset);
 
-                 return (
-                   <motion.div
-                     key={idx}
-                     animate={{ y: yOffset, scale, opacity, zIndex }}
-                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                     drag={offset === 0 ? "y" : false}
-                     dragConstraints={{ top: 0, bottom: 0 }}
-                     dragElastic={0.2}
-                     onDragEnd={(e, { offset: dragOffset }) => {
-                       if (offset !== 0) return;
-                       const swipe = dragOffset.y;
-                       if (swipe < -50 && activeImage < images.length - 1) {
-                         setActiveImage(prev => prev + 1);
-                       } else if (swipe > 50 && activeImage > 0) {
-                         setActiveImage(prev => prev - 1);
-                       }
-                     }}
-                     className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
-                     style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
-                   >
-                     <div className="relative w-full h-full max-w-4xl mx-auto">
-                       <SafeImage
-                         src={img}
-                         alt={`${product.name} view ${idx + 1}`}
-                         className="object-contain drop-shadow-2xl"
-                         priority={idx === 0}
-                       />
-                     </div>
-                   </motion.div>
-                 );
-               })}
+                   return (
+                     <motion.div
+                       key={`${selectedColor || 'variant'}-${img}-${idx}`}
+                       initial={{ opacity: 0, scale: 0.92, y: yOffset }}
+                       animate={{ y: yOffset, scale, opacity, zIndex }}
+                       exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.18, ease: "easeInOut" } }}
+                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                       drag={offset === 0 ? "y" : false}
+                       dragConstraints={{ top: 0, bottom: 0 }}
+                       dragElastic={0.2}
+                       onDragEnd={(e, { offset: dragOffset }) => {
+                         if (offset !== 0) return;
+                         const swipe = dragOffset.y;
+                         if (swipe < -50 && activeImage < images.length - 1) {
+                           setActiveImage(prev => prev + 1);
+                         } else if (swipe > 50 && activeImage > 0) {
+                           setActiveImage(prev => prev - 1);
+                         }
+                       }}
+                       className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
+                       style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
+                     >
+                       <div className="relative w-full h-full max-w-4xl mx-auto">
+                         <SafeImage
+                           src={img}
+                           alt={`${product.name} view ${idx + 1}`}
+                           className="object-contain drop-shadow-2xl"
+                           priority={idx === 0}
+                         />
+                       </div>
+                     </motion.div>
+                   );
+                 })}
+               </AnimatePresence>
              </div>
           </div>
 
