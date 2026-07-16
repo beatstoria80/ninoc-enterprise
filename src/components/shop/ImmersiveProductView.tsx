@@ -355,6 +355,36 @@ export default function ImmersiveProductView({
                  })}
                </AnimatePresence>
              </div>
+
+             {/* GRIDS PREVIEW PHOTO PRODUCT (Centered inside Center Column) */}
+             {images.length > 1 && (
+               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[120] flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-md border border-ink/10 rounded-[2px] shadow-xl max-w-[90%] overflow-x-auto no-scrollbar">
+                 {images.map((img, idx) => {
+                   const isSelected = idx === activeImage;
+                   return (
+                     <button
+                       key={idx}
+                       type="button"
+                       onClick={() => {
+                         setActiveImage(idx);
+                         if (setActiveImageIndex) setActiveImageIndex(idx);
+                       }}
+                       className={cn(
+                         "w-12 h-12 shrink-0 relative rounded-[2px] overflow-hidden border-2 transition-all bg-white",
+                         isSelected ? "border-rose shadow-md scale-105" : "border-ink/10 opacity-60 hover:opacity-100 hover:border-ink/30"
+                       )}
+                       title={`View photo ${idx + 1}`}
+                     >
+                       <SafeImage
+                         src={img}
+                         alt={`${product.name} thumbnail ${idx + 1}`}
+                         className="object-contain p-1 pointer-events-none"
+                       />
+                     </button>
+                   );
+                 })}
+               </div>
+             )}
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
