@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { ArrowLeft, Share2, Check, Clock, FileText, Type } from 'lucide-react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Check } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { useDictionary } from '@/hooks/useDictionary';
 
@@ -29,7 +29,7 @@ interface NavEntry {
 }
 
 const EASING = { out: [0.23, 1, 0.32, 1] as const };
-const DURATION = { normal: 0.12, medium: 0.18, slow: 0.3 };
+const DURATION = { normal: 0.18, medium: 0.25, slow: 0.35 };
 
 export default function LogbookDetailClient({
   entry,
@@ -42,6 +42,14 @@ export default function LogbookDetailClient({
 }) {
   const dict = useDictionary();
   const [copied, setCopied] = useState(false);
+  const [fontSizeScale, setFontSizeScale] = useState<'sm' | 'md' | 'lg'>('md');
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 25,
+    restDelta: 0.001,
+  });
 
   const title = dict.locale === 'EN' && entry.title_en ? entry.title_en : entry.title;
   const excerpt = dict.locale === 'EN' && entry.excerpt_en ? entry.excerpt_en : entry.excerpt;
@@ -49,107 +57,191 @@ export default function LogbookDetailClient({
 
   const paragraphs = rawContent.split(/\n+/).filter(Boolean);
 
-  const handleShare = () => {
-    if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
+  // Calculate word count and estimated reading time
+  const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
+  const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 180));
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${title} | NINOC Logbook Studio`,
+          text: excerpt,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
+  const getFontSizeClass = () => {
+    if (fontSizeScale === 'sm') return 'text-xs md:text-sm lg:text-base leading-[1.8]';
+    if (fontSizeScale === 'lg') return 'text-base md:text-lg lg:text-xl leading-[1.9]';
+    return 'text-sm md:text-base lg:text-[17px] leading-[1.85]';
+  };
+
   return (
-    <main className="min-h-screen bg-cr noise pt-6 md:pt-20 px-4 md:px-12 pb-[140px] text-ink selection:bg-ink selection:text-white">
-      <div className="max-w-[820px] mx-auto">
-        {/* Top bar navigation */}
-        <div className="flex items-center justify-between mb-8 md:mb-14 border-b border-ink/10 pb-4">
+    <main className="min-h-screen bg-[#F8F7F4] pt-6 md:pt-16 pb-28 text-ink selection:bg-rose selection:text-white">
+      {/* Top Hairline Reading Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[3px] bg-rose z-50 origin-left"
+        style={{ scaleX }}
+      />
+
+      <div className="max-w-[840px] mx-auto px-4 md:px-8">
+        {/* Top Nav & Action Bar */}
+        <div className="flex items-center justify-between mb-8 md:mb-12 border-b border-ink/10 pb-4">
           <Link
             href="/logbook"
-            className="inline-flex items-center gap-2 text-ink/60 hover:text-rose transition-colors group"
+            className="flex items-center gap-2 text-ink/60 hover:text-rose transition-colors py-1 group"
           >
-            <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.3em] font-medium">
-              {dict.header?.logbook || 'JURNAL'} / STUDIO
+            <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+            <span className="text-xs font-mono uppercase tracking-[0.2em]">
+              {dict.locale === 'EN' ? 'Back to Studio Registry' : 'Kembali ke Arsip Studio'}
             </span>
           </Link>
 
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-[0.2em] text-ink/70 hover:text-ink border border-ink/10 px-3 py-1.5 bg-white transition-all active:scale-95"
-          >
-            {copied ? <Check size={12} className="text-emerald-600" /> : <Share2 size={12} />}
-            <span>{copied ? (dict.locale === 'EN' ? 'Copied Link' : 'Tersalin') : (dict.locale === 'EN' ? 'Share' : 'Bagikan')}</span>
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Reading Mode Text Scaler */}
+            <div className="hidden sm:flex items-center gap-1 border border-ink/15 bg-white px-2 py-1">
+              <Type size={12} className="text-ink/40 mr-1" />
+              {(['sm', 'md', 'lg'] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setFontSizeScale(size)}
+                  className={`text-[10px] font-mono px-1.5 py-0.5 uppercase transition-colors ${
+                    fontSizeScale === size ? 'bg-ink text-white font-bold' : 'text-ink/60 hover:text-ink'
+                  }`}
+                  title={`Adjust text size: ${size}`}
+                >
+                  {size === 'sm' ? 'A-' : size === 'md' ? 'A' : 'A+'}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 border border-ink/15 bg-white hover:border-ink px-3 py-1.5 transition-all text-xs font-mono tracking-wider text-ink active:scale-95"
+            >
+              {copied ? (
+                <>
+                  <Check size={14} className="text-emerald-600" />
+                  <span className="text-emerald-600 font-medium">
+                    {dict.locale === 'EN' ? 'COPIED' : 'TERSALIN'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Share2 size={14} />
+                  <span>{dict.locale === 'EN' ? 'SHARE' : 'BAGIKAN'}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Article Header */}
+        {/* Article Metadata & Header */}
         <motion.header
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: DURATION.slow, ease: EASING.out }}
-          className="mb-10 md:mb-16"
+          transition={{ duration: DURATION.medium, ease: EASING.out }}
+          className="mb-8 md:mb-12"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-[10px] md:text-xs font-mono tracking-widest bg-ink text-white px-2 py-0.5">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono uppercase tracking-widest text-ink/60 mb-4">
+            <span className="bg-ink text-white px-2.5 py-1 font-bold tracking-[0.2em]">
               {entry.id}
             </span>
-            <span className="text-xs md:text-sm font-mono uppercase tracking-[0.25em] text-ink/50">
-              {entry.date}
-            </span>
-            <span className="w-1 h-1 rounded-full bg-rose" />
-            <span className="text-xs md:text-sm font-mono font-semibold uppercase tracking-[0.3em] text-rose">
-              {entry.category}
-            </span>
+            <span className="text-rose font-bold">• {entry.category}</span>
+            <span>• {entry.date}</span>
           </div>
 
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-medium uppercase italic tracking-tight leading-[1.15] mb-6 text-ink">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-display font-medium uppercase italic tracking-tight text-ink leading-[1.15] mb-6">
             {title}
           </h1>
 
-          <p className="text-sm md:text-lg font-medium leading-relaxed text-ink/70 border-l-2 border-ink/20 pl-4 py-1 italic">
-            {excerpt}
-          </p>
+          <div className="flex flex-wrap items-center gap-6 text-xs font-mono text-ink/60 border-y border-ink/10 py-3.5 my-6">
+            <div className="flex items-center gap-1.5">
+              <Clock size={14} className="text-rose" />
+              <span>
+                {readingTimeMinutes} {dict.locale === 'EN' ? 'MIN READ' : 'MENIT BACA'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <FileText size={14} className="text-ink/40" />
+              <span>
+                {wordCount} {dict.locale === 'EN' ? 'WORDS RECORDED' : 'KATA TERCATAT'}
+              </span>
+            </div>
+            <div className="ml-auto hidden md:block text-[11px] uppercase tracking-widest text-ink/40">
+              {dict.locale === 'EN' ? 'VERIFIED TECHNICAL LOG' : 'CATATAN TEKNIS TERVERIFIKASI'}
+            </div>
+          </div>
+
+          {excerpt && (
+            <p className="text-base md:text-xl font-sans font-normal italic text-ink/85 leading-relaxed border-l-2 border-rose pl-4 md:pl-6 my-6">
+              {excerpt}
+            </p>
+          )}
         </motion.header>
 
-        {/* Archival Illustration Cover */}
+        {/* Cover Illustration Image */}
         {entry.image_url && (
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: DURATION.slow, delay: 0.1, ease: EASING.out }}
-            className="mb-12 md:mb-16 border border-ink/10 bg-white p-2 md:p-4 shadow-sm"
+            className="mb-10 md:mb-14 border border-ink/15 bg-white p-2 md:p-3 shadow-sm relative aspect-[16/9] overflow-hidden"
           >
-            <div className="relative overflow-hidden bg-[#F8F7F4] aspect-[16/9] flex items-center justify-center">
-              <Image
-                src={entry.image_url}
-                alt={title}
-                fill
-                sizes="(max-width: 768px) 100vw, 820px"
-                className="object-cover grayscale opacity-95 mix-blend-multiply transition-transform duration-700 hover:scale-105"
-                priority
-              />
-            </div>
-            <div className="flex items-center justify-between mt-3 px-1 text-[9px] font-mono uppercase tracking-widest text-ink/40">
-              <span>FIG. {entry.id} — ARCHIVAL ILLUSTRATION</span>
-              <span>NINOC STUDIO ARCHIVE</span>
-            </div>
+            <Image
+              src={entry.image_url}
+              alt={title}
+              fill
+              sizes="(max-width: 840px) 100vw, 840px"
+              priority
+              className="object-cover transition-transform duration-700 hover:scale-[1.02]"
+            />
           </motion.div>
         )}
 
-        {/* Article Content Body */}
+        {/* Article Body */}
         <motion.article
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: DURATION.slow, delay: 0.2 }}
-          className="space-y-6 md:space-y-8 text-sm md:text-base lg:text-[17px] leading-[1.85] font-sans text-ink/85 border-b border-ink/10 pb-16"
+          className={`space-y-6 md:space-y-8 font-sans text-ink/90 border-b border-ink/10 pb-16 ${getFontSizeClass()}`}
         >
           {paragraphs.map((para, idx) => {
             const isFirst = idx === 0;
+            const isQuote = para.trim().startsWith('>');
+
+            if (isQuote) {
+              const quoteText = para.replace(/^>\s*/, '').replace(/"/g, '');
+              return (
+                <blockquote
+                  key={idx}
+                  className="my-8 md:my-10 bg-white border border-ink/15 border-l-4 border-l-rose p-6 md:p-8 shadow-sm font-display italic text-lg md:text-2xl text-ink tracking-tight leading-relaxed"
+                >
+                  <p>&ldquo;{quoteText}&rdquo;</p>
+                  <footer className="mt-3 text-[11px] font-mono not-italic uppercase tracking-[0.2em] text-ink/50">
+                    — NINOC Studio Design Engineering & Quality Standard
+                  </footer>
+                </blockquote>
+              );
+            }
+
             return (
               <p
                 key={idx}
                 className={`${
                   isFirst
-                    ? 'text-base md:text-lg lg:text-xl font-medium leading-[1.75] text-ink first-letter:text-3xl first-letter:md:text-4xl first-letter:font-display first-letter:font-bold first-letter:mr-1.5 first-letter:float-left first-letter:leading-none first-letter:pt-1 first-letter:text-rose'
+                    ? 'text-base md:text-lg lg:text-xl font-medium leading-[1.8] text-ink first-letter:text-3xl first-letter:md:text-4xl first-letter:font-display first-letter:font-bold first-letter:mr-1.5 first-letter:float-left first-letter:leading-none first-letter:pt-1 first-letter:text-rose'
                     : ''
                 }`}
               >
@@ -159,17 +251,17 @@ export default function LogbookDetailClient({
           })}
         </motion.article>
 
-        {/* Footer / Adjacent Navigation */}
+        {/* Footer / Chronological Adjacent Navigation */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
           {newerEntry ? (
             <Link
               href={`/logbook/${newerEntry.slug}`}
-              className="block bg-white border border-ink/10 p-5 hover:border-ink transition-all group"
+              className="block bg-white border border-ink/15 p-5 hover:border-ink transition-all group active:scale-[0.99]"
             >
-              <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
-                ← {dict.locale === 'EN' ? 'Newer Entry' : 'Entri Lebih Baru'}
+              <span className="text-[10px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
+                ← {dict.locale === 'EN' ? 'Newer Archival Record' : 'Arsip Lebih Baru'}
               </span>
-              <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1">
+              <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1.5">
                 {newerEntry.id}
               </span>
               <h4 className="text-sm md:text-base font-display font-medium uppercase italic tracking-tight text-ink group-hover:text-rose transition-colors line-clamp-2">
@@ -183,12 +275,12 @@ export default function LogbookDetailClient({
           {olderEntry ? (
             <Link
               href={`/logbook/${olderEntry.slug}`}
-              className="block bg-white border border-ink/10 p-5 hover:border-ink transition-all group md:text-right"
+              className="block bg-white border border-ink/15 p-5 hover:border-ink transition-all group md:text-right active:scale-[0.99]"
             >
-              <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
-                {dict.locale === 'EN' ? 'Older Entry' : 'Entri Sebelumnya'} →
+              <span className="text-[10px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
+                {dict.locale === 'EN' ? 'Older Archival Record' : 'Arsip Sebelumnya'} →
               </span>
-              <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1">
+              <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1.5">
                 {olderEntry.id}
               </span>
               <h4 className="text-sm md:text-base font-display font-medium uppercase italic tracking-tight text-ink group-hover:text-rose transition-colors line-clamp-2">
