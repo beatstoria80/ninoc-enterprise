@@ -33,12 +33,12 @@ const DURATION = { normal: 0.12, medium: 0.18, slow: 0.3 };
 
 export default function LogbookDetailClient({
   entry,
-  prevEntry,
-  nextEntry,
+  newerEntry,
+  olderEntry,
 }: {
   entry: LogEntryDetail;
-  prevEntry: NavEntry | null;
-  nextEntry: NavEntry | null;
+  newerEntry: NavEntry | null;
+  olderEntry: NavEntry | null;
 }) {
   const dict = useDictionary();
   const [copied, setCopied] = useState(false);
@@ -161,38 +161,38 @@ export default function LogbookDetailClient({
 
         {/* Footer / Adjacent Navigation */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {nextEntry ? (
+          {newerEntry ? (
             <Link
-              href={`/logbook/${nextEntry.slug}`}
+              href={`/logbook/${newerEntry.slug}`}
               className="block bg-white border border-ink/10 p-5 hover:border-ink transition-all group"
             >
               <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
                 ← {dict.locale === 'EN' ? 'Newer Entry' : 'Entri Lebih Baru'}
               </span>
               <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1">
-                {nextEntry.id}
+                {newerEntry.id}
               </span>
               <h4 className="text-sm md:text-base font-display font-medium uppercase italic tracking-tight text-ink group-hover:text-rose transition-colors line-clamp-2">
-                {dict.locale === 'EN' && nextEntry.title_en ? nextEntry.title_en : nextEntry.title}
+                {dict.locale === 'EN' && newerEntry.title_en ? newerEntry.title_en : newerEntry.title}
               </h4>
             </Link>
           ) : (
             <div className="hidden md:block" />
           )}
 
-          {prevEntry ? (
+          {olderEntry ? (
             <Link
-              href={`/logbook/${prevEntry.slug}`}
+              href={`/logbook/${olderEntry.slug}`}
               className="block bg-white border border-ink/10 p-5 hover:border-ink transition-all group md:text-right"
             >
               <span className="text-[9px] font-mono uppercase tracking-widest text-ink/40 block mb-1">
                 {dict.locale === 'EN' ? 'Older Entry' : 'Entri Sebelumnya'} →
               </span>
               <span className="text-xs font-mono font-medium tracking-wide text-rose block mb-1">
-                {prevEntry.id}
+                {olderEntry.id}
               </span>
               <h4 className="text-sm md:text-base font-display font-medium uppercase italic tracking-tight text-ink group-hover:text-rose transition-colors line-clamp-2">
-                {dict.locale === 'EN' && prevEntry.title_en ? prevEntry.title_en : prevEntry.title}
+                {dict.locale === 'EN' && olderEntry.title_en ? olderEntry.title_en : olderEntry.title}
               </h4>
             </Link>
           ) : (

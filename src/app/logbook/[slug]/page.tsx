@@ -3,9 +3,16 @@ import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import LogbookDetailClient from './LogbookDetailClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase')
-  ? process.env.NEXT_PUBLIC_APP_URL
-  : 'https://ninoc.store';
+function getBaseUrl() {
+  let url = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+  if (url.includes('supabase')) url = 'https://ninoc.store';
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = `https://${url}`;
+  }
+  return url.replace(/\/+$/, '');
+}
+
+const BASE_URL = getBaseUrl();
 
 export const revalidate = 60;
 
@@ -58,19 +65,21 @@ export default async function LogbookDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  // Fetch adjacent entries for navigation
+  // Fetch adjacent entries for navigation (ordered entry_id DESC: L-013, L-012, L-011...)
   const { data: allEntries } = await supabase
     .from('logbook_entries')
     .select('entry_id, title, title_en, slug')
     .order('entry_id', { ascending: false });
 
   const currentIndex = (allEntries || []).findIndex(e => e.slug === slug);
-  const prevEntry = currentIndex > 0 ? (allEntries || [])[currentIndex - 1] : null;
-  const nextEntry = currentIndex >= 0 && currentIndex < (allEntries || []).length - 1 ? (allEntries || [])[currentIndex + 1] : null;
+  // Chronologically newer entry has a smaller array index (e.g., index 0 when current is index 1)
+  const newerEntry = currentIndex > 0 ? (allEntries || [])[currentIndex - 1] : null;
+  // Chronologically older entry has a larger array index (e.g., index 2 when current is index 1)
+  const olderEntry = currentIndex >= 0 && currentIndex < (allEntries || []).length - 1 ? (allEntries || [])[currentIndex + 1] : null;
 
   const formattedEntry = {
     id: entry.entry_id,
-    date: entry.published_date ? entry.published_date.replace(/-/g, '.') : '',
+    date: entry.published_date ? String(entry.published_date).replace(/-/g, '.') : '',
     category: entry.category || 'MANIFESTO',
     title: entry.title || '',
     title_en: entry.title_en || '',
@@ -85,8 +94,8 @@ export default async function LogbookDetailPage({ params }: { params: Promise<{ 
   return (
     <LogbookDetailClient
       entry={formattedEntry}
-      prevEntry={prevEntry ? { id: prevEntry.entry_id, title: prevEntry.title, title_en: prevEntry.title_en, slug: prevEntry.slug } : null}
-      nextEntry={nextEntry ? { id: nextEntry.entry_id, title: nextEntry.title, title_en: nextEntry.title_en, slug: nextEntry.slug } : null}
+      newerEntry={newerEntry ? { id: newerEntry.entry_id, title: newerEntry.title, title_en: newerEntry.title_en, slug: newerEntry.slug } : null}
+      olderEntry={olderEntry ? { id: olderEntry.entry_id, title: olderEntry.title, title_en: olderEntry.title_en, slug: olderEntry.slug } : null}
     />
   );
 }
