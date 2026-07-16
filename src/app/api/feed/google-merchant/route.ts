@@ -32,7 +32,7 @@ export async function GET() {
 
     const domain = 'https://ninoc.store';
 
-    let xml = `<?xml version="1.0"?>
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
     <title>NINOC Enterprise</title>
@@ -58,7 +58,9 @@ export async function GET() {
 
       const escapeXml = (unsafe: unknown) => {
         const str = typeof unsafe === 'string' ? unsafe : String(unsafe || '');
-        return str.replace(/[<>&'"]/g, function (c) {
+        // Strip invalid XML 1.0 control characters
+        const cleanStr = str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+        return cleanStr.replace(/[<>&'"]/g, function (c) {
           switch (c) {
             case '<': return '&lt;';
             case '>': return '&gt;';
@@ -112,7 +114,7 @@ export async function GET() {
       <g:item_group_id>${itemGroupId}</g:item_group_id>
       <g:title>${title}</g:title>
       <g:description>${description}</g:description>
-      <g:link>${link}</g:link>
+      <g:link>${escapeXml(link)}</g:link>
       <g:image_link>${escapeXml(imageLink)}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>
@@ -148,7 +150,7 @@ export async function GET() {
       <g:id>${escapeXml(product.id)}</g:id>
       <g:title>${title}</g:title>
       <g:description>${description}</g:description>
-      <g:link>${link}</g:link>
+      <g:link>${escapeXml(link)}</g:link>
       <g:image_link>${escapeXml(imageLink)}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>
