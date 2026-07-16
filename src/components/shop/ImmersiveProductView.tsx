@@ -237,9 +237,9 @@ export default function ImmersiveProductView({
           {/* Close Button */}
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 z-[100] w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-ink hover:bg-white hover:text-rose transition-colors border border-ink/10"
+            className="absolute top-6 right-6 z-[100] w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-ink hover:bg-white hover:text-rose transition-colors border border-ink/10"
           >
-            <X strokeWidth={1.5} size={24} />
+            <X strokeWidth={1.5} size={18} />
           </button>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
@@ -463,7 +463,7 @@ export default function ImmersiveProductView({
               )}
 
               {/* QUANTITY & STOCK */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex justify-between items-end">
                   <span className="text-[10px] uppercase tracking-widest font-bold text-ink/40">Quantity</span>
                   <span className={cn(
@@ -474,22 +474,22 @@ export default function ImmersiveProductView({
                   </span>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center bg-ink/5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center bg-ink/5 h-9">
                     <button 
                       onClick={() => setQuantity(Math.max(1, displayQuantity - 1))}
                       disabled={displayQuantity <= 1 || remainingStock === 0}
-                      className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
+                      className="px-3 h-full flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
-                      <Minus size={14} />
+                      <Minus size={13} />
                     </button>
-                    <span className="w-12 text-center text-sm font-bold">{displayQuantity}</span>
+                    <span className="w-9 text-center text-xs font-bold">{displayQuantity}</span>
                     <button 
                       onClick={() => setQuantity(displayQuantity + 1)}
                       disabled={displayQuantity >= remainingStock || remainingStock === 0}
-                      className="p-4 hover:bg-ink/10 transition-colors disabled:opacity-30"
+                      className="px-3 h-full flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
-                      <Plus size={14} />
+                      <Plus size={13} />
                     </button>
                   </div>
 
@@ -499,12 +499,12 @@ export default function ImmersiveProductView({
                       onClose();
                       window.dispatchEvent(new CustomEvent('open-cart'));
                     }}
-                    className="flex items-center justify-center w-[46px] h-[46px] border border-ink/10 relative shrink-0 hover:bg-ink/5 transition-colors" 
+                    className="flex items-center justify-center w-9 h-9 border border-ink/10 relative shrink-0 hover:bg-ink/5 transition-colors" 
                     title="View Cart"
                   >
-                    <ShoppingBag size={16} className="text-ink/80" strokeWidth={1.5} />
+                    <ShoppingBag size={15} className="text-ink/80" strokeWidth={1.5} />
                     {cartTotalItems > 0 && (
-                      <span className="absolute top-2.5 right-2.5 w-3.5 h-3.5 bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
+                      <span className="absolute top-1.5 right-1.5 w-3 h-3 bg-rose text-white text-[7.5px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
                         {cartTotalItems}
                       </span>
                     )}
@@ -521,7 +521,7 @@ export default function ImmersiveProductView({
                 }}
                 disabled={remainingStock === 0}
                 className={cn(
-                  "w-full py-5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500",
+                  "w-full py-3 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-500",
                   remainingStock === 0
                     ? "bg-ink/10 text-ink/40 cursor-not-allowed"
                     : "bg-ink text-white hover:bg-rose"
