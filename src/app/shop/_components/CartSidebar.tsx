@@ -36,7 +36,9 @@ function CartItemImage({ item }: { item: CartItem }) {
         if (specMatch && specMatch.value?.trim()) {
           const img = specMatch.value.trim();
           setFetchedOverride(img);
-          if (item.image_url !== img) {
+          const currentItems = useCart.getState().items;
+          const needsUpdate = currentItems.some(i => i.id === item.id && i.size === item.size && i.color === item.color && i.image_url !== img);
+          if (needsUpdate) {
             useCart.setState(state => ({
               items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
             }));
@@ -54,7 +56,9 @@ function CartItemImage({ item }: { item: CartItem }) {
         if (isMounted && varData && varData[0]?.image_url) {
           const img = varData[0].image_url;
           setFetchedOverride(img);
-          if (item.image_url !== img) {
+          const currentItems = useCart.getState().items;
+          const needsUpdate = currentItems.some(i => i.id === item.id && i.size === item.size && i.color === item.color && i.image_url !== img);
+          if (needsUpdate) {
             useCart.setState(state => ({
               items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
             }));
@@ -67,7 +71,7 @@ function CartItemImage({ item }: { item: CartItem }) {
 
     fetchColorPhoto();
     return () => { isMounted = false; };
-  }, [item.id, item.color, item.image_url, item.size]);
+  }, [item.id, item.color, item.size]);
 
   const src = fetchedOverride || item.image_url;
   return src ? <SafeImage src={src} alt={item.name} sizes="56px" /> : null;

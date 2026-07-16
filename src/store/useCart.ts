@@ -108,7 +108,17 @@ export const useCart = create<CartStore>()(
           set({
             items: currentItems.map(item =>
               (item.id === product.id && item.size === size && item.color === color)
-                ? { ...item, quantity: newQty, maxStock, image_url: product.image_url || existingItem.image_url }
+                ? { 
+                    ...item, 
+                    quantity: newQty, 
+                    maxStock, 
+                    image_url: product.image_url || existingItem.image_url,
+                    weight_grams: product.weight_grams ?? existingItem.weight_grams,
+                    department_id: product.department_id ?? existingItem.department_id,
+                    category: product.category ?? existingItem.category,
+                    is_perishable: product.is_perishable ?? existingItem.is_perishable,
+                    size_surcharge: sizeSurcharge ?? existingItem.size_surcharge
+                  }
                 : item
             )
           });

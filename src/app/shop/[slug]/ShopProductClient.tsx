@@ -22,15 +22,16 @@ import { CartSidebar } from '../_components/CartSidebar';
 import { RelatedProductsList } from '../_components/RelatedProductsList';
 
 export function getWeightAndHeight(size: string) {
-  const s = size.toUpperCase();
-  if (s === 'S' || s === '28') return { w: '45-55kg', h: '150-160cm' };
-  if (s === 'M' || s === '30') return { w: '55-65kg', h: '160-170cm' };
-  if (s === 'L' || s === '32') return { w: '65-75kg', h: '170-175cm' };
-  if (s === 'XL' || s === '34') return { w: '75-85kg', h: '175-180cm' };
-  if (s === 'XXL' || s === '36') return { w: '85-95kg', h: '180-185cm' };
-  if (s === '3XL' || s === '38') return { w: '95-105kg', h: '185-190cm' };
-  if (s === '4XL' || s === '40') return { w: '105-115kg', h: '190-195cm' };
-  if (s === '5XL' || s === '42') return { w: '115-125kg', h: '195-200cm' };
+  const s = size.toUpperCase().trim();
+  if (s === 'S' || s === '28' || s.startsWith('28') || (s.includes('S') && !s.includes('XS') && !s.includes('ALL') && !s.includes('FREE'))) return { w: '45-55kg', h: '150-160cm' };
+  if (s === 'M' || s === '30' || s.startsWith('30') || (s.includes('M') && !s.includes('SMALL'))) return { w: '55-65kg', h: '160-170cm' };
+  if (s === 'L' || s === '32' || s.startsWith('32') || (s.includes('L') && !s.includes('XL') && !s.includes('ALL') && !s.includes('FREE') && !s.includes('SMALL'))) return { w: '65-75kg', h: '170-175cm' };
+  if (s === 'XL' || s === '34' || s.startsWith('34') || s === '1XL') return { w: '75-85kg', h: '175-180cm' };
+  if (s === 'XXL' || s === '2XL' || s === '36' || s.startsWith('36')) return { w: '85-95kg', h: '180-185cm' };
+  if (s === '3XL' || s === 'XXXL' || s === '38' || s.startsWith('38')) return { w: '95-105kg', h: '185-190cm' };
+  if (s === '4XL' || s === 'XXXXL' || s === '40' || s.startsWith('40')) return { w: '105-115kg', h: '190-195cm' };
+  if (s === '5XL' || s === 'XXXXXL' || s === '42' || s.startsWith('42')) return { w: '115-125kg', h: '195-200cm' };
+  if (s === 'ALL SIZE' || s.includes('ALL') || s.includes('FREE')) return { w: '45-85kg', h: '150-180cm' };
   return { w: '-', h: '-' };
 }
 
