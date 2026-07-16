@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Google Merchant Center ID: 5814201453
 
 export async function GET() {
@@ -184,7 +187,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400', // Cache for 1 hour
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
 
