@@ -149,7 +149,7 @@ export default function LogbookDetailClient({
                 key={idx}
                 className={`${
                   isFirst
-                    ? 'text-base md:text-lg lg:text-xl font-medium leading-[1.75] text-ink first-letter:text-3xl first-letter:md:text-4xl first-letter:font-display first-letter:font-bold first-letter:mr-2 first-letter:float-left first-letter:text-rose'
+                    ? 'text-base md:text-lg lg:text-xl font-medium leading-[1.75] text-ink first-letter:text-3xl first-letter:md:text-4xl first-letter:font-display first-letter:font-bold first-letter:mr-1.5 first-letter:float-left first-letter:leading-none first-letter:pt-1 first-letter:text-rose'
                     : ''
                 }`}
               >
