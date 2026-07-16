@@ -358,21 +358,21 @@ export default function ImmersiveProductView({
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
-          <div className="w-full lg:w-[320px] xl:w-[360px] h-auto lg:h-full bg-white flex flex-col px-6 lg:px-8 py-6 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar border-l border-ink/[0.04]">
+          <div className="w-full lg:w-[360px] xl:w-[400px] h-auto lg:h-full bg-white flex flex-col px-6 lg:px-8 py-8 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar border-l border-ink/[0.04]">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="w-full max-w-[240px] mx-auto space-y-3.5"
+              className="w-full max-w-[310px] mx-auto space-y-4"
             >
 
               {/* SIZE SELECTION */}
               {hasSizes && (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <span className="text-[8px] uppercase tracking-widest font-bold text-ink/40">Select Size</span>
+                    <span className="text-[9px] uppercase tracking-widest font-bold text-ink/40">Select Size</span>
                   </div>
-                  <div className="grid grid-cols-4 gap-1">
+                  <div className="grid grid-cols-4 gap-1.5">
                     {availableSizes.map(size => {
                       const isSelected = selectedSize === size;
                       const sizeVariant = safeVariants.find((v: any) => 
@@ -387,7 +387,7 @@ export default function ImmersiveProductView({
                           onClick={() => !isOutOfStock && setSelectedSize(size)}
                           disabled={isOutOfStock}
                           className={cn(
-                            "py-1 text-[8px] font-bold uppercase tracking-wider transition-all duration-200 relative overflow-hidden rounded-[2px]",
+                            "h-8 flex items-center justify-center text-[9px] font-bold uppercase tracking-wider transition-all duration-200 relative overflow-hidden rounded-[2px]",
                             isSelected 
                               ? "bg-ink text-white shadow-xs" 
                               : "bg-ink/[0.04] text-ink hover:bg-ink/10",
@@ -409,8 +409,8 @@ export default function ImmersiveProductView({
 
               {/* VARIANT / SERIES / COLOR SELECTION */}
               {availableColors.length > 0 && (
-                <div className="space-y-1.5">
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-ink/40">
+                <div className="space-y-2">
+                  <span className="text-[9px] uppercase tracking-widest font-bold text-ink/40">
                     {product?.variant_label
                       ? `Select ${product.variant_label}`
                       : isObjectsCat
@@ -419,7 +419,7 @@ export default function ImmersiveProductView({
                           ? 'Select Variant / Blend'
                           : 'Select Color'}
                   </span>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {availableColors.map(color => {
                       const isSelected = selectedColor === color;
                       const colorImg = colorGalleryMap[color.toUpperCase()]?.main;
@@ -432,29 +432,29 @@ export default function ImmersiveProductView({
                             if (setActiveImageIndex) setActiveImageIndex(0);
                           }}
                           className={cn(
-                            "flex items-center gap-1 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider transition-all duration-200 rounded-[2px]",
+                            "h-8 flex items-center justify-center gap-2 px-2.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 rounded-[2px] truncate",
                             isSelected 
                               ? "bg-ink text-white shadow-xs" 
                               : "bg-ink/[0.04] text-ink hover:bg-ink/10"
                           )}
                         >
                           {colorImg && (
-                            <div className="w-3 h-3 rounded-full overflow-hidden shrink-0 border border-current">
-                              <Image src={colorImg} alt={color} width={12} height={12} className="w-full h-full object-cover" unoptimized />
+                            <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 border border-current">
+                              <Image src={colorImg} alt={color} width={14} height={14} className="w-full h-full object-cover" unoptimized />
                             </div>
                           )}
-                          <span>{color}</span>
+                          <span className="truncate">{color}</span>
                         </button>
                       );
                     })}
                   </div>
                   {selectedColor && (isObjectsCat || isFnBCat) && (
-                    <div className="flex items-center gap-1.5 p-1.5 bg-ink/[0.02] border border-ink/10 rounded-[2px]">
+                    <div className="flex items-center gap-2 p-2 bg-ink/[0.02] border border-ink/10 rounded-[2px]">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                      <span className="text-[8px] uppercase tracking-wider font-bold text-emerald-700">
+                      <span className="text-[8.5px] uppercase tracking-wider font-bold text-emerald-700">
                         {product?.variant_label || (isObjectsCat ? 'Selected Series/Model' : 'Selected Blend/Flavor')}:
                       </span>
-                      <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-ink ml-auto bg-white px-1 py-0.5 border border-ink/10">
+                      <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-ink ml-auto bg-white px-1.5 py-0.5 border border-ink/10">
                         {selectedColor}
                       </span>
                     </div>
@@ -463,11 +463,11 @@ export default function ImmersiveProductView({
               )}
 
               {/* QUANTITY & STOCK */}
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <div className="flex justify-between items-end">
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-ink/40">Quantity</span>
+                  <span className="text-[9px] uppercase tracking-widest font-bold text-ink/40">Quantity</span>
                   <span className={cn(
-                    "text-[8px] uppercase tracking-widest font-bold",
+                    "text-[9px] uppercase tracking-widest font-bold",
                     availableStock > 0 ? "text-emerald-500" : "text-rose"
                   )}>
                     {availableStock === 999 ? 'In Stock' : availableStock > 0 ? (itemInCartQty > 0 ? `Tersisa ${remainingStock} dari ${availableStock} Available` : `${availableStock} Available`) : 'Out of Stock'}
@@ -479,17 +479,17 @@ export default function ImmersiveProductView({
                     <button 
                       onClick={() => setQuantity(Math.max(1, displayQuantity - 1))}
                       disabled={displayQuantity <= 1 || remainingStock === 0}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
+                      className="w-8 h-8 flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
-                      <Minus size={10} />
+                      <Minus size={12} />
                     </button>
-                    <span className="w-6 text-center text-[11px] font-bold">{displayQuantity}</span>
+                    <span className="w-8 text-center text-xs font-bold">{displayQuantity}</span>
                     <button 
                       onClick={() => setQuantity(displayQuantity + 1)}
                       disabled={displayQuantity >= remainingStock || remainingStock === 0}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
+                      className="w-8 h-8 flex items-center justify-center hover:bg-ink/10 transition-colors disabled:opacity-30"
                     >
-                      <Plus size={10} />
+                      <Plus size={12} />
                     </button>
                   </div>
 
@@ -499,12 +499,12 @@ export default function ImmersiveProductView({
                       onClose();
                       window.dispatchEvent(new CustomEvent('open-cart'));
                     }}
-                    className="flex items-center justify-center w-7 h-7 border border-ink/10 rounded-[2px] relative shrink-0 hover:bg-ink/5 transition-colors" 
+                    className="flex items-center justify-center w-8 h-8 border border-ink/10 rounded-[2px] relative shrink-0 hover:bg-ink/5 transition-colors" 
                     title="View Cart"
                   >
-                    <ShoppingBag size={12} className="text-ink/80" strokeWidth={1.5} />
+                    <ShoppingBag size={14} className="text-ink/80" strokeWidth={1.5} />
                     {cartTotalItems > 0 && (
-                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose text-white text-[7px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
+                      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose text-white text-[8px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
                         {cartTotalItems}
                       </span>
                     )}
@@ -521,7 +521,7 @@ export default function ImmersiveProductView({
                 }}
                 disabled={remainingStock === 0}
                 className={cn(
-                  "w-full py-2.5 text-[9.5px] font-bold uppercase tracking-[0.18em] transition-all duration-300 rounded-[2px]",
+                  "w-full py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px]",
                   remainingStock === 0
                     ? "bg-ink/10 text-ink/40 cursor-not-allowed"
                     : "bg-ink text-white hover:bg-rose shadow-xs hover:shadow-md"
