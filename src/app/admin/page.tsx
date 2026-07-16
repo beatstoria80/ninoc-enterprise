@@ -2953,24 +2953,41 @@ export default function AdminDashboard() {
                             <label className="block text-[11px] uppercase tracking-wider text-gray-700 font-bold">Measurement / Size Chart Garment (CM)</label>
                             <p className="text-[10px] text-gray-500">Standar spesifikasi industri apparel (Lebar Dada, Panjang Badan, Bahu, Lengan / Pinggang & Paha)</p>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const isCelana = productForm.category === 'celana';
-                              setProductForm({
-                                ...productForm,
-                                measurements: [
-                                  ...(productForm.measurements || []),
-                                  isCelana
-                                    ? { size: '', waist: '', length: '', thigh: '', hip: '', leg_opening: '' }
-                                    : { size: '', chest: '', length: '', shoulder: '', sleeve: '' }
-                                ]
-                              });
-                            }}
-                            className="text-[10px] uppercase tracking-wider text-white bg-rose hover:bg-rose/90 px-3 py-1.5 rounded-lg font-bold shadow-2xs self-start md:self-auto transition-all"
-                          >
-                            + Add Size Row
-                          </button>
+                          <div className="flex items-center gap-2 self-start md:self-auto">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const isCelana = productForm.category === 'celana';
+                                setProductForm({
+                                  ...productForm,
+                                  measurements: [
+                                    ...(productForm.measurements || []),
+                                    isCelana
+                                      ? { size: '', waist: '', length: '', thigh: '', hip: '', leg_opening: '' }
+                                      : { size: '', chest: '', length: '', shoulder: '', sleeve: '' }
+                                  ]
+                                });
+                              }}
+                              className="text-[10px] uppercase tracking-wider text-white bg-rose hover:bg-rose/90 px-3 py-1.5 rounded-lg font-bold shadow-2xs transition-all flex items-center gap-1"
+                            >
+                              <span>+ Add Size Row</span>
+                            </button>
+                            {(productForm.measurements?.length || 0) > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm('Kosongkan seluruh tabel ukuran? Ukuran juga akan dihapus dari varian website.')) {
+                                    setProductForm({ ...productForm, measurements: [], variants: [] });
+                                  }
+                                }}
+                                className="text-[10px] uppercase tracking-wider text-rose bg-rose/10 hover:bg-rose hover:text-white px-2.5 py-1.5 rounded-lg font-bold border border-rose/30 transition-all flex items-center gap-1.5 cursor-pointer"
+                                title="Hapus / Kosongkan semua baris ukuran sekaligus"
+                              >
+                                <Trash2 size={13} />
+                                <span>Reset Table</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {/* ===== INSTANT INDUSTRY PRESETS ===== */}
@@ -3050,7 +3067,7 @@ export default function AdminDashboard() {
                         {(productForm.measurements?.length || 0) > 0 && (
                           <div className="space-y-2 overflow-x-auto">
                             {productForm.category === 'celana' ? (
-                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_36px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[520px]">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_48px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[530px]">
                                 <span>Size</span>
                                 <span>Waist</span>
                                 <span>Length</span>
@@ -3060,7 +3077,7 @@ export default function AdminDashboard() {
                                 <span></span>
                               </div>
                             ) : (
-                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_36px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[500px]">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_48px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[510px]">
                                 <span>Size</span>
                                 <span>Chest</span>
                                 <span>Length</span>
@@ -3071,7 +3088,7 @@ export default function AdminDashboard() {
                             )}
                             
                             {productForm.measurements?.map((m, idx) => (
-                              <div key={idx} className={cn("grid gap-2 items-center min-w-[500px]", productForm.category === 'celana' ? "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_36px] min-w-[520px]" : "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_36px]")}>
+                              <div key={idx} className={cn("grid gap-2 items-center min-w-[510px]", productForm.category === 'celana' ? "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_48px] min-w-[530px]" : "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_48px]")}>
                                 <input
                                   type="text"
                                   placeholder="e.g. S / 32"
@@ -3191,13 +3208,26 @@ export default function AdminDashboard() {
                                 )}
                                 <button
                                   type="button"
+                                  title={`Hapus ukuran "${m.size || 'ini'}" dari tabel dan sinkronkan hapus dari pilihan ukuran di website shop`}
                                   onClick={() => {
+                                    const deletedSizeObj = productForm.measurements[idx];
+                                    const deletedSizeStr = deletedSizeObj?.size ? deletedSizeObj.size.trim().toUpperCase() : '';
                                     const newM = productForm.measurements.filter((_, i) => i !== idx);
-                                    setProductForm({ ...productForm, measurements: newM });
+                                    
+                                    // Auto-sync: Also remove exact matching size from productForm.variants so it disappears from the shop website!
+                                    let newV = productForm.variants || [];
+                                    if (deletedSizeStr) {
+                                      newV = newV.filter(v => {
+                                        if (!v.size) return true;
+                                        const vSizeStr = v.size.trim().toUpperCase();
+                                        return vSizeStr !== deletedSizeStr && !vSizeStr.startsWith(deletedSizeStr + ' ') && !deletedSizeStr.startsWith(vSizeStr + ' ');
+                                      });
+                                    }
+                                    setProductForm({ ...productForm, measurements: newM, variants: newV });
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-rose hover:bg-rose/10 rounded-lg transition-colors flex items-center justify-center"
+                                  className="p-2 bg-rose/10 hover:bg-rose text-rose hover:text-white border border-rose/30 rounded-lg transition-all duration-200 flex items-center justify-center shadow-2xs group shrink-0 cursor-pointer"
                                 >
-                                  <Trash2 size={15} />
+                                  <Trash2 size={16} className="transition-transform group-hover:scale-110 shrink-0" />
                                 </button>
                               </div>
                             ))}
