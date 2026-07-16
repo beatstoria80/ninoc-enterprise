@@ -108,7 +108,7 @@ export const useCart = create<CartStore>()(
           set({
             items: currentItems.map(item =>
               (item.id === product.id && item.size === size && item.color === color)
-                ? { ...item, quantity: newQty, maxStock }
+                ? { ...item, quantity: newQty, maxStock, image_url: product.image_url || existingItem.image_url }
                 : item
             )
           });

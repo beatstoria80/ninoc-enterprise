@@ -174,13 +174,45 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
 
     const qtyToAdd = Math.min(quantity, remainingStock);
 
+    // Resolve accurate photo for selected color from specifications or variants
+    let colorImageUrl = product.image_url;
+    if (effectiveColor) {
+      const safeColor = effectiveColor.trim().toUpperCase();
+      const safeSpecs = Array.isArray(product.specifications) ? product.specifications : [];
+      
+      const mainSpec = safeSpecs.find((spec: any) => {
+        if (!spec?.label || typeof spec.label !== 'string') return false;
+        const match = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+        return match && match[2].trim().toUpperCase() === safeColor && spec.value?.trim();
+      });
+
+      if (mainSpec?.value?.trim()) {
+        colorImageUrl = mainSpec.value.trim();
+      } else {
+        const p1Spec = safeSpecs.find((spec: any) => {
+          if (!spec?.label || typeof spec.label !== 'string') return false;
+          const match = spec.label.match(/^color\s*(p1)\s*:\s*(.+)$/i);
+          return match && match[2].trim().toUpperCase() === safeColor && spec.value?.trim();
+        });
+        if (p1Spec?.value?.trim()) {
+          colorImageUrl = p1Spec.value.trim();
+        } else {
+          const safeVariants = Array.isArray(product.variants) ? product.variants : [];
+          const varMatch = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url);
+          if (varMatch?.image_url) {
+            colorImageUrl = varMatch.image_url;
+          }
+        }
+      }
+    }
+
     // Single atomic call — passing availableStock so cart store enforces max limit
     addItem({
       id: product.id,
       name: product.name,
       slug: product.slug,
       price: product.price,
-      image_url: product.image_url,
+      image_url: colorImageUrl,
       weight_grams: product.weight_grams,
       department_id: product.department_id,
       category: product.category,

@@ -1,13 +1,77 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { ShoppingBag, Trash2, Ruler, X, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SafeImage from '@/components/SafeImage';
-import { useCart } from '@/store/useCart';
+import { useCart, CartItem } from '@/store/useCart';
+import { supabase } from '@/lib/supabase';
 import type { Dictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+
+function CartItemImage({ item }: { item: CartItem }) {
+  const [fetchedOverride, setFetchedOverride] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!item.color || !item.id) return;
+
+    let isMounted = true;
+    const fetchColorPhoto = async () => {
+      try {
+        const safeColor = item.color!.trim().toUpperCase();
+        const { data } = await supabase
+          .from('specifications')
+          .select('label, value')
+          .eq('product_id', item.id);
+
+        if (!isMounted || !data) return;
+
+        const specMatch = data.find(spec => {
+          if (!spec.label || !spec.value) return false;
+          const m = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+          return m && m[2].trim().toUpperCase() === safeColor && spec.value.trim();
+        });
+
+        if (specMatch && specMatch.value?.trim()) {
+          const img = specMatch.value.trim();
+          setFetchedOverride(img);
+          if (item.image_url !== img) {
+            useCart.setState(state => ({
+              items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
+            }));
+          }
+          return;
+        }
+
+        const { data: varData } = await supabase
+          .from('variants')
+          .select('image_url')
+          .eq('product_id', item.id)
+          .ilike('color', safeColor)
+          .limit(1);
+
+        if (isMounted && varData && varData[0]?.image_url) {
+          const img = varData[0].image_url;
+          setFetchedOverride(img);
+          if (item.image_url !== img) {
+            useCart.setState(state => ({
+              items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('CartItemImage resolve error:', err);
+      }
+    };
+
+    fetchColorPhoto();
+    return () => { isMounted = false; };
+  }, [item.id, item.color, item.image_url, item.size]);
+
+  const src = fetchedOverride || item.image_url;
+  return src ? <SafeImage src={src} alt={item.name} sizes="56px" /> : null;
+}
 
 interface CartSidebarProps {
   dict: Dictionary;
@@ -71,7 +135,7 @@ export function CartSidebar({
                         }
                       }}
                     >
-                      {item.image_url && <SafeImage src={item.image_url} alt={item.name} sizes="56px" />}
+                      <CartItemImage item={item} />
                     </div>
 
                     <div className="flex-1 min-w-0 flex flex-col justify-between h-full">

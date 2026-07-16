@@ -91,9 +91,10 @@ export default function QuickBuyModal() {
         if (data) {
           const map: Record<string, string> = {};
           data.forEach(spec => {
-            const match = spec.label.match(/^ColorImage:(.+)$/);
-            if (match) {
-              map[match[1].toUpperCase()] = spec.value;
+            if (!spec?.label || !spec?.value) return;
+            const match = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+            if (match && match[2]) {
+              map[match[2].trim().toUpperCase()] = spec.value.trim();
             }
           });
           setColorImages(map);
@@ -104,9 +105,10 @@ export default function QuickBuyModal() {
       } else {
         const map: Record<string, string> = {};
         quickBuyProduct.specifications.forEach((spec: any) => {
-          const match = spec.label.match(/^ColorImage:(.+)$/);
-          if (match) {
-            map[match[1].toUpperCase()] = spec.value;
+          if (!spec?.label || !spec?.value) return;
+          const match = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+          if (match && match[2]) {
+            map[match[2].trim().toUpperCase()] = spec.value.trim();
           }
         });
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -132,12 +134,16 @@ export default function QuickBuyModal() {
       ? (typeof selectedVariantObj.stock_quantity === 'number' ? selectedVariantObj.stock_quantity : (parseInt(selectedVariantObj.stock_quantity) || 0))
       : (quickBuyProduct && 'stock_quantity' in quickBuyProduct ? (typeof (quickBuyProduct as any).stock_quantity === 'number' ? (quickBuyProduct as any).stock_quantity : (parseInt((quickBuyProduct as any).stock_quantity) || 0)) : 0);
 
+    const safeColor = selectedColor ? selectedColor.trim().toUpperCase() : '';
+    const variantImg = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url)?.image_url;
+    const finalImageUrl = safeColor ? (colorImages[safeColor] || variantImg || quickBuyProduct.image_url || null) : (quickBuyProduct.image_url || null);
+
     addItem(
       {
         id: quickBuyProduct.id,
         name: quickBuyProduct.name,
         price: quickBuyProduct.price,
-        image_url: selectedColor ? (colorImages[selectedColor.toUpperCase()] || null) : (quickBuyProduct.image_url || null),
+        image_url: finalImageUrl,
         slug: quickBuyProduct.slug,
       },
       selectedSize || undefined,

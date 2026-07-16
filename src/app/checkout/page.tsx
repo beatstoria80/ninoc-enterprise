@@ -28,6 +28,69 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+function CheckoutCartItemImage({ item }: { item: { id: string; name: string; color?: string; size?: string; image_url?: string | null } }) {
+  const [fetchedOverride, setFetchedOverride] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!item.color || !item.id) return;
+
+    let isMounted = true;
+    const fetchColorPhoto = async () => {
+      try {
+        const safeColor = item.color!.trim().toUpperCase();
+        const { data } = await supabase
+          .from('specifications')
+          .select('label, value')
+          .eq('product_id', item.id);
+
+        if (!isMounted || !data) return;
+
+        const specMatch = data.find(spec => {
+          if (!spec.label || !spec.value) return false;
+          const m = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+          return m && m[2].trim().toUpperCase() === safeColor && spec.value.trim();
+        });
+
+        if (specMatch && specMatch.value?.trim()) {
+          const img = specMatch.value.trim();
+          setFetchedOverride(img);
+          if (item.image_url !== img) {
+            useCart.setState(state => ({
+              items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
+            }));
+          }
+          return;
+        }
+
+        const { data: varData } = await supabase
+          .from('variants')
+          .select('image_url')
+          .eq('product_id', item.id)
+          .ilike('color', safeColor)
+          .limit(1);
+
+        if (isMounted && varData && varData[0]?.image_url) {
+          const img = varData[0].image_url;
+          setFetchedOverride(img);
+          if (item.image_url !== img) {
+            useCart.setState(state => ({
+              items: state.items.map(i => (i.id === item.id && i.size === item.size && i.color === item.color) ? { ...i, image_url: img } : i)
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('CheckoutCartItemImage resolve error:', err);
+      }
+    };
+
+    fetchColorPhoto();
+    return () => { isMounted = false; };
+  }, [item.id, item.color, item.image_url, item.size]);
+
+  const src = fetchedOverride || item.image_url;
+  return src ? <Image src={src} alt={item.name} fill className="object-contain" /> : null;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // EMIL KOWALSKI ANIMATION ENGINE — CHECKOUT
 // ═══════════════════════════════════════════════════════════════
@@ -930,7 +993,7 @@ export default function CheckoutPage() {
                   <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center justify-between">
                     <div className="flex gap-3 items-center flex-1 min-w-0">
                       <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
-                        {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
+                        <CheckoutCartItemImage item={item} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-1 text-ink">{item.name}</p>
@@ -1265,7 +1328,7 @@ export default function CheckoutPage() {
                   {items.map((item) => (
                     <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center group">
                       <div className="w-10 h-10 bg-ink/5 rounded-none overflow-hidden flex-shrink-0 border border-ink/5 group-hover:border-rose/20 transition-colors relative">
-                        {item.image_url && <Image src={item.image_url} alt={item.name} fill className="object-contain" />}
+                        <CheckoutCartItemImage item={item} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm md:text-[11px] font-medium uppercase line-clamp-2 text-ink">{item.name}</p>
