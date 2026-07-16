@@ -28,7 +28,7 @@ export default async function LogbookPage() {
   const { data } = await supabase
     .from('logbook_entries')
     .select('*')
-    .order('published_date', { ascending: false });
+    .order('entry_id', { ascending: false });
 
   let formattedEntries: any[] = [];
   if (data) {
@@ -40,6 +40,9 @@ export default async function LogbookPage() {
       title_en: item.title_en || '', 
       excerpt: item.excerpt || '', 
       excerpt_en: item.excerpt_en || '', 
+      content: item.content || '',
+      content_en: item.content_en || '',
+      image_url: item.image_url || '',
       slug: item.slug || ''
     }));
   }
