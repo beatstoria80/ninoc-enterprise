@@ -337,9 +337,15 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     parts: [{ text: msg.content || '' }]
   }));
 
+  // Strip tool instructions to prevent Gemini from hallucinating malformed function calls
+  const geminiSystemPrompt = systemPrompt.replace(
+    /IMPORTANT: YOU MUST ALWAYS CALL A TOOL BEFORE ANSWERING![\s\S]*/,
+    "IMPORTANT: KAMU SEDANG DALAM MODE DARURAT (TANPA ALAT PENCARIAN). JANGAN mencoba memanggil tool apapun (TIDAK ADA search_products atau get_order_details)! Jika kustomer menanyakan ketersediaan produk, katakan dengan sangat sopan bahwa sistem katalog sedang diperbarui dan minta mereka untuk langsung mengecek etalase website (https://ninoc.store) atau menunggu tim admin membalas."
+  );
+
   const payload: any = {
     system_instruction: {
-      parts: [{ text: systemPrompt }]
+      parts: [{ text: geminiSystemPrompt }]
     },
     contents: geminiMessages,
     generationConfig: {
