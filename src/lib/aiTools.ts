@@ -563,8 +563,8 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
       if (combinedIds.length > 0) {
         return query.in('id', combinedIds);
       } else {
-        // Jika tidak ada kandidat sama sekali, paksa query kosong agar jatuh ke fallback
-        return query.eq('id', '00000000-0000-0000-0000-000000000000');
+        // Jika tidak ada kandidat sama sekali, paksa query kosong agar jatuh ke fallback tanpa resiko casting error
+        return query.limit(0);
       }
     } catch (err) {
       console.warn('[SearchProductsHandler] Keyword filter warning:', err);
