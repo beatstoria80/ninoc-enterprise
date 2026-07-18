@@ -412,6 +412,37 @@ ${ticketData.order_id ? `- ID Pesanan Customer: ${ticketData.order_id} (PENTING:
       console.warn('[AI-Chat] ALL providers failed. Emitting static fallback.');
     } else {
       console.log(`[AI-Chat] ✅ AI Response generated (${aiResponse.length} chars)`);
+      
+      // --- QA/DEBUG: Server-Side Slug Validation Interceptor ---
+      if (aiResponse !== FALLBACK_RESPONSE) {
+        const tagMatches = aiResponse.match(/\[PRODUK:([a-zA-Z0-9-_]+)\]/g);
+        if (tagMatches && tagMatches.length > 0) {
+          console.log('[AI-Chat] Intercepting tags for DB validation:', tagMatches);
+          const slugs = tagMatches.map(t => t.substring(8, t.length - 1));
+          const uniqueSlugs = Array.from(new Set(slugs));
+          
+          try {
+            const { data: validProducts } = await supabaseAdmin
+              .from('products')
+              .select('slug')
+              .in('slug', uniqueSlugs);
+              
+            const validSlugs = new Set(validProducts?.map(p => p.slug) || []);
+            
+            uniqueSlugs.forEach(slug => {
+              if (!validSlugs.has(slug)) {
+                console.warn(`[AI-Chat] 🚨 HALLUCINATION DETECTED: [PRODUK:${slug}] is not in DB. Removing tag.`);
+                const fakeTagRegex = new RegExp(`\\[PRODUK:${slug}\\]`, 'g');
+                const fakeName = slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                aiResponse = aiResponse!.replace(fakeTagRegex, `${fakeName} (Maaf, produk saat ini tidak tersedia)`);
+              }
+            });
+          } catch (valErr) {
+            console.error('[AI-Chat] DB Validation error:', valErr);
+          }
+        }
+      }
+      // ---------------------------------------------------------
     }
 
     // Save to Supabase
