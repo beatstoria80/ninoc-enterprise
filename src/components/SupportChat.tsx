@@ -84,14 +84,29 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
   });
 }
 
-const urlRegex = /(https?:\/\/[^\s]+)/g;
+const tokenRegex = /(\[PRODUK:[a-zA-Z0-9-_]+\]|https?:\/\/[^\s]+)/g;
 
 function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?: () => void) {
   if (!text) return null;
-  const parts = text.split(urlRegex);
+  const parts = text.split(tokenRegex);
   
   return parts.map((part, i) => {
-    if (part.match(urlRegex)) {
+    if (part.startsWith('[PRODUK:') && part.endsWith(']')) {
+      const slug = part.substring(8, part.length - 1);
+      const linkClass = cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 mt-1.5 mb-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 mx-0.5 whitespace-nowrap",
+        isCustomer ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-ink/90"
+      );
+      return (
+        <span key={i}>
+          <Link href={`/shop/${slug}`} className={linkClass} onClick={onLinkClick}>
+            Lihat Produk <ChevronRight size={12} strokeWidth={2.5} />
+          </Link>
+        </span>
+      );
+    }
+
+    if (part.match(/^https?:\/\//)) {
       // Membersihkan tanda baca di awal dan akhir URL jika AI memasukkannya (kurung, kutip, titik, koma, dsb)
       const cleanUrl = part.replace(/[.,;?!)\]"'`>]+$/, '').replace(/^[([{"'`<]+/, '');
       const idx = part.lastIndexOf(cleanUrl);
@@ -99,8 +114,7 @@ function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?:
       const urlStr = cleanUrl;
 
       let label = "Buka Tautan";
-      if (urlStr.includes('/shop/')) label = "Lihat Produk";
-      else if (urlStr.includes('/retur')) label = "Info Tracking / Retur";
+      if (urlStr.includes('/retur')) label = "Info Tracking / Retur";
       else if (urlStr.includes('/help')) label = "Info Lengkap / Bantuan";
       else if (urlStr.includes('ninoc.store')) label = "Kunjungi Website";
       
