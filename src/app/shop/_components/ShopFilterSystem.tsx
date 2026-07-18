@@ -104,11 +104,21 @@ export function matchesSize(product: ShopProduct, selectedSize: string): boolean
   });
 }
 
+export function matchesColor(product: ShopProduct, selectedColor: string): boolean {
+  if (!selectedColor || selectedColor === 'All') return true;
+  if (!product.variants || product.variants.length === 0) return false;
+  return product.variants.some(v => {
+    const vc = (v.color || '').toUpperCase().trim();
+    return vc === selectedColor.toUpperCase().trim();
+  });
+}
+
 export function useShopFilters(initialProducts: ShopProduct[], initialCategory: string = 'All') {
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [subCategory, setSubCategory] = useState<string>('All');
   const [selectedSize, setSelectedSize] = useState<string>('All');
+  const [selectedColor, setSelectedColor] = useState<string>('All');
   const [priceRange, setPriceRange] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -138,6 +148,9 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
       const savedSize = sessionStorage.getItem('ninoc_filter_size');
       if (savedSize) setSelectedSize(savedSize);
       
+      const savedColor = sessionStorage.getItem('ninoc_filter_color');
+      if (savedColor) setSelectedColor(savedColor);
+      
       const savedPrice = sessionStorage.getItem('ninoc_filter_price');
       if (savedPrice) setPriceRange(savedPrice);
       
@@ -159,15 +172,17 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     sessionStorage.setItem('ninoc_filter_search', searchQuery);
     sessionStorage.setItem('ninoc_filter_sub', subCategory);
     sessionStorage.setItem('ninoc_filter_size', selectedSize);
+    sessionStorage.setItem('ninoc_filter_color', selectedColor);
     sessionStorage.setItem('ninoc_filter_price', priceRange);
     sessionStorage.setItem('ninoc_filter_sort', sortBy);
-  }, [selectedCategory, searchQuery, subCategory, selectedSize, priceRange, sortBy]);
+  }, [selectedCategory, searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy]);
 
   const handleSetCategory = (cat: string) => {
     setSelectedCategory(cat);
     setSubCategory('All');
     if (cat === 'Objects' || cat === 'Pantry') {
       setSelectedSize('All');
+      setSelectedColor('All');
     }
   };
 
@@ -175,6 +190,7 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     setSearchQuery('');
     setSubCategory('All');
     setSelectedSize('All');
+    setSelectedColor('All');
     setPriceRange('all');
     setSortBy('newest');
     // Also clear sessionStorage so filters don't zombie-restore on next visit
@@ -182,6 +198,7 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
       sessionStorage.removeItem('ninoc_filter_search');
       sessionStorage.removeItem('ninoc_filter_sub');
       sessionStorage.removeItem('ninoc_filter_size');
+      sessionStorage.removeItem('ninoc_filter_color');
       sessionStorage.removeItem('ninoc_filter_price');
       sessionStorage.removeItem('ninoc_filter_sort');
     }
@@ -192,10 +209,11 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     if (searchQuery.trim() !== '') count++;
     if (subCategory !== 'All') count++;
     if (selectedSize !== 'All') count++;
+    if (selectedColor !== 'All') count++;
     if (priceRange !== 'all') count++;
     if (sortBy !== 'newest') count++;
     return count;
-  }, [searchQuery, subCategory, selectedSize, priceRange, sortBy]);
+  }, [searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy]);
 
   const filteredProducts = useMemo(() => {
     return initialProducts
@@ -219,6 +237,10 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
         return matchesSize(p, selectedSize);
       })
       .filter(p => {
+        if (selectedColor === 'All') return true;
+        return matchesColor(p, selectedColor);
+      })
+      .filter(p => {
         if (priceRange === 'all') return true;
         const pr = p.price || 0;
         if (priceRange === 'under_150') return pr < 150000;
@@ -232,7 +254,7 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
         if (sortBy === 'popular') return getProductViews(b) - getProductViews(a);
         return 0;
       });
-  }, [initialProducts, selectedCategory, searchQuery, subCategory, selectedSize, priceRange, sortBy]);
+  }, [initialProducts, selectedCategory, searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy]);
 
   const availableSubCategories = useMemo(() => {
     const pillarProducts = initialProducts.filter(p => matchesCategoryPillar(p.category, selectedCategory));
@@ -275,6 +297,24 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     return Array.from(sizes);
   }, [initialProducts, selectedCategory]);
 
+  const availableColors = useMemo(() => {
+    const pillarProducts = initialProducts.filter(p => matchesCategoryPillar(p.category, selectedCategory));
+    const colors = new Set<string>(['All']);
+    pillarProducts.forEach(p => {
+      if (p.variants && p.variants.length > 0) {
+        p.variants.forEach(v => {
+          if (v.color) {
+            const vc = v.color.trim();
+            // Capitalize first letter of every word for consistent display
+            const displayColor = vc.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            if (displayColor) colors.add(displayColor);
+          }
+        });
+      }
+    });
+    return Array.from(colors);
+  }, [initialProducts, selectedCategory]);
+
   return {
     selectedCategory,
     setSelectedCategory: handleSetCategory,
@@ -296,6 +336,9 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
     availableSubCategories,
     availablePriceRanges,
     availableSizes,
+    availableColors,
+    selectedColor,
+    setSelectedColor,
   };
 }
 
@@ -322,6 +365,7 @@ function ActiveFilterTags({ filterSystem, isMobileTopRow = false }: { filterSyst
     searchQuery, setSearchQuery,
     subCategory, setSubCategory,
     selectedSize, setSelectedSize,
+    selectedColor, setSelectedColor,
     priceRange, setPriceRange,
     sortBy, setSortBy,
     activeFilterCount
@@ -367,6 +411,24 @@ function ActiveFilterTags({ filterSystem, isMobileTopRow = false }: { filterSyst
         </span>
       )}
 
+      {selectedColor !== 'All' && (
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
+          <span>Warna: {selectedColor}</span>
+          <button onClick={() => setSelectedColor('All')} className="hover:text-rose transition-colors">
+            <X size={10} />
+          </button>
+        </span>
+      )}
+
+      {selectedColor !== 'All' && (
+        <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
+          <span>Warna: {selectedColor}</span>
+          <button onClick={() => setSelectedColor('All')} className="hover:text-rose transition-colors">
+            <X size={10} />
+          </button>
+        </span>
+      )}
+
       {priceRange !== 'all' && (
         <span className="inline-flex items-center gap-1.5 bg-ink text-white px-2 py-1 md:px-2.5 text-[9px] md:text-[10px] font-mono uppercase tracking-wider rounded-full shadow-sm shrink-0">
           <span>{PRICE_RANGES.find(p => p.id === priceRange)?.label}</span>
@@ -395,6 +457,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
     searchQuery, setSearchQuery,
     subCategory, setSubCategory,
     selectedSize, setSelectedSize,
+    selectedColor, setSelectedColor,
     priceRange, setPriceRange,
     sortBy, setSortBy,
     isFilterOpen, setIsFilterOpen,
@@ -403,6 +466,7 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
     availableSubCategories,
     availablePriceRanges,
     availableSizes,
+    availableColors,
     filteredProducts
   } = filterSystem;
 
@@ -557,28 +621,54 @@ export function DesktopShopFilterBar({ filterSystem }: { filterSystem: FilterSys
                   </div>
                 </div>
 
-                {/* Kolom 2: Ukuran (Khusus Apparel) */}
+                {/* Kolom 2: Ukuran & Warna (Khusus Apparel) */}
                 {showSizeFilter && (
-                  <div className="space-y-1.5">
-                    <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
-                      <Ruler size={11} className="text-rose" /> Ukuran Pakaian (Size)
-                    </h4>
-                    <div className="flex flex-wrap gap-1">
-                      {SIZES.filter(sz => availableSizes.includes(sz)).map((sz) => (
-                        <button
-                          key={sz}
-                          onClick={() => setSelectedSize(sz)}
-                          className={cn(
-                            "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all min-w-[32px] text-center",
-                            selectedSize === sz
-                              ? "bg-ink text-white font-semibold shadow-2xs"
-                              : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
-                          )}
-                        >
-                          {sz === 'All' ? 'Semua' : sz}
-                        </button>
-                      ))}
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                        <Ruler size={11} className="text-rose" /> Ukuran Pakaian
+                      </h4>
+                      <div className="flex flex-wrap gap-1">
+                        {SIZES.filter(sz => availableSizes.includes(sz)).map((sz) => (
+                          <button
+                            key={sz}
+                            onClick={() => setSelectedSize(sz)}
+                            className={cn(
+                              "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all min-w-[32px] text-center",
+                              selectedSize === sz
+                                ? "bg-ink text-white font-semibold shadow-2xs"
+                                : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
+                            )}
+                          >
+                            {sz === 'All' ? 'Semua' : sz}
+                          </button>
+                        ))}
+                      </div>
                     </div>
+                    
+                    {availableColors.length > 1 && (
+                      <div className="space-y-1.5 pt-1 border-t border-ink/5">
+                        <h4 className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-ink/80 flex items-center gap-1.5">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> Warna
+                        </h4>
+                        <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto no-scrollbar pb-2">
+                          {availableColors.map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => setSelectedColor(color)}
+                              className={cn(
+                                "px-2.5 py-1 rounded-xs text-[10px] font-mono uppercase tracking-wider transition-all min-w-[32px] text-center whitespace-nowrap",
+                                selectedColor === color
+                                  ? "bg-ink text-white font-semibold shadow-2xs"
+                                  : "bg-ink/[0.03] text-ink/70 hover:bg-ink/10 hover:text-ink"
+                              )}
+                            >
+                              {color === 'All' ? 'Semua Warna' : color}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -647,6 +737,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
     searchQuery, setSearchQuery,
     subCategory, setSubCategory,
     selectedSize, setSelectedSize,
+    selectedColor, setSelectedColor,
     priceRange, setPriceRange,
     sortBy, setSortBy,
     isFilterOpen, setIsFilterOpen,
@@ -654,6 +745,7 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
     availableSubCategories,
     availablePriceRanges,
     availableSizes,
+    availableColors,
     filteredProducts,
     resetFilters
   } = filterSystem;
@@ -881,6 +973,29 @@ export function MobileShopFilterBar({ filterSystem }: { filterSystem: FilterSyst
                         </button>
                       ))}
                     </div>
+                    {availableColors.length > 1 && (
+                      <div className="space-y-3 pt-3 border-t border-ink/5">
+                        <h4 className="text-[11px] font-display font-bold uppercase tracking-widest text-ink flex items-center gap-2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-rose"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> Warna
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {availableColors.map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => setSelectedColor(color)}
+                              className={cn(
+                                "px-3 py-2 rounded-md text-[11px] font-mono uppercase tracking-wider transition-all border",
+                                selectedColor === color
+                                  ? "bg-ink text-white border-ink font-semibold shadow-md scale-[1.02]"
+                                  : "bg-white text-ink/70 border-ink/15 hover:bg-ink/5 hover:text-ink hover:border-ink/30"
+                              )}
+                            >
+                              {color === 'All' ? 'Semua' : color}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
