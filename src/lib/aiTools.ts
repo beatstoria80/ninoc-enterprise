@@ -412,17 +412,66 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
     query = this.applySortingStrategy(query, toSafeString(sort_by), parsedKw.raw);
 
     // 4. Apply NLP Keyword Attributes & Variant Search
+    let isSearchSpecific = false;
     if (parsedKw.raw && !IndonesianNlpEngine.isGenericQuery(parsedKw.raw)) {
+      isSearchSpecific = true;
       query = await this.applyKeywordFilter(db, query, parsedKw);
+      query = query.limit(100); // Fetch broader candidates for scoring
+    } else {
+      query = query.limit(10);
     }
 
-    const { data, error } = await query.limit(10);
+    const { data, error } = await query;
 
     if (error || !data || data.length === 0) {
       return this.executeFallbackQuery(db, toSafeString(sort_by), parsedKw.raw);
     }
 
-    return { success: true, products: data };
+    let finalProducts = data;
+
+    // 5. In-Memory Relevance Ranking
+    if (isSearchSpecific) {
+      const validTerms = Array.from(new Set([parsedKw.safe, parsedKw.cleaned, parsedKw.synonym, ...parsedKw.tokens]))
+        .map(t => (t || '').replace(/[,().%_\\/]/g, ' ').replace(/\s+/g, ' ').trim())
+        .filter((t) => t && t.length > 1);
+
+      finalProducts = finalProducts.map((product: any) => {
+        let score = 0;
+        const name = (product.name || '').toLowerCase();
+        const category = (product.category || '').toLowerCase();
+        const desc = (product.description || '').toLowerCase();
+
+        validTerms.forEach(term => {
+          if (name.includes(term)) score += 3;
+          if (category.includes(term)) score += 2;
+          if (desc.includes(term)) score += 1;
+
+          if (product.variants && Array.isArray(product.variants)) {
+            const variantMatches = product.variants.some((v: any) =>
+              (v.color || '').toLowerCase().includes(term) ||
+              (v.size || '').toLowerCase().includes(term) ||
+              (v.sku || '').toLowerCase().includes(term)
+            );
+            if (variantMatches) score += 3;
+          }
+        });
+
+        return { ...product, _relevanceScore: score };
+      });
+
+      // Sort by score descending, fallback to natural DB order for ties
+      finalProducts.sort((a: any, b: any) => {
+        if (b._relevanceScore !== a._relevanceScore) {
+          return b._relevanceScore - a._relevanceScore;
+        }
+        return 0;
+      });
+
+      finalProducts = finalProducts.slice(0, 10);
+      finalProducts.forEach((p: any) => delete p._relevanceScore);
+    }
+
+    return { success: true, products: finalProducts };
   }
 
   private applySortingStrategy(query: any, sortBy: string = '', kwRaw: string = ''): any {
@@ -468,21 +517,18 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
   ): Promise<any> {
     const { safe, cleaned, tokens, synonym } = parsedKw;
 
-    // Build unique search terms, filtering out empty strings or single-character noise
-    // and stripping PostgREST delimiter characters
     const validTerms = Array.from(new Set([safe, cleaned, synonym, ...tokens]))
       .map(t => (t || '').replace(/[,().%_\\/]/g, ' ').replace(/\s+/g, ' ').trim())
       .filter((t) => t && t.length > 1);
 
-    // If query was entirely punctuation or emojis and produced no valid search terms, return early
     if (validTerms.length === 0) {
       return query;
     }
 
     try {
-      // Build variant search clause dynamically to prevent empty ilike patterns (.ilike.%%)
+      // 1. Dapatkan ID dari tabel variants yang cocok
       const varOrClauses = validTerms
-        .slice(0, 4)
+        .slice(0, 5)
         .flatMap((t) => [`size.ilike.%${t}%,color.ilike.%${t}%,sku.ilike.%${t}%`]);
 
       const { data: varData } = await db
@@ -490,28 +536,40 @@ class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
         .select('product_id')
         .or(varOrClauses.join(','))
         .gt('stock', 0)
-        .limit(30);
+        .limit(100);
 
       const variantProductIds = Array.from(
         new Set(varData?.map((v) => v.product_id).filter(Boolean) || [])
       );
 
-      if (variantProductIds.length > 0) {
-        return query.in('id', variantProductIds.slice(0, 30));
+      // 2. Dapatkan ID dari tabel products yang cocok
+      const productOrClauses = validTerms
+        .slice(0, 5)
+        .flatMap((t) => [`name.ilike.%${t}%`, `description.ilike.%${t}%`, `category.ilike.%${t}%`]);
+
+      const { data: prodData } = await db
+        .from('products')
+        .select('id')
+        .or(productOrClauses.join(','))
+        .limit(100);
+
+      const productIds = Array.from(
+        new Set(prodData?.map((p) => p.id).filter(Boolean) || [])
+      );
+
+      // 3. Gabungkan semua ID kandidat (Broad Net)
+      const combinedIds = Array.from(new Set([...variantProductIds, ...productIds]));
+
+      if (combinedIds.length > 0) {
+        return query.in('id', combinedIds);
+      } else {
+        // Jika tidak ada kandidat sama sekali, paksa query kosong agar jatuh ke fallback
+        return query.eq('id', '00000000-0000-0000-0000-000000000000');
       }
     } catch (err) {
-      console.warn('[SearchProductsHandler] Variant search warning:', err);
+      console.warn('[SearchProductsHandler] Keyword filter warning:', err);
+      return query;
     }
-
-    // Fallback to name/description search without allowing empty .ilike.%% patterns
-    const orClauses = validTerms
-      .slice(0, 5)
-      .flatMap((t) => [`name.ilike.%${t}%`, `description.ilike.%${t}%`, `category.ilike.%${t}%`]);
-
-    if (orClauses.length > 0) {
-      return query.or(Array.from(new Set(orClauses)).join(','));
-    }
-    return query;
   }
 
   private async executeFallbackQuery(
