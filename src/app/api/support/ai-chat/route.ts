@@ -328,7 +328,7 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.warn('[AI-Chat] GEMINI_API_KEY not set.');
-    return null;
+    return '[SYSTEM DEBUG] GEMINI_API_KEY tidak ditemukan di environment Vercel! Pastikan Anda sudah menambahkan key ini di Vercel Settings -> Environment Variables dan men-centang opsi "Production".';
   }
 
   // Convert OpenAI format messages to Gemini format
@@ -361,11 +361,14 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
       return `[SYSTEM DEBUG] Gemini API Ditolak oleh Google! Status: ${res.status}. Pesan Error: ${errText.substring(0, 300)}`;
     }
 
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      return `[SYSTEM DEBUG] Gemini API mengembalikan respons kosong atau diblokir oleh Safety Filter. Raw Response: ${JSON.stringify(data).substring(0, 300)}`;
+    }
+    return text;
   } catch (err: any) {
     console.warn(`[AI-Chat] Exception with Gemini fallback:`, err.message);
-    return null;
+    return `[SYSTEM DEBUG] Terjadi kesalahan jaringan saat menghubungi Gemini: ${err.message}`;
   }
 }
 
