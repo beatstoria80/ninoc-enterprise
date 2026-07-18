@@ -337,14 +337,14 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     parts: [{ text: msg.content || '' }]
   }));
 
-  const payload = {
+  const payload: any = {
     system_instruction: {
       parts: [{ text: systemPrompt }]
     },
     contents: geminiMessages,
     generationConfig: {
       temperature: 0.7,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 8192,
     }
   };
 
