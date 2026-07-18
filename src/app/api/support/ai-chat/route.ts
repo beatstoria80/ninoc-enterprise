@@ -337,8 +337,35 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     parts: [{ text: msg.content || '' }]
   }));
 
-  // Append emergency instructions to the very end of the prompt so Gemini prioritizes it
-  const geminiSystemPrompt = systemPrompt + "\n\n=================================\n\nIMPORTANT: ABAIKAN SEMUA INSTRUKSI DI ATAS TENTANG PENGGUNAAN TOOL (search_products, get_order_details, dll). KAMU SEDANG DALAM MODE DARURAT (TANPA ALAT PENCARIAN). JANGAN COBA-COBA MEMANGGIL TOOL ATAU FUNCTION CALL APAPUN! Jika kustomer menanyakan ketersediaan suatu produk, JAWAB SAJA DENGAN JUJUR DAN SINGKAT bahwa untuk saat ini produk tersebut TIDAK TERSEDIA atau belum bisa kamu cek, dan arahkan mereka untuk melihat koleksi lengkap yang ready di website (https://ninoc.store).";
+  // 🚨 COMPLETELY ISOLATE GEMINI'S PROMPT FROM GROQ'S TOOL PROMPT
+  // Groq's prompt is full of instructions to format prices and use [PRODUK:slug].
+  // If we give that to Gemini (which has no tools), it will hallucinate products to satisfy the prompt constraints.
+  // Groq's prompt has strict rules to format prices (Rp 129.000) and use [PRODUK:slug].
+  // If Gemini reads those rules but has no tools to get real data, it will hallucinate products to satisfy the prompt.
+  // We must give Gemini a clean, pure text-fallback prompt.
+  
+  let faqContext = "Silakan cek langsung di https://ninoc.store.";
+  if (systemPrompt.includes('STORE CONTEXT')) {
+    faqContext = systemPrompt.substring(systemPrompt.indexOf('STORE CONTEXT'));
+  } else if (systemPrompt.includes('FAQ')) {
+    faqContext = systemPrompt.substring(systemPrompt.indexOf('FAQ'));
+  } else {
+    // Attempt to grab the end of the prompt where the dynamic context is injected
+    const parts = systemPrompt.split('Format your responses using clean text');
+    if (parts.length > 1) faqContext = parts[1];
+  }
+
+  const geminiSystemPrompt = `Kamu adalah Asisten Virtual (CS) NINOC untuk mode DARURAT / FALLBACK.
+Saat ini sistem pencarian katalog dan pesanan sedang SIBUK/OFFLINE. Kamu TIDAK memiliki akses ke data produk, stok, harga, maupun database pesanan.
+
+ATURAN MUTLAK (SANGAT PENTING):
+1. JANGAN PERNAH mengarang, menebak, atau merekomendasikan nama produk, harga, atau ukuran spesifik apapun karena kamu tidak bisa melihat stok!
+2. JANGAN PERNAH menyebutkan nominal harga (seperti Rp 129.000) atau membuat tag [PRODUK:slug] karena itu pasti halusinasi!
+3. Jika kustomer menanyakan ketersediaan produk, kaos, hoodie, atau lainnya (misal: "ada hoodie?", "ada ukuran L?"), JAWAB DENGAN JUJUR DAN SINGKAT bahwa saat ini kamu belum bisa mengecek ketersediaan produk secara langsung, lalu ARAHKAN kustomer untuk mengecek etalase secara mandiri di website: https://ninoc.store.
+4. Gunakan bahasa kasual ala Gen-Z Indonesia (aku, kak, ramah, antusias).
+
+FAQ TOKO NINOC (Gunakan ini untuk menjawab pertanyaan umum, hindari mengarang informasi):
+${faqContext}`;
 
   const payload: any = {
     system_instruction: {
