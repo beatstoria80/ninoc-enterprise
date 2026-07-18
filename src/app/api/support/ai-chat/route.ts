@@ -198,7 +198,7 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
 
       if (!response.ok) {
         const errText = await response.text();
-        console.warn(`[AI-Chat] Model ${modelName} failed (${response.status}):`, errText);
+        console.error(`[AI-Chat-Error] Initial Groq ${modelName} gagal (${response.status}). Payload length: ${JSON.stringify(payload).length}. Response:`, errText);
         continue;
       }
 
@@ -289,7 +289,7 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
           });
         }
 
-        payload.tool_choice = 'none';
+        // Menghapus payload.tool_choice = 'none' karena sering memicu 400 Bad Request di beberapa endpoint Groq saat follow-up
         
         const followUpResponse = await fetchGroqWithRetry('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
@@ -302,7 +302,7 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
 
         if (!followUpResponse.ok) {
           const errText = await followUpResponse.text();
-          console.warn(`[AI-Chat] Follow-up for model ${modelName} failed (${followUpResponse.status}):`, errText);
+          console.error(`[AI-Chat-Error] Follow-up Groq ${modelName} gagal (${followUpResponse.status}). Payload length: ${JSON.stringify(payload).length}. Response:`, errText);
           continue;
         }
 
