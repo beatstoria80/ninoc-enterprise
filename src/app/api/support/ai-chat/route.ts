@@ -362,7 +362,9 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     }
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const text = parts.map((p: any) => p.text).filter(Boolean).join('\\n').trim();
+
     if (!text) {
       return `[SYSTEM DEBUG] Gemini API mengembalikan respons kosong atau diblokir oleh Safety Filter. Raw Response: ${JSON.stringify(data).substring(0, 300)}`;
     }
