@@ -107,12 +107,13 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     .from('support_messages')
     .select('message, sender_role')
     .eq('ticket_id', ticketId)
-    .order('created_at', { ascending: true })
-    .limit(10);
+    .order('created_at', { ascending: false })
+    .limit(6);
 
   const rawMessages: Array<any> = [];
   if (historyData) {
-    for (const msg of historyData) {
+    const chronologicalData = [...historyData].reverse();
+    for (const msg of chronologicalData) {
       rawMessages.push({
         role: msg.sender_role === 'customer' ? 'user' : 'assistant',
         content: msg.message,

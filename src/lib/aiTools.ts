@@ -383,7 +383,7 @@ class GetOrderDetailsHandler implements AiToolHandler<GetOrderDetailsArgs> {
 class SearchProductsHandler implements AiToolHandler<SearchProductsArgs> {
   public readonly name = 'search_products';
   private readonly SELECT_FIELDS =
-    'id, name, price, description, category, slug, variants(color, size, stock, sku)';
+    'id, name, price, category, slug, variants(color, size, stock, sku)';
 
   private readonly AI_ETHICS_INSTRUCTION =
     `INFO PENTING UNTUK AI: Pencarian spesifik user (warna, ukuran, desain) TIDAK DITEMUKAN di database. Produk di bawah ini adalah ALTERNATIF Best Seller. 🚨 ANTI-HALLUCINATION RULES: 1. JANGAN MENGARANG/BERBOHONG bahwa produk di bawah ini memiliki warna/ukuran yang dicari user! Cek array 'variants' secara faktual. 2. JANGAN menjawab "kosong" atau "tidak ada". 3. GUNAKAN POSITIF RESPON: "Wah kak, untuk warna/motif/ukuran tersebut saat ini sedang dalam proses kurasi & pengembangan oleh tim kreatif NINOC ya! 😊 Tapi tenang aja kak, biar style kakak makin kece, yuk cek pilihan best seller NINOC lainnya di bawah ini:" (lalu sebutkan rekomendasi alternatif). 4. JANGAN MENGARANG LINK! Gunakan HANYA format tag [PRODUK:slug] berdasarkan properti 'slug' dari data produk di bawah. DILARANG KERAS MENGIRIMKAN URL LENGKAP.`;
