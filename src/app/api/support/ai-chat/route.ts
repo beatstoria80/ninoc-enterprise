@@ -356,8 +356,9 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     });
 
     if (!res.ok) {
-      console.warn('[AI-Chat] Gemini API failed:', await res.text());
-      return null;
+      const errText = await res.text();
+      console.warn('[AI-Chat] Gemini API failed:', errText);
+      return `[SYSTEM DEBUG] Gemini API Ditolak oleh Google! Status: ${res.status}. Pesan Error: ${errText.substring(0, 300)}`;
     }
 
     const data = await res.json();
