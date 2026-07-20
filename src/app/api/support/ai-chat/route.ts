@@ -123,11 +123,16 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     }
   }
 
-  if (!rawMessages.length || rawMessages[rawMessages.length - 1].content !== currentMessage) {
+  // Safely append currentMessage if missing (handling DB replication lag)
+  // Only skip if the LAST message was from the USER and has the EXACT SAME content
+  const lastRaw = rawMessages.length > 0 ? rawMessages[rawMessages.length - 1] : null;
+  const isDuplicateUserMessage = lastRaw && lastRaw.role === 'user' && lastRaw.content === currentMessage;
+  
+  if (!isDuplicateUserMessage) {
     rawMessages.push({ role: 'user', content: currentMessage });
   }
 
-  // Combine consecutive messages with the same role to prevent API errors (Groq/Gemini require alternating roles)
+  // Combine consecutive messages with the same role to prevent API errors
   const mergedMessages: Array<any> = [];
   for (const msg of rawMessages) {
     if (mergedMessages.length > 0 && mergedMessages[mergedMessages.length - 1].role === msg.role) {
@@ -142,7 +147,10 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     mergedMessages.shift();
   }
 
+  // Final API Safety Net: History MUST end with a user prompt for completion endpoints
   if (mergedMessages.length === 0) {
+    mergedMessages.push({ role: 'user', content: currentMessage });
+  } else if (mergedMessages[mergedMessages.length - 1].role === 'assistant') {
     mergedMessages.push({ role: 'user', content: currentMessage });
   }
 
