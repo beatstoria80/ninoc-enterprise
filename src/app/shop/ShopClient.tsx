@@ -73,6 +73,29 @@ function getCategoryDisplayName(cat: string): string {
   return cat;
 }
 
+function getDisplayImage(product: Product, selectedColor: string): string {
+  if (selectedColor && selectedColor !== 'All' && product.specifications) {
+    const targetColor = selectedColor.toLowerCase().trim();
+    const specificImage = product.specifications.find(s => {
+      const label = (s.label || '').toLowerCase().trim();
+      if (label.startsWith('colorimage:') || label.startsWith('colorp1:')) {
+        const colorName = label.split(':')[1]?.trim();
+        return colorName === targetColor;
+      }
+      return false;
+    });
+    if (specificImage && specificImage.value) {
+      return specificImage.value;
+    }
+  }
+
+  return product.image_url || 
+         product.perspective1 || 
+         product.perspective2 || 
+         product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || 
+         '';
+}
+
 function KithEmptyState({ selectedCategory, onReset }: { selectedCategory: string; onReset: () => void }) {
   const code = selectedCategory === 'Apparel' ? 'APR-01' : selectedCategory === 'Objects' ? 'OBJ-02' : selectedCategory === 'Pantry' ? 'PTR-03' : 'EMPTY';
   
@@ -185,7 +208,7 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                     <div className="bg-white border border-ink/5 h-full flex flex-col justify-between p-2 relative group overflow-hidden">
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02] mb-2">
                         <SafeImage
-                          src={product.image_url || product.perspective1 || product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || ''}
+                          src={getDisplayImage(product, filterSystem.selectedColor)}
                           alt={product.name}
                           className="object-cover transition-transform duration-500 group-hover:scale-105 select-none pointer-events-none"
                           sizes="50vw"
@@ -306,7 +329,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
 
                     <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/[0.02]">
                       <SafeImage
-                        src={product.image_url || product.perspective1 || product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:') || s.label?.toLowerCase().startsWith('colorp1:'))?.value || ''}
+                        src={getDisplayImage(product, filterSystem.selectedColor)}
                         alt={product.name}
                         className="transition-transform duration-700 group-hover/card:scale-105 select-none pointer-events-none"
                         sizes="(max-width: 1280px) 25vw, 20vw"
