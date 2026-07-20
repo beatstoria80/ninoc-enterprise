@@ -98,7 +98,7 @@ function getDisplayImage(product: Product, selectedColor: string): string {
 
     // 3. Check for variant image_url
     const safeVariants = Array.isArray(product.variants) ? product.variants : [];
-    const varMatch = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url);
+    const varMatch = (safeVariants as any[]).find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url);
     if (varMatch?.image_url) return varMatch.image_url;
   }
 
