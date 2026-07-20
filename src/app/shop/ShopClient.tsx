@@ -74,21 +74,35 @@ function getCategoryDisplayName(cat: string): string {
 }
 
 function getDisplayImage(product: Product, selectedColor: string): string {
-  if (selectedColor && selectedColor !== 'All' && product.specifications) {
-    const targetColor = selectedColor.toLowerCase().trim();
-    const specificImage = product.specifications.find(s => {
-      const label = (s.label || '').toLowerCase().trim();
-      if (label.startsWith('colorimage:') || label.startsWith('colorp1:')) {
-        const colorName = label.split(':')[1]?.trim();
-        return colorName === targetColor;
-      }
-      return false;
+  if (selectedColor && selectedColor !== 'All') {
+    const safeColor = selectedColor.trim().toUpperCase();
+    const safeSpecs = Array.isArray(product.specifications) ? product.specifications : [];
+    
+    // 1. Check for Color Image: <Color>
+    const mainSpec = safeSpecs.find((spec: any) => {
+      if (!spec?.label || typeof spec.label !== 'string') return false;
+      const match = spec.label.match(/^color\s*(image)?\s*:\s*(.+)$/i);
+      return match && match[2].trim().toUpperCase() === safeColor && spec.value?.trim();
     });
-    if (specificImage && specificImage.value) {
-      return specificImage.value;
-    }
+
+    if (mainSpec?.value?.trim()) return mainSpec.value.trim();
+
+    // 2. Check for Color P1: <Color>
+    const p1Spec = safeSpecs.find((spec: any) => {
+      if (!spec?.label || typeof spec.label !== 'string') return false;
+      const match = spec.label.match(/^color\s*(p1|perspective1|1)?\s*:\s*(.+)$/i);
+      return match && match[2].trim().toUpperCase() === safeColor && spec.value?.trim();
+    });
+
+    if (p1Spec?.value?.trim()) return p1Spec.value.trim();
+
+    // 3. Check for variant image_url
+    const safeVariants = Array.isArray(product.variants) ? product.variants : [];
+    const varMatch = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url);
+    if (varMatch?.image_url) return varMatch.image_url;
   }
 
+  // Fallback
   return product.image_url || 
          product.perspective1 || 
          product.perspective2 || 
