@@ -1,7 +1,6 @@
 /**
  * Biteship Order Creation API
- * Creates a shipment/waybill in Biteship and saves tracking_id to Supabase
- * Falls back to mock tracking ID if API not activated
+ * Creates a shipment/waybill in Biteship and saves tracking_id to Supabase.
  */
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
@@ -27,20 +26,13 @@ const OrderPayloadSchema = z.object({
   metadata: z.any().optional()
 });
 
-// Generate mock tracking ID for development/pre-activation
-function generateMockWaybill(courierCompany: string): string {
-  const prefix = courierCompany.toUpperCase().slice(0, 3);
-  const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-  const timestamp = Date.now().toString().slice(-6);
-  return `NNC-${prefix}${random}${timestamp}`;
-}
+
 
 async function saveOrderToSupabase(
   orderId: string,
   trackingId: string,
   courierCompany: string,
   courierType: string,
-  mock: boolean = false,
   rawPayload?: object
 ) {
   // Get current print count
@@ -70,13 +62,13 @@ async function saveOrderToSupabase(
   // Log to tracking_logs
   await adminClient.from('tracking_logs').insert({
     order_id: orderId,
-    biteship_status: mock ? 'mock_allocated' : 'allocated',
+    biteship_status: 'allocated',
     internal_status: 'paid',
     courier_company: courierCompany,
     courier_link: null,
     courier_driver_name: null,
     courier_driver_phone: null,
-    raw_payload: JSON.stringify(rawPayload || { mock }),
+    raw_payload: JSON.stringify(rawPayload || {}),
   });
 
   // ─── Trigger Immediate Shipping Notifications (Email, WA, Push) ───
@@ -245,7 +237,7 @@ export async function POST(req: Request) {
 
         if (response.ok && data.success !== false) {
           // Success — save to Supabase
-          await saveOrderToSupabase(order_id, data.waybill_id, data.courier_company, data.courier_type, false, data);
+          await saveOrderToSupabase(order_id, data.waybill_id, data.courier_company, data.courier_type, data);
 
           return NextResponse.json({
             success: true,
@@ -263,39 +255,15 @@ export async function POST(req: Request) {
 
         // API error (not activated / no balance)
         console.warn(`[Biteship Create Order] API error: ${JSON.stringify(data)}`);
-        
-        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-          return NextResponse.json({ error: 'Shipping provider is currently unavailable. Please contact support.' }, { status: 500 });
-        }
+        return NextResponse.json({ error: 'Layanan pengiriman sedang tidak tersedia. Hubungi support untuk bantuan.' }, { status: 503 });
 
       } catch (apiErr) {
         console.error('[Biteship Create Order] API call failed:', (apiErr as Error).message);
-        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-          return NextResponse.json({ error: 'Internal Shipping Server Error.' }, { status: 500 });
-        }
+        return NextResponse.json({ error: 'Gagal menghubungi layanan pengiriman. Silakan coba lagi.' }, { status: 503 });
       }
     }
 
-    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-      return NextResponse.json({ error: 'Shipping API Key Not Configured.' }, { status: 500 });
-    }
-
-    // ── FALLBACK: Generate mock waybill ──
-    const mockWaybill = generateMockWaybill(courier_company);
-    await saveOrderToSupabase(order_id, mockWaybill, courier_company, courier_type, true);
-
-    console.log(`[Biteship Create Order] Mock mode — generated: ${mockWaybill}`);
-
-    return NextResponse.json({
-      success: true,
-      source: 'mock',
-      waybill_id: mockWaybill,
-      tracking_id: mockWaybill,
-      courier_company: courier_company.toLowerCase(),
-      courier_type: courierType,
-      status: 'allocated',
-      note: 'Mock mode — Biteship Order API not yet activated. Order will be processed when API is activated.',
-    });
+    return NextResponse.json({ error: 'Layanan pengiriman belum dikonfigurasi. Hubungi admin.' }, { status: 500 });
 
   } catch (err) {
     const error = err as Error;
@@ -311,7 +279,7 @@ export async function GET(req: Request) {
   const apiKey = process.env.BITESHIP_API_KEY;
 
   if (!apiKey || apiKey === 'your_biteship_api_key_here') {
-    return NextResponse.json({ success: true, orders: [], source: 'mock' });
+    return NextResponse.json({ success: false, error: 'Biteship API key not configured' }, { status: 500 });
   }
 
   try {

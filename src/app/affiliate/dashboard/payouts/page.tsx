@@ -123,13 +123,9 @@ export default function PayoutsPage() {
     }
   };
 
-  const simulateUpload = () => {
-    setDocUploading(true);
-    setTimeout(() => {
-      setIdUploaded(true);
-      setDocUploading(false);
-      setError(null); // Clear error if any
-    }, 1500);
+  const handleUploadKTP = () => {
+    // TODO: Implement real file upload to Supabase Storage
+    alert('Fitur upload KTP akan segera tersedia. Hubungi admin untuk verifikasi manual.');
   };
 
   if (loading) {
@@ -243,20 +239,20 @@ export default function PayoutsPage() {
                 <div className="bg-rose/5 border border-rose/10 p-4 rounded-xl flex items-start gap-3">
                   <AlertCircle size={16} className="text-rose shrink-0 mt-0.5" />
                   <p className="text-xs font-medium text-rose leading-relaxed">
-                    Penarikan dana tidak dapat diproses jika dokumen verifikasi belum diunggah. (Untuk versi ini, klik tombol di bawah untuk mensimulasikan upload).
+                    Penarikan dana tidak dapat diproses jika dokumen verifikasi belum diunggah. Hubungi admin NINOC untuk proses verifikasi identitas.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div 
-                    onClick={simulateUpload}
+                    onClick={handleUploadKTP}
                     className="border-2 border-dashed border-ink/10 rounded-xl p-6 flex flex-col items-center text-center cursor-pointer hover:border-rose transition-colors bg-ink/[0.02]"
                   >
                     <div className="p-3 bg-white rounded-full shadow-sm mb-3">
                       {docUploading ? <Loader2 size={18} className="animate-spin text-ink/60" /> : <Upload size={18} className="text-ink/60" />}
                     </div>
                     <h3 className="text-sm font-medium text-ink mb-1">Upload KTP & Mutasi</h3>
-                    <p className="text-xs md:text-[10px] text-ink/60 uppercase tracking-wider">Klik untuk simulasi</p>
+                    <p className="text-xs md:text-[10px] text-ink/60 uppercase tracking-wider">Segera Hadir</p>
                   </div>
                 </div>
               </>

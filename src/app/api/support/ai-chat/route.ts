@@ -337,8 +337,8 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
 async function callGemini(messages: Array<any>, systemPrompt: string): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.warn('[AI-Chat] GEMINI_API_KEY not set.');
-    return '[SYSTEM DEBUG] GEMINI_API_KEY tidak ditemukan di environment Vercel! Pastikan Anda sudah menambahkan key ini di Vercel Settings -> Environment Variables dan men-centang opsi "Production".';
+    console.error('[AI-Chat] GEMINI_API_KEY not set in environment.');
+    return 'Hai kak! Maaf ya, asisten virtual NINOC sedang maintenance sebentar 🙏 Untuk bantuan langsung, silakan hubungi kami via WhatsApp di halaman Bantuan ya!';
   }
 
   // Convert OpenAI format messages to Gemini format
@@ -397,21 +397,22 @@ ${faqContext}`;
 
     if (!res.ok) {
       const errText = await res.text();
-      console.warn('[AI-Chat] Gemini API failed:', errText);
-      return `[SYSTEM DEBUG] Gemini API Ditolak oleh Google! Status: ${res.status}. Pesan Error: ${errText.substring(0, 300)}`;
+      console.error('[AI-Chat] Gemini API failed:', errText);
+      return 'Hai kak! Maaf ya, asisten virtual sedang ada gangguan teknis 🙏 Coba lagi dalam beberapa menit ya, atau langsung chat kami via WhatsApp!';
     }
 
     const data = await res.json();
     const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.map((p: any) => p.text).filter(Boolean).join('\\n').trim();
+    const text = parts.map((p: any) => p.text).filter(Boolean).join('\n').trim();
 
     if (!text) {
-      return `[SYSTEM DEBUG] Gemini API mengembalikan respons kosong atau diblokir oleh Safety Filter. Raw Response: ${JSON.stringify(data).substring(0, 300)}`;
+      console.warn('[AI-Chat] Gemini returned empty or blocked response:', JSON.stringify(data).substring(0, 300));
+      return 'Hai kak! Mohon maaf, aku belum bisa memproses pertanyaan itu 🙏 Coba tanya dengan kata-kata yang berbeda ya!';
     }
     return text;
   } catch (err: any) {
-    console.warn(`[AI-Chat] Exception with Gemini fallback:`, err.message);
-    return `[SYSTEM DEBUG] Terjadi kesalahan jaringan saat menghubungi Gemini: ${err.message}`;
+    console.error(`[AI-Chat] Exception with Gemini fallback:`, err.message);
+    return 'Hai kak! Maaf ya, ada gangguan koneksi ke server kami 🙏 Silakan coba lagi dalam beberapa saat!';
   }
 }
 

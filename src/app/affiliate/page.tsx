@@ -161,7 +161,7 @@ export default function AffiliateApplicationPage() {
     npwp: ''
   });
 
-  // Mock document states for visual completeness
+  // Document upload states (will connect to Supabase Storage in future)
   const [ktpUploaded, setKtpUploaded] = useState(false);
   const [igInsightUploaded, setIgInsightUploaded] = useState(false);
   const [tiktokInsightUploaded, setTiktokInsightUploaded] = useState(false);
@@ -178,15 +178,12 @@ export default function AffiliateApplicationPage() {
     if (!file) return;
 
     setUploading(type);
-    // Simulate upload delay
+    // TODO: Implement real upload to Supabase Storage
+    // For now, show user-friendly message
     setTimeout(() => {
-      if (type === 'ktp') setKtpUploaded(true);
-      if (type === 'ig_insight') setIgInsightUploaded(true);
-      if (type === 'tiktok_insight') setTiktokInsightUploaded(true);
-      if (type === 'yt_insight') setYInsightUploaded(true);
-      if (type === 'fb_insight') setFbInsightUploaded(true);
+      alert('Fitur upload dokumen akan segera tersedia. Data formulir Anda tetap tersimpan.');
       setUploading(null);
-    }, 1000);
+    }, 500);
   };
 
   const isFormValid = () => {

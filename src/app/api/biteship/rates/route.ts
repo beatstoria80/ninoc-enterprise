@@ -1,27 +1,12 @@
 /**
  * Biteship Shipping Rates API
- * Proxy to Biteship API — tries real Biteship first, falls back to mock on failure.
+ * Proxy to Biteship API for real-time courier rate lookups.
  * Features in-memory TTL caching for origin warehouse lookups to eliminate DB bottlenecks.
  */
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { isFnBDepartment } from '@/lib/departmentDomain';
 import { getBiteshipActivationSettings } from '@/lib/settings';
-
-const MOCK_RATES = {
-  success: true,
-  object: 'rates',
-  source: 'fallback',
-  pricing: [
-    { id: 'rate_jne_reg', company: 'jne', courier_name: 'JNE', courier_service_name: 'REGULER', courier_service_code: 'reg', description: 'Layanan reguler JNE - 2-3 hari kerja', duration: '2-3 Days', price: 12000 },
-    { id: 'rate_jne_yes', company: 'jne', courier_name: 'JNE', courier_service_name: 'YES', courier_service_code: 'yes', description: 'Layanan besok JNE - 1 hari kerja', duration: '1 Day', price: 18000 },
-    { id: 'rate_grab_instant', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GrabExpress Instant', duration: '1-3 Hours', price: 25000 },
-    { id: 'rate_grab_sameday', company: 'grab', courier_name: 'GrabExpress', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GrabExpress Same Day', duration: '6-8 Hours', price: 15000 },
-    { id: 'rate_gojek_instant', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Instant', courier_service_code: 'instant', description: 'Layanan GoSend Instant', duration: '1-3 Hours', price: 26000 },
-    { id: 'rate_gojek_sameday', company: 'gojek', courier_name: 'GoSend', courier_service_name: 'Same Day', courier_service_code: 'sameday', description: 'Layanan GoSend Same Day', duration: '6-8 Hours', price: 16000 },
-  ],
-  available_couriers: ['jne', 'grab', 'gojek'],
-};
 
 // In-memory TTL cache for primary crossdock origin warehouse (5 minutes TTL)
 let cachedOriginHub: { postalCode: number; expiresAt: number } | null = null;
@@ -159,46 +144,25 @@ export async function POST(req: Request) {
           return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
         }
 
-        // If rates API error (no balance), fall back to mock
+        // If rates API error (no balance / auth issue), return clear error
         if (!response.ok || data.success === false) {
           console.warn(`[Biteship Rates] API returned error: ${JSON.stringify(data)}`);
-          
-          if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-            return NextResponse.json({ success: false, error: data.error || 'Shipping API unavailable', source: 'biteship' }, { status: 500 });
-          }
-
-          const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
-          const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
-          return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: data.error || 'API unavailable' });
+          return NextResponse.json({ success: false, error: data.error || 'Layanan pengiriman sedang tidak tersedia. Silakan coba beberapa saat lagi.', source: 'biteship' }, { status: 503 });
         }
 
       } catch (apiErr) {
         // Network or other error
         console.error('[Biteship Rates] API call failed:', (apiErr as Error).message);
-        if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-          return NextResponse.json({ success: false, error: 'Internal Shipping Server Error' }, { status: 500 });
-        }
+        return NextResponse.json({ success: false, error: 'Gagal menghubungi layanan pengiriman. Silakan coba beberapa saat lagi.' }, { status: 503 });
       }
     }
 
-    // Fallback mock data — works without API activation
-    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-      return NextResponse.json({ success: false, error: 'Shipping API Key Not Configured' }, { status: 500 });
-    }
-
-    const geoFiltered = applyGeographicRestrictions(MOCK_RATES.pricing, destination_area_name);
-    const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
-    return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice });
+    // No API key configured
+    return NextResponse.json({ success: false, error: 'Layanan pengiriman belum dikonfigurasi. Hubungi admin.' }, { status: 500 });
 
   } catch (err) {
     const error = err as Error;
     console.error('[Biteship Rates] Error:', error.message);
-    if (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true') {
-      return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
-    }
-    
-    // Still return mock data on unexpected error
-    const fnbResult = applyFnBRestrictions(MOCK_RATES.pricing, []);
-    return NextResponse.json({ ...MOCK_RATES, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, reason: error.message });
+    return NextResponse.json({ success: false, error: 'Terjadi kesalahan pada layanan pengiriman.' }, { status: 500 });
   }
 }
