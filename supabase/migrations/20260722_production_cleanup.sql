@@ -36,33 +36,12 @@ DELETE FROM user_notifications WHERE action_link LIKE '/profile/orders/%';
 -- 9. Clear orders (main table)
 DELETE FROM orders;
 
--- 10. Reset negative stock on products to 0
-UPDATE products 
-SET stock_quantity = GREATEST(COALESCE(stock_quantity, 0), 0)
-WHERE stock_quantity IS NULL OR stock_quantity < 0;
+-- 10. Reset stock on all variants to 10
+-- Restores stock deducted from fake sandbox transactions
+UPDATE variants 
+SET stock_quantity = 10;
 
--- 11. Reset negative stock on product variants (JSONB array)
--- This updates the variants JSONB array to set any negative stock_quantity to 0
-UPDATE products
-SET variants = (
-  SELECT jsonb_agg(
-    CASE 
-      WHEN (elem->>'stock_quantity')::int < 0 
-      THEN jsonb_set(elem, '{stock_quantity}', '0')
-      ELSE elem
-    END
-  )
-  FROM jsonb_array_elements(variants) AS elem
-)
-WHERE variants IS NOT NULL 
-  AND variants != 'null'::jsonb
-  AND jsonb_typeof(variants) = 'array'
-  AND EXISTS (
-    SELECT 1 FROM jsonb_array_elements(variants) AS v
-    WHERE (v->>'stock_quantity')::int < 0
-  );
-
--- 12. Clear order transaction logs if table exists
+-- 11. Clear order transaction logs if table exists
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'order_transactions') THEN
@@ -70,7 +49,7 @@ BEGIN
   END IF;
 END $$;
 
--- 13. Clear retur/return requests if any test data exists
+-- 12. Clear retur/return requests if any test data exists
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'retur_requests') THEN
@@ -79,7 +58,7 @@ BEGIN
 END $$;
 
 -- Verification query (run after migration to confirm)
--- SELECT 'products' AS table_name, COUNT(*) AS remaining FROM products
+-- SELECT 'variants' AS table_name, COUNT(*) AS remaining FROM variants WHERE stock_quantity != 10
 -- UNION ALL SELECT 'orders', COUNT(*) FROM orders
 -- UNION ALL SELECT 'order_items', COUNT(*) FROM order_items
 -- UNION ALL SELECT 'tracking_logs', COUNT(*) FROM tracking_logs;
