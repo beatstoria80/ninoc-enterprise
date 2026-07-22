@@ -67,6 +67,12 @@ export default function GlobalFooter() {
           <Link href="/refund-policy" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {(dict.footer as any).refundPolicy || 'Refund Policy'}
           </Link>
+          <Link href="/privacy-policy" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
+            {(dict.footer as any).privacyPolicy || 'Privacy Policy'}
+          </Link>
+          <Link href="/cookie-policy" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
+            {(dict.footer as any).cookiePolicy || 'Cookie Policy'}
+          </Link>
           <Link href="/track" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm cursor-pointer inline-block py-2 -my-2">
             {dict.header.track}
           </Link>

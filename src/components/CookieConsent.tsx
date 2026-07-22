@@ -42,7 +42,7 @@ export default function CookieConsent() {
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="fixed bottom-4 left-4 z-[99990] pointer-events-none md:bottom-6 md:left-6 w-[calc(100%-2rem)] max-w-sm"
         >
-          <div className="bg-neutral-900/90 backdrop-blur-xl border border-neutral-800 rounded-2xl shadow-2xl p-5 md:p-6 pointer-events-auto flex flex-col relative overflow-hidden">
+          <div className="bg-neutral-900/90 backdrop-blur-xl border border-neutral-800 rounded-2xl shadow-2xl p-5 md:p-6 pointer-events-auto flex flex-col relative overflow-hidden no-drag">
             <div className="absolute -top-8 -right-8 text-neutral-800/40 transform rotate-12">
               <Cookie size={120} />
             </div>
