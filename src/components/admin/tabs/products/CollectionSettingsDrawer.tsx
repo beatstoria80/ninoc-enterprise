@@ -146,8 +146,6 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let savedCollectionId = collection?.id;
-
       const payload = {
         name: formData.name,
         slug: formData.slug,
@@ -159,29 +157,19 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
         end_date: formData.end_date ? new Date(formData.end_date).toISOString() : null,
       };
 
-      if (savedCollectionId) {
-        // Update existing
-        const { error: updateError } = await supabase.from('collections').update(payload).eq('id', savedCollectionId);
-        if (updateError) throw updateError;
-        
-        // Delete old relations
-        const { error: deleteRelError } = await supabase.from('collection_products').delete().eq('collection_id', savedCollectionId);
-        if (deleteRelError) throw deleteRelError;
-      } else {
-        // Create new
-        const { data, error } = await supabase.from('collections').insert([payload]).select().single();
-        if (error) throw error;
-        savedCollectionId = data.id;
-      }
+      const res = await fetch('/api/admin/collections/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          collectionId: collection?.id || null,
+          payload,
+          selectedProductIds: Array.from(selectedProductIds),
+        }),
+      });
 
-      // Insert new relations
-      if (savedCollectionId && selectedProductIds.size > 0) {
-        const relations = Array.from(selectedProductIds).map(pid => ({
-          collection_id: savedCollectionId,
-          product_id: pid
-        }));
-        const { error: insertRelError } = await supabase.from('collection_products').insert(relations);
-        if (insertRelError) throw insertRelError;
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || 'Terjadi kesalahan sistem');
       }
 
       onSaved();
@@ -200,11 +188,16 @@ export function CollectionSettingsDrawer({ isOpen, onClose, collection, onSaved 
     
     setIsDeleting(true);
     try {
-      // Delete relations first just in case cascade is not set up
-      await supabase.from('collection_products').delete().eq('collection_id', collection.id);
-      
-      const { error } = await supabase.from('collections').delete().eq('id', collection.id);
-      if (error) throw error;
+      const res = await fetch('/api/admin/collections/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ collectionId: collection.id }),
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || 'Terjadi kesalahan sistem');
+      }
       
       onSaved();
       onClose();
