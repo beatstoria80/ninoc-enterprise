@@ -43,7 +43,7 @@ export default function BentoDepartmentGrid() {
   };
 
   return (
-    <section className="px-4 md:px-12 max-w-[1800px] mx-auto pb-12 md:pb-20 pt-4 md:pt-6 relative z-30 -mt-8 md:-mt-16">
+    <section className="px-4 md:px-12 max-w-[1800px] mx-auto pb-12 md:pb-20 pt-4 md:pt-6 relative z-30 -mt-16 md:-mt-32">
       <motion.div 
         variants={headerVariants}
         initial="hidden"

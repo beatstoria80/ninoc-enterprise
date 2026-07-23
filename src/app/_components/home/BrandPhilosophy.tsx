@@ -16,7 +16,7 @@ export default function BrandPhilosophy() {
   return (
     <section 
       ref={ref} 
-      className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden py-32 md:py-40"
+      className="relative min-h-[30vh] md:min-h-[40vh] flex items-center justify-center overflow-hidden py-10 md:py-16"
     >
       {/* Masked Background - Applies the feather effect only to the black bg, not the text */}
       <div 
@@ -33,13 +33,7 @@ export default function BrandPhilosophy() {
       <div className="max-w-[1200px] mx-auto px-4 md:px-12 relative z-20 w-full text-center">
         <motion.div style={{ y: y1, opacity }} className="space-y-8 md:space-y-12">
           
-          <div className="flex items-center justify-center gap-3">
-            <div className="h-[1px] w-8 md:w-16 bg-white/40" />
-            <p className="text-[10px] md:text-xs font-mono uppercase tracking-[0.4em] text-white/80 font-semibold">
-              Manifesto
-            </p>
-            <div className="h-[1px] w-8 md:w-16 bg-white/40" />
-          </div>
+
 
           <h2 className="text-3xl md:text-5xl lg:text-7xl font-display font-medium italic uppercase tracking-tighter text-white leading-[0.9]">
             Functionality<br />
