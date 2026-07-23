@@ -268,9 +268,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
               <span className="text-[11px] md:text-[8px] text-ink/50 uppercase tracking-widest hidden md:inline">{products.length} Items</span>
             </div>
           </div>
-          <div className="text-[11px] md:text-[8px] font-mono tracking-tighter text-ink/50 uppercase">
-            NINOC-COL-{collection.id.substring(0, 6)}
-          </div>
+
         </div>
       </div>
 
