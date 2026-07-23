@@ -32,7 +32,7 @@ export default function ConnectSection() {
               href="https://www.instagram.com/ninoc.co/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all"
+              className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all relative z-50 pointer-events-auto"
             >
               <motion.div
                 className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center mb-4"
@@ -70,12 +70,12 @@ export default function ConnectSection() {
               <p className="text-xs md:text-[7px] text-ink/50 uppercase tracking-widest mt-1">Direct Message</p>
             </a>
 
-            {/* WhatsApp */}
+            {/* TikTok */}
             <a
-              href="https://wa.me/628211983774"
+              href="https://tiktok.com/@ninoc.co"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all"
+              className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all relative z-50 pointer-events-auto"
             >
               <motion.div
                 className="w-12 h-12 md:w-16 md:h-16 bg-ink/5 flex items-center justify-center mb-4"
