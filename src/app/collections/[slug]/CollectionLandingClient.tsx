@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowLeft, Package, Calendar, ShoppingBag, Eye } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
-import { getProductStock, getProductViews } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
-import { useBrandColor } from '@/components/BrandProvider';
-import { Collection, Product, CollectionProduct } from '@/components/admin/types';
-import { useCart } from '@/store/useCart';
-import { useRouter } from 'next/navigation';
+import { getProductStock } from '@/lib/utils';
+import { Collection, Product } from '@/components/admin/types';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
 import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 
@@ -60,7 +56,7 @@ function ProductCard({ product }: { product: Product }) {
     return 0;
   };
 
-  const router = useRouter();
+
 
   return (
     <motion.div
@@ -254,7 +250,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
 
       {/* 2. METADATA BAR */}
       <div className="bg-white border-b border-ink/5 shrink-0 z-20 shadow-sm relative">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-3 flex items-center">
           <div className="flex items-center gap-4 md:gap-6">
             <Link href="/shop" className="group flex items-center gap-1.5 text-ink/60 hover:text-ink transition-colors">
               <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
