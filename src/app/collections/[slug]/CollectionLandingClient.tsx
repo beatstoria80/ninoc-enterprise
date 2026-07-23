@@ -214,14 +214,6 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
         
-        {/* Top Nav inside Hero */}
-        <div className="absolute top-16 md:top-24 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-10">
-          <Link href="/collections" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform ease-[cubic-bezier(0.23,1,0.32,1)] duration-200" />
-            <span className="text-xs md:text-[10px] uppercase tracking-[0.2em]">All Collections</span>
-          </Link>
-        </div>
-
         {/* Hero Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 z-10">
           <div className="max-w-[1200px] mx-auto space-y-4">
