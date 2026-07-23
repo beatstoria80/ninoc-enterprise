@@ -16,7 +16,7 @@ export default function BrandPhilosophy() {
   return (
     <section 
       ref={ref} 
-      className="relative min-h-[30vh] md:min-h-[40vh] flex items-center justify-center overflow-hidden py-10 md:py-16"
+      className="relative min-h-[30vh] md:min-h-[40vh] flex items-center justify-center overflow-hidden py-10 md:py-16 -mt-8 md:-mt-16 z-20"
     >
       {/* Masked Background - Applies the feather effect only to the black bg, not the text */}
       <div 
