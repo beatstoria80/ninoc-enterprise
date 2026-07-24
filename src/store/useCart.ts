@@ -47,10 +47,28 @@ export const useCart = create<CartStore>()(
         const currentItems = get().items;
         
         // Single Order Warehouse Conflict Check
+        // CRITICAL BUG FIX: Ensure we do not block items that technically share the same physical location
+        // but have mismatched metadata (e.g. one has warehouse_id, the other only has origin_postal_code).
         if (currentItems.length > 0) {
-          const existingOrigin = currentItems[0].warehouse_id || currentItems[0].origin_postal_code || 'DEFAULT_BANDUNG';
-          const newOrigin = product.warehouse_id || product.origin_postal_code || 'DEFAULT_BANDUNG';
-          if (existingOrigin !== newOrigin) {
+          const firstItem = currentItems[0];
+          
+          const existingWarehouseId = firstItem.warehouse_id;
+          const existingPostal = firstItem.origin_postal_code;
+          
+          const newWarehouseId = product.warehouse_id;
+          const newPostal = product.origin_postal_code;
+
+          // 1. If both have warehouse_id, they MUST match.
+          // 2. If one is missing warehouse_id but postal codes match, we allow it (soft fallback).
+          // 3. If neither have warehouse_id and neither have postal codes, they are both DEFAULT (allowed).
+          const isSameWarehouseId = existingWarehouseId && newWarehouseId ? existingWarehouseId === newWarehouseId : true;
+          const isSamePostal = existingPostal && newPostal ? existingPostal === newPostal : true;
+          
+          // Strict block if explicit IDs mismatch, or if explicit IDs are missing but postals mismatch
+          const isConflict = (existingWarehouseId && newWarehouseId && existingWarehouseId !== newWarehouseId) || 
+                             (!existingWarehouseId && !newWarehouseId && existingPostal !== newPostal);
+
+          if (isConflict) {
             return { 
               success: false, 
               error: 'Anda tidak dapat menggabungkan produk dari lokasi fasilitas/gudang yang berbeda dalam satu pesanan. Selesaikan atau kosongkan pesanan sebelumnya.' 
