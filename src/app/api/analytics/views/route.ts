@@ -66,8 +66,9 @@ export async function GET(request: Request) {
       response.rows.forEach((row) => {
         const pagePath = (row.dimensionValues?.[0]?.value || '').toLowerCase();
         const views = parseInt(row.metricValues?.[0]?.value || '0', 10);
-        // Match /shop/slug or /shop/slug/ or paths containing the slug
-        if (pagePath.includes(slug!.toLowerCase())) {
+        // Exact match using regex to prevent substring collision
+        const match = pagePath.match(/\/shop\/([^\/?#]+)/i);
+        if (match && match[1] && match[1].toLowerCase() === slug!.toLowerCase()) {
           totalViews += views;
         }
       });

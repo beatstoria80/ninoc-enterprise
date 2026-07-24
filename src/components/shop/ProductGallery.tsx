@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Maximize2, Star } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/shop';
@@ -39,6 +40,8 @@ export default function ProductGallery({
   onExpand
 }: ProductGalleryProps) {
   const { views: activeViewers } = useProductViews(product.slug);
+  const pathname = usePathname();
+  const isId = !pathname?.startsWith('/en');
 
   // Desktop vertical drag scroll state
   const desktopThumbRef = useRef<HTMLDivElement>(null);
@@ -292,7 +295,7 @@ export default function ProductGallery({
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="text-[9px] md:text-[10px] font-bold text-ink/80 uppercase tracking-widest leading-none pt-[1px]">
-                  {activeViewers} Melihat
+                  {activeViewers} {isId ? 'DILIHAT' : 'VIEWS'}
                 </span>
               </div>
             </motion.div>
