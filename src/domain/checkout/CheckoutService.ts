@@ -4,6 +4,7 @@ import { PricingEngine } from './PricingEngine';
 import { OrderRepository } from '@/repositories/OrderRepository';
 import { getSnapApi } from '@/lib/midtrans';
 import { getAppUrl } from '@/lib/utils';
+import { StockValidator } from './StockValidator';
 
 export class CheckoutService {
   constructor(private readonly supabaseAdmin: SupabaseClient) {}
@@ -57,35 +58,12 @@ export class CheckoutService {
     }
 
     // 4.5 Pre-validate stock availability strictly and case-insensitively per AGENTS.md Rule #3
-    for (const item of items) {
-      const dbProd = dbProducts.find((p: any) => p.id === item.id);
-      if (!dbProd) continue;
-      
-      const effectiveSize = (item.size || '').toUpperCase().trim();
-      const effectiveColor = (item.color || '').toUpperCase().trim();
-      const safeVariants = Array.isArray(dbProd.variants) ? dbProd.variants : [];
-      
-      let variant = undefined;
-      if (effectiveSize || effectiveColor) {
-        variant = safeVariants.find((v: any) => 
-          (!effectiveSize ? true : (v?.size || '').toUpperCase().trim() === effectiveSize) &&
-          (!effectiveColor ? true : (v?.color || '').toUpperCase().trim() === effectiveColor)
-        );
-        if (!variant && effectiveSize) {
-          variant = safeVariants.find((v: any) => (v?.size || '').toUpperCase().trim() === effectiveSize);
-        }
-      }
-      
-      const currentStock = variant && variant.stock_quantity != null 
-        ? variant.stock_quantity 
-        : (dbProd.stock_quantity != null ? dbProd.stock_quantity : 0);
-
-      if (item.quantity > currentStock) {
-        return { status: 409, payload: { 
-          error: `Stok "${item.name}" ${item.size ? `(${item.size})` : ''} hanya tersisa ${currentStock} unit`,
-          out_of_stock_item: item.id 
-        }};
-      }
+    const stockValidation = StockValidator.validateStock(items, dbProducts);
+    if (!stockValidation.isValid) {
+      return { status: 409, payload: { 
+        error: stockValidation.error,
+        out_of_stock_item: stockValidation.outOfStockItemId 
+      }};
     }
 
     // 5. Resolve Affiliate Tracking
