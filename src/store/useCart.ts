@@ -33,70 +33,6 @@ interface CartStore {
   totalPrice: () => number;
 }
 
-// Cached member state to avoid repetitive expensive parsing
-let cachedIsMember: boolean | null = null;
-
-const checkIsMember = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  if (cachedIsMember !== null) return cachedIsMember;
-  
-  // O(1) Check for cookies first (Supabase SSR)
-  if (typeof document !== 'undefined' && document.cookie) {
-    if (/sb-.*-auth-token/.test(document.cookie)) {
-      cachedIsMember = true;
-      return true;
-    }
-  }
-
-  // Fallback O(1) approximate check for localStorage
-  try {
-    const keys = Object.keys(window.localStorage);
-    cachedIsMember = keys.some(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
-    return cachedIsMember;
-  } catch (e) {
-    return false;
-  }
-};
-
-const smartCartStorage = {
-  getItem: (name: string): string | null => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const local = window.localStorage.getItem(name);
-      if (local) return local;
-      return window.sessionStorage.getItem(name);
-    } catch (e) {
-      console.warn('smartCartStorage getItem error:', e);
-      return null;
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    if (typeof window === 'undefined') return;
-    try {
-      const isMember = checkIsMember();
-
-      if (isMember) {
-        window.localStorage.setItem(name, value);
-        window.sessionStorage.removeItem(name);
-      } else {
-        window.sessionStorage.setItem(name, value);
-        window.localStorage.removeItem(name);
-      }
-    } catch (e) {
-      console.warn('smartCartStorage setItem error:', e);
-    }
-  },
-  removeItem: (name: string): void => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.removeItem(name);
-      window.sessionStorage.removeItem(name);
-    } catch (e) {
-      console.warn('smartCartStorage removeItem error:', e);
-    }
-  }
-};
-
 export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -119,6 +55,8 @@ export const useCart = create<CartStore>()(
                     department_id: product.department_id ?? existingItem.department_id,
                     category: product.category ?? existingItem.category,
                     is_perishable: product.is_perishable ?? existingItem.is_perishable,
+                    warehouse_id: product.warehouse_id ?? existingItem.warehouse_id,
+                    origin_postal_code: product.origin_postal_code ?? existingItem.origin_postal_code,
                     size_surcharge: sizeSurcharge ?? existingItem.size_surcharge
                   }
                 : item
@@ -144,7 +82,8 @@ export const useCart = create<CartStore>()(
     }),
     { 
       name: 'ninoc-cart-storage',
-      storage: typeof window !== 'undefined' ? createJSONStorage(() => smartCartStorage) : undefined
+      // Standard localStorage: predictable, robust, and SSR safe
+      storage: typeof window !== 'undefined' ? createJSONStorage(() => localStorage) : undefined
     }
   )
 );
