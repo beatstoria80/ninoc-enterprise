@@ -6,7 +6,7 @@ import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLe
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { useHydratedCart } from '@/store/useCart';
+import { useHydratedCart, useCart } from '@/store/useCart';
 import { useBrandColor } from '@/components/BrandProvider';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';

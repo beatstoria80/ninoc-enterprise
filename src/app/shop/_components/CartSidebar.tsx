@@ -5,7 +5,7 @@ import { motion, Variants } from 'framer-motion';
 import { ShoppingBag, Trash2, Ruler, X, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SafeImage from '@/components/SafeImage';
-import { useHydratedCart, CartItem } from '@/store/useCart';
+import { useHydratedCart, CartItem, useCart } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 import type { Dictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';

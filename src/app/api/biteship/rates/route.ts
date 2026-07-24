@@ -133,7 +133,8 @@ export async function POST(req: Request) {
             return acc;
           }, {});
 
-          const packages = await Promise.all(Object.entries(originGroups).map(async ([originCode, groupItems]) => {
+          const packages = await Promise.all(Object.entries(originGroups).map(async ([originCode, group]) => {
+            const groupItems = group as any[];
             const payload: any = { ...bodyPayload, items: groupItems, origin_postal_code: originCode };
             
             const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
@@ -200,11 +201,7 @@ export async function POST(req: Request) {
           }
         }
 
-        // If rates API error (no balance / auth issue), return clear error
-        if (!response.ok || data.success === false) {
-          console.warn(`[Biteship Rates] API returned error: ${JSON.stringify(data)}`);
-          return NextResponse.json({ success: false, error: data.error || 'Layanan pengiriman sedang tidak tersedia. Silakan coba beberapa saat lagi.', source: 'biteship' }, { status: 503 });
-        }
+
 
       } catch (apiErr) {
         // Network or other error

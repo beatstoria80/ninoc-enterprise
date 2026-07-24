@@ -67,7 +67,7 @@ export default function ImmersiveProductView({
   const [activeImage, setActiveImage] = React.useState(0);
   
   // Get cart items to show global checkout quantity
-  const items = useHydratedCart(state => state.items);
+  const items = useHydratedCart().items || [];
   const cartTotalItems = items.reduce((total, item) => total + item.quantity, 0);
 
   // Category detection for context-aware labels

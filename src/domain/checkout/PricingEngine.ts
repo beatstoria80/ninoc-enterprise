@@ -146,7 +146,7 @@ export class PricingEngine {
     });
 
     // Add Shipping Cost
-    const shipments = shipping.shipments || (Array.isArray(shipping) ? shipping : null);
+    const shipments = (shipping as any).shipments || (Array.isArray(shipping) ? shipping : null);
     if (shipments && shipments.length > 0) {
       let totalShippingCost = 0;
       shipments.forEach((s: any, idx: number) => {
