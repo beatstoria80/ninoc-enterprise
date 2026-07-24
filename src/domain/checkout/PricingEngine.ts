@@ -146,13 +146,30 @@ export class PricingEngine {
     });
 
     // Add Shipping Cost
-    midtransItems.push({
-      id: 'SHIPPING',
-      price: shipping.cost,
-      quantity: 1,
-      name: `Courier: ${shipping.method.toUpperCase()}`.substring(0, this.policy.maxItemNameLength),
-    });
-    calculatedGrossAmount += shipping.cost;
+    const shipments = shipping.shipments || (Array.isArray(shipping) ? shipping : null);
+    if (shipments && shipments.length > 0) {
+      let totalShippingCost = 0;
+      shipments.forEach((s: any, idx: number) => {
+        const cost = Number(s.shipping_cost || s.cost || 0);
+        midtransItems.push({
+          id: `SHIPPING_${idx}`,
+          price: cost,
+          quantity: 1,
+          name: `Courier: ${s.courier_name || s.method}`.substring(0, this.policy.maxItemNameLength),
+        });
+        totalShippingCost += cost;
+      });
+      calculatedGrossAmount += totalShippingCost;
+    } else {
+      // Legacy single shipping
+      midtransItems.push({
+        id: 'SHIPPING',
+        price: shipping.cost || 0,
+        quantity: 1,
+        name: `Courier: ${(shipping.method || '').toUpperCase()}`.substring(0, this.policy.maxItemNameLength),
+      });
+      calculatedGrossAmount += (shipping.cost || 0);
+    }
 
     // Add Platform Fee
     if (this.policy.platformFee > 0) {

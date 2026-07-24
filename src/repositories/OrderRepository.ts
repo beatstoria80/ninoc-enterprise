@@ -142,21 +142,25 @@ export class OrderRepository {
     orderId: string,
     grossAmount: number,
     affiliateId: string | null,
-    customer: CustomerDetails,
-    shipping: ShippingDetails,
+    customer: any,
+    shippingAddressData: any, // Basic info without single cost
     firstName: string,
     lastName: string,
-    dbOrderItems: any[]
+    dbOrderItems: any[],
+    shipments: any[] // Array of { warehouse_id, origin_postal_code, courier_name, courier_service, shipping_cost }
   ): Promise<{ success: boolean; error?: string }> {
     
+    const aggregatedCourier = shipments.map(s => `${s.courier_name} ${s.courier_service}`).join(', ');
+    const totalShippingCost = shipments.reduce((sum, s) => sum + Number(s.shipping_cost), 0);
+
     const shippingAddress = {
       ...customer,
       first_name: firstName,
       last_name: lastName,
       address: (customer.address || '').toUpperCase(),
       city: (customer.city || '').toUpperCase(),
-      shipping_method: shipping.method,
-      shipping_cost: shipping.cost,
+      shipping_method: aggregatedCourier,
+      shipping_cost: totalShippingCost,
     };
 
     const customerName = customer.name || `${firstName} ${lastName}`.trim() || null;
@@ -170,9 +174,10 @@ export class OrderRepository {
       p_customer_email: customer.email || null,
       p_customer_phone: customer.phone || null,
       p_total_price: grossAmount,
-      p_courier: shipping.method,
+      p_courier: aggregatedCourier,
       p_shipping_address: shippingAddress,
-      p_items: dbOrderItems
+      p_items: dbOrderItems,
+      p_shipments: shipments
     });
 
     if (error) {

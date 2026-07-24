@@ -118,6 +118,8 @@ export class CheckoutService {
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
 
+    const shipments = shippingDetails.shipments || (Array.isArray(shippingDetails) ? shippingDetails : []);
+    
     const orderCreation = await orderRepo.createOrderWithInventoryLock(
       orderId,
       pricing.grossAmount,
@@ -126,7 +128,8 @@ export class CheckoutService {
       shippingDetails,
       firstName,
       lastName,
-      pricing.dbOrderItems
+      pricing.dbOrderItems,
+      shipments
     );
 
     if (!orderCreation.success) {

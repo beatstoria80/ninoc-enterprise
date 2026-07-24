@@ -80,7 +80,7 @@ function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '
 
 export async function POST(req: Request) {
   try {
-    const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, destination_latitude, destination_longitude, items, couriers } = await req.json();
+    const { destination_area_id, destination_area_name, destination_postal_code, origin_area_id, origin_postal_code, destination_latitude, destination_longitude, items, couriers, split_shipping } = await req.json();
     const apiKey = process.env.BITESHIP_API_KEY;
 
     // Try real Biteship API if key is configured
@@ -121,27 +121,83 @@ export async function POST(req: Request) {
           bodyPayload.origin_longitude = settings?.warehouse_longitude || 107.6098;
         }
 
-        // Dynamically fetch Origin Hub (NINOC Central Warehouse) with in-memory TTL cache
-        const defaultOrigin = await getOriginPostalCode();
+        if (split_shipping && items && items.length > 0) {
+          // MULTI-WAREHOUSE / SPLIT SHIPPING LOGIC
+          const defaultOrigin = await getOriginPostalCode();
+          
+          // Group items by origin_postal_code (fallback to defaultOrigin)
+          const originGroups = items.reduce((acc: Record<string, any[]>, item: any) => {
+            const code = item.origin_postal_code || defaultOrigin;
+            if (!acc[code]) acc[code] = [];
+            acc[code].push(item);
+            return acc;
+          }, {});
 
-        bodyPayload.origin_postal_code = origin_postal_code || defaultOrigin;
+          const packages = await Promise.all(Object.entries(originGroups).map(async ([originCode, groupItems]) => {
+            const payload: any = { ...bodyPayload, items: groupItems, origin_postal_code: originCode };
+            
+            const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
+              method: 'POST',
+              headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            
+            let finalPricing = [];
+            let isFnbRestricted = false;
+            let fnbNoticeStr = null;
+            
+            if (response.ok && data.success !== false) {
+              const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
+              const fnbResult = applyFnBRestrictions(geoFiltered, groupItems, destination_area_name);
+              finalPricing = fnbResult.pricing;
+              isFnbRestricted = fnbResult.is_fnb_restricted;
+              fnbNoticeStr = fnbResult.fnb_notice;
+            }
+            
+            // Get warehouse_id from the first item in the group that has it
+            const warehouseId = groupItems.find((i: any) => i.warehouse_id)?.warehouse_id || null;
 
-        const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
-          method: 'POST',
-          headers: {
-            'Authorization': apiKey,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bodyPayload),
-        });
+            return {
+              origin_postal_code: originCode,
+              warehouse_id: warehouseId,
+              items: groupItems,
+              pricing: finalPricing,
+              is_fnb_restricted: isFnbRestricted,
+              fnb_notice: fnbNoticeStr
+            };
+          }));
 
-        const data = await response.json();
+          return NextResponse.json({ success: true, packages, source: 'biteship_split' });
 
-        // If success, return real data
-        if (response.ok && data.success !== false) {
-          const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
-          const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
-          return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
+        } else {
+          // SINGLE ORIGIN (LEGACY LOGIC)
+          const defaultOrigin = await getOriginPostalCode();
+          bodyPayload.origin_postal_code = origin_postal_code || defaultOrigin;
+
+          const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
+            method: 'POST',
+            headers: {
+              'Authorization': apiKey,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bodyPayload),
+          });
+
+          const data = await response.json();
+
+          // If success, return real data
+          if (response.ok && data.success !== false) {
+            const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
+            const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
+            return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
+          }
+
+          // If rates API error (no balance / auth issue), return clear error
+          if (!response.ok || data.success === false) {
+            console.warn(`[Biteship Rates] API returned error: ${JSON.stringify(data)}`);
+            return NextResponse.json({ success: false, error: data.error || 'Layanan pengiriman sedang tidak tersedia. Silakan coba beberapa saat lagi.', source: 'biteship' }, { status: 503 });
+          }
         }
 
         // If rates API error (no balance / auth issue), return clear error
