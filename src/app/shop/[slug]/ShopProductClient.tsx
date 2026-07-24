@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
-import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { useCart, useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
@@ -83,7 +83,7 @@ interface ShopProductClientProps {
 
 export default function ShopProductClient({ slug, productSchema, dict, initialProduct, initialReviews = [] }: ShopProductClientProps) {
   const router = useRouter();
-  const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useCart();
+  const { addItem, removeItem, updateQuantity, clearCart, items, totalPrice } = useHydratedCart();
   const {
     product,
     reviews,
@@ -541,6 +541,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     </div>
                   )}
                 </motion.div>
+
+                {product.warehouses && product.warehouses.is_primary === false && product.warehouses.city && (
+                  <motion.div variants={textVariants} className="flex items-center gap-1.5 mt-2 text-ink/60">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span className="text-[11px] font-medium italic">Dikirim dari fasilitas {product.warehouses.city}</span>
+                  </motion.div>
+                )}
               </div>
 
               <div className="space-y-1.5 pt-1.5 lg:pt-2 border-t border-ink/5 mt-1.5 lg:mt-2">
