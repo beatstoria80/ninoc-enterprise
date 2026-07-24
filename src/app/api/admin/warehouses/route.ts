@@ -55,7 +55,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, code, contact_name, contact_phone, street_address, district, city, province, postal_code, is_primary } = body;
+    const { name, code, contact_name, contact_phone, contact_phone_2, street_address, district, city, province, postal_code, is_primary } = body;
 
     if (!name || !code || !contact_phone || !street_address) {
       return apiBadRequest('Name, code, phone, and address are required');
@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
         code,
         contact_name: contact_name || 'Logistics Admin',
         contact_phone,
+        contact_phone_2: contact_phone_2 || null,
         street_address,
         district: district || 'Bandung',
         city: city || 'Kota Bandung',

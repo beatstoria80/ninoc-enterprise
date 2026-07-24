@@ -19,6 +19,7 @@ export interface Warehouse {
   code: string;
   contact_name: string;
   contact_phone: string;
+  contact_phone_2?: string | null;
   street_address: string;
   district: string;
   city: string;

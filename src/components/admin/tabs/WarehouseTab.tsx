@@ -11,6 +11,7 @@ export function WarehouseTab() {
     code: '',
     contact_name: '',
     contact_phone: '',
+    contact_phone_2: '',
     street_address: '', 
     district: '',
     city: '', 
@@ -49,7 +50,7 @@ export function WarehouseTab() {
       });
       if (res.ok) {
         setFormData({ 
-          name: '', code: '', contact_name: '', contact_phone: '',
+          name: '', code: '', contact_name: '', contact_phone: '', contact_phone_2: '',
           street_address: '', district: '', city: '', province: '',
           postal_code: '', is_primary: false
         });
@@ -118,8 +119,13 @@ export function WarehouseTab() {
                 <input required type="text" value={formData.contact_name} onChange={e => setFormData({...formData, contact_name: e.target.value})} className="w-full px-2 py-1.5 border border-ink/10 rounded focus:border-rose focus:outline-none text-xs" placeholder="e.g. Budi (Warehouse Admin)" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-ink/90 mb-1">PIC Phone <span className="text-rose">*</span></label>
+                <label className="block text-[10px] uppercase tracking-wider text-ink/90 mb-1">PIC Phone (Primary) <span className="text-rose">*</span></label>
                 <input required type="tel" value={formData.contact_phone} onChange={e => setFormData({...formData, contact_phone: e.target.value})} className="w-full px-2 py-1.5 border border-ink/10 rounded focus:border-rose focus:outline-none text-xs" placeholder="e.g. 08123456789" />
+              </div>
+              
+              <div className="md:col-span-2">
+                <label className="block text-[10px] uppercase tracking-wider text-ink/90 mb-1">PIC Phone 2 (Optional)</label>
+                <input type="tel" value={formData.contact_phone_2} onChange={e => setFormData({...formData, contact_phone_2: e.target.value})} className="w-full px-2 py-1.5 border border-ink/10 rounded focus:border-rose focus:outline-none text-xs" placeholder="Opsional, no HP kedua..." />
               </div>
             </div>
 
