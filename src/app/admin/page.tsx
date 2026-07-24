@@ -11,7 +11,7 @@ import {
   MapPin, CreditCard, Shield, Star, Factory, FileText, ClipboardCheck, ArrowRightLeft,
   Upload, Printer, ChevronDown, ChevronUp, Bell, ChevronLeft, ChevronRight, Filter, Settings, BookOpen, RefreshCw,
   Tag, ShieldAlert, CheckCircle, AlertCircle, Info, PanelRightClose, PanelRightOpen,
-  AlertTriangle, Check, BarChart3
+  AlertTriangle, Check, BarChart3, Download
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -3360,17 +3360,29 @@ export default function AdminDashboard() {
                             />
                           </label>
                           {productForm.image_url && (
-                            <button
-                              type="button"
-                              onClick={() => setProductForm(prev => {
-                                const newSpecs = (prev.specifications || []).filter(s => !s?.label?.toLowerCase().startsWith('colorimage:'));
-                                return { ...prev, image_url: '', image_alt: '', specifications: newSpecs };
-                              })}
-                              className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
-                              title="Hapus URL Gambar"
-                            >
-                              Clear
-                            </button>
+                            <>
+                              <a
+                                href={productForm.image_url}
+                                download
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
+                                title="Download Gambar"
+                              >
+                                <Download size={14} />
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => setProductForm(prev => {
+                                  const newSpecs = (prev.specifications || []).filter(s => !s?.label?.toLowerCase().startsWith('colorimage:'));
+                                  return { ...prev, image_url: '', image_alt: '', specifications: newSpecs };
+                                })}
+                                className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
+                                title="Hapus URL Gambar"
+                              >
+                                Clear
+                              </button>
+                            </>
                           )}
                         </div>
                       </div>
@@ -3463,34 +3475,46 @@ export default function AdminDashboard() {
                                 />
                               </label>
                               {val && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (isGlobalP) {
-                                      const newSpecs = [...(productForm.specifications || [])];
-                                      const specIdx = newSpecs.findIndex(s => s.label === field);
-                                      if (specIdx >= 0) {
-                                        newSpecs.splice(specIdx, 1);
-                                        setProductForm({ ...productForm, specifications: newSpecs });
-                                      }
-                                    } else {
-                                      setProductForm(prev => {
-                                        const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
-                                        const newSpecs = [...(prev.specifications || [])];
-                                        if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
-                                           const prefix = field === 'perspective1' ? 'ColorP1' : field === 'perspective2' ? 'ColorP2' : field === 'perspective3' ? 'ColorP3' : 'ColorP4';
-                                           const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith(`${prefix.toLowerCase()}:`));
-                                           if (idx >= 0) newSpecs.splice(idx, 1);
+                                <>
+                                  <a
+                                    href={val}
+                                    download
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center justify-center w-7 h-7 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors shrink-0"
+                                    title="Download Gambar"
+                                  >
+                                    <Download size={14} />
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (isGlobalP) {
+                                        const newSpecs = [...(productForm.specifications || [])];
+                                        const specIdx = newSpecs.findIndex(s => s.label === field);
+                                        if (specIdx >= 0) {
+                                          newSpecs.splice(specIdx, 1);
+                                          setProductForm({ ...productForm, specifications: newSpecs });
                                         }
-                                        return { ...prev, [field]: '', specifications: newSpecs };
-                                      });
-                                    }
-                                  }}
-                                  className="flex items-center justify-center px-2 py-1.5 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap shrink-0"
-                                  title="Hapus Gambar"
-                                >
-                                  X
-                                </button>
+                                      } else {
+                                        setProductForm(prev => {
+                                          const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
+                                          const newSpecs = [...(prev.specifications || [])];
+                                          if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
+                                             const prefix = field === 'perspective1' ? 'ColorP1' : field === 'perspective2' ? 'ColorP2' : field === 'perspective3' ? 'ColorP3' : 'ColorP4';
+                                             const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith(`${prefix.toLowerCase()}:`));
+                                             if (idx >= 0) newSpecs.splice(idx, 1);
+                                          }
+                                          return { ...prev, [field]: '', specifications: newSpecs };
+                                        });
+                                      }
+                                    }}
+                                    className="flex items-center justify-center w-7 h-7 rounded bg-gray-100 text-gray-400 hover:bg-rose hover:text-white transition-colors shrink-0"
+                                    title="Hapus Gambar"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </>
                               )}
                             </div>
                           </div>
