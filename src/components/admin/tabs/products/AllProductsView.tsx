@@ -4,6 +4,7 @@ import { Package, Eye, Edit2, Trash2, CheckCircle2, AlertCircle, Search } from '
 import { cn } from '@/lib/utils';
 import { Product } from '@/components/admin/types';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
+import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 
 export function AllProductsView({
   products,
@@ -25,6 +26,8 @@ export function AllProductsView({
     product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (product.sub_category && product.sub_category.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const { allViews } = useCatalogViews();
 
   return (
     <div className="flex flex-col h-full space-y-3">
@@ -137,6 +140,18 @@ export function AllProductsView({
                     {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
                   </p>
+                </div>
+
+                {/* Analytics Info (Views & Sold) */}
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <Eye size={10} />
+                    <span className="text-[9px] font-medium">{allViews?.[product.slug] ?? 0} Views</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-purple-600/80">
+                    <Package size={10} />
+                    <span className="text-[9px] font-medium">0 Sold</span>
+                  </div>
                 </div>
 
                 {/* Color/Sizes breakdown */}
