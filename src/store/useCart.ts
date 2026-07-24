@@ -28,7 +28,7 @@ export interface CartItem {
 interface CartStore {
   items: CartItem[];
   totalPrice: number;
-  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number, maxStock?: number) => void;
+  addItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number, maxStock?: number) => { success: boolean; error?: string };
   removeItem: (id: string, size?: string, color?: string) => void;
   updateQuantity: (id: string, quantity: number, size?: string, color?: string, maxStock?: number) => void;
   clearCart: () => void;
@@ -45,6 +45,19 @@ export const useCart = create<CartStore>()(
       totalPrice: 0,
       addItem: (product, size, color, sizeSurcharge = 0, qty = 1, maxStock = 999) => {
         const currentItems = get().items;
+        
+        // Single Order Warehouse Conflict Check
+        if (currentItems.length > 0) {
+          const existingOrigin = currentItems[0].warehouse_id || currentItems[0].origin_postal_code || 'DEFAULT_BANDUNG';
+          const newOrigin = product.warehouse_id || product.origin_postal_code || 'DEFAULT_BANDUNG';
+          if (existingOrigin !== newOrigin) {
+            return { 
+              success: false, 
+              error: 'Anda tidak dapat menggabungkan produk dari lokasi fasilitas/gudang yang berbeda dalam satu pesanan. Selesaikan atau kosongkan pesanan sebelumnya.' 
+            };
+          }
+        }
+
         const existingItem = currentItems.find(item => item.id === product.id && item.size === size && item.color === color);
         let newItems;
         if (existingItem) {
@@ -71,6 +84,7 @@ export const useCart = create<CartStore>()(
           newItems = [...currentItems, { ...product, quantity: initialQty, size, color, size_surcharge: sizeSurcharge, maxStock }];
         }
         set({ items: newItems, totalPrice: calculateTotal(newItems) });
+        return { success: true };
       },
       removeItem: (id, size, color) => {
         const newItems = get().items.filter(item => !(item.id === id && item.size === size && item.color === color));

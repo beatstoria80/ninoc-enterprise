@@ -207,7 +207,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     }
 
     // Single atomic call — passing availableStock so cart store enforces max limit
-    addItem({
+    const result = addItem({
       id: product.id,
       name: product.name,
       slug: product.slug,
@@ -221,6 +221,11 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       origin_postal_code: product.warehouses?.postal_code,
     }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
+    if (result && (result as any).success === false) {
+      alert((result as any).error);
+      return false;
+    }
+
     setQuantity(1);
     return true;
   };
