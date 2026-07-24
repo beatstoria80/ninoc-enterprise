@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
+import { useHydratedCart } from '@/store/useCart';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -66,7 +67,7 @@ export default function ImmersiveProductView({
   const [activeImage, setActiveImage] = React.useState(0);
   
   // Get cart items to show global checkout quantity
-  const items = useCart(state => state.items);
+  const items = useHydratedCart(state => state.items);
   const cartTotalItems = items.reduce((total, item) => total + item.quantity, 0);
 
   // Category detection for context-aware labels

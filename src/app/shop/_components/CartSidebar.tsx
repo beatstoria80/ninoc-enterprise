@@ -5,7 +5,7 @@ import { motion, Variants } from 'framer-motion';
 import { ShoppingBag, Trash2, Ruler, X, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SafeImage from '@/components/SafeImage';
-import { useCart, CartItem } from '@/store/useCart';
+import { useHydratedCart, CartItem } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 import type { Dictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -97,7 +97,7 @@ export function CartSidebar({
   columnVariants
 }: CartSidebarProps) {
   const router = useRouter();
-  const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, totalPrice, isHydrated } = useHydratedCart();
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
 
   return (
@@ -106,7 +106,7 @@ export function CartSidebar({
       className={cn(
         "col-span-2 2xl:col-span-1 flex-col py-0 lg:py-1 mt-2 lg:mt-0 lg:pl-3 lg:border-l lg:border-ink/5",
         isMobile 
-          ? (items.length === 0 ? "hidden" : "flex") 
+          ? (!isHydrated || items.length === 0 ? "hidden" : "flex") 
           : "hidden 2xl:flex"
       )}
     >
@@ -254,7 +254,7 @@ export function CartSidebar({
             <motion.div variants={textVariants} className="border-t border-ink/10 px-4 py-3 space-y-3 bg-ink/[0.01]">
               <div className="flex justify-between items-center">
                 <span className="text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/60">{dict.product.total}</span>
-                <span className="text-sm md:text-[11px] font-medium text-ink">IDR {totalPrice().toLocaleString('id-ID')}</span>
+                <span className="text-sm md:text-[11px] font-medium text-ink">IDR {totalPrice.toLocaleString('id-ID')}</span>
               </div>
 
               <div className="flex flex-col gap-2">

@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT, useHydratedCart } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 
 export default function QuickBuyModal() {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem } = useHydratedCart();
   const [quickBuyProduct, setQuickBuyProduct] = useState<any | null>(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');

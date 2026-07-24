@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import GlobalHeader from './GlobalHeader';
 import GlobalFooter from './Footer';
 import MobileLayout from './platforms/mobile/MobileLayout';
-import { useCart } from '@/store/useCart';
+import { useHydratedCart } from '@/store/useCart';
 import { usePathname } from 'next/navigation';
 
 export default function ClientPlatformManager({ children }: { children: React.ReactNode }) {
@@ -13,7 +13,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [introPlaying, setIntroPlaying] = useState(false);
-  const { items } = useCart();
+  const { items } = useHydratedCart();
 
   // Hide GlobalHeader/Footer on admin pages, checkout, legal, help, track, profile, retur, onboarding
   const isAdminPage = pathname?.startsWith('/admin');

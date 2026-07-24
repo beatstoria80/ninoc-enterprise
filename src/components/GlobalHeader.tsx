@@ -6,7 +6,7 @@ import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLe
 import Link from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { useCart } from '@/store/useCart';
+import { useHydratedCart } from '@/store/useCart';
 import { useBrandColor } from '@/components/BrandProvider';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -438,13 +438,7 @@ export default function GlobalHeader() {
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const { items, removeItem, updateQuantity, totalPrice } = useCart();
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line
-    setIsHydrated(true);
-  }, []);
+  const { items, removeItem, updateQuantity, totalPrice, isHydrated } = useHydratedCart();
 
   const cartItemsCount = isHydrated ? items.length : 0;
 
@@ -825,7 +819,7 @@ export default function GlobalHeader() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                       <span>Raw Value</span>
-                      <span>IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                      <span>IDR {totalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                     </div>
                     <div className="flex justify-between text-[11px] font-medium uppercase tracking-[0.2em] text-ink/80">
                       <span>Handling Fee</span>
@@ -835,7 +829,7 @@ export default function GlobalHeader() {
                     <div className="flex justify-between items-baseline">
                       <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink/60">Total</span>
                       <span className="text-xl font-display font-semibold italic text-emerald-700">
-                        IDR {totalPrice().toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        IDR {totalPrice.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </span>
                     </div>
                   </div>

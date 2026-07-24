@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 
 export function useProductSelection(initialProduct: any, initialReviews: any[]) {
   const [product, setProduct] = useState(initialProduct || null);
@@ -10,7 +10,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-  const addItem = useCart(state => state.addItem);
+  const { addItem } = useHydratedCart();
 
   // Derived state: hasSizes, availableSizes
   const hasSizes = useMemo(() => {
@@ -138,7 +138,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     };
   }, [product, product?.id, product?.category]);
 
-  const cartItems = useCart(state => state.items);
+  const { items: cartItems } = useHydratedCart();
 
   const availableStock = useMemo(() => {
     const safeVariants = Array.isArray(product?.variants) ? product.variants : [];

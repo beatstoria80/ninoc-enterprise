@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2 } from 'lucide-react';
-import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { useCart, useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -223,7 +223,7 @@ function getEstimatedDeliveryDate(durationStr: string, isLateForInstant: boolean
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, totalPrice, clearCart, removeItem } = useCart();
+  const { items, totalPrice, clearCart, removeItem, isHydrated } = useHydratedCart();
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string; size?: string; color?: string } | null>(null);
   const dict = useDictionary();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -685,7 +685,7 @@ export default function CheckoutPage() {
   const currentHourWIB = parseInt(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false }));
   const isLateForInstant = currentHourWIB >= 15;
 
-  const subtotal = totalPrice();
+  const subtotal = totalPrice;
   const tax = 0; // VAT removed as prices are nett
   const platformFee = 2500; // Standard platform/gateway fee
   const finalTotal = Math.max(0, subtotal + shippingCost + platformFee - (promoApplied?.discountAmount || 0));

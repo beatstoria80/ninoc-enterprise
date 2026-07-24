@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ShoppingBag } from 'lucide-react';
-import { useCart } from '@/store/useCart';
+import { useHydratedCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 
 function cn(...inputs: ClassValue[]) {
@@ -35,7 +35,7 @@ interface ProductCardProps {
  * - Image scale on hover/touch
  */
 export function NativeMobileProductCard({ product, onTap }: { product: ProductCardProps; onTap?: () => void }) {
-  const { addItem } = useCart();
+  const { addItem } = useHydratedCart();
   const router = useRouter();
 
   const handleQuickBuy = (e: React.MouseEvent) => {

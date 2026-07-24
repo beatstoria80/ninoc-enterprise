@@ -7,7 +7,7 @@ import Link from '@/components/LocalizedLink';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Invoice } from '@/components/Invoice';
-import { useCart } from '@/store/useCart';
+import { useHydratedCart } from '@/store/useCart';
 
 import { toBlob } from 'html-to-image';
 
@@ -67,7 +67,7 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
   const [isDownloading, setIsDownloading] = useState(false);
 
   const displayId = String(order?.id || '').toUpperCase();
-  const clearCart = useCart((state) => state.clearCart);
+  const { clearCart } = useHydratedCart();
 
   React.useEffect(() => {
     if (!isInvalid && order) {
