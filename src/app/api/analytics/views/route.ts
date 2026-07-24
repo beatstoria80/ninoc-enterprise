@@ -48,10 +48,10 @@ export async function GET(request: Request) {
         const pagePath = row.dimensionValues?.[0]?.value || '';
         const views = parseInt(row.metricValues?.[0]?.value || '0', 10);
         if (pagePath && views > 0) {
-          // Extract slug from path like /shop/product-slug
-          const pathSlug = pagePath.replace(/^\/shop\//, '').replace(/\/$/, '');
-          if (pathSlug && pagePath.startsWith('/shop/') && pathSlug !== '' && !pathSlug.includes('/')) {
-            // Accumulate views for same slug (could have trailing slash variants)
+          // Use regex to find /shop/{slug} anywhere in the path, handling i18n prefixes like /en/shop/...
+          const match = pagePath.match(/\/shop\/([^\/?#]+)/i);
+          if (match && match[1]) {
+            const pathSlug = match[1].toLowerCase();
             allViews[pathSlug] = (allViews[pathSlug] || 0) + views;
           }
         }
