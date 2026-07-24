@@ -20,6 +20,8 @@ export interface CartItem {
   category?: string;
   is_perishable?: boolean;
   maxStock?: number; // inventory limit for this variant
+  warehouse_id?: string | null;
+  origin_postal_code?: string;
 }
 
 interface CartStore {

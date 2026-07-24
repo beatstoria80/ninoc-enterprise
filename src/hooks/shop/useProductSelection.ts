@@ -217,6 +217,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       department_id: product.department_id,
       category: product.category,
       is_perishable: product.is_perishable,
+      warehouse_id: product.warehouse_id,
+      origin_postal_code: product.warehouses?.postal_code,
     }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
     setQuantity(1);

@@ -650,6 +650,7 @@ export default function CheckoutPage() {
               destination_area_name: `${formData.city} ${formData.kecamatan}`,
               destination_area_id: formData.kecamatan,
               destination_postal_code: formData.postal_code,
+              origin_postal_code: items.length > 0 ? items[0].origin_postal_code : undefined,
               destination_latitude: formData.latitude,
               destination_longitude: formData.longitude,
               items: biteshipItems
