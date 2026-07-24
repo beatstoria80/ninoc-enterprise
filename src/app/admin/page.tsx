@@ -113,6 +113,37 @@ const compressImage = async (file: File): Promise<File> => {
   });
 };
 
+const forceDownloadImage = async (url: string, filename: string = 'product-image.jpg') => {
+  try {
+    const isSupabase = url.includes('supabase.co/storage');
+    if (isSupabase) {
+      const downloadUrl = url.includes('?') ? `${url}&download=` : `${url}?download=`;
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
+    
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Network response was not ok');
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Download failed, opening in new tab', error);
+    window.open(url, '_blank');
+  }
+};
+
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -3361,16 +3392,14 @@ export default function AdminDashboard() {
                           </label>
                           {productForm.image_url && (
                             <>
-                              <a
-                                href={productForm.image_url}
-                                download
-                                target="_blank"
-                                rel="noreferrer"
+                              <button
+                                type="button"
+                                onClick={() => forceDownloadImage(productForm.image_url, 'main-image.jpg')}
                                 className="flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] uppercase tracking-wider font-medium rounded-lg transition-colors whitespace-nowrap"
                                 title="Download Gambar"
                               >
                                 <Download size={14} />
-                              </a>
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => setProductForm(prev => {
@@ -3476,16 +3505,14 @@ export default function AdminDashboard() {
                               </label>
                               {val && (
                                 <>
-                                  <a
-                                    href={val}
-                                    download
-                                    target="_blank"
-                                    rel="noreferrer"
+                                  <button
+                                    type="button"
+                                    onClick={() => forceDownloadImage(val, `${field}-image.jpg`)}
                                     className="flex items-center justify-center w-7 h-7 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors shrink-0"
                                     title="Download Gambar"
                                   >
                                     <Download size={14} />
-                                  </a>
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => {
