@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { getProductStock, getProductViews } from '@/lib/utils';
+import { getProductStock } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';

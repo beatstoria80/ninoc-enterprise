@@ -7,7 +7,7 @@ import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { getProductStock, getProductViews } from '@/lib/utils';
+import { getProductStock } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';

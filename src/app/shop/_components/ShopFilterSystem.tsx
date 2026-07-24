@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, X, Check, Sparkles, Tag, DollarSign, Ruler, ChevronDown, Layers, Filter, Minus, RotateCcw } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { getProductViews } from '@/lib/utils';
+import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -114,6 +114,7 @@ export function matchesColor(product: ShopProduct, selectedColor: string): boole
 }
 
 export function useShopFilters(initialProducts: ShopProduct[], initialCategory: string = 'All') {
+  const { allViews } = useCatalogViews();
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [subCategory, setSubCategory] = useState<string>('All');
@@ -251,10 +252,14 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
       .sort((a, b) => {
         if (sortBy === 'cheapest') return (a.price || 0) - (b.price || 0);
         if (sortBy === 'most_expensive') return (b.price || 0) - (a.price || 0);
-        if (sortBy === 'popular') return getProductViews(b) - getProductViews(a);
+        if (sortBy === 'popular') {
+          const viewsA = allViews?.[a.slug] ?? 0;
+          const viewsB = allViews?.[b.slug] ?? 0;
+          return viewsB - viewsA;
+        }
         return 0;
       });
-  }, [initialProducts, selectedCategory, searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy]);
+  }, [initialProducts, selectedCategory, searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy, allViews]);
 
   const availableSubCategories = useMemo(() => {
     const pillarProducts = initialProducts.filter(p => matchesCategoryPillar(p.category, selectedCategory));

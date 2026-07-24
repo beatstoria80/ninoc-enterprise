@@ -37,11 +37,7 @@ export function getProductStock(product: any): number {
   }
   if (typeof product?.stock === 'number' && product.stock > 0) return product.stock;
   if (typeof product?.stock_quantity === 'number' && product.stock_quantity > 0) return product.stock_quantity;
-  return Math.abs((product?.id || 'ninoc').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)) % 25 + 5;
-}
-
-export function getProductViews(product: any): number {
-  return Math.abs((product?.slug || product?.id || 'ninoc').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)) % 18 + 7;
+  return 0;
 }
 
 /**
