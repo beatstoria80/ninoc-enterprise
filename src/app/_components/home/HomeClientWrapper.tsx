@@ -131,7 +131,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   whileHover={{ scale: 1.1, backgroundColor: "#f8f8f8" }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  SHOP NOW
+                  GET YOURS
                 </motion.button>
               </div>
             </div>
