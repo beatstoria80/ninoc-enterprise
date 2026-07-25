@@ -3891,31 +3891,44 @@ export default function AdminDashboard() {
                                               />
                                             </label>
                                             {colorImage && (
-                                              <button
-                                                type="button"
-                                                onClick={() => {
-                                                  const newSpecs = (productForm.specifications || []).filter(s => {
-                                                    if (!s || typeof s.label !== 'string') return true;
-                                                    const lbl = s.label.trim().toLowerCase();
-                                                    if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
-                                                    if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
-                                                    return true;
-                                                  });
-                                                  const updates: any = { specifications: newSpecs };
-                                                  if (colorGroups.length === 1) {
-                                                    if (imgType === 'Image') updates.image_url = '';
-                                                    else if (imgType === 'P1') updates.perspective1 = '';
-                                                    else if (imgType === 'P2') updates.perspective2 = '';
-                                                    else if (imgType === 'P3') updates.perspective3 = '';
-                                                    else if (imgType === 'P4') updates.perspective4 = '';
-                                                  }
-                                                  setProductForm(prev => ({ ...prev, ...updates }));
-                                                }}
-                                                className="px-2 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap"
-                                                title="Remove image"
-                                              >
-                                                Hapus
-                                              </button>
+                                              <>
+                                                <a
+                                                  href={colorImage}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  download
+                                                  className="px-2 py-1 bg-ink/5 hover:bg-ink/10 text-ink text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap flex items-center gap-1"
+                                                  title="Download image"
+                                                >
+                                                  <Download size={12} />
+                                                  Download
+                                                </a>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const newSpecs = (productForm.specifications || []).filter(s => {
+                                                      if (!s || typeof s.label !== 'string') return true;
+                                                      const lbl = s.label.trim().toLowerCase();
+                                                      if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
+                                                      if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
+                                                      return true;
+                                                    });
+                                                    const updates: any = { specifications: newSpecs };
+                                                    if (colorGroups.length === 1) {
+                                                      if (imgType === 'Image') updates.image_url = '';
+                                                      else if (imgType === 'P1') updates.perspective1 = '';
+                                                      else if (imgType === 'P2') updates.perspective2 = '';
+                                                      else if (imgType === 'P3') updates.perspective3 = '';
+                                                      else if (imgType === 'P4') updates.perspective4 = '';
+                                                    }
+                                                    setProductForm(prev => ({ ...prev, ...updates }));
+                                                  }}
+                                                  className="px-2 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap"
+                                                  title="Remove image"
+                                                >
+                                                  Hapus
+                                                </button>
+                                              </>
                                             )}
                                           </div>
                                         </div>
