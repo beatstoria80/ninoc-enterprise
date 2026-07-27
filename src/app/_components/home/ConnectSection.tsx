@@ -29,7 +29,7 @@ export default function ConnectSection() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {/* Instagram */}
             <a
-              href="https://www.instagram.com/ninoc.co/"
+              href="https://www.instagram.com/ninoc.co"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all relative z-50 pointer-events-auto"
