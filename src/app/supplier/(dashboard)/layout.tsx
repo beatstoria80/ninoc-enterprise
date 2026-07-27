@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { Package, LineChart, LogOut, LayoutDashboard, Settings } from 'lucide-react';
+import { Package, LineChart, LogOut, LayoutDashboard, Settings, Truck } from 'lucide-react';
 
 export default async function SupplierLayout({
   children,
@@ -68,6 +68,10 @@ export default async function SupplierLayout({
           <Link href="/supplier/inventory" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <Package size={18} />
             <span>Allocations</span>
+          </Link>
+          <Link href="/supplier/logistics" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
+            <Truck size={18} />
+            <span>Logistics & Packing</span>
           </Link>
           <Link href="/supplier/ledger" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <LineChart size={18} />
