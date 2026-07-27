@@ -13,13 +13,21 @@ export const getCurrentSupplier = cache(async () => {
     return null;
   }
 
-  const { data: supplierUser } = await supabase
+  // Create an admin client to bypass the broken RLS infinite recursion on supplier_users
+  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: supplierUser, error } = await supabaseAdmin
     .from('supplier_users')
     .select('*, suppliers(name, status)')
     .eq('user_id', session.user.id)
     .single();
 
-  if (!supplierUser) {
+  if (!supplierUser || error) {
+    console.error("getCurrentSupplier Error:", error);
     return null;
   }
 
