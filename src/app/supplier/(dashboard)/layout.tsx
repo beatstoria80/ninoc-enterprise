@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { Package, LineChart, LogOut, LayoutDashboard, Settings, Truck } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
@@ -9,6 +9,7 @@ export default async function SupplierLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export async function requestPickupAction(orderId: string) {
   try {
@@ -15,6 +15,8 @@ export async function requestPickupAction(orderId: string) {
     if (!orderId) {
       return { success: false, error: 'Order ID is required.' };
     }
+
+    const supabase = await createClient();
 
     // 1. Verify supplier owns this order via DB
     const { data: orderData, error: orderError } = await supabase

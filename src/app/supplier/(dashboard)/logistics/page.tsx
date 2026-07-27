@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { Truck, Package, Clock, CheckCircle2, ChevronRight, Search } from 'lucide-react';
 import Link from 'next/link';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { format } from 'date-fns';
 
 export const metadata = {
@@ -15,6 +15,8 @@ export default async function SupplierLogisticsPage() {
   if (!supplierUser) {
     redirect('/supplier/apply');
   }
+
+  const supabase = await createClient();
 
   // Fetch orders that contain this supplier's products
   // Using an inner join to ensure we only get orders with at least one item from this supplier

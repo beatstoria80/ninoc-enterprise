@@ -1,11 +1,12 @@
 import { cache } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 /**
  * Cached service to get the current supplier's identity.
  * This prevents N+1 queries across layouts and nested server components.
  */
 export const getCurrentSupplier = cache(async () => {
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {

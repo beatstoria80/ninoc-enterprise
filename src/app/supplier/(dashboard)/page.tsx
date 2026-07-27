@@ -1,7 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { Package, LineChart, TrendingUp, DollarSign } from 'lucide-react';
 
 export default async function SupplierDashboard() {
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   // Dummy logic for prototype: we would fetch real stats here

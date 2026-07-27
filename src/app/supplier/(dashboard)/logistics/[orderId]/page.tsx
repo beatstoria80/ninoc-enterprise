@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import PickupRequestModalClient from './PickupRequestModalClient';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { format } from 'date-fns';
 
 export const metadata = {
@@ -19,6 +19,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
   }
 
   const orderId = params.orderId;
+  const supabase = await createClient();
 
   // 1. Fetch Order
   const { data: orderData, error: orderError } = await supabase
