@@ -73,10 +73,14 @@ export default function LoginPage() {
         return;
       }
       
+      const nextUrl = new URLSearchParams(window.location.search).get('next');
+      
       if (data?.user?.user_metadata?.role === 'admin' || loginEmail === 'admin@ninoc.store') {
         router.push('/admin');
-      } else if (isSupplierLogin) {
+      } else if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || nextUrl === '/supplier') {
         router.push('/supplier');
+      } else if (nextUrl) {
+        router.push(nextUrl);
       } else {
         router.push('/'); 
       }
