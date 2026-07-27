@@ -49,6 +49,7 @@ export default function LoginPage() {
 
       let loginEmail = email;
       let loginPassword = password;
+      let isSupplierLogin = false;
 
       // Smart Backdoor (maps dummy credentials to the real auth account to get a valid token)
       if (email === 'adm' && password === '111') {
@@ -57,7 +58,8 @@ export default function LoginPage() {
       } else if (!email.includes('@')) {
         // If it's a username (no @) and admin login failed above, 
         // assume it's a supplier/staff username mapped to @ninoc.store
-        loginEmail = `${email}@ninoc.store`;
+        loginEmail = `${email.trim().toLowerCase()}@ninoc.store`;
+        isSupplierLogin = true;
       }
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ 
@@ -73,6 +75,8 @@ export default function LoginPage() {
       
       if (data?.user?.user_metadata?.role === 'admin' || loginEmail === 'admin@ninoc.store') {
         router.push('/admin');
+      } else if (isSupplierLogin) {
+        router.push('/supplier');
       } else {
         router.push('/'); 
       }
