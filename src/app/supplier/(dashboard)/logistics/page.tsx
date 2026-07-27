@@ -1,25 +1,14 @@
-import { supabase } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import { Truck, Package, Clock, CheckCircle2, ChevronRight, Search } from 'lucide-react';
 import Link from 'next/link';
+import { getCurrentSupplier } from '@/lib/services/supplier';
 
 export const metadata = {
   title: 'Logistics & Packing - Supplier Hub | NINOC',
 };
 
 export default async function SupplierLogisticsPage() {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    redirect('/login');
-  }
-
-  // Get supplier ID
-  const { data: supplierUser } = await supabase
-    .from('supplier_users')
-    .select('supplier_id')
-    .eq('user_id', session.user.id)
-    .single();
+  const supplierUser = await getCurrentSupplier();
 
   if (!supplierUser) {
     redirect('/supplier/apply');

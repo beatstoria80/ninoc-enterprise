@@ -1,27 +1,16 @@
-import { supabase } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import { Truck, Package, Clock, ChevronLeft, MapPin, CheckCircle2, User, Phone, FileText } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import PickupRequestModalClient from './PickupRequestModalClient';
+import { getCurrentSupplier } from '@/lib/services/supplier';
 
 export const metadata = {
   title: 'Order Logistics - Supplier Hub | NINOC',
 };
 
 export default async function SupplierLogisticsOrderDetail({ params }: { params: { orderId: string } }) {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    redirect('/login');
-  }
-
-  // Get supplier ID
-  const { data: supplierUser } = await supabase
-    .from('supplier_users')
-    .select('supplier_id')
-    .eq('user_id', session.user.id)
-    .single();
+  const supplierUser = await getCurrentSupplier();
 
   if (!supplierUser) {
     redirect('/supplier/apply');

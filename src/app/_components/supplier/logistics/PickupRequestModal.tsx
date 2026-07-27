@@ -8,6 +8,7 @@ interface PickupRequestModalProps {
   onClose: () => void;
   orderId: string;
   courierName: string;
+  requestAction: (orderId: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   onSuccess: () => void;
 }
 
@@ -16,24 +17,28 @@ export default function PickupRequestModal({
   onClose,
   orderId,
   courierName,
+  requestAction,
   onSuccess
 }: PickupRequestModalProps) {
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleRequestPickup = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
-      // MOCK API Call for UI/UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // In real implementation:
-      // await fetch('/api/supplier/logistics/request-pickup', { method: 'POST', body: JSON.stringify({ orderId }) });
-      
-      onSuccess();
-      onClose();
+      const result = await requestAction(orderId);
+      if (result.success) {
+        onSuccess();
+        onClose();
+      } else {
+        setErrorMsg(result.error || 'Failed to request pickup');
+      }
     } catch (error) {
       console.error(error);
+      setErrorMsg('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -59,6 +64,12 @@ export default function PickupRequestModal({
               Ensure all items are securely packed before requesting a pickup. Once requested, the courier will be dispatched to your registered facility address.
             </div>
           </div>
+          
+          {errorMsg && (
+            <div className="p-3 bg-red-50 text-red-600 rounded-lg border border-red-100 text-sm">
+              {errorMsg}
+            </div>
+          )}
 
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b border-gray-50">

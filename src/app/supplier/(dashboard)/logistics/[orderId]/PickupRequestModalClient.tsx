@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Truck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import PickupRequestModal from '@/app/_components/supplier/logistics/PickupRequestModal';
+import { requestPickupAction } from '@/actions/supplier/logistics';
 
 interface Props {
   orderId: string;
@@ -11,6 +13,7 @@ interface Props {
 
 export default function PickupRequestModalClient({ orderId, courierName }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -27,9 +30,10 @@ export default function PickupRequestModalClient({ orderId, courierName }: Props
         onClose={() => setIsOpen(false)}
         orderId={orderId}
         courierName={courierName}
+        requestAction={requestPickupAction}
         onSuccess={() => {
-          // In real scenario, trigger a refresh or optimistically update UI
-          window.location.reload();
+          // Trigger a lightweight refresh without reloading the page
+          router.refresh();
         }}
       />
     </>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { Package, LineChart, LogOut, LayoutDashboard, Settings, Truck } from 'lucide-react';
+import { getCurrentSupplier } from '@/lib/services/supplier';
 
 export default async function SupplierLayout({
   children,
@@ -14,12 +15,8 @@ export default async function SupplierLayout({
     redirect('/login?next=/supplier');
   }
 
-  // Verify if user is a supplier
-  const { data: supplierUser } = await supabase
-    .from('supplier_users')
-    .select('*, suppliers(name)')
-    .eq('user_id', session.user.id)
-    .single();
+  // Verify if user is a supplier using cached service
+  const supplierUser = await getCurrentSupplier();
 
   if (!supplierUser) {
     // Not a supplier at all, redirect to apply
