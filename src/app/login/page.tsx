@@ -54,6 +54,10 @@ export default function LoginPage() {
       if (email === 'adm' && password === '111') {
         loginEmail = 'admin@ninoc.store';
         loginPassword = 'NinocAdmin2026!';
+      } else if (!email.includes('@')) {
+        // If it's a username (no @) and admin login failed above, 
+        // assume it's a supplier/staff username mapped to @ninoc.store
+        loginEmail = `${email}@ninoc.store`;
       }
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ 
