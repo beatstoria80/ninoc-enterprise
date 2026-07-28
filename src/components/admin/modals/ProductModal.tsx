@@ -105,8 +105,8 @@ export function ProductModal(props: any) {
                             let newPerishable = productForm.is_perishable;
                             let newSpecs = [...(productForm.specifications || [])];
 
-                            const fbWh = dbWarehouses.find(w => (w.name || '').toLowerCase().includes('roastery') || (w.name || '').toLowerCase().includes('f&b') || w.code === 'WH-BANDUNG-FB')?.id || 'wh-2';
-                            const mainWh = dbWarehouses.find(w => w.is_primary || w.code === 'WH-BANDUNG-01')?.id || dbWarehouses[0]?.id || 'wh-1';
+                            const fbWh = dbWarehouses.find(w => (w.name || '').toLowerCase().includes('roastery') || (w.name || '').toLowerCase().includes('f&b') || w.code === 'WH-BANDUNG-FB')?.id || '';
+                            const mainWh = dbWarehouses.find(w => w.is_primary || w.code === 'WH-BANDUNG-01')?.id || dbWarehouses[0]?.id || '';
 
                             if (isPantrySel) {
                               newCat = 'coffee';
@@ -158,12 +158,12 @@ export function ProductModal(props: any) {
                         >
                           <option value="">-- Pilih Gudang Asal --</option>
                           {dbWarehouses.map(w => (
-                            <option key={w.id} value={w.id}>{w.name} (Kode Pos: {w.postal_code || 'Tidak Ada'})</option>
+                            <option key={w.id} value={w.id}>{w.name} (Biteship Numeric ID/Kode Pos: {w.postal_code || 'Tidak Ada'})</option>
                           ))}
                           {!dbWarehouses.length && (
                             <>
-                              <option value="wh-1">Gudang Utama NINOC (Kode Pos: 40292)</option>
-                              <option value="wh-2">NINOC Pantry Roastery Hub (Kode Pos: 40292)</option>
+                              <option value="" disabled>Gudang Utama NINOC (Biteship ID: 40292) - Harap buat Gudang</option>
+                              <option value="" disabled>NINOC Pantry Roastery Hub (Biteship ID: 40292) - Harap buat Gudang</option>
                             </>
                           )}
                         </select>

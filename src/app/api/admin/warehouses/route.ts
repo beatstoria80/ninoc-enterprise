@@ -14,7 +14,7 @@ export async function GET() {
         // Table doesn't exist yet, return fallback warehouses
         return NextResponse.json([
           {
-            id: 'wh-1',
+            id: '11111111-1111-1111-1111-111111111111',
             name: 'Gudang Utama NINOC (Apparel & Goods)',
             code: 'WH-BANDUNG-01',
             contact_name: 'NINOC Logistics',
@@ -28,7 +28,7 @@ export async function GET() {
             is_active: true
           },
           {
-            id: 'wh-2',
+            id: '22222222-2222-2222-2222-222222222222',
             name: 'NINOC Pantry Roastery Hub (F&B)',
             code: 'WH-BANDUNG-FB',
             contact_name: 'NINOC Roastery',
