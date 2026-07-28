@@ -58,15 +58,21 @@ export const useCart = create<CartStore>()(
           const newWarehouseId = product.warehouse_id;
           const newPostal = product.origin_postal_code;
 
-          // 1. If both have warehouse_id, they MUST match.
-          // 2. If one is missing warehouse_id but postal codes match, we allow it (soft fallback).
-          // 3. If neither have warehouse_id and neither have postal codes, they are both DEFAULT (allowed).
-          const isSameWarehouseId = existingWarehouseId && newWarehouseId ? existingWarehouseId === newWarehouseId : true;
-          const isSamePostal = existingPostal && newPostal ? existingPostal === newPostal : true;
+          let isConflict = false;
           
-          // Strict block if explicit IDs mismatch, or if explicit IDs are missing but postals mismatch
-          const isConflict = (existingWarehouseId && newWarehouseId && existingWarehouseId !== newWarehouseId) || 
-                             (!existingWarehouseId && !newWarehouseId && existingPostal !== newPostal);
+          if (existingWarehouseId || newWarehouseId) {
+            // Strict enforcement: if AT LEAST ONE item has a warehouse_id, they MUST match.
+            // This blocks mixing a Warehouse Item (Tumbler) with a Generic Item (Kaos).
+            if (existingWarehouseId !== newWarehouseId) {
+              isConflict = true;
+            }
+          } else {
+            // Fallback: neither item has a warehouse_id.
+            // If both have postal codes and they differ, block it.
+            if (existingPostal && newPostal && existingPostal !== newPostal) {
+              isConflict = true;
+            }
+          }
 
           if (isConflict) {
             return { 
