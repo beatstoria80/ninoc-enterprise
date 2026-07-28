@@ -16,6 +16,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export function ProductModal(props: any) {
+  const isFashion = !props.isFnB && !props.isObjects;
   const {
     isProductModalOpen, setIsProductModalOpen,
     isEditMode, productForm, setProductForm,

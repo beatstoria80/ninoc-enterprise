@@ -201,7 +201,7 @@ export default function ImmersiveProductView({
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      setIsMobileCheckoutOpen(false);
+      setTimeout(() => setIsMobileCheckoutOpen(false), 0);
     }
     return () => {
       document.body.style.overflow = '';
