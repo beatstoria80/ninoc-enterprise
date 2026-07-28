@@ -194,7 +194,10 @@ export default function ProductGallery({
                 onClick={() => {
                   if (isPrev) setActiveImageIndex(idx);
                   else if (isNext) setActiveImageIndex(idx);
-                  else if (isActive) setFullscreenImage(img);
+                  else if (isActive) {
+                    if (onExpand) onExpand();
+                    else setFullscreenImage(img);
+                  }
                 }}
                 className={cn(
                   "absolute w-[75%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",

@@ -12,7 +12,7 @@ export default async function SupplierInventoryPage() {
     .from('supplier_users')
     .select('supplier_id')
     .eq('user_id', session.user.id)
-    .single();
+    .maybeSingle();
 
   const supplierId = supplierUser?.supplier_id;
 

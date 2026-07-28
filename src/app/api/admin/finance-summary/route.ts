@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
@@ -11,40 +12,44 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
     }
 
-    // Determine admin/staff rights (assume if they reached here, they have UI access, but ideally check roles)
-    // Fetch all completed orders via server-side pagination to bypass 1000-row PostgREST limits
-    let allCompletedOrders: any[] = [];
-    let hasMore = true;
-    let page = 0;
-    const PAGE_SIZE = 1000;
-    
-    // We only need specific fields to calculate revenue, making payload extremely light
-    while (hasMore) {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('id, total_price, status, payment_status, created_at')
-        .in('status', ['paid', 'delivered', 'shipped'])
-        .in('payment_status', ['success', 'settlement'])
-        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
-        
-      if (error) {
-        console.error('[Finance Summary] Fetch Error:', error);
-        break;
-      }
-      
-      if (data && data.length > 0) {
-        allCompletedOrders = [...allCompletedOrders, ...data];
-        if (data.length < PAGE_SIZE) {
-          hasMore = false; // reached the end
-        } else {
-          page++;
-        }
-      } else {
-        hasMore = false;
-      }
+    // 2. FETCH AGGREGATED COUNT
+    // First, determine how many orders exist to chunk the parallel fetch
+    const { count, error: countError } = await supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['paid', 'delivered', 'shipped'])
+      .in('payment_status', ['success', 'settlement']);
+
+    if (countError) {
+      console.error('[Finance Summary] Count Error:', countError);
+      return NextResponse.json({ error: 'Failed to fetch order count' }, { status: 500 });
     }
 
-    // 2. SERVER-SIDE AGGREGATION
+    const totalOrders = count || 0;
+    const PAGE_SIZE = 1000;
+    const chunkPromises = [];
+
+    // Create parallel fetch promises (max 1000 per request per PostgREST limits)
+    for (let i = 0; i < Math.ceil(totalOrders / PAGE_SIZE); i++) {
+      const from = i * PAGE_SIZE;
+      const to = (i + 1) * PAGE_SIZE - 1;
+      
+      const fetchPromise = supabase
+        .from('orders')
+        .select('total_price, created_at') // ONLY fetch needed columns to minimize memory
+        .in('status', ['paid', 'delivered', 'shipped'])
+        .in('payment_status', ['success', 'settlement'])
+        .range(from, to);
+        
+      chunkPromises.push(fetchPromise);
+    }
+
+    // Await all chunks in parallel (significantly faster than sequential while-loop)
+    // For extreme scaling (>50k orders), a batching mechanism like p-limit should be used.
+    // Given Vercel limits, parallel execution here solves the immediate timeout issue.
+    const chunkResults = await Promise.all(chunkPromises);
+
+    // 3. SERVER-SIDE AGGREGATION
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -52,22 +57,33 @@ export async function GET(req: NextRequest) {
     let totalRevenue = 0;
     let todayRevenue = 0;
     let monthRevenue = 0;
+    let processedCount = 0;
 
-    allCompletedOrders.forEach(o => {
-      const price = Number(o.total_price) || 0;
-      const createdAt = new Date(o.created_at);
+    for (const result of chunkResults) {
+      if (result.error) {
+        console.error('[Finance Summary] Chunk Fetch Error:', result.error);
+        continue;
+      }
       
-      totalRevenue += price;
-      if (createdAt >= today) todayRevenue += price;
-      if (createdAt >= monthStart) monthRevenue += price;
-    });
+      if (result.data) {
+        for (const o of result.data) {
+          const price = Number(o.total_price) || 0;
+          const createdAt = new Date(o.created_at);
+          
+          totalRevenue += price;
+          if (createdAt >= today) todayRevenue += price;
+          if (createdAt >= monthStart) monthRevenue += price;
+          processedCount++;
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,
       totalRevenue,
       todayRevenue,
       monthRevenue,
-      totalOrdersAnalyzed: allCompletedOrders.length
+      totalOrdersAnalyzed: processedCount
     });
 
   } catch (err) {
@@ -75,3 +91,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
