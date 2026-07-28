@@ -59,6 +59,7 @@ import { SidebarItem } from '@/components/admin/SidebarItem';
 import { SeoHelper } from '@/components/admin/SeoHelper';
 import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
 import { isFnBDepartment, isObjectsDepartment } from '@/lib/departmentDomain';
+import { useProductForm } from '@/hooks/admin/useProductForm';
 
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -91,16 +92,14 @@ export default function AdminDashboard() {
   });
 
   // Modal states
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isReprintModalOpen, setIsReprintModalOpen] = useState(false);
   const [reprintReason, setReprintReason] = useState('');
   const [isPrinting, setIsPrinting] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
   const [isSeoPanelOpen, setIsSeoPanelOpen] = useState(true);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showUserMenuModal, setShowUserMenuModal] = useState(false);
@@ -169,40 +168,94 @@ export default function AdminDashboard() {
   const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [dbDepartments, setDbDepartments] = useState<any[]>([]);
   const [dbWarehouses, setDbWarehouses] = useState<any[]>([]);
-  const [productForm, setProductForm] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    description_en: '',
-    specifications: [] as { label: string; value: string }[],
-    measurements: [] as { size: string; chest?: string; shoulder?: string; sleeve?: string; waist?: string; length: string; leg_opening?: string; thigh?: string; hip?: string }[],
-    model_info: '',
-    price: '',
-    category: 'pakaian',
-    sub_category: 'kaos',
-    department_id: '',
-    warehouse_id: '',
-    weight_grams: 500,
-    length_cm: 20,
-    width_cm: 20,
-    height_cm: 5,
-    shelf_life_days: '',
-    is_perishable: false,
-    image_url: '',
-    image_alt: '',
-    perspective1: '',
-    perspective2: '',
-    perspective3: '',
-    perspective4: '',
-    is_featured: false,
-    affiliate_eligible: false,
-    price_tag: '',
-    badge_text: '',
-    variant_label: '',
-    variants: [] as { id: string; size: string; color: string; stock_quantity: number; sku?: string }[]
-  });
 
-  const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
+  // Fetch all data
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Fetch products with variants
+      const { data: prodData } = await supabase
+        .from('products')
+        .select('*, variants(*)')
+        .order('created_at', { ascending: false });
+      if (prodData) setProducts(prodData);
+
+      // Fetch orders with items (PAGINATED: limit to 100 to prevent browser OOM)
+      const { data: orderData } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (orderData) setOrders(orderData);
+
+      // Fetch Server-Side Aggregated Finance Summary (Bypassing 1000-row PostgREST limits)
+      try {
+        const financeRes = await fetch('/api/admin/finance-summary').then(r => r.json());
+        
+        if (financeRes && financeRes.success) {
+          // Still calculate pending orders from local orderData since it's just a count of latest
+          const pendingOrders = orderData ? orderData.filter(o => o.status === 'pending') : [];
+          
+          setFinance({
+            totalRevenue: financeRes.totalRevenue || 0,
+            todayRevenue: financeRes.todayRevenue || 0,
+            monthRevenue: financeRes.monthRevenue || 0,
+            pendingPayments: pendingOrders.length,
+            completedOrders: financeRes.totalOrdersAnalyzed || 0
+          });
+        }
+      } catch (financeErr) {
+        console.error('Failed to fetch server-side finance summary:', financeErr);
+      }
+
+      // Fetch customers
+      const { data: customerData } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .order('customer_number', { ascending: true });
+      if (customerData) setCustomers(customerData);
+
+      // Fetch pending returns count
+      const { count: pendingReturnsCount } = await supabase
+        .from('retur_requests')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['pending', 'reviewed']);
+      if (pendingReturnsCount !== null) setPendingReturns(pendingReturnsCount);
+
+      // Fetch categories, departments, and warehouses
+      const catData = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ([]));
+      const cats = Array.isArray(catData) ? catData : (catData?.data || []);
+      if (Array.isArray(cats)) setDbCategories(cats);
+
+      const deptData = await fetch('/api/admin/departments').then(r => r.json()).catch(() => ([]));
+      const depts = Array.isArray(deptData) ? deptData : (deptData?.data || []);
+      if (Array.isArray(depts)) setDbDepartments(depts);
+
+      const whData = await fetch('/api/admin/warehouses').then(r => r.json()).catch(() => ([]));
+      const whs = Array.isArray(whData) ? whData : (whData?.data || []);
+      if (Array.isArray(whs)) setDbWarehouses(whs);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Product CRUD
+  const {
+    productForm, setProductForm,
+    isEditMode, setIsEditMode,
+    editingProduct, setEditingProduct,
+    isProductModalOpen, setIsProductModalOpen,
+    isUploadingProductImage, setIsUploadingProductImage,
+    openProductModal,
+    handleProductNameChange,
+    addVariant,
+    removeVariant,
+    updateVariant,
+    saveProduct,
+    handleProductImageUpload
+  } = useProductForm(dbDepartments, dbWarehouses, showToast, fetchData);
 
   // Derived state for Concept Mall UI/UX conditional hierarchy (supports database UUIDs, slug strings, and category fallbacks)
   const selectedDeptObj = dbDepartments.find(d => d.id === productForm.department_id || d.slug === productForm.department_id || String(d.id) === String(productForm.department_id));
@@ -274,79 +327,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [customerSearchQuery, setCustomerSearchQuery] = useState('');
 
-  // Fetch all data
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Fetch products with variants
-      const { data: prodData } = await supabase
-        .from('products')
-        .select('*, variants(*)')
-        .order('created_at', { ascending: false });
-      if (prodData) setProducts(prodData);
 
-      // Fetch orders with items (PAGINATED: limit to 100 to prevent browser OOM)
-      const { data: orderData } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      if (orderData) setOrders(orderData);
-
-      // Fetch Server-Side Aggregated Finance Summary (Bypassing 1000-row PostgREST limits)
-      try {
-        const financeRes = await fetch('/api/admin/finance-summary').then(r => r.json());
-        
-        if (financeRes && financeRes.success) {
-          // Still calculate pending orders from local orderData since it's just a count of latest
-          const pendingOrders = orderData ? orderData.filter(o => o.status === 'pending') : [];
-          
-          setFinance({
-            totalRevenue: financeRes.totalRevenue || 0,
-            todayRevenue: financeRes.todayRevenue || 0,
-            monthRevenue: financeRes.monthRevenue || 0,
-            pendingPayments: pendingOrders.length,
-            completedOrders: financeRes.totalOrdersAnalyzed || 0
-          });
-        }
-      } catch (financeErr) {
-        console.error('Failed to fetch server-side finance summary:', financeErr);
-      }
-
-
-
-      // Fetch customers
-      const { data: customerData } = await supabase
-        .from('customer_profiles')
-        .select('*')
-        .order('customer_number', { ascending: true });
-      if (customerData) setCustomers(customerData);
-
-      // Fetch pending returns count
-      const { count: pendingReturnsCount } = await supabase
-        .from('retur_requests')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['pending', 'reviewed']);
-      if (pendingReturnsCount !== null) setPendingReturns(pendingReturnsCount);
-
-      // Fetch categories, departments, and warehouses
-      const catData = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ([]));
-      const cats = Array.isArray(catData) ? catData : (catData?.data || []);
-      if (Array.isArray(cats)) setDbCategories(cats);
-
-      const deptData = await fetch('/api/admin/departments').then(r => r.json()).catch(() => ([]));
-      const depts = Array.isArray(deptData) ? deptData : (deptData?.data || []);
-      if (Array.isArray(depts)) setDbDepartments(depts);
-
-      const whData = await fetch('/api/admin/warehouses').then(r => r.json()).catch(() => ([]));
-      const whs = Array.isArray(whData) ? whData : (whData?.data || []);
-      if (Array.isArray(whs)) setDbWarehouses(whs);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -354,410 +335,6 @@ export default function AdminDashboard() {
       fetchFinancialData();
     });
   }, [fetchData, fetchFinancialData]);
-
-  // Product CRUD
-  const openProductModal = (product?: Product) => {
-    if (product) {
-      setIsEditMode(true);
-      setEditingProduct(product);
-      
-      const cat = (product.category || '').toLowerCase();
-      const isFnBCat = ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry'].some(k => cat.includes(k));
-      const isObjCat = !isFnBCat && ['home', 'kitchen', 'utilities', 'ceramics', 'objects'].some(k => cat.includes(k));
-      const defaultSpec = isFnBCat 
-        ? { label: 'Roast Profile', value: 'Medium Roast' } 
-        : isObjCat 
-          ? { label: 'Material', value: 'Artisan Ceramic' } 
-          : { label: 'Jenis Pakaian', value: 'Kaos' };
-
-      setProductForm({
-        name: product.name || '',
-        slug: product.slug || '',
-        description: product.description || '',
-        description_en: product.description_en || '',
-        specifications: product.specifications?.length ? product.specifications : [defaultSpec],
-        measurements: product.measurements || [],
-        model_info: product.model_info || '',
-        price: (product.price ?? 0).toString(),
-        category: isFnBCat 
-          ? (product.category || 'coffee') 
-          : isObjCat 
-            ? (product.category || 'utilities') 
-            : ((product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
-                ? product.sub_category 
-                : (product.category === 'pakaian' ? 'kaos' : (product.category || 'kaos'))),
-        sub_category: isFnBCat 
-          ? (product.sub_category || product.category || 'coffee') 
-          : isObjCat 
-            ? (product.sub_category || product.category || 'utilities') 
-            : ((product.sub_category && !['pakaian', 'atasan', 'bawahan'].includes(product.sub_category)) 
-                ? product.sub_category 
-                : 'kaos'),
-        department_id: product.department_id || dbDepartments?.find(d => {
-          if (isFnBCat) return d.slug === 'pantry' || (d.name || '').toLowerCase().includes('pantry');
-          if (isObjCat) return d.slug === 'objects' || (d.name || '').toLowerCase().includes('objects');
-          return d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel');
-        })?.id || dbDepartments?.[0]?.id || '',
-        warehouse_id: product.warehouse_id || dbWarehouses?.find(w => w.is_primary)?.id || dbWarehouses?.[0]?.id || '',
-        weight_grams: typeof product.weight_grams === 'number' && !isNaN(product.weight_grams) ? product.weight_grams : 500,
-        length_cm: typeof product.length_cm === 'number' && !isNaN(product.length_cm) ? product.length_cm : 20,
-        width_cm: typeof product.width_cm === 'number' && !isNaN(product.width_cm) ? product.width_cm : 20,
-        height_cm: typeof product.height_cm === 'number' && !isNaN(product.height_cm) ? product.height_cm : 5,
-        shelf_life_days: product.shelf_life_days ? String(product.shelf_life_days) : '',
-        is_perishable: Boolean(product.is_perishable),
-        image_url: product.image_url || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorimage:'))?.value || '',
-        image_alt: product.image_alt || (product.name ? `${product.name} - Official Product View` : ''),
-        perspective1: product.perspective1 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp1:'))?.value || '',
-        perspective2: product.perspective2 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp2:'))?.value || '',
-        perspective3: product.perspective3 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp3:'))?.value || '',
-        perspective4: product.perspective4 || product.specifications?.find(s => s.label?.toLowerCase().startsWith('colorp4:'))?.value || '',
-        is_featured: Boolean(product.is_featured),
-        affiliate_eligible: Boolean(product.affiliate_eligible),
-        price_tag: product.price_tag || '',
-        badge_text: product.badge_text || '',
-        variant_label: product.variant_label || '',
-        variants: product.variants?.length ? product.variants.map(v => {
-          const parsedStock = typeof v.stock_quantity === 'number' && !isNaN(v.stock_quantity) 
-            ? v.stock_quantity 
-            : parseInt(String(v.stock_quantity || 0), 10);
-          return {
-            id: v.id || '',
-            size: v.size || '',
-            color: v.color || '',
-            stock_quantity: isNaN(parsedStock) ? 0 : parsedStock,
-            sku: v.sku || ''
-          };
-        }) : []
-      } as any);
-    } else {
-      setIsEditMode(false);
-      setEditingProduct(null);
-      setProductForm({
-        name: '',
-        slug: '',
-        description: '',
-        description_en: '',
-        specifications: [{ label: 'Fit', value: 'Standar / Regular Fit' }, { label: 'Jenis Pakaian', value: 'kaos' }],
-        measurements: [],
-        model_info: '',
-        price: '',
-        category: 'kaos',
-        sub_category: 'kaos',
-        department_id: dbDepartments?.find(d => d.slug === 'apparel' || (d.name || '').toLowerCase().includes('apparel'))?.id || dbDepartments?.[0]?.id || '',
-        warehouse_id: dbWarehouses?.find(w => w.is_primary)?.id || dbWarehouses?.[0]?.id || '',
-        weight_grams: 500,
-        length_cm: 20,
-        width_cm: 20,
-        height_cm: 5,
-        shelf_life_days: '',
-        is_perishable: false,
-        image_url: '',
-        image_alt: '',
-        perspective1: '',
-        perspective2: '',
-        perspective3: '',
-        perspective4: '',
-        is_featured: false,
-        affiliate_eligible: false,
-        price_tag: '',
-        badge_text: '',
-        variant_label: '',
-        variants: []
-      } as any);
-    }
-    setIsProductModalOpen(true);
-  };
-
-  const generateSlug = (name: string) => {
-    return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  const handleProductNameChange = (name: string) => {
-    setProductForm(prev => ({
-      ...prev,
-      name,
-      slug: generateSlug(name),
-      image_alt: (!prev.image_alt || prev.image_alt === prev.name || prev.image_alt.endsWith(' - Official Product View')) ? `${name} - Official Product View` : prev.image_alt
-    }));
-  };
-
-  const addVariant = () => {
-    setProductForm({
-      ...productForm,
-      variants: [...productForm.variants, { id: '', size: '', color: '', stock_quantity: 0 }]
-    });
-  };
-
-  const removeVariant = (index: number) => {
-    setProductForm({
-      ...productForm,
-      variants: productForm.variants.filter((_, i) => i !== index)
-    });
-  };
-
-  const updateVariant = (index: number, field: string, value: string | number) => {
-    const newVariants = [...productForm.variants];
-    newVariants[index] = { ...newVariants[index], [field]: value };
-    setProductForm({ ...productForm, variants: newVariants });
-  };
-
-  const cleanAndParsePrice = (priceStr: string) => {
-    let cleaned = priceStr.replace(/\./g, '');
-    if (cleaned.includes(',')) {
-      cleaned = cleaned.split(',')[0];
-    }
-    if (cleaned.includes('.')) {
-      cleaned = cleaned.split('.')[0];
-    }
-    const parsed = parseInt(cleaned.replace(/[^\d-]/g, ''), 10);
-    return isNaN(parsed) ? 0 : parsed;
-  };
-
-  const saveProduct = async () => {
-    try {
-      const hasColors = productForm.variants.some(v => v.color);
-      let finalSpecs = (productForm.specifications || []).filter(s => {
-        if (!s || typeof s.label !== 'string') return false;
-        if (typeof s.value !== 'string' || s.value.trim() === '' || s.value === 'null' || s.value === 'undefined') {
-          if (s.label.toLowerCase().startsWith('colorimage:') || s.label.toLowerCase().startsWith('colorp')) {
-            return false;
-          }
-        }
-        return true;
-      });
-
-      let finalImageUrl = productForm.image_url?.trim() || null;
-      let finalImageAlt = productForm.image_alt?.trim() || productForm.name || null;
-      let finalP1 = productForm.perspective1?.trim() || null;
-      let finalP2 = productForm.perspective2?.trim() || null;
-      let finalP3 = productForm.perspective3?.trim() || null;
-      let finalP4 = productForm.perspective4?.trim() || null;
-
-      if (hasColors && finalSpecs) {
-        const rawFirstColor = productForm.variants.find(v => Boolean(v.color))?.color;
-        const firstColor = rawFirstColor ? rawFirstColor.split(',')[0].trim() : null;
-        if (firstColor) {
-           const findSpecVal = (prefix: string) => {
-             return finalSpecs.find(s => 
-               s && typeof s.label === 'string' && (
-                 s.label.trim().toLowerCase() === `${prefix.toLowerCase()}:${firstColor.toLowerCase()}` ||
-                 (productForm.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1 &&
-                  s.label.trim().toLowerCase().startsWith(`${prefix.toLowerCase()}:`))
-               )
-             )?.value || null;
-           };
-
-           const specImageUrl = findSpecVal('ColorImage');
-           const specP1 = findSpecVal('ColorP1');
-           const specP2 = findSpecVal('ColorP2');
-           const specP3 = findSpecVal('ColorP3');
-           const specP4 = findSpecVal('ColorP4');
-
-           if (specImageUrl !== null) finalImageUrl = specImageUrl;
-           if (specP1 !== null) finalP1 = specP1;
-           if (specP2 !== null) finalP2 = specP2;
-           if (specP3 !== null) finalP3 = specP3;
-           if (specP4 !== null) finalP4 = specP4;
-           
-           if (!finalImageUrl) {
-             finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
-           }
-
-           const syncSpec = (prefix: string, val: string | null) => {
-             const label = `${prefix}:${firstColor}`;
-             const idx = finalSpecs.findIndex(s => 
-               s && typeof s.label === 'string' && (
-                 s.label.trim().toLowerCase() === label.trim().toLowerCase() ||
-                 (productForm.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1 &&
-                  s.label.trim().toLowerCase().startsWith(`${prefix.toLowerCase()}:`))
-               )
-             );
-             if (!val || val.trim() === '') {
-               if (idx >= 0) finalSpecs.splice(idx, 1);
-               return;
-             }
-             if (idx >= 0) finalSpecs[idx].value = val.trim();
-             else finalSpecs.push({ label, value: val.trim() });
-           };
-           syncSpec('ColorImage', finalImageUrl);
-           syncSpec('ColorP1', finalP1);
-           syncSpec('ColorP2', finalP2);
-           syncSpec('ColorP3', finalP3);
-           syncSpec('ColorP4', finalP4);
-
-           (['P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15'] as const).forEach(pKey => {
-             const globalLabel = `Global${pKey}`;
-             const colorLabel = `Color${pKey}:${firstColor}`;
-             
-             const firstPVal = finalSpecs.find(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === colorLabel.toLowerCase())?.value
-                            || productForm.specifications?.find(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === colorLabel.toLowerCase())?.value;
-             const formGlobalVal = finalSpecs.find(s => s && s.label === globalLabel)?.value
-                                || productForm.specifications?.find(s => s && s.label === globalLabel)?.value;
-             
-             const effectiveVal = (firstPVal && firstPVal.trim() !== '') ? firstPVal.trim() 
-                                : (formGlobalVal && formGlobalVal.trim() !== '') ? formGlobalVal.trim() : null;
-
-             const updateOrRemoveSpec = (targetLabel: string, val: string | null) => {
-               const idx = finalSpecs.findIndex(s => s && typeof s.label === 'string' && s.label.trim().toLowerCase() === targetLabel.toLowerCase());
-               if (!val) {
-                 if (idx >= 0) finalSpecs.splice(idx, 1);
-               } else {
-                 if (idx >= 0) finalSpecs[idx].value = val;
-                 else finalSpecs.push({ label: targetLabel, value: val });
-               }
-             };
-
-             updateOrRemoveSpec(globalLabel, effectiveVal);
-             updateOrRemoveSpec(colorLabel, effectiveVal);
-           });
-        }
-      } else if (!finalImageUrl) {
-        finalImageUrl = finalP1 || finalP2 || finalP3 || finalP4 || null;
-      }
-
-      const productData = {
-        name: productForm.name,
-        slug: productForm.slug,
-        description: productForm.description,
-        description_en: productForm.description_en || null,
-        specifications: finalSpecs,
-        measurements: productForm.measurements.length > 0 ? productForm.measurements : null,
-        model_info: productForm.model_info || null,
-        price: cleanAndParsePrice(productForm.price),
-        category: productForm.category,
-        sub_category: (productForm as any).sub_category || productForm.category || null,
-        department_id: (productForm as any).department_id || null,
-        warehouse_id: (productForm as any).warehouse_id || null,
-        weight_grams: parseInt(String((productForm as any).weight_grams)) || 500,
-        length_cm: parseInt(String((productForm as any).length_cm)) || 20,
-        width_cm: parseInt(String((productForm as any).width_cm)) || 20,
-        height_cm: parseInt(String((productForm as any).height_cm)) || 5,
-        shelf_life_days: (productForm as any).shelf_life_days ? parseInt(String((productForm as any).shelf_life_days)) : null,
-        is_perishable: Boolean((productForm as any).is_perishable),
-        image_url: finalImageUrl,
-        image_alt: finalImageAlt,
-        perspective1: finalP1,
-        perspective2: finalP2,
-        perspective3: finalP3,
-        perspective4: finalP4,
-        is_featured: productForm.is_featured,
-        affiliate_eligible: productForm.affiliate_eligible,
-        price_tag: productForm.price_tag || null,
-        badge_text: productForm.badge_text || null,
-        variant_label: productForm.variant_label || null,
-        updated_at: new Date().toISOString()
-      };
-
-      // Use server API to bypass RLS and save securely
-      const res = await fetch('/api/admin/products/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          isEditMode,
-          editingProductId: editingProduct?.id,
-          productData,
-          allVariants: productForm.variants.flatMap(v => {
-            const colors = v.color ? v.color.split(',').map(c => c.trim()).filter(Boolean) : [null];
-            return colors.map((color, index) => {
-              const variantObj: any = {
-                size: v.size || null,
-                color: color,
-                sku: v.sku || null,
-                stock_quantity: parseInt(String(v.stock_quantity)) || 0
-              };
-              if (v.id && index === 0) variantObj.id = v.id;
-              return variantObj;
-            });
-          })
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save product via API');
-
-      setIsProductModalOpen(false);
-      
-      if (data.costingMissing) {
-        showToast('Success: Product saved! ⚠️ PEMBERITAHUAN: Jangan lupa isi HPP/Costing untuk SKU ini di menu Marketing & ROAS agar data Finance akurat.', 'info');
-      } else {
-        showToast('Success: Product saved successfully!', 'success');
-      }
-      
-      fetchData();
-
-      // Background Ping to Google Indexing API
-      if (productForm.slug) {
-        fetch('/api/admin/seo/index', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: `https://ninoc.store/shop/${productForm.slug}`,
-            action: 'URL_UPDATED'
-          })
-        }).then(res => res.json()).then(data => {
-           if (data.success) {
-             setTimeout(() => showToast('Google Indexing Requested!', 'success'), 1500);
-           }
-        }).catch(err => console.error('Google Indexing API error:', err));
-      }
-    } catch (error: any) {
-      console.error('Failed to save product:', error);
-      showToast('Failed to save product: ' + (error.message || JSON.stringify(error)), 'error');
-    }
-  };
-
-  // ===== PRODUCT IMAGE UPLOAD (Single) =====
-  const handleProductImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setIsUploadingProductImage(true);
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      const compressedFile = await compressImage(file);
-
-      // Use API route (server-side with service role key)
-      const formData = new FormData();
-      formData.append('files', compressedFile);
-      formData.append('bucket', 'products');
-
-      const res = await fetch('/api/admin/upload-images', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Upload failed');
-      }
-
-      if (data.results && data.results[0]?.url) {
-        setProductForm(prev => {
-          const newUrl = data.results[0].url;
-          const firstColor = prev.variants.find(v => Boolean(v.color))?.color?.split(',')[0].trim();
-          const newSpecs = [...(prev.specifications || [])];
-          if (firstColor && prev.variants.filter(v => Boolean(v.color)).map(v => v.color).filter((v, i, a) => a.indexOf(v) === i).length === 1) {
-             const label = `ColorImage:${firstColor}`;
-             const idx = newSpecs.findIndex(s => s.label?.toLowerCase().startsWith('colorimage:'));
-             if (idx >= 0) newSpecs[idx] = { label, value: newUrl };
-             else newSpecs.push({ label, value: newUrl });
-          }
-          return {
-            ...prev,
-            image_url: newUrl,
-            image_alt: prev.image_alt ? prev.image_alt : prev.name ? `${prev.name} - Official Product View` : 'NINOC Official Product View',
-            specifications: newSpecs
-          };
-        });
-        alert('Image uploaded successfully!');
-      }
-    } catch (err) {
-      const error = err as Error;
-      alert('Error uploading image: ' + (error.message || 'Unknown error'));
-    } finally {
-      setIsUploadingProductImage(false);
-    }
-  };
 
   // ===== BULK UPLOAD HANDLER =====
   const handleBulkImageUpload = async () => {

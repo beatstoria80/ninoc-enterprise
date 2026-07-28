@@ -15,21 +15,30 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   const [introPlaying, setIntroPlaying] = useState(false);
   const { items } = useHydratedCart();
 
-  // Hide GlobalHeader/Footer on admin pages, checkout, legal, help, track, profile, retur, onboarding
-  const isAdminPage = pathname?.startsWith('/admin');
+  // Hidden layout route configuration
+  const HIDDEN_HEADER_EXACT_ROUTES = new Set([
+    '/checkout', '/legal', '/track', '/retur', 
+    '/onboarding', '/login', '/register'
+  ]);
+  
+  const HIDDEN_HEADER_PREFIXES = [
+    '/admin', '/help', '/profile', 
+    '/affiliate/dashboard', '/supplier'
+  ];
+
+  const showGlobalHeader = pathname ? 
+    (!HIDDEN_HEADER_EXACT_ROUTES.has(pathname) && 
+     !HIDDEN_HEADER_PREFIXES.some(prefix => pathname.startsWith(prefix))) 
+    : true;
+    
+  // Re-derive properties used by MobileLayout
   const isCheckoutPage = pathname === '/checkout';
-  const isLegalPage = pathname === '/legal';
-  const isHelpPage = pathname?.startsWith('/help');
-  const isTrackPage = pathname === '/track';
   const isProfilePage = pathname?.startsWith('/profile');
-  const isReturPage = pathname === '/retur';
   const isOnboardingPage = pathname === '/onboarding';
   const isLoginPage = pathname === '/login';
   const isRegisterPage = pathname === '/register';
-  const isAffiliateDashboard = pathname?.startsWith('/affiliate/dashboard');
-  const isSupplierPage = pathname?.startsWith('/supplier');
-  
-  const showGlobalHeader = !isAdminPage && !isCheckoutPage && !isLegalPage && !isHelpPage && !isTrackPage && !isReturPage && !isOnboardingPage && !isAffiliateDashboard && !isRegisterPage && !isLoginPage && !isProfilePage && !isSupplierPage;
+  const isAdminPage = pathname?.startsWith('/admin');
+  const isReturPage = pathname === '/retur';
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
