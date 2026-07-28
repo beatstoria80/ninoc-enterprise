@@ -17,38 +17,41 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { compressImage, forceDownloadImage } from '@/lib/utils/imageUtils';
+
 import { OverviewTab } from '@/components/admin/tabs/OverviewTab';
-import { ProductsTab } from '@/components/admin/tabs/ProductsTab';
-import { UploadTab } from '@/components/admin/tabs/UploadTab';
-import { InventoryTab } from '@/components/admin/tabs/InventoryTab';
-import { OrdersTab } from '@/components/admin/tabs/OrdersTab';
-import { LogisticsTab } from '@/components/admin/tabs/LogisticsTab';
-import { FinanceTab } from '@/components/admin/tabs/FinanceTab';
-import { ProductCostingTab } from '@/components/admin/tabs/ProductCostingTab';
-import PoManager from '@/components/admin/PoManager';
-import DoReceiving from '@/components/admin/DoReceiving';
-import StockLedger from '@/components/admin/StockLedger';
-import FinanceDashboard from '@/components/admin/FinanceDashboard';
-import StockOpname from '@/components/admin/StockOpname';
-import OpexTracker from '@/components/admin/OpexTracker';
-import { MessagesTab } from '@/components/admin/tabs/MessagesTab';
-import { CustomersTab } from '@/components/admin/tabs/CustomersTab';
-import { SettingsTab } from '@/components/admin/tabs/SettingsTab';
-import { LogbookTab } from '@/components/admin/tabs/LogbookTab';
-import { ReturTab } from '@/components/admin/tabs/ReturTab';
-import { PlaceholderTab } from '@/components/admin/tabs/PlaceholderTab';
-import { WABroadcastTab } from '@/components/admin/tabs/WABroadcastTab';
-import { EmailBroadcastTab } from '@/components/admin/tabs/EmailBroadcastTab';
-import AffiliatesTab from '@/components/admin/tabs/AffiliatesTab';
-import { MarketingTab } from '@/components/admin/tabs/MarketingTab';
-import { GoogleAdsTab } from '@/components/admin/tabs/GoogleAdsTab';
-import { WebAnalyticsTab } from '@/components/admin/tabs/WebAnalyticsTab';
-import { SuppliersTab } from '@/components/admin/tabs/SuppliersTab';
-import { WarehouseTab } from '@/components/admin/tabs/WarehouseTab';
-import { POTab } from '@/components/admin/tabs/POTab';
-import { DOTab } from '@/components/admin/tabs/DOTab';
-import { StockLedgerTab } from '@/components/admin/tabs/StockLedgerTab';
-import { SubmissionsTab } from '@/components/admin/tabs/SubmissionsTab';
+const ProductsTab = dynamic(() => import('@/components/admin/tabs/ProductsTab').then(mod => mod.ProductsTab), { ssr: false });
+const UploadTab = dynamic(() => import('@/components/admin/tabs/UploadTab').then(mod => mod.UploadTab), { ssr: false });
+const InventoryTab = dynamic(() => import('@/components/admin/tabs/InventoryTab').then(mod => mod.InventoryTab), { ssr: false });
+const OrdersTab = dynamic(() => import('@/components/admin/tabs/OrdersTab').then(mod => mod.OrdersTab), { ssr: false });
+const LogisticsTab = dynamic(() => import('@/components/admin/tabs/LogisticsTab').then(mod => mod.LogisticsTab), { ssr: false });
+const FinanceTab = dynamic(() => import('@/components/admin/tabs/FinanceTab').then(mod => mod.FinanceTab), { ssr: false });
+const ProductCostingTab = dynamic(() => import('@/components/admin/tabs/ProductCostingTab').then(mod => mod.ProductCostingTab), { ssr: false });
+const PoManager = dynamic(() => import('@/components/admin/PoManager'), { ssr: false });
+const DoReceiving = dynamic(() => import('@/components/admin/DoReceiving'), { ssr: false });
+const StockLedger = dynamic(() => import('@/components/admin/StockLedger'), { ssr: false });
+const FinanceDashboard = dynamic(() => import('@/components/admin/FinanceDashboard'), { ssr: false });
+const StockOpname = dynamic(() => import('@/components/admin/StockOpname'), { ssr: false });
+const OpexTracker = dynamic(() => import('@/components/admin/OpexTracker'), { ssr: false });
+const MessagesTab = dynamic(() => import('@/components/admin/tabs/MessagesTab').then(mod => mod.MessagesTab), { ssr: false });
+const CustomersTab = dynamic(() => import('@/components/admin/tabs/CustomersTab').then(mod => mod.CustomersTab), { ssr: false });
+const SettingsTab = dynamic(() => import('@/components/admin/tabs/SettingsTab').then(mod => mod.SettingsTab), { ssr: false });
+const LogbookTab = dynamic(() => import('@/components/admin/tabs/LogbookTab').then(mod => mod.LogbookTab), { ssr: false });
+const ReturTab = dynamic(() => import('@/components/admin/tabs/ReturTab').then(mod => mod.ReturTab), { ssr: false });
+const PlaceholderTab = dynamic(() => import('@/components/admin/tabs/PlaceholderTab').then(mod => mod.PlaceholderTab), { ssr: false });
+const WABroadcastTab = dynamic(() => import('@/components/admin/tabs/WABroadcastTab').then(mod => mod.WABroadcastTab), { ssr: false });
+const EmailBroadcastTab = dynamic(() => import('@/components/admin/tabs/EmailBroadcastTab').then(mod => mod.EmailBroadcastTab), { ssr: false });
+const AffiliatesTab = dynamic(() => import('@/components/admin/tabs/AffiliatesTab'), { ssr: false });
+const MarketingTab = dynamic(() => import('@/components/admin/tabs/MarketingTab').then(mod => mod.MarketingTab), { ssr: false });
+const GoogleAdsTab = dynamic(() => import('@/components/admin/tabs/GoogleAdsTab').then(mod => mod.GoogleAdsTab), { ssr: false });
+const WebAnalyticsTab = dynamic(() => import('@/components/admin/tabs/WebAnalyticsTab').then(mod => mod.WebAnalyticsTab), { ssr: false });
+const SuppliersTab = dynamic(() => import('@/components/admin/tabs/SuppliersTab').then(mod => mod.SuppliersTab), { ssr: false });
+const WarehouseTab = dynamic(() => import('@/components/admin/tabs/WarehouseTab').then(mod => mod.WarehouseTab), { ssr: false });
+const POTab = dynamic(() => import('@/components/admin/tabs/POTab').then(mod => mod.POTab), { ssr: false });
+const DOTab = dynamic(() => import('@/components/admin/tabs/DOTab').then(mod => mod.DOTab), { ssr: false });
+const StockLedgerTab = dynamic(() => import('@/components/admin/tabs/StockLedgerTab').then(mod => mod.StockLedgerTab), { ssr: false });
+const SubmissionsTab = dynamic(() => import('@/components/admin/tabs/SubmissionsTab').then(mod => mod.SubmissionsTab), { ssr: false });
 import { CustomerModal } from '@/components/admin/CustomerModal';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
@@ -66,83 +69,6 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Helper to compress images before upload (Bypass Vercel 4.5MB limit)
-const compressImage = async (file: File): Promise<File> => {
-  if (!file.type.startsWith('image/')) return file;
-  if (file.type === 'image/svg+xml' || file.size < 500 * 1024) return file; // Skip SVG & < 500KB
-  
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new globalThis.Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        const MAX_SIZE = 1920;
-        
-        if (width > height && width > MAX_SIZE) {
-          height = Math.round((height * MAX_SIZE) / width);
-          width = MAX_SIZE;
-        } else if (height > MAX_SIZE) {
-          width = Math.round((width * MAX_SIZE) / height);
-          height = MAX_SIZE;
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return resolve(file);
-        
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(
-          (blob) => {
-            if (blob && blob.size < file.size) {
-              resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
-            } else {
-              resolve(file);
-            }
-          },
-          'image/jpeg',
-          0.85
-        );
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
-};
-
-const forceDownloadImage = async (url: string, filename: string = 'product-image.jpg') => {
-  try {
-    const isSupabase = url.includes('supabase.co/storage');
-    if (isSupabase) {
-      const downloadUrl = url.includes('?') ? `${url}&download=` : `${url}?download=`;
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      return;
-    }
-    
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Network response was not ok');
-    const blob = await res.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error('Download failed, opening in new tab', error);
-    window.open(url, '_blank');
-  }
-};
 
 // ============ MAIN ADMIN DASHBOARD ============
 export default function AdminDashboard() {
