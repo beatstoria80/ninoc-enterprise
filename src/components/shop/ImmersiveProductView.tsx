@@ -90,13 +90,6 @@ export default function ImmersiveProductView({
       if (typeof activeImageIndex === 'number' && activeImageIndex >= 0 && activeImageIndex < images.length) {
         requestAnimationFrame(() => {
           setActiveImage(activeImageIndex);
-        });
-      }
-    }
-    prevIsOpenRef.current = isOpen;
-  }, [isOpen, activeImageIndex, images.length]);
-
-  // Ensure activeImage is clamped safely if images array shrinks after switching color variant
   useEffect(() => {
     if (isOpen && images && images.length > 0 && activeImage >= images.length) {
       requestAnimationFrame(() => {
@@ -105,18 +98,17 @@ export default function ImmersiveProductView({
     }
   }, [isOpen, images, activeImage]);
 
-  // Sync selected color automatically when user swipes or drags photo in ImmersiveProductView
   useEffect(() => {
     if (!isOpen || !images || images.length === 0 || activeImage >= images.length) return;
     const currentImg = images[activeImage];
     if (!currentImg) return;
 
-    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]: [string, any]) => {
       return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentImg);
     });
 
     if (matchedEntry) {
-      const [matchedColor, g] = matchedEntry;
+      const [matchedColor, g] = matchedEntry as [string, any];
       if (matchedColor && matchedColor !== selectedColor?.toUpperCase()) {
         const colorSpecific = [g.main || product?.image_url || '', g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].filter(
           (img): img is string => typeof img === 'string' && img.length > 0
@@ -142,13 +134,12 @@ export default function ImmersiveProductView({
     }
   }, [isOpen, activeImage, images, colorGalleryMap, selectedColor, setSelectedColor, setActiveImageIndex, activeImageIndex, product?.image_url]);
 
-  // Determine variant name for the active image
   const currentImmersiveVariantName = React.useMemo(() => {
     if (!images || images.length === 0) return selectedColor;
     const currentUrl = images[activeImage];
     if (!currentUrl) return selectedColor;
 
-    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]: [string, any]) => {
       return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentUrl);
     });
 
@@ -159,60 +150,46 @@ export default function ImmersiveProductView({
     return selectedColor || `${product?.variant_label || 'Series'} #${activeImage + 1}`;
   }, [images, activeImage, colorGalleryMap, selectedColor, product]);
 
-  // Dynamic description per active image (changes on swipe)
   const currentImmersiveDesc = React.useMemo(() => {
-    if (!images || images.length === 0) return null;
-    const currentUrl = images[activeImage];
-    if (!currentUrl) return null;
+    if (!currentImmersiveVariantName) return '';
+    try {
+      const descriptions = typeof product?.variant_descriptions === 'string' 
+        ? JSON.parse(product.variant_descriptions) 
+        : (product?.variant_descriptions || {});
+      return descriptions[currentImmersiveVariantName.toUpperCase()] || '';
+    } catch(e) { return ''; }
+  }, [currentImmersiveVariantName, product?.variant_descriptions]);
 
-    // 1. Match by URL first from imageDescriptionItems
-    const matchByUrl = imageDescriptionItems.find(item => item.url && item.url === currentUrl && item.desc);
-    if (matchByUrl?.desc) return matchByUrl.desc;
-
-    // 2. Fallback match by index in imageDescriptionItems
-    const matchByIndex = imageDescriptionItems[activeImage]?.desc;
-    if (matchByIndex) return matchByIndex;
-
-    // 3. Fallback match by colorDescMap for active image color if available
-    const activeColorName = currentImmersiveVariantName || selectedColor;
-    if (activeColorName && colorDescMap && colorDescMap[activeColorName.toUpperCase()]) {
-      return colorDescMap[activeColorName.toUpperCase()];
+  const localizedDescription = React.useMemo(() => {
+    if (!product?.description_localized) return product?.description || '';
+    try {
+      const parsed = typeof product.description_localized === 'string' 
+        ? JSON.parse(product.description_localized) 
+        : product.description_localized;
+      return parsed?.id || product.description || '';
+    } catch (e) {
+      return product?.description || '';
     }
-
-    return null;
-  }, [images, activeImage, imageDescriptionItems, currentImmersiveVariantName, selectedColor, colorDescMap]);
-
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isMobileCheckoutOpen) setIsMobileCheckoutOpen(false);
-        else onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, isMobileCheckoutOpen]);
-
-  // Lock body scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      setTimeout(() => setIsMobileCheckoutOpen(false), 0);
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+  }, [product?.description, product?.description_localized]);
 
   if (!product) return null;
 
-  const currentSurcharge = hasSizes && selectedSize && SURCHARGE_SIZES.some(s => s?.toUpperCase() === selectedSize?.toUpperCase()) ? SIZE_SURCHARGE_AMOUNT : 0;
+  const isObjectsCat = product.department_id === 'objects' || product.department_id === 'art';
+  const isFnBCat = product.department_id === 'fnb' || product.department_id === 'pantry';
   
-  // Resolve stock safely for cart limits
+  const rawColors = typeof product.colors === 'string' ? JSON.parse(product.colors || '[]') : (product.colors || []);
+  const availableColors = Array.isArray(rawColors) ? rawColors : [];
+  
+  const rawSizes = typeof product.sizes === 'string' ? JSON.parse(product.sizes || '[]') : (product.sizes || []);
+  const availableSizes = Array.isArray(rawSizes) ? rawSizes : [];
+
+  const effectiveSize = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : '');
+  const effectiveColor = selectedColor || (availableColors.length > 0 ? availableColors[0] : '');
+  const isSetOf2 = effectiveSize === 'SET OF 2';
+  const currentSurcharge = isSetOf2 ? SIZE_SURCHARGE_AMOUNT : (SURCHARGE_SIZES.includes(effectiveSize) ? SIZE_SURCHARGE_AMOUNT : 0);
+  
+  const cartTotalItems = isHydrated ? items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
   const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
   const selectedVariant = safeVariants.find((v: any) => 
     (!selectedSize ? true : v?.size?.toUpperCase() === selectedSize.toUpperCase()) && 
@@ -237,7 +214,7 @@ export default function ImmersiveProductView({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '100%' }}
           transition={{ type: "spring", stiffness: 200, damping: 30 }}
-          className="fixed inset-0 z-[9999] bg-black lg:bg-cr flex flex-col lg:flex-row overflow-hidden"
+          className="fixed inset-0 z-[9999] bg-white lg:bg-cr flex flex-col lg:flex-row overflow-hidden"
         >
           {/* Desktop Close Button */}
           <button 
@@ -249,28 +226,23 @@ export default function ImmersiveProductView({
 
           {/* Mobile Top Header Navigation */}
           <div className="lg:hidden absolute top-0 left-0 right-0 z-[100] flex justify-between items-start p-4 pointer-events-none">
-            <button onClick={onClose} className="pointer-events-auto w-10 h-10 flex items-center justify-center text-white drop-shadow-md">
+            <button onClick={onClose} className="pointer-events-auto w-10 h-10 flex items-center justify-center text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm rounded-full">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
-            <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
-              <div className="flex gap-5 text-white drop-shadow-md">
-                <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-                <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                  {cartTotalItems > 0 && (
-                    <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-rose text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-black/20">
-                      {cartTotalItems}
-                    </span>
-                  )}
-                </button>
-              </div>
-              <div className="px-2 py-0.5 bg-black/40 text-white text-[10px] font-medium rounded backdrop-blur-sm mt-1 border border-white/10">
-                {activeImage + 1}/{images.length}
-              </div>
+            <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full pointer-events-auto">
+              <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+              <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                {cartTotalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose text-white text-[7.5px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
+                    {cartTotalItems}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
+          {/* LEFT COLUMN: DESCRIPTION */}
           <div className="hidden lg:flex flex-1 h-full bg-white flex-col justify-center pl-12 lg:pl-24 pr-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -330,13 +302,13 @@ export default function ImmersiveProductView({
             </motion.div>
           </div>
 
-          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfect 4:5 Aspect Ratio) */}
-          <div className="w-full h-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-black lg:bg-white relative flex items-center justify-center overflow-hidden">
+          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO */}
+          <div className="w-full h-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-white relative flex items-center justify-center overflow-hidden">
              <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
                <AnimatePresence>
                  {images.map((img, idx) => {
                    const offset = idx - activeImage;
-                   const yOffset = offset * 250;
+                   const xOffsetStr = `${offset * 100}%`;
                    const scale = offset === 0 ? 1 : 0.85;
                    const opacity = offset === 0 ? 1 : 0.3;
                    const zIndex = 10 - Math.abs(offset);
@@ -344,16 +316,16 @@ export default function ImmersiveProductView({
                    return (
                      <motion.div
                        key={`${selectedColor || 'variant'}-${img}-${idx}`}
-                       initial={{ opacity: 0, scale: 0.92, y: yOffset }}
-                       animate={{ y: yOffset, scale, opacity, zIndex }}
+                       initial={{ opacity: 0, scale: 0.92, x: xOffsetStr }}
+                       animate={{ x: xOffsetStr, scale, opacity, zIndex }}
                        exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.18, ease: "easeInOut" } }}
                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                       drag={offset === 0 ? "y" : false}
-                       dragConstraints={{ top: 0, bottom: 0 }}
+                       drag={offset === 0 ? "x" : false}
+                       dragConstraints={{ left: 0, right: 0 }}
                        dragElastic={0.2}
                        onDragEnd={(e, { offset: dragOffset }) => {
                          if (offset !== 0) return;
-                         const swipe = dragOffset.y;
+                         const swipe = dragOffset.x;
                          if (swipe < -50 && activeImage < images.length - 1) {
                            setActiveImage(prev => prev + 1);
                          } else if (swipe > 50 && activeImage > 0) {
@@ -363,11 +335,11 @@ export default function ImmersiveProductView({
                        className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
                        style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
                      >
-                       <div className="relative w-full h-full max-w-4xl mx-auto">
+                       <div className="relative w-full h-full max-w-4xl mx-auto flex items-center justify-center">
                          <SafeImage
                            src={img}
                            alt={`${product.name} view ${idx + 1}`}
-                           className="object-contain drop-shadow-2xl"
+                           className="object-contain"
                            priority={idx === 0}
                          />
                        </div>
@@ -377,22 +349,28 @@ export default function ImmersiveProductView({
                </AnimatePresence>
              </div>
              
+             {/* Mobile Image Counter */}
+             <div className="lg:hidden absolute top-16 right-4 z-[100] flex flex-col items-end gap-2 pointer-events-none">
+               <div className="px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-[10px] font-bold text-ink drop-shadow-sm border border-white/20">
+                 {activeImage + 1}/{images.length}
+               </div>
+             </div>
+
              {/* Mobile Bottom Navigation (Floating) */}
              <div className="lg:hidden absolute bottom-0 left-0 right-0 z-[100] pointer-events-none">
-               {/* Store & Share Buttons */}
                <div className="flex justify-end px-4 pb-4 pointer-events-auto">
                  <div className="flex flex-col gap-4">
                    <button className="flex flex-col items-center gap-1 group">
-                     <div className="w-10 h-10 bg-white rounded-full p-0.5 shadow-lg flex items-center justify-center overflow-hidden">
-                        <Image src="/images/octo.png" width={36} height={36} alt="Store" className="rounded-full object-cover" />
+                     <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-rose border border-ink/5">
+                        <Store strokeWidth={1.5} />
                      </div>
                      <span className="text-[9px] text-rose font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Toko &gt;</span>
                    </button>
                    <button className="flex flex-col items-center gap-1">
-                     <div className="w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-lg">
-                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                     <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-ink shadow-lg border border-ink/5">
+                       <Share2 strokeWidth={1.5} size={18} />
                      </div>
-                     <span className="text-[9px] text-white font-bold drop-shadow-md">Bagikan</span>
+                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Bagikan</span>
                    </button>
                  </div>
                </div>
