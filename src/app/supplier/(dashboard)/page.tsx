@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Package, LineChart, TrendingUp, DollarSign, ArrowUpRight, Activity } from 'lucide-react';
+import { Package, LineChart, TrendingUp, DollarSign, ArrowUpRight, Activity, Truck } from 'lucide-react';
 
 export default async function SupplierDashboard() {
   const supabase = await createClient();
