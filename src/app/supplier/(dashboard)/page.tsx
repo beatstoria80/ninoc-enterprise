@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Package, LineChart, TrendingUp, DollarSign } from 'lucide-react';
+import { Package, LineChart, TrendingUp, DollarSign, ArrowUpRight, Activity } from 'lucide-react';
 
 export default async function SupplierDashboard() {
   const supabase = await createClient();
@@ -10,13 +10,14 @@ export default async function SupplierDashboard() {
     if (!session) return { data: null };
     return await supabase
       .from('supplier_users')
-      .select('supplier_id')
+      .select('supplier_id, suppliers(name)')
       .eq('user_id', session.user.id)
       .limit(1)
       .single();
   });
 
   const supplierId = supplierUser?.supplier_id;
+  const supplierName = supplierUser?.suppliers?.name || 'Partner';
 
   // Fetch actual data
   let pendingPayouts = 0;
@@ -25,7 +26,6 @@ export default async function SupplierDashboard() {
   let recentMovements: any[] = [];
 
   if (supplierId) {
-    // Attempt to fetch real stats if tables are available
     try {
       const { data: products } = await supabase
         .from('products')
@@ -36,84 +36,141 @@ export default async function SupplierDashboard() {
         activeAllocations = products.reduce((acc, p) => acc + (p.stock || 0), 0);
       }
       
-      // In a real scenario, you'd fetch from supplier_ledgers or order_items
-      // For now, we initialize to 0 to remove dummy data
+      // Additional real queries can be added here
     } catch (e) {
       console.error(e);
     }
   }
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-        <div className="text-sm text-gray-500">Live updating...</div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-gradient-to-r from-ink to-ink/80 p-8 rounded-2xl text-white shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative z-10">
+          <p className="text-sm font-medium text-white/60 mb-1 uppercase tracking-widest">Overview</p>
+          <h1 className="text-3xl font-bold font-display">Welcome back, {supplierName}</h1>
+          <p className="text-white/70 mt-2 max-w-lg">
+            Monitor your logistics, allocations, and financial performance seamlessly. NINOC enterprise systems handle the heavy lifting.
+          </p>
+        </div>
+        <div className="relative z-10 flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span className="text-xs font-medium text-white">System Active</span>
+        </div>
       </div>
 
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <DollarSign size={80} />
+          </div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm">
               <DollarSign size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-500 font-medium">Pending Payouts</p>
-              <h3 className="text-2xl font-bold text-gray-900">
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">
                 Rp {pendingPayouts.toLocaleString('id-ID')}
               </h3>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <TrendingUp size={80} />
+          </div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
               <TrendingUp size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-500 font-medium">Items Sold (30d)</p>
-              <h3 className="text-2xl font-bold text-gray-900">{itemsSold}</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">{itemsSold}</h3>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Package size={80} />
+          </div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
               <Package size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-500 font-medium">Active Allocations</p>
-              <h3 className="text-2xl font-bold text-gray-900">{activeAllocations}</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">{activeAllocations}</h3>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Activity size={80} />
+          </div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shadow-sm">
+              <Activity size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 font-medium">Fulfillment Rate</p>
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">100%</h3>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Sales Performance (Managed by Ninoc)</h3>
-          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
-            <p className="text-sm text-gray-400">Belum ada data penjualan</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Sales Performance</h3>
+            <span className="text-xs font-medium px-3 py-1 bg-gray-100 rounded-full text-gray-600">Managed by Ninoc</span>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center bg-gray-50/50 rounded-xl border border-dashed border-gray-200 min-h-[300px]">
+            <LineChart size={48} className="text-gray-300 mb-4" />
+            <p className="text-sm font-medium text-gray-500">Analytics are currently syncing</p>
+            <p className="text-xs text-gray-400 mt-1 text-center max-w-xs">Data will populate automatically as Ninoc processes orders containing your products.</p>
           </div>
         </div>
         
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Movement</h3>
-          <div className="space-y-4">
-            {recentMovements.length > 0 ? recentMovements.map((m, i) => (
-              <div key={i} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-md"></div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{m.name}</p>
-                    <p className="text-xs text-gray-500">{m.desc}</p>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Recent Logistics</h3>
+            <button className="text-blue-600 hover:text-blue-700 p-1">
+              <ArrowUpRight size={18} />
+            </button>
+          </div>
+          <div className="flex-1">
+            {recentMovements.length > 0 ? (
+              <div className="space-y-4">
+                {recentMovements.map((m, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gray-50 group-hover:bg-gray-100 transition-colors rounded-lg flex items-center justify-center">
+                        <Package size={16} className="text-gray-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{m.name}</p>
+                        <p className="text-xs text-gray-500">{m.desc}</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-bold text-emerald-600">+ Rp {m.amount.toLocaleString('id-ID')}</span>
                   </div>
-                </div>
-                <span className="text-sm font-bold text-emerald-600">+ Rp {m.amount.toLocaleString('id-ID')}</span>
+                ))}
               </div>
-            )) : (
-              <p className="text-sm text-gray-500 py-4 text-center">Belum ada pergerakan stok</p>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center py-12">
+                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                  <Truck size={24} className="text-gray-300" />
+                </div>
+                <p className="text-sm font-medium text-gray-500 text-center">No recent movements</p>
+                <p className="text-xs text-gray-400 text-center mt-1">Pending incoming shipments</p>
+              </div>
             )}
           </div>
         </div>

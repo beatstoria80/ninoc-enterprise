@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { Package, LineChart, LogOut, LayoutDashboard, Settings, Truck } from 'lucide-react';
+import { Package, LineChart, LayoutDashboard, Settings, Truck } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
+import { SupplierLogoutButton } from '@/components/supplier/SupplierLogoutButton';
 
 export default async function SupplierLayout({
   children,
@@ -78,10 +79,7 @@ export default async function SupplierLayout({
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <button className="flex items-center gap-3 px-4 py-3 w-full text-sm text-rose/80 hover:text-rose hover:bg-white/5 rounded-md transition-colors">
-            <LogOut size={18} />
-            <span>Sign Out</span>
-          </button>
+          <SupplierLogoutButton />
         </div>
       </aside>
 
