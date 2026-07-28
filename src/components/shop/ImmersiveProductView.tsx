@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, ShoppingBag, Store, Share2 } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Star, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
 import { useHydratedCart } from '@/store/useCart';
@@ -384,9 +384,9 @@ export default function ImmersiveProductView({
                  <div className="flex flex-col gap-4">
                    <button className="flex flex-col items-center gap-1 group">
                      <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-ink border border-ink/5">
-                        <Store strokeWidth={1.5} />
+                        <Star strokeWidth={1.5} size={18} />
                      </div>
-                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Toko &gt;</span>
+                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Ulasan</span>
                    </button>
                    <button className="flex flex-col items-center gap-1">
                      <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-ink shadow-lg border border-ink/5">
