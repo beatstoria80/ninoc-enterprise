@@ -17,7 +17,8 @@ export default async function SupplierDashboard() {
   });
 
   const supplierId = supplierUser?.supplier_id;
-  const supplierName = supplierUser?.suppliers?.name || 'Partner';
+  const suppliersObj = supplierUser?.suppliers as any;
+  const supplierName = (Array.isArray(suppliersObj) ? suppliersObj[0]?.name : suppliersObj?.name) || 'Partner';
 
   // Fetch actual data
   let pendingPayouts = 0;
