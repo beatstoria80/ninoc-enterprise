@@ -24,6 +24,7 @@ export const getCurrentSupplier = cache(async () => {
     .from('supplier_users')
     .select('*, suppliers(name, status)')
     .eq('user_id', session.user.id)
+    .limit(1)
     .single();
 
   if (!supplierUser || error) {
