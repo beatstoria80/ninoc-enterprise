@@ -1865,12 +1865,12 @@ export default function AdminDashboard() {
                         >
                           <option value="">-- Pilih Gudang Asal --</option>
                           {dbWarehouses.map(w => (
-                            <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
+                            <option key={w.id} value={w.id}>{w.name} (Kode Pos: {w.postal_code || 'Tidak Ada'})</option>
                           ))}
                           {!dbWarehouses.length && (
                             <>
-                              <option value="wh-1">Gudang Utama NINOC (WH-BANDUNG-01)</option>
-                              <option value="wh-2">NINOC Pantry Roastery Hub (WH-BANDUNG-FB)</option>
+                              <option value="wh-1">Gudang Utama NINOC (Kode Pos: 40292)</option>
+                              <option value="wh-2">NINOC Pantry Roastery Hub (Kode Pos: 40292)</option>
                             </>
                           )}
                         </select>
