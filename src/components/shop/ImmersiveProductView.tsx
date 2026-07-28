@@ -253,10 +253,10 @@ export default function ImmersiveProductView({
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
             <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
-              <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full">
+              <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full pointer-events-auto">
                 <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
                 <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  <ShoppingBag size={22} strokeWidth={2.5} />
                   {cartTotalItems > 0 && (
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose text-white text-[7.5px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
                       {cartTotalItems}
@@ -383,10 +383,10 @@ export default function ImmersiveProductView({
                <div className="flex justify-end px-4 pb-4 pointer-events-auto">
                  <div className="flex flex-col gap-4">
                    <button className="flex flex-col items-center gap-1 group">
-                     <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-rose border border-ink/5">
+                     <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-ink border border-ink/5">
                         <Store strokeWidth={1.5} />
                      </div>
-                     <span className="text-[9px] text-rose font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Toko &gt;</span>
+                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Toko &gt;</span>
                    </button>
                    <button className="flex flex-col items-center gap-1">
                      <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-ink shadow-lg border border-ink/5">
@@ -406,7 +406,7 @@ export default function ImmersiveProductView({
                  
                  {/* Product Info */}
                  <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
-                   <span className="text-[#FF5722] font-bold text-sm leading-none mb-1">
+                   <span className="text-ink font-bold text-sm leading-none mb-1">
                      Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
                    </span>
                    <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">
@@ -418,13 +418,14 @@ export default function ImmersiveProductView({
                  <div className="flex items-center gap-1.5 shrink-0">
                    <button 
                      onClick={() => setIsMobileCheckoutOpen(true)}
-                     className="w-8 h-8 rounded border border-[#FF5722] text-[#FF5722] bg-[#FF5722]/5 flex items-center justify-center"
+                     className="w-8 h-8 rounded border border-ink text-ink bg-ink/5 flex items-center justify-center relative"
                    >
-                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+                     <ShoppingBag size={14} strokeWidth={2.5} />
+                     <Plus size={10} strokeWidth={3} className="absolute bottom-1 right-0.5 bg-white rounded-full text-ink p-[1px]" />
                    </button>
                    <button 
                      onClick={() => setIsMobileCheckoutOpen(true)}
-                     className="px-4 h-8 rounded bg-[#FF5722] text-white text-[11px] font-bold whitespace-nowrap"
+                     className="px-4 h-8 rounded bg-ink text-white text-[11px] font-bold whitespace-nowrap hover:bg-ink/90 transition-colors"
                    >
                      Beli Sekarang
                    </button>
