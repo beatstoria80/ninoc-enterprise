@@ -111,8 +111,12 @@ export async function POST(req: Request) {
           }
         }
 
-        if (destination_postal_code) bodyPayload.destination_postal_code = destination_postal_code;
-        else if (final_dest_id) bodyPayload.destination_area_id = final_dest_id;
+        // PRIORITIZE AREA ID OVER POSTAL CODE FOR CHEAPER, MORE ACCURATE RATES
+        if (final_dest_id) {
+          bodyPayload.destination_area_id = final_dest_id;
+        } else if (destination_postal_code) {
+          bodyPayload.destination_postal_code = destination_postal_code;
+        }
 
         if (destination_latitude && destination_longitude) {
           bodyPayload.destination_latitude = destination_latitude;
