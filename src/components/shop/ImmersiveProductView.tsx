@@ -65,6 +65,7 @@ export default function ImmersiveProductView({
   colorImageDescMap = {}
 }: ImmersiveProductViewProps) {
   const [activeImage, setActiveImage] = React.useState(0);
+  const [isMobileCheckoutOpen, setIsMobileCheckoutOpen] = React.useState(false);
   
   // Get cart items to show global checkout quantity
   const items = useHydratedCart().items || [];
@@ -185,11 +186,14 @@ export default function ImmersiveProductView({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (isMobileCheckoutOpen) setIsMobileCheckoutOpen(false);
+        else onClose();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isMobileCheckoutOpen]);
 
   // Lock body scroll
   useEffect(() => {
@@ -197,6 +201,7 @@ export default function ImmersiveProductView({
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      setIsMobileCheckoutOpen(false);
     }
     return () => {
       document.body.style.overflow = '';
@@ -232,15 +237,38 @@ export default function ImmersiveProductView({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '100%' }}
           transition={{ type: "spring", stiffness: 200, damping: 30 }}
-          className="fixed inset-0 z-[9999] bg-cr flex flex-col lg:flex-row overflow-hidden"
+          className="fixed inset-0 z-[9999] bg-black lg:bg-cr flex flex-col lg:flex-row overflow-hidden"
         >
-          {/* Close Button */}
+          {/* Desktop Close Button */}
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 z-[100] w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-ink hover:bg-white hover:text-rose transition-colors border border-ink/10"
+            className="hidden lg:flex absolute top-6 right-6 z-[100] w-9 h-9 bg-white/10 backdrop-blur-md rounded-full items-center justify-center text-ink hover:bg-white hover:text-rose transition-colors border border-ink/10"
           >
             <X strokeWidth={1.5} size={18} />
           </button>
+
+          {/* Mobile Top Header Navigation */}
+          <div className="lg:hidden absolute top-0 left-0 right-0 z-[100] flex justify-between items-start p-4 pointer-events-none">
+            <button onClick={onClose} className="pointer-events-auto w-10 h-10 flex items-center justify-center text-white drop-shadow-md">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
+              <div className="flex gap-5 text-white drop-shadow-md">
+                <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+                <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  {cartTotalItems > 0 && (
+                    <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-rose text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-black/20">
+                      {cartTotalItems}
+                    </span>
+                  )}
+                </button>
+              </div>
+              <div className="px-2 py-0.5 bg-black/40 text-white text-[10px] font-medium rounded backdrop-blur-sm mt-1 border border-white/10">
+                {activeImage + 1}/{images.length}
+              </div>
+            </div>
+          </div>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
           <div className="hidden lg:flex flex-1 h-full bg-white flex-col justify-center pl-12 lg:pl-24 pr-8 overflow-y-auto no-scrollbar">
@@ -303,14 +331,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfect 4:5 Aspect Ratio) */}
-          <div className="w-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-white relative flex items-center justify-center overflow-hidden">
-             {/* Mobile Header Overlay */}
-             <div className="lg:hidden absolute top-6 left-6 z-[110]">
-               <h1 className="text-base font-display font-medium uppercase italic tracking-tighter mix-blend-difference text-white">
-                 {product.name}
-               </h1>
-             </div>
-
+          <div className="w-full h-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-black lg:bg-white relative flex items-center justify-center overflow-hidden">
              <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
                <AnimatePresence>
                  {images.map((img, idx) => {
@@ -355,10 +376,79 @@ export default function ImmersiveProductView({
                  })}
                </AnimatePresence>
              </div>
+             
+             {/* Mobile Bottom Navigation (Floating) */}
+             <div className="lg:hidden absolute bottom-0 left-0 right-0 z-[100] pointer-events-none">
+               {/* Store & Share Buttons */}
+               <div className="flex justify-end px-4 pb-4 pointer-events-auto">
+                 <div className="flex flex-col gap-4">
+                   <button className="flex flex-col items-center gap-1 group">
+                     <div className="w-10 h-10 bg-white rounded-full p-0.5 shadow-lg flex items-center justify-center overflow-hidden">
+                        <Image src="/images/octo.png" width={36} height={36} alt="Store" className="rounded-full object-cover" />
+                     </div>
+                     <span className="text-[9px] text-rose font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Toko &gt;</span>
+                   </button>
+                   <button className="flex flex-col items-center gap-1">
+                     <div className="w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-lg">
+                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                     </div>
+                     <span className="text-[9px] text-white font-bold drop-shadow-md">Bagikan</span>
+                   </button>
+                 </div>
+               </div>
+               
+               {/* White Checkout Card */}
+               <div className="bg-white p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex gap-3 items-center pointer-events-auto pb-6">
+                 {/* Thumbnail */}
+                 <div className="w-12 h-12 rounded border border-gray-100 shrink-0 overflow-hidden relative bg-gray-50">
+                   {images.length > 0 && <Image src={images[0]} alt="thumb" fill className="object-cover" unoptimized />}
+                 </div>
+                 
+                 {/* Product Info */}
+                 <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
+                   <span className="text-[#FF5722] font-bold text-sm leading-none mb-1">
+                     Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                   </span>
+                   <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">
+                     {product.name}
+                   </span>
+                 </div>
+                 
+                 {/* Action Buttons */}
+                 <div className="flex items-center gap-1.5 shrink-0">
+                   <button 
+                     onClick={() => setIsMobileCheckoutOpen(true)}
+                     className="w-8 h-8 rounded border border-[#FF5722] text-[#FF5722] bg-[#FF5722]/5 flex items-center justify-center"
+                   >
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+                   </button>
+                   <button 
+                     onClick={() => setIsMobileCheckoutOpen(true)}
+                     className="px-4 h-8 rounded bg-[#FF5722] text-white text-[11px] font-bold whitespace-nowrap"
+                   >
+                     Beli Sekarang
+                   </button>
+                 </div>
+               </div>
+             </div>
           </div>
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
-          <div className="w-full lg:flex-1 h-auto lg:h-full bg-white flex flex-col pl-8 pr-12 lg:pr-24 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar">
+          <div className={cn(
+            "lg:w-[400px] xl:w-[450px] bg-white flex flex-col pl-6 pr-6 lg:pl-8 lg:pr-12 xl:pr-24 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar transition-transform duration-300",
+            !isMobileCheckoutOpen && "translate-y-full lg:translate-y-0 hidden lg:flex",
+            isMobileCheckoutOpen && "absolute bottom-0 left-0 right-0 z-[200] max-h-[85vh] rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.3)] pb-safe"
+          )}>
+            {/* Mobile Close Bottom Sheet Button */}
+            {isMobileCheckoutOpen && (
+              <button 
+                onClick={() => setIsMobileCheckoutOpen(false)}
+                className="lg:hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200"
+              >
+                <X size={16} />
+              </button>
+            )}
+            
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
