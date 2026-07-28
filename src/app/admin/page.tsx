@@ -285,43 +285,35 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
       if (prodData) setProducts(prodData);
 
-      // Fetch orders with items
+      // Fetch orders with items (PAGINATED: limit to 100 to prevent browser OOM)
       const { data: orderData } = await supabase
         .from('orders')
         .select('*, order_items(*)')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
       if (orderData) setOrders(orderData);
 
-      // Calculate finance
-      if (orderData) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-        const completedOrders = orderData.filter(o =>
-          (o.status === 'paid' || o.status === 'delivered' || o.status === 'shipped') &&
-          (o.payment_status === 'success' || o.payment_status === 'settlement')
-        );
-        const pendingOrders = orderData.filter(o => o.status === 'pending');
-
-        const calcOrderRevenue = (o: Order) => o.order_items?.reduce((s, i) => s + (i.price_at_purchase * i.quantity), 0) || 0;
-
-        const totalRevenue = completedOrders.reduce((sum, o) => sum + calcOrderRevenue(o), 0);
-        const todayRevenue = completedOrders
-          .filter(o => new Date(o.created_at) >= today)
-          .reduce((sum, o) => sum + calcOrderRevenue(o), 0);
-        const monthRevenue = completedOrders
-          .filter(o => new Date(o.created_at) >= monthStart)
-          .reduce((sum, o) => sum + calcOrderRevenue(o), 0);
-
-        setFinance({
-          totalRevenue,
-          todayRevenue,
-          monthRevenue,
-          pendingPayments: pendingOrders.length,
-          completedOrders: completedOrders.length
-        });
+      // Fetch Server-Side Aggregated Finance Summary (Bypassing 1000-row PostgREST limits)
+      try {
+        const financeRes = await fetch('/api/admin/finance-summary').then(r => r.json());
+        
+        if (financeRes && financeRes.success) {
+          // Still calculate pending orders from local orderData since it's just a count of latest
+          const pendingOrders = orderData ? orderData.filter(o => o.status === 'pending') : [];
+          
+          setFinance({
+            totalRevenue: financeRes.totalRevenue || 0,
+            todayRevenue: financeRes.todayRevenue || 0,
+            monthRevenue: financeRes.monthRevenue || 0,
+            pendingPayments: pendingOrders.length,
+            completedOrders: financeRes.totalOrdersAnalyzed || 0
+          });
+        }
+      } catch (financeErr) {
+        console.error('Failed to fetch server-side finance summary:', financeErr);
       }
+
+
 
       // Fetch customers
       const { data: customerData } = await supabase
