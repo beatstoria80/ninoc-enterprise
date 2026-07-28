@@ -254,7 +254,7 @@ export default function ImmersiveProductView({
             </button>
             <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
               <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full pointer-events-auto">
-                <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+                <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-search')); }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
                 <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
                   <ShoppingBag size={22} strokeWidth={2.5} />
                   {cartTotalItems > 0 && (
@@ -382,13 +382,41 @@ export default function ImmersiveProductView({
                {/* Store & Share Buttons */}
                <div className="flex justify-end px-4 pb-4 pointer-events-auto">
                  <div className="flex flex-col gap-4">
-                   <button className="flex flex-col items-center gap-1 group">
+                   <button 
+                     onClick={() => {
+                       onClose();
+                       // Scroll to reviews section smoothly
+                       setTimeout(() => {
+                         const reviewSection = document.getElementById('reviews');
+                         if (reviewSection) reviewSection.scrollIntoView({ behavior: 'smooth' });
+                       }, 300);
+                     }}
+                     className="flex flex-col items-center gap-1 group"
+                   >
                      <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-ink border border-ink/5">
                         <Star strokeWidth={1.5} size={18} />
                      </div>
                      <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Ulasan</span>
                    </button>
-                   <button className="flex flex-col items-center gap-1">
+                   <button 
+                     onClick={async () => {
+                       if (navigator.share) {
+                         try {
+                           await navigator.share({
+                             title: product.name,
+                             text: `Cek ${product.name} di NINOC B2B!`,
+                             url: window.location.href,
+                           });
+                         } catch (err) {
+                           console.error('Error sharing:', err);
+                         }
+                       } else {
+                         navigator.clipboard.writeText(window.location.href);
+                         alert('Link disalin ke clipboard!');
+                       }
+                     }}
+                     className="flex flex-col items-center gap-1"
+                   >
                      <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-ink shadow-lg border border-ink/5">
                        <Share2 strokeWidth={1.5} size={18} />
                      </div>
