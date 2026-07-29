@@ -307,18 +307,25 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        let role = 'super_admin'; // default fallback for safety during transition
-        const { data: roleData } = await supabase
-          .from('admin_roles')
-          .select('role')
-          .eq('email', user.email)
-          .single();
-        if (roleData) {
-          role = roleData.role;
-        }
-        setAdminUser({ ...user, role });
+      if (!user) {
+        window.location.href = '/admin/login';
+        return;
       }
+      
+      const { data: roleData, error } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('email', user.email)
+        .single();
+        
+      if (error || !roleData) {
+        // Not an admin, sign them out of the admin context and redirect
+        await supabase.auth.signOut();
+        window.location.href = '/admin/login?error=unauthorized';
+        return;
+      }
+      
+      setAdminUser({ ...user, role: roleData.role });
     };
     fetchAdmin();
   }, []);
@@ -1227,6 +1234,15 @@ export default function AdminDashboard() {
   };
 
 
+
+  if (!adminUser) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50">
+        <div className="w-8 h-8 border-2 border-ink/20 border-t-rose rounded-full animate-spin mb-4"></div>
+        <p className="text-xs uppercase tracking-widest text-ink/40 font-medium animate-pulse">Verifying Access...</p>
+      </div>
+    );
+  }
 
   return (
     <>
