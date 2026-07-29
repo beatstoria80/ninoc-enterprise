@@ -3,6 +3,7 @@ import { Truck, Package, Clock, CheckCircle2, ChevronRight, Search, FileText } f
 import Link from 'next/link';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { createClient } from '@/utils/supabase/server';
+import ExportCSVButton from '@/components/supplier/ExportCSVButton';
 import { format } from 'date-fns';
 
 export const metadata = {
@@ -65,10 +66,13 @@ export default async function SupplierLogisticsPage() {
           <h1 className="text-2xl font-bold font-display text-gray-900">Logistics & Packing</h1>
           <p className="text-gray-500 text-sm mt-1">Manage packing, tracking, and courier pickups for your allocations.</p>
         </div>
-        <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center gap-2">
-          <FileText size={16} />
-          Print Packing Slips
-        </button>
+        <div className="flex gap-2">
+          <ExportCSVButton orders={orders} />
+          <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center justify-center gap-2">
+            <FileText size={16} />
+            Print Packing Slips
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">

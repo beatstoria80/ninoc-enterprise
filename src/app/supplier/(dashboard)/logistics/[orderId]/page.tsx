@@ -3,6 +3,7 @@ import { Truck, Package, Clock, ChevronLeft, MapPin, CheckCircle2, User, Phone, 
 import Link from 'next/link';
 import Image from 'next/image';
 import PickupRequestModalClient from './PickupRequestModalClient';
+import AntiFraudDataVault from '@/components/supplier/AntiFraudDataVault';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { createClient } from '@/utils/supabase/server';
 import { format } from 'date-fns';
@@ -51,10 +52,22 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
     );
   }
 
-  const buyerName = orderData.customer_name || (orderData.shipping_address as any)?.name || 'N/A';
-  const buyerPhone = orderData.customer_phone || (orderData.shipping_address as any)?.phone || 'N/A';
+  const rawBuyerName = orderData.customer_name || (orderData.shipping_address as any)?.name || 'N/A';
+  const rawBuyerPhone = orderData.customer_phone || (orderData.shipping_address as any)?.phone || 'N/A';
   const buyerAddress = (orderData.shipping_address as any)?.full_address || JSON.stringify(orderData.shipping_address);
   const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm') : '-';
+
+  // Obfuscation Logic
+  // Hide full phone number (e.g. 081234567890 -> 0812-****-7890)
+  const obfuscatePhone = (phone: string) => {
+    if (phone.length < 8 || phone === 'N/A') return phone;
+    const first4 = phone.slice(0, 4);
+    const last4 = phone.slice(-4);
+    return `${first4}-****-${last4}`;
+  };
+
+  const buyerName = rawBuyerName; 
+  const buyerPhone = obfuscatePhone(rawBuyerPhone);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -168,27 +181,30 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
 
           {/* Destination */}
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
               <h3 className="font-medium text-ink text-sm flex items-center gap-2">
                 <MapPin size={16} className="text-ink/60" />
                 Destination
               </h3>
+              <span className="text-[10px] uppercase font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">Confidential</span>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <User size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-sm font-medium text-ink">{buyerName}</div>
-                  <div className="text-xs text-ink/60 mt-0.5">{buyerPhone}</div>
+            <AntiFraudDataVault supplierId={supplierUser.supplier_id}>
+              <div className="p-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <User size={16} className="text-ink/40 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-ink">{buyerName}</div>
+                    <div className="text-xs text-ink/60 mt-0.5 font-mono">{buyerPhone}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin size={16} className="text-ink/40 shrink-0 mt-0.5" />
+                  <div className="text-sm text-ink/80 leading-relaxed">
+                    {buyerAddress}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                <div className="text-sm text-ink/80 leading-relaxed">
-                  {buyerAddress}
-                </div>
-              </div>
-            </div>
+            </AntiFraudDataVault>
           </div>
         </div>
       </div>
