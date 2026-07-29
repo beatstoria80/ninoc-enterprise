@@ -40,6 +40,7 @@ export async function getSupplierProductsWithVariants(supplierId: string) {
       stock, 
       image_url, 
       category, 
+      is_perishable,
       created_at,
       product_variants (
         id,

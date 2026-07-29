@@ -32,8 +32,26 @@ export const getCurrentSupplier = cache(async () => {
     return null;
   }
 
+  // Detect Pillar based on the latest product's category
+  let pillar = 'FASHION';
+  const { data: productCheck } = await supabaseAdmin
+    .from('products')
+    .select('category')
+    .eq('supplier_id', supplierUser.supplier_id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (productCheck && productCheck.category) {
+    const cat = String(productCheck.category).toLowerCase();
+    if (cat === 'utilities' || cat === 'fnb' || cat === 'pantry') {
+      pillar = 'FNB';
+    }
+  }
+
   return {
     ...supplierUser,
+    pillar,
     session,
   };
 });

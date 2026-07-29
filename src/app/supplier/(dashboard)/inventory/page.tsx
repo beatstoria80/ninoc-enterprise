@@ -1,21 +1,19 @@
-import { createClient } from '@/utils/supabase/server';
+import { getCurrentSupplier } from '@/lib/services/supplier';
 import { getSupplierProductsWithVariants } from '@/lib/services/inventory';
-import { Package, Search, Filter, MoreHorizontal, ArrowUpDown, ChevronDown } from 'lucide-react';
-import Image from 'next/image';
+import { Search, Filter } from 'lucide-react';
+import { FashionInventoryTable } from '@/components/supplier/inventory/FashionInventoryTable';
+import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryTable';
+import { redirect } from 'next/navigation';
 
 export default async function SupplierInventoryPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const supplierContext = await getCurrentSupplier();
   
-  if (!session) return null;
+  if (!supplierContext) {
+    redirect('/login');
+  }
 
-  const { data: supplierUser } = await supabase
-    .from('supplier_users')
-    .select('supplier_id')
-    .eq('user_id', session.user.id)
-    .maybeSingle();
-
-  const supplierId = supplierUser?.supplier_id;
+  const supplierId = supplierContext.supplier_id;
+  const pillar = supplierContext.pillar || 'FASHION';
 
   let products: any[] = [];
   if (supplierId) {
@@ -27,7 +25,7 @@ export default async function SupplierInventoryPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display text-gray-900">Allocations & Inventory</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your Virtual Allocated Stock (Direct Fulfillment).</p>
+          <p className="text-gray-500 text-sm mt-1">Manage your Virtual Allocated Stock for {pillar === 'FNB' ? 'F&B/Pantry' : 'Fashion/Objects'}.</p>
         </div>
         <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
           Request Allocation
@@ -40,7 +38,7 @@ export default async function SupplierInventoryPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input 
               type="text" 
-              placeholder="Search products, SKU, or category..." 
+              placeholder={`Search ${pillar === 'FNB' ? 'menu items' : 'products'}...`} 
               className="w-full pl-9 pr-4 py-2 rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink"
             />
           </div>
@@ -52,100 +50,10 @@ export default async function SupplierInventoryPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 font-medium">
-              <tr>
-                <th className="px-6 py-4">Product Details</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-gray-900">
-                    Stock Allocated <ArrowUpDown size={14} />
-                  </div>
-                </th>
-                <th className="px-6 py-4">Base Price</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {products.length > 0 ? (
-                products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden relative shrink-0">
-                          {product.image_url ? (
-                            <Image src={product.image_url} alt={product.name} fill className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Package size={20} className="text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">ID: {product.id.split('-')[0]}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 capitalize">
-                      {product.category || 'Uncategorized'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">
-                          {product.product_variants && product.product_variants.length > 0
-                            ? product.product_variants.reduce((acc: number, v: any) => acc + (v.stock_quantity || 0), 0)
-                            : (product.stock || 0)} units
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {product.product_variants?.length > 0 ? `${product.product_variants.length} Variants` : 'No Variants'}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-900 font-medium">
-                      Rp {product.price?.toLocaleString('id-ID') || 0}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Active
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-gray-400 hover:text-ink hover:bg-gray-100 rounded-lg transition-colors">
-                        <MoreHorizontal size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                        <Package size={24} className="text-gray-400" />
-                      </div>
-                      <p className="text-gray-900 font-medium mb-1">No products allocated yet</p>
-                      <p className="text-gray-500 text-sm max-w-sm mx-auto">
-                        Your products will appear here once Ninoc enterprise approves your catalog and allocates warehouse space.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        
-        {products.length > 0 && (
-          <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-sm text-gray-600">
-            <span>Showing {products.length} products</span>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1 border border-gray-200 rounded bg-white hover:bg-gray-50 disabled:opacity-50">Previous</button>
-              <button className="px-3 py-1 border border-gray-200 rounded bg-white hover:bg-gray-50 disabled:opacity-50">Next</button>
-            </div>
-          </div>
+        {pillar === 'FNB' ? (
+          <FnBInventoryTable products={products} />
+        ) : (
+          <FashionInventoryTable products={products} />
         )}
       </div>
     </div>

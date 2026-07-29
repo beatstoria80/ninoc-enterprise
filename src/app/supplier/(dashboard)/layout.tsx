@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { Package, LineChart, LayoutDashboard, Settings, Truck } from 'lucide-react';
+import { Package, LineChart, LayoutDashboard, Settings, Truck, Coffee, UtensilsCrossed } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { SupplierLogoutButton } from '@/components/supplier/SupplierLogoutButton';
 
@@ -10,22 +9,15 @@ export default async function SupplierLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  // Verify if user is a supplier using cached service.
+  // This centralizes the session and database lookup.
+  const supplierContext = await getCurrentSupplier();
 
-  if (!session) {
-    redirect('/login?next=/supplier');
-  }
-
-  // Verify if user is a supplier using cached service
-  const supplierUser = await getCurrentSupplier();
-
-  if (!supplierUser) {
-    // Not a supplier at all, redirect to apply
+  if (!supplierContext) {
     redirect('/supplier/apply');
   }
 
-  if (supplierUser.suppliers?.status === 'pending') {
+  if (supplierContext.suppliers?.status === 'pending') {
     return (
       <div className="min-h-screen bg-cr noise flex items-center justify-center p-4">
         <div className="bg-white p-8 max-w-md w-full shadow-2xl border border-ink/5 text-center">
@@ -34,7 +26,7 @@ export default async function SupplierLayout({
           </div>
           <h2 className="text-xl font-display font-medium text-ink mb-2">Application Under Review</h2>
           <p className="text-sm text-ink/60 mb-6">
-            Thank you for applying to be a NINOC B2B Manufacturer. Our curation team is currently reviewing your capacity and sample submission. We will notify you via email once your factory is approved.
+            Thank you for applying to be a NINOC B2B Partner. Our curation team is currently reviewing your capacity and sample submission. We will notify you via email once your application is approved.
           </p>
           <Link href="/" className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink hover:text-rose transition-colors">
             Return to Homepage
@@ -44,7 +36,8 @@ export default async function SupplierLayout({
     );
   }
 
-  const supplierName = supplierUser.suppliers?.name || 'Supplier Portal';
+  const supplierName = supplierContext.suppliers?.name || 'Supplier Portal';
+  const isFNB = supplierContext.pillar === 'FNB';
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -53,6 +46,10 @@ export default async function SupplierLayout({
         <div className="p-6 border-b border-white/10">
           <h1 className="text-xl font-display italic text-white mb-1">NINOC B2B</h1>
           <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]">{supplierName}</p>
+          <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 bg-white/10 rounded text-[10px] font-medium uppercase tracking-wider text-white">
+            {isFNB ? <UtensilsCrossed size={12} /> : <Package size={12} />}
+            {isFNB ? 'F&B Partner' : 'Retail Partner'}
+          </div>
         </div>
 
         <nav className="flex-1 py-6 px-4 space-y-2">
@@ -61,12 +58,12 @@ export default async function SupplierLayout({
             <span>Dashboard</span>
           </Link>
           <Link href="/supplier/inventory" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
-            <Package size={18} />
-            <span>Allocations</span>
+            {isFNB ? <Coffee size={18} /> : <Package size={18} />}
+            <span>{isFNB ? 'Menu & Stock' : 'Allocations'}</span>
           </Link>
           <Link href="/supplier/logistics" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <Truck size={18} />
-            <span>Logistics & Packing</span>
+            <span>{isFNB ? 'Instan Deliveries' : 'Logistics & Packing'}</span>
           </Link>
           <Link href="/supplier/ledger" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <LineChart size={18} />

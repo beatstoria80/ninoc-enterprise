@@ -1,25 +1,18 @@
-import { createClient } from '@/utils/supabase/server';
+import { getCurrentSupplier } from '@/lib/services/supplier';
 import { getSupplierInventoryStats } from '@/lib/services/inventory';
-import { Package, LineChart, TrendingUp, DollarSign, ArrowUpRight, Activity, Truck } from 'lucide-react';
+import { Package, LineChart, TrendingUp, DollarSign, UtensilsCrossed, ArrowUpRight, Activity, Truck } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 export default async function SupplierDashboard() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  // Get the current supplier ID
-  const { data: supplierUser } = await supabase.auth.getSession().then(async ({ data: { session } }) => {
-    if (!session) return { data: null };
-    return await supabase
-      .from('supplier_users')
-      .select('supplier_id, suppliers(name)')
-      .eq('user_id', session.user.id)
-      .limit(1)
-      .single();
-  });
+  const supplierContext = await getCurrentSupplier();
 
-  const supplierId = supplierUser?.supplier_id;
-  const suppliersObj = supplierUser?.suppliers as any;
-  const supplierName = (Array.isArray(suppliersObj) ? suppliersObj[0]?.name : suppliersObj?.name) || 'Partner';
+  if (!supplierContext) {
+    redirect('/login');
+  }
+
+  const supplierId = supplierContext.supplier_id;
+  const supplierName = supplierContext.suppliers?.name || 'Partner';
+  const pillar = supplierContext.pillar || 'FASHION';
 
   // Fetch actual data
   let pendingPayouts = 0;
