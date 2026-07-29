@@ -373,8 +373,9 @@ export function ProductModal(props: any) {
                             onChange={(e) => setProductForm({ ...productForm, is_perishable: e.target.checked })}
                             className="rounded border-amber-400 text-rose focus:ring-rose w-4 h-4 cursor-pointer"
                           />
-                          <label htmlFor="is_perishable" className="text-[11px] font-bold text-amber-950 cursor-pointer">
-                            Mudah Basi / Instan Only (GoSend/Grab)
+                          <label htmlFor="is_perishable" className="text-[11px] font-bold text-amber-950 cursor-pointer leading-tight">
+                            Perishable (Mudah Basi)<br/>
+                            <span className="text-[9px] font-medium text-amber-800/80 mt-0.5 inline-block">Bila dicentang: Hanya kurir Instan Lokal. Hilangkan centang untuk produk kemasan tahan lama (Bisa kirim luar provinsi/Reguler).</span>
                           </label>
                         </div>
                       </div>

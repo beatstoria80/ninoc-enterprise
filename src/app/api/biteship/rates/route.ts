@@ -56,7 +56,7 @@ function applyGeographicRestrictions(pricing: any[], destName: string = '') {
 
 function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
   const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
-    return Boolean(it.is_perishable) || isFnBDepartment(it);
+    return Boolean(it.is_perishable);
   });
 
   if (!isFnBOrPerishable || !pricing || !Array.isArray(pricing)) {
