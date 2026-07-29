@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ShieldAlert } from 'lucide-react';
 
 export default function AntiFraudDataVault({ 
@@ -13,12 +13,18 @@ export default function AntiFraudDataVault({
   
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const alertTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const triggerSecurityAlert = () => {
       setIsHidden(true);
       setIsAlertVisible(true);
-      setTimeout(() => {
+      
+      if (alertTimeoutRef.current) {
+        clearTimeout(alertTimeoutRef.current);
+      }
+      
+      alertTimeoutRef.current = setTimeout(() => {
         setIsHidden(false);
         setIsAlertVisible(false);
       }, 3000);
@@ -39,8 +45,12 @@ export default function AntiFraudDataVault({
         e.preventDefault();
         triggerSecurityAlert();
         // Optional: clear clipboard to prevent copying
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText('Data Protected by NINOC Security');
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText('Data Protected by NINOC Security');
+          }
+        } catch (error) {
+          console.warn('Clipboard API blocked by browser security settings');
         }
       }
     };
@@ -72,6 +82,9 @@ export default function AntiFraudDataVault({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('focus', handleWindowFocus);
+      if (alertTimeoutRef.current) {
+        clearTimeout(alertTimeoutRef.current);
+      }
     };
   }, []);
 

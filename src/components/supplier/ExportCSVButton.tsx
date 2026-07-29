@@ -34,6 +34,11 @@ export default function ExportCSVButton({ orders }: ExportCSVButtonProps) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Revoke the object URL to avoid memory leak
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
   };
 
   return (
