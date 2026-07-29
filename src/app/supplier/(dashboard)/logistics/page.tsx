@@ -28,7 +28,7 @@ export default async function SupplierLogisticsPage() {
       status, 
       courier, 
       tracking_id,
-      order_items!inner(id, supplier_id)
+      order_items!inner(id, supplier_id, quantity, product_name, size, color)
     `)
     .eq('order_items.supplier_id', supplierUser.supplier_id)
     .order('created_at', { ascending: false });

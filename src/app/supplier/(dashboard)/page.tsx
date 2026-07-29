@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { getSupplierInventoryStats } from '@/lib/services/inventory';
 import { Package, LineChart, TrendingUp, DollarSign, ArrowUpRight, Activity, Truck } from 'lucide-react';
 
 export default async function SupplierDashboard() {
@@ -28,14 +29,8 @@ export default async function SupplierDashboard() {
 
   if (supplierId) {
     try {
-      const { data: products } = await supabase
-        .from('products')
-        .select('id, stock')
-        .eq('supplier_id', supplierId);
-      
-      if (products) {
-        activeAllocations = products.reduce((acc, p) => acc + (p.stock || 0), 0);
-      }
+      const stats = await getSupplierInventoryStats(supplierId);
+      activeAllocations = stats.activeAllocations;
       
       // Additional real queries can be added here
     } catch (e) {

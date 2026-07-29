@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
-import { Package, Search, Filter, MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { getSupplierProductsWithVariants } from '@/lib/services/inventory';
+import { Package, Search, Filter, MoreHorizontal, ArrowUpDown, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 
 export default async function SupplierInventoryPage() {
@@ -18,13 +19,7 @@ export default async function SupplierInventoryPage() {
 
   let products: any[] = [];
   if (supplierId) {
-    const { data } = await supabase
-      .from('products')
-      .select('id, name, price, stock, image_url, category, created_at')
-      .eq('supplier_id', supplierId)
-      .order('created_at', { ascending: false });
-    
-    if (data) products = data;
+    products = await getSupplierProductsWithVariants(supplierId);
   }
 
   return (
@@ -32,7 +27,7 @@ export default async function SupplierInventoryPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display text-gray-900">Allocations & Inventory</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your product stock allocated across Ninoc Enterprise warehouses.</p>
+          <p className="text-gray-500 text-sm mt-1">Manage your Virtual Allocated Stock (Direct Fulfillment).</p>
         </div>
         <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
           Request Allocation
@@ -99,8 +94,14 @@ export default async function SupplierInventoryPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">{product.stock || 0} units</span>
-                        <span className="text-xs text-gray-500">in 1 Warehouse</span>
+                        <span className="font-medium text-gray-900">
+                          {product.product_variants && product.product_variants.length > 0
+                            ? product.product_variants.reduce((acc: number, v: any) => acc + (v.stock_quantity || 0), 0)
+                            : (product.stock || 0)} units
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {product.product_variants?.length > 0 ? `${product.product_variants.length} Variants` : 'No Variants'}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-900 font-medium">
