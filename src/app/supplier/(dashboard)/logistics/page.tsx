@@ -60,7 +60,7 @@ export default async function SupplierLogisticsPage() {
   const displayOrders = [...toPackOrders, ...readyOrders]; 
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display text-gray-900">Logistics & Packing</h1>
