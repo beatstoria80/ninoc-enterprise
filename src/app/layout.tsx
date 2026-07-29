@@ -97,7 +97,6 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     alternates: {
-      canonical: BASE_URL,
       languages: {
         'id': BASE_URL,
         'en': `${BASE_URL}/en`,

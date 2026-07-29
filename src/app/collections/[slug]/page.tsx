@@ -14,9 +14,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: 'Collection Not Found | NINOC' };
   }
 
+  const url = `${process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store'}/collections/${resolvedParams.slug}`;
+
   return {
     title: `${collection.name} | NINOC Collections`,
     description: collection.description || `Discover the ${collection.name} collection at NINOC Studio.`,
+    alternates: {
+      canonical: url,
+    }
   };
 }
 

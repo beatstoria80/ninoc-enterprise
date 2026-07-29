@@ -4,6 +4,12 @@ import { getDictionaryByLocale, Locale } from '@/lib/i18n';
 import HomeClientWrapper from './_components/home/HomeClientWrapper';
 
 // Server Component (Data Fetching only)
+export const metadata = {
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store',
+  },
+};
+
 export default async function Home(props: { searchParams?: Promise<any>, params?: Promise<any> }) {
   // Wait for headers to be available if needed for locale
   const { headers } = await import('next/headers');
