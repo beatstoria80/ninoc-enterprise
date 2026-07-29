@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
+import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 
 export default async function SupplierSettingsPage() {
   const supplierUser = await getCurrentSupplier();
@@ -131,6 +132,8 @@ export default async function SupplierSettingsPage() {
               </button>
             </div>
           </div>
+
+          <UIPreferencesPanel />
         </div>
       </div>
     </div>

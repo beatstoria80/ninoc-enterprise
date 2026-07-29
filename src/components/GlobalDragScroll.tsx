@@ -2,9 +2,12 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useUIPreferences } from '@/store/useUIPreferences';
 
 export default function GlobalDragScroll() {
   const pathname = usePathname();
+  const dragScrollEnabled = useUIPreferences((state) => state.dragScrollEnabled);
+  
   const state = useRef({
     isMouseDown: false,
     isDragging: false,
@@ -15,12 +18,13 @@ export default function GlobalDragScroll() {
     scrollLeft: 0,
   });
 
-  // Nonaktifkan drag scroll untuk rute admin atau dashboard
-  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
+  // Nonaktifkan drag scroll untuk rute admin atau dashboard, kecuali jika diaktifkan di preferences
+  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/supplier') || pathname?.startsWith('/dashboard');
+  const shouldDisableDragScroll = isDashboardRoute && !dragScrollEnabled;
 
   useEffect(() => {
     // Kelola class global pada html untuk mengembalikan UI/UX normal (scrollbar & native scroll)
-    if (isDashboardRoute) {
+    if (shouldDisableDragScroll) {
       document.documentElement.classList.add('admin-route');
       return;
     } else {
@@ -121,9 +125,9 @@ export default function GlobalDragScroll() {
       window.removeEventListener('pointerup', handlePointerUpCapture, true);
       cleanupDragState();
     };
-  }, [isDashboardRoute]);
+  }, [shouldDisableDragScroll]);
 
-  if (isDashboardRoute) return null;
+  if (shouldDisableDragScroll) return null;
 
   return null;
 }
