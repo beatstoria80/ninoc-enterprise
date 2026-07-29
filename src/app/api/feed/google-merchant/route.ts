@@ -18,6 +18,10 @@ export async function GET() {
         description, 
         price, 
         image_url,
+        perspective1,
+        perspective2,
+        perspective3,
+        perspective4,
         category,
         weight_grams,
         departments ( gpc_code, name ),
@@ -76,6 +80,20 @@ export async function GET() {
       };
 
       const imageLink = product.image_url ? (product.image_url.startsWith('http') ? product.image_url : `${domain}${product.image_url}`) : '';
+      let additionalImagesXml = '';
+      
+      const perspectives = [product.perspective1, product.perspective2, product.perspective3, product.perspective4];
+      const validImages = perspectives
+        .map((img: unknown) => {
+          const imgStr = String(img || '');
+          return imgStr ? (imgStr.startsWith('http') ? imgStr : `${domain}${imgStr}`) : '';
+        })
+        .filter(Boolean);
+        
+      for (const imgUrl of validImages) {
+        additionalImagesXml += `\n      <g:additional_image_link>${escapeXml(imgUrl)}</g:additional_image_link>`;
+      }
+      
       const formattedPrice = typeof product.price === 'number' 
         ? product.price.toFixed(2) 
         : parseFloat(product.price || '0').toFixed(2);
@@ -118,7 +136,7 @@ export async function GET() {
       <g:title>${title}</g:title>
       <g:description>${description}</g:description>
       <g:link>${escapeXml(link)}</g:link>
-      <g:image_link>${escapeXml(imageLink)}</g:image_link>
+      <g:image_link>${escapeXml(imageLink)}</g:image_link>${additionalImagesXml}
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>
       <g:price>${price}</g:price>
@@ -154,7 +172,7 @@ export async function GET() {
       <g:title>${title}</g:title>
       <g:description>${description}</g:description>
       <g:link>${escapeXml(link)}</g:link>
-      <g:image_link>${escapeXml(imageLink)}</g:image_link>
+      <g:image_link>${escapeXml(imageLink)}</g:image_link>${additionalImagesXml}
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>
       <g:price>${price}</g:price>
