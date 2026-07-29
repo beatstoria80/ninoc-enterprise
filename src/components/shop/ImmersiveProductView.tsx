@@ -38,6 +38,7 @@ interface ImmersiveProductViewProps {
   setActiveImageIndex?: (idx: number) => void;
   colorDescMap?: Record<string, string>;
   colorImageDescMap?: Record<string, Record<string, string>>;
+  onOpenReviews?: () => void;
 }
 
 export default function ImmersiveProductView({
@@ -62,7 +63,8 @@ export default function ImmersiveProductView({
   activeImageIndex,
   setActiveImageIndex,
   colorDescMap = {},
-  colorImageDescMap = {}
+  colorImageDescMap = {},
+  onOpenReviews
 }: ImmersiveProductViewProps) {
   const [activeImage, setActiveImage] = React.useState(0);
   const [isMobileCheckoutOpen, setIsMobileCheckoutOpen] = React.useState(false);
@@ -255,14 +257,6 @@ export default function ImmersiveProductView({
             <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
               <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full pointer-events-auto">
                 <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-search')); }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-                <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-cart')); }} className="relative">
-                  <ShoppingBag size={22} strokeWidth={2.5} />
-                  {cartTotalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose text-white text-[7.5px] font-bold flex items-center justify-center rounded-full ring-2 ring-white">
-                      {cartTotalItems}
-                    </span>
-                  )}
-                </button>
               </div>
               <div className="px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-[10px] font-bold text-ink drop-shadow-sm border border-white/20 mt-1">
                 {activeImage + 1}/{images.length}
@@ -271,7 +265,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
-          <div className="hidden lg:flex flex-1 h-full bg-white flex-col justify-center pl-12 lg:pl-24 pr-8 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex lg:w-[400px] xl:w-[450px] shrink-0 h-full bg-white flex-col justify-center pl-8 lg:pl-12 xl:pl-24 pr-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -330,8 +324,8 @@ export default function ImmersiveProductView({
             </motion.div>
           </div>
 
-          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfect 4:5 Aspect Ratio) */}
-          <div className="w-full h-full lg:w-auto lg:h-full lg:aspect-[4/5] shrink-0 bg-white relative flex items-center justify-center overflow-hidden">
+          {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfectly Centered) */}
+          <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex items-center justify-center overflow-hidden">
              <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
                <AnimatePresence>
                  {images.map((img, idx) => {
@@ -384,12 +378,7 @@ export default function ImmersiveProductView({
                  <div className="flex flex-col gap-4">
                    <button 
                      onClick={() => {
-                       onClose();
-                       // Scroll to reviews section smoothly
-                       setTimeout(() => {
-                         const reviewSection = document.getElementById('reviews');
-                         if (reviewSection) reviewSection.scrollIntoView({ behavior: 'smooth' });
-                       }, 300);
+                       if (onOpenReviews) onOpenReviews();
                      }}
                      className="flex flex-col items-center gap-1 group"
                    >

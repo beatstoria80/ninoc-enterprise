@@ -883,6 +883,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
         setActiveImageIndex={setActiveImageIndex}
         colorDescMap={colorDescMap}
         colorImageDescMap={colorImageDescMap}
+        onOpenReviews={() => setIsReviewsDrawerOpen(true)}
       />
     </main>
   );

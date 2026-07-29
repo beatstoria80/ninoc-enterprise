@@ -122,7 +122,7 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName, pr
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-0 z-[9998] bg-ink/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[10001] bg-ink/40 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -132,7 +132,7 @@ export function ProductReviewsDrawer({ isOpen, onClose, reviews, productName, pr
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.4, ease: easeDrawer }}
-            className="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-white z-[9999] flex flex-col shadow-2xl border-l border-ink/10"
+            className="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-white z-[10002] flex flex-col shadow-2xl border-l border-ink/10"
           >
             {/* Header */}
             <div className="p-5 border-b border-ink/10 flex items-center justify-between bg-white shrink-0 z-10">
