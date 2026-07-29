@@ -1,12 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import dynamic from 'next/dynamic';
-
-const UIPreferencesPanel = dynamic(
-  () => import('@/components/supplier/settings/UIPreferencesPanel').then(mod => mod.UIPreferencesPanel),
-  { ssr: false }
-);
+import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 
 export default async function SupplierSettingsPage() {
   const supplierUser = await getCurrentSupplier();

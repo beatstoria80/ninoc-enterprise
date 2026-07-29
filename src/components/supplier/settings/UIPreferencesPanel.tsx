@@ -1,11 +1,18 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUIPreferences } from '@/store/useUIPreferences';
 
 export function UIPreferencesPanel() {
   const dragScrollEnabled = useUIPreferences((state) => state.dragScrollEnabled);
   const setDragScrollEnabled = useUIPreferences((state) => state.setDragScrollEnabled);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  if (!isHydrated) return null;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mt-6">
