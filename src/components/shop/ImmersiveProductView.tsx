@@ -265,7 +265,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
-          <div className="hidden lg:flex lg:w-[400px] xl:w-[450px] shrink-0 h-full bg-white flex-col justify-center pl-8 lg:pl-12 xl:pl-24 pr-8 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex lg:w-[450px] xl:w-[500px] 2xl:w-[550px] shrink-0 h-full bg-white flex-col justify-center pl-8 lg:pl-12 xl:pl-16 pr-8 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -453,7 +453,7 @@ export default function ImmersiveProductView({
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
           <div className={cn(
-            "lg:w-[400px] xl:w-[450px] bg-white flex flex-col pl-6 pr-6 lg:pl-8 lg:pr-12 xl:pr-24 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar transition-transform duration-300",
+            "lg:w-[450px] xl:w-[500px] 2xl:w-[550px] bg-white flex flex-col pl-6 pr-6 lg:pl-8 lg:pr-12 xl:pr-16 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar transition-transform duration-300",
             !isMobileCheckoutOpen && "translate-y-full lg:translate-y-0 hidden lg:flex",
             isMobileCheckoutOpen && "absolute bottom-0 left-0 right-0 z-[200] max-h-[85vh] rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.3)] pb-safe"
           )}>
@@ -471,7 +471,7 @@ export default function ImmersiveProductView({
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="w-full max-w-sm mx-auto space-y-6"
+              className="w-full max-w-md mx-auto space-y-6"
             >
 
               {/* SIZE SELECTION */}
