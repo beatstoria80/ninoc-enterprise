@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin } from 'lucide-react';
+import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 
@@ -74,23 +74,7 @@ export default async function SupplierSettingsPage() {
                   placeholder="Describe your manufacturing capacity, specialties, and history..."
                 ></textarea>
               </div>
-            </div>
-            
-            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end">
-              <button className="bg-ink text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
-                Save Changes
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">Contact & Address</h2>
-              <p className="text-sm text-gray-500 mt-1">Primary warehouse or factory location for inbound logistics.</p>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <Mail size={16} className="text-gray-400" />
@@ -112,26 +96,16 @@ export default async function SupplierSettingsPage() {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <MapPin size={16} className="text-gray-400" />
-                  Primary Facility Address
-                </label>
-                <textarea 
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
-                  placeholder="Street address..."
-                ></textarea>
-              </div>
             </div>
             
             <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end">
               <button className="bg-ink text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
-                Update Location
+                Save Changes
               </button>
             </div>
           </div>
+
+
 
           <UIPreferencesPanel />
         </div>
