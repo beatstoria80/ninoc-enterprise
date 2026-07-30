@@ -83,18 +83,18 @@ export default function GlobalFooter() {
 
         {/* Base */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NINOC ENTERPRISE</h4>
+          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NANDANG RIDWANULLOH</h4>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
               <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 leading-tight">
-                Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari<br/>Kota Bandung, Jawa Barat 40292<br/>Indonesia
+                Dusun Pasarlama RT/RW 001/001, Desa Pamanukan<br/>Kecamatan Pamanukan, Kabupaten Subang<br/>Jawa Barat, Indonesia
               </p>
             </div>
             <div className="flex items-center gap-1.5">
               <Phone size={9} className="text-rose flex-shrink-0" />
-              <a href="https://wa.me/628211983774" target="_blank" rel="noopener noreferrer" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                +62 821 1983 774
+              <a href="https://wa.me/6285722341018" target="_blank" rel="noopener noreferrer" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+                +62 857 2234 1018
               </a>
             </div>
             <div className="flex items-center gap-1.5">
@@ -125,7 +125,7 @@ export default function GlobalFooter() {
 
       <div className="w-full mt-3 pt-2 border-t border-ink/5 flex flex-col md:flex-row justify-between items-center gap-2">
         <div className="flex items-center gap-3">
-          <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/50">© 2026 NINOC ENTERPRISE.</p>
+          <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-widest text-ink/50">© 2026 NANDANG RIDWANULLOH.</p>
           <div className="h-2 w-[1px] bg-ink/10 hidden md:block" />
           <p className="text-[10px] md:text-[7px] font-medium uppercase tracking-[0.1em] text-ink/20 leading-none hidden md:block">
             Data privasi terlindungi melalui enkripsi standar. Tidak membagikan informasi pribadi ke pihak ketiga.
