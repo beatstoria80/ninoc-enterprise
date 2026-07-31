@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import HeroSequence from './HeroSequence';
+import { DynamicBanner } from '@/components/home/DynamicBanner';
 import HomeProductSlider from './HomeProductSlider';
 import BentoDepartmentGrid from './BentoDepartmentGrid';
 import BrandPhilosophy from './BrandPhilosophy';
@@ -153,6 +154,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
           >
              <div className="mobile-momentum">
                 <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
+                <DynamicBanner />
                 <HomeProductSlider products={products} isLoading={false} />
                 <BrandPhilosophy />
                 <BentoDepartmentGrid />
