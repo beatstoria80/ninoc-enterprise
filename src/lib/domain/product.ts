@@ -94,7 +94,7 @@ export function findVariant(product: Product | null | undefined, size: string, c
   if (!product || !Array.isArray(product.variants)) return undefined;
   
   return product.variants.find((v) => 
-    (!size || v.size?.toUpperCase() === size.toUpperCase()) &&
-    (!color || v.color?.toUpperCase() === color.toUpperCase())
+    (!size ? !v.size : v.size?.toUpperCase() === size.toUpperCase()) &&
+    (!color ? !v.color : v.color?.toUpperCase() === color.toUpperCase())
   );
 }
