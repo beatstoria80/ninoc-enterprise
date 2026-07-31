@@ -1,6 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { 
+  hasSizes, 
+  getAvailableSizes, 
+  resolveEffectiveSize, 
+  getAvailableColorsForSize, 
+  resolveEffectiveColor, 
+  findVariant,
+  Product
+} from '@/lib/domain/product';
 
 export function useProductSelection(initialProduct: any, initialReviews: any[]) {
   const [product, setProduct] = useState(initialProduct || null);
@@ -12,46 +21,18 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
 
   const { addItem } = useHydratedCart();
 
-  // Derived state: hasSizes, availableSizes
-  const hasSizes = useMemo(() => {
-    return product?.variants?.some((v: any) => v.size && v.size.trim() !== '');
-  }, [product]);
+  // Derived state: hasProductSizes, availableSizes
+  const hasProductSizes = useMemo(() => hasSizes(product), [product]);
+  
+  const availableSizes = useMemo(() => getAvailableSizes(product), [product]);
 
-  const availableSizes = useMemo(() => {
-    if (!product?.variants?.length || !hasSizes) return [];
-    const sizes = Array.from(new Set(product.variants.map((v: any) => v.size).filter(Boolean))) as string[];
-    
-    const SIZE_ORDER = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-    sizes.sort((a, b) => {
-      const idxA = SIZE_ORDER.indexOf(a.toUpperCase());
-      const idxB = SIZE_ORDER.indexOf(b.toUpperCase());
-      if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-      if (idxA === -1) return 1;
-      if (idxB === -1) return -1;
-      return idxA - idxB;
-    });
+  const effectiveSize = useMemo(() => {
+    return resolveEffectiveSize(product, selectedSize);
+  }, [product, selectedSize]);
 
-    return sizes;
-  }, [product, hasSizes]);
-
-  const effectiveSize = useMemo((): string => {
-    if (!hasSizes) return '';
-    const match = availableSizes.find(s => s.toUpperCase() === selectedSize.toUpperCase());
-    if (match) return match;
-    return availableSizes[0] || '';
-  }, [hasSizes, availableSizes, selectedSize]);
-
-  const effectiveColor = useMemo((): string => {
-    if (!product?.variants?.length) return selectedColor;
-    const colorsForSize = Array.from<string>(new Set(
-      product.variants
-        .filter((v: any) => (!hasSizes || v.size?.toUpperCase() === effectiveSize.toUpperCase()) && v.color)
-        .map((v: any) => v.color as string)
-    ));
-    const match = colorsForSize.find((c: string) => c.toUpperCase() === selectedColor.toUpperCase());
-    if (match) return match;
-    return (colorsForSize[0] as string) || '';
-  }, [product, hasSizes, effectiveSize, selectedColor]);
+  const effectiveColor = useMemo(() => {
+    return resolveEffectiveColor(product, effectiveSize, selectedColor);
+  }, [product, effectiveSize, selectedColor]);
 
   // Realtime Stock & Related Products
   useEffect(() => {
@@ -141,11 +122,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
   const { items: cartItems } = useHydratedCart();
 
   const availableStock = useMemo(() => {
-    const safeVariants = Array.isArray(product?.variants) ? product.variants : [];
-    const selectedVariant = safeVariants.find((v: any) => 
-      (!hasSizes ? !v?.size : v?.size?.toUpperCase() === effectiveSize?.toUpperCase()) && 
-      (!effectiveColor ? !v?.color : v?.color?.toUpperCase() === effectiveColor?.toUpperCase())
-    );
+    const selectedVariant = findVariant(product, effectiveSize, effectiveColor);
     if (selectedVariant) {
       return typeof selectedVariant.stock_quantity === 'number' ? selectedVariant.stock_quantity : (parseInt(selectedVariant.stock_quantity) || 0);
     }
@@ -240,7 +217,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     quantity,
     setQuantity,
     relatedProducts,
-    hasSizes,
+    hasSizes: hasProductSizes,
     availableSizes,
     effectiveSize,
     effectiveColor,
