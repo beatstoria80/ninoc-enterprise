@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT, useHydratedCart } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
+import { findVariant } from '@/lib/domain/product';
 
 export default function QuickBuyModal() {
   const router = useRouter();
@@ -125,16 +126,13 @@ export default function QuickBuyModal() {
     const surcharge = selectedSize ? (isSurchargeSize(selectedSize) ? SIZE_SURCHARGE_AMOUNT : 0) : 0;
     
     // Calculate available stock for the selected variant
-    const safeVariants = Array.isArray(quickBuyProduct.variants) ? quickBuyProduct.variants : [];
-    const selectedVariantObj = safeVariants.find((v: any) => 
-      (!selectedSize ? true : v?.size?.toUpperCase() === selectedSize.toUpperCase()) && 
-      (!selectedColor ? true : v?.color?.toUpperCase() === selectedColor.toUpperCase())
-    );
+    const selectedVariantObj = findVariant(quickBuyProduct, selectedSize, selectedColor);
     const availableStock = selectedVariantObj 
-      ? (typeof selectedVariantObj.stock_quantity === 'number' ? selectedVariantObj.stock_quantity : (parseInt(selectedVariantObj.stock_quantity) || 0))
+      ? (typeof selectedVariantObj.stock_quantity === 'number' ? selectedVariantObj.stock_quantity : (parseInt(selectedVariantObj.stock_quantity as unknown as string) || 0))
       : (quickBuyProduct && 'stock_quantity' in quickBuyProduct ? (typeof (quickBuyProduct as any).stock_quantity === 'number' ? (quickBuyProduct as any).stock_quantity : (parseInt((quickBuyProduct as any).stock_quantity) || 0)) : 0);
 
     const safeColor = selectedColor ? selectedColor.trim().toUpperCase() : '';
+    const safeVariants = Array.isArray(quickBuyProduct.variants) ? quickBuyProduct.variants : [];
     const variantImg = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url)?.image_url;
     const finalImageUrl = safeColor ? (colorImages[safeColor] || variantImg || quickBuyProduct.image_url || null) : (quickBuyProduct.image_url || null);
 
@@ -149,6 +147,8 @@ export default function QuickBuyModal() {
         department_id: quickBuyProduct.department_id,
         category: quickBuyProduct.category,
         is_perishable: quickBuyProduct.is_perishable,
+        warehouse_id: quickBuyProduct.warehouse_id,
+        origin_postal_code: quickBuyProduct.warehouses?.postal_code,
       },
       selectedSize || undefined,
       selectedColor || undefined,
