@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail } from 'lucide-react';
+import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 
@@ -105,7 +105,59 @@ export default async function SupplierSettingsPage() {
             </div>
           </div>
 
-
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Fulfillment & Warehouse Hub</h2>
+                <p className="text-sm text-gray-500 mt-1">Your assigned Ninoc central warehouse for inbound and outbound logistics.</p>
+              </div>
+              {supplierUser.assignedWarehouse ? (
+                <div className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200 flex items-center gap-1.5">
+                  <CheckCircle2 size={14} />
+                  Connected
+                </div>
+              ) : (
+                <div className="px-3 py-1 bg-yellow-50 text-yellow-700 text-xs font-semibold rounded-full border border-yellow-200 flex items-center gap-1.5">
+                  Pending Assignment
+                </div>
+              )}
+            </div>
+            
+            <div className="p-6">
+              {supplierUser.assignedWarehouse ? (
+                <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white rounded-lg border border-gray-200 flex items-center justify-center shrink-0 shadow-sm">
+                    <MapPin className="text-ink" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-gray-500 bg-gray-200 px-2 py-0.5 rounded uppercase tracking-wider">
+                        {supplierUser.assignedWarehouse.is_primary ? 'MAIN HUB' : 'CROSSDOCK HUB'}
+                      </span>
+                      <span className="text-xs text-gray-400 font-mono">{supplierUser.assignedWarehouse.code}</span>
+                    </div>
+                    <h3 className="text-base font-bold text-gray-900">{supplierUser.assignedWarehouse.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1 mb-2">PIC: {supplierUser.assignedWarehouse.contact_name} ({supplierUser.assignedWarehouse.contact_phone})</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {supplierUser.assignedWarehouse.street_address},<br/>
+                      {supplierUser.assignedWarehouse.district}, {supplierUser.assignedWarehouse.city}, {supplierUser.assignedWarehouse.province}<br/>
+                      ZIP: {supplierUser.assignedWarehouse.postal_code}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-gray-50 rounded-xl p-8 border border-gray-100 flex flex-col items-center justify-center text-center">
+                  <div className="w-12 h-12 bg-white rounded-full border border-gray-200 flex items-center justify-center mb-3 shadow-sm">
+                    <MapPin className="text-gray-300" size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900">No Warehouse Assigned</h3>
+                  <p className="text-sm text-gray-500 mt-1 max-w-sm">
+                    Our team is currently reviewing your application. A central fulfillment hub will be assigned shortly based on your product category.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
           <UIPreferencesPanel />
         </div>

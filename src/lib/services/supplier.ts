@@ -49,9 +49,35 @@ export const getCurrentSupplier = cache(async () => {
     }
   }
 
+  // Fetch assigned warehouse based on Pillar mapping
+  let warehouseQuery = supabaseAdmin.from('warehouses').select('*').eq('is_active', true);
+  if (pillar === 'FNB') {
+    // Default to F&B Hub
+    warehouseQuery = warehouseQuery.eq('code', 'WH-BANDUNG-FB');
+  } else {
+    // Default to Main Crossdock Hub for Fashion/Goods
+    warehouseQuery = warehouseQuery.eq('code', 'WH-TG-TIU-001'); // Using main hub as default for Fashion per plan
+  }
+  
+  const { data: warehouseData } = await warehouseQuery.limit(1).maybeSingle();
+  
+  // If the specific hub fails, fallback to any primary hub
+  let assignedWarehouse = warehouseData;
+  if (!assignedWarehouse) {
+    const { data: fallbackWarehouse } = await supabaseAdmin
+      .from('warehouses')
+      .select('*')
+      .eq('is_primary', true)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle();
+    assignedWarehouse = fallbackWarehouse;
+  }
+
   return {
     ...supplierUser,
     pillar,
+    assignedWarehouse,
     session,
   };
 });
