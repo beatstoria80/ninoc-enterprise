@@ -175,7 +175,7 @@ export default async function RootLayout({
                 availableLanguage: ['Indonesian', 'English'],
               },
               sameAs: [
-                'https://instagram.com/ninoc.co',
+                'https://www.instagram.com/ninoc.co',
                 'https://twitter.com/ninocstore',
               ],
             }),
