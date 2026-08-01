@@ -40,3 +40,8 @@ Skill ini mendokumentasikan prosedur standar untuk membantu user membuat iklan G
 ## 7. Pengaturan Durasi (Start & End Dates)
 - Selalu ingatkan user untuk mengatur **End Date** (Tanggal Berakhir) terutama untuk produk edisi musiman/promosi spesifik (seperti edisi 17 Agustus, Lebaran, dll) agar saldo tidak terus terpotong ketika kampanye sudah tidak relevan.
 - **Cara:** Masuk ke menu *Campaigns* > Pilih kampanye > *Settings* > *Start and end dates*.
+
+## 8. Troubleshooting Campaign Diagnostics (Status Merah & Kuning)
+- **"New bid strategy is learning":** Ini adalah pesan normal (biru) saat kampanye baru tayang. Algoritma sedang belajar mengoptimalkan *budget*. Tidak ada tindakan yang perlu dilakukan.
+- **"Ad strength is poor" / Incomplete assets (Peringatan Kuning):** Kampanye tidak akan berjalan optimal atau tayangan dibatasi. Arahkan user untuk masuk ke **Edit asset group**. Minta user melengkapi minimal 15 *Headlines*, 4 *Descriptions*, serta variasi gambar (minimal 3 Horizontal/Landscape 1.91:1 dan 3 Kotak/Square 1:1). Jangan *upload* gambar yang sama berulang kali, minta user membuat variasi (contoh: fokus produk, beda warna, variasi dengan/tanpa model).
+- **"Account balance is exhausted" & "Not eligible" (Peringatan Merah):** Kasus ini sering membuat panik user yang baru pertama kali *Top-up* manual (*Money Transfer*/Virtual Account). Jika user sudah mentransfer (misal Rp 100.000), peringatan merah ini **akan tetap muncul selama 1-2 hari kerja** karena dana sedang diproses oleh Payment Gateway. Jelaskan kepada user agar tidak panik dan cukup menunggu. Gembok merah otomatis terbuka, iklan otomatis berjalan, dan label *Impression detection issue* otomatis hilang begitu saldo mendarat di sistem Google.
