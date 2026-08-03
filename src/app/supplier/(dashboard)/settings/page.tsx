@@ -3,6 +3,8 @@ import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin, Chec
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 import { SupplierForm } from './SupplierForm';
+import { SupplierAccountForm } from './SupplierAccountForm';
+import { SupplierBankForm } from './SupplierBankForm';
 import Link from 'next/link';
 
 export default async function SupplierSettingsPage(props: { searchParams: Promise<{ tab?: string }> }) {
@@ -113,18 +115,22 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
           )}
 
           {tab === 'account' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
-              <User size={48} className="text-gray-300 mb-4" />
-              <h2 className="text-xl font-bold text-gray-900">Account Details</h2>
-              <p className="text-gray-500 mt-2 max-w-sm">Manage your login credentials, sub-users, and role assignments here. This module is currently in development.</p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-900">Account Details</h2>
+                <p className="text-sm text-gray-500 mt-1">Manage your login credentials and role assignments.</p>
+              </div>
+              <SupplierAccountForm supplierUser={supplierUser} />
             </div>
           )}
 
           {tab === 'bank' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
-              <CreditCard size={48} className="text-gray-300 mb-4" />
-              <h2 className="text-xl font-bold text-gray-900">Bank & Payouts</h2>
-              <p className="text-gray-500 mt-2 max-w-sm">Configure your banking details for automated HPP payouts and settlements. This module is currently in development.</p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-900">Bank & Payouts</h2>
+                <p className="text-sm text-gray-500 mt-1">Configure your banking details for automated HPP payouts and settlements.</p>
+              </div>
+              <SupplierBankForm supplierData={supplierData} />
             </div>
           )}
 

@@ -22,7 +22,7 @@ export const getCurrentSupplier = cache(async () => {
 
   const { data: supplierUser, error } = await supabaseAdmin
     .from('supplier_users')
-    .select('*, suppliers(name, description, status, contact_email, contact_phone)')
+    .select('*, suppliers(name, description, status, contact_email, contact_phone, bank_name, bank_account_number, bank_account_holder)')
     .eq('user_id', session.user.id)
     .limit(1)
     .single();
