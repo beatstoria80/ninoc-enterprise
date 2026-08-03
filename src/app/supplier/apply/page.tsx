@@ -272,7 +272,7 @@ export default function SupplierApplicationPage() {
               <h3 className="text-[10px] font-bold text-ink uppercase tracking-wider border-b border-ink/10 pb-1.5 sticky top-0 bg-white z-10 pt-1">{dict.step1}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 md:gap-3">
                 <div className="lg:col-span-2">
-                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-2">{dict.legal_entity}</label>
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-2">{dict.legal_entity}</label>
                   <select required name="legal_entity" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all">
                     <option value="PT">PT</option>
                     <option value="CV">CV</option>
@@ -281,34 +281,34 @@ export default function SupplierApplicationPage() {
                   </select>
                 </div>
                 <div className="lg:col-span-3">
-                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.legal_name}</label>
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.legal_name}</label>
                   <input required type="text" name="legal_name" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="PT Jaya Garment" />
                 </div>
               </div>
               
               <div>
-                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.director}</label>
+                <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.director}</label>
                 <input required type="text" name="director_name" className="w-full bg-cr noise border border-ink/10 p-2 md:p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="Budi Santoso" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                 <div>
-                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.npwp}</label>
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.npwp}</label>
                   <input required type="text" name="tax_id" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="00.000.000.0-000.000" />
                 </div>
                 <div>
-                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.nib}</label>
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.nib}</label>
                   <input required type="text" name="nib" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="1234567890123" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 pt-1">
                 <div>
-                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.email}</label>
+                  <label className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.email}</label>
                   <input required type="email" name="email" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="director@jayagarment.com" />
                 </div>
                 <div>
-                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/50 mb-1">{dict.phone}</label>
+                  <label className="block text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 mb-1">{dict.phone}</label>
                   <input required type="tel" name="phone" className="w-full bg-cr noise border border-ink/10 p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-rose focus:border-rose transition-all" placeholder="+62..." />
                 </div>
               </div>
