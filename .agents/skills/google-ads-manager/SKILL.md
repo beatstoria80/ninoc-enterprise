@@ -22,8 +22,9 @@ Skill ini mendokumentasikan prosedur standar untuk membantu user membuat iklan G
 - **AI Generate Assets:** Minta user menekan tombol **Skip** saat Google menawarkan fitur *Generate Assets* menggunakan AI jika link tujuan adalah marketplace. AI Google kesulitan memilah elemen desain marketplace.
 - **Manual Copywriting:** Pandu user menulis *Headlines* (Maks 30 huruf) dan *Descriptions* (Maks 90 huruf) secara manual agar tepat sasaran, lengkap dengan *Search themes* (Keyword) yang relevan.
 
-## 4. Strategi Bidding (Penawaran)
-- **Bid Strategy:** Pilih **Conversions** (yang dalam kasus marketplace dihitung sebagai *Page views*).
+## 4. Strategi Bidding & Conversion Goals
+- **Conversion Goals (Penting untuk Marketplace):** Saat di menu *Campaign Settings*, pastikan pengaturan *Conversion goals* diubah dari `Account-default` (yang biasanya melacak *Purchase*) menjadi **`Campaign-specific`**. Kemudian pilih **Page views** atau **Website traffic**. Jika tidak diubah, Google akan terus memunculkan peringatan *"Conversion tracking setup is incomplete"*.
+- **Bid Strategy:** Pilih **Conversions** (yang dalam kasus marketplace dihitung sebagai *Page views* berkat pengaturan di atas).
 - **Target CPA:** Pastikan kotak **"Set a target cost per action"** TIDAK DICENTANG untuk kampanye baru. Biarkan AI Google mencari trafik termurah berdasarkan budget harian.
 
 ## 5. Pengaturan Anggaran Harian (Budget)
