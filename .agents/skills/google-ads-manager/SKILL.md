@@ -17,10 +17,11 @@ Skill ini mendokumentasikan prosedur standar untuk membantu user membuat iklan G
 - Jika user menggunakan **Google Ads Manager Account (MCC)**, mereka tidak bisa langsung membuat kampanye.
 - **Tindakan:** Pastikan user membuat **Child Account** (Akun Iklan Anak) terlebih dahulu melalui menu *Accounts* > *Create new account*. Setelah itu, user harus masuk ke akun anak tersebut untuk membuat kampanye.
 
-## 3. Strategi Pengisian URL & Assets
-- **URL Spesifik:** Jika mempromosikan satu produk khusus, gunakan URL langsung ke produk tersebut (misal `shopee.co.id/Produk-X`), bukan sekadar beranda toko.
+## 3. Strategi Pengisian URL & Assets (Mencapai "Excellent" Ad Strength)
+- **Final URL Spesifik Produk:** Wajib menggunakan URL langsung ke halaman produk spesifik (misal: `https://shopee.co.id/Kaos-X-i.123...`), **BUKAN** sekadar beranda toko (`shopee.co.id/namatoko`). Kesalahan ini menyebabkan *bounce rate* tinggi.
 - **AI Generate Assets:** Minta user menekan tombol **Skip** saat Google menawarkan fitur *Generate Assets* menggunakan AI jika link tujuan adalah marketplace. AI Google kesulitan memilah elemen desain marketplace.
-- **Manual Copywriting:** Pandu user menulis *Headlines* (Maks 30 huruf) dan *Descriptions* (Maks 90 huruf) secara manual agar tepat sasaran, lengkap dengan *Search themes* (Keyword) yang relevan.
+- **Maksimalkan Teks (Headlines & Descriptions):** Algoritma *Performance Max* sangat rakus data. Untuk mencapai status **Excellent**, user wajib mengisi **semua kuota**: 15 *Headlines* (Maks 30 huruf) dan 4 *Descriptions* (Maks 90 huruf) secara manual dengan variasi yang kaya (contoh: ajakan beli, fitur bahan, promo gratis ongkir).
+- **Search Themes (Sangat Krusial):** Jangan biarkan kolom *Search themes* kosong (status *"No search themes provided"*). Wajib ketikkan 5-25 kata kunci manual agar AI tidak menebak-nebak target audiens dari nol.
 
 ## 4. Strategi Bidding & Conversion Goals
 - **Conversion Goals (Penting untuk Marketplace):** Saat di menu *Campaign Settings*, pastikan pengaturan *Conversion goals* diubah dari `Account-default` (yang biasanya melacak *Purchase*) menjadi **`Campaign-specific`**. Kemudian pilih **Page views** atau **Website traffic**. Jika tidak diubah, Google akan terus memunculkan peringatan *"Conversion tracking setup is incomplete"*.
@@ -44,5 +45,9 @@ Skill ini mendokumentasikan prosedur standar untuk membantu user membuat iklan G
 
 ## 8. Troubleshooting Campaign Diagnostics (Status Merah & Kuning)
 - **"New bid strategy is learning":** Ini adalah pesan normal (biru) saat kampanye baru tayang. Algoritma sedang belajar mengoptimalkan *budget*. Tidak ada tindakan yang perlu dilakukan.
-- **"Ad strength is poor" / Incomplete assets (Peringatan Kuning):** Kampanye tidak akan berjalan optimal atau tayangan dibatasi. Arahkan user untuk masuk ke **Edit asset group**. Minta user melengkapi minimal 15 *Headlines*, 4 *Descriptions*, serta variasi gambar (minimal 3 Horizontal/Landscape 1.91:1 dan 3 Kotak/Square 1:1). Jangan *upload* gambar yang sama berulang kali, minta user membuat variasi (contoh: fokus produk, beda warna, variasi dengan/tanpa model).
+- **"Ad strength is poor" / Incomplete assets (Peringatan Kuning):** Kampanye tidak akan berjalan optimal atau tayangan dibatasi karena AI Google kekurangan variasi data. Arahkan user untuk masuk ke **Edit asset group**. Syarat mutlak merubah *Poor* menjadi *Good/Excellent*:
+  1. Lengkapi 15 *Headlines* dan 4 *Descriptions* (jangan ada yang kosong).
+  2. Tambahkan minimal 5 *Search themes* (Kata kunci manual).
+  3. Upload variasi gambar (minimal 3 Horizontal/Landscape 1.91:1 dan 3 Kotak/Square 1:1). Jangan gunakan gambar identik berulang kali, buat variasi (fokus produk, pemakaian dengan model, beda warna).
+- **"Asset group under review" (Status Pending):** Setelah user menekan Save/Simpan dari hasil *Edit asset group*, status *Ad Strength* akan berubah menjadi indikator *loading* (Pending). Beri tahu user bahwa ini normal; Google butuh 1-24 jam untuk meninjau iklan sebelum mengkalkulasi ulang skor kekuatannya.
 - **"Account balance is exhausted" & "Not eligible" (Peringatan Merah):** Kasus ini sering membuat panik user yang baru pertama kali *Top-up* manual (*Money Transfer*/Virtual Account). Jika user sudah mentransfer (misal Rp 100.000), peringatan merah ini **akan tetap muncul selama 1-2 hari kerja** karena dana sedang diproses oleh Payment Gateway. Jelaskan kepada user agar tidak panik dan cukup menunggu. Gembok merah otomatis terbuka, iklan otomatis berjalan, dan label *Impression detection issue* otomatis hilang begitu saldo mendarat di sistem Google.
