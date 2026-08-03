@@ -34,9 +34,14 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     return resolveEffectiveColor(product, effectiveSize, selectedColor);
   }, [product, effectiveSize, selectedColor]);
 
+  // Destructure primitives to prevent infinite Realtime re-renders while satisfying linter
+  const productId = product?.id;
+  const productCategory = product?.category;
+  const productSubCategory = product?.sub_category;
+
   // Realtime Stock & Related Products
   useEffect(() => {
-    if (!product) return;
+    if (!productId) return;
     
     let channel: ReturnType<typeof supabase.channel> | null = null;
     
@@ -46,8 +51,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
         let { data: exactMatches } = await supabase
           .from('products')
           .select('*')
-          .eq('sub_category', product.sub_category || product.category)
-          .neq('id', product.id)
+          .eq('sub_category', productSubCategory || productCategory)
+          .neq('id', productId)
           .limit(14);
           
         let related = exactMatches || [];
@@ -57,8 +62,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
           const { data: categoryMatches } = await supabase
             .from('products')
             .select('*')
-            .eq('category', product.category)
-            .neq('id', product.id)
+            .eq('category', productCategory)
+            .neq('id', productId)
             .limit(14);
             
           if (categoryMatches) {
@@ -73,7 +78,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
           const { data: allOther } = await supabase
             .from('products')
             .select('*')
-            .neq('id', product.id)
+            .neq('id', productId)
             .limit(16);
 
           if (allOther) {
@@ -93,17 +98,17 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     
     try {
       channel = supabase
-        .channel(`variants-stock-${product.id}`)
+        .channel(`variants-stock-${productId}`)
         .on('postgres_changes', {
           event: '*',
           schema: 'public',
           table: 'variants',
-          filter: `product_id=eq.${product.id}`
+          filter: `product_id=eq.${productId}`
         }, async () => {
           const { data } = await supabase
             .from('products')
             .select('*, variants(*)')
-            .eq('id', product.id)
+            .eq('id', productId)
             .single();
           if (data) setProduct(data);
         })
@@ -117,7 +122,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
         try { supabase.removeChannel(channel); } catch {}
       }
     };
-  }, [product?.id, product?.category, product?.sub_category]);
+  }, [productId, productCategory, productSubCategory]);
 
   const { items: cartItems } = useHydratedCart();
 
