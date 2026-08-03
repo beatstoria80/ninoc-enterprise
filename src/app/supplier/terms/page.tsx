@@ -200,7 +200,7 @@ export default function SupplierTermsPage() {
             {/* General B2B Contract Clauses */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10">
               <div className="p-5 bg-[#141414] border border-white/10 space-y-2">
-                <h4 className="text-xs font-display font-bold uppercase tracking-wider text-rose">01 // {dict.s1_title}</h4>
+                <h4 className="text-xs font-display font-bold uppercase tracking-wider text-blue-400">01 // {dict.s1_title}</h4>
                 <p className="text-xs text-white/70 leading-relaxed">{dict.s1_text}</p>
               </div>
               <div className="p-5 bg-[#141414] border border-white/10 space-y-2">
