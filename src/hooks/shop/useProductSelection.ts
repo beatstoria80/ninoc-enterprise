@@ -117,7 +117,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
         try { supabase.removeChannel(channel); } catch {}
       }
     };
-  }, [product, product?.id, product?.category]);
+  }, [product?.id, product?.category, product?.sub_category]);
 
   const { items: cartItems } = useHydratedCart();
 
@@ -130,7 +130,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       return typeof (product as any).stock_quantity === 'number' ? (product as any).stock_quantity : (parseInt((product as any).stock_quantity) || 0);
     }
     return 0; // Default to 0 instead of 999 to prevent overselling of null-stock items
-  }, [product, hasSizes, effectiveSize, effectiveColor]);
+  }, [product, effectiveSize, effectiveColor]);
 
   const itemInCartQty = useMemo(() => {
     return cartItems
