@@ -12,6 +12,7 @@ export async function updateSupplierProfile(prevState: any, formData: FormData) 
     }
 
     const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
     const contact_email = formData.get('contact_email') as string;
     const contact_phone = formData.get('contact_phone') as string;
 
@@ -30,6 +31,7 @@ export async function updateSupplierProfile(prevState: any, formData: FormData) 
       .from('suppliers')
       .update({
         name,
+        description,
         contact_email,
         contact_phone,
         updated_at: new Date().toISOString(),

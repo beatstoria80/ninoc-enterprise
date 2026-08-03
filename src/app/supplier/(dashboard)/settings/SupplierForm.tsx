@@ -37,6 +37,8 @@ export function SupplierForm({ supplierData }: { supplierData: any }) {
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Business Description</label>
           <textarea 
+            name="description"
+            defaultValue={supplierData?.description || ''}
             rows={4}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
             placeholder="Describe your manufacturing capacity, specialties, and history..."
