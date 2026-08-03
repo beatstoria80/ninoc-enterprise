@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Factory, ArrowRight, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Factory, ArrowRight, Upload, FileText, CheckCircle, AlertCircle, X } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import NextLink from 'next/link';
 import { submitSupplierApplication } from './actions';
@@ -257,7 +257,10 @@ export default function SupplierApplicationPage() {
 
         {/* Grid 2 & 3 - Form */}
         <div className="lg:col-span-9 p-4 md:p-12 relative flex flex-col h-full bg-white overflow-hidden">
-          <h2 className="hidden md:block text-xl font-display font-medium text-ink mb-6 shrink-0">{dict.form_title}</h2>
+          <NextLink href="/supplier" className="absolute top-4 right-4 md:top-8 md:right-8 text-ink/40 hover:text-rose transition-colors z-20 bg-gray-50/50 hover:bg-rose/10 p-2 rounded-full">
+            <X size={20} strokeWidth={2} />
+          </NextLink>
+          <h2 className="hidden md:block text-xl font-display font-medium text-ink mb-6 shrink-0 pr-12">{dict.form_title}</h2>
           
           {error && (
             <div className="mb-4 md:mb-6 p-3 md:p-4 bg-red-50 text-red-600 text-xs font-medium border border-red-100 flex gap-2 items-start shrink-0">
