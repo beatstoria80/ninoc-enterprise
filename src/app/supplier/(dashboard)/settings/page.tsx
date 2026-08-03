@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
-import { updateSupplierProfile } from './actions';
+import { SupplierForm } from './SupplierForm';
 
 export default async function SupplierSettingsPage() {
   const supplierUser = await getCurrentSupplier();
@@ -45,61 +45,7 @@ export default async function SupplierSettingsPage() {
               <h2 className="text-lg font-bold text-gray-900">Company Information</h2>
               <p className="text-sm text-gray-500 mt-1">Update your factory or brand details shown to Ninoc enterprise.</p>
             </div>
-            <form action={updateSupplierProfile}>
-              <div className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Company / Brand Name</label>
-                  <input 
-                    type="text" 
-                    name="name"
-                    required
-                    defaultValue={supplierData?.name || ''}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Business Description</label>
-                <textarea 
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
-                  placeholder="Describe your manufacturing capacity, specialties, and history..."
-                ></textarea>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Mail size={16} className="text-gray-400" />
-                    Support Email
-                  </label>
-                  <input 
-                    type="email" 
-                    name="contact_email"
-                    defaultValue={supplierData?.contact_email || ''}
-                    placeholder="contact@brand.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    name="contact_phone"
-                    defaultValue={supplierData?.contact_phone || ''}
-                    placeholder="+62 812 3456 7890"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end">
-              <button type="submit" className="bg-ink text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
-                Save Changes
-              </button>
-            </div>
-            </form>
+            <SupplierForm supplierData={supplierData} />
           </div>
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
