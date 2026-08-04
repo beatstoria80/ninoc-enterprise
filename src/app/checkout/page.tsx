@@ -581,6 +581,17 @@ export default function CheckoutPage() {
         } else {
           setFormData(prev => ({ ...prev, email: user.email || '' }));
         }
+      } else {
+        // Guest mode hydration from sessionStorage
+        if (formData.province) {
+          const loadedCities = await fetchCities(formData.province);
+          if (formData.city && Array.isArray(loadedCities)) {
+            const loadedDistricts = await fetchDistricts(formData.city, loadedCities);
+            if (formData.kecamatan && Array.isArray(loadedDistricts)) {
+              await fetchVillages(formData.kecamatan, loadedDistricts);
+            }
+          }
+        }
       }
     };
     fetchProfile();
