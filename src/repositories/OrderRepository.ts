@@ -150,8 +150,13 @@ export class OrderRepository {
     shipments: any[] // Array of { warehouse_id, origin_postal_code, courier_name, courier_service, shipping_cost }
   ): Promise<{ success: boolean; error?: string }> {
     
-    const aggregatedCourier = shipments.map(s => `${s.courier_name} ${s.courier_service}`).join(', ');
-    const totalShippingCost = shipments.reduce((sum, s) => sum + Number(s.shipping_cost), 0);
+    const aggregatedCourier = shipments.length > 0 
+      ? shipments.map(s => `${s.courier_name} ${s.courier_service}`).join(', ')
+      : (shippingAddressData.method || '');
+      
+    const totalShippingCost = shipments.length > 0
+      ? shipments.reduce((sum, s) => sum + Number(s.shipping_cost), 0)
+      : Number(shippingAddressData.cost || 0);
 
     const shippingAddress = {
       ...customer,

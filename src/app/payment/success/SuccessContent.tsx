@@ -187,9 +187,17 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
   const invoiceId = `#${displayId}`;
   const sub = order.order_items?.reduce((acc: number, item: OrderItem) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
   const platform = 2500;
-  const shipping = typeof order.shipping_address?.shipping_cost === 'number' 
+  let shipping = typeof order.shipping_address?.shipping_cost === 'number' 
     ? order.shipping_address.shipping_cost 
     : Math.max(0, order.total_price - sub - platform);
+
+  // Fallback for legacy DB bug where shipping_cost was strictly saved as 0
+  if (shipping === 0) {
+    const calculatedShipping = Math.max(0, order.total_price - sub - platform);
+    if (calculatedShipping > 0) {
+      shipping = calculatedShipping;
+    }
+  }
 
   return (
     <>
