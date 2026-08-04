@@ -197,25 +197,25 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-[1180px] mx-auto w-full"
+        className="max-w-[1180px] 2xl:max-w-[1536px] 3xl:max-w-[1800px] mx-auto w-full"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 xl:gap-6 items-start text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 xl:gap-6 2xl:gap-12 3xl:gap-16 items-start text-left">
 
           {/* Column 1: Headers & Actions */}
           <div className="lg:col-span-4 flex flex-col space-y-1.5 md:space-y-4 lg:space-y-4 order-1">
             <div className="space-y-0.5 md:space-y-4">
-              <h1 className="text-lg md:text-3xl lg:text-4xl xl:text-[42px] font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3">
+              <h1 className="text-lg md:text-3xl lg:text-4xl xl:text-[42px] 2xl:text-[52px] 3xl:text-[64px] font-display font-medium italic text-ink tracking-tight flex items-center gap-2 md:gap-3 2xl:gap-4">
                 Payment Successful.
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", damping: 10, stiffness: 100 }}
-                  className="w-5 h-5 md:w-7 md:h-7 lg:w-8 lg:h-8 xl:w-9 xl:h-9 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
+                  className="w-5 h-5 md:w-7 md:h-7 lg:w-8 lg:h-8 xl:w-9 xl:h-9 2xl:w-11 2xl:h-11 3xl:w-14 3xl:h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/20"
                 >
-                  <CheckCircle className="w-3 h-3 md:w-4 md:h-4 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5" />
+                  <CheckCircle className="w-3 h-3 md:w-4 md:h-4 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 3xl:w-7 3xl:h-7" />
                 </motion.div>
               </h1>
-              <p className="text-[10px] md:text-sm lg:text-base xl:text-lg text-ink/70 font-medium leading-relaxed">
+              <p className="text-[10px] md:text-sm lg:text-base xl:text-lg 2xl:text-xl 3xl:text-2xl text-ink/70 font-medium leading-relaxed">
                 Thank you for your purchase. We are now processing your order.
               </p>
             </div>
