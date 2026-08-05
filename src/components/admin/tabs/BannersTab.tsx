@@ -167,11 +167,37 @@ export function BannersTab() {
               
               <div>
                 <label className="block text-[10px] uppercase mb-1">Target URL</label>
-                <input 
-                  type="text" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} 
-                  className="w-full border border-ink/20 p-2 text-xs outline-none focus:border-ink" 
-                  placeholder="/collections/sale"
-                />
+                <div className="flex gap-2">
+                  <select 
+                    value={
+                      linkUrl === '' ? '' :
+                      ['/', '/collections/all', '/collections/sale', '/collections/new', '/collections/pakaian-pria', '/collections/pakaian-wanita', '/collections/aksesoris'].includes(linkUrl) ? linkUrl : 'custom'
+                    }
+                    onChange={e => {
+                      if (e.target.value === 'custom') {
+                        setLinkUrl('');
+                      } else {
+                        setLinkUrl(e.target.value);
+                      }
+                    }}
+                    className="border border-ink/20 p-2 text-xs outline-none focus:border-ink bg-white w-1/3"
+                  >
+                    <option value="" disabled>Pilih URL (atau ketik)</option>
+                    <option value="/">Beranda (/)</option>
+                    <option value="/collections/all">Semua Produk</option>
+                    <option value="/collections/sale">Promo / Sale</option>
+                    <option value="/collections/new">Produk Terbaru</option>
+                    <option value="/collections/pakaian-pria">Pakaian Pria</option>
+                    <option value="/collections/pakaian-wanita">Pakaian Wanita</option>
+                    <option value="/collections/aksesoris">Aksesoris</option>
+                    <option value="custom">-- Custom URL --</option>
+                  </select>
+                  <input 
+                    type="text" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} 
+                    className="flex-1 border border-ink/20 p-2 text-xs outline-none focus:border-ink" 
+                    placeholder="e.g. /shop/nama-produk"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
