@@ -6,7 +6,7 @@ import { sendEmailInvoice } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { getAppUrl } from '@/lib/utils';
-import { unstable_after as after } from 'next/server';
+import { after } from 'next/server';
 
 /**
  * Fast-Path Cryptographic Signature Verification (0.1ms local check).

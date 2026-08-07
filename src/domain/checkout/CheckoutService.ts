@@ -6,7 +6,7 @@ import { getSnapApi } from '@/lib/midtrans';
 import { getAppUrl } from '@/lib/utils';
 import { StockValidator } from './StockValidator';
 import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
-import { unstable_after as after } from 'next/server';
+import { after } from 'next/server';
 
 export class CheckoutService {
   constructor(private readonly supabaseAdmin: SupabaseClient) {}
