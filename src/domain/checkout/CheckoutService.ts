@@ -5,6 +5,8 @@ import { OrderRepository } from '@/repositories/OrderRepository';
 import { getSnapApi } from '@/lib/midtrans';
 import { getAppUrl } from '@/lib/utils';
 import { StockValidator } from './StockValidator';
+import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { unstable_after as after } from 'next/server';
 
 export class CheckoutService {
   constructor(private readonly supabaseAdmin: SupabaseClient) {}
@@ -155,6 +157,25 @@ export class CheckoutService {
     const transaction = await snap.createTransaction(parameter);
     const snapToken = transaction.token as string;
     await orderRepo.updateSnapToken(orderId, snapToken);
+
+    // 9. Fire Asynchronous WhatsApp Notification (Non-blocking using Next.js after)
+    after(() => {
+      try {
+        const formattedPhone = formatPhoneNumber(customerDetails.phone);
+        if (formattedPhone) {
+          // Estimated Delivery usually 2-5 days for standard couriers
+          const estDelivery = '2-5 hari kerja'; 
+          sendCheckoutPendingWA({
+            phone: formattedPhone,
+            customer_name: firstName,
+            order_id: orderNumber,
+            estimated_delivery: estDelivery
+          }).catch(err => console.error('[CheckoutService Async] WA Notification Error:', err));
+        }
+      } catch (err) {
+        console.error('[CheckoutService Async] Failed to queue WA Notification:', err);
+      }
+    });
 
     return {
       status: 200,

@@ -42,6 +42,7 @@ export const WA_TEMPLATES = {
   PROMO_BROADCAST: 'promo_broadcast',
   RETUR_STATUS_UPDATE: 'retur_status_update',
   ORDER_CANCELLED: 'order_cancelled',
+  ORDER_PENDING: 'jaspers_market_order_confirmation_v1', // Placeholder template until a custom one is created
 } as const;
 
 export type WATemplateKey = keyof typeof WA_TEMPLATES;
@@ -59,9 +60,13 @@ export function formatPhoneNumber(phone: string): string {
   return '';
 }
 
-// ─── Core HTTP Client ──────────────────────────────────────────────────────────
+// ─── Core HTTP Client with Robust Exponential Backoff ────────────────────────
 
-async function callWhatsAppAPI(payload: Record<string, unknown>): Promise<WASendResult> {
+async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function callWhatsAppAPI(payload: Record<string, unknown>, retries = 3, baseDelay = 1000): Promise<WASendResult> {
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
@@ -71,33 +76,51 @@ async function callWhatsAppAPI(payload: Record<string, unknown>): Promise<WASend
     return { success: false, error: err };
   }
 
-  try {
-    const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      console.error('[WhatsApp] API error:', data);
-      return {
-        success: false,
-        error: data.error?.message || 'WhatsApp API error',
-        error_code: String(data.error?.code || res.status),
-      };
+      if (!res.ok) {
+        // Retry on rate limit (429) or server errors (500+)
+        if (res.status === 429 || res.status >= 500) {
+          throw new Error(`Transient API Error: ${res.status} - ${data.error?.message || 'Unknown'}`);
+        }
+
+        // Fatal errors (e.g., 400 Bad Request) do not retry
+        console.error(`[WhatsApp] Fatal API error on attempt ${attempt}:`, data);
+        return {
+          success: false,
+          error: data.error?.message || 'WhatsApp API error',
+          error_code: String(data.error?.code || res.status),
+        };
+      }
+
+      return { success: true, message_id: data.messages?.[0]?.id };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Network error';
+      console.warn(`[WhatsApp] Call error on attempt ${attempt}: ${msg}`);
+      
+      if (attempt === retries) {
+        console.error(`[WhatsApp] Exhausted all ${retries} retries for payload. Giving up.`);
+        return { success: false, error: msg };
+      }
+      
+      const backoffMs = baseDelay * (2 ** (attempt - 1));
+      console.log(`[WhatsApp] Retrying in ${backoffMs}ms...`);
+      await delay(backoffMs);
     }
-
-    return { success: true, message_id: data.messages?.[0]?.id };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Network error';
-    console.error('[WhatsApp] Call error:', msg);
-    return { success: false, error: msg };
   }
+
+  return { success: false, error: 'Unexpected exit in retry loop' };
 }
 
 // ─── Template Message Sender ───────────────────────────────────────────────────
@@ -116,7 +139,7 @@ export async function sendTemplateMessage(
     type: 'template',
     template: {
       name: templateName,
-      language: { code: 'id' },
+      language: { code: templateName === 'jaspers_market_order_confirmation_v1' ? 'en_US' : 'id' },
       components,
     },
   });
@@ -131,7 +154,7 @@ export async function sendTemplateMessage(
       type: 'template',
       template: {
         name: templateName,
-        language: { code: 'id' },
+        language: { code: templateName === 'jaspers_market_order_confirmation_v1' ? 'en_US' : 'id' },
       },
     });
   }
@@ -159,6 +182,28 @@ export async function sendInvoiceWA(params: {
         { type: 'text', text: params.customer_name },
         { type: 'text', text: params.order_id },
         { type: 'text', text: params.total_price },
+      ],
+    },
+  ]);
+}
+
+/**
+ * Send order pending / checkout confirmation WhatsApp message
+ * Triggered from checkout service when order is created but not yet paid
+ */
+export async function sendCheckoutPendingWA(params: {
+  phone: string;
+  customer_name: string;
+  order_id: string;
+  estimated_delivery?: string;
+}): Promise<WASendResult> {
+  return sendTemplateMessage(WA_TEMPLATES.ORDER_PENDING, params.phone, [
+    {
+      type: 'body',
+      parameters: [
+        { type: 'text', text: params.customer_name },
+        { type: 'text', text: params.order_id },
+        { type: 'text', text: params.estimated_delivery || '2-5 hari kerja' },
       ],
     },
   ]);
@@ -251,44 +296,6 @@ export async function sendWAReturStatusUpdate(params: {
   ]);
 }
 
-// ─── Rate Limiter ──────────────────────────────────────────────────────────────
-// Meta limit: 80 messages/minute per phone number
-// Simple token-bucket: 80 messages per 60 seconds
-
-let messageCount = 0;
-let windowStart = Date.now();
-
-export async function sendWithRateLimit(
-  fn: () => Promise<WASendResult>
-): Promise<WASendResult> {
-  const now = Date.now();
-  if (now - windowStart > 60_000) {
-    messageCount = 0;
-    windowStart = now;
-  }
-
-  if (messageCount >= 75) {
-    const waitMs = 60_000 - (now - windowStart);
-    console.log(`[WhatsApp] Rate limit approaching, waiting ${waitMs}ms`);
-    await new Promise(resolve => setTimeout(resolve, waitMs));
-    messageCount = 0;
-    windowStart = Date.now();
-  }
-
-  messageCount++;
-  return fn();
-}
-
-// ─── Configuration Status ──────────────────────────────────────────────────────
-
-export function isWAConfigured(): boolean {
-  return !!(
-    process.env.WHATSAPP_PHONE_NUMBER_ID &&
-    process.env.WHATSAPP_ACCESS_TOKEN &&
-    process.env.WHATSAPP_WABA_ID
-  );
-}
-
 /**
  * Send order cancellation and refund status update via WhatsApp
  */
@@ -312,3 +319,12 @@ export async function sendCancelledWA(params: {
   ]);
 }
 
+// ─── Configuration Status ──────────────────────────────────────────────────────
+
+export function isWAConfigured(): boolean {
+  return !!(
+    process.env.WHATSAPP_PHONE_NUMBER_ID &&
+    process.env.WHATSAPP_ACCESS_TOKEN &&
+    process.env.WHATSAPP_WABA_ID
+  );
+}

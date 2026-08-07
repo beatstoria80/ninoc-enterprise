@@ -6,6 +6,7 @@ import { sendEmailInvoice } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { getAppUrl } from '@/lib/utils';
+import { unstable_after as after } from 'next/server';
 
 /**
  * Fast-Path Cryptographic Signature Verification (0.1ms local check).
@@ -124,7 +125,7 @@ export async function POST(req: Request) {
     console.log(`[Payment Webhook] Order ${orderId} transitioned: ${previousStatus} -> ${orderUpdateStatus} in ${Date.now() - startTime}ms`);
 
     // 5. Decoupled Asynchronous Tasks (Non-Blocking execution after core DB transition)
-    queueMicrotask(async () => {
+    after(async () => {
       try {
         // --- INVENTORY RESTOCK (Only on transition into cancelled) ---
         if (orderUpdateStatus === 'cancelled' && previousStatus !== 'cancelled') {
