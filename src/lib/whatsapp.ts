@@ -42,7 +42,7 @@ export const WA_TEMPLATES = {
   PROMO_BROADCAST: 'promo_broadcast',
   RETUR_STATUS_UPDATE: 'retur_status_update',
   ORDER_CANCELLED: 'order_cancelled',
-  ORDER_PENDING: 'jaspers_market_order_confirmation_v1', // Placeholder template until a custom one is created
+  ORDER_PENDING: 'order_pending_id',
 } as const;
 
 export type WATemplateKey = keyof typeof WA_TEMPLATES;
@@ -139,7 +139,7 @@ export async function sendTemplateMessage(
     type: 'template',
     template: {
       name: templateName,
-      language: { code: templateName === 'jaspers_market_order_confirmation_v1' ? 'en_US' : 'id' },
+      language: { code: 'id' },
       components,
     },
   });
@@ -154,7 +154,7 @@ export async function sendTemplateMessage(
       type: 'template',
       template: {
         name: templateName,
-        language: { code: templateName === 'jaspers_market_order_confirmation_v1' ? 'en_US' : 'id' },
+        language: { code: 'id' },
       },
     });
   }
