@@ -110,15 +110,14 @@ export class PointerTracker {
     const clampedX = Math.max(-1.0, Math.min(1.0, rawX * this.config.pointerSensitivity));
     const clampedY = Math.max(-1.0, Math.min(1.0, rawY));
 
-    // Non-linear response curve with center dead-zone
-    const absX = Math.abs(clampedX);
+    // Rightward Drag Only: React strictly when cursor moves to the right (clampedX > 0)
     const dz = this.config.pointerDeadZone;
 
     let targetX = 0;
-    if (absX > dz) {
-      const normRange = (absX - dz) / (1.0 - dz);
+    if (clampedX > dz) {
+      const normRange = (clampedX - dz) / (1.0 - dz);
       const smoothResponse = normRange * normRange * (3 - 2 * normRange); // Hermite interpolation
-      targetX = Math.sign(clampedX) * smoothResponse;
+      targetX = smoothResponse;
     }
 
     if (this.state.reducedMotion) {

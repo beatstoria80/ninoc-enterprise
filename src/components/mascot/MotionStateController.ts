@@ -64,21 +64,27 @@ export class MotionStateController {
     // Clamp position
     this.currentX = Math.max(-1.0, Math.min(1.0, this.currentX));
 
-    // Update state machine for 2-chapter system
-    const absX = Math.abs(this.currentX);
-    if (absX < 0.05 && Math.abs(this.velocity) < 0.01) {
+    // Update state machine for 2-chapter system with rightward drag only
+    if (this.currentX < 0.05 && Math.abs(this.velocity) < 0.01) {
       this.stateName = 'IDLE_CENTER';
     } else if (Math.abs(this.velocity) > 0.01) {
-      this.stateName = Math.abs(targetX) < absX ? 'RETURNING_CENTER' : 'MOVING_HORIZONTAL';
+      this.stateName = targetX < this.currentX ? 'RETURNING_CENTER' : 'MOVING_HORIZONTAL';
     } else {
       this.stateName = 'HORIZONTAL_HELD';
     }
 
-    // Calculate Layer Opacities for 2 Chapters (Chapter 1 Idle Center vs Chapter 2 Horizontal)
-    const motionWeight = Math.min(1.0, absX * 2.2);
-    const idleOpacity = Math.max(0.0, 1.0 - motionWeight);
-    const horizontalOpacity = motionWeight;
-    const horizontalTimeFraction = (this.currentX + 1.0) / 2.0;
+    // Video 1 (Chapter 1 Idle Center) is MAIN.
+    // Video 2 (Chapter 2) activates strictly when dragging right (currentX > 0).
+    let idleOpacity = 1.0;
+    let horizontalOpacity = 0.0;
+
+    if (this.currentX > 0.02) {
+      const rightWeight = Math.min(1.0, (this.currentX - 0.02) * 2.2);
+      idleOpacity = Math.max(0.0, 1.0 - rightWeight);
+      horizontalOpacity = rightWeight;
+    }
+
+    const horizontalTimeFraction = Math.max(0.0, Math.min(1.0, this.currentX));
 
     // Mutate internal buffer in-place (Zero Allocation)
     const frame = this.scratchFrame;
