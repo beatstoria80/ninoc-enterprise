@@ -195,9 +195,10 @@ export async function sendTemplateMessage(
     return firstAttempt;
   }
 
-  // Attempt 2: If Header parameter mismatch (132000), retry with Body components only
-  if (firstAttempt.error_code === '132000' && !hasHeader) {
-    console.warn(`[WhatsApp] Template ${templateName} header image mismatch (132000). Retrying with body components only...`);
+  // Attempt 2: If Header parameter mismatch (132000, 132018, 132001), retry with Body components only
+  const isHeaderMismatch = ['132000', '132018', '132001'].includes(String(firstAttempt.error_code));
+  if (isHeaderMismatch && !hasHeader) {
+    console.warn(`[WhatsApp] Template ${templateName} header mismatch (${firstAttempt.error_code}). Retrying with body components only...`);
     const secondAttempt = await callWhatsAppAPI({
       messaging_product: 'whatsapp',
       to: formattedPhone,
@@ -214,9 +215,9 @@ export async function sendTemplateMessage(
       return secondAttempt;
     }
 
-    // Attempt 3: If still 132000 (static template with 0 parameters), retry without any components
-    if (secondAttempt.error_code === '132000') {
-      console.warn(`[WhatsApp] Template ${templateName} parameters mismatch (132000). Retrying without components...`);
+    // Attempt 3: If still parameter mismatch (static template with 0 parameters), retry without any components
+    if (['132000', '132018', '132001'].includes(String(secondAttempt.error_code))) {
+      console.warn(`[WhatsApp] Template ${templateName} parameters mismatch (${secondAttempt.error_code}). Retrying without components...`);
       return callWhatsAppAPI({
         messaging_product: 'whatsapp',
         to: formattedPhone,
