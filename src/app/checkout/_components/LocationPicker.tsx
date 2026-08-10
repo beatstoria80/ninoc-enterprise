@@ -56,9 +56,35 @@ function LocationMarker({ position, setPosition, onSelect }: { position: L.LatLn
 
 function MapUpdater({ center }: { center: [number, number] }) {
   const map = useMapEvents({});
+
   useEffect(() => {
     map.setView(center, 14, { animate: true });
   }, [center, map]);
+
+  useEffect(() => {
+    // Invalidate size immediately, after Framer Motion expansion (300ms), and after 600ms
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 100);
+    const t2 = setTimeout(() => map.invalidateSize(), 350);
+    const t3 = setTimeout(() => map.invalidateSize(), 700);
+
+    const container = map.getContainer();
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && container) {
+      observer = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      observer.observe(container);
+    }
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      if (observer) observer.disconnect();
+    };
+  }, [map]);
+
   return null;
 }
 

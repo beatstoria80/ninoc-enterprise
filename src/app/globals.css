@@ -497,6 +497,9 @@ input:focus, textarea:focus, select:focus {
    Prevents GlobalDragScroll from interfering with map panning.
    ═══════════════════════════════════════════════════════════════ */
 .leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 250px !important;
   cursor: grab !important;
   touch-action: none !important;
   -webkit-user-select: none !important;
