@@ -52,34 +52,37 @@ export class MotionStateController {
    * Zero GC allocations occur inside this method.
    */
   public update(pointer: Readonly<PointerState>, dt: number): Readonly<MotionStateFrame> {
-    const targetX = pointer.isHovered ? pointer.targetX : 0.0;
+    const isRightDrag = pointer.isHovered && pointer.targetX > 0;
+    const targetX = isRightDrag ? pointer.targetX : 0.0;
 
-    const response = pointer.isHovered ? this.config.motionResponse : this.config.returnToCenterSpeed;
+    const response = isRightDrag ? this.config.motionResponse : this.config.returnToCenterSpeed;
     const damping = this.config.motionDamping;
 
     const accel = response * (targetX - this.currentX) - damping * this.velocity;
     this.velocity += accel * (dt * 60);
     this.currentX += this.velocity * (dt * 60);
 
-    // Clamp position
-    this.currentX = Math.max(-1.0, Math.min(1.0, this.currentX));
+    // Clamp position strictly between 0.0 (Idle Main) and 1.0 (Full Right Drag)
+    this.currentX = Math.max(0.0, Math.min(1.0, this.currentX));
 
-    // Update state machine for 2-chapter system with rightward drag only
-    if (this.currentX < 0.05 && Math.abs(this.velocity) < 0.01) {
+    // Update state machine
+    if (this.currentX < 0.02 && Math.abs(this.velocity) < 0.005) {
+      this.currentX = 0.0;
+      this.velocity = 0.0;
       this.stateName = 'IDLE_CENTER';
-    } else if (Math.abs(this.velocity) > 0.01) {
+    } else if (Math.abs(this.velocity) > 0.005) {
       this.stateName = targetX < this.currentX ? 'RETURNING_CENTER' : 'MOVING_HORIZONTAL';
     } else {
       this.stateName = 'HORIZONTAL_HELD';
     }
 
-    // Video 1 (Chapter 1 Idle Center) is MAIN.
-    // Video 2 (Chapter 2) activates strictly when dragging right (currentX > 0).
+    // Video 1 (Chapter 1 Idle Center) is MAIN and continuously loops.
+    // Video 2 (Chapter 2) activates strictly when rightward drag is triggered (currentX > 0).
     let idleOpacity = 1.0;
     let horizontalOpacity = 0.0;
 
-    if (this.currentX > 0.02) {
-      const rightWeight = Math.min(1.0, (this.currentX - 0.02) * 2.2);
+    if (this.currentX > 0.01) {
+      const rightWeight = Math.min(1.0, this.currentX * 2.0);
       idleOpacity = Math.max(0.0, 1.0 - rightWeight);
       horizontalOpacity = rightWeight;
     }
