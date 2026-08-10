@@ -53,6 +53,8 @@ export function formatPhoneNumber(phone: string): string {
   if (!phone) return '';
   let digits = phone.replace(/\D/g, '');
   if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+  else if (digits.startsWith('8')) digits = '62' + digits;
+  
   if (digits.startsWith('62') && digits.length >= 10 && digits.length <= 15) {
     return digits;
   }
@@ -60,10 +62,17 @@ export function formatPhoneNumber(phone: string): string {
   return '';
 }
 
-// ─── Core HTTP Client with Robust Exponential Backoff ────────────────────────
+// ─── Core HTTP Client with Robust Exponential Backoff & Timeout ────────────────
 
 async function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function sanitizeTextParam(val: unknown, fallback = '-'): string {
+  if (val === null || val === undefined) return fallback;
+  const str = String(val).trim();
+  if (!str) return fallback;
+  return str.slice(0, 1024);
 }
 
 async function callWhatsAppAPI(payload: Record<string, unknown>, retries = 3, baseDelay = 1000): Promise<WASendResult> {
@@ -85,6 +94,7 @@ async function callWhatsAppAPI(payload: Record<string, unknown>, retries = 3, ba
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10000), // 10s fetch timeout protection
       });
 
       const data = await res.json();
@@ -130,26 +140,41 @@ export async function sendTemplateMessage(
   to: string,
   components: WAComponent[] = []
 ): Promise<WASendResult> {
-  if (!to) return { success: false, error: 'Missing recipient phone' };
+  const formattedPhone = formatPhoneNumber(to);
+  if (!formattedPhone) return { success: false, error: 'Invalid or missing recipient phone number' };
+
+  // Sanitize components parameters text values
+  const sanitizedComponents = components.map(comp => {
+    if (!comp.parameters) return comp;
+    return {
+      ...comp,
+      parameters: comp.parameters.map(p => {
+        if (p.type === 'text') {
+          return { ...p, text: sanitizeTextParam(p.text) };
+        }
+        return p;
+      })
+    };
+  });
 
   const firstAttempt = await callWhatsAppAPI({
     messaging_product: 'whatsapp',
-    to,
+    to: formattedPhone,
     recipient_type: 'individual',
     type: 'template',
     template: {
       name: templateName,
       language: { code: 'id' },
-      components,
+      components: sanitizedComponents,
     },
   });
 
   // If template expects 0 parameters (e.g. static template), automatically retry without components
-  if (!firstAttempt.success && firstAttempt.error_code === '132000' && components.length > 0) {
+  if (!firstAttempt.success && firstAttempt.error_code === '132000' && sanitizedComponents.length > 0) {
     console.warn(`[WhatsApp] Template ${templateName} parameter mismatch (132000). Retrying without components...`);
     return callWhatsAppAPI({
       messaging_product: 'whatsapp',
-      to,
+      to: formattedPhone,
       recipient_type: 'individual',
       type: 'template',
       template: {
