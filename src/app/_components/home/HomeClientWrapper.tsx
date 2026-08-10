@@ -106,17 +106,29 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               {/* Main Content Area: Left Section Headline, Copy & CTA */}
               <div className="flex flex-col justify-between flex-grow w-full max-w-[1800px] mx-auto py-6 md:py-12">
                 <div className="flex-1 flex items-center my-auto">
-                  <div className="w-full max-w-xl text-left pointer-events-auto space-y-6 md:space-y-8 ml-2 sm:ml-6 md:ml-12 lg:ml-16">
-                    {/* Main Headline with Gradient Motion Text */}
+                  <div className="w-full max-w-xl text-left pointer-events-auto space-y-5 sm:space-y-6 md:space-y-7 ml-2 sm:ml-6 md:ml-12 lg:ml-16">
+                    
+                    {/* Eyebrow / Overline */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
+                      className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold tracking-[0.25em] uppercase text-[#64748b]"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-[#8b5cf6]" />
+                      <span>NINOC® DESIGN & PRODUCTION STUDIO</span>
+                    </motion.div>
+
+                    {/* Primary Headline H1 */}
                     <motion.div 
                       initial={{ opacity: 0, x: -40 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
                       className="space-y-1 sm:space-y-2"
                     >
-                      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.08] font-sans">
-                        Create Your <br />
-                        Own <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
+                      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.06] font-sans">
+                        Tactile Form, <br />
+                        Living <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
                       </h1>
                     </motion.div>
 
@@ -127,26 +139,53 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
                       className="text-sm sm:text-base md:text-lg text-[#475569] font-normal leading-relaxed max-w-md"
                     >
-                      Interactive mascot that follows your cursor with precision. Move, explore, and bring <span className="font-semibold text-[#8b5cf6]">ninoc</span> to life.
+                      Curated apparel, studio objects, and interactive digital forms—meticulously crafted for contemporary living.
                     </motion.p>
 
-                    {/* Gradient Pill CTA Button */}
+                    {/* Interactive Cursor Microcopy Cue */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.55 }}
+                    >
+                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50/80 border border-purple-200/60 text-xs font-medium text-[#7c3aed] backdrop-blur-sm shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] animate-pulse" />
+                        Move cursor rightward to interact
+                      </span>
+                    </motion.div>
+
+                    {/* Primary & Secondary CTA Buttons */}
                     <motion.div
                       initial={{ opacity: 0, x: -20, scale: 0.95 }}
                       animate={{ opacity: 1, x: 0, scale: 1 }}
-                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.6 }}
-                      className="pt-2"
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.65 }}
+                      className="pt-2 flex flex-wrap items-center gap-4"
                     >
+                      {/* Primary CTA */}
                       <motion.button
                         onClick={handleShopClick}
-                        className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer"
-                        whileHover={{ scale: 1.05, boxShadow: "0px 10px 25px rgba(168, 85, 247, 0.4)" }}
+                        className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:ring-offset-2"
+                        whileHover={{ scale: 1.04, boxShadow: "0px 12px 28px rgba(168, 85, 247, 0.35)" }}
                         whileTap={{ scale: 0.97 }}
+                        aria-label="Explore Catalog"
                       >
-                        <span>Explore More</span>
+                        <span>Explore Catalog</span>
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
                       </motion.button>
+
+                      {/* Secondary CTA */}
+                      <motion.button
+                        onClick={handleShopClick}
+                        className="inline-flex items-center gap-2 text-sm sm:text-base font-medium text-[#475569] hover:text-[#1e1b4b] transition-colors py-3.5 px-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-300 rounded-full"
+                        whileHover={{ x: 3 }}
+                        whileTap={{ scale: 0.97 }}
+                        aria-label="View Studio Logbook"
+                      >
+                        <span>View Logbook</span>
+                        <span className="text-xs text-[#94a3b8]">→</span>
+                      </motion.button>
                     </motion.div>
+
                   </div>
                 </div>
 
@@ -154,7 +193,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.7 }}
+                  transition={{ duration: 0.8, delay: 0.75 }}
                   className="pointer-events-auto ml-2 sm:ml-6 md:ml-12 lg:ml-16 pt-4"
                 >
                   <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
