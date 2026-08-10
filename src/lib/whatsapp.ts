@@ -137,14 +137,16 @@ async function callWhatsAppAPI(payload: Record<string, unknown>, retries = 3, ba
 
 export async function sendTemplateMessage(
   templateName: string,
-  to: string,
-  components: WAComponent[] = []
+  toPhone: string,
+  components: WAComponent[]
 ): Promise<WASendResult> {
-  const formattedPhone = formatPhoneNumber(to);
-  if (!formattedPhone) return { success: false, error: 'Invalid or missing recipient phone number' };
+  const formattedPhone = formatPhoneNumber(toPhone);
+  if (!formattedPhone) {
+    return { success: false, error: 'Invalid phone number format' };
+  }
 
-  // Sanitize components parameters text values
-  const sanitizedComponents = components.map(comp => {
+  // Sanitize text parameters to prevent undefined/null crashing API
+  const sanitizeComponent = (comp: WAComponent): WAComponent => {
     if (!comp.parameters) return comp;
     return {
       ...comp,
@@ -155,8 +157,26 @@ export async function sendTemplateMessage(
         return p;
       })
     };
-  });
+  };
 
+  const sanitizedBodyComponents = components.map(sanitizeComponent);
+
+  // Prepare header component with public logo.png URL
+  const appUrl = getAppUrl();
+  const defaultHeaderImage = `${appUrl}/logo.png`;
+  const hasHeader = sanitizedBodyComponents.some(c => c.type === 'header');
+
+  const componentsWithHeader: WAComponent[] = hasHeader
+    ? sanitizedBodyComponents
+    : [
+        {
+          type: 'header',
+          parameters: [{ type: 'image', image: { link: defaultHeaderImage } }],
+        },
+        ...sanitizedBodyComponents,
+      ];
+
+  // Attempt 1: Send with Header Image + Body parameters
   const firstAttempt = await callWhatsAppAPI({
     messaging_product: 'whatsapp',
     to: formattedPhone,
@@ -165,14 +185,18 @@ export async function sendTemplateMessage(
     template: {
       name: templateName,
       language: { code: 'id' },
-      components: sanitizedComponents,
+      components: componentsWithHeader,
     },
   });
 
-  // If template expects 0 parameters (e.g. static template), automatically retry without components
-  if (!firstAttempt.success && firstAttempt.error_code === '132000' && sanitizedComponents.length > 0) {
-    console.warn(`[WhatsApp] Template ${templateName} parameter mismatch (132000). Retrying without components...`);
-    return callWhatsAppAPI({
+  if (firstAttempt.success) {
+    return firstAttempt;
+  }
+
+  // Attempt 2: If Header parameter mismatch (132000), retry with Body components only
+  if (firstAttempt.error_code === '132000' && !hasHeader) {
+    console.warn(`[WhatsApp] Template ${templateName} header image mismatch (132000). Retrying with body components only...`);
+    const secondAttempt = await callWhatsAppAPI({
       messaging_product: 'whatsapp',
       to: formattedPhone,
       recipient_type: 'individual',
@@ -180,8 +204,30 @@ export async function sendTemplateMessage(
       template: {
         name: templateName,
         language: { code: 'id' },
+        components: sanitizedBodyComponents,
       },
     });
+
+    if (secondAttempt.success) {
+      return secondAttempt;
+    }
+
+    // Attempt 3: If still 132000 (static template with 0 parameters), retry without any components
+    if (secondAttempt.error_code === '132000') {
+      console.warn(`[WhatsApp] Template ${templateName} parameters mismatch (132000). Retrying without components...`);
+      return callWhatsAppAPI({
+        messaging_product: 'whatsapp',
+        to: formattedPhone,
+        recipient_type: 'individual',
+        type: 'template',
+        template: {
+          name: templateName,
+          language: { code: 'id' },
+        },
+      });
+    }
+
+    return secondAttempt;
   }
 
   return firstAttempt;
