@@ -20,6 +20,8 @@ interface HomeClientWrapperProps {
   dict: any;
 }
 
+import InteractiveMascotVideo from '@/components/mascot/InteractiveMascotVideo';
+
 export default function HomeClientWrapper({ products, dict }: HomeClientWrapperProps) {
   const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
     if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
@@ -77,11 +79,11 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   };
 
   return (
-    <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-ink'}`}>
+    <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-white'}`}>
       <AnimatePresence>
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
-            className="fixed inset-0 z-[200] bg-ink overflow-hidden h-[100dvh]"
+            className="fixed inset-0 z-[200] bg-white overflow-hidden h-[100dvh]"
             initial={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0 }}
             animate={
@@ -91,37 +93,34 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.2, ease: EASING.inOut }}
           >
-            <motion.video 
-              autoPlay loop muted playsInline preload="auto"
-              className="absolute inset-0 w-full h-full object-cover opacity-80 bg-ink"
-              style={{ scale: videoScale }}
-            >
-              <source src="/videos/opening_video_ninoc.mp4" type="video/mp4" />
-            </motion.video>
+            {/* Interactive Mascot Video Motion State Engine */}
+            <div className="absolute inset-0 w-full h-full">
+              <InteractiveMascotVideo className="w-full h-full" />
+            </div>
             
-            <div className="absolute inset-0 h-full flex flex-col justify-between p-6 md:p-12 z-10 text-white">
-              <div className="flex justify-between items-center w-full">
+            <div className="absolute inset-0 h-full flex flex-col justify-between p-6 md:p-12 z-10 text-ink pointer-events-none">
+              <div className="flex justify-between items-center w-full pointer-events-auto">
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-10 h-10 md:w-12 md:h-12 object-contain" priority unoptimized />
                 </motion.div>
                 
-                <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
+                <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
                   <span>Apparel</span><span>Objects</span><span>Pantry</span><span>Logbook</span><span>About</span>
                 </motion.div>
                 
-                <motion.div className="flex gap-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em]" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}>
+                <motion.div className="flex gap-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}>
                   <span>Search</span><span className="hidden md:inline">Account</span><span>Cart(0)</span>
                 </motion.div>
               </div>
 
-              <div className="flex flex-col items-center justify-end flex-grow text-center pb-[calc(2rem+env(safe-area-inset-bottom))] md:pb-24">
+              <div className="flex flex-col items-center justify-end flex-grow text-center pb-[calc(2rem+env(safe-area-inset-bottom))] md:pb-24 pointer-events-auto">
                 <motion.button
                   onClick={handleShopClick}
-                  className="bg-white text-ink px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all relative"
+                  className="bg-ink text-white px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all relative cursor-pointer shadow-xl shadow-ink/10"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ 
                     opacity: 1, y: 0, scale: [1, 1.05, 1],
-                    boxShadow: ["0px 0px 0px rgba(255,255,255,0)", "0px 0px 20px rgba(255,255,255,0.4)", "0px 0px 0px rgba(255,255,255,0)"]
+                    boxShadow: ["0px 0px 0px rgba(0,0,0,0)", "0px 0px 20px rgba(0,0,0,0.2)", "0px 0px 0px rgba(0,0,0,0)"]
                   }}
                   transition={{
                     opacity: { duration: 1, delay: 0.5 },
@@ -129,7 +128,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     scale: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 },
                     boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }
                   }}
-                  whileHover={{ scale: 1.1, backgroundColor: "#f8f8f8" }}
+                  whileHover={{ scale: 1.08, backgroundColor: "#e11d48" }}
                   whileTap={{ scale: 0.97 }}
                 >
                   GET YOURS
