@@ -491,3 +491,42 @@ input:focus, textarea:focus, select:focus {
     print-color-adjust: exact !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LEAFLET MAP — Interaction & Cursor Overrides
+   Prevents GlobalDragScroll from interfering with map panning.
+   ═══════════════════════════════════════════════════════════════ */
+.leaflet-container {
+  cursor: grab !important;
+  touch-action: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  z-index: 1;
+}
+
+.leaflet-container:active {
+  cursor: grabbing !important;
+}
+
+.leaflet-interactive {
+  cursor: pointer !important;
+}
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  cursor: grab !important;
+}
+
+.leaflet-marker-icon:active {
+  cursor: grabbing !important;
+}
+
+/* Ensure Leaflet controls stay above tiles but below page modals */
+.leaflet-control-container {
+  z-index: 5;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 5;
+}

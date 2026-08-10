@@ -178,7 +178,7 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
               </button>
             </div>
             
-            <div className="h-[250px] w-full border border-ink/10 rounded-sm relative overflow-hidden bg-ink/5" style={{ zIndex: 1 }}>
+            <div className="h-[250px] w-full border border-ink/10 rounded-sm relative overflow-hidden bg-ink/5 no-drag" style={{ zIndex: 1, touchAction: 'none' }}>
               <MapContainer 
                 center={mapCenter} 
                 zoom={14} 
@@ -193,9 +193,9 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
               </MapContainer>
               
               {!position && (
-                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-white/20" style={{ zIndex: 1000 }}>
+                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center bg-white/20" style={{ zIndex: 10 }}>
                   <MapPin size={24} className="text-rose mb-2 animate-bounce" />
-                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink bg-white/90 px-3 py-1 rounded-sm shadow-sm pointer-events-auto cursor-pointer" onClick={() => alert('Silakan klik di mana saja pada peta')}>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-ink bg-white/90 px-3 py-1 rounded-sm shadow-sm">
                     {isLocating ? 'Mencari Alamat Anda...' : 'Klik untuk pasang PIN'}
                   </span>
                 </div>

@@ -35,7 +35,7 @@ export default function GlobalDragScroll() {
       if (e.defaultPrevented || e.button !== 0) return;
 
       const target = e.target as HTMLElement;
-      if (target.closest('.no-drag, nav, header, a, button, input, select, textarea, [role="button"]')) return;
+      if (target.closest('.no-drag, nav, header, a, button, input, select, textarea, [role="button"], .leaflet-container, .leaflet-interactive, .leaflet-control, .leaflet-pane')) return;
 
       state.current = {
         ...state.current,
