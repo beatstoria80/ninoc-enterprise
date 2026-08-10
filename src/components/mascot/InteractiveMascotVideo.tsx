@@ -66,6 +66,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 
     [vIdle, vHoriz, vRet].forEach((v) => {
       if (v) {
+        v.muted = true;
+        v.defaultMuted = true;
+        v.playsInline = true;
         v.play().catch(() => {});
       }
     });
@@ -92,9 +95,18 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
         // Ensure background video playback
-        if (vIdle.paused) vIdle.play().catch(() => {});
-        if (vHoriz.paused) vHoriz.play().catch(() => {});
-        if (vRet.paused) vRet.play().catch(() => {});
+        if (vIdle.paused) {
+          vIdle.muted = true;
+          vIdle.play().catch(() => {});
+        }
+        if (vHoriz.paused) {
+          vHoriz.muted = true;
+          vHoriz.play().catch(() => {});
+        }
+        if (vRet.paused) {
+          vRet.muted = true;
+          vRet.play().catch(() => {});
+        }
 
         // Smart DOM Opacity Diffing: Only write style when value changes meaningfully
         const nextIdle = frame.weights.idleOpacity;
@@ -131,33 +143,26 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       className={`relative w-full h-full flex items-center justify-center bg-white select-none overflow-hidden ${className}`}
       style={{ touchAction: 'none' }}
     >
-      {/* Loading Placeholder */}
-      {!isPreloaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
-          <div className="w-10 h-10 rounded-full border-2 border-ink/10 border-t-ink animate-spin" />
-        </div>
-      )}
-
       {/* Synchronized 3-Layer Video Stack (100% Viewport Frame Coverage) */}
-      <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-white">
         
         {/* Layer 0: Idle Center (Chapter 1) */}
         <video
           ref={videoIdleRef}
-          src={config.videoPaths.idleCenter}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
-          style={{ opacity: isPreloaded ? 1 : 0 }}
-        />
+          style={{ opacity: 1 }}
+        >
+          <source src={config.videoPaths.idleCenter} type="video/mp4" />
+        </video>
 
         {/* Layer 1: Horizontal Motion (Chapter 2) */}
         <video
           ref={videoHorizontalRef}
-          src={config.videoPaths.horizontalMotion}
           autoPlay
           loop
           muted
@@ -165,12 +170,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
           style={{ opacity: 0 }}
-        />
+        >
+          <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
+        </video>
 
         {/* Layer 2: Return Left Continuation (Chapter 3) */}
         <video
           ref={videoReturnLeftRef}
-          src={config.videoPaths.returnLeft}
           autoPlay
           loop
           muted
@@ -178,7 +184,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
           style={{ opacity: 0 }}
-        />
+        >
+          <source src={config.videoPaths.returnLeft} type="video/mp4" />
+        </video>
 
       </div>
     </div>
