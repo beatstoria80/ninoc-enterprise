@@ -30,7 +30,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const prevHorizOpacity = useRef<number>(-1);
   const prevRetOpacity = useRef<number>(-1);
 
-  const [isPreloaded, setIsPreloaded] = useState(false);
+  const [isPreloaded, setIsPreloaded] = useState(true);
 
   // Controllers
   const motionControllerRef = useRef<MotionStateController | null>(null);
@@ -58,46 +58,21 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     };
   }, [pointerTracker, config]);
 
-  // Asset Preloading Verification
+  // Immediate Video Autoplay Enforcer
   useEffect(() => {
-    let loadedCount = 0;
-    const totalVideos = 3;
-
-    const checkAllLoaded = () => {
-      loadedCount++;
-      if (loadedCount >= totalVideos) {
-        setIsPreloaded(true);
-        if (onLoaded) onLoaded();
-      }
-    };
-
     const vIdle = videoIdleRef.current;
     const vHoriz = videoHorizontalRef.current;
     const vRet = videoReturnLeftRef.current;
 
     [vIdle, vHoriz, vRet].forEach((v) => {
       if (v) {
-        if (v.readyState >= 3) {
-          checkAllLoaded();
-        } else {
-          v.addEventListener('canplaythrough', checkAllLoaded, { once: true });
-          v.addEventListener('loadeddata', checkAllLoaded, { once: true });
-        }
+        v.play().catch(() => {});
       }
     });
-
-    const fallbackTimer = setTimeout(() => {
-      setIsPreloaded(true);
-      if (onLoaded) onLoaded();
-    }, 1500);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [onLoaded]);
+  }, []);
 
   // High-Performance 60 FPS Render Loop (Zero GC, Cached DOM Updates)
   useEffect(() => {
-    if (!isPreloaded) return;
-
     let animFrameId: number;
     let lastTimestamp = performance.now();
 
