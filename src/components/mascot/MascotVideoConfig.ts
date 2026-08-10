@@ -10,8 +10,7 @@ export interface MascotVideoConfigType {
   
   readonly videoPaths: {
     readonly idleCenter: string;        // Chapter 1: Neutral Idle / Center
-    readonly horizontalMotion: string;  // Chapter 2: Center -> Right -> Center -> Left
-    readonly returnLeft: string;        // Chapter 3: Left -> Center Continuation
+    readonly horizontalMotion: string;  // Chapter 2: Center <-> Horizontal Motion
   };
 
   readonly reducedMotionFactor: number;
@@ -30,7 +29,6 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',
     horizontalMotion: '/videos/Mascot_horizontal_motion_video_chapter_2.mp4',
-    returnLeft: '/videos/Ninoc_mascot_idle_video_animation_chapter_3.mp4',
   }),
   
   reducedMotionFactor: 0.1,

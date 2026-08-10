@@ -20,15 +20,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   
-  // Video element refs for the 3 motion state chapters
+  // Video element refs for the 2 motion state chapters
   const videoIdleRef = useRef<HTMLVideoElement | null>(null);
   const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
-  const videoReturnLeftRef = useRef<HTMLVideoElement | null>(null);
 
   // Cached opacity refs to eliminate redundant DOM mutations
   const prevIdleOpacity = useRef<number>(-1);
   const prevHorizOpacity = useRef<number>(-1);
-  const prevRetOpacity = useRef<number>(-1);
 
   const [isPreloaded, setIsPreloaded] = useState(true);
 
@@ -58,13 +56,12 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     };
   }, [pointerTracker, config]);
 
-  // Immediate Video Autoplay Enforcer
+  // Immediate Video Autoplay Enforcer for 2 Video Layers
   useEffect(() => {
     const vIdle = videoIdleRef.current;
     const vHoriz = videoHorizontalRef.current;
-    const vRet = videoReturnLeftRef.current;
 
-    [vIdle, vHoriz, vRet].forEach((v) => {
+    [vIdle, vHoriz].forEach((v) => {
       if (v) {
         v.muted = true;
         v.defaultMuted = true;
@@ -72,7 +69,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         v.play().catch(() => {});
       }
     });
-  }, []);
+
+    if (onLoaded) onLoaded();
+  }, [onLoaded]);
 
   // High-Performance 60 FPS Render Loop (Zero GC, Cached DOM Updates)
   useEffect(() => {
@@ -88,9 +87,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 
       const vIdle = videoIdleRef.current;
       const vHoriz = videoHorizontalRef.current;
-      const vRet = videoReturnLeftRef.current;
 
-      if (tracker && motion && vIdle && vHoriz && vRet) {
+      if (tracker && motion && vIdle && vHoriz) {
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
@@ -103,15 +101,10 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           vHoriz.muted = true;
           vHoriz.play().catch(() => {});
         }
-        if (vRet.paused) {
-          vRet.muted = true;
-          vRet.play().catch(() => {});
-        }
 
         // Smart DOM Opacity Diffing: Only write style when value changes meaningfully
         const nextIdle = frame.weights.idleOpacity;
         const nextHoriz = frame.weights.horizontalOpacity;
-        const nextRet = frame.weights.returnLeftOpacity;
 
         if (Math.abs(prevIdleOpacity.current - nextIdle) > 0.001) {
           prevIdleOpacity.current = nextIdle;
@@ -121,11 +114,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         if (Math.abs(prevHorizOpacity.current - nextHoriz) > 0.001) {
           prevHorizOpacity.current = nextHoriz;
           vHoriz.style.opacity = nextHoriz.toFixed(3);
-        }
-
-        if (Math.abs(prevRetOpacity.current - nextRet) > 0.001) {
-          prevRetOpacity.current = nextRet;
-          vRet.style.opacity = nextRet.toFixed(3);
         }
       }
 
@@ -143,7 +131,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       className={`relative w-full h-full flex items-center justify-center bg-white select-none overflow-hidden ${className}`}
       style={{ touchAction: 'none' }}
     >
-      {/* Synchronized 3-Layer Video Stack (100% Viewport Frame Coverage) */}
+      {/* Synchronized 2-Layer Video Stack (100% Viewport Frame Coverage) */}
       <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-white">
         
         {/* Layer 0: Idle Center (Chapter 1) */}
@@ -190,29 +178,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           style={{ opacity: 0 }}
         >
           <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
-        </video>
-
-        {/* Layer 2: Return Left Continuation (Chapter 3) */}
-        <video
-          ref={videoReturnLeftRef}
-          src={config.videoPaths.returnLeft}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          onCanPlay={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          onLoadedData={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
-          style={{ opacity: 0 }}
-        >
-          <source src={config.videoPaths.returnLeft} type="video/mp4" />
         </video>
 
       </div>
