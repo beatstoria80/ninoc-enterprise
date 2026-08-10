@@ -88,7 +88,7 @@ function MapUpdater({ center }: { center: [number, number] }) {
   return null;
 }
 
-export function LocationPicker({ initialLat, initialLng, searchQuery, onLocationSelect }: LocationPickerProps) {
+export function LocationPicker({ initialLat, initialLng, searchQuery, addressParts, onLocationSelect }: LocationPickerProps) {
   const [position, setPosition] = useState<L.LatLng | null>(
     initialLat && initialLng ? new L.LatLng(initialLat, initialLng) : null
   );
@@ -114,41 +114,58 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
     }
   }, [initialLat, initialLng]);
 
-  // Geocoding effect — re-centers map when address fields (searchQuery) change or when map opens
+  // Cascading Geocoding effect — re-centers map when address fields change or when map opens
   useEffect(() => {
-    if (!isOpen || !searchQuery) return;
+    if (!isOpen) return;
+
+    const currentQueryString = addressParts && addressParts.length > 0 
+      ? addressParts.join(', ') 
+      : (searchQuery || '');
+
+    if (!currentQueryString) return;
     
-    // Check if query actually changed or if pin is not set yet
-    const queryChanged = prevQueryRef.current !== searchQuery;
+    // Check if query actually changed
+    const queryChanged = prevQueryRef.current !== currentQueryString;
     if (!queryChanged && position) return;
 
-    prevQueryRef.current = searchQuery;
+    prevQueryRef.current = currentQueryString;
 
-    const fetchLocation = async () => {
+    const fetchLocationWithCascadingFallback = async () => {
       setIsLocating(true);
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
-        const data = await res.json();
-        if (data && data.length > 0) {
-          const lat = parseFloat(data[0].lat);
-          const lon = parseFloat(data[0].lon);
-          setMapCenter([lat, lon]);
-          
-          // Automatically drop pin at the geocoded location
-          const newPos = new L.LatLng(lat, lon);
-          setPosition(newPos);
-          onLocationSelect(lat, lon);
+        const rawParts = addressParts && addressParts.length > 0
+          ? addressParts.filter(Boolean)
+          : currentQueryString.split(',').map(s => s.trim()).filter(Boolean);
+
+        for (let i = 0; i < rawParts.length; i++) {
+          const subQuery = rawParts.slice(i).join(', ');
+          if (!subQuery || subQuery.trim() === 'Indonesia') continue;
+
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(subQuery)}`);
+          if (!res.ok) continue;
+
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            const newPos = new L.LatLng(lat, lon);
+
+            setMapCenter([lat, lon]);
+            setPosition(newPos);
+            onLocationSelect(lat, lon);
+            break; // Found valid location! Exit fallback loop
+          }
         }
       } catch (error) {
-        console.error("Geocoding failed:", error);
+        console.error("Cascading Geocoding failed:", error);
       } finally {
         setIsLocating(false);
       }
     };
     
-    const timeoutId = setTimeout(fetchLocation, 400);
+    const timeoutId = setTimeout(fetchLocationWithCascadingFallback, 400);
     return () => clearTimeout(timeoutId);
-  }, [isOpen, searchQuery, position, onLocationSelect]);
+  }, [isOpen, searchQuery, addressParts, position, onLocationSelect]);
 
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
