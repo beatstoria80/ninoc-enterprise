@@ -168,7 +168,7 @@ export class CheckoutService {
           sendCheckoutPendingWA({
             phone: formattedPhone,
             customer_name: firstName,
-            order_id: orderNumber,
+            order_id: orderId,
             estimated_delivery: estDelivery
           }).catch(err => console.error('[CheckoutService Async] WA Notification Error:', err));
         }
