@@ -102,39 +102,52 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
     position ? [position.lat, position.lng] : defaultCenter
   );
 
-  // Geocoding effect
+  const prevQueryRef = useRef<string>('');
+
+  // Sync position if initialLat / initialLng change from outside
   useEffect(() => {
-    if (isOpen && !position && searchQuery) {
-      const fetchLocation = async () => {
-        setIsLocating(true);
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
-          const data = await res.json();
-          if (data && data.length > 0) {
-            const lat = parseFloat(data[0].lat);
-            const lon = parseFloat(data[0].lon);
-            setMapCenter([lat, lon]);
-            
-            // Automatically drop pin at the geocoded location
-            const newPos = new L.LatLng(lat, lon);
-            setPosition(newPos);
-            onLocationSelect(lat, lon);
-          }
-        } catch (error) {
-          console.error("Geocoding failed:", error);
-        } finally {
-          setIsLocating(false);
-        }
-      };
-      
-      // Debounce slightly to prevent double fetching
-      const timeoutId = setTimeout(() => {
-        fetchLocation();
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
+    if (initialLat && initialLng) {
+      const newPos = new L.LatLng(initialLat, initialLng);
+      setPosition(newPos);
+      setMapCenter([initialLat, initialLng]);
     }
-  }, [isOpen, position, searchQuery, onLocationSelect]);
+  }, [initialLat, initialLng]);
+
+  // Geocoding effect — re-centers map when address fields (searchQuery) change or when map opens
+  useEffect(() => {
+    if (!isOpen || !searchQuery) return;
+    
+    // Check if query actually changed or if pin is not set yet
+    const queryChanged = prevQueryRef.current !== searchQuery;
+    if (!queryChanged && position) return;
+
+    prevQueryRef.current = searchQuery;
+
+    const fetchLocation = async () => {
+      setIsLocating(true);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lon = parseFloat(data[0].lon);
+          setMapCenter([lat, lon]);
+          
+          // Automatically drop pin at the geocoded location
+          const newPos = new L.LatLng(lat, lon);
+          setPosition(newPos);
+          onLocationSelect(lat, lon);
+        }
+      } catch (error) {
+        console.error("Geocoding failed:", error);
+      } finally {
+        setIsLocating(false);
+      }
+    };
+    
+    const timeoutId = setTimeout(fetchLocation, 400);
+    return () => clearTimeout(timeoutId);
+  }, [isOpen, searchQuery, position, onLocationSelect]);
 
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
