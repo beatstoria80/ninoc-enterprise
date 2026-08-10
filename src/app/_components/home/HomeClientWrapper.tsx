@@ -106,7 +106,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               {/* Main Content Area: Left Section Headline, Copy & CTA */}
               <div className="flex flex-col justify-between flex-grow w-full max-w-[1800px] mx-auto py-6 md:py-12">
                 <div className="flex-1 flex items-center my-auto">
-                  <div className="w-full max-w-xl text-left pointer-events-auto space-y-5 sm:space-y-6 md:space-y-7 ml-2 sm:ml-6 md:ml-12 lg:ml-16">
+                  <div className="w-full max-w-md md:max-w-lg lg:max-w-[500px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -124,9 +124,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       initial={{ opacity: 0, x: -40 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
-                      className="space-y-1 sm:space-y-2"
+                      className="space-y-1"
                     >
-                      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.06] font-sans">
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.08] font-sans">
                         Tactile Form, <br />
                         Living <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
                       </h1>
@@ -137,7 +137,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
-                      className="text-sm sm:text-base md:text-lg text-[#475569] font-normal leading-relaxed max-w-md"
+                      className="text-xs sm:text-sm md:text-base text-[#475569] font-normal leading-relaxed max-w-sm sm:max-w-md"
                     >
                       Curated apparel, studio objects, and interactive digital forms—meticulously crafted for contemporary living.
                     </motion.p>
