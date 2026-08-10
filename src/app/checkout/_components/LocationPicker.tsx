@@ -108,6 +108,7 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, onLocation
   useEffect(() => {
     if (initialLat && initialLng) {
       const newPos = new L.LatLng(initialLat, initialLng);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPosition(newPos);
       setMapCenter([initialLat, initialLng]);
     }
