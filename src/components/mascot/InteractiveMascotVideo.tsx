@@ -145,7 +145,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       )}
 
       {/* Synchronized 3-Layer Video Stack */}
-      <div className="relative w-full h-full aspect-[16/9] flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
         
         {/* Layer 0: Idle Center (Chapter 1) */}
         <video
@@ -156,7 +156,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
           style={{ opacity: isPreloaded ? 1 : 0 }}
         />
 
@@ -169,7 +169,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
           style={{ opacity: 0 }}
         />
 
@@ -182,7 +182,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
           style={{ opacity: 0 }}
         />
 
