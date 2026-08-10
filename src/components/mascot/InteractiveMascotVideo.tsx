@@ -155,6 +155,14 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
+          onCanPlay={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
+          onLoadedData={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 1 }}
         >
@@ -170,6 +178,14 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
+          onCanPlay={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
+          onLoadedData={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 0 }}
         >
@@ -185,6 +201,14 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           muted
           playsInline
           preload="auto"
+          onCanPlay={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
+          onLoadedData={(e) => {
+            e.currentTarget.muted = true;
+            e.currentTarget.play().catch(() => {});
+          }}
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 0 }}
         >
