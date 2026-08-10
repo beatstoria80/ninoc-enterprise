@@ -76,15 +76,18 @@ export class MotionStateController {
       this.stateName = 'HORIZONTAL_HELD';
     }
 
-    // Video 1 (Chapter 1 Idle Center) is MAIN and continuously loops.
-    // Video 2 (Chapter 2) activates strictly when rightward drag is triggered (currentX > 0).
+    // Video 1 (Chapter 1 Idle Center) is MAIN and continuously loops when idle.
+    // Video 2 (Chapter 2) activates strictly when rightward drag is triggered (currentX > 0.03).
+    // Discrete layer threshold switching eliminates semi-transparent double-image ghosting artifacts completely.
     let idleOpacity = 1.0;
     let horizontalOpacity = 0.0;
 
-    if (this.currentX > 0.01) {
-      const rightWeight = Math.min(1.0, this.currentX * 2.0);
-      idleOpacity = Math.max(0.0, 1.0 - rightWeight);
-      horizontalOpacity = rightWeight;
+    if (this.currentX > 0.03) {
+      idleOpacity = 0.0;
+      horizontalOpacity = 1.0;
+    } else {
+      idleOpacity = 1.0;
+      horizontalOpacity = 0.0;
     }
 
     const horizontalTimeFraction = Math.max(0.0, Math.min(1.0, this.currentX));

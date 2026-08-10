@@ -20,6 +20,7 @@ interface HomeClientWrapperProps {
   dict: any;
 }
 
+import { ArrowRight } from 'lucide-react';
 import InteractiveMascotVideo from '@/components/mascot/InteractiveMascotVideo';
 
 export default function HomeClientWrapper({ products, dict }: HomeClientWrapperProps) {
@@ -86,8 +87,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div className="absolute inset-0 w-full h-full">
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
-            
             <div className="absolute inset-0 h-full flex flex-col justify-between p-6 md:p-12 z-10 text-ink pointer-events-none">
+              {/* Header Navigation */}
               <div className="flex justify-between items-center w-full pointer-events-auto">
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-10 h-10 md:w-12 md:h-12 object-contain" priority unoptimized />
@@ -102,26 +103,73 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 </motion.div>
               </div>
 
-              <div className="flex flex-col items-center justify-end flex-grow text-center pb-[calc(2rem+env(safe-area-inset-bottom))] md:pb-24 pointer-events-auto">
-                <motion.button
-                  onClick={handleShopClick}
-                  className="bg-ink text-white px-10 py-4 text-sm font-medium uppercase tracking-[0.3em] transition-all relative cursor-pointer shadow-xl shadow-ink/10"
+              {/* Main Content Area: Left Section Headline, Copy & CTA */}
+              <div className="flex flex-col justify-between flex-grow w-full max-w-[1800px] mx-auto py-6 md:py-12">
+                <div className="flex-1 flex items-center my-auto">
+                  <div className="w-full max-w-xl text-left pointer-events-auto space-y-6 md:space-y-8 ml-2 sm:ml-6 md:ml-12 lg:ml-16">
+                    {/* Main Headline with Gradient Motion Text */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
+                      className="space-y-1 sm:space-y-2"
+                    >
+                      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.08] font-sans">
+                        Create Your <br />
+                        Own <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
+                      </h1>
+                    </motion.div>
+
+                    {/* Subtitle / Body Copy */}
+                    <motion.p 
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
+                      className="text-sm sm:text-base md:text-lg text-[#475569] font-normal leading-relaxed max-w-md"
+                    >
+                      Interactive mascot that follows your cursor with precision. Move, explore, and bring <span className="font-semibold text-[#8b5cf6]">ninoc</span> to life.
+                    </motion.p>
+
+                    {/* Gradient Pill CTA Button */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.6 }}
+                      className="pt-2"
+                    >
+                      <motion.button
+                        onClick={handleShopClick}
+                        className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer"
+                        whileHover={{ scale: 1.05, boxShadow: "0px 10px 25px rgba(168, 85, 247, 0.4)" }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <span>Explore More</span>
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+                      </motion.button>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Bottom Left Social Footer */}
+                <motion.div 
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, y: 0, scale: [1, 1.05, 1],
-                    boxShadow: ["0px 0px 0px rgba(0,0,0,0)", "0px 0px 20px rgba(0,0,0,0.2)", "0px 0px 0px rgba(0,0,0,0)"]
-                  }}
-                  transition={{
-                    opacity: { duration: 1, delay: 0.5 },
-                    y: { duration: 1, ease: [0.23, 1, 0.32, 1], delay: 0.5 },
-                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 },
-                    boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }
-                  }}
-                  whileHover={{ scale: 1.08, backgroundColor: "#e11d48" }}
-                  whileTap={{ scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  className="pointer-events-auto ml-2 sm:ml-6 md:ml-12 lg:ml-16 pt-4"
                 >
-                  GET YOURS
-                </motion.button>
+                  <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
+                  <div className="flex items-center gap-4 text-[#64748b]">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Website">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Twitter">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                    </a>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </motion.div>
