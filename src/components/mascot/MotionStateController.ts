@@ -33,19 +33,35 @@ export class MotionStateController {
   private velocity = 0;
   private stateName: MotionStateName = 'IDLE_CENTER';
 
+  // Zero-Allocation Buffer: Pre-allocated scratch frame mutated in-place
+  private readonly scratchFrame: MotionStateFrame = {
+    currentX: 0,
+    velocity: 0,
+    stateName: 'IDLE_CENTER',
+    weights: {
+      idleOpacity: 1,
+      horizontalOpacity: 0,
+      returnLeftOpacity: 0,
+      horizontalTimeFraction: 0,
+      returnLeftTimeFraction: 0,
+    },
+  };
+
   constructor(config: MascotVideoConfigType = DEFAULT_MASCOT_VIDEO_CONFIG) {
     this.config = config;
   }
 
-  public updateConfig(newConfig: MascotVideoConfigType) {
+  public updateConfig(newConfig: MascotVideoConfigType): void {
     this.config = newConfig;
   }
 
-  public update(pointer: PointerState, dt: number): MotionStateFrame {
-    // Determine target X based on hover state
+  /**
+   * Updates state physics and returns pre-allocated scratch frame buffer.
+   * Zero GC allocations occur inside this method.
+   */
+  public update(pointer: Readonly<PointerState>, dt: number): Readonly<MotionStateFrame> {
     const targetX = pointer.isHovered ? pointer.targetX : 0.0;
 
-    // Spring physics update for inertia
     const response = pointer.isHovered ? this.config.motionResponse : this.config.returnToCenterSpeed;
     const damping = this.config.motionDamping;
 
@@ -53,10 +69,10 @@ export class MotionStateController {
     this.velocity += accel * (dt * 60);
     this.currentX += this.velocity * (dt * 60);
 
-    // Clamp current position
+    // Clamp position
     this.currentX = Math.max(-1.0, Math.min(1.0, this.currentX));
 
-    // Update state machine name
+    // Update state machine
     if (Math.abs(this.currentX) < 0.05 && Math.abs(this.velocity) < 0.01) {
       this.stateName = 'IDLE_CENTER';
     } else if (this.currentX > 0.05) {
@@ -73,11 +89,9 @@ export class MotionStateController {
       }
     }
 
-    // Calculate Video Layer Opacity Weights and Scrub Ratios
+    // Calculate Layer Opacities
     const absX = Math.abs(this.currentX);
-    
-    // Crossfade curve: Idle is 1.0 when X=0, fades out smoothly as X increases
-    const motionWeight = Math.min(1.0, absX * 2.2); // Reaches full motion layer at ~0.45 offset
+    const motionWeight = Math.min(1.0, absX * 2.2);
     const idleOpacity = Math.max(0.0, 1.0 - motionWeight);
 
     let horizontalOpacity = 0;
@@ -86,34 +100,32 @@ export class MotionStateController {
     let returnLeftTimeFraction = 0;
 
     if (this.currentX >= 0) {
-      // Moving right or idle: Map [0 .. +1] to first half of horizontal video [0.0 .. 0.48]
       horizontalOpacity = motionWeight;
       horizontalTimeFraction = (this.currentX / 1.0) * 0.48;
     } else {
-      // Moving left: Use Chapter 2 second half or Chapter 3 continuation
       if (this.stateName === 'RETURNING_CENTER_FROM_LEFT') {
-        // Return from left uses Chapter 3 continuation
         returnLeftOpacity = motionWeight;
         returnLeftTimeFraction = (1.0 - Math.abs(this.currentX));
       } else {
-        // Direct left movement uses Chapter 2 second half [0.52 .. 1.0]
         horizontalOpacity = motionWeight;
         horizontalTimeFraction = 0.52 + (Math.abs(this.currentX) * 0.46);
       }
     }
 
-    return {
-      currentX: this.currentX,
-      velocity: this.velocity,
-      stateName: this.stateName,
-      weights: {
-        idleOpacity,
-        horizontalOpacity,
-        returnLeftOpacity,
-        horizontalTimeFraction,
-        returnLeftTimeFraction,
-      },
-    };
+    // Mutate internal buffer in-place (Zero Allocation)
+    const frame = this.scratchFrame;
+    frame.currentX = this.currentX;
+    frame.velocity = this.velocity;
+    frame.stateName = this.stateName;
+
+    const w = frame.weights;
+    w.idleOpacity = idleOpacity;
+    w.horizontalOpacity = horizontalOpacity;
+    w.returnLeftOpacity = returnLeftOpacity;
+    w.horizontalTimeFraction = horizontalTimeFraction;
+    w.returnLeftTimeFraction = returnLeftTimeFraction;
+
+    return frame;
   }
 
   public getCurrentStateName(): MotionStateName {

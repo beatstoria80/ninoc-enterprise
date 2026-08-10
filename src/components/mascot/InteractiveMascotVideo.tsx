@@ -25,6 +25,11 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
   const videoReturnLeftRef = useRef<HTMLVideoElement | null>(null);
 
+  // Cached opacity refs to eliminate redundant DOM mutations
+  const prevIdleOpacity = useRef<number>(-1);
+  const prevHorizOpacity = useRef<number>(-1);
+  const prevRetOpacity = useRef<number>(-1);
+
   const [isPreloaded, setIsPreloaded] = useState(false);
 
   // Controllers
@@ -35,7 +40,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     motionControllerRef.current = new MotionStateController(config);
   }, [config]);
 
-  // Pointer Tracker initialization
+  // Pointer Tracker initialization with strict cleanup
   useEffect(() => {
     const activeTracker = pointerTracker || internalTrackerRef.current || new PointerTracker(config);
     if (!pointerTracker) {
@@ -81,7 +86,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       }
     });
 
-    // Fallback timeout to guarantee interaction readiness
     const fallbackTimer = setTimeout(() => {
       setIsPreloaded(true);
       if (onLoaded) onLoaded();
@@ -90,7 +94,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     return () => clearTimeout(fallbackTimer);
   }, [onLoaded]);
 
-  // 60 FPS Video Motion State Engine Loop
+  // High-Performance 60 FPS Render Loop (Zero GC, Cached DOM Updates)
   useEffect(() => {
     if (!isPreloaded) return;
 
@@ -110,17 +114,32 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 
       if (tracker && motion && vIdle && vHoriz && vRet) {
         const pointer = tracker.getState();
-        const frame: MotionStateFrame = motion.update(pointer, dt);
+        const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
-        // Ensure video playback
+        // Ensure background video playback
         if (vIdle.paused) vIdle.play().catch(() => {});
         if (vHoriz.paused) vHoriz.play().catch(() => {});
         if (vRet.paused) vRet.play().catch(() => {});
 
-        // Set layer opacities GPU blended
-        vIdle.style.opacity = frame.weights.idleOpacity.toFixed(3);
-        vHoriz.style.opacity = frame.weights.horizontalOpacity.toFixed(3);
-        vRet.style.opacity = frame.weights.returnLeftOpacity.toFixed(3);
+        // Smart DOM Opacity Diffing: Only write style when value changes meaningfully
+        const nextIdle = frame.weights.idleOpacity;
+        const nextHoriz = frame.weights.horizontalOpacity;
+        const nextRet = frame.weights.returnLeftOpacity;
+
+        if (Math.abs(prevIdleOpacity.current - nextIdle) > 0.001) {
+          prevIdleOpacity.current = nextIdle;
+          vIdle.style.opacity = nextIdle.toFixed(3);
+        }
+
+        if (Math.abs(prevHorizOpacity.current - nextHoriz) > 0.001) {
+          prevHorizOpacity.current = nextHoriz;
+          vHoriz.style.opacity = nextHoriz.toFixed(3);
+        }
+
+        if (Math.abs(prevRetOpacity.current - nextRet) > 0.001) {
+          prevRetOpacity.current = nextRet;
+          vRet.style.opacity = nextRet.toFixed(3);
+        }
       }
 
       animFrameId = requestAnimationFrame(renderLoop);
@@ -144,7 +163,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         </div>
       )}
 
-      {/* Synchronized 3-Layer Video Stack */}
+      {/* Synchronized 3-Layer Video Stack (100% Viewport Frame Coverage) */}
       <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
         
         {/* Layer 0: Idle Center (Chapter 1) */}

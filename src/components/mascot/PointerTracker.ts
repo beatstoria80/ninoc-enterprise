@@ -13,8 +13,9 @@ export class PointerTracker {
   private container: HTMLElement | null = null;
   private config: MascotVideoConfigType;
   private mediaQueryList: MediaQueryList | null = null;
+  private isAttached = false;
 
-  private state: PointerState = {
+  private readonly state: PointerState = {
     normX: 0,
     normY: 0,
     targetX: 0,
@@ -27,7 +28,10 @@ export class PointerTracker {
     this.config = config;
   }
 
-  public attach(container: HTMLElement) {
+  public attach(container: HTMLElement): void {
+    if (this.isAttached && this.container === container) return;
+    if (this.isAttached) this.detach();
+
     this.container = container;
     this.checkReducedMotion();
 
@@ -45,12 +49,16 @@ export class PointerTracker {
       container.addEventListener('touchcancel', this.handleTouchEnd, { passive: true });
 
       window.addEventListener('mousemove', this.handleWindowMouseMove, { passive: true });
+      this.isAttached = true;
     }
   }
 
-  public detach() {
+  public detach(): void {
+    if (!this.isAttached) return;
+
     if (this.mediaQueryList) {
       this.mediaQueryList.removeEventListener('change', this.handleReducedMotionChange);
+      this.mediaQueryList = null;
     }
     if (this.container) {
       this.container.removeEventListener('mousemove', this.handleMouseMove);
@@ -66,28 +74,29 @@ export class PointerTracker {
       window.removeEventListener('mousemove', this.handleWindowMouseMove);
     }
     this.container = null;
+    this.isAttached = false;
   }
 
-  public updateConfig(newConfig: MascotVideoConfigType) {
+  public updateConfig(newConfig: MascotVideoConfigType): void {
     this.config = newConfig;
   }
 
-  public getState(): PointerState {
-    return { ...this.state };
+  public getState(): Readonly<PointerState> {
+    return this.state;
   }
 
-  private checkReducedMotion() {
+  private checkReducedMotion(): void {
     if (typeof window !== 'undefined') {
       const query = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.state.reducedMotion = query.matches;
     }
   }
 
-  private handleReducedMotionChange = (e: MediaQueryListEvent) => {
+  private handleReducedMotionChange = (e: MediaQueryListEvent): void => {
     this.state.reducedMotion = e.matches;
   };
 
-  private updatePointer(clientX: number, clientY: number, isTouch = false) {
+  private updatePointer(clientX: number, clientY: number, isTouch = false): void {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
@@ -95,7 +104,6 @@ export class PointerTracker {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Normalized X and Y from -1.0 to +1.0
     const rawX = (clientX - centerX) / (rect.width / 2);
     const rawY = (clientY - centerY) / (rect.height / 2);
 
@@ -108,7 +116,6 @@ export class PointerTracker {
 
     let targetX = 0;
     if (absX > dz) {
-      // Scale from [dz .. 1.0] to [0.0 .. 1.0] with smoothstep curve
       const normRange = (absX - dz) / (1.0 - dz);
       const smoothResponse = normRange * normRange * (3 - 2 * normRange); // Hermite interpolation
       targetX = Math.sign(clampedX) * smoothResponse;
@@ -124,12 +131,12 @@ export class PointerTracker {
     this.state.isTouch = isTouch;
   }
 
-  private handleMouseMove = (e: MouseEvent) => {
+  private handleMouseMove = (e: MouseEvent): void => {
     this.state.isHovered = true;
     this.updatePointer(e.clientX, e.clientY, false);
   };
 
-  private handleWindowMouseMove = (e: MouseEvent) => {
+  private handleWindowMouseMove = (e: MouseEvent): void => {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
@@ -147,18 +154,18 @@ export class PointerTracker {
     }
   };
 
-  private handleMouseEnter = () => {
+  private handleMouseEnter = (): void => {
     this.state.isHovered = true;
   };
 
-  private handleMouseLeave = () => {
+  private handleMouseLeave = (): void => {
     this.state.isHovered = false;
     this.state.normX = 0;
     this.state.normY = 0;
     this.state.targetX = 0;
   };
 
-  private handleTouchStart = (e: TouchEvent) => {
+  private handleTouchStart = (e: TouchEvent): void => {
     if (e.touches.length > 0) {
       this.state.isHovered = true;
       const touch = e.touches[0];
@@ -166,7 +173,7 @@ export class PointerTracker {
     }
   };
 
-  private handleTouchMove = (e: TouchEvent) => {
+  private handleTouchMove = (e: TouchEvent): void => {
     if (e.touches.length > 0) {
       this.state.isHovered = true;
       const touch = e.touches[0];
@@ -174,7 +181,7 @@ export class PointerTracker {
     }
   };
 
-  private handleTouchEnd = () => {
+  private handleTouchEnd = (): void => {
     this.state.isHovered = false;
     this.handleMouseLeave();
   };

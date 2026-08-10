@@ -1,28 +1,23 @@
 export interface MascotVideoConfigType {
-  // Cursor Dead-zone and Sensitivity
-  pointerDeadZone: number;       // Dead-zone around center (e.g. +-0.10)
-  pointerSensitivity: number;    // Sensitivity multiplier for cursor offset
+  readonly pointerDeadZone: number;       // Dead-zone around center (e.g. +-0.10)
+  readonly pointerSensitivity: number;    // Sensitivity multiplier for cursor offset
   
-  // Motion Physics & Damping
-  motionDamping: number;         // Damping factor for inertia (0.05 to 0.25)
-  motionResponse: number;        // Spring responsiveness speed (0.02 to 0.15)
-  returnToCenterSpeed: number;   // Smooth return speed when pointer leaves hero
+  readonly motionDamping: number;         // Damping factor for inertia (0.05 to 0.25)
+  readonly motionResponse: number;        // Spring responsiveness speed (0.02 to 0.15)
+  readonly returnToCenterSpeed: number;   // Smooth return speed when pointer leaves hero
   
-  // Video Motion Engine & Layer Crossfading
-  videoCrossfadeDurationMs: number; // Layer transition opacity crossfade duration in ms
+  readonly videoCrossfadeDurationMs: number; // Layer transition opacity crossfade duration in ms
   
-  // Asset Paths (Auto-discovered Google Flow video files in public/videos/)
-  videoPaths: {
-    idleCenter: string;        // Chapter 1: Neutral Idle / Center
-    horizontalMotion: string;  // Chapter 2: Center -> Right -> Center -> Left
-    returnLeft: string;        // Chapter 3: Left -> Center Continuation
+  readonly videoPaths: {
+    readonly idleCenter: string;        // Chapter 1: Neutral Idle / Center
+    readonly horizontalMotion: string;  // Chapter 2: Center -> Right -> Center -> Left
+    readonly returnLeft: string;        // Chapter 3: Left -> Center Continuation
   };
 
-  // Reduced motion multiplier
-  reducedMotionFactor: number;
+  readonly reducedMotionFactor: number;
 }
 
-export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = {
+export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze({
   pointerDeadZone: 0.10,
   pointerSensitivity: 1.2,
   
@@ -32,11 +27,26 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = {
   
   videoCrossfadeDurationMs: 250,
   
-  videoPaths: {
+  videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',
     horizontalMotion: '/videos/Mascot_horizontal_motion_video_chapter_2.mp4',
     returnLeft: '/videos/Ninoc_mascot_idle_video_animation_chapter_3.mp4',
-  },
+  }),
   
   reducedMotionFactor: 0.1,
-};
+});
+
+export function createMascotVideoConfig(
+  overrides?: Partial<MascotVideoConfigType>
+): MascotVideoConfigType {
+  if (!overrides) return DEFAULT_MASCOT_VIDEO_CONFIG;
+  
+  return Object.freeze({
+    ...DEFAULT_MASCOT_VIDEO_CONFIG,
+    ...overrides,
+    videoPaths: Object.freeze({
+      ...DEFAULT_MASCOT_VIDEO_CONFIG.videoPaths,
+      ...(overrides.videoPaths || {}),
+    }),
+  });
+}
