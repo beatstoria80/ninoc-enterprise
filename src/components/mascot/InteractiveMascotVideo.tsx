@@ -121,23 +121,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         vIdle.style.opacity = frame.weights.idleOpacity.toFixed(3);
         vHoriz.style.opacity = frame.weights.horizontalOpacity.toFixed(3);
         vRet.style.opacity = frame.weights.returnLeftOpacity.toFixed(3);
-
-        // Synchronize seek time for layer 1 (horizontal motion)
-        if (vHoriz.duration && !isNaN(vHoriz.duration)) {
-          const targetTime = vHoriz.duration * frame.weights.horizontalTimeFraction;
-          // Smooth lerp seek time if delta is significant
-          if (Math.abs(vHoriz.currentTime - targetTime) > 0.08) {
-            vHoriz.currentTime = targetTime;
-          }
-        }
-
-        // Synchronize seek time for layer 2 (return left)
-        if (vRet.duration && !isNaN(vRet.duration)) {
-          const targetTime = vRet.duration * frame.weights.returnLeftTimeFraction;
-          if (Math.abs(vRet.currentTime - targetTime) > 0.08) {
-            vRet.currentTime = targetTime;
-          }
-        }
       }
 
       animFrameId = requestAnimationFrame(renderLoop);

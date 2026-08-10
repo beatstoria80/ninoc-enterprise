@@ -130,17 +130,19 @@ export class PointerTracker {
   };
 
   private handleWindowMouseMove = (e: MouseEvent) => {
-    if (!this.container || !this.state.isHovered) return;
+    if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
-    const margin = 80;
+    if (rect.width === 0 || rect.height === 0) return;
+
     if (
-      e.clientX >= rect.left - margin &&
-      e.clientX <= rect.right + margin &&
-      e.clientY >= rect.top - margin &&
-      e.clientY <= rect.bottom + margin
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom
     ) {
+      this.state.isHovered = true;
       this.updatePointer(e.clientX, e.clientY, false);
-    } else {
+    } else if (this.state.isHovered) {
       this.handleMouseLeave();
     }
   };
