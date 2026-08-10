@@ -149,12 +149,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         {/* Layer 0: Idle Center (Chapter 1) */}
         <video
           ref={videoIdleRef}
+          src={config.videoPaths.idleCenter}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 1 }}
         >
           <source src={config.videoPaths.idleCenter} type="video/mp4" />
@@ -163,12 +164,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         {/* Layer 1: Horizontal Motion (Chapter 2) */}
         <video
           ref={videoHorizontalRef}
+          src={config.videoPaths.horizontalMotion}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 0 }}
         >
           <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
@@ -177,12 +179,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         {/* Layer 2: Return Left Continuation (Chapter 3) */}
         <video
           ref={videoReturnLeftRef}
+          src={config.videoPaths.returnLeft}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300 bg-white"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-300"
           style={{ opacity: 0 }}
         >
           <source src={config.videoPaths.returnLeft} type="video/mp4" />

@@ -23,19 +23,8 @@ interface HomeClientWrapperProps {
 import InteractiveMascotVideo from '@/components/mascot/InteractiveMascotVideo';
 
 export default function HomeClientWrapper({ products, dict }: HomeClientWrapperProps) {
-  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
-      return 'archive';
-    }
-    return 'hero';
-  });
-
-  const [isReturningVisitor, setIsReturningVisitor] = useState(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
-      return true;
-    }
-    return false;
-  });
+  const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
+  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
 
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
