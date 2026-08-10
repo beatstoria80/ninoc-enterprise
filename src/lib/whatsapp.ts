@@ -10,6 +10,8 @@
  * because it contains WHATSAPP_ACCESS_TOKEN (secret).
  */
 
+import { getAppUrl } from '@/lib/utils';
+
 const WHATSAPP_API_VERSION = 'v18.0';
 const BASE_URL = `https://graph.facebook.com/${WHATSAPP_API_VERSION}`;
 
