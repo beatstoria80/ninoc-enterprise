@@ -94,12 +94,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-10 h-10 md:w-12 md:h-12 object-contain" priority unoptimized />
                 </motion.div>
                 
-                <motion.div className="hidden md:flex gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
-                  <span>Apparel</span><span>Objects</span><span>Pantry</span><span>Logbook</span><span>About</span>
-                </motion.div>
-                
-                <motion.div className="flex gap-4 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}>
-                  <span>Search</span><span className="hidden md:inline">Account</span><span>Cart(0)</span>
+                {/* Navigation Menu moved to Top Right */}
+                <motion.div className="flex gap-4 md:gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
+                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Apparel</button>
+                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Objects</button>
+                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Pantry</button>
+                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Logbook</button>
+                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">About</button>
                 </motion.div>
               </div>
 
@@ -142,26 +143,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       Curated apparel, studio objects, and interactive digital forms—meticulously crafted for contemporary living.
                     </motion.p>
 
-                    {/* Interactive Cursor Microcopy Cue */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.55 }}
-                    >
-                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50/80 border border-purple-200/60 text-xs font-medium text-[#7c3aed] backdrop-blur-sm shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] animate-pulse" />
-                        Move cursor rightward to interact
-                      </span>
-                    </motion.div>
-
-                    {/* Primary & Secondary CTA Buttons */}
+                    {/* Primary CTA Button */}
                     <motion.div
                       initial={{ opacity: 0, x: -20, scale: 0.95 }}
                       animate={{ opacity: 1, x: 0, scale: 1 }}
-                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.65 }}
-                      className="pt-2 flex flex-wrap items-center gap-4"
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.6 }}
+                      className="pt-2"
                     >
-                      {/* Primary CTA */}
                       <motion.button
                         onClick={handleShopClick}
                         className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:ring-offset-2"
@@ -171,18 +159,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       >
                         <span>Explore Catalog</span>
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-                      </motion.button>
-
-                      {/* Secondary CTA */}
-                      <motion.button
-                        onClick={handleShopClick}
-                        className="inline-flex items-center gap-2 text-sm sm:text-base font-medium text-[#475569] hover:text-[#1e1b4b] transition-colors py-3.5 px-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-300 rounded-full"
-                        whileHover={{ x: 3 }}
-                        whileTap={{ scale: 0.97 }}
-                        aria-label="View Studio Logbook"
-                      >
-                        <span>View Logbook</span>
-                        <span className="text-xs text-[#94a3b8]">→</span>
                       </motion.button>
                     </motion.div>
 
