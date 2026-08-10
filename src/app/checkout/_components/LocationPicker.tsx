@@ -25,6 +25,7 @@ interface LocationPickerProps {
   initialLat?: number;
   initialLng?: number;
   searchQuery?: string;
+  addressParts?: string[];
   onLocationSelect: (lat: number, lng: number) => void;
 }
 
